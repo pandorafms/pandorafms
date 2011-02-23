@@ -1,3 +1,7 @@
+2011-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/postinst: Updated.
+
 2011-02-14  Sancho Lerena <slerena@artica.es>
 
 	* OpenWRT: Special files for OpenWRT/Perl version.

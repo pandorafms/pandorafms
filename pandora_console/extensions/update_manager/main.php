@@ -48,7 +48,7 @@ if ($update_package) {
 		
 		um_client_upgrade_to_latest ($user_key, $force);
 		/* TODO: Add a new in tnews */
-		$settings = um_db_load_settings ();
+
 	} else {
 		echo '<h5 class="error">' . __('This is an Enterprise feature. Visit %s for more information.', '<a href="http://pandorafms.com">http://pandorafms.com</a>') . '</h5>';
 	}
@@ -140,11 +140,15 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 else {
 	$error = '<h5 class="error">'.__('File cannot be uploaded').'</h5>';
 }
-global $build_version;
+
+clean_cache();
+$settings = um_db_load_settings ();
+$user_key = get_user_key ($settings);
 
 $package = um_client_check_latest_update ($settings, $user_key);
 
 if (give_acl ($config['id_user'], 0, 'PM')) {
+
 	if ($package === true) {
 		echo '<h5 class="suc">'.__('Your system is up-to-date').'.</h5>';
 	} elseif ($package === false) {
@@ -200,5 +204,4 @@ if (give_acl ($config['id_user'], 0, 'PM')) {
 } 
 
 echo '<h4>'.__('Your system version number is').': '.$settings->current_update.'</h4>';
-
 ?>

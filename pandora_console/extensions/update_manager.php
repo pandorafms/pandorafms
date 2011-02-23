@@ -19,7 +19,6 @@ function load_update_manager_lib () {
 
 function update_settings_database_connection () {
 	global $config;
-	global $db;
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);

@@ -18,19 +18,19 @@ error_reporting ($prev_level);
 include("xmlrpc/xmlrpc.inc");
 include("xmlrpc/xmlrpcs.inc");
 include("xmlrpc/xmlrpc_wrappers.inc");
-//require_once ("db/functions_db.mysql.php");
 
 unset ($prev_level);
 
 define ('XMLRPC_DEBUG', 0);
 define ('XMLRPC_TIMEOUT', 15);
-//define ('DB_NAME', 'update_manager_client');
+global $config;
+define('HOME_DIR', $config['homedir']);
 
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass, $function, $parameters) {
 	$msg = new xmlrpcmsg ($function, $parameters);
 	
 	$client = new xmlrpc_client($server_path, $server_host, $server_port);
-	
+
 	$client->setProxy($proxy, $proxy_port, $proxy_user, $proxy_pass);
 	
 	if (defined ('XMLRPC_DEBUG'))
@@ -40,11 +40,17 @@ function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $prox
 
 	if (! $result) {
 		trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$client->errstr);
-		return false;
+		return 0;
 	}
-	if ($result->faultCode ()) {
-		trigger_error ('<strong>Open Update Manager</strong> XML-RPC error. '.$result->faultString ());
-		return false;
+	switch($result->faultCode ()) {
+		case 0:
+			break;
+		case 5: 
+			trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$result->faultString ());
+			return 0;
+		default:
+			trigger_error ('<strong>Open Update Manager</strong> XML-RPC error. '.$result->faultString ());
+			return 0;
 	}
 
 	return $result;
@@ -105,8 +111,9 @@ function um_client_check_latest_update ($settings, $user_key) {
 			$settings->proxy_user,
 			$settings->proxy_pass,
 			'get_latest_package', $params);
-	if ($result === false) {
-		return 0;
+				
+	if ($result == false) {
+		return $result;
 	}
 
 	$value = $result->value ();
@@ -133,7 +140,7 @@ function um_client_get_package ($settings, $user_key) {
 			$settings->proxy_user,
 			$settings->proxy_pass,
 			'get_next_package', $params);
-	
+		
 	if ($result === false)
 		return false;
 	
@@ -150,7 +157,8 @@ function um_client_get_package ($settings, $user_key) {
 
 function um_client_db_save_package ($package, $settings) {
 	$fields = array ('id' => $package->id,
-			'description' => $package->description);
+			'description' => $package->description,
+			'timestamp' => $package->timestamp);
 
 	um_client_db_connect($settings);
 
@@ -243,7 +251,8 @@ function um_client_apply_update_database (&$update) {
 
 function um_client_apply_update (&$update, $settings, $force = false) {
 	if ($update->type == 'code') {
-		$filename = $settings->updating_code_path.'/'.$update->filename;
+		// We use the Pandora Home dir of config to code files
+		$filename = HOME_DIR.'/'.$update->filename;
 		$success = um_client_apply_update_file ($update, $filename, $force);
 	} else if ($update->type == 'binary') {
 		$filename = $settings->updating_binary_path.'/'.$update->filename;
@@ -343,7 +352,7 @@ function um_client_print_update ($update, $settings) {
 	echo '<li><em>Type</em>: '.$update->type.'</li>';
 	if ($update->type == 'code' || $update->type == 'binary') {
 		if ($update->type == 'code') {
-			$realpath = $settings->updating_code_path.'/'.$update->filename;
+			$realpath = HOME_DIR.'/'.$update->filename;
 		} else {
 			$realpath = $settings->updating_binary_path.'/'.$update->filename;
 		}
@@ -467,7 +476,6 @@ function um_client_upgrade_to_package ($package, $settings, $force = false, $upd
 		um_component_db_connect ();
 		foreach ($package->updates as $update) {
 			$success = um_client_apply_update ($update, $settings, $force);	
-
 			if (! $success) {
 				echo '<p /><strong>Failed</strong> on:<br />';
 				um_client_print_update ($update, $settings);
@@ -492,8 +500,6 @@ function um_client_upgrade_to_package ($package, $settings, $force = false, $upd
 		}
 
 		um_db_update_setting ('current_update', $package->id);
-		
-		process_sql_commit();
 	}
 	else {
 		$data_queries = '';
@@ -598,21 +604,22 @@ function um_client_upgrade_to_package ($package, $settings, $force = false, $upd
 
 function um_client_upgrade_to_latest ($user_key, $force) {
 	$settings = um_db_load_settings ();
-	process_sql_begin();
 	do {
 		$package = um_client_get_package ($settings, $user_key);
 
-		if ($package === false || $package === true)
+		if ($package === false || $package === true) {
 			break;
+		}
 		
 		$success = um_client_upgrade_to_package ($package, $settings, $force);
 
 		if (! $success)
 			break;
-		
+
 		$settings->current_update = $package->id;
 		
 	} while (1);
+
 	/* Break on error, when there are no more packages on the server (server return true)
 		or on auth failure (server return false) */
 }

@@ -581,6 +581,7 @@ function um_db_is_auth_developer ($id_auth) {
 }
 
 function um_db_connect ($backend = 'mysql', $host = '', $user = '', $password = '', $db_name = '') {
+	
 	return connect_db ($host, $db_name, $user, $password);
 }
 

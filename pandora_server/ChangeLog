@@ -1,3 +1,7 @@
+2011-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Merged from trunk. HTML encode events.
+
 2011-02-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server_installer: Merged from trunk. Change tentacle_server

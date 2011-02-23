@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-16 13:10+0100\n"
-"PO-Revision-Date: 2011-02-18 10:06+0000\n"
-"Last-Translator: nil <slerena@gmail.com>\n"
+"POT-Creation-Date: 2011-02-22 09:23+0100\n"
+"PO-Revision-Date: 2011-02-23 13:09+0000\n"
+"Last-Translator: Zarzuelo <Unknown>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-22 08:25+0000\n"
-"X-Generator: Launchpad (build 12406)\n"
+"X-Launchpad-Export-Date: 2011-02-23 13:53+0000\n"
+"X-Generator: Launchpad (build 12432)\n"
 
 #: ../../index.php:243
 msgid "Attachment directory is not writable by HTTP Server"
@@ -810,7 +810,7 @@ msgstr "Título"
 #: ../../godmode/agentes/agent_template.php:149
 #: ../../godmode/massive/massive_edit_agents.php:377
 #: ../../godmode/massive/massive_edit_modules.php:333
-#: ../../extensions/update_manager/main.php:88
+#: ../../extensions/update_manager/main.php:175
 #: ../../extensions/update_manager/settings.php:79
 msgid "Update"
 msgstr "Actualizar"
@@ -1236,8 +1236,8 @@ msgstr "Sólo pendientes"
 #: ../../mobile/operation/events/events.php:53
 #: ../../mobile/operation/agents/monitor_status.php:46
 #: ../../mobile/operation/agents/monitor_status.php:59
-#: ../../extensions/agents_modules.php:69 ../../include/functions_db.php:1666
-#: ../../include/functions_db.php:1671 ../../include/functions.php:578
+#: ../../extensions/agents_modules.php:69 ../../include/functions_db.php:1697
+#: ../../include/functions_db.php:1702 ../../include/functions.php:578
 #: ../../include/functions.php:875
 msgid "All"
 msgstr "Todo"
@@ -1334,7 +1334,7 @@ msgstr "Grupos"
 #: ../../include/functions_reporting.php:2282
 #: ../../include/functions_reporting.php:2310
 #: ../../include/functions_reporting.php:2338
-#: ../../include/functions_db.php:1838 ../../include/functions.php:690
+#: ../../include/functions_db.php:1898 ../../include/functions.php:690
 #: ../../include/functions.php:808 ../../include/functions_ui.php:198
 #: ../../include/functions_ui.php:199 ../../include/functions_alerts.php:292
 msgid "Unknown"
@@ -1772,7 +1772,7 @@ msgstr "Mapas"
 #: ../../enterprise/extensions/backup/main.php:96
 #: ../../enterprise/include/functions_reporting_pdf2.php:796
 #: ../../include/functions_reporting.php:1800
-#: ../../include/functions_db.php:3650
+#: ../../include/functions_db.php:3710
 msgid "OK"
 msgstr "Bien"
 
@@ -1934,7 +1934,7 @@ msgstr "Panel con mensaje de texto"
 #: ../../godmode/setup/news.php:108
 #: ../../godmode/reporting/reporting_builder.item_editor.php:327
 #: ../../include/functions_reporting.php:1978
-#: ../../include/functions_db.php:3141 ../../include/functions_db.php:3163
+#: ../../include/functions_db.php:3201 ../../include/functions_db.php:3223
 #: ../../include/functions.php:650
 msgid "Text"
 msgstr "Texto"
@@ -2224,7 +2224,7 @@ msgstr "Borrar Dashboard"
 #: ../../godmode/agentes/module_manager_editor_common.php:122
 #: ../../mobile/operation/agents/view_agents.php:87
 #: ../../include/functions_filemanager.php:477
-#: ../../include/functions_db.php:3082
+#: ../../include/functions_db.php:3142
 #: ../../include/help/es/modu_group_list.php:111
 #: ../../include/functions_ui.php:1302
 msgid "Name"
@@ -2831,7 +2831,7 @@ msgstr "Crítico"
 #: ../../mobile/operation/agents/view_agents.php:374
 #: ../../mobile/operation/agents/group_view.php:44
 #: ../../include/functions_reporting.php:1596
-#: ../../include/functions_db.php:3175 ../../include/functions.php:814
+#: ../../include/functions_db.php:3235 ../../include/functions.php:814
 #: ../../include/functions_ui.php:535 ../../include/functions_events.php:521
 msgid "Alert fired"
 msgstr "Alerta lanzada"
@@ -2985,7 +2985,7 @@ msgstr "G."
 #: ../../operation/agentes/estado_ultimopaquete.php:180
 #: ../../godmode/setup/news.php:131
 #: ../../mobile/operation/events/events.php:137
-#: ../../extensions/update_manager/main.php:75
+#: ../../extensions/update_manager/main.php:162
 #: ../../include/functions_reporting.php:687
 #: ../../include/functions_reporting.php:1353
 #: ../../include/functions_reporting.php:1407
@@ -3495,7 +3495,7 @@ msgstr "No hay servicios definidos"
 #: ../../godmode/agentes/agent_template.php:130
 #: ../../godmode/massive/massive_edit_agents.php:269
 #: ../../mobile/operation/events/events.php:138
-#: ../../extensions/update_manager/main.php:78
+#: ../../extensions/update_manager/main.php:165
 #: ../../include/functions_reporting.php:1120
 msgid "Description"
 msgstr "Descripción"
@@ -4347,7 +4347,7 @@ msgstr "Capacitar base de datos histórica"
 #: ../../godmode/reporting/reporting_builder.php:88
 #: ../../godmode/massive/massive_edit_modules.php:297
 #: ../../godmode/massive/massive_edit_modules.php:326
-#: ../../include/functions_db.php:3155
+#: ../../include/functions_db.php:3215
 msgid "Yes"
 msgstr "Sí"
 
@@ -4373,7 +4373,7 @@ msgstr "Sí"
 #: ../../godmode/reporting/reporting_builder.php:90
 #: ../../godmode/massive/massive_edit_modules.php:297
 #: ../../godmode/massive/massive_edit_modules.php:326
-#: ../../include/functions_db.php:3157
+#: ../../include/functions_db.php:3217
 msgid "No"
 msgstr "No"
 
@@ -4417,7 +4417,7 @@ msgstr "Contraseña de la base de datos"
 #: ../../enterprise/enterprise/godmode/setup/setup_history.php:66
 #: ../../enterprise/godmode/setup/setup_history.php:64
 #: ../../godmode/alerts/alert_templates.php:68
-#: ../../include/functions_db.php:3092
+#: ../../include/functions_db.php:3152
 msgid "Days"
 msgstr "Días"
 
@@ -6922,7 +6922,7 @@ msgstr "Realizado con el wizard de informes"
 #: ../../include/functions_reporting.php:1186
 #: ../../include/functions_reporting.php:1224
 #: ../../include/functions_reporting.php:1253
-#: ../../include/functions_db.php:3135 ../../include/functions.php:616
+#: ../../include/functions_db.php:3195 ../../include/functions.php:616
 #: ../../include/functions.php:621 ../../include/functions.php:624
 msgid "N/A"
 msgstr "N/A"
@@ -7229,7 +7229,7 @@ msgstr "Alerta desactivada"
 #: ../../mobile/operation/agents/view_alerts.php:77
 #: ../../mobile/operation/agents/view_agents.php:380
 #: ../../include/functions_reporting.php:1527
-#: ../../include/functions_db.php:3177 ../../include/functions_ui.php:541
+#: ../../include/functions_db.php:3237 ../../include/functions_ui.php:541
 msgid "Alert not fired"
 msgstr "Alerta no lanzada"
 
@@ -8136,7 +8136,7 @@ msgstr "No disparado"
 #: ../../operation/agentes/alerts_status.functions.php:52
 #: ../../include/functions_reporting.php:794
 #: ../../include/functions_reporting.php:886
-#: ../../include/functions_db.php:3093
+#: ../../include/functions_db.php:3153
 msgid "Fired"
 msgstr "Lanzada"
 
@@ -8376,6 +8376,7 @@ msgstr "Añadir adjunto"
 #: ../../extensions/plugin_registration.php:37
 #: ../../extensions/resource_registration.php:64
 #: ../../extensions/extension_uploader.php:63
+#: ../../extensions/update_manager/main.php:193
 #: ../../include/functions_filemanager.php:656
 msgid "Upload"
 msgstr "Subir"
@@ -8649,7 +8650,7 @@ msgstr "Todos (Habilitados)"
 #: ../../godmode/massive/massive_edit_agents.php:304
 #: ../../godmode/massive/massive_edit_agents.php:334
 #: ../../godmode/massive/massive_edit_modules.php:295
-#: ../../extensions/update_manager/lib/libupdate_manager.php:591
+#: ../../extensions/update_manager/lib/libupdate_manager.php:599
 msgid "Disabled"
 msgstr "Desactivado"
 
@@ -10725,7 +10726,7 @@ msgid "Time source"
 msgstr "Origen de hora"
 
 #: ../../godmode/setup/setup.php:84
-#: ../../extensions/update_manager/lib/libupdate_manager.php:599
+#: ../../extensions/update_manager/lib/libupdate_manager.php:607
 msgid "Database"
 msgstr "Base de datos"
 
@@ -10979,7 +10980,7 @@ msgstr "Condiciones"
 #: ../../godmode/alerts/configure_alert_compound.php:70
 #: ../../godmode/alerts/configure_alert_template.php:112
 #: ../../godmode/alerts/configure_alert_template.php:117
-#: ../../include/functions_db.php:3086
+#: ../../include/functions_db.php:3146
 msgid "Firing"
 msgstr "Disparado"
 
@@ -10987,7 +10988,7 @@ msgstr "Disparado"
 #: ../../godmode/alerts/configure_alert_compound.php:88
 #: ../../godmode/alerts/configure_alert_template.php:132
 #: ../../godmode/alerts/configure_alert_template.php:137
-#: ../../include/functions_db.php:3090
+#: ../../include/functions_db.php:3150
 msgid "Recovery"
 msgstr "Recuperación"
 
@@ -12411,7 +12412,7 @@ msgid "Database purge"
 msgstr "Purgar BB. DD."
 
 #: ../../godmode/menu.php:224 ../../godmode/db/db_refine.php:29
-#: ../../include/functions_db.php:3620
+#: ../../include/functions_db.php:3680
 msgid "Database debug"
 msgstr "Depurar BB. DD."
 
@@ -13616,21 +13617,21 @@ msgstr "Creado componente '%s' satisfactoriamente"
 msgid "Error create '%s' component."
 msgstr "Hubo un problema al crear el componente '%s'"
 
-#: ../../extensions/update_manager.php:109
+#: ../../extensions/update_manager.php:105
 msgid "There's a new update for Pandora"
 msgstr "Existe una nueva actualización para Pandora FMS"
 
-#: ../../extensions/update_manager.php:111
+#: ../../extensions/update_manager.php:107
 msgid "More info"
 msgstr "Más info."
 
-#: ../../extensions/update_manager.php:128
-#: ../../extensions/update_manager/main.php:25
+#: ../../extensions/update_manager.php:123
+#: ../../extensions/update_manager/main.php:26
 #: ../../extensions/update_manager/settings.php:30
 msgid "Update manager"
 msgstr "Update manager"
 
-#: ../../extensions/update_manager.php:129
+#: ../../extensions/update_manager.php:124
 msgid "Update manager settings"
 msgstr "Ajustes del Update Manager"
 
@@ -13702,23 +13703,23 @@ msgstr "Subir la extensión como un fichero zip"
 msgid "Extension uploader"
 msgstr "Cargador de extensiones"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:588
+#: ../../extensions/update_manager/lib/libupdate_manager.php:596
 msgid "Development"
 msgstr "Desarrollo"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:589
+#: ../../extensions/update_manager/lib/libupdate_manager.php:597
 msgid "Testing"
 msgstr "Pruebas"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:590
+#: ../../extensions/update_manager/lib/libupdate_manager.php:598
 msgid "Public"
 msgstr "Público"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:600
+#: ../../extensions/update_manager/lib/libupdate_manager.php:608
 msgid "Code / binary directory"
 msgstr "Directorio de código / binario"
 
-#: ../../extensions/update_manager/main.php:31
+#: ../../extensions/update_manager/main.php:32
 msgid ""
 "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
 "client is shipped with Pandora FMS 3.0. It helps system administrators to "
@@ -13733,7 +13734,7 @@ msgstr ""
 "y nuevas características (incluso realizar una migracion de futuras "
 "versiones) de forma automática."
 
-#: ../../extensions/update_manager/main.php:33
+#: ../../extensions/update_manager/main.php:34
 msgid ""
 "Update Manager is one of the most advanced features of Pandora FMS 3.0 "
 "Enterprise version, for more information visit <a "
@@ -13743,7 +13744,7 @@ msgstr ""
 "de Pandora FMS Enterprise, para obtener más información, visite <a "
 "href=\"http://pandorafms.com\"> http://pandorafms.com </ a>."
 
-#: ../../extensions/update_manager/main.php:35
+#: ../../extensions/update_manager/main.php:36
 msgid ""
 "Update Manager sends anonymous information about Pandora FMS usage (number "
 "of agents and modules running). To disable it, just delete extension or "
@@ -13754,41 +13755,69 @@ msgstr ""
 "borre la extensión o quite la dirección del servidor remoto de la "
 "configuración del complemento de Update Manager."
 
-#: ../../extensions/update_manager/main.php:44
+#: ../../extensions/update_manager/main.php:45
 msgid "Updating"
 msgstr "Actualizando"
 
-#: ../../extensions/update_manager/main.php:52
+#: ../../extensions/update_manager/main.php:53
 #, php-format
 msgid "This is an Enterprise feature. Visit %s for more information."
 msgstr ""
 "Esta es una característica Enteprise. Visita %s para más información."
 
-#: ../../extensions/update_manager/main.php:61
+#: ../../extensions/update_manager/main.php:60
+msgid "Incorrect file extension"
+msgstr "Extensión de fichero incorrecta"
+
+#: ../../extensions/update_manager/main.php:70
+msgid "Update cannot be opened"
+msgstr "La actualización no se ha podido abrir"
+
+#: ../../extensions/update_manager/main.php:78
+msgid "Your system version is higher or equal than the loaded package"
+msgstr "La versión del sistema es mayor o igual que la del paquete cargado"
+
+#: ../../extensions/update_manager/main.php:131
+msgid "Successfully upgraded"
+msgstr "Actualizado satisfactoriamente"
+
+#: ../../extensions/update_manager/main.php:135
+msgid "Cannot be upgraded"
+msgstr "No ha podido ser actualizado"
+
+#: ../../extensions/update_manager/main.php:141
+msgid "File cannot be uploaded"
+msgstr "El fichero no se ha podido cargar"
+
+#: ../../extensions/update_manager/main.php:148
 msgid "Your system is up-to-date"
 msgstr "Su sistema está actualizado"
 
-#: ../../extensions/update_manager/main.php:63
-msgid "Server connection failed"
-msgstr "Falló la conexión con el servidor"
-
-#: ../../extensions/update_manager/main.php:65
+#: ../../extensions/update_manager/main.php:150
 msgid "Server authorization rejected"
 msgstr "Se rechazó la autorización del servidor"
 
-#: ../../extensions/update_manager/main.php:67
+#: ../../extensions/update_manager/main.php:152
+msgid "Server connection failed"
+msgstr "Falló la conexión con el servidor"
+
+#: ../../extensions/update_manager/main.php:154
 msgid "There's a new update for Pandora FMS"
 msgstr "Existe una nueva actualización para Pandora FMS"
 
-#: ../../extensions/update_manager/main.php:72
+#: ../../extensions/update_manager/main.php:159
 msgid "Id"
 msgstr "ID"
 
-#: ../../extensions/update_manager/main.php:84
+#: ../../extensions/update_manager/main.php:171
 msgid "Overwrite local changes"
 msgstr "Sobreescribir cambios locales"
 
-#: ../../extensions/update_manager/main.php:94
+#: ../../extensions/update_manager/main.php:190
+msgid "Offline packages loader"
+msgstr "Cargador offline de paquetes"
+
+#: ../../extensions/update_manager/main.php:201
 msgid "Your system version number is"
 msgstr "El número de versión de su sistema es"
 
@@ -13840,11 +13869,11 @@ msgstr "Usuario del proxy"
 msgid "Proxy password"
 msgstr "Contraseña del proxy"
 
-#: ../../extensions/update_manager/load_updatemanager.php:33
+#: ../../extensions/update_manager/load_updatemanager.php:32
 msgid "Keygen file does not exists"
 msgstr "El fichero generador de claves no existe"
 
-#: ../../extensions/update_manager/load_updatemanager.php:40
+#: ../../extensions/update_manager/load_updatemanager.php:39
 msgid "Keygen file is not executable"
 msgstr "El fichero generador de claves no se puede ejecutar"
 
@@ -14261,59 +14290,59 @@ msgstr "Subir archivo zip: "
 msgid "Create text file: "
 msgstr "Crear archivo de texto: "
 
-#: ../../include/functions_db.php:1826
+#: ../../include/functions_db.php:1886
 msgid "Software agent data"
 msgstr "Datos del agente de software"
 
-#: ../../include/functions_db.php:1829
+#: ../../include/functions_db.php:1889
 msgid "Software agent monitor"
 msgstr "Monitores del agente de software"
 
-#: ../../include/functions_db.php:1832
+#: ../../include/functions_db.php:1892
 msgid "Network agent data"
 msgstr "Datos del agente de red"
 
-#: ../../include/functions_db.php:1835
+#: ../../include/functions_db.php:1895
 msgid "Network agent monitor"
 msgstr "Monitores del agente de red"
 
-#: ../../include/functions_db.php:3083
+#: ../../include/functions_db.php:3143
 msgid "Oper"
 msgstr "Operador"
 
-#: ../../include/functions_db.php:3085
+#: ../../include/functions_db.php:3145
 msgid "Tt"
 msgstr "UT"
 
-#: ../../include/functions_db.php:3087
+#: ../../include/functions_db.php:3147
 msgid "Time"
 msgstr "Hora"
 
-#: ../../include/functions_db.php:3089
+#: ../../include/functions_db.php:3149
 msgid "Desc"
 msgstr "Descripción"
 
-#: ../../include/functions_db.php:3091
+#: ../../include/functions_db.php:3151
 msgid "MinMax.Al"
 msgstr "Alertas Mín/Máx"
 
-#: ../../include/functions_db.php:3636
+#: ../../include/functions_db.php:3696
 msgid "SQL sentence"
 msgstr "Consulta SQL"
 
-#: ../../include/functions_db.php:3637
+#: ../../include/functions_db.php:3697
 msgid "Result"
 msgstr "Resultado"
 
-#: ../../include/functions_db.php:3638
+#: ../../include/functions_db.php:3698
 msgid "Rows"
 msgstr "Filas"
 
-#: ../../include/functions_db.php:3639
+#: ../../include/functions_db.php:3699
 msgid "Saved"
 msgstr "Guardado"
 
-#: ../../include/functions_db.php:3640
+#: ../../include/functions_db.php:3700
 msgid "Time (ms)"
 msgstr "Tiempo (ms)"
 

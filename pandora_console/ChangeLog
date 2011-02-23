@@ -1,3 +1,8 @@
+2011-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_ui.php: Merged from trunk. Call safe_output instead
+	  of safe_output_html.
+
 2011-02-03 Javier Lanz <javier.lanz@artica.es>
 
 	* extensions/agents_modules.php: Fixed an error in the header of

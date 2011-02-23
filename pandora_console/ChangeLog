@@ -1,5 +1,9 @@
 2011-02-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_console.redhat.spec: Removed PEAR dependencies.
+
+2011-02-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* DEBIAN/control, DEBIAN/postinst, pandora_console.spec: Removed PEAR
 	  dependencies.
 

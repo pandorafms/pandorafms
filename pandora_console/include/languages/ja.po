@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-16 13:10+0100\n"
-"PO-Revision-Date: 2011-02-17 09:38+0000\n"
+"POT-Creation-Date: 2011-02-22 09:23+0100\n"
+"PO-Revision-Date: 2011-02-23 12:46+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-22 08:24+0000\n"
-"X-Generator: Launchpad (build 12406)\n"
+"X-Launchpad-Export-Date: 2011-02-23 13:53+0000\n"
+"X-Generator: Launchpad (build 12432)\n"
 
 #: ../../index.php:243
 msgid "Attachment directory is not writable by HTTP Server"
@@ -798,7 +798,7 @@ msgstr "タイトル"
 #: ../../godmode/agentes/agent_template.php:149
 #: ../../godmode/massive/massive_edit_agents.php:377
 #: ../../godmode/massive/massive_edit_modules.php:333
-#: ../../extensions/update_manager/main.php:88
+#: ../../extensions/update_manager/main.php:175
 #: ../../extensions/update_manager/settings.php:79
 msgid "Update"
 msgstr "更新"
@@ -1224,8 +1224,8 @@ msgstr "未承諾"
 #: ../../mobile/operation/events/events.php:53
 #: ../../mobile/operation/agents/monitor_status.php:46
 #: ../../mobile/operation/agents/monitor_status.php:59
-#: ../../extensions/agents_modules.php:69 ../../include/functions_db.php:1666
-#: ../../include/functions_db.php:1671 ../../include/functions.php:578
+#: ../../extensions/agents_modules.php:69 ../../include/functions_db.php:1697
+#: ../../include/functions_db.php:1702 ../../include/functions.php:578
 #: ../../include/functions.php:875
 msgid "All"
 msgstr "全て"
@@ -1322,7 +1322,7 @@ msgstr "グループ"
 #: ../../include/functions_reporting.php:2282
 #: ../../include/functions_reporting.php:2310
 #: ../../include/functions_reporting.php:2338
-#: ../../include/functions_db.php:1838 ../../include/functions.php:690
+#: ../../include/functions_db.php:1898 ../../include/functions.php:690
 #: ../../include/functions.php:808 ../../include/functions_ui.php:198
 #: ../../include/functions_ui.php:199 ../../include/functions_alerts.php:292
 msgid "Unknown"
@@ -1752,7 +1752,7 @@ msgstr "マップ"
 #: ../../enterprise/extensions/backup/main.php:96
 #: ../../enterprise/include/functions_reporting_pdf2.php:796
 #: ../../include/functions_reporting.php:1800
-#: ../../include/functions_db.php:3650
+#: ../../include/functions_db.php:3710
 msgid "OK"
 msgstr "OK"
 
@@ -1914,7 +1914,7 @@ msgstr "メッセージパネル"
 #: ../../godmode/setup/news.php:108
 #: ../../godmode/reporting/reporting_builder.item_editor.php:327
 #: ../../include/functions_reporting.php:1978
-#: ../../include/functions_db.php:3141 ../../include/functions_db.php:3163
+#: ../../include/functions_db.php:3201 ../../include/functions_db.php:3223
 #: ../../include/functions.php:650
 msgid "Text"
 msgstr "文字列"
@@ -2204,7 +2204,7 @@ msgstr "ダッシュボードの削除"
 #: ../../godmode/agentes/module_manager_editor_common.php:122
 #: ../../mobile/operation/agents/view_agents.php:87
 #: ../../include/functions_filemanager.php:477
-#: ../../include/functions_db.php:3082
+#: ../../include/functions_db.php:3142
 #: ../../include/help/es/modu_group_list.php:111
 #: ../../include/functions_ui.php:1302
 msgid "Name"
@@ -2811,7 +2811,7 @@ msgstr "障害"
 #: ../../mobile/operation/agents/view_agents.php:374
 #: ../../mobile/operation/agents/group_view.php:44
 #: ../../include/functions_reporting.php:1596
-#: ../../include/functions_db.php:3175 ../../include/functions.php:814
+#: ../../include/functions_db.php:3235 ../../include/functions.php:814
 #: ../../include/functions_ui.php:535 ../../include/functions_events.php:521
 msgid "Alert fired"
 msgstr "発生中アラート"
@@ -2965,7 +2965,7 @@ msgstr "グループ"
 #: ../../operation/agentes/estado_ultimopaquete.php:180
 #: ../../godmode/setup/news.php:131
 #: ../../mobile/operation/events/events.php:137
-#: ../../extensions/update_manager/main.php:75
+#: ../../extensions/update_manager/main.php:162
 #: ../../include/functions_reporting.php:687
 #: ../../include/functions_reporting.php:1353
 #: ../../include/functions_reporting.php:1407
@@ -3475,7 +3475,7 @@ msgstr "サービスが定義されていません。"
 #: ../../godmode/agentes/agent_template.php:130
 #: ../../godmode/massive/massive_edit_agents.php:269
 #: ../../mobile/operation/events/events.php:138
-#: ../../extensions/update_manager/main.php:78
+#: ../../extensions/update_manager/main.php:165
 #: ../../include/functions_reporting.php:1120
 msgid "Description"
 msgstr "説明"
@@ -4327,7 +4327,7 @@ msgstr "ヒストリデータベースの有効化"
 #: ../../godmode/reporting/reporting_builder.php:88
 #: ../../godmode/massive/massive_edit_modules.php:297
 #: ../../godmode/massive/massive_edit_modules.php:326
-#: ../../include/functions_db.php:3155
+#: ../../include/functions_db.php:3215
 msgid "Yes"
 msgstr "はい"
 
@@ -4353,7 +4353,7 @@ msgstr "はい"
 #: ../../godmode/reporting/reporting_builder.php:90
 #: ../../godmode/massive/massive_edit_modules.php:297
 #: ../../godmode/massive/massive_edit_modules.php:326
-#: ../../include/functions_db.php:3157
+#: ../../include/functions_db.php:3217
 msgid "No"
 msgstr "いいえ"
 
@@ -4397,7 +4397,7 @@ msgstr "データベースパスワード"
 #: ../../enterprise/enterprise/godmode/setup/setup_history.php:66
 #: ../../enterprise/godmode/setup/setup_history.php:64
 #: ../../godmode/alerts/alert_templates.php:68
-#: ../../include/functions_db.php:3092
+#: ../../include/functions_db.php:3152
 msgid "Days"
 msgstr "日間"
 
@@ -6880,7 +6880,7 @@ msgstr "ウィザードで作成しました"
 #: ../../include/functions_reporting.php:1186
 #: ../../include/functions_reporting.php:1224
 #: ../../include/functions_reporting.php:1253
-#: ../../include/functions_db.php:3135 ../../include/functions.php:616
+#: ../../include/functions_db.php:3195 ../../include/functions.php:616
 #: ../../include/functions.php:621 ../../include/functions.php:624
 msgid "N/A"
 msgstr "N/A"
@@ -7178,7 +7178,7 @@ msgstr "無効アラート"
 #: ../../mobile/operation/agents/view_alerts.php:77
 #: ../../mobile/operation/agents/view_agents.php:380
 #: ../../include/functions_reporting.php:1527
-#: ../../include/functions_db.php:3177 ../../include/functions_ui.php:541
+#: ../../include/functions_db.php:3237 ../../include/functions_ui.php:541
 msgid "Alert not fired"
 msgstr "未通知アラート"
 
@@ -8062,7 +8062,7 @@ msgstr "未通知"
 #: ../../operation/agentes/alerts_status.functions.php:52
 #: ../../include/functions_reporting.php:794
 #: ../../include/functions_reporting.php:886
-#: ../../include/functions_db.php:3093
+#: ../../include/functions_db.php:3153
 msgid "Fired"
 msgstr "通知済"
 
@@ -8302,6 +8302,7 @@ msgstr "ファイルを追加"
 #: ../../extensions/plugin_registration.php:37
 #: ../../extensions/resource_registration.php:64
 #: ../../extensions/extension_uploader.php:63
+#: ../../extensions/update_manager/main.php:193
 #: ../../include/functions_filemanager.php:656
 msgid "Upload"
 msgstr "アップロード"
@@ -8575,7 +8576,7 @@ msgstr "全て(有効状態のもの)"
 #: ../../godmode/massive/massive_edit_agents.php:304
 #: ../../godmode/massive/massive_edit_agents.php:334
 #: ../../godmode/massive/massive_edit_modules.php:295
-#: ../../extensions/update_manager/lib/libupdate_manager.php:591
+#: ../../extensions/update_manager/lib/libupdate_manager.php:599
 msgid "Disabled"
 msgstr "無効"
 
@@ -10626,7 +10627,7 @@ msgid "Time source"
 msgstr "日時データソース"
 
 #: ../../godmode/setup/setup.php:84
-#: ../../extensions/update_manager/lib/libupdate_manager.php:599
+#: ../../extensions/update_manager/lib/libupdate_manager.php:607
 msgid "Database"
 msgstr "データベース"
 
@@ -10878,7 +10879,7 @@ msgstr "状態"
 #: ../../godmode/alerts/configure_alert_compound.php:70
 #: ../../godmode/alerts/configure_alert_template.php:112
 #: ../../godmode/alerts/configure_alert_template.php:117
-#: ../../include/functions_db.php:3086
+#: ../../include/functions_db.php:3146
 msgid "Firing"
 msgstr "障害通知"
 
@@ -10886,7 +10887,7 @@ msgstr "障害通知"
 #: ../../godmode/alerts/configure_alert_compound.php:88
 #: ../../godmode/alerts/configure_alert_template.php:132
 #: ../../godmode/alerts/configure_alert_template.php:137
-#: ../../include/functions_db.php:3090
+#: ../../include/functions_db.php:3150
 msgid "Recovery"
 msgstr "復旧通知"
 
@@ -12291,7 +12292,7 @@ msgid "Database purge"
 msgstr "収集データ"
 
 #: ../../godmode/menu.php:224 ../../godmode/db/db_refine.php:29
-#: ../../include/functions_db.php:3620
+#: ../../include/functions_db.php:3680
 msgid "Database debug"
 msgstr "DBのデバッグ"
 
@@ -13465,21 +13466,21 @@ msgstr "コンポーネント '%s' を作成しました。"
 msgid "Error create '%s' component."
 msgstr "コンポーネント '%s' の作成に失敗しました。"
 
-#: ../../extensions/update_manager.php:109
+#: ../../extensions/update_manager.php:105
 msgid "There's a new update for Pandora"
 msgstr "Pandora に新しい更新があります。"
 
-#: ../../extensions/update_manager.php:111
+#: ../../extensions/update_manager.php:107
 msgid "More info"
 msgstr "詳細情報"
 
-#: ../../extensions/update_manager.php:128
-#: ../../extensions/update_manager/main.php:25
+#: ../../extensions/update_manager.php:123
+#: ../../extensions/update_manager/main.php:26
 #: ../../extensions/update_manager/settings.php:30
 msgid "Update manager"
 msgstr "アップデートマネージャ"
 
-#: ../../extensions/update_manager.php:129
+#: ../../extensions/update_manager.php:124
 msgid "Update manager settings"
 msgstr "アップデートマネージャ設定"
 
@@ -13551,23 +13552,23 @@ msgstr "zipファイルで拡張をアップロードしてください。"
 msgid "Extension uploader"
 msgstr "拡張アップローダ"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:588
+#: ../../extensions/update_manager/lib/libupdate_manager.php:596
 msgid "Development"
 msgstr "開発"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:589
+#: ../../extensions/update_manager/lib/libupdate_manager.php:597
 msgid "Testing"
 msgstr "テスト"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:590
+#: ../../extensions/update_manager/lib/libupdate_manager.php:598
 msgid "Public"
 msgstr "公開"
 
-#: ../../extensions/update_manager/lib/libupdate_manager.php:600
+#: ../../extensions/update_manager/lib/libupdate_manager.php:608
 msgid "Code / binary directory"
 msgstr "コード / バイナリディレクトリ"
 
-#: ../../extensions/update_manager/main.php:31
+#: ../../extensions/update_manager/main.php:32
 msgid ""
 "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
 "client is shipped with Pandora FMS 3.0. It helps system administrators to "
@@ -13581,7 +13582,7 @@ msgstr ""
 "を自動的にアップデートします。アップデートマネージャは、新しいモジュール、新しいプラグイン、新しい機能の取得を自動的に行います(新たしいバージョンへの移行"
 ")。"
 
-#: ../../extensions/update_manager/main.php:33
+#: ../../extensions/update_manager/main.php:34
 msgid ""
 "Update Manager is one of the most advanced features of Pandora FMS 3.0 "
 "Enterprise version, for more information visit <a "
@@ -13590,7 +13591,7 @@ msgstr ""
 "アップデートマネージャは、Pandora FMS 3.0 エンタープライズ版の最も先進的な機能の一つです。より詳しい情報は、<a "
 "href=\"http://pandorafms.com\">http://pandorafms.com</a>を参照してください。"
 
-#: ../../extensions/update_manager/main.php:35
+#: ../../extensions/update_manager/main.php:36
 msgid ""
 "Update Manager sends anonymous information about Pandora FMS usage (number "
 "of agents and modules running). To disable it, just delete extension or "
@@ -13600,40 +13601,68 @@ msgstr ""
 "の利用状況(エージェントと動作しているモジュールの数)を送信します。それを無効にするには、「拡張」の削除もしくは、アップデートマネージャプラグインの設定か"
 "らリモートサーバのアドレスを削除してください。"
 
-#: ../../extensions/update_manager/main.php:44
+#: ../../extensions/update_manager/main.php:45
 msgid "Updating"
 msgstr "更新中"
 
-#: ../../extensions/update_manager/main.php:52
+#: ../../extensions/update_manager/main.php:53
 #, php-format
 msgid "This is an Enterprise feature. Visit %s for more information."
 msgstr "これはエンタープライズ版の機能です。詳細は %s を参照してください。"
 
-#: ../../extensions/update_manager/main.php:61
+#: ../../extensions/update_manager/main.php:60
+msgid "Incorrect file extension"
+msgstr "ファイル拡張子が不正です"
+
+#: ../../extensions/update_manager/main.php:70
+msgid "Update cannot be opened"
+msgstr "更新ファイルを開けません"
+
+#: ../../extensions/update_manager/main.php:78
+msgid "Your system version is higher or equal than the loaded package"
+msgstr "このシステムのバージョンは、ロードしたパッケージと同様か新しいものです"
+
+#: ../../extensions/update_manager/main.php:131
+msgid "Successfully upgraded"
+msgstr "アップグレードしました"
+
+#: ../../extensions/update_manager/main.php:135
+msgid "Cannot be upgraded"
+msgstr "アップグレードに失敗しました"
+
+#: ../../extensions/update_manager/main.php:141
+msgid "File cannot be uploaded"
+msgstr "ファイルをアップロードできません"
+
+#: ../../extensions/update_manager/main.php:148
 msgid "Your system is up-to-date"
 msgstr "システムが更新されました。"
 
-#: ../../extensions/update_manager/main.php:63
-msgid "Server connection failed"
-msgstr "サーバの接続に失敗しました。"
-
-#: ../../extensions/update_manager/main.php:65
+#: ../../extensions/update_manager/main.php:150
 msgid "Server authorization rejected"
 msgstr "サーバの認証に失敗しました。"
 
-#: ../../extensions/update_manager/main.php:67
+#: ../../extensions/update_manager/main.php:152
+msgid "Server connection failed"
+msgstr "サーバの接続に失敗しました。"
+
+#: ../../extensions/update_manager/main.php:154
 msgid "There's a new update for Pandora FMS"
 msgstr "Pandora FMS に新しい更新があります。"
 
-#: ../../extensions/update_manager/main.php:72
+#: ../../extensions/update_manager/main.php:159
 msgid "Id"
 msgstr "ID"
 
-#: ../../extensions/update_manager/main.php:84
+#: ../../extensions/update_manager/main.php:171
 msgid "Overwrite local changes"
 msgstr "ローカルの変更を上書きする"
 
-#: ../../extensions/update_manager/main.php:94
+#: ../../extensions/update_manager/main.php:190
+msgid "Offline packages loader"
+msgstr "オフラインパッケージローダ"
+
+#: ../../extensions/update_manager/main.php:201
 msgid "Your system version number is"
 msgstr "システムのバージョン番号は"
 
@@ -13685,11 +13714,11 @@ msgstr "プロキシのユーザ"
 msgid "Proxy password"
 msgstr "プロキシのパスワード"
 
-#: ../../extensions/update_manager/load_updatemanager.php:33
+#: ../../extensions/update_manager/load_updatemanager.php:32
 msgid "Keygen file does not exists"
 msgstr "Keygen ファイルが存在しません。"
 
-#: ../../extensions/update_manager/load_updatemanager.php:40
+#: ../../extensions/update_manager/load_updatemanager.php:39
 msgid "Keygen file is not executable"
 msgstr "Keygen ファイルを実行できません。"
 
@@ -14100,59 +14129,59 @@ msgstr "zip ファイルのアップロード: "
 msgid "Create text file: "
 msgstr "テキストファイルの作成: "
 
-#: ../../include/functions_db.php:1826
+#: ../../include/functions_db.php:1886
 msgid "Software agent data"
 msgstr "ソフトウエアエージェントデータ"
 
-#: ../../include/functions_db.php:1829
+#: ../../include/functions_db.php:1889
 msgid "Software agent monitor"
 msgstr "ソフトウエアエージェントモニタ"
 
-#: ../../include/functions_db.php:1832
+#: ../../include/functions_db.php:1892
 msgid "Network agent data"
 msgstr "ネットワークエージェントデータ"
 
-#: ../../include/functions_db.php:1835
+#: ../../include/functions_db.php:1895
 msgid "Network agent monitor"
 msgstr "ネットワークエージェントモニタ"
 
-#: ../../include/functions_db.php:3083
+#: ../../include/functions_db.php:3143
 msgid "Oper"
 msgstr "演算子"
 
-#: ../../include/functions_db.php:3085
+#: ../../include/functions_db.php:3145
 msgid "Tt"
 msgstr "再通知間隔"
 
-#: ../../include/functions_db.php:3087
+#: ../../include/functions_db.php:3147
 msgid "Time"
 msgstr "時刻"
 
-#: ../../include/functions_db.php:3089
+#: ../../include/functions_db.php:3149
 msgid "Desc"
 msgstr "説明"
 
-#: ../../include/functions_db.php:3091
+#: ../../include/functions_db.php:3151
 msgid "MinMax.Al"
 msgstr "最小・最大"
 
-#: ../../include/functions_db.php:3636
+#: ../../include/functions_db.php:3696
 msgid "SQL sentence"
 msgstr "SQL 構文"
 
-#: ../../include/functions_db.php:3637
+#: ../../include/functions_db.php:3697
 msgid "Result"
 msgstr "結果"
 
-#: ../../include/functions_db.php:3638
+#: ../../include/functions_db.php:3698
 msgid "Rows"
 msgstr "行"
 
-#: ../../include/functions_db.php:3639
+#: ../../include/functions_db.php:3699
 msgid "Saved"
 msgstr "保存"
 
-#: ../../include/functions_db.php:3640
+#: ../../include/functions_db.php:3700
 msgid "Time (ms)"
 msgstr "時間 (ミリ秒)"
 

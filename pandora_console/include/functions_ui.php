@@ -40,7 +40,7 @@ function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $r
 		}
 	} 
 	
-	$text = safe_output_html($text);
+	$text = safe_output($text);
 	if ((strlen($text)) > ($numChars)) {
 		$half_lenght = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
 		$truncateText2 = mb_strimwidth($text, (strlen($text) - $half_lenght), strlen($text));

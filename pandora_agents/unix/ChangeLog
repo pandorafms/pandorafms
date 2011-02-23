@@ -1,3 +1,7 @@
+2011-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/postinst: Updated.
+
 2011-02-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent_daemon: Ported some changes related to "su" from trunk

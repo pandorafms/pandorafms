@@ -1,3 +1,12 @@
+2011-02-23 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* include/javascript/pandora_modules.js: fixed the disabled button snmp when
+	change any parameter of snmp.
+	
+	Fixes: #3168685
+
 2011-02-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_ui.php: Merged from trunk. Call safe_output instead

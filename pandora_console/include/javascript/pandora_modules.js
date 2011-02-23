@@ -180,9 +180,71 @@ function configure_modules_form () {
 	$("#text-ip_target").keyup (function () {
 		if (this.value != '') {
 			$("#button-snmp_walk").enable ();
-		} else {
+		}
+		else {
 			$("#button-snmp_walk").disable ();
 		}
+	});
+	
+	$("#text-tcp_port").keyup (function () {
+		if (this.value != '') {
+			$("#button-snmp_walk").enable ();
+		}
+		else {
+			$("#button-snmp_walk").disable ();
+		}
+	});
+	
+	$("#text-snmp_community").keyup (function () {
+		if (this.value != '') {
+			$("#button-snmp_walk").enable ();
+		}
+		else {
+			$("#button-snmp_walk").disable ();
+		}
+	});
+	
+	$("#snmp_version").change(function () {
+		$("#button-snmp_walk").enable ();
+	});
+	
+	$("#text-snmp3_auth_user").keyup (function () {
+		if (this.value != '') {
+			$("#button-snmp_walk").enable ();
+		}
+		else {
+			$("#button-snmp_walk").disable ();
+		}
+	});
+	
+	$("#text-snmp3_auth_pass").keyup (function () {
+		if (this.value != '') {
+			$("#button-snmp_walk").enable ();
+		}
+		else {
+			$("#button-snmp_walk").disable ();
+		}
+	});
+	
+	$("#snmp3_privacy_method").change(function () {
+		$("#button-snmp_walk").enable ();
+	});
+	
+	$("#text-snmp3_privacy_pass").keyup (function () {
+		if (this.value != '') {
+			$("#button-snmp_walk").enable ();
+		}
+		else {
+			$("#button-snmp_walk").disable ();
+		}
+	});
+	
+	$("#snmp3_auth_method").change(function () {
+		$("#button-snmp_walk").enable ();
+	});
+	
+	$("#snmp3_security_level").change(function () {
+		$("#button-snmp_walk").enable ();
 	});
 	
 	$("#button-snmp_walk").click (function () {

@@ -1,3 +1,11 @@
+2011-02-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/languages/es.po
+	include/languages/es.mo
+	include/languages/ja.po
+	include/languages/ja.mo: Added seven latest strings
+	form launchpad
+
 2011-02-23 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

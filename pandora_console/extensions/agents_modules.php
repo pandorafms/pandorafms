@@ -51,7 +51,7 @@ function mainAgentsModules() {
 		$updated_info = __("Updated at realtime");
 	}
 	
-	$updated_time = print_image ("images/information.png", true, array ("title" => $updated_info, "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
+	$updated_time = print_image ("images/information.png", true, array ("title" => __('Last update'), "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
 
 	$modulegroup = get_parameter('modulegroup', 0);
 	$refr = get_parameter('refr', 30); // By default 30 seconds

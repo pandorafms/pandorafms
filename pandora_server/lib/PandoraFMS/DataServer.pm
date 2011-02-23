@@ -434,17 +434,17 @@ sub process_module_data ($$$$$$$$$) {
 
 	# Get module parameters, matching column names in tagente_modulo
 	my $module_conf;
-	$module_conf->{'max'} = get_tag_value ($data, 'max', 0);
-	$module_conf->{'min'} = get_tag_value ($data, 'min', 0);
-	$module_conf->{'descripcion'} = get_tag_value ($data, 'description', '');
-	$module_conf->{'post_process'} = get_tag_value ($data, 'post_process', 0);
-	$module_conf->{'module_interval'} = get_tag_value ($data, 'module_interval', 1);
+	$module_conf->{'max'} = get_tag_value ($data, 'max', undef);
+	$module_conf->{'min'} = get_tag_value ($data, 'min', undef);
+	$module_conf->{'descripcion'} = get_tag_value ($data, 'description', undef);
+	$module_conf->{'post_process'} = get_tag_value ($data, 'post_process', undef);
+	$module_conf->{'module_interval'} = get_tag_value ($data, 'module_interval', undef);
 	
 	# Calculate the module interval in seconds
-	$module_conf->{'module_interval'} *= $interval;
+	$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
 
 	# Allow , as a decimal separator
-	$module_conf->{'post_process'} =~ s/,/./;
+	$module_conf->{'post_process'} =~ s/,/./ if (defined ($module_conf->{'post_process'}));
 
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();
@@ -472,6 +472,13 @@ sub process_module_data ($$$$$$$$$) {
 			return;
 		}
 
+		# Set default values
+		$module_conf->{'max'} = 0 unless defined ($module_conf->{'max'});
+		$module_conf->{'min'} = 0 unless defined ($module_conf->{'min'});
+		$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
+		$module_conf->{'post_process'} = 0 unless defined ($module_conf->{'descripcion'});
+		$module_conf->{'module_interval'} = $interval unless defined ($module_conf->{'module_interval'}); # 1 * $interval
+
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
 			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
@@ -483,6 +490,14 @@ sub process_module_data ($$$$$$$$$) {
 			return;
 		}
 	} else {
+		
+		# Set default values
+		$module_conf->{'max'} = $module->{'max'} unless defined ($module_conf->{'max'});
+		$module_conf->{'min'} = $module->{'min'} unless defined ($module_conf->{'min'});
+		$module_conf->{'descripcion'} = $module->{'descripcion'} unless defined ($module_conf->{'descripcion'});
+		$module_conf->{'post_process'} = $module->{'post_process'} unless defined ($module_conf->{'post_process'});
+		$module_conf->{'module_interval'} = $module->{'module_interval'} unless defined ($module_conf->{'module_interval'});
+
 		# Update module configuration if in learning mode
 		if ($agent->{'modo'} eq '1') {
 			update_module_configuration ($pa_config, $dbh, $module, $module_conf);

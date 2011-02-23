@@ -1,5 +1,10 @@
 2011-02-23 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/operation/events/events_list.php: fixed the show html
+	entities.
+
+2011-02-23 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora_modules.js: fixed the disabled button snmp when
 	change any parameter of snmp.
 	

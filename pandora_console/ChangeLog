@@ -1,3 +1,8 @@
+2011-02-23 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_console/include/functions_db.php: fixed in the function
+	"get_agent_modules" extract the agents when the current user user is admin.
+
 2011-02-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_config.php: Fixed an error at the momment of accept the 

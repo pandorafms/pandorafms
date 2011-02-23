@@ -707,7 +707,14 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 		$groups = get_user_groups(false, 'AR', false);
 		$id_groups = array_keys($groups);
 		
-		$id_agent = get_db_sql("SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")");
+		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
+		$id_agent = get_db_all_rows_sql($sql);
+		
+		$temp = array();
+		foreach ($id_agent as $item) {
+			$temp[] = $item['id_agente'];
+		}
+		$id_agent = $temp;
 	}
 	
 	$id_agent = safe_int ($id_agent, 1);

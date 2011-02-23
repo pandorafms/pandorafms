@@ -31,9 +31,8 @@ BuildArchitectures: noarch
 AutoReq:            0
 Requires:           httpd >= 2.0.0
 Requires:           php >= 5.2.0
-Requires:           php-gd, php-snmp, php-pear 
+Requires:           php-gd, php-snmp
 Requires:           php-mysql, php-ldap, php-mbstring, php, php-common
-Requires:           php-pear-DB
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
 Requires:           graphviz
 Provides:           %{name}-%{version}

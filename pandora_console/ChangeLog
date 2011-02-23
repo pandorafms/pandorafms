@@ -1,3 +1,10 @@
+2011-02-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_config.php: Fixed an error at the momment of accept the 
+	license terms in enterprise installation process.
+	
+	Fixes: #3183681
+
 2011-02-23 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/operation/events/events_list.php: fixed the show html

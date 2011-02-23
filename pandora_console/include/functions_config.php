@@ -609,7 +609,7 @@ function process_config () {
 		update_config_value( 'api_password', '');
 	}
 
-	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user']))) {
+	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
 
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {		

@@ -69,6 +69,7 @@ function check_login () {
 		include("general/noaccess.php");
 		exit;
 	}
+	
 	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
 		if (is_user ($_SESSION["id_usuario"])) {
 			return 0;
@@ -86,6 +87,7 @@ function check_login () {
 			}
 		}
 	}
+	
 	pandora_audit("No session", "Trying to access without a valid session", "N/A");
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;
@@ -2162,31 +2164,16 @@ function get_db_row_sql ($sql, $search_history_db = false) {
  * @return mixed The first row of a database query or false.
  */
 function get_db_row ($table, $field_search, $condition, $fields = false) {
-	if (empty ($fields)) {
-		$fields = '*';
-	} else {
-		if (is_array ($fields))
-			$fields = implode (',', $fields);
-		else if (! is_string ($fields))
-			return false;
-	}
-		
-	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %d LIMIT 1",
-			$fields, $table, $field_search, $condition);
-	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %f LIMIT 1",
-			$fields, $table, $field_search, $condition);
-	} else {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1", 
-			$fields, $table, $field_search, $condition);
-	}
-	$result = get_db_all_rows_sql ($sql);
-		
-	if ($result === false) 
-		return false;
+	global $config;
 	
-	return $result[0];
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_row($table, $field_search, $condition, $fields);
+			break;
+		case "postgresql":
+			return postgresql_get_db_row($table, $field_search, $condition, $fields);
+			break;
+	}
 }
 
 /** 

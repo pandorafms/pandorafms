@@ -1,5 +1,11 @@
 2011-02-24 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php, include/db/mysql.php,include/functions_db.php:
+	created the function "postgresql_get_db_row" in to the engines mysql and
+	postgreSQL.
+
+2011-02-24 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
 	create the function "get_db_value" for the engine mysql and postgreSQL.
 	

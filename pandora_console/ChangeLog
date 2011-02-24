@@ -1,3 +1,19 @@
+2011-02-24  Sergio Martin <sergio.martin@artica.es>
+
+	* install.php: Remove the cheching dependences
+	of PEAR DB and PEAR XML_RPC.
+
+	* ChangeLog: Added a missing information of 
+	languages commit
+
+2011-02-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/languages/es.po
+	include/languages/es.mo
+	include/languages/ja.po
+	include/languages/ja.mo: Added seven latest strings
+	form launchpad
+
 2011-02-24 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/db/postgresql.php, include/db/mysql.php,include/functions_db.php:

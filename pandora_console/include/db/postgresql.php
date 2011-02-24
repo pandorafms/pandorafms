@@ -26,10 +26,10 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 	if ($pass === null)
 		$pass = $config["dbpass"];
 	
-	$config['dbconnection'] = pg_connect("host=" . $host . 
-		" dbname=" . $db . 
-		" user=" . $user . 
-		" password=" . $pass);
+	$config['dbconnection'] = pg_connect("host='" . $host . "'" .
+		" dbname='" . $db . "'" .
+		" user='" . $user . "'" .
+		" password='" . $pass . "'");
 	
 	if (! $config['dbconnection']) {
 		include ($config["homedir"]."/general/error_authconfig.php");
@@ -208,8 +208,8 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
-				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			add_database_debug_trace ($sql, mysql_error ());
+				pg_result_error($result), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
+			add_database_debug_trace ($sql, pg_result_error($result));
 			set_error_handler ('sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();

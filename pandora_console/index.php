@@ -229,7 +229,8 @@ if ($config["pure"] == 0) {
 	echo '</div><div id="page"><div id="menu">';
 	require ("general/main_menu.php");
 	echo '</div>';
-} else {
+}
+else {
 	echo '<div id="main_pure">';
 }
 

@@ -2053,29 +2053,17 @@ $sql_cache = array ('saved' => 0);
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function get_db_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
-	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
-				$field, $table, $field_search, $condition);
-	}
-	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %f LIMIT 1",
-				$field, $table, $field_search, $condition);
-	}
-	else {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
-				$field, $table, $field_search, $condition);
-	}
-	$result = get_db_all_rows_sql ($sql, $search_history_db);
+function get_db_value($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
+	global $config;
 	
-	if ($result === false)
-		return false;
-	
-	if ($field[0] == '`')
-		$field = str_replace ('`', '', $field);
-	
-		
-	return $result[0][$field];
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_value($field, $table, $field_search, $condition, $search_history_db);
+			break;
+		case "postgresql":
+			return postgresql_get_db_value($field, $table, $field_search, $condition, $search_history_db);
+			break;
+	}
 }
 
 /** 

@@ -170,6 +170,29 @@ function parse_mysql_dump($url){
 		return 0;
 }
 
+function parse_postgresql_dump($url) {
+	if (file_exists($url)) {
+		$file_content = file($url);
+		
+		$query = "";
+		
+		foreach($file_content as $sql_line){
+			$comment = preg_match("/^(\s|\t)*--.*$/", $line);
+			if ($comment) {
+				continue;
+			}
+			
+			$clean_line = $sql_line;
+			var_dump($clean_line);
+		}
+		
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
 function random_name ($size){
 	$temp = "";
 	for ($a=0;$a< $size;$a++)
@@ -297,7 +320,6 @@ function install_step2() {
 			echo "<table border=0 width=230>";
 			$res = 0;
 			$res += check_variable(phpversion(),"5.2","PHP version >= 5.2",1);
-			$res += check_extension("mysql","PHP MySQL extension");
 			$res += check_extension("gd","PHP GD extension");
 			$res += check_extension("ldap","PHP LDAP extension");
 			$res += check_extension("snmp","PHP SNMP extension");
@@ -312,7 +334,14 @@ function install_step2() {
 			else {
 				$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
 			}
-
+			
+			echo "<tr><td>";
+			echo "<span style='display: block; font-family: verdana,arial,sans;
+				font-size: 8.5pt;margin-top: 2px; font-weight: bolder;'>DB Engines</span>";
+			echo "</td><td>";
+			echo "</td></tr>";
+			check_extension("mysql", "PHP MySQL extension");
+			check_extension("pgsql", "PHP PostgreSQL extension");
 			echo "</table>";
 		echo "</div>";
 		print_logo_status (3,5);
@@ -343,6 +372,19 @@ function install_step2() {
 
 
 function install_step3() {
+	$options = '';
+	if (extension_loaded("mysql")) {
+		$options .= "<option value='mysql'>MySQL</option>";
+	}
+	if (extension_loaded("pgsql")) {
+		$options .= "<option value='pgsql'>PostgreSQL</option>";
+	}
+	
+	$error = false;
+	if (empty($options)) {
+		$error = true;
+	}
+	
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS console installation wizard. Step #4 of 5 </h1>
@@ -365,15 +407,31 @@ function install_step3() {
 			Pandora FMS configuration and <b>Database</b>. Before continue, 
 			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
-			</div>
-			<form method='post' action='install.php?step=4'>
-				<div>DB User with privileges on MySQL</div>
+			</div>";
+	if (!$error) {
+		echo "<form method='post' action='install.php?step=4'>";
+	}
+	echo "<div>DB ENGINE</div>";
+
+
+	if ($error) {
+		echo "
+			<div class='warn'>
+			<b>Warning:</b> You haven't a any DB engine with PHP. Please check the previous step to DB engine dependencies.
+			</div>";
+	}
+	else {
+		echo "<select name='engine'>";
+		echo $options;
+		echo "</select>";
+	}
+	echo "		<div>DB User with privileges on DB</div>
 				<input class='login' type='text' name='user' value='root'>
 
 				<div>DB Password for this user</div>
 				<input class='login' type='password' name='pass' value=''>
 				
-				<div>DB Hostname of MySQL</div>
+				<div>DB Hostname</div>
 				<input class='login' type='text' name='host' value='localhost'>
 
 				<div>DB Name (pandora by default)</div>
@@ -395,16 +453,20 @@ function install_step3() {
 				</div>
 				<input class='login' type='text' name='url' style='width: 250px;' 
 				value='".dirname ($_SERVER["SCRIPT_NAME"])."'>
-				
-				<div align='right'><br>
+				";
+	
+	if (!$error) {
+		echo "	<div align='right'><br>
 				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>
 				</div>
-			</form>
+			";
+	}
+	echo "	</form>
 			</div>";
 
-		print_logo_status (4,5);
+	print_logo_status (4,5);
 
-		echo "</div>
+	echo "</div>
 		<div id='foot_install'>
 			<i>Pandora FMS is an OpenSource Software project registered at 
 			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
@@ -416,13 +478,15 @@ function install_step4() {
 	$pandora_config = "include/config.php";
 
 	if ( (! isset($_POST["user"])) || (! isset($_POST["dbname"])) || (! isset($_POST["host"])) || 
-	(! isset($_POST["pass"])) ) {
+	(! isset($_POST["pass"])) || (!isset($_POST['engine'])) ) {
 		$dbpassword = "";
 		$dbuser = "";
 		$dbhost = "";
 		$dbname = "";
+		$engine = "";
 	}
 	else {
+		$engine = $_POST['engine'];
 		$dbpassword = $_POST["pass"];
 		$dbuser = $_POST["user"];
 		$dbhost = $_POST["host"];
@@ -454,72 +518,120 @@ function install_step4() {
 		<div id='install_box'>
 			<h2>Creating database and default configuration file</h2>
 			<table>";
-			if (! mysql_connect ($dbhost,$dbuser,$dbpassword)) {
-				check_generic ( 0, "Connection with Database");
-			}
-			else {
-				check_generic ( 1, "Connection with Database");
-				
-				// Drop database if needed
-				if ($dbdrop == 1)
-					mysql_query ("DROP DATABASE IF EXISTS $dbname");
-				
-				// Create schema
-				$step1 = mysql_query ("CREATE DATABASE $dbname");
-				check_generic ($step1, "Creating database '$dbname'");
-				if ($step1 == 1) {
-					$step2 = mysql_select_db($dbname);
-					check_generic ($step2, "Opening database '$dbname'");
-	
-					$step3 = parse_mysql_dump("pandoradb.sql");
-					check_generic ($step3, "Creating schema");
-			
-					$step4 = parse_mysql_dump("pandoradb_data.sql");
-					check_generic ($step4, "Populating database");
-	
-					$random_password = random_name (8);
-					$host = 'localhost';
-					if ($dbhost != 'localhost')
-						$host = $_SERVER['SERVER_ADDR'];
-					$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@$host 
-					IDENTIFIED BY '".$random_password."'");
-					mysql_query ("FLUSH PRIVILEGES");
-					check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
-	
-					$step6 = is_writable("include");
-					check_generic ($step6, "Write permissions to save config file in './include'");
+			switch ($engine) {
+				case 'mysql':
+					if (! mysql_connect ($dbhost, $dbuser, $dbpassword)) {
+						check_generic ( 0, "Connection with Database");
+					}
+					else {
+						check_generic ( 1, "Connection with Database");
 						
-					$cfgin = fopen ("include/config.inc.php","r");
-					$cfgout = fopen ($pandora_config,"w");
-					$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
-					$dbtype = 'mysql'; //TODO set other types
-					$config_new = '<?php
-					// Begin of automatic config file
-					$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgres)
-					$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
-					$config["dbuser"]="pandora";			// DB User
-					$config["dbpass"]="'.$random_password.'";	// DB Password
-					$config["dbhost"]="'.$dbhost.'";			// DB Host
-					$config["homedir"]="'.$path.'";		// Config homedir
-					$config["homeurl"]="'.$url.'";			// Base URL
-					// End of automatic config file
-					?>';
-					$step7 = fputs ($cfgout, $config_new);
-					$step7 = $step7 + fputs ($cfgout, $config_contents);
-					if ($step7 > 0)
-						$step7 = 1;
-					fclose ($cfgin);
-					fclose ($cfgout);
-					chmod ($pandora_config, 0600);
-					check_generic ($step7, "Created new config file at '".$pandora_config."'");
-				}
-			}
-			if (($step7 + $step6 + $step5 + $step4 + $step3 + $step2 + $step1) == 7) {
-				$everything_ok = 1;
+						// Drop database if needed
+						if ($dbdrop == 1)
+							mysql_query ("DROP DATABASE IF EXISTS $dbname");
+						
+						// Create schema
+						$step1 = mysql_query ("CREATE DATABASE $dbname");
+						check_generic ($step1, "Creating database '$dbname'");
+						if ($step1 == 1) {
+							$step2 = mysql_select_db($dbname);
+							check_generic ($step2, "Opening database '$dbname'");
+			
+							$step3 = parse_mysql_dump("pandoradb.sql");
+							check_generic ($step3, "Creating schema");
+					
+							$step4 = parse_mysql_dump("pandoradb_data.sql");
+							check_generic ($step4, "Populating database");
+			
+							$random_password = random_name (8);
+							$host = 'localhost';
+							if ($dbhost != 'localhost')
+								$host = $_SERVER['SERVER_ADDR'];
+							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@$host 
+							IDENTIFIED BY '".$random_password."'");
+							mysql_query ("FLUSH PRIVILEGES");
+							check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+			
+							$step6 = is_writable("include");
+							check_generic ($step6, "Write permissions to save config file in './include'");
+								
+							$cfgin = fopen ("include/config.inc.php","r");
+							$cfgout = fopen ($pandora_config,"w");
+							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
+							$dbtype = 'mysql'; //TODO set other types
+							$config_new = '<?php
+							// Begin of automatic config file
+							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgres)
+							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
+							$config["dbuser"]="pandora";			// DB User
+							$config["dbpass"]="'.$random_password.'";	// DB Password
+							$config["dbhost"]="'.$dbhost.'";			// DB Host
+							$config["homedir"]="'.$path.'";		// Config homedir
+							$config["homeurl"]="'.$url.'";			// Base URL
+							// End of automatic config file
+							?>';
+							$step7 = fputs ($cfgout, $config_new);
+							$step7 = $step7 + fputs ($cfgout, $config_contents);
+							if ($step7 > 0)
+								$step7 = 1;
+							fclose ($cfgin);
+							fclose ($cfgout);
+							chmod ($pandora_config, 0600);
+							check_generic ($step7, "Created new config file at '".$pandora_config."'");
+						}
+					}
+					
+					if (($step7 + $step6 + $step5 + $step4 + $step3 + $step2 + $step1) == 7) {
+						$everything_ok = 1;
+					}
+					break;
+				case 'pgsql':
+					$step1 = $step2 = $step3 = $step4 = $step5 = $step6 = $step7 = 0;
+					
+					$connection = pg_connect("host='" . $dbhost . "' user='" . $dbuser . "' password='" . $dbpassword . "'");
+					if ($connection === false) {
+						check_generic(0, "Connection with Database");
+					}
+					else {
+						check_generic(1, "Connection with Database");
+						
+						// Drop database if needed
+						if ($dbdrop == 1) {
+							pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
+						}
+						
+						pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
+						$result = pg_get_result($connection);
+						if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
+							$step1 = 1;
+						}
+						
+						check_generic ($step1, "Creating database '$dbname'");
+						
+						if ($step1 == 1) {
+							//Reopen DB because I don't know how to use DB in PostgreSQL
+							pg_close($connection);
+							
+							$connection = pg_connect("host='" . $dbhost . "' dbname='" . $dbname .
+								"' user='" . $dbuser . "' password='" . $dbpassword . "'");
+							
+							if ($connection !== false) {
+								$step2 = 1;
+							}
+						}
+						
+						check_generic ($step2, "Opening database '$dbname'");
+						
+						if ($step2) {
+							$step3 = parse_postgresql_dump("pandoradb.postgreSQL.sql");
+							check_generic ($step3, "Creating schema");
+						}
+					}
+					break;
 			}
 		echo "</table></div>";
 
-		print_logo_status (4,5);
+		print_logo_status(4,5);
 		
 		echo "<div id='install_img'>";
 			if ($everything_ok == 1) {
@@ -533,11 +645,19 @@ function install_step4() {
 				All database schemes created in this step have been dropped. </p>
 				</div>";
 
-				if (mysql_error() != "")
-					echo "<div class='warn'> <b>ERROR:</b> ". mysql_error().".</div>";
-					
-				if ($step1 == 1)
-					mysql_query ("DROP DATABASE $dbname");
+				switch ($engine) {
+					case 'mysql':
+						if (mysql_error() != "") {
+							echo "<div class='warn'> <b>ERROR:</b> ". mysql_error().".</div>";
+						}
+							
+						if ($step1 == 1) {
+							mysql_query ("DROP DATABASE $dbname");
+						}
+						break;
+					case 'pgsql':
+						break;
+				}
 			}		
 		echo "
 		</div>

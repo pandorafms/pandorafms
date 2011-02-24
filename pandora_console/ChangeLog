@@ -1,3 +1,12 @@
+2011-02-24 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/db/postgresql.php: in function "postgresql_connect_db" added
+	quotes for special names in user or password or host. Fixed in function
+	"postgresql_process_sql" the output errors.
+	
+	* install.php: begin to make a source code to install Pandora in DB schema
+	on PostgreSQL.
+
 2011-02-24  Sergio Martin <sergio.martin@artica.es>
 
 	* install.php: Remove the cheching dependences

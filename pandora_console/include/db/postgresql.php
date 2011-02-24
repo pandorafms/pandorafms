@@ -78,6 +78,50 @@ function postgresql_get_db_value ($field, $table, $field_search = 1, $condition 
 	}
 }
 
+/** 
+ * Get the first row of a database query into a table.
+ *
+ * The SQL statement executed would be something like:
+ * "SELECT (*||$fields) FROM $table WHERE $field_search = $condition"
+ *
+ * @param string Table to get the row
+ * @param string Field to filter elements
+ * @param string Condition the field must have.
+ * @param mixed Fields to select (array or string or false/empty for *)
+ * 
+ * @return mixed The first row of a database query or false.
+ */
+function postgresql_get_db_row ($table, $field_search, $condition, $fields = false) {
+	if (empty ($fields)) {
+		$fields = '*';
+	}
+	else {
+		if (is_array ($fields))
+			$fields = implode (',', $fields);
+		else if (! is_string ($fields))
+			return false;
+	}
+	
+	if (is_int ($condition)) {
+		$sql = sprintf ('SELECT %s FROM "%s" WHERE \'%s\' = %d LIMIT 1',
+			$fields, $table, $field_search, $condition);
+	}
+	else if (is_float ($condition) || is_double ($condition)) {
+		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE '%s' = %f LIMIT 1",
+			$fields, $table, $field_search, $condition);
+	}
+	else {
+		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE '%s' = '%s' LIMIT 1", 
+			$fields, $table, $field_search, $condition);
+	}
+	$result = get_db_all_rows_sql ($sql);
+		
+	if ($result === false) 
+		return false;
+	
+	return $result[0];
+}
+
 function postgresql_get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
 	global $config;
 	

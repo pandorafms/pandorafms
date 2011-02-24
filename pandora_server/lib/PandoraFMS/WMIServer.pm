@@ -89,7 +89,7 @@ sub data_producer ($) {
 	my @rows;
 
 	if ($pa_config->{'pandora_master'} != 1) {
-		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left 
+		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left 
 			FROM tagente, tagente_modulo, tagente_estado
 			WHERE server_name = ?
 			AND tagente_modulo.id_agente = tagente.id_agente

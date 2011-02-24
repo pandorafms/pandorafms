@@ -1,3 +1,7 @@
+2011-02-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/WMIServer.pm: Fixed a typo. Thanks to Tadashi Kaneda.
+
 2011-02-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: HTML encode events.

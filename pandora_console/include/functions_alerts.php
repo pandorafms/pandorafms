@@ -605,7 +605,6 @@ function add_alert_agent_module_action ($id_alert_template_module, $id_alert_act
 	$values['id_alert_action'] = (int) $id_alert_action;
 	$values['fires_max'] = 0;
 	$values['fires_min'] = 0;
-	$values['module_action_threshold'] = 0;
 	if ($options) {
 		$max = 0;
 		$min = 0;

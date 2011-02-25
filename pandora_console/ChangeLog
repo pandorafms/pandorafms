@@ -1,3 +1,9 @@
+2011-02-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_alerts.php: Deleted 'module_action_threshold'.
+	It's a version 4.0 feature.
+	(Fixed alert action addition does not work.)
+
 2011-02-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_console.redhat.spec: Removed PEAR dependencies.

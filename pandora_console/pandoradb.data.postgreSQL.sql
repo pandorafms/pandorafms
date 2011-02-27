@@ -105,15 +105,16 @@ COMMIT WORK;
 --
 BEGIN WORK;
 LOCK TABLE "tgrupo";
-INSERT INTO "tgrupo" VALUES 
-(2,'Servers','server_database',0,0,'',0),
-(4,'Firewalls','firewall',0,0,'',0),
-(8,'Databases','database_gear',0,0,'',0),
-(9,'Network','transmit',0,0,'',0),
-(10,'Unknown','world',0,0,'',0),
-(11,'Workstations','computer',0,0,'',0),
-(12,'Applications','applications',0,0,'',0),
-(13,'Web','world',0,0,'',0);
+INSERT INTO "tgrupo" ("id_grupo", "nombre", "icon", "parent", "propagate", "disabled", "custom_id")
+VALUES 
+(2,'Servers','server_database',0,0,0,''),
+(4,'Firewalls','firewall',0,0,0,''),
+(8,'Databases','database_gear',0,0,0,''),
+(9,'Network','transmit',0,0,0,''),
+(10,'Unknown','world',0,0,0,''),
+(11,'Workstations','computer',0,0,0,''),
+(12,'Applications','applications',0,0,0,''),
+(13,'Web','world',0,0,0,'');
 COMMIT WORK;
 
 --

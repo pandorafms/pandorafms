@@ -103,15 +103,15 @@ function postgresql_get_db_row ($table, $field_search, $condition, $fields = fal
 	}
 	
 	if (is_int ($condition)) {
-		$sql = sprintf ('SELECT %s FROM "%s" WHERE \'%s\' = %d LIMIT 1',
+		$sql = sprintf ('SELECT %s FROM "%s" WHERE "%s" = %d LIMIT 1',
 			$fields, $table, $field_search, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE '%s' = %f LIMIT 1",
+		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE \"%s\" = %f LIMIT 1",
 			$fields, $table, $field_search, $condition);
 	}
 	else {
-		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE '%s' = '%s' LIMIT 1", 
+		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE \"%s\" = '%s' LIMIT 1", 
 			$fields, $table, $field_search, $condition);
 	}
 	$result = get_db_all_rows_sql ($sql);

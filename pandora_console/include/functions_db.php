@@ -71,7 +71,7 @@ function check_login () {
 	}
 	
 	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
-		if (is_user ($_SESSION["id_usuario"])) {
+		if (is_user($_SESSION["id_usuario"])) {
 			return 0;
 		}
 	}

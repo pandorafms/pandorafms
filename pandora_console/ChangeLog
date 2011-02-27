@@ -1,3 +1,26 @@
+2011-02-27 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb_data.sql, pandoradb.data.postgreSQL.sql: in the table "tgrupo"
+	reordered the last field, this field is "custom_id" with '' value.
+
+	* pandoradb.postgreSQL.sql: commented the first lines before it was for
+	make manuallity the schema. Fixed in the "talert_templates" the column
+	"id_alert_action" can be null, and fixed the type of column "id_language"
+	in table "tlanguage". And move to empty lines some end line comments and
+	group in one line the functions for avoid the error in the install.
+
+	* include/db/postgresql.php: fixed in the function "postgresql_get_db_row"
+	the quotes for the field, the correct quotes is " for PostgreSQL.
+	
+	* include/auth/mysql.php, include/functions_db.php: cleaned source code
+	style.
+	
+	* install.php: now the installer can install a schema and data in PostgreSQL
+	database.
+	
+	* extensions/update_manager.php: added some code and TODO comment to fix or
+	develop the method to use postgreSQL.
+
 2011-02-24 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/db/postgresql.php: in function "postgresql_connect_db" added

@@ -22,9 +22,9 @@
 -- -----------------------------------------------------------
 
 -- The charset is for all DB not only table.
-CREATE DATABASE "pandora" WITH ENCODING 'utf8';
+--CREATE DATABASE "pandora" WITH ENCODING 'utf8';
 
-\c "pandora"
+--\c "pandora"
 
 CREATE LANGUAGE plpgsql;
 
@@ -60,9 +60,12 @@ CREATE TABLE "tagente" (
 	"custom_id" varchar(255) default '',
 	"server_name" varchar(100) default '',
 	"cascade_protection" SMALLINT NOT NULL default 0, 
-	"timezone_offset" SMALLINT NULL DEFAULT 0, --number of hours of diference with the server timezone
-	"icon_path" VARCHAR(127) NULL DEFAULT NULL, --path in the server to the image of the icon representing the agent
-	"update_gis_data" SMALLINT NOT NULL DEFAULT 1 --set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it
+	--number of hours of diference with the server timezone
+	"timezone_offset" SMALLINT NULL DEFAULT 0,
+	 --path in the server to the image of the icon representing the agent
+	"icon_path" VARCHAR(127) NULL DEFAULT NULL,
+	 --set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it
+	"update_gis_data" SMALLINT NOT NULL DEFAULT 1
 );
 CREATE INDEX "tagente_nombre_idx" ON "tagente"("nombre");
 CREATE INDEX "tagente_direccion_idx" ON "tagente"("direccion");
@@ -239,7 +242,7 @@ CREATE TABLE "talert_templates" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" text default '',
 	"description" TEXT,
-	"id_alert_action" INTEGER NOT NULL REFERENCES talert_actions("id")  ON DELETE SET NULL ON UPDATE CASCADE,
+	"id_alert_action" INTEGER REFERENCES talert_actions("id")  ON DELETE SET NULL ON UPDATE CASCADE,
 	"field1" text default '',
 	"field2" text default '',
 	"field3" text NOT NULL,
@@ -419,17 +422,12 @@ CREATE TABLE "tincidencia" (
 CREATE INDEX "tincidencia_id_1_idx" ON "tincidencia"("id_usuario","id_incidencia");
 CREATE INDEX "tincidencia_id_agente_modulo_idx" ON "tincidencia"("id_agente_modulo");
 --This function is for to tranlate "on update CURRENT_TIMESTAMP" of MySQL.
-CREATE OR REPLACE FUNCTION update_tincidencia_actualizacion()
-RETURNS TRIGGER AS $$
-BEGIN
-	NEW.actualizacion = now();
-	RETURN NEW;
-END;
-$$ language 'plpgsql';
+	--It is in only one line because the parser of Pandora installer execute the code at the end with ;
+CREATE OR REPLACE FUNCTION update_tincidencia_actualizacion() RETURNS TRIGGER AS $$ BEGIN NEW.actualizacion = now(); RETURN NEW; END; $$ language 'plpgsql';
 CREATE TRIGGER trigger_tincidencia_actualizacion BEFORE UPDATE ON tincidencia FOR EACH ROW EXECUTE PROCEDURE update_tincidencia_actualizacion();
 
 CREATE TABLE "tlanguage" (
-	"id_language" SERIAL NOT NULL PRIMARY KEY,
+	"id_language" varchar(6) NOT NULL default '',
 	"name" varchar(100) NOT NULL default ''
 );
 
@@ -662,7 +660,7 @@ CREATE TABLE "tusuario" (
 	"language" varchar(10) default NULL,
 	"timezone" varchar(50) default '',
 	"block_size" INTEGER NOT NULL default 20,
-	"flash_chart" INTEGER NOT NULL default 1,
+	"flash_chart" INTEGER NOT NULL default 1
 );
 
 CREATE TABLE "tusuario_perfil" (
@@ -823,7 +821,8 @@ CREATE TABLE "tserver_export" (
 	"port" INTEGER NOT NULL default 0,
 	"directory" varchar(100) NOT NULL default '',
 	"options" varchar(100) NOT NULL default '',
-	"timezone_offset" SMALLINT NOT NULL default 0 --Number of hours of diference with the server timezone
+	--Number of hours of diference with the server timezone
+	"timezone_offset" SMALLINT NOT NULL default 0
 );
 
 -- id_export_server is real pandora fms export server process that manages this server
@@ -861,16 +860,23 @@ CREATE TABLE "tplanned_downtime_agents" (
 -- -----------------------------------------------------
 --Table to store historical GIS information of the agents
 CREATE TABLE "tgis_data_history" (
-	"id_tgis_data" SERIAL NOT NULL PRIMARY KEY, --key of the table
+	--key of the table
+	"id_tgis_data" SERIAL NOT NULL PRIMARY KEY,
 	"longitude" DOUBLE PRECISION NOT NULL,
 	"latitude" DOUBLE PRECISION NOT NULL,
 	"altitude" DOUBLE PRECISION NOT NULL,
-	"start_timestamp"  TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP, --timestamp on wich the agente started to be in this position
-	"end_timestamp"  TIMESTAMP without time zone default NULL, --timestamp on wich the agent was placed for last time on this position
-	"description" TEXT DEFAULT NULL, --description of the region correoponding to this placemnt
-	"manual_placement" SMALLINT NOT NULL default 0, --0 to show that the position cames from the agent, 1 to show that the position was established manualy
-	"number_of_packages" INTEGER NOT NULL default 1, --Number of data packages received with this position from the start_timestampa to the_end_timestamp
-	"tagente_id_agente" INTEGER NOT NULL --reference to the agent
+	--timestamp on wich the agente started to be in this position
+	"start_timestamp"  TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
+	--timestamp on wich the agent was placed for last time on this position
+	"end_timestamp"  TIMESTAMP without time zone default NULL,
+	--description of the region correoponding to this placemnt
+	"description" TEXT DEFAULT NULL,
+	-- 0 to show that the position cames from the agent, 1 to show that the position was established manualy
+	"manual_placement" SMALLINT NOT NULL default 0,
+	-- Number of data packages received with this position from the start_timestampa to the_end_timestamp
+	"number_of_packages" INTEGER NOT NULL default 1,
+	--reference to the agent
+	"tagente_id_agente" INTEGER NOT NULL 
 );
 CREATE INDEX "tgis_data_history_start_timestamp_idx" ON "tgis_data_history"("start_timestamp");
 CREATE INDEX "tgis_data_history_end_timestamp_idx" ON "tgis_data_history"("end_timestamp");
@@ -880,17 +886,28 @@ CREATE INDEX "tgis_data_history_end_timestamp_idx" ON "tgis_data_history"("end_t
 -- -----------------------------------------------------
 --Table to store last GIS information of the agents
 CREATE TABLE "tgis_data_status" (
-	"tagente_id_agente" INTEGER NOT NULL REFERENCES "tagente"("id_agente") ON DELETE CASCADE ON UPDATE NO ACTION, --Reference to the agent
-	"current_longitude" DOUBLE PRECISION NOT NULL, --Last received longitude
-	"current_latitude" DOUBLE PRECISION NOT NULL, --Last received latitude
-	"current_altitude" DOUBLE PRECISION NOT NULL, --Last received altitude
-	"stored_longitude" DOUBLE PRECISION NOT NULL, --Reference longitude to see if the agent has moved
-	"stored_latitude" DOUBLE PRECISION NOT NULL, --Reference latitude to see if the agent has moved
-	"stored_altitude" DOUBLE PRECISION DEFAULT NULL, --Reference altitude to see if the agent has moved
-	"number_of_packages" INTEGER NOT NULL default 1, --Number of data packages received with this position since start_timestampa
-	"start_timestamp" TIMESTAMP without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, --Timestamp on wich the agente started to be in this position
-	"manual_placement" SMALLINT NOT NULL default 0, --0 to show that the position cames from the agent, 1 to show that the position was established manualy
-	"description" TEXT NULL, --description of the region correoponding to this placemnt
+	--Reference to the agent
+	"tagente_id_agente" INTEGER NOT NULL REFERENCES "tagente"("id_agente") ON DELETE CASCADE ON UPDATE NO ACTION,
+	--Last received longitude
+	"current_longitude" DOUBLE PRECISION NOT NULL,
+	--Last received latitude 
+	"current_latitude" DOUBLE PRECISION NOT NULL,
+	--Last received altitude 
+	"current_altitude" DOUBLE PRECISION NOT NULL,
+	--Reference longitude to see if the agent has moved
+	"stored_longitude" DOUBLE PRECISION NOT NULL,
+	--Reference latitude to see if the agent has moved
+	"stored_latitude" DOUBLE PRECISION NOT NULL,
+	--Reference altitude to see if the agent has moved
+	"stored_altitude" DOUBLE PRECISION DEFAULT NULL,
+	--Number of data packages received with this position since start_timestampa
+	"number_of_packages" INTEGER NOT NULL default 1, 
+	--Timestamp on wich the agente started to be in this position
+	"start_timestamp" TIMESTAMP without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+	--0 to show that the position cames from the agent, 1 to show that the position was established manualy
+	"manual_placement" SMALLINT NOT NULL default 0, 
+	--description of the region correoponding to this placemnt
+	"description" TEXT NULL,
   PRIMARY KEY("tagente_id_agente")
 );
 CREATE INDEX "tgis_data_status_start_timestamp_idx" ON "tgis_data_status"("start_timestamp");
@@ -901,18 +918,30 @@ CREATE INDEX "tgis_data_status_tagente_id_agente_idx" ON "tgis_data_status"("tag
 -- -----------------------------------------------------
 --Table containing information about a gis map
 CREATE TABLE "tgis_map" (
-	"id_tgis_map" SERIAL NOT NULL PRIMARY KEY, --table identifier
-	"map_name" VARCHAR(63) NOT NULL, --Name of the map
-	"initial_longitude" DOUBLE PRECISION DEFAULT NULL, --longitude of the center of the map when it\'s loaded
-	"initial_latitude" DOUBLE PRECISION DEFAULT NULL, --latitude of the center of the map when it\'s loaded
-	"initial_altitude" DOUBLE PRECISION DEFAULT NULL, --altitude of the center of the map when it\'s loaded
-	"zoom_level"  SMALLINT NOT NULL default 1, --Zoom level to show when the map is loaded.
-	"map_background" VARCHAR(127) DEFAULT NULL, --path on the server to the background image of the map
-	"default_longitude" DOUBLE PRECISION DEFAULT NULL, --default longitude for the agents placed on the map
-	"default_latitude" DOUBLE PRECISION DEFAULT NULL, --default latitude for the agents placed on the map
-	"default_altitude" DOUBLE PRECISION DEFAULT NULL, --default altitude for the agents placed on the map
-	"group_id" INTEGER NOT NULL default 0, --Group that owns the map
-	"default_map" SMALLINT NOT NULL default 0 --1 if this is the default map, 0 in other case
+    --table identifier
+	"id_tgis_map" SERIAL NOT NULL PRIMARY KEY,
+	--Name of the map
+	"map_name" VARCHAR(63) NOT NULL,
+	--longitude of the center of the map when it\'s loaded
+	"initial_longitude" DOUBLE PRECISION DEFAULT NULL,
+	--latitude of the center of the map when it\'s loaded
+	"initial_latitude" DOUBLE PRECISION DEFAULT NULL,
+	--altitude of the center of the map when it\'s loaded
+	"initial_altitude" DOUBLE PRECISION DEFAULT NULL,
+	--Zoom level to show when the map is loaded.
+	"zoom_level"  SMALLINT NOT NULL default 1,
+	--path on the server to the background image of the map
+	"map_background" VARCHAR(127) DEFAULT NULL,
+	--default longitude for the agents placed on the map
+	"default_longitude" DOUBLE PRECISION DEFAULT NULL,
+	--default latitude for the agents placed on the map
+	"default_latitude" DOUBLE PRECISION DEFAULT NULL,
+	--default altitude for the agents placed on the map
+	"default_altitude" DOUBLE PRECISION DEFAULT NULL,
+	--Group that owns the map
+	"group_id" INTEGER NOT NULL default 0,
+	--1 if this is the default map, 0 in other case
+	"default_map" SMALLINT NOT NULL default 0
 );
 CREATE INDEX "tgis_map_tagente_map_name_idx" ON "tgis_map"("map_name");
 
@@ -921,19 +950,32 @@ CREATE INDEX "tgis_map_tagente_map_name_idx" ON "tgis_map"("map_name");
 -- -----------------------------------------------------
 --Table to store the map connection information
 CREATE TABLE "tgis_map_connection" (
-	"id_tmap_connection" SERIAL NOT NULL PRIMARY KEY, --table id
-	"conection_name" VARCHAR(45) DEFAULT NULL, --Name of the connection (name of the base layer)
-	"connection_type" VARCHAR(45) DEFAULT NULL, --Type of map server to connect
-	"conection_data" TEXT DEFAULT NULL, --connection information (this can probably change to fit better the possible connection parameters)
-	"num_zoom_levels" SMALLINT DEFAULT NULL, --Number of zoom levels available
-	"default_zoom_level" SMALLINT NOT NULL default 16, --Default Zoom Level for the connection
-	"default_longitude" DOUBLE PRECISION DEFAULT NULL, --default longitude for the agents placed on the map
-	"default_latitude" DOUBLE PRECISION DEFAULT NULL, --default latitude for the agents placed on the map
-	"default_altitude" DOUBLE PRECISION DEFAULT NULL, --default altitude for the agents placed on the map
-	"initial_longitude" DOUBLE PRECISION DEFAULT NULL, --longitude of the center of the map when it\'s loaded
-	"initial_latitude" DOUBLE PRECISION DEFAULT NULL, --latitude of the center of the map when it\'s loaded
-	"initial_altitude" DOUBLE PRECISION DEFAULT NULL, --altitude of the center of the map when it\'s loaded
-	"group_id" INTEGER NOT NULL default 0 --Group that owns the map
+	--table id
+	"id_tmap_connection" SERIAL NOT NULL PRIMARY KEY,
+	--Name of the connection (name of the base layer)
+	"conection_name" VARCHAR(45) DEFAULT NULL,
+	--Type of map server to connect
+	"connection_type" VARCHAR(45) DEFAULT NULL, 
+	--connection information (this can probably change to fit better the possible connection parameters)
+	"conection_data" TEXT DEFAULT NULL, 
+	--Number of zoom levels available
+	"num_zoom_levels" SMALLINT DEFAULT NULL, 
+	--Default Zoom Level for the connection
+	"default_zoom_level" SMALLINT NOT NULL default 16,
+	--default longitude for the agents placed on the map
+	"default_longitude" DOUBLE PRECISION DEFAULT NULL,
+	--default latitude for the agents placed on the map
+	"default_latitude" DOUBLE PRECISION DEFAULT NULL,
+	--default altitude for the agents placed on the map
+	"default_altitude" DOUBLE PRECISION DEFAULT NULL,
+	--longitude of the center of the map when it\'s loaded
+	"initial_longitude" DOUBLE PRECISION DEFAULT NULL,
+	--latitude of the center of the map when it\'s loaded
+	"initial_latitude" DOUBLE PRECISION DEFAULT NULL, 
+	--altitude of the center of the map when it\'s loaded
+	"initial_altitude" DOUBLE PRECISION DEFAULT NULL, 
+	--Group that owns the map
+	"group_id" INTEGER NOT NULL default 0 
 );
 
 -- -----------------------------------------------------
@@ -941,22 +983,21 @@ CREATE TABLE "tgis_map_connection" (
 -- -----------------------------------------------------
 --Table to asociate a connection to a gis map
 CREATE TABLE "tgis_map_has_tgis_map_connection" (
-	"tgis_map_id_tgis_map" INTEGER NOT NULL REFERENCES "tgis_map"("id_tgis_map") ON DELETE CASCADE ON UPDATE NO ACTION, --reference to tgis_map
-	"tgis_map_connection_id_tmap_connection" INTEGER NOT NULL REFERENCES "tgis_map_connection" ("id_tmap_connection") ON DELETE CASCADE ON UPDATE NO ACTION, --reference to tgis_map_connection
-	"modification_time" TIMESTAMP without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, --Last Modification Time of the Connection
-	"default_map_connection" SMALLINT NOT NULL default 0, --Flag to mark the default map connection of a map
+	--reference to tgis_map
+	"tgis_map_id_tgis_map" INTEGER NOT NULL REFERENCES "tgis_map"("id_tgis_map") ON DELETE CASCADE ON UPDATE NO ACTION,
+	--reference to tgis_map_connection
+	"tgis_map_connection_id_tmap_connection" INTEGER NOT NULL REFERENCES "tgis_map_connection" ("id_tmap_connection") ON DELETE CASCADE ON UPDATE NO ACTION, 
+	--Last Modification Time of the Connection
+	"modification_time" TIMESTAMP without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+	--Flag to mark the default map connection of a map
+	"default_map_connection" SMALLINT NOT NULL default 0,
   PRIMARY KEY ("tgis_map_id_tgis_map", "tgis_map_connection_id_tmap_connection")
 );
 CREATE INDEX "tgis_map_has_tgis_map_connection_map_tgis_map_id_tgis_map_idx" ON "tgis_map_has_tgis_map_connection"("tgis_map_id_tgis_map");
 CREATE INDEX "tgis_map_has_tgis_map_connection_map_tgis_map_connection_id_tmap_connection_idx" ON "tgis_map_has_tgis_map_connection"("tgis_map_connection_id_tmap_connection");
 --This function is for to tranlate "ON UPDATE CURRENT_TIMESTAMP" of MySQL.
-CREATE OR REPLACE FUNCTION update_tgis_map_has_tgis_map_connection_modification_time()
-RETURNS TRIGGER AS $$
-BEGIN
-	NEW.modification_time = now();
-	RETURN NEW;
-END;
-$$ language 'plpgsql';
+	--It is in only one line because the parser of Pandora installer execute the code at the end with ;
+CREATE OR REPLACE FUNCTION update_tgis_map_has_tgis_map_connection_modification_time() RETURNS TRIGGER AS $$ BEGIN NEW.modification_time = now(); RETURN NEW; END; $$ language 'plpgsql';
 CREATE TRIGGER trigger_tgis_map_has_tgis_map_connection_modification_time BEFORE UPDATE ON tgis_map_has_tgis_map_connection FOR EACH ROW EXECUTE PROCEDURE update_tgis_map_has_tgis_map_connection_modification_time();
 
 -- -----------------------------------------------------
@@ -964,12 +1005,18 @@ CREATE TRIGGER trigger_tgis_map_has_tgis_map_connection_modification_time BEFORE
 -- -----------------------------------------------------
 --Table containing information about the map layers
 CREATE TABLE "tgis_map_layer" (
-	"id_tmap_layer" SERIAL NOT NULL PRIMARY KEY, --table id
-	"layer_name" VARCHAR(45) NOT NULL, --Name of the layer
-	"view_layer" SMALLINT NOT NULL default 1, --True if the layer must be shown
-	"layer_stack_order" SMALLINT NOT NULL default 0, --Number of order of the layer in the layer stack, bigger means upper on the stack.\n
-	"tgis_map_id_tgis_map" INTEGER NOT NULL default 0 REFERENCES "tgis_map"("id_tgis_map") ON DELETE CASCADE ON UPDATE NO ACTION, --reference to the map containing the layer
-	"tgrupo_id_grupo" BIGINT NOT NULL --reference to the group shown in the layer
+	--table id
+	"id_tmap_layer" SERIAL NOT NULL PRIMARY KEY,
+	--Name of the layer
+	"layer_name" VARCHAR(45) NOT NULL, 
+	--True if the layer must be shown
+	"view_layer" SMALLINT NOT NULL default 1, 
+	--Number of order of the layer in the layer stack, bigger means upper on the stack.\n
+	"layer_stack_order" SMALLINT NOT NULL default 0, 
+	--reference to the map containing the layer
+	"tgis_map_id_tgis_map" INTEGER NOT NULL default 0 REFERENCES "tgis_map"("id_tgis_map") ON DELETE CASCADE ON UPDATE NO ACTION, 
+	--reference to the group shown in the layer
+	"tgrupo_id_grupo" BIGINT NOT NULL 
 );
 CREATE INDEX "tgis_map_layer_id_tmap_layer_idx" ON "tgis_map_layer"("id_tmap_layer");
 

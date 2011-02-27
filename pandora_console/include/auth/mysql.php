@@ -232,7 +232,7 @@ function get_user_id ($user) {
  * @return bool True if the user exists.
  */
 function is_user ($user) {
-	$user = get_db_row ('tusuario', 'id_user', get_user_id ($user));
+	$user = get_db_row('tusuario', 'id_user', get_user_id ($user));
 	if (! $user)
 		return false;
 	return true;

@@ -134,6 +134,12 @@ if(isset($config['id_user'])) {
 }
 
 $db = NULL;
-
-pandora_update_manager_install ();
+switch ($config['dbtype']) {
+	case 'mysql':
+		pandora_update_manager_install ();
+		break;
+	case 'postgresql':
+		//TODO MAKE THE UPDATE MANAGER FOR POSTGRESQL
+		break;
+}
 ?>

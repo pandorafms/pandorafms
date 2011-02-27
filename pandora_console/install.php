@@ -170,20 +170,46 @@ function parse_mysql_dump($url){
 		return 0;
 }
 
-function parse_postgresql_dump($url) {
+function parse_postgresql_dump($connection, $url, $debug = false) {
 	if (file_exists($url)) {
 		$file_content = file($url);
 		
 		$query = "";
 		
 		foreach($file_content as $sql_line){
-			$comment = preg_match("/^(\s|\t)*--.*$/", $line);
+			$clean_line = trim($sql_line);
+			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
 				continue;
 			}
 			
-			$clean_line = $sql_line;
-			var_dump($clean_line);
+			if (empty($clean_line)) {
+				continue;
+			}
+			
+			$query .= $clean_line;
+			
+			//Check if the end of query with the the semicolon and any returns in the end of line
+			if(preg_match("/;[\040]*\$/", $clean_line)) {
+				//And execute and clean buffer
+				pg_send_query($connection, $query);
+				
+				$result = pg_get_result($connection);
+				
+				if ($debug) {
+					var_dump($query);
+					var_dump(pg_result_error($result));
+				}
+				
+				if (pg_result_status($result) == PGSQL_FATAL_ERROR) {
+					echo pg_result_error($result);
+					echo "<i><br>$query<br></i>";
+					
+					return 0;
+				}
+				
+				$query = "";
+			}
 		}
 		
 		return 1;
@@ -527,8 +553,9 @@ function install_step4() {
 						check_generic ( 1, "Connection with Database");
 						
 						// Drop database if needed
-						if ($dbdrop == 1)
+						if ($dbdrop == 1) {
 							mysql_query ("DROP DATABASE IF EXISTS $dbname");
+						}
 						
 						// Create schema
 						$step1 = mysql_query ("CREATE DATABASE $dbname");
@@ -558,10 +585,10 @@ function install_step4() {
 							$cfgin = fopen ("include/config.inc.php","r");
 							$cfgout = fopen ($pandora_config,"w");
 							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
-							$dbtype = 'mysql'; //TODO set other types
+							$dbtype = 'mysql';
 							$config_new = '<?php
 							// Begin of automatic config file
-							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgres)
+							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
 							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
 							$config["dbuser"]="pandora";			// DB User
 							$config["dbpass"]="'.$random_password.'";	// DB Password
@@ -597,7 +624,7 @@ function install_step4() {
 						
 						// Drop database if needed
 						if ($dbdrop == 1) {
-							pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
+							$result = pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
 						}
 						
 						pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
@@ -623,8 +650,127 @@ function install_step4() {
 						check_generic ($step2, "Opening database '$dbname'");
 						
 						if ($step2) {
-							$step3 = parse_postgresql_dump("pandoradb.postgreSQL.sql");
-							check_generic ($step3, "Creating schema");
+							$step3 = parse_postgresql_dump($connection, "pandoradb.postgreSQL.sql");
+						}
+						
+						check_generic($step3, "Creating schema");
+						
+						if ($step3) {
+							$step4 = parse_postgresql_dump($connection, "pandoradb.data.postgreSQL.sql");
+						}
+						
+						check_generic ($step4, "Populating database");
+						
+						if ($step4) {
+							$random_password = random_name (8);
+							
+							pg_query($connection, "DROP USER pandora"); 
+							pg_send_query($connection, "CREATE USER pandora WITH PASSWORD '" . $random_password . "'");
+							$result = pg_get_result($connection);
+							
+							if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
+								//Set the privileges for DB
+								pg_send_query($connection, "GRANT ALL PRIVILEGES ON DATABASE pandora to pandora;");
+								$result = pg_get_result($connection);
+								
+								$setDBPrivileges = 0;
+								if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
+									$setDBPrivileges = 1;
+								}
+								
+								if ($setDBPrivileges) {
+									//Set the privileges for each tables.
+									pg_send_query($connection, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';");
+									$result = pg_get_result($connection);
+									
+									$tables = array();
+									while ($row = pg_fetch_assoc($result)) {
+										$tables[] = $row['table_name'];
+									}
+									
+									$correct = 1;
+									foreach ($tables as $table) {
+										pg_send_query($connection, "GRANT ALL PRIVILEGES ON TABLE " . $table . " to pandora;");
+										$result = pg_get_result($connection);
+										
+										if (pg_result_status($result) == PGSQL_FATAL_ERROR) {
+											$correct = 0;
+											break;
+										}
+										
+										//INI ----- Grant for secuences
+										pg_send_query($connection, "SELECT column_name FROM information_schema.columns WHERE table_name = '" . $table . "';");
+										$result2 = pg_get_result($connection);
+										
+										$columns = array();
+										while ($row = pg_fetch_assoc($result2)) {
+											$columns[] = $row['column_name'];
+										}
+										
+										//Check for each column if it have a sequence to grant
+										foreach ($columns as $column) {
+											pg_send_query($connection, "SELECT pg_get_serial_sequence('" . $table . "', '" . $column . "');");
+											$result3 = pg_get_result($connection);
+											
+											$sequence = pg_fetch_assoc($result3);
+											if (!empty($sequence['pg_get_serial_sequence'])) {
+												pg_send_query($connection, "GRANT ALL PRIVILEGES ON SEQUENCE " . $sequence['pg_get_serial_sequence'] . " to pandora;");
+												$result4 = pg_get_result($connection);
+												
+												if (pg_result_status($result4) == PGSQL_FATAL_ERROR) {
+													$correct = 0;
+													break;
+												}
+											}
+										}
+										//END ----- Grant for secuences
+										
+									}
+									
+									if ($correct) {
+										$step5 = 1;
+									}
+								}
+							}
+						}
+						
+						check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+						
+						if ($step5) {
+							$step6 = is_writable("include");
+						}
+						
+						check_generic ($step6, "Write permissions to save config file in './include'");
+						
+						if ($step6) {
+							$cfgin = fopen ("include/config.inc.php","r");
+							$cfgout = fopen ($pandora_config,"w");
+							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
+							$dbtype = 'postgresql';
+							$config_new = '<?php
+							// Begin of automatic config file
+							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
+							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
+							$config["dbuser"]="pandora";			// DB User
+							$config["dbpass"]="'.$random_password.'";	// DB Password
+							$config["dbhost"]="'.$dbhost.'";			// DB Host
+							$config["homedir"]="'.$path.'";		// Config homedir
+							$config["homeurl"]="'.$url.'";			// Base URL
+							// End of automatic config file
+							?>';
+							$step7 = fputs ($cfgout, $config_new);
+							$step7 = $step7 + fputs ($cfgout, $config_contents);
+							if ($step7 > 0)
+								$step7 = 1;
+							fclose ($cfgin);
+							fclose ($cfgout);
+							chmod ($pandora_config, 0600);
+						}
+						
+						check_generic ($step7, "Created new config file at '".$pandora_config."'");
+						
+						if (($step7 + $step6 + $step5 + $step4 + $step3 + $step2 + $step1) == 7) {
+							$everything_ok = 1;
 						}
 					}
 					break;
@@ -704,19 +850,20 @@ function install_step5() {
 
 if (! isset($_GET["step"])){
 	install_step1();
-} else {
+}
+else {
 	$step = $_GET["step"];
 	switch ($step) {
-	case 11: install_step1_licence();
-		break;
-	case 2: install_step2();
-		break;
-	case 3: install_step3();
-		break;
-	case 4: install_step4();
-		break;
-	case 5: install_step5();
-		break;
+		case 11: install_step1_licence();
+			break;
+		case 2: install_step2();
+			break;
+		case 3: install_step3();
+			break;
+		case 4: install_step4();
+			break;
+		case 5: install_step5();
+			break;
 	}
 }
 

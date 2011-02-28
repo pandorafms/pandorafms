@@ -122,7 +122,7 @@ if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 }
 
 /* Check if the user can see the graph */
-if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
+if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin($config['id_user']))) {
 	return;
 }
 

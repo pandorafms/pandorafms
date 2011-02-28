@@ -113,10 +113,10 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1]['icon'] = print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
 			break;
 		case SIMPLE_VALUE:
-			$table->data[$i + 1]['icon'] = print_image('images/binary.png', true, array('title' => ___('Simple Value')));
+			$table->data[$i + 1]['icon'] = print_image('images/binary.png', true, array('title' => __('Simple Value')));
 			break;
 		case LABEL:
-			$table->data[$i + 1]['icon'] = print_image('images/tag_red.png', true, array('title' => ___('Label')));
+			$table->data[$i + 1]['icon'] = print_image('images/tag_red.png', true, array('title' => __('Label')));
 			break;
 		case ICON:
 			$table->data[$i + 1]['icon'] = print_image('images/photo.png', true, array('title' => __('Icon')));

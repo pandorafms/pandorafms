@@ -602,10 +602,28 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
+
+			var element_status= null;
+			var parameter = Array();
+			parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+			parameter.push ({name: "get_element_status", value: "1"});
+			parameter.push ({name: "id_element", value: id_data});
+
+			jQuery.ajax ({
+				type: 'POST',
+				url: action="ajax.php",
+				data: parameter,
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					element_status = data;
+				}
+			});
+
 			var item = $('<div id="' + id_data + '" class="item static_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
-				'</div>'
+				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
 			);
 			break;
 		case 'percentile_bar':

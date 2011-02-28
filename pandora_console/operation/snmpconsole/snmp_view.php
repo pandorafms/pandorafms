@@ -352,7 +352,7 @@ if ($traps !== false) {
 		//User
 		if (!empty ($trap["status"])) {
 			$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
-			$data[5] .= '<a href="#" class="tip">&nbsp;<span>'.dame_nombre_real($trap["id_usuario"]).'</span></a>';
+			$data[5] .= '<a href="#" class="tip">&nbsp;<span>'.get_user_fullname($trap["id_usuario"]).'</span></a>';
 		} else {
 			$data[5] = '--';
 		}

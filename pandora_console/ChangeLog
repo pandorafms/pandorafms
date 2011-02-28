@@ -1,5 +1,13 @@
 2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_db.php: cleaned source code, and erased the deprecated
+	functions "dame_nombre_real" and "show_alert_row_mini".
+	
+	* operation/incidents/incident_detail.php,
+	operation/snmpconsole/snmp_view.php: replaced obsolete "dame_nombre_real"
+	to "get_user_fullname". 
+
+2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_db.php: cleaned source code, and erased the deprecated
 	function "dame_admin".
 	
 	* operation/reporting/reporting_xml.php: replaced obsolete "dame_admin"

@@ -276,7 +276,7 @@ echo '</td><td class="datos"><b>'.__('Creator').'</b></td><td class="datos">';
 if (empty ($id_creator)) {
 	echo 'SYSTEM';
 } else {
-	echo $id_creator.' (<i>'.dame_nombre_real ($id_creator).'</i>)';
+	echo $id_creator.' (<i>'.get_user_fullname($id_creator).'</i>)';
 }
 
 echo '</td></tr><tr><td class="datos2" colspan="4">';

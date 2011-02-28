@@ -1,3 +1,7 @@
+2011-02-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Fixed a typo. Thanks to Kikuchi Koichiro.
+
 2011-02-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/WMIServer.pm: Fixed a typo. Thanks to Tadashi Kaneda.

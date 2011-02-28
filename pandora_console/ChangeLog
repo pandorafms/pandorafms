@@ -1,4 +1,8 @@
-2011-02-27 Miguel de Dios  <miguel.dedios@artica.es>
+2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
+	* extensions/update_manager.php: replaced obsolete "give_acl" to "check_acl"
+	and erased the "give_acl".
+
+2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
 	* extensions/users_connected.php: fixed the double negation in the
 	check_acl.
 

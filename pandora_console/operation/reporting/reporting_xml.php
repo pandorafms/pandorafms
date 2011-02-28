@@ -115,7 +115,7 @@ $report = get_db_row ('treport', 'id_report', $id_report);
 
 $report["datetime"] = get_system_time();
 
-if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
+if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 	pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;

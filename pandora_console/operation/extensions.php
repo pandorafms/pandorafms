@@ -15,7 +15,7 @@
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access extensions list");
 	include ("general/noaccess.php");
@@ -44,7 +44,7 @@ if ($delete != ""){
 $table->width = '500px';
 $table->head = array ();
 $table->head[0] = __('Name');
-//if (give_acl ($config['id_user'], 0, "PM")){
+//if (check_acl ($config['id_user'], 0, "PM")){
 //	$table->head[1] = __('Delete');
 //	$table->align[1] = "center";
 //}
@@ -59,7 +59,7 @@ foreach ($config['extensions'] as $extension) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=extensions&amp;sec2='.$extension['operation_menu']['sec2'].'" class="mn">'.$extension['operation_menu']['name'];
 
-//	if (give_acl ($config['id_user'], 0, "PM")) {
+//	if (check_acl ($config['id_user'], 0, "PM")) {
 //		$data[1] = '<a href="index.php?sec=extensions&amp;sec2=operation/extensions&delete='.$extension['operation_menu']['sec2'].'&name='.$extension['operation_menu']['name'].'" class="mn"><img src="images/cross.png"></a>';
 //	}
 

@@ -21,7 +21,7 @@ require_once ('include/functions_gis.php');
 
 require_javascript_file('openlayers.pandora');
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
@@ -50,7 +50,7 @@ if (is_ajax ()) {
 
 $action = get_parameter('action');
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_default_column = true;
 else
 	$display_default_column = false;
@@ -91,7 +91,7 @@ if (!$maps) {
 		if (!check_acl ($config["id_user"], $map["group_id"], "IR")) {
 			continue;
 		}
-		if ($map['group_id'] == 0 && (!$own_info['is_admin'] || !give_acl ($config['id_user'], 0, "PM")))
+		if ($map['group_id'] == 0 && (!$own_info['is_admin'] || !check_acl ($config['id_user'], 0, "PM")))
 			continue;
 		$checked = false;
 		if ($map['default_map']) {

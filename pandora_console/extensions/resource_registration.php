@@ -29,7 +29,7 @@ In the xml is the tag "module_source"
 function resource_registration_extension_main() {
 	global $config;
 	
-	if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;

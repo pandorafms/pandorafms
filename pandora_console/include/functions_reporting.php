@@ -533,8 +533,8 @@ function get_group_stats ($id_group = 0) {
 
 	$cur_time = get_system_time ();
 
-	//Check for access credentials using give_acl. More overhead, much safer
-	if (!give_acl ($config["id_user"], $id_group, "AR")) {
+	//Check for access credentials using check_acl. More overhead, much safer
+	if (!check_acl ($config["id_user"], $id_group, "AR")) {
 		return $data;
 	}
 	
@@ -1527,7 +1527,7 @@ function get_agent_module_info ($id_agent, $filter = false) {
 	$return["alert_img"] = print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
 	$return["agent_group"] = get_agent_group ($id_agent);
 	
-	if (!give_acl ($config["id_user"], $return["agent_group"], "AR")) {
+	if (!check_acl ($config["id_user"], $return["agent_group"], "AR")) {
 		return $return;
 	} 
 	

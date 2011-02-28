@@ -23,7 +23,7 @@ require_once ("include/fgraph.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation","Trying to access event viewer");
 	require ("general/noaccess.php");
 	return;

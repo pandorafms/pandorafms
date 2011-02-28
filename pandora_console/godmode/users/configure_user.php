@@ -28,7 +28,7 @@ if ($user_info["language"] == ""){
 	$user_info["language"] = $config["language"];
 }
 
-if (! give_acl ($config['id_user'], 0, "UM")) {
+if (! check_acl ($config['id_user'], 0, "UM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
@@ -364,7 +364,7 @@ foreach ($result as $profile) {
 
 $data = array ();
 $data[0] = '<form method="post">';
-if (give_acl ($config['id_user'], 0, "PM"))
+if (check_acl ($config['id_user'], 0, "PM"))
 	$data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 		0, true, false, false);
 else

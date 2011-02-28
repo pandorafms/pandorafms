@@ -315,7 +315,7 @@ if (empty ($id_agente)) {
 $agent = get_db_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
-if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
+if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".get_agent_name($id_agente));
 	include ("general/noaccess.php");
@@ -325,7 +325,7 @@ if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 // Check for Network FLAG change request
 $flag = get_parameter('flag', '');
 if ($flag !== '') {
-	if ($flag == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+	if ($flag == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
 		$id_agent_module = get_parameter('id_agente_modulo');
 		$sql = sprintf("UPDATE tagente_modulo SET flag=1 WHERE id_agente_modulo = %d", $id_agent_module);
 		process_sql ($sql);
@@ -334,7 +334,7 @@ if ($flag !== '') {
 // Check for Network FLAG change request
 $flag_agent = get_parameter('flag_agent','');
 if ($flag_agent !== ''){
-	if ($flag_agent == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+	if ($flag_agent == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
 		$sql = sprintf("UPDATE tagente_modulo SET flag=1 WHERE id_agente = %d", $id_agente);
 		process_sql ($sql);
 	}
@@ -354,7 +354,7 @@ $tab = get_parameter ("tab", "main");
 
 $managetab = "";
 
-if (give_acl ($config['id_user'],$id_grupo, "AW")) {
+if (check_acl ($config['id_user'],$id_grupo, "AW")) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';

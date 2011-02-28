@@ -19,7 +19,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access node graph builder");
 	include ("general/noaccess.php");

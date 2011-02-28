@@ -68,7 +68,7 @@ class MonitorStatus {
 		
 		
 		// Agent group selector
-		if (($group > 0) && (give_acl($system->getConfig('id_user'), $group, "AR"))) {
+		if (($group > 0) && (check_acl($system->getConfig('id_user'), $group, "AR"))) {
 			$sqlGroup = sprintf (" AND tagente.id_grupo = %d", $ag_group);
 		}
 		else {

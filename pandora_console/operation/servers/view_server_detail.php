@@ -26,7 +26,7 @@ $options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view
 print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
 
 
-if (! give_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access recon task viewer");
 	require ("general/noaccess.php");
@@ -40,7 +40,7 @@ $total_modules_data = 0;
 // --------------------------------
 // FORCE A RECON TASK
 // --------------------------------
-if (give_acl ($config['id_user'], 0, "PM")) {
+if (check_acl ($config['id_user'], 0, "PM")) {
 	if (isset ($_GET["force"])) {
 		$id = (int) get_parameter_get ("force", 0);
 		$sql = sprintf ("UPDATE trecon_task SET utimestamp = 0, status = 1 WHERE id_rt = %d", $id);
@@ -132,7 +132,7 @@ if ($task["id_recon_script"] == 0){
 	
 	$data[7] = print_timestamp ($task["utimestamp"], true);
 
-	if (give_acl ($config["id_user"], $task["id_group"], "PM")) {
+	if (check_acl ($config["id_user"], $task["id_group"], "PM")) {
 		$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';
 	} else {
 		$data[8] = '';

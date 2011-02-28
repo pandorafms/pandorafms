@@ -188,7 +188,7 @@ function get_parents($parent, $onlyPropagate = false, $groups = null) {
  *
  * @return bool 1 if the user has privileges, 0 if not.
  */
-function check_acl ($id_user, $id_group, $access) {
+function check_acl($id_user, $id_group, $access) {
 	if (empty ($id_user)) {
 		//User ID needs to be specified
 		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
@@ -285,13 +285,6 @@ function check_acl ($id_user, $id_group, $access) {
 		return 1;
 		
 	return 0;
-}
-
-/*
- * @deprecated Use check_acl instead
- */
-function give_acl ($id_user, $id_group, $access) {
-	return check_acl ($id_user, $id_group, $access);
 }
 
 /**
@@ -1619,7 +1612,7 @@ function get_all_groups($groupWithAgents = false) {
 	
 	$return = array();
 	foreach ($rows as $row) {
-		if (give_acl ($config['id_user'], $row["id_grupo"], "AR"))
+		if (check_acl ($config['id_user'], $row["id_grupo"], "AR"))
 			$return[$row['id_grupo']] = $row['nombre'];
 	}
 		
@@ -3278,7 +3271,7 @@ function delete_agent ($id_agents, $disableACL = false) {
 	
 		/* Check for deletion permissions */
 		$id_group = get_agent_group ($id_agent);
-		if ((! give_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
+		if ((! check_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
 			process_sql_rollback ();
 			return false;
 		}
@@ -3725,6 +3718,6 @@ function user_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	}
 	
 	$id_group = (int) get_db_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
-	return (bool) give_acl ($id_user, $id_group, $mode);
+	return (bool) check_acl ($id_user, $id_group, $mode);
 }
 ?>

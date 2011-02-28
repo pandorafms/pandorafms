@@ -43,7 +43,7 @@ function get_report ($id_report, $filter = false, $fields = false) {
 		$fields[] = 'id_group';
 	
 	$report = get_db_row_filter ('treport', $filter, $fields);
-	if (! give_acl ($config['id_user'], $report['id_group'], 'AR'))
+	if (! check_acl ($config['id_user'], $report['id_group'], 'AR'))
 		return false;
 	return $report;
 }
@@ -82,7 +82,7 @@ function get_reports ($filter = false, $fields = false, $returnAllGroup = true, 
 	foreach ($all_reports as $report){
 		if (!in_array($report['id_group'], array_keys($groups)))
 			continue;
-		if ($config['id_user'] != $report['id_user'] && ! give_acl ($config['id_user'], $report['id_group'], 'AR'))
+		if ($config['id_user'] != $report['id_user'] && ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
 			continue;
 		array_push ($reports, $report);
 	}

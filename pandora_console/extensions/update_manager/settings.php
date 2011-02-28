@@ -16,7 +16,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, 'PM')) {
+if (! check_acl ($config['id_user'], 0, 'PM')) {
 	pandora_audit("ACL Violation", "Trying to use Open Update Manager extension");
 	include ("general/noaccess.php");
 	return;

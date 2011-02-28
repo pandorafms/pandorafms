@@ -21,7 +21,7 @@ enterprise_include ("operation/snmpconsole/snmp_view.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access SNMP Console");
 	require ("general/noaccess.php");
@@ -54,7 +54,7 @@ print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", f
 // Delete SNMP Trap entry Event (only incident management access).
 if (isset ($_GET["delete"])){
 	$id_trap = (int) get_parameter_get ("delete", 0);
-	if ($id_trap > 0 && give_acl ($config['id_user'], 0, "IM")) {
+	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
 		$result = process_sql ($sql);
 		print_result_message ($result,
@@ -69,7 +69,7 @@ if (isset ($_GET["delete"])){
 // Check Event (only incident write access).
 if (isset ($_GET["check"])) {
 	$id_trap = (int) get_parameter_get ("check", 0);
-	if ($id_trap > 1 && give_acl ($config['id_user'], 0, "IW")) {
+	if ($id_trap > 1 && check_acl ($config['id_user'], 0, "IW")) {
 		$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
 		$result = process_sql ($sql);
 		print_result_message ($result,
@@ -84,7 +84,7 @@ if (isset ($_GET["check"])) {
 // Mass-process DELETE
 if (isset ($_POST["deletebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
-	if (is_array ($trap_ids) && give_acl ($config['id_user'], 0, "IW")) {
+	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
 		foreach ($trap_ids as $id_trap) {
 			$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
 			process_sql ($sql);
@@ -98,7 +98,7 @@ if (isset ($_POST["deletebt"])) {
 // Mass-process UPDATE
 if (isset ($_POST["updatebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
-	if (is_array ($trap_ids) && give_acl ($config['id_user'], 0, "IW")) {
+	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
 		foreach ($trap_ids as $id_trap) {
 			$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
 			process_sql ($sql);
@@ -313,12 +313,12 @@ if ($traps !== false) {
 		// Agent matching source address
 		$agent = get_agent_with_ip ($trap['source']);
 		if ($agent === false) {
-			if (! give_acl ($config["id_user"], 0, "AW")) {
+			if (! check_acl ($config["id_user"], 0, "AW")) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
 		} else {
-			if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
+			if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
@@ -375,10 +375,10 @@ if ($traps !== false) {
 		//Actions
 		$data[8] = "";
 		
-		if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
+		if (empty ($trap["status"]) && check_acl ($config["id_user"], 0, "IW")) {
 			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'">' . print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a>';
 		}
-		if (give_acl ($config["id_user"], 0, "IM")) {
+		if (check_acl ($config["id_user"], 0, "IM")) {
 			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a>';
 		}
 		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
@@ -415,11 +415,11 @@ if ($idx == 0) {
 unset ($table);
 
 echo '<div style="width:735px; text-align:right;">';
-if (give_acl ($config["id_user"], 0, "IW")) {
+if (check_acl ($config["id_user"], 0, "IW")) {
 	print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
 }
 
-if (give_acl ($config['id_user'], 0, "IM")) {
+if (check_acl ($config['id_user'], 0, "IM")) {
 	echo "&nbsp;";
 	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"');
 }

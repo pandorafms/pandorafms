@@ -36,7 +36,7 @@ function view_logfile ($file_name) {
 function pandoralogs_extension_main () {
 	global $config;
 
-    if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+    if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	    pandora_audit("ACL Violation", "Trying to access Setup Management");
 	    require ("general/noaccess.php");
 	    return;

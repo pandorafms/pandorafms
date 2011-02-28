@@ -18,7 +18,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LW")) {
+if (! check_acl ($config['id_user'], 0, "LW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -65,7 +65,7 @@ $table->data[1][0] = __('Template');
 
 $table->data[1][0] = __('Template');
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$templates = get_alert_templates (false, array ('id', 'name'));
 else{
 	$usr_groups = get_user_groups($config['id_user'], 'LW', true);
@@ -78,7 +78,7 @@ $table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);
 $table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
 	print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
-if (give_acl ($config['id_user'], 0, "LM")) {
+if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[1][1] .= print_image ('images/add.png', true);
 	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
 	$table->data[1][1] .= __('Create Template');
@@ -101,7 +101,7 @@ $table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
 $table->data[2][1] .= print_help_icon ("alert-matches", true);
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
-if (give_acl ($config['id_user'], 0, "LM")) {
+if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[2][1] .= print_image ('images/add.png', true);
 	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
 	$table->data[2][1] .= __('Create Action');

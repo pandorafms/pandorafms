@@ -130,7 +130,7 @@ function update_config () {
 	if (! isset ($config['id_user']))
 		return false;
 	
-	if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user']))
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user']))
 		return false;
 	
 	$update_config = (bool) get_parameter ('update_config');

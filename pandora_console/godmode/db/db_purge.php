@@ -24,7 +24,7 @@ if ($config['flash_charts']) {
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "DM")) {
+if (! check_acl ($config['id_user'], 0, "DM")) {
 	pandora_audit( "ACL Violation",
 		"Trying to access Database Purge Section");
 	include ("general/noaccess.php");

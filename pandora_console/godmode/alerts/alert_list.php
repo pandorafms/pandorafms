@@ -18,7 +18,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LW")) {
+if (! check_acl ($config['id_user'], 0, "LW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");

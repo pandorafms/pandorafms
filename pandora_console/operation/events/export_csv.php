@@ -25,7 +25,7 @@ session_write_close ();
 
 $config["id_user"] = $_SESSION["id_usuario"];
 
-if (! give_acl ($config["id_user"], 0, "AR") && ! give_acl ($config["id_user"], 0, "AW")) {
+if (! check_acl ($config["id_user"], 0, "AR") && ! check_acl ($config["id_user"], 0, "AW")) {
 	exit;
 }
 

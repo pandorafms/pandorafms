@@ -27,7 +27,7 @@ $group = 0;
 if ($id_agente)
 	$group = get_agent_group ($id_agente);
 
-if (! give_acl ($config["id_user"], $group, "AW")) {
+if (! check_acl ($config["id_user"], $group, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
@@ -488,7 +488,7 @@ if ($update_agent) { // if modified some agent paramenter
 if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = get_agent_group ($id_agente);
-	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
+	if (check_acl ($config["id_user"], $id_grupo, "AW") != 1) {
 		pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
@@ -528,7 +528,7 @@ $edit_module = (bool) get_parameter ('edit_module');
 if ($update_module || $create_module) {
 	$id_grupo = get_agent_group ($id_agente);
 	
-	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
+	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 		pandora_audit("ACL Violation",
 			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");
@@ -752,7 +752,7 @@ if ($delete_module) { // DELETE agent module !
 	$module_data = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
 	$id_grupo = (int) dame_id_grupo ($id_agente);
 	
-	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
+	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 		pandora_audit("ACL Violation",
 		"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");

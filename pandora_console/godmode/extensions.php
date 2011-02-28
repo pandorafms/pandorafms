@@ -15,7 +15,7 @@
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access extensions list");
 	include ("general/noaccess.php");

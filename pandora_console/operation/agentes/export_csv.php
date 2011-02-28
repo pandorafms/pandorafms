@@ -20,7 +20,7 @@ require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
 
 $config["id_user"] = $_SESSION["id_usuario"];
-if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	require ("../../general/noaccess.php");
 	return;
 }
@@ -29,7 +29,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agentmodule = $_GET["agentmodule"];
 	$id_agent = $_GET["agent"];
 	$agentmodule_name = get_agentmodule_name ($id_agentmodule);
-	if (! give_acl ($config['id_user'], dame_id_grupo ($id_agent), "AR")) {
+	if (! check_acl ($config['id_user'], dame_id_grupo ($id_agent), "AR")) {
 		pandora_audit("ACL Violation",
 			"Trying to access Agent Export Data");
 		require ("../../general/noaccess.php");

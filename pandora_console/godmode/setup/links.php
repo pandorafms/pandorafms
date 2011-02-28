@@ -17,7 +17,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	pandora_audit("ACL Violation", "Trying to access Link Management");
 	require ("general/noaccess.php");
 	exit;

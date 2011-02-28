@@ -22,7 +22,7 @@ require_once ("include/functions_alerts.php"); //Alerts processing functions
 
 check_login ();
 
-if (! give_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "IR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -77,7 +77,7 @@ else {
 }
 
 // Skip system messages if user is not PM
-if (!give_acl ($config["id_user"], 0, "PM")) {
+if (!check_acl ($config["id_user"], 0, "PM")) {
     $sql_post .= " AND id_grupo != 0";
 }
 
@@ -377,7 +377,7 @@ foreach ($result as $event) {
 	//Actions
 	$data[4] = '';
 	// Validate event
-	if (($event["estado"] != 1) and (give_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
+	if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
 		$data[4] .= '<a href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
 		$data[4] .= print_image ("images/ok.png", true,
 			array ("title" => __('Validate event')));
@@ -388,7 +388,7 @@ foreach ($result as $event) {
 			array ("title" => __('Event validated'))).'&nbsp;';
 	}
 	// Delete event
-	if (give_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
+	if (check_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
 		if($event['estado'] != 2) {
 			$data[4] .= '<a class="delete_event" href="#"  onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;" id="delete-'.$event['id_evento'].'">';
 			$data[4] .= print_image ("images/cross.png", true,
@@ -407,7 +407,7 @@ foreach ($result as $event) {
 	$data[4] .= '</a>&nbsp;';
 	
 	// Create incident from this event
-	if (give_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 		$data[4] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event='.$event["id_evento"].'">';
 		$data[4] .= print_image ("images/page_lightning.png", true,
 			array ("title" => __('Create incident from event')));
@@ -575,10 +575,10 @@ if (!empty ($table->data)) {
 	print_table ($table);
 
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
-	if (give_acl ($config["id_user"], 0, "IW") == 1) {
+	if (check_acl ($config["id_user"], 0, "IW") == 1) {
 		print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
 	}
-	if (give_acl ($config["id_user"], 0,"IM") == 1) {
+	if (check_acl ($config["id_user"], 0,"IM") == 1) {
 		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
 	}
 	echo '</div></form>';

@@ -45,7 +45,7 @@ foreach ($layouts as $layout) {
 	$rowPair = !$rowPair;
 	$iterator++;
 	
-	if (!give_acl ($config["id_user"], $layout["id_group"], "AR")) {
+	if (!check_acl ($config["id_user"], $layout["id_group"], "AR")) {
 		continue;
 	}
 	$data = array ();

@@ -20,7 +20,7 @@ global $config;
 
 check_login();
 
-if (! give_acl($config['id_user'], 0, "PM")) {
+if (! check_acl($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
@@ -34,7 +34,7 @@ if (is_ajax ()) {
 	if ($get_group_json) {
 		$id_group = (int) get_parameter ('id_group');
 		
-		if (! give_acl ($config['id_user'], $id_group, "AR")) {
+		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);

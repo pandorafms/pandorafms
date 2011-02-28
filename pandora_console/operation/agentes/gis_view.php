@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_user'])) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_user'])) {
         pandora_audit("ACL Violation", "Trying to access GIS Agent view");
         require ("general/noaccess.php");
         return;

@@ -18,7 +18,7 @@ global $config;
 
 check_login();
 
-if (! give_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -199,7 +199,7 @@ if ($create_downtime || $update_downtime) {
 		$data = array ();
 		if ($downtimes)
 			foreach ($downtimes as $downtime) {		
-				if (give_acl ($config["id_user"], $downtime['id_grupo'], "AR")) {
+				if (check_acl ($config["id_user"], $downtime['id_grupo'], "AR")) {
 					$data[$downtime['id_agente']] = $downtime['nombre'];
 				}
 			}

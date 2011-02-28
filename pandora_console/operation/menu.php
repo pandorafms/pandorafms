@@ -26,7 +26,7 @@ $menu = array ();
 $menu['class'] = 'operation';
 
 // Agent read, Server read
-if (give_acl ($config['id_user'], 0, "AR")) {
+if (check_acl ($config['id_user'], 0, "AR")) {
 
 	enterprise_hook ('metaconsole_menu');
 
@@ -109,7 +109,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$firstLetterNameVisualToShow = array('_', ',', '[', '(');
 	
 	foreach ($layouts as $layout) {
-		if (! give_acl ($config["id_user"], $layout["id_group"], "AR")) {
+		if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
 			continue;
 		}
 		$name = safe_output($layout['name']);
@@ -132,7 +132,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Agent read, Server read
-if (give_acl ($config['id_user'], 0, "AR")) {
+if (check_acl ($config['id_user'], 0, "AR")) {
 
 	// Server view
 	$menu["estado_server"]["text"] = __('Pandora servers');
@@ -146,7 +146,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	if ($servers === false) {
 		$servers = array ();
 	}
-	if (give_acl ($config['id_user'], 0, "PM")) {
+	if (check_acl ($config['id_user'], 0, "PM")) {
 		foreach ($servers as $serverItem) {
 			$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
 		}
@@ -160,7 +160,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 enterprise_hook ('inventory_menu');
 
 //Incidents
-if (give_acl ($config['id_user'], 0, "IR") == 1) {
+if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$menu["incidencias"]["text"] = __('Manage incidents');
 	$menu["incidencias"]["sec2"] = "operation/incidents/incident";
 	$menu["incidencias"]["refr"] = 0;
@@ -173,7 +173,7 @@ if (give_acl ($config['id_user'], 0, "IR") == 1) {
 }
 
 // Rest of options, all with AR privilege (or should events be with incidents?)
-if (give_acl ($config['id_user'], 0, "AR")) {
+if (check_acl ($config['id_user'], 0, "AR")) {
 	// Events
 	$menu["eventos"]["text"] = __('View events'); 
 	$menu["eventos"]["refr"] = 0;
@@ -227,7 +227,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 //End of Users
 
 // Rest of options, all with AR privilege (or should events be with incidents?)
-if (give_acl ($config['id_user'], 0, "AR")) {
+if (check_acl ($config['id_user'], 0, "AR")) {
 
 	//SNMP Console
 	$menu["snmpconsole"]["text"] = __('SNMP console');

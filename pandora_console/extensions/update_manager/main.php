@@ -55,7 +55,7 @@ if ($update_package) {
 
 $package = um_client_check_latest_update ($settings, $user_key);
 
-if (give_acl ($config['id_user'], 0, 'PM')) {
+if (check_acl ($config['id_user'], 0, 'PM')) {
 	
 	if (is_int ($package) && $package == 1) {
 		echo '<h5 class="suc">'.__('Your system is up-to-date').'.</h5>';

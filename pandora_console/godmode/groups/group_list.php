@@ -22,7 +22,7 @@ check_login();
 require_once("include/functions_groups.php");
 
 if (is_ajax ()) {
-	if (! give_acl($config['id_user'], 0, "AR")) {
+	if (! check_acl($config['id_user'], 0, "AR")) {
 		pandora_audit("ACL Violation", "Trying to access Group Management");
 		require ("general/noaccess.php");
 		return;
@@ -46,7 +46,7 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		if (! give_acl ($config['id_user'], $id_group, "AR")) {
+		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
@@ -63,7 +63,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		$disabled = (int) get_parameter ('disabled', 0);
 		
-		if (! give_acl ($config['id_user'], $id_group, "AR")) {
+		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
@@ -77,7 +77,7 @@ if (is_ajax ()) {
 	return;
 }
 
-if (! give_acl($config['id_user'], 0, "PM")) {
+if (! check_acl($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");

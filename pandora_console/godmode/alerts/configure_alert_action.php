@@ -20,7 +20,7 @@ require_once ('include/functions_alerts.php');
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "LM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -35,7 +35,7 @@ if ($al_action !== false){
 	// If user tries to edit an action with group=ALL
 	if ($al_action['id_group'] == 0){
 		// then must have "PM" access privileges
-		if (! give_acl ($config['id_user'], 0, "PM")) {
+		if (! check_acl ($config['id_user'], 0, "PM")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			require ("general/noaccess.php");
@@ -46,7 +46,7 @@ if ($al_action !== false){
 	// If user tries to edit an action of others groups
 	}else{
 		$own_info = get_user_info ($config['id_user']);
-		if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
 		else
 			$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
@@ -99,7 +99,7 @@ $table->data[1][0] = __('Group');
 $groups = get_user_groups ();
 $own_info = get_user_info ($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
 else	
 	$display_all_group = false;
@@ -109,7 +109,7 @@ $table->data[2][0] = __('Command');
 $table->data[2][1] = print_select_from_sql ('SELECT id, name FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
 $table->data[2][1] .= ' ';
-if (give_acl ($config['id_user'], 0, "PM")){
+if (check_acl ($config['id_user'], 0, "PM")){
 	$table->data[2][1] .= print_image ('images/add.png', true);
 	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
 	$table->data[2][1] .= __('Create Command');

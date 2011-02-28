@@ -23,7 +23,7 @@ $id_group = get_parameter ("id_group", -1);
 $update_agent = get_parameter ("update_agent", -1);
 $update_group = get_parameter ("update_group", -1);
 
-if (! give_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access remote config copy tool");
 	require ("general/noaccess.php");
@@ -123,7 +123,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
-			if (give_acl ($config["id_user"], $row["id_grupo"], "AR")){
+			if (check_acl ($config["id_user"], $row["id_grupo"], "AR")){
 				$source = $config["remote_config"]."/conf/". md5($row["nombre"]).".conf";
 				if (file_exists($source)){
 					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
@@ -144,7 +144,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
-			if (give_acl ($config["id_user"], $row["id_grupo"], "AW"))
+			if (check_acl ($config["id_user"], $row["id_grupo"], "AW"))
 				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 		}
 		echo '</select>';

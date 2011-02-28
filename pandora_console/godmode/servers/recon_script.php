@@ -29,7 +29,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "LM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access recon script Management");
 	require ("general/noaccess.php");

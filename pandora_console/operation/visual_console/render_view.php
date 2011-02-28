@@ -45,7 +45,7 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=".$config["pure"];
 
-if (! give_acl ($config["id_user"], $id_group, "AR")) {
+if (! check_acl ($config["id_user"], $id_group, "AR")) {
 	pandora_audit("ACL Violation", "Trying to access visual console without group access");
 	require ("general/noaccess.php");
 	exit;
@@ -54,7 +54,7 @@ if (! give_acl ($config["id_user"], $id_group, "AR")) {
 // Render map
 $options = array();
 
-if (give_acl ($config["id_user"], $id_group, "AW")) {
+if (check_acl ($config["id_user"], $id_group, "AW")) {
 	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=edit&id_visual_console='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }

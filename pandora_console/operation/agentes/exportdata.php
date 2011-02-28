@@ -65,7 +65,7 @@ require_once ("include/functions_reporting.php");
 
 check_login();
 
-if (!give_acl ($config['id_user'], 0, "AR")) {
+if (!check_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	return;
 }

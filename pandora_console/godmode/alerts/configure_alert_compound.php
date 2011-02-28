@@ -17,7 +17,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -227,7 +227,7 @@ if ($id && ! $create_compound) {
 	$field3_recovery = $compound['field3_recovery'];
 	$id_agent = $compound['id_agent'];
 	$id_group = get_agent_group ($id_agent);
-	if (! give_acl ($config['id_user'], $id_group, "AW")) {
+	if (! check_acl ($config['id_user'], $id_group, "AW")) {
 		pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		require ("general/noaccess.php");

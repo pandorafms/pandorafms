@@ -19,7 +19,7 @@ require_once ('include/functions_alerts.php');
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "LM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -42,7 +42,7 @@ if ($a_template !== false){
 	// If user tries to duplicate/edit a template with group=ALL
 	if ($a_template['id_group'] == 0){
 		// then must have "PM" access privileges
-		if (! give_acl ($config['id_user'], 0, "PM")) {
+		if (! check_acl ($config['id_user'], 0, "PM")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			require ("general/noaccess.php");
@@ -53,7 +53,7 @@ if ($a_template !== false){
 	// If user tries to duplicate/edit a template of others groups 
 	}else{
 		$own_info = get_user_info ($config['id_user']);
-		if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
 		else
 			$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
@@ -519,7 +519,7 @@ if ($step == 2) {
 	$groups = get_user_groups ();
 	$own_info = get_user_info($config['id_user']);
 	// Only display group "All" if user is administrator or has "PM" privileges
-	if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 		$display_all_group = true;
 	else	
 		$display_all_group = false;

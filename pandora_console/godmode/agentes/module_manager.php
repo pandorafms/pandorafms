@@ -83,7 +83,7 @@ if ($multiple_delete) {
 	foreach($id_agent_modules_delete as $id_agent_module_del) {
 		$id_grupo = (int) dame_id_grupo ($id_agente);
 		
-		if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
+		if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 			pandora_audit("ACL Violation",
 			"Trying to delete a module without admin rights");
 			require ("general/noaccess.php");

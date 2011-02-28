@@ -19,7 +19,7 @@ global $config;
 require_once ("include/functions_reporting.php");
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access agent main list view");
 	require ("general/noaccess.php");
@@ -63,7 +63,7 @@ if (is_ajax ()) {
 	if ($get_agent_module_last_value) {
 		$id_module = (int) get_parameter ('id_agent_module');
 		
-		if (! give_acl ($config['id_user'], get_agentmodule_group ($id_module), "AR")) {
+		if (! check_acl ($config['id_user'], get_agentmodule_group ($id_module), "AR")) {
 			pandora_audit("ACL Violation",
 				"Trying to access agent main list view");
 			echo json_encode (false);
@@ -302,7 +302,7 @@ foreach ($agents as $agent) {
 	$data = array ();
 	
 	$data[0] = '';
-	if (give_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
+	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
 		$data[0] .= print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
 		$data[0] .= '</a>&nbsp;';
@@ -370,9 +370,9 @@ if (!empty ($table->data)) {
 
 /* Godmode controls SHOULD NOT BE HERE 
 
-if (give_acl ($config['id_user'], 0, "LM") || give_acl ($config['id_user'], 0, "AW")
-		|| give_acl ($config['id_user'], 0, "PM") || give_acl ($config['id_user'], 0, "DM")
-		|| give_acl ($config['id_user'], 0, "UM")) {
+if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AW")
+		|| check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")
+		|| check_acl ($config['id_user'], 0, "UM")) {
 	
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 		print_input_hidden ('new_agent', 1);

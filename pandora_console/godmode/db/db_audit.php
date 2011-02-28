@@ -20,7 +20,7 @@ print_page_header (__('Database maintenance').' &raquo; '.__('Database audit pur
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "DM")) {
+if (! check_acl ($config['id_user'], 0, "DM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Database Management Audit");
 	require ("general/noaccess.php");

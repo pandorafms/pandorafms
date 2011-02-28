@@ -686,7 +686,7 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 		$agent_id = get_agentmodule_agent ($alert["id_agent_module"]);
 		$group_id = get_agentmodule_group ($agent_id);
 		
-		if (! give_acl ($config['id_user'], $group_id, "AW")) {
+		if (! check_acl ($config['id_user'], $group_id, "AW")) {
 			continue;
 		}
 		$result = process_sql_update ('talert_template_modules',
@@ -929,7 +929,7 @@ function validate_alert_compound ($id_alert_compound) {
 		$agent_id = $alert["id_agent"];
 		$group_id = get_agent_group ($agent_id);
 		
-		if (! give_acl ($config['id_user'], $group_id, "AW")) {
+		if (! check_acl ($config['id_user'], $group_id, "AW")) {
 			continue;
 		}
 		$result = process_sql_update ('talert_compound',

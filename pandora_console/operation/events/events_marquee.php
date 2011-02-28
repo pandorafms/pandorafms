@@ -53,7 +53,7 @@ $groups = get_user_groups ($config["id_user"], "AR");
 $sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
 
 // Skip system messages if user is not PM
-if (!give_acl ($config["id_user"], 0, "PM")) {
+if (!check_acl ($config["id_user"], 0, "PM")) {
     $sql_group_filter .= " AND id_grupo != 0";
 }
 

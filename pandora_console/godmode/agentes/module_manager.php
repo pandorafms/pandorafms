@@ -81,7 +81,7 @@ if ($multiple_delete) {
 	$id_agent_modules_delete = (array)get_parameter('id_delete');
 	
 	foreach($id_agent_modules_delete as $id_agent_module_del) {
-		$id_grupo = (int) dame_id_grupo ($id_agente);
+		$id_grupo = (int) get_agent_group($id_agente);
 		
 		if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 			pandora_audit("ACL Violation",

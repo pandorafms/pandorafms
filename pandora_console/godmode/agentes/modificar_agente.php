@@ -45,7 +45,7 @@ $agent_to_delete = (int)get_parameter('borrar_agente');
 if (!empty($agent_to_delete)) {
 	$id_agente = $agent_to_delete;
 	$agent_name = get_agent_name ($id_agente);
-	$id_grupo = dame_id_grupo ($id_agente);
+	$id_grupo = get_agent_group($id_agente);
 	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
 		delete_agent($id_agentes);

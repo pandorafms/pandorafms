@@ -1,4 +1,13 @@
 2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_db.php: cleaned source code, and erased the deprecated
+	function "dame_id_grupo".
+	
+	*extensions/update_manager.php, operation/agentes/export_csv.php,
+	godmode/agentes/module_manager.php, godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php: replaced obsolete "dame_id_grupo" to
+	"get_agent_group".
+
+2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
 	* extensions/update_manager.php: replaced obsolete "give_acl" to "check_acl"
 	and erased the "give_acl".
 

@@ -1465,7 +1465,8 @@ function get_agent_modules_data_count ($id_agent = 0) {
 	
 	if (empty ($id_agent)) {
 		$id_agent = array ();
-	} else {
+	}
+	else {
 		$id_agent = (array) $id_agent;
 	}
 	
@@ -1510,13 +1511,6 @@ function get_agent_modules_data_count ($id_agent = 0) {
  */
 function get_os_name ($id_os) {
 	return (string) get_db_value ('name', 'tconfig_os', 'id_os', (int) $id_os);
-}
-
-/** 
- * @deprecated Use is_user_admin
- */
-function dame_admin ($id_user) {
-	return is_user_admin ($id_user);
 }
 
 /** 

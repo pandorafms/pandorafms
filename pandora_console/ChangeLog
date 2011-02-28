@@ -1,3 +1,10 @@
+2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_db.php: cleaned source code, and erased the deprecated
+	function "dame_admin".
+	
+	* operation/reporting/reporting_xml.php: replaced obsolete "dame_admin"
+	to "is_user_admin".
+
 2011-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_html.php: new parameter in function print_image in 	

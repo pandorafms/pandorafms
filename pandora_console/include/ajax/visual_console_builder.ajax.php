@@ -52,6 +52,8 @@ $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
 
+$get_element_status = get_parameter('get_element_status', 0);
+
 switch ($action) {
 	case 'get_layout_data':
 		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
@@ -285,4 +287,14 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 }
+
+/* visual map element status check  */
+if ($get_element_status){
+
+	$res = getStatusElement($id_element);
+
+	echo $res;	
+	return;
+}
+
 ?>

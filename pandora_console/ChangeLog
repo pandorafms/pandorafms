@@ -1,3 +1,11 @@
+2011-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/ajax/visual_console_builder.ajax.php
+	 godmode/reporting/visual_console_builder.editor.js: Status information is
+	saved when static graph are created in visual console.
+	* godmode/reporting/visual_console_builder.elements.php: Fixed wrong call to
+	__() function from functions_db.
+
 2011-02-27 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb_data.sql, pandoradb.data.postgreSQL.sql: in the table "tgrupo"

@@ -650,7 +650,7 @@ function get_report_types () {
 	$types['text'] = __ ('Text');
 	
 	# Only pandora managers have access to the whole database
-	if (give_acl ($config['id_user'], 0, "PM")) {
+	if (check_acl ($config['id_user'], 0, "PM")) {
 		$types['sql'] = __('SQL query');
 		$types['sql_graph_vbar'] = __('SQL vertical bar graph');
 		$types['sql_graph_pie'] = __('SQL pie graph');

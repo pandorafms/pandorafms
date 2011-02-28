@@ -20,7 +20,7 @@ require_once ('include/functions_custom_graphs.php');
 // Check user credentials
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Inventory Module Management");
 	require ("general/noaccess.php");
@@ -36,7 +36,7 @@ print_page_header (__('Graphs management'), "", false, "", true);
 
 // Delete module SQL code
 if ($delete_graph) {
-	if (give_acl ($config['id_user'], 0, "AW")) {
+	if (check_acl ($config['id_user'], 0, "AW")) {
 		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
@@ -57,7 +57,7 @@ if ($delete_graph) {
 }
 
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_group = true;
 else
 	$return_all_group = false;
@@ -80,7 +80,7 @@ if (! empty ($graphs)) {
 	$table->size[0] = '20px';
 	$table->size[3] = '125px';
 	$table->size[4] = '50px';
-	if (give_acl ($config['id_user'], 0, "AW")) {
+	if (check_acl ($config['id_user'], 0, "AW")) {
 		$table->align[5] = 'center';
 		$table->head[5] = __('Delete');
 		$table->size[5] = '50px';
@@ -99,7 +99,7 @@ if (! empty ($graphs)) {
 		$data[3] = $graph["graphs_count"];
 		$data[4] = print_group_icon($graph['id_group'],true);
 		
-		if (give_acl ($config['id_user'], 0, "AW")) {
+		if (check_acl ($config['id_user'], 0, "AW")) {
 			$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
 					return false;">' . print_image("images/cross.png", true) . '</a>';

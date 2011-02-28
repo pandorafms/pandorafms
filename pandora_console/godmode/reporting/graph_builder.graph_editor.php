@@ -21,7 +21,7 @@ if ($config['flash_charts']) {
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");

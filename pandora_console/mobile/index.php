@@ -58,7 +58,7 @@ $user->hackinjectConfig();
 						$user->hackinjectConfig();
 						menu();
 						
-						if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+						if (! check_acl($system->getConfig('id_user'), 0, "AR")) {
 							pandora_audit("ACL Violation",
 								"Trying to access Agent Data view");
 							require ("../general/noaccess.php");
@@ -93,7 +93,7 @@ $user->hackinjectConfig();
 								break;
 						default:
 						case 'tactical':
-							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "AR")) {
 								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
@@ -104,7 +104,7 @@ $user->hackinjectConfig();
 							$tactical->show();
 							break;
 						case 'agents':
-							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "AR")) {
 								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
@@ -130,7 +130,7 @@ $user->hackinjectConfig();
 							}
 							break;
 						case 'servers':
-							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "PM")) {
 								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
@@ -141,7 +141,7 @@ $user->hackinjectConfig();
 							$viewServers->show();
 							break;
 						case 'alerts':
-							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "PM")) {
 								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
@@ -152,7 +152,7 @@ $user->hackinjectConfig();
 							$viewAlerts->show();
 							break;
 						case 'groups':
-							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "PM")) {
 								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
@@ -163,7 +163,7 @@ $user->hackinjectConfig();
 							$groupView->show();
 							break;
 						case 'events':
-							if (! give_acl($system->getConfig('id_user'), 0, "IR")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "IR")) {
 								pandora_audit("ACL Violation",
 									"Trying to access event viewer");
 								require ("general/noaccess.php");
@@ -174,7 +174,7 @@ $user->hackinjectConfig();
 							$eventsView->show();
 							break;
 						case 'monitor':
-							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+							if (! check_acl($system->getConfig('id_user'), 0, "AR")) {
 								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");

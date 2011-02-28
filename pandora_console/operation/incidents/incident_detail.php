@@ -21,7 +21,7 @@ require_once ("include/functions_events.php"); //To get events group information
 
 check_login ();
 
-if (! give_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "IR")) {
  	// Doesn't have access to this page
 	pandora_audit("ACL Violation", "Trying to access incident details");
 	require ("general/noaccess.php");
@@ -70,7 +70,7 @@ if (isset ($_GET["id"])) {
 	if (isset ($_POST["delete_nota"])) {
 		$id_nota = get_parameter_post ("delete_nota", 0);
 		$note_user = get_incidents_notes_author ($id_nota);
-		if (((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($note_user == $config["id_user"])) OR ($id_owner == $config["id_user"])) { 
+		if (((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($note_user == $config["id_user"])) OR ($id_owner == $config["id_user"])) { 
 		// Only admins (manage incident) or owners can modify
 		// incidents notes. note authors are 
 		// able to delete their own notes
@@ -86,7 +86,7 @@ if (isset ($_GET["id"])) {
 	}
 
 	// Delete file
-	if (((give_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
+	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
 		$file_id = (int) get_parameter_post ("delete_file", 0);
 		$filename = get_db_value ("filename", "tattachment", "id_attachment", $file_id);
 		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
@@ -103,7 +103,7 @@ if (isset ($_GET["id"])) {
 	}
 
 	// Upload file
-	if ((give_acl ($config["id_user"], $id_grupo, "IW") == 1) AND isset ($_GET["upload_file"]) AND ($_FILES['userfile']['name'] != "")) {
+	if ((check_acl ($config["id_user"], $id_grupo, "IW") == 1) AND isset ($_GET["upload_file"]) AND ($_FILES['userfile']['name'] != "")) {
 		$description = get_parameter_post ("file_description", __('No description available'));
 		
 		// Insert into database
@@ -211,7 +211,7 @@ if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="650px">';
 echo '<tr><td class="datos"><b>'.__('Incident').'</b></td><td colspan="3" class="datos">';
 
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_input_text ("titulo", $titulo,'', 70);
 } else {
 	print_input_text_extended ("titulo", $titulo, "", "", 70, "", false, "", "readonly"); 
@@ -224,14 +224,14 @@ echo '<td class="datos2"><b>'.__('Updated at').'</b><td class="datos2"><i>'.date
 
 echo '<tr><td class="datos"><b>'.__('Owner').'</b></td><td class="datos">';
 
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select (get_users_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135");
 } else {
 	print_select (get_users_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135", true);
 }
 echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
 } else {
 	print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
@@ -250,7 +250,7 @@ foreach ($return as $row) {
 }
 
 // Only owner could change source or user with Incident management privileges
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135');
 } else {
 	print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135', true);
@@ -258,7 +258,7 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 
 // Group combo
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select_groups($config["id_user"], "IR", true, "grupo_form", $id_grupo, '', '', '', false, false, false, 'w135');
 } else {
 	print_select_groups($config["id_user"], "IR", true, "grupo_form", $id_grupo, '', '', '', false, false, true, 'w135', true);
@@ -266,7 +266,7 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 
 echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="datos">';
 
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select (get_incidents_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
 } else {
 	print_select (get_incidents_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
@@ -281,7 +281,7 @@ if (empty ($id_creator)) {
 
 echo '</td></tr><tr><td class="datos2" colspan="4">';
 
-if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;"');
 } else {
 	print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;" disabled');
@@ -290,9 +290,9 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 echo '</td></tr></table><div style="width: 650px; text-align:right;">';
 
 // Only if user is the used who opened incident or (s)he is admin
-if (isset ($id_inc) AND ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
+if (isset ($id_inc) AND ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
 	print_submit_button (__('Update incident'), "accion", false, 'class="sub upd"');
-} elseif (give_acl ($config["id_user"], $id_grupo, "IW")) {
+} elseif (check_acl ($config["id_user"], $id_grupo, "IW")) {
 	print_submit_button (__('Create'), "accion", false, 'class="sub wand"');
 } else {
 	print_submit_button (__('Submit'), "accion", true, 'class="sub upd"');
@@ -335,7 +335,7 @@ if (isset ($id_inc)) {
 		
 		$data = array ();
 		$data[0] = '';
-		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($row["id_usuario"] == $config["id_user"])) {
+		if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($row["id_usuario"] == $config["id_user"])) {
 			$data[0] .= print_input_image ("delete_nota", "images/cross.png", $row["id_nota"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
 		}
 		$data[1] = $row["nota"];
@@ -376,7 +376,7 @@ if (isset ($id_inc)) {
 		$data[0] = print_image("images/disk.png", true, array("border" => '0', "align" => "top")) . '&nbsp;&nbsp;<a target="_new" href="attachment/pand'.$row["id_attachment"].'_'.$row["filename"].'"><b>'.$row["filename"].'</b></a>';
 		$data[1] = $row["description"];
 		$data[2] = format_for_graph ($row["size"])."B";
-		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+		if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 			$data[3] = print_input_image ("delete_file", "images/cross.png", $row["id_attachment"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
 		} else {
 			$data[3] = '';
@@ -398,7 +398,7 @@ if (isset ($id_inc)) {
 
 
 	// Upload control
-	if ((give_acl($config["id_user"], $id_grupo, "IW")==1)) {
+	if ((check_acl($config["id_user"], $id_grupo, "IW")==1)) {
 
 		echo '<div>';
 		echo '<a class="attachment" href="#">';

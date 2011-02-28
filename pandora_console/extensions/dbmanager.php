@@ -50,7 +50,7 @@ function dbmgr_extension_main () {
 	require_css_file ('dbmanager', 'extensions/dbmanager/');
 
     global $config;
-    if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+    if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	    pandora_audit("ACL Violation", "Trying to access Setup Management");
 	    require ("general/noaccess.php");
 	    return;

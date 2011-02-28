@@ -19,7 +19,7 @@ include_once('include/functions_reports.php');
 $linkReport = false;
 $searchReports = check_acl ($config["id_user"], 0, "IR");
 
-if (give_acl ($config['id_user'], 0, "IW")) {
+if (check_acl ($config['id_user'], 0, "IW")) {
 	$linkReport = true;
 }
 

@@ -50,7 +50,7 @@ if ($config['flash_charts']) {
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
@@ -103,7 +103,7 @@ if ($edit_graph) {
 echo ">";
 
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_groups = true;
 else	
 	$return_all_groups = false;

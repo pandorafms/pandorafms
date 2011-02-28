@@ -18,7 +18,7 @@ require_once ("include/functions_incidents.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IR")) {
+if (! check_acl ($config['id_user'], 0, "IR")) {
 	pandora_audit("ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
@@ -45,7 +45,7 @@ if ($action == "mass") {
 	$own_btn = get_parameter_post ("own_btn", -1);
 	
 	foreach ($id_inc as $incident) {
-		if (give_acl ($config['id_user'], get_incidents_group ($incident), "IM") || get_incidents_author ($incident) == $config["id_user"] || get_incidents_owner ($incident) == $config["id_user"]) {
+		if (check_acl ($config['id_user'], get_incidents_group ($incident), "IM") || get_incidents_author ($incident) == $config["id_user"] || get_incidents_owner ($incident) == $config["id_user"]) {
 			continue;
 		}
 		pandora_audit("ACL Forbidden","Mass-update or deletion of incident");
@@ -73,7 +73,7 @@ elseif ($action == "update") {
 	$owner = get_incidents_owner ($id_inc);
 	$grupo = get_incidents_group ($id_inc);
 	
-	if ($author != $config["id_user"] && $owner != $config["id_user"] && !give_acl ($config['id_user'], $grupo, "IM")) { // Only admins (manage incident) or owners/creators can modify incidents
+	if ($author != $config["id_user"] && $owner != $config["id_user"] && !check_acl ($config['id_user'], $grupo, "IM")) { // Only admins (manage incident) or owners/creators can modify incidents
 		pandora_audit("ACL Forbidden", "Update incident #".$id_inc, $author);
 		require ("general/noaccess.php");
 		exit;
@@ -103,7 +103,7 @@ elseif ($action == "update") {
 	//Create incident
 	$grupo = get_parameter_post ("grupo_form", 1);
 	
-	if (!give_acl ($config['id_user'], $grupo, "IW")) {
+	if (!check_acl ($config['id_user'], $grupo, "IW")) {
 		pandora_audit("ACL Forbidden", "User ".$config["id_user"]." tried to update incident");
 		require ("general/noaccess.php");
 		exit;
@@ -146,7 +146,7 @@ if ($estado >= 0) //-1 = All
 $grupo = (int) get_parameter ("grupo", 0);
 if ($grupo > 0) {
 	$filter .= sprintf (" AND id_grupo = %d", $grupo);
-	if (give_acl ($config['id_user'], $grupo, "IM") == 0) {
+	if (check_acl ($config['id_user'], $grupo, "IM") == 0) {
 		pandora_audit("ACL Forbidden","User tried to read incidents from group without access");
 		include ("general/noaccess.php");
 		exit;
@@ -300,7 +300,7 @@ if ($count < 1) {
 		$data[6] = $row["origen"];
 		$data[7] = print_username ($row["id_usuario"], true);
 		
-		if (give_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
+		if (check_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
 			$data[8] = print_checkbox ("id_inc[]", $row["id_incidencia"], false, true);
 		} else {
 			$data[8] = '';
@@ -313,11 +313,11 @@ if ($count < 1) {
 	print_table ($table);
 	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
 	echo '<b>'.__('Action').': </b>' ;
-	if (give_acl ($config["id_user"], 0, "IW")) {
+	if (check_acl ($config["id_user"], 0, "IW")) {
 		print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
 	}
 
-	if (give_acl ($config["id_user"], 0, "IM")) {
+	if (check_acl ($config["id_user"], 0, "IM")) {
 		print_submit_button (__('Become owner'), 'own_btn', false, 'class="sub upd"');
 	}
 	echo '</div>';
@@ -325,7 +325,7 @@ if ($count < 1) {
 	unset ($table);
 }
 	echo '<br><br>';
-if (give_acl ($config["id_user"], 0, "IW")) {
+if (check_acl ($config["id_user"], 0, "IW")) {
 	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
 	echo '<form method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
 	print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');

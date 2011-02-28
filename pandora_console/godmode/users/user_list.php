@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "UM")) {
+if (! check_acl ($config['id_user'], 0, "UM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");

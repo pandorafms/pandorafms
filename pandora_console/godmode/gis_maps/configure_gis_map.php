@@ -78,7 +78,7 @@ function updateArrowLayers() {
 </script>
 <?php
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
@@ -334,7 +334,7 @@ $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	</tr> " . addConectionMapsInForm($map_connection_list) . "
 </table>";
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
 else
 	$display_all_group = false;

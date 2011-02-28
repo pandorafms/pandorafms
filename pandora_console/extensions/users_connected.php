@@ -18,7 +18,7 @@ function users_extension_main() {
 
 function users_extension_main_god ($god = true) {
 	if (isset($config["id_user"])) {
-		if (!!give_acl ($config["id_user"], 0, "UM")) {
+		if (!check_acl ($config["id_user"], 0, "UM")) {
 			return;
 		}
 	}
@@ -71,7 +71,7 @@ function users_extension_main_god ($god = true) {
 add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"users/icon.png");
 
 if (isset($config["id_user"])) {
-    if (give_acl ($config["id_user"], 0, "UM")) {
+    if (check_acl ($config["id_user"], 0, "UM")) {
         add_operation_menu_option(__('Users connected'), 'usuarios',"users/icon.png");
     }
 }

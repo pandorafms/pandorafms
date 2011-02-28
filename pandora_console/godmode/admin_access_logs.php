@@ -24,7 +24,7 @@ check_login ();
 
 $enterprise_include = enterprise_include_once('godmode/admin_access_logs.php');
 
-if (! give_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	pandora_audit( "ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");

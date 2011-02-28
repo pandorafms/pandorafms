@@ -35,7 +35,7 @@ if ($agent === false) {
 	return;
 }
 
-if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
+if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	pandora_audit("ACL Violation", 
 			  "Trying to access Agent General Information");
 	require_once ("general/noaccess.php");

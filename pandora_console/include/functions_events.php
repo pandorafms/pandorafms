@@ -57,7 +57,7 @@ function get_event ($id, $fields = false) {
 	}
 	
 	$event = get_db_row ('tevento', 'id_evento', $id, $fields);
-	if (! give_acl ($config['id_user'], $event['id_grupo'], 'IR'))
+	if (! check_acl ($config['id_user'], $event['id_grupo'], 'IR'))
 		return false;
 	return $event;
 }
@@ -119,7 +119,7 @@ function delete_event ($id_event, $similar = true) {
 		$sql = sprintf ("DELETE FROM tevento WHERE id_evento = %d", $event);
 		$ret = process_sql ($sql);
 		
-		if (give_acl ($config["id_user"], get_event_group ($event), "IM") == 0) {
+		if (check_acl ($config["id_user"], get_event_group ($event), "IM") == 0) {
 			//Check ACL
 			pandora_audit("ACL Violation", "Attempted deleting event #".$event);
 		}
@@ -197,7 +197,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 		$sql = sprintf ("UPDATE tevento SET estado = %d, id_usuario = '%s', user_comment = '%s' WHERE id_evento = %d", $new_status, $config['id_user'], $comment, $event);
 		$ret = process_sql ($sql);
 		
-		if (give_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
+		if (check_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
 			//Check ACL
 			pandora_audit("ACL Violation", "Attempted updating event #".$event);
 		} elseif ($ret !== false) {
@@ -323,7 +323,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 		$table->align[6] = "right";
 		
 		foreach ($result as $event) {
-			if (! give_acl ($config["id_user"], $event["id_grupo"], "AR")) {
+			if (! check_acl ($config["id_user"], $event["id_grupo"], "AR")) {
 				continue;
 			}
 			$data = array ();

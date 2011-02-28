@@ -21,7 +21,7 @@ global $config;
 
 check_login();
 
-if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
 	require ('general/noaccess.php');
@@ -132,7 +132,7 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
-if ($ag_group > 0 && give_acl ($config["id_user"], $ag_group, "AR")) {
+if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
 	$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
 }
 else {

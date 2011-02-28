@@ -183,7 +183,7 @@ echo "<th>".__('Timestamp') . ' ' .
 echo "</th>";
 $texto=''; $last_modulegroup = 0;
 $color = 1;
-$write = give_acl ($config['id_user'], $agent['id_grupo'], "AW");
+$write = check_acl ($config['id_user'], $agent['id_grupo'], "AW");
 foreach ($modules as $module) {
 	// Calculate table line color
 	if ($color == 1){

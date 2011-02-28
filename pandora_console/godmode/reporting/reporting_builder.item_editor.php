@@ -16,7 +16,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");

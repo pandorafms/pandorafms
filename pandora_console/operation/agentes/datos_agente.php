@@ -28,7 +28,7 @@ $group = get_agentmodule_group ($module_id);
 $agentId = get_parameter("id_agente"); 
 
 
-if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
+if (! check_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	pandora_audit("ACL Violation",
 		"Trying to access Agent Data view");
 	require ("general/noaccess.php");

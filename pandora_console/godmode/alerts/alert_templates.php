@@ -99,7 +99,7 @@ if (is_ajax ()) {
 	return;
 }
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "LM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -139,7 +139,7 @@ if ($delete_template) {
 	if ($al_template !== false){
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
 		if ($al_template['id_group'] == 0){
-			if (! give_acl ($config['id_user'], 0, "PM")) {
+			if (! check_acl ($config['id_user'], 0, "PM")) {
 				pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
@@ -150,7 +150,7 @@ if ($delete_template) {
 		// If user tries to delete a template of others groups
 		}else{
 			$own_info = get_user_info ($config['id_user']);
-			if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
 			else
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));

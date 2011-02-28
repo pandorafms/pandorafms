@@ -29,7 +29,7 @@ if ($ag_group == -1 )
 if (($ag_group == -1) && ($group_id != 0))
 	$ag_group = $group_id;
 
-if (! give_acl ($config["id_user"], 0, "AW")) {
+if (! check_acl ($config["id_user"], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
@@ -46,7 +46,7 @@ if (!empty($agent_to_delete)) {
 	$id_agente = $agent_to_delete;
 	$agent_name = get_agent_name ($id_agente);
 	$id_grupo = dame_id_grupo ($id_agente);
-	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
+	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
 		delete_agent($id_agentes);
 		pandora_audit("Agent management", "Delete Agent " . $agent_name);
@@ -245,7 +245,7 @@ if ($agents !== false) {
 	$iterator = 0;
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
-		if (! give_acl ($config["id_user"], $id_grupo, "AW"))
+		if (! check_acl ($config["id_user"], $id_grupo, "AW"))
 			continue;
 		if ($color == 1){
 			$tdcolor = "datos";

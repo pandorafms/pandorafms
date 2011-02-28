@@ -882,7 +882,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	}
  
 	foreach ($result as $row) {
-		if (!give_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
+		if (!check_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
 			continue;
 		
 		if ($loop >= NUM_PIECES_PIE) {

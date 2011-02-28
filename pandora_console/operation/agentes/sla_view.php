@@ -21,7 +21,7 @@ require_once ("include/functions_reporting.php");
 
 check_login();
 
-if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access SLA View");
 	require ("general/noaccess.php");

@@ -21,7 +21,7 @@ require_once ("include/functions_servers.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Server view");
 	require ("general/noaccess.php");

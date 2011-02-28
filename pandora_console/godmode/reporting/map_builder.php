@@ -117,7 +117,7 @@ $table->align[4] = 'center';
 
 // Only display maps of "All" group if user is administrator or has "PM" privileges, otherwise show only maps of user group
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$maps = get_user_layouts ();	
 else
 	$maps = get_user_layouts ($config['id_user'], false, false, false);
@@ -126,7 +126,7 @@ if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
 } else {
 	foreach ($maps as $map) {			
-		if (give_acl ($config['id_user'], $map['id_group'], "IW")){
+		if (check_acl ($config['id_user'], $map['id_group'], "IW")) {
 			$data = array ();
 			$data[0] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&amp;action=edit&amp;id_visual_console='.$map['id'].'">'.$map['name'].'</a>';
 		

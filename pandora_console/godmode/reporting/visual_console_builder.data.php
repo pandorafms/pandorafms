@@ -17,7 +17,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -52,7 +52,7 @@ $groups = get_user_groups ($config['id_user']);
 
 $own_info = get_user_info($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
 else	
 	$display_all_group = false;

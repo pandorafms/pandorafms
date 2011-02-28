@@ -20,7 +20,7 @@ require_once ("include/functions_servers.php");
 
 check_login();
 
-if (! give_acl ($config["id_user"], 0, "PM")) {
+if (! check_acl ($config["id_user"], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Server Management");
 	require ("general/noaccess.php");

@@ -27,7 +27,7 @@ if ($searchMaps) {
 	if($maps !== false) {
 		$maps_id = array();
 		foreach($maps as $key => $map) {
-			if (!give_acl ($config["id_user"], $map["id_group"], "AR")) {
+			if (!check_acl ($config["id_user"], $map["id_group"], "AR")) {
 				unset($maps[$key]);
 			}else {
 				$maps_id[] = $map['id'];

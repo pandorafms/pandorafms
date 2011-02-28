@@ -42,7 +42,7 @@ $tab = get_parameter_get ("tab", null);
 
 $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&filter_standby='.$filter_standby.'&ag_group='.$id_group;
 	
-if ($flag_alert == 1 && give_acl($config['id_user'], $id_group, "AW")) {
+if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
 }
 
@@ -54,7 +54,7 @@ if ($idAgent != 0) {
 	
 	$id_group = get_agent_group ($idAgent);
 	
-	if (give_acl ($config["id_user"], $id_group, "AR") == 0) {
+	if (check_acl ($config["id_user"], $id_group, "AR") == 0) {
 		pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		exit;
@@ -68,7 +68,7 @@ if ($idAgent != 0) {
 	echo "<h3>" . __('Alerts') . "</h3>";
 } 
 else {
-	if (!give_acl ($config["id_user"], 0, "AR")) {
+	if (!check_acl ($config["id_user"], 0, "AR")) {
 		pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		return;

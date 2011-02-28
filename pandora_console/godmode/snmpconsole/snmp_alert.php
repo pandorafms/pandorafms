@@ -16,7 +16,7 @@
 
 // Load global vars
 
-if (! give_acl ($config['id_user'], 0, "LW")) {
+if (! check_acl ($config['id_user'], 0, "LW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access SNMP Alert Management");
 	require ("general/noaccess.php");

@@ -27,7 +27,7 @@ $id_graph = (int) get_parameter ('id');
 
 // Delete module SQL code
 if ($delete_graph) {
-	if (give_acl ($config['id_user'], 0, "AW")) {
+	if (check_acl ($config['id_user'], 0, "AW")) {
 		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id_graph";
 		if ($res=mysql_query($sql))
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";

@@ -18,7 +18,7 @@ require_once ("include/functions_reporting.php");
 
 check_login ();
 // ACL Check
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	pandora_audit("ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
@@ -30,7 +30,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 // Made it a subquery, much faster on both the database and server side
 if (isset ($_GET["update_netgroup"])) {
 	$group = get_parameter_get ("update_netgroup", 0);
-	if (give_acl ($config['id_user'], $group, "AW")) {
+	if (check_acl ($config['id_user'], $group, "AW")) {
 		$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$group);
 		process_sql ($sql);
 	} else {
@@ -118,7 +118,7 @@ foreach ($groups as $id_group => $group_name) {
 	echo "</a>";
 	echo "</td>";
 	echo "<td style='text-align: center; vertica-align: middle;'>";
-	if (give_acl ($config['id_user'], $id_group, "AW")) {
+	if (check_acl ($config['id_user'], $id_group, "AW")) {
 		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . print_image("images/target.png", true, array("border" => '0')) . '</a>';
 	}
 	echo "</td>";

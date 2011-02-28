@@ -20,7 +20,7 @@ require_once ("include/functions_alerts.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "LM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Alert actions");
 	require ("general/noaccess.php");
@@ -57,7 +57,7 @@ if ($copy_action) {
 		// If user tries to copy an action with group=ALL
 		if ($al_action['id_group'] == 0){
 			// then must have "PM" access privileges
-			if (! give_acl ($config['id_user'], 0, "PM")) {
+			if (! check_acl ($config['id_user'], 0, "PM")) {
 				pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
@@ -68,7 +68,7 @@ if ($copy_action) {
 		// If user tries to copy an action of others groups
 		}else{
 			$own_info = get_user_info ($config['id_user']);
-			if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
 			else
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
@@ -142,7 +142,7 @@ if ($update_action) {
 
 	if ($al_action !== false){
 		if ($al_action['id_group'] == 0){
-			if (! give_acl ($config['id_user'], 0, "PM")) {
+			if (! check_acl ($config['id_user'], 0, "PM")) {
 				pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
@@ -200,7 +200,7 @@ if ($delete_action) {
 		// If user tries to delete an action with group=ALL
 		if ($al_action['id_group'] == 0){
 			// then must have "PM" access privileges
-			if (! give_acl ($config['id_user'], 0, "PM")) {
+			if (! check_acl ($config['id_user'], 0, "PM")) {
 				pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
@@ -211,7 +211,7 @@ if ($delete_action) {
 		// If user tries to delete an action of others groups
 		}else{
 			$own_info = get_user_info ($config['id_user']);
-			if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
 			else
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));

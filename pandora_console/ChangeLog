@@ -1,3 +1,20 @@
+2011-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php: new parameter in function print_image in 	
+	order to return only src field of image.	 
+	* include/ajax/visual_console_builder.ajax.php
+	include/functions_gis.php
+	godmode/groups/configure_group.php
+	godmode/alerts/configure_alert_compound.php
+	godmode/setup/os.builder.php
+	godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.editor.php
+	godmode/reporting/reporting_builder.item_editor.php: Changed the way of create 
+	images from "<img=.." html tag to print_image function. 
+	* include/ajax/skins.ajax.php: Added to repository. New php callback for 
+	skins support inside javascript code.
+	* ajax.php: Load of relative_path variable in ajax user session.
+
 2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_db.php: cleaned source code, and erased the deprecated
 	function "dame_id_grupo".

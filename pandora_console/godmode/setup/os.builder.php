@@ -74,6 +74,20 @@ function get_list_os_icons_dir() {
 <script type="text/javascript">
 
 function show_icon_OS() {
-	$("#icon_image").html('<img src="images/os_icons/' + $("#icon").val() + '" />');
+
+	var params = [];
+	params.push("get_image_path=1");
+	params.push('img_src=images/os_icons/' + $("#icon").val());
+	params.push("page=include/ajax/skins.ajax");
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action="ajax.php",
+		async: false,
+		timeout: 10000,
+		success: function (data) {
+			$("#icon_image").html(data);		
+		}
+	});
 }
 </script>

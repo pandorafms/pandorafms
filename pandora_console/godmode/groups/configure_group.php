@@ -127,7 +127,21 @@ function icon_changed () {
 	$('#icon_preview').fadeOut ('normal', function () {
 		$('#icon_preview').empty ();
 		if (data != "") {
-			$('#icon_preview').append ($('<img />').attr ('src', 'images/groups_small/'+data));
+			var params = [];
+			params.push("get_image_path=1");
+			params.push("img_src=images/groups_small/" + data);
+			params.push("page=include/ajax/skins.ajax");
+			params.push("only_src=1");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (result) {
+					$('#icon_preview').append ($('<img />').attr ('src', result));
+				}
+			});
 		}
 		$('#icon_preview').fadeIn ();
 	});
@@ -149,7 +163,21 @@ function parent_changed () {
 			$('#parent_preview').fadeOut ('normal', function () {
 				$('#parent_preview').empty ();
 				if (data_ != null) {
-					$('#parent_preview').append ($('<img />').attr ('src', 'images/groups_small/'+data['icon']+'.png'));
+					var params = [];
+					params.push("get_image_path=1");
+					params.push("img_src=images/groups_small/" + data['icon'] + ".png");
+					params.push("page=include/ajax/skins.ajax");
+					params.push("only_src=1");
+					jQuery.ajax ({
+						data: params.join ("&"),
+						type: 'POST',
+						url: action="ajax.php",
+						async: false,
+						timeout: 10000,
+						success: function (result) {
+							$('#parent_preview').append ($('<img />').attr ('src', result));
+						}
+					});
 				}
 				$('#parent_preview').fadeIn ();
 			});

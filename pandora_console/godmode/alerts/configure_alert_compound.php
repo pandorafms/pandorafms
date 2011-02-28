@@ -666,7 +666,21 @@ function add_alert () {
 		.clone ()
 		.append (td);
 	
-	$("img", tr).attr ("src", "images/delete.png");
+	var params = [];
+	params.push("get_image_path=1");
+	params.push("img_src=images/delete.png");
+	params.push("page=include/ajax/skins.ajax");
+	params.push("only_src=1");
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action="ajax.php",
+		async: false,
+		timeout: 10000,
+			success: function (data) {
+				$("img", tr).attr ("src", data);
+			}
+		});	
 	$("a", tr).attr("id", "remove-"+id)
 		.click (remove_alert);
 	
@@ -740,8 +754,22 @@ $(document).ready (function () {
 				alerts = Array ();
 				jQuery.each (data, function () {
 					tr = $('<tr></tr>');
-					img = $("<img></img>").attr ("src", "images/add.png")
-						.addClass ("clickable");
+					
+					var params = [];
+					params.push("get_image_path=1");
+					params.push("img_src=images/add.png");
+					params.push("page=include/ajax/skins.ajax");
+					params.push("only_src=1");
+					jQuery.ajax ({
+						data: params.join ("&"),
+						type: 'POST',
+						url: action="ajax.php",
+						async: false,
+						timeout: 10000,
+							success: function (data) {
+								img = $("<img></img>").attr ("src", data).addClass ("clickable");
+							}
+						});
 					a = $("<a></a>").append (img)
 						.attr ("id", "add-"+this["id"])
 						.attr ("href", "#condition")

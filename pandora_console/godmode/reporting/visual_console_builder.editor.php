@@ -32,7 +32,11 @@ if (is_ajax ()) {
 	
 	if ($get_original_size_background) {
 		$background = get_parameter('background', '');
-		$size = getimagesize($background);
+		$replace = strlen($config["homeurl"] . '/');
+		if (substr($background, 0, $replace) == $config["homeurl"] . '/')
+			$size = getimagesize(substr($background, $replace));
+		else
+			$size = getimagesize($background);
 		echo json_encode($size);
 		return;
 	}

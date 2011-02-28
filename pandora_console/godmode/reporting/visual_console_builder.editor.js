@@ -126,7 +126,23 @@ function updateAction() {
 			$("#background").css('height', values['height']);
 			
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
-			$("#background_img").attr('src', 'images/console/background/' + values['background']);
+
+			var params = [];
+			params.push("get_image_path=1");
+			params.push("img_src=images/console/background/" + values['background']);
+			params.push("page=include/ajax/skins.ajax");
+			params.push("only_src=1");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					$("#background_img").attr('src', data);
+				}
+			});	
+		
 			var idElement = 0;
 			break;
 		case 'static_graph':
@@ -158,7 +174,22 @@ function updateAction() {
 					// Default is Grey (Other)
 			}
 
-			$("#image_" + idItem).attr('src', 'images/console/icons/' + values['image'] + suffix);
+			var params = [];
+			params.push("get_image_path=1");
+			params.push("img_src=images/console/icons/" + values['image'] + suffix);
+			params.push("page=include/ajax/skins.ajax");
+			params.push("only_src=1");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					$("#image_" + idItem).attr('src', data);
+				}
+			});	
+		
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -189,7 +220,23 @@ function updateAction() {
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
-			$("#image_" + idItem).attr('src', getImageElement(idItem));
+
+			var params = [];
+			params.push("get_image_path=1");
+			params.push("img_src=" + getImageElement(idItem));
+			params.push("page=include/ajax/skins.ajax");
+			params.push("only_src=1");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					$("#image_" + idItem).attr('src', data);
+				}
+			});	
+
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -672,7 +719,7 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-		
+
 			var element_status= null;
 			var parameter = Array();
 			parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -689,9 +736,27 @@ function createItem(type, values, id_data) {
 					element_status = data;
 				}
 			});
+	
+			var img_src= null;
+			var parameter = Array();
+			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
+			parameter.push ({name: "get_image_path", value: "1"});
+			parameter.push ({name: "img_src", value: getImageElement(id_data)});
+			parameter.push ({name: "only_src", value: "1"});
 
+			jQuery.ajax ({
+				type: 'POST',
+				url: action="ajax.php",
+				data: parameter,
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					img_src = data;
+				}
+			});
+			
 			var item = $('<div id="' + id_data + '" class="item static_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' +
+				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
 			);
@@ -741,8 +806,27 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
+
+			var img_src= null;
+			var parameter = Array();
+			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
+			parameter.push ({name: "get_image_path", value: "1"});
+			parameter.push ({name: "img_src", value: getImageElement(id_data)});
+			parameter.push ({name: "only_src", value: "1"});
+
+			jQuery.ajax ({
+				type: 'POST',
+				url: action="ajax.php",
+				data: parameter,
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					img_src = data;
+				}
+			});
+
 			var item = $('<div id="' + id_data + '" class="item icon" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' + 
+				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
 			break;
@@ -1225,10 +1309,26 @@ function showPreviewStaticGraph(staticGraph) {
 	
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
-		$("#preview").append("<img src='" + imgBase + "_bad.png' />");
-		$("#preview").append("<img src='" + imgBase + "_ok.png' />");
-		$("#preview").append("<img src='" + imgBase + "_warning.png' />");
-		$("#preview").append("<img src='" + imgBase + ".png' />");
+
+		var img_src= null;
+		var parameter = Array();
+		parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+		parameter.push ({name: "get_image_path_status", value: "1"});
+		parameter.push ({name: "img_src", value: imgBase });
+
+		jQuery.ajax ({
+			type: 'POST',
+			url: action="ajax.php",
+			data: parameter,
+			async: false,
+			dataType: 'json',
+			timeout: 10000,
+			success: function (data) {
+				jQuery.each(data, function(i, line) {
+					$("#preview").append(line);
+				});
+			}
+		});
 	}
 }
 
@@ -1238,6 +1338,20 @@ function showPreviewIcon(icon) {
 	
 	if (icon != '') {
 		imgBase = "images/console/icons/" + icon;
-		$("#preview").append("<img src='" + imgBase + ".png' />");
+
+		var params = [];
+		params.push("get_image_path=1");
+		params.push("img_src=" + imgBase + ".png");
+		params.push("page=include/ajax/skins.ajax");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				$("#preview").append(data);
+			}
+		});	
 	}
 }

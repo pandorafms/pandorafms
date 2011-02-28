@@ -71,7 +71,7 @@ function check_login () {
 	}
 	
 	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
-		if (is_user($_SESSION["id_usuario"])) {
+		if (is_user ($_SESSION["id_usuario"])) {
 			return 0;
 		}
 	}
@@ -314,7 +314,8 @@ function safe_acl_group ($id_user, $id_groups, $access) {
 		if ($id_groups == 0)
 			return array_keys (get_user_groups ($id_user, $access));
 		return array ($id_groups);
-	} elseif (!is_array ($id_groups)) {
+	}
+	elseif (!is_array ($id_groups)) {
 		return array ();
 	}
 	
@@ -340,7 +341,7 @@ function safe_acl_group ($id_user, $id_groups, $access) {
  * 
  * @return int Return the id of row in tsesion or false in case of fail.
  */
-function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false, $info = '') {
+function pandora_audit($accion, $descripcion, $user_id = false, $ip = false, $info = '') {
 	global $config;
 	
 	if ($ip !== false) {
@@ -894,15 +895,15 @@ function get_agent_name ($id_agent, $case = "none") {
 	// Version 3.0 has enforced case sensitive agent names
 	// so we always should show real case names.
 	switch ($case) {
-	case "upper":
-		return mb_strtoupper ($agent,"UTF-8");
-		break;
-	case "lower":
-		return mb_strtolower ($agent,"UTF-8");
-		break;
-	case "none":
-	default:
-		return ($agent);
+		case "upper":
+			return mb_strtoupper ($agent,"UTF-8");
+			break;
+		case "lower":
+			return mb_strtolower ($agent,"UTF-8");
+			break;
+		case "none":
+		default:
+			return ($agent);
 	}
 }
 
@@ -1343,7 +1344,7 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 	$agents = array ();
 	
 	foreach ($alerts as $alert) {
-		if (isset($alert['id'])){
+		if (isset($alert['id'])) {
 			$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
 			if (! $fires) {
 				continue;
@@ -1426,7 +1427,8 @@ function get_moduletypes ($type = "all", $rows = "nombre") {
 	$row_cnt = count ($rows);
 	if ($type == "remote") {
 		return array_merge (range (6,18), (array) 100);
-	} elseif ($type == "agent") {
+	}
+	elseif ($type == "agent") {
 		return array_merge (range (1,4), range (19,24));
 	}
 	
@@ -1439,19 +1441,12 @@ function get_moduletypes ($type = "all", $rows = "nombre") {
 	foreach ($result as $type) {
 		if ($row_cnt > 1) {
 			$return[$type["id_tipo"]] = $type;
-		} else {
+		}
+		else {
 			$return[$type["id_tipo"]] = $type[reset ($rows)];
 		}
 	}
 	return $return;
-}
-
-
-/** 
- * @deprecated Use get_agent_group ($id) now (fully compatible)
- */
-function dame_id_grupo ($id_agent) {
-	return get_agent_group ($id_agent);
 }
 
 

@@ -69,7 +69,7 @@ function pandora_update_manager_main () {
 	global $config;
 	global $db;
 	
-	if (! give_acl ($config['id_user'], 0, "PM")) {
+	if (! check_acl($config['id_user'], 0, "PM")) {
 		require ("general/noaccess.php");
 		return;
 	}
@@ -124,7 +124,7 @@ function pandora_update_manager_godmode () {
 }
 
 if(isset($config['id_user'])) {
-	if (give_acl ($config['id_user'], 0, "PM")) {
+	if (check_acl($config['id_user'], 0, "PM")) {
 		add_operation_menu_option (__('Update manager'));
 		add_godmode_menu_option (__('Update manager settings'), 'PM','gsetup');
 		add_extension_main_function ('pandora_update_manager_main');

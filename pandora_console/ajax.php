@@ -37,6 +37,9 @@ $page = (string) get_parameter ('page');
 $page = safe_url_extraclean ($page);
 $page .= '.php';
 $config["id_user"] = $_SESSION["id_usuario"];
+$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK)
+	$config["relative_path"] = enterprise_hook('set_image_skin_path',array($config['id_user']));
 session_write_close ();
 if (file_exists ($page)) {
 	require_once ($page);

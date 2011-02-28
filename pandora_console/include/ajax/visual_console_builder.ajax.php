@@ -53,6 +53,7 @@ $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
 
 $get_element_status = get_parameter('get_element_status', 0);
+$get_image_path_status = get_parameter('get_image_path_status', 0);
 
 switch ($action) {
 	case 'get_layout_data':
@@ -295,6 +296,21 @@ if ($get_element_status){
 
 	echo $res;	
 	return;
+}
+
+if ($get_image_path_status){
+	$img_src = get_parameter("img_src");
+	$only_src = get_parameter("only_src", 0);
+
+	$result = array();
+	
+	$result['bad'] = print_image($img_src . '_bad.png', true, '', $only_src);
+	$result['ok'] = print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['warning'] = print_image($img_src . '_warning.png', true, '', $only_src);
+	$result['ok'] = print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['normal'] = print_image($img_src . '.png', true, '', $only_src);
+
+	echo json_encode($result);
 }
 
 ?>

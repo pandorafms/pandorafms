@@ -165,10 +165,27 @@ function makeLayer($name, $visible = true, $dot = null, $idLayer = null) {
 						var long_lat = featureData.long_lat;
 						var popup;
 						
+						var img_src= null;
+						var parameter = Array();
+						parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
+						parameter.push ({name: "get_image_path", value: "1"});
+						parameter.push ({name: "img_src", value: "images/spinner.gif"});
+
+						jQuery.ajax ({
+							type: 'POST',
+							url: action="ajax.php",
+							data: parameter,
+							async: false,
+							timeout: 10000,
+							success: function (data) {
+								img_src = data;
+							}
+						});						
+
 						popup = new OpenLayers.Popup.FramedCloud('cloud00',
 								long_lat,
 								null,
-								'<div class="cloudContent' + featureData.id + '" style="text-align: center;"><img src="images/spinner.gif" /></div>',
+								'<div class="cloudContent' + featureData.id + '" style="text-align: center;">' + img_src + '</div>',
 								null,
 								true,
 								function () { popup.destroy(); });

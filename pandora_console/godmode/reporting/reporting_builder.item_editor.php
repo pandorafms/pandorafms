@@ -479,7 +479,20 @@ function chooseSQLquery() {
 		$("#sql_example").html('');
 	}
 	else {
-		$("#sql_example").html('<img src="images/spinner.gif" />');
+		var params1 = [];
+		params1.push("get_image_path=1");
+		params1.push("img_src=" + "images/spinner.gif");
+		params1.push("page=include/ajax/skins.ajax");
+		jQuery.ajax ({
+			data: params1.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				$("#sql_example").html(data);
+			}
+		});
 		
 		var params = [];
 		params.push("get_custom_sql=1");

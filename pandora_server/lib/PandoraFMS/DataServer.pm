@@ -476,7 +476,7 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'max'} = 0 unless defined ($module_conf->{'max'});
 		$module_conf->{'min'} = 0 unless defined ($module_conf->{'min'});
 		$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
-		$module_conf->{'post_process'} = 0 unless defined ($module_conf->{'descripcion'});
+		$module_conf->{'post_process'} = 0 unless defined ($module_conf->{'post_process'});
 		$module_conf->{'module_interval'} = $interval unless defined ($module_conf->{'module_interval'}); # 1 * $interval
 
 		# Create the module

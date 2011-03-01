@@ -2301,10 +2301,16 @@ function get_db_all_rows_filter($table, $filter = array(), $fields = false, $whe
  * @return mixed The row or false in error.
  */
 function get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
-	if ($new == true)
-	$result = mysql_query($sql);
+	global $config;
 
-	return mysql_fetch_assoc($result);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_all_row_by_steps_sql($new, $result, $sql);
+			break;
+		case "postgresql":
+			return postgresql_get_db_all_row_by_steps_sql($new, $result, $sql);
+			break;
+	}
 }
 
 /**
@@ -3323,17 +3329,33 @@ function process_sql_delete($table, $where, $where_join = 'AND') {
 /**
  * Starts a database transaction.
  */
-function process_sql_begin () {
-	mysql_query ('SET AUTOCOMMIT = 0');
-	mysql_query ('START TRANSACTION');
+function process_sql_begin() {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_process_sql_begin();
+			break;
+		case "postgresql":
+			return postgresql_process_sql_begin();
+			break;
+	}
 }
 
 /**
  * Commits a database transaction.
  */
-function process_sql_commit () {
-	mysql_query ('COMMIT');
-	mysql_query ('SET AUTOCOMMIT = 0');
+function process_sql_commit() {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_process_sql_commit();
+			break;
+		case "postgresql":
+			return postgresql_process_sql_commit();
+			break;
+	}
 }
 
 /**

@@ -2093,15 +2093,17 @@ function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
  * @return the first value of the first row of a table result from query.
  *
  */
-function get_db_value_sql ($sql) {
-	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql ($sql);
+function get_db_value_sql($sql) {
+	global $config;
 
-	if($result === false)
-	return false;
-
-	foreach ($result[0] as $f)
-	return $f;
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_value_sql($sql);
+			break;
+		case "postgresql":
+			return postgresql_get_db_value_sql($sql);
+			break;
+	}
 }
 
 /**
@@ -2111,14 +2113,17 @@ function get_db_value_sql ($sql) {
  *
  * @return mixed The first row of the result or false
  */
-function get_db_row_sql ($sql, $search_history_db = false) {
-	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql ($sql, $search_history_db);
+function get_db_row_sql($sql, $search_history_db = false) {
+	global $config;
 
-	if($result === false)
-	return false;
-
-	return $result[0];
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_row_sql($sql, $search_history_db);
+			break;
+		case "postgresql":
+			return postgresql_get_db_row_sql($sql, $search_history_db);
+			break;
+	}
 }
 
 /**
@@ -2171,27 +2176,17 @@ function get_db_row ($table, $field_search, $condition, $fields = false) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
-	if (empty ($fields)) {
-		$fields = '*';
-	}
-	else {
-		if (is_array ($fields))
-		$fields = implode (',', $fields);
-		else if (! is_string ($fields))
-		return false;
-	}
+function get_db_row_filter($table, $filter, $fields = false, $where_join = 'AND') {
+	global $config;
 
-	if (is_array ($filter))
-	$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
-	else if (is_string ($filter))
-	$filter = 'WHERE '.$filter;
-	else
-	$filter = '';
-	$sql = sprintf ('SELECT %s FROM %s %s',
-	$fields, $table, $filter);
-
-	return get_db_row_sql ($sql);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_row_filter($table, $filter, $fields, $where_join);
+			break;
+		case "postgresql":
+			return postgresql_get_db_row_filter($table, $filter, $fields, $where_join);
+			break;
+	}
 }
 
 /**

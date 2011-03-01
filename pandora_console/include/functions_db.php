@@ -437,24 +437,6 @@ function get_profiles () {
 	return $return;
 }
 
-/**
- * Selects profiles filtered 
- *
- * @return array List of profiles filtered
- */
-function get_profiles_filter ($filter) {
-	$sql = sprintf('SELECT * FROM tperfil WHERE %s', $filter);
-	$profiles = get_db_all_rows_sql ($sql);
-	$return = array ();
-	if ($profiles === false) {
-		return $return;
-	}
-	foreach ($profiles as $profile) {
-		$return[$profile["id_perfil"]] = $profile["name"];
-	}
-	return $return;
-}
-
 
 /**
  * Create Profile for User
@@ -3361,9 +3343,17 @@ function process_sql_commit() {
 /**
  * Rollbacks a database transaction.
  */
-function process_sql_rollback () {
-	mysql_query ('ROLLBACK');
-	mysql_query ('SET AUTOCOMMIT = 0');
+function process_sql_rollback() {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_process_sql_rollback();
+			break;
+		case "postgresql":
+			return postgresql_process_sql_rollback();
+			break;
+	}
 }
 
 /**

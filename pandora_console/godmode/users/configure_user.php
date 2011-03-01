@@ -63,6 +63,9 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['is_admin'] = 0;
 	$user_info['language'] = $config["language"];
 	$user_info['id_skin'] = '';
+	//This attributes are inherited from global configuration
+	$user_info['block_size'] = $config["block_size"];
+	$user_info['flash_chart'] = $config["flash_charts"];
 }
 
 if ($create_user) {
@@ -84,6 +87,8 @@ if ($create_user) {
 	$values['is_admin'] = get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', $config["language"]);
 	$values['id_skin'] = get_parameter ('skin', 0);
+	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
+	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 	
 	if ($id == '') {
 		print_error_message (__('User ID cannot be empty'));
@@ -111,7 +116,8 @@ if ($create_user) {
 			' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 			' Is_admin: ' . $values['is_admin'] .
-			' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'];
+			' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'] . 
+			' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
 		
 		$result = create_user ($id, $password_new, $values);
 
@@ -148,6 +154,8 @@ if ($update_user) {
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
 	$values['language'] = (string) get_parameter ('language', $config["language"]);
 	$values['id_skin'] = get_parameter ('skin', 0);
+	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
+	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 
 	$res1 = update_user ($id, $values);
 	
@@ -170,7 +178,8 @@ if ($update_user) {
 				' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 				' Is_admin: ' . $values['is_admin'] .
-				' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'];
+				' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'] . 
+				' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
 			
 			pandora_audit("User management", "Updated user ".safe_input($id),
 				false, false, $info);
@@ -286,11 +295,17 @@ $table->data[9][1] = print_textarea ("comments", 2, 65, $user_info['comments'],
 	($view_mode ? 'readonly="readonly"' : ''), true);
 
 // If we want to create a new user, skins displayed are the skins of the creator's group. If we want to update, skins displayed are the skins of the modified user.  
-if ($new_user){
-	$usr_groups = (get_user_groups($config['id_user']));
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+	$display_all_group = true;
+else
+	$display_all_group = false;
+
+if ($new_user){		
+	$usr_groups = (get_user_groups($config['id_user'], 'AR', $display_all_group));
 	$id_usr = $config['id_user'];
 }else{
-	$usr_groups = (get_user_groups($id));
+	$usr_groups = (get_user_groups($id, 'AR', $display_all_group));
 	$id_usr = $id;
 }
 
@@ -303,6 +318,13 @@ if (count($usr_groups) > 1){
 		$table->data[10][1] = print_select_skins($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 	}
 }
+
+$table->data[11][0] = __('Flash charts');
+$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $user_info["flash_chart"], true).'&nbsp;&nbsp;';
+$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $user_info["flash_chart"], true);
+
+$table->data[12][0] = __('Block size for pagination');
+$table->data[12][1] = print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 
 echo '<form method="post">';
 

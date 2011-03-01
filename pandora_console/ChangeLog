@@ -1,3 +1,10 @@
+2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* operation/events/events_list.php: fixed the html entities in the extend
+	list.
+
 2011-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/ajax/visual_console_builder.ajax.php

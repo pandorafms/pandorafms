@@ -2073,24 +2073,16 @@ function get_db_value($field, $table, $field_search = 1, $condition = 1, $search
  * @return mixed Value of first column of the first row. False if there were no row.
  */
 function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
-	if (! is_array ($filter) || empty ($filter))
-	return false;
+	global $config;
 
-	/* Avoid limit and offset if given */
-	unset ($filter['limit']);
-	unset ($filter['offset']);
-
-	$sql = sprintf ("SELECT %s FROM %s WHERE %s LIMIT 1",
-	$field, $table,
-	format_array_to_where_clause_sql ($filter, $where_join));
-	$result = get_db_all_rows_sql ($sql);
-
-	if ($result === false)
-	return false;
-
-	$fieldClean = str_replace('`', '', $field);
-
-	return $result[0][$fieldClean];
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_value_filter($field, $table, $filter, $where_join);
+			break;
+		case "postgresql":
+			return postgresql_get_db_value_filter($field, $table, $filter, $where_join);
+			break;
+	}
 }
 
 /**
@@ -2620,112 +2612,16 @@ function format_array_to_update_sql ($values) {
  * clause of an SQL sentence.
  */
 function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
+	global $config;
 
-	$fields = array ();
-
-	if (! is_array ($values)) {
-		return '';
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_format_array_to_where_clause_sql($values, $join, $prefix);
+			break;
+		case "postgresql":
+			return postgresql_format_array_to_where_clause_sql($values, $join, $prefix);
+			break;
 	}
-
-	$query = '';
-	$limit = '';
-	$offset = '';
-	$order = '';
-	$group = '';
-	if (isset ($values['limit'])) {
-		$limit = sprintf (' LIMIT %d', $values['limit']);
-		unset ($values['limit']);
-	}
-
-	if (isset ($values['offset'])) {
-		$offset = sprintf (' OFFSET %d', $values['offset']);
-		unset ($values['offset']);
-	}
-
-	if (isset ($values['order'])) {
-		if (is_array($values['order'])) {
-			if (!isset($values['order']['order'])) {
-				$orderTexts = array();
-				foreach ($values['order'] as $orderItem) {
-					$orderTexts[] = $orderItem['field'] . ' ' . $orderItem['order'];
-				}
-				$order = ' ORDER BY ' . implode(', ', $orderTexts);
-			}
-			else {
-				$order = sprintf (' ORDER BY %s %s', $values['order']['field'], $values['order']['order']);
-			}
-		}
-		else {
-			$order = sprintf (' ORDER BY %s', $values['order']);
-		}
-		unset ($values['order']);
-	}
-
-	if (isset ($values['group'])) {
-		$group = sprintf (' GROUP BY %s', $values['group']);
-		unset ($values['group']);
-	}
-
-	$i = 1;
-	$max = count ($values);
-	foreach ($values as $field => $value) {
-		if (is_numeric ($field)) {
-			/* User provide the exact operation to do */
-			$query .= $value;
-				
-			if ($i < $max) {
-				$query .= ' '.$join.' ';
-			}
-			$i++;
-			continue;
-		}
-
-		if ($field[0] != "`") {
-			$field = "`".$field."`";
-		}
-
-		if (is_null ($value)) {
-			$query .= sprintf ("%s IS NULL", $field);
-		}
-		elseif (is_int ($value) || is_bool ($value)) {
-			$query .= sprintf ("%s = %d", $field, $value);
-		}
-		else if (is_float ($value) || is_double ($value)) {
-			$query .= sprintf ("%s = %f", $field, $value);
-		}
-		elseif (is_array ($value)) {
-			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
-		}
-		else {
-			if ($value[0] == ">"){
-				$value = substr($value,1,strlen($value)-1);
-				$query .= sprintf ("%s > '%s'", $field, $value);
-			}
-			else if ($value[0] == "<"){
-				if ($value[1] == ">"){
-					$value = substr($value,2,strlen($value)-2);
-					$query .= sprintf ("%s <> '%s'", $field, $value);
-				}
-				else {
-					$value = substr($value,1,strlen($value)-1);
-					$query .= sprintf ("%s < '%s'", $field, $value);
-				}
-			}
-			else if ($value[0] == '%') {
-				$query .= sprintf ("%s LIKE '%s'", $field, $value);
-			}
-			else {
-				$query .= sprintf ("%s = '%s'", $field, $value);
-			}
-		}
-
-		if ($i < $max) {
-			$query .= ' '.$join.' ';
-		}
-		$i++;
-	}
-
-	return (! empty ($query) ? $prefix: '').$query.$group.$order.$limit.$offset;
 }
 
 /**

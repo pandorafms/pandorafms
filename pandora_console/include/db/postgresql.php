@@ -346,4 +346,225 @@ function postgresql_escape_string_sql($string) {
 
 	return $str;
 }
+
+/**
+ * Get the first value of the first row of a table in the database from an
+ * array with filter conditions.
+ *
+ * Example:
+ <code>
+ get_db_value_filter ('name', 'talert_templates',
+ array ('value' => 2, 'type' => 'equal'));
+ // Equivalent to:
+ // SELECT name FROM talert_templates WHERE value = 2 AND type = 'equal' LIMIT 1
+
+ get_db_value_filter ('description', 'talert_templates',
+ array ('name' => 'My alert', 'type' => 'regex'), 'OR');
+ // Equivalent to:
+ // SELECT description FROM talert_templates WHERE name = 'My alert' OR type = 'equal' LIMIT 1
+ </code>
+ *
+ * @param string Field name to get
+ * @param string Table to retrieve the data
+ * @param array Conditions to filter the element. See format_array_to_where_clause_sql()
+ * for the format
+ * @param string Join operator for the elements in the filter.
+ *
+ * @return mixed Value of first column of the first row. False if there were no row.
+ */
+function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
+	if (! is_array ($filter) || empty ($filter))
+		return false;
+
+	/* Avoid limit and offset if given */
+	unset ($filter['limit']);
+	unset ($filter['offset']);
+
+	$sql = sprintf ("SELECT \"%s\" FROM \"%s\" WHERE %s LIMIT 1",
+		$field, $table,
+		format_array_to_where_clause_sql ($filter, $where_join));
+	
+	$result = get_db_all_rows_sql ($sql); debugPrint($sql);
+
+	if ($result === false)
+		return false;
+	
+	debugPrint($field);
+
+	$fieldClean = str_replace('`', '', $field);
+
+	return $result[0][$fieldClean];
+}
+
+/**
+ * Formats an array of values into a SQL where clause string.
+ *
+ * This function is useful to generate a WHERE clause for a SQL sentence from
+ * a list of values. Example code:
+ <code>
+ $values = array ();
+ $values['name'] = "Name";
+ $values['description'] = "Long description";
+ $values['limit'] = $config['block_size']; // Assume it's 20
+ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ echo $sql;
+ </code>
+ * Will return:
+ * <code>
+ * SELECT * FROM table WHERE `name` = "Name" AND `description` = "Long description" LIMIT 20
+ * </code>
+ *
+ * @param array Values to be formatted in an array indexed by the field name.
+ * There are special parameters such as 'limit' and 'offset' that will be used
+ * as ORDER, LIMIT and OFFSET clauses respectively. Since LIMIT and OFFSET are
+ * numerics, ORDER can receive a field name or a SQL function and a the ASC or
+ * DESC clause. Examples:
+ <code>
+ $values = array ();
+ $values['value'] = 10;
+ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ // SELECT * FROM table WHERE VALUE = 10
+
+ $values = array ();
+ $values['value'] = 10;
+ $values['order'] = 'name DESC';
+ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ // SELECT * FROM table WHERE VALUE = 10 ORDER BY name DESC
+
+ </code>
+ * @param string Join operator. AND by default.
+ * @param string A prefix to be added to the string. It's useful when limit and
+ * offset could be given to avoid this cases:
+ <code>
+ $values = array ();
+ $values['limit'] = 10;
+ $values['offset'] = 20;
+ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ // Wrong SQL: SELECT * FROM table WHERE LIMIT 10 OFFSET 20
+
+ $values = array ();
+ $values['limit'] = 10;
+ $values['offset'] = 20;
+ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+ // Good SQL: SELECT * FROM table LIMIT 10 OFFSET 20
+
+ $values = array ();
+ $values['value'] = 5;
+ $values['limit'] = 10;
+ $values['offset'] = 20;
+ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+ // Good SQL: SELECT * FROM table WHERE value = 5 LIMIT 10 OFFSET 20
+ </code>
+ *
+ * @return string Values joined into an SQL string that can fits into the WHERE
+ * clause of an SQL sentence.
+ */
+function postgresql_format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
+
+	$fields = array ();
+
+	if (! is_array ($values)) {
+		return '';
+	}
+
+	$query = '';
+	$limit = '';
+	$offset = '';
+	$order = '';
+	$group = '';
+	if (isset ($values['limit'])) {
+		$limit = sprintf (' LIMIT %d', $values['limit']);
+		unset ($values['limit']);
+	}
+
+	if (isset ($values['offset'])) {
+		$offset = sprintf (' OFFSET %d', $values['offset']);
+		unset ($values['offset']);
+	}
+
+	if (isset ($values['order'])) {
+		if (is_array($values['order'])) {
+			if (!isset($values['order']['order'])) {
+				$orderTexts = array();
+				foreach ($values['order'] as $orderItem) {
+					$orderTexts[] = $orderItem['field'] . ' ' . $orderItem['order'];
+				}
+				$order = ' ORDER BY ' . implode(', ', $orderTexts);
+			}
+			else {
+				$order = sprintf (' ORDER BY %s %s', $values['order']['field'], $values['order']['order']);
+			}
+		}
+		else {
+			$order = sprintf (' ORDER BY %s', $values['order']);
+		}
+		unset ($values['order']);
+	}
+
+	if (isset ($values['group'])) {
+		$group = sprintf (' GROUP BY %s', $values['group']);
+		unset ($values['group']);
+	}
+
+	$i = 1;
+	$max = count ($values);
+	foreach ($values as $field => $value) {
+		if (is_numeric ($field)) {
+			/* User provide the exact operation to do */
+			$query .= $value;
+				
+			if ($i < $max) {
+				$query .= ' '.$join.' ';
+			}
+			$i++;
+			continue;
+		}
+
+		if ($field[0] != "\"") {
+			$field = "\"".$field."\"";
+		}
+
+		if (is_null ($value)) {
+			$query .= sprintf ("%s IS NULL", $field);
+		}
+		elseif (is_int ($value) || is_bool ($value)) {
+			$query .= sprintf ("%s = %d", $field, $value);
+		}
+		else if (is_float ($value) || is_double ($value)) {
+			$query .= sprintf ("%s = %f", $field, $value);
+		}
+		elseif (is_array ($value)) {
+			$query .= sprintf ("%s IN ('%s')", $field, implode ("', '", $value));
+		}
+		else {
+			if ($value[0] == ">"){
+				$value = substr($value,1,strlen($value)-1);
+				$query .= sprintf ("%s > '%s'", $field, $value);
+			}
+			else if ($value[0] == "<"){
+				if ($value[1] == ">"){
+					$value = substr($value,2,strlen($value)-2);
+					$query .= sprintf ("%s <> '%s'", $field, $value);
+				}
+				else {
+					$value = substr($value,1,strlen($value)-1);
+					$query .= sprintf ("%s < '%s'", $field, $value);
+				}
+			}
+			else if ($value[0] == '%') {
+				$query .= sprintf ("%s LIKE '%s'", $field, $value);
+			}
+			else {
+				$query .= sprintf ("%s = '%s'", $field, $value);
+			}
+		}
+
+		if ($i < $max) {
+			$query .= ' '.$join.' ';
+		}
+		$i++;
+	}
+
+	return (! empty ($query) ? $prefix: '').$query.$group.$order.$limit.$offset;
+}
 ?>

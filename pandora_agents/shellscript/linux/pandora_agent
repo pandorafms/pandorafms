@@ -618,7 +618,7 @@ do
 		if [ ! -z "`echo $a | grep -e '^module_postprocess'`" ]
 		then
 			pprocess=`echo $a | cut -d" " -f2-`
-			echo "<postprocess><![CDATA[$pprocess]]></postprocess>" >> $DATA2
+			echo "<post_process><![CDATA[$pprocess]]></post_process>" >> $DATA2
 		fi
 
 		# If module ends, and execute for this module is enabled

@@ -311,9 +311,9 @@ sub read_config (;$) {
 				'interval' => 1,
 				'timeout' => 0,
 				'counter' => 0,
-				'max' => 0,
-				'min' => 0,
-				'postprocess' => 0,
+				'max' => undef,
+				'min' => undef,
+				'post_process' => undef,
 				'save' => '',
 				'conditions' => [],
 				'cron' => '',
@@ -353,10 +353,12 @@ sub read_config (;$) {
 		} elsif ($line =~ /^\s*module_freepercentdisk\s+(.*)$/) {
 			$module->{'func'} = \&module_freepercentdisk;
 			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_max\s+(\d+)\s*$/) {
+		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
 			$module->{'max'} = $1;
-		} elsif ($line =~ /^\s*module_min\s+(\d+)\s*$/) {
-			$module->{'max'} = $1;
+		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
+			$module->{'min'} = $1;
+		} elsif ($line =~ /^\s*module_post_process\s+(.*)\s*$/) {
+			$module->{'post_process'} = $1;
 		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
 			$module->{'interval'} = $1;
 
@@ -1211,9 +1213,17 @@ sub write_module_xml ($@) {
 		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
 		"	<type>" . $module->{'type'} . "</type>\n";
 
-	if ($module->{'interval'} > 1) {
-		$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
-	}
+	# Interval
+	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n" if ($module->{'interval'} > 1);
+	
+	# Min
+	$Xml .= "	<min>" . $module->{'min'} . "</min>\n" if (defined ($module->{'min'}));
+
+	# Max
+	$Xml .= "	<max>" . $module->{'max'} . "</max>\n" if (defined ($module->{'max'}));
+
+	# Post process
+	$Xml .= "	<post_process>" . $module->{'post_process'} . "</post_process>\n" if (defined ($module->{'post_process'}));
 
 	# Data list
 	if ($#data > 0) {

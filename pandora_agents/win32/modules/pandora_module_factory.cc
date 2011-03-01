@@ -58,6 +58,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_ODBC          ("module_odbc ")
 #define TOKEN_MAX           ("module_max ")
 #define TOKEN_MIN           ("module_min ")
+#define TOKEN_POST_PROCESS  ("module_post_process ")
 #define TOKEN_DESCRIPTION   ("module_description ")
 #define TOKEN_ODBC_QUERY    ("module_odbc_query ")
 #define TOKEN_LOGEVENT      ("module_logevent")
@@ -127,7 +128,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
 	string                 module_plugin, module_save, module_condition;
-	string                 module_crontab, module_cron_interval;
+	string                 module_crontab, module_cron_interval, module_post_process;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -170,6 +171,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_condition     = "";
 	module_crontab       = "";
 	module_cron_interval = "";
+	module_post_process  = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -224,6 +226,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_min == "") {
 			module_min = parseLine (line, TOKEN_MIN);
+		}
+		if (module_post_process == "") {
+			module_post_process = parseLine (line, TOKEN_POST_PROCESS);
 		}
 		if (module_description == "") {
 			module_description = parseLine (line, TOKEN_DESCRIPTION);
@@ -507,6 +512,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				    module_interval.c_str (),
 				    module_name.c_str ());
 		}
+	}
+
+	if (module_post_process != "") {
+		module->setPostProcess (module_post_process);
 	}
 
 	return module;

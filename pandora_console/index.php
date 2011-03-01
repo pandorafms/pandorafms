@@ -29,7 +29,8 @@ if ($develop_bypass != 1) {
 		if (! file_exists ("install.php")) {
 			include ("general/error_noconfig.php");
 			exit;
-		} else {
+		}
+		else {
 			include ("install.php");
 			exit;
 		}
@@ -276,7 +277,8 @@ if ($config["pure"] == 0) {
 	echo '</div>'; // main
 	echo '<div style="clear:both">&nbsp;</div>';
 	echo '</div>'; // page (id = page)
-} else {
+}
+else {
 	echo "</div>"; // main_pure
 }
 

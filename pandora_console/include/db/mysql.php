@@ -746,4 +746,153 @@ function mysql_get_db_all_fields_in_table ($table, $field = '', $condition = '',
 
 	return get_db_all_rows_sql ($sql);
 }
+
+/**
+ * Formats an array of values into a SQL string.
+ *
+ * This function is useful to generate an UPDATE SQL sentence from a list of
+ * values. Example code:
+ *
+ * <code>
+ * $values = array ();
+ * $values['name'] = "Name";
+ * $values['description'] = "Long description";
+ * $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
+ * echo $sql;
+ * </code>
+ * Will return:
+ * <code>
+ * UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
+ * </code>
+ *
+ * @param array Values to be formatted in an array indexed by the field name.
+ *
+ * @return string Values joined into an SQL string that can fits into an UPDATE
+ * sentence.
+ */
+function mysql_format_array_to_update_sql ($values) {
+	$fields = array ();
+
+	foreach ($values as $field => $value) {
+		if (is_numeric ($field)) {
+			array_push ($fields, $value);
+			continue;
+		}
+		else if ($field[0] == "`") {
+			$field = str_replace('`', '', $field);
+		}
+
+		if ($value === NULL) {
+			$sql = sprintf ("`%s` = NULL", $field);
+		}
+		elseif (is_int ($value) || is_bool ($value)) {
+			$sql = sprintf ("`%s` = %d", $field, $value);
+		}
+		elseif (is_float ($value) || is_double ($value)) {
+			$sql = sprintf ("`%s` = %f", $field, $value);
+		}
+		else {
+			/* String */
+			if (isset ($value[0]) && $value[0] == '`')
+			/* Don't round with quotes if it references a field */
+			$sql = sprintf ("`%s` = %s", $field, $value);
+			else
+			$sql = sprintf ("`%s` = '%s'", $field, $value);
+		}
+		array_push ($fields, $sql);
+	}
+
+	return implode (", ", $fields);
+}
+
+/**
+ * Updates a database record.
+ *
+ * All values should be cleaned before passing. Quoting isn't necessary.
+ * Examples:
+ *
+ * <code>
+ * process_sql_update ('table', array ('field' => 1), array ('id' => $id));
+ * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
+ * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
+ * process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
+ * </code>
+ *
+ * @param string Table to insert into
+ * @param array An associative array of values to update
+ * @param mixed An associative array of field and value matches. Will be joined
+ * with operator specified by $where_join. A custom string can also be provided.
+ * If nothing is provided, the update will affect all rows.
+ * @param string When a $where parameter is given, this will work as the glue
+ * between the fields. "AND" operator will be use by default. Other values might
+ * be "OR", "AND NOT", "XOR"
+ *
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function mysql_process_sql_update($table, $values, $where = false, $where_join = 'AND') {
+	$query = sprintf ("UPDATE `%s` SET %s",
+	$table,
+	format_array_to_update_sql ($values));
+
+	if ($where) {
+		if (is_string ($where)) {
+			// No clean, the caller should make sure all input is clean, this is a raw function
+			$query .= " WHERE " . $where;
+		}
+		else if (is_array ($where)) {
+			$query .= format_array_to_where_clause_sql ($where, $where_join, ' WHERE ');
+		}
+	}
+
+	return process_sql ($query);
+}
+
+/**
+ * Delete database records.
+ *
+ * All values should be cleaned before passing. Quoting isn't necessary.
+ * Examples:
+ *
+ * <code>
+ * process_sql_delete ('table', array ('id' => 1));
+ * // DELETE FROM table WHERE id = 1
+ * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
+ * // DELETE FROM table WHERE id = 1 AND name = 'example'
+ * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
+ * // DELETE FROM table WHERE id = 1 OR name = 'example'
+ * process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
+ * // DELETE FROM table WHERE id in (1, 2, 3) OR id > 10
+ * </code>
+ *
+ * @param string Table to insert into
+ * @param array An associative array of values to update
+ * @param mixed An associative array of field and value matches. Will be joined
+ * with operator specified by $where_join. A custom string can also be provided.
+ * If nothing is provided, the update will affect all rows.
+ * @param string When a $where parameter is given, this will work as the glue
+ * between the fields. "AND" operator will be use by default. Other values might
+ * be "OR", "AND NOT", "XOR"
+ *
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function mysql_process_sql_delete($table, $where, $where_join = 'AND') {
+	if (empty ($where))
+		/* Should avoid any mistake that lead to deleting all data */
+		return false;
+
+	$query = sprintf ("DELETE FROM `%s` WHERE ", $table);
+
+	if ($where) {
+		if (is_string ($where)) {
+			/* FIXME: Should we clean the string for sanity?
+			 Who cares if this is deleting data... */
+			$query .= $where;
+		}
+		else if (is_array ($where)) {
+			$query .= format_array_to_where_clause_sql ($where, $where_join);
+		}
+	}
+
+	return process_sql ($query);
+}
 ?>

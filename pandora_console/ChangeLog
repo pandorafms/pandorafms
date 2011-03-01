@@ -1,3 +1,9 @@
+2011-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk.
+
+	* include/functions_db.php: Added missing function get_profile_filter.
+
 2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

@@ -54,6 +54,9 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["phone"] = get_parameter_post ("phone", $user_info["phone"]);
 	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
+	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);	
+	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
+	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
 	
 	if ( !empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
@@ -135,7 +138,33 @@ echo print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 
 echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos">';
 print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
- 
+   
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+	$display_all_group = true;
+else
+	$display_all_group = false;		
+
+$usr_groups = (get_user_groups($config['id_user'], 'AR', $display_all_group));
+$id_usr = $config['id_user'];
+
+// User only can change skins if has more than one group 
+if (count($usr_groups) > 1){
+
+	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		echo '</td></tr><tr><td class="datos">' . __('Skin') . '</td><td class="datos2">';
+		echo print_select_skins($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+	}
+}
+
+echo '</td></tr><tr><td class="datos">'.__('Flash charts').'</td><td class="datos2">';
+echo __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $user_info["flash_chart"], true).'&nbsp;&nbsp;';
+echo __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $user_info["flash_chart"], true);
+
+echo '</td></tr><tr><td class="datos">'.__('Block size for pagination').'</td><td class="datos2">';
+echo print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
+
 echo '</td></tr></table>';
 
 echo '<div style="width:90%; text-align:right;">';

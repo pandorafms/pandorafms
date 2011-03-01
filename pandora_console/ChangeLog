@@ -1,3 +1,21 @@
+2011-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/ajax/skins.ajax.php: Replaced "give_acl" function call to 
+	"check_acl". 
+	* include/config_process.php: "block_size" and "flash_charts" user options
+	override global options.
+	* include/functions_ui.php: If user has assigned a skin then use skins's 
+	css files if it's possible.
+	* include/functions_db.php: Added missing function get_profile_filter.
+	* include/functions_themes.php: New parameter "path" in order to list all
+	css files of an specific path.
+	* index.php: Added functions_themes.php include statement.
+	* operation/users/user_edit.php
+	godmode/users/configure_user.php: Added new user options: "skin", "block_size" 
+	and "flash_charts". 
+	* godmode/setup/setup_visuals.php: Removed "custom_logo" options in setup for
+	pandora enterprise version. 
+
 2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:

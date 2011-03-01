@@ -22,16 +22,27 @@
 /**
  * Get a list of CSS themes installed.
  *
+ * @param bool List all css files of an specific path without filter "pandora*" pattern
+ *
  * @return array An indexed array with the file name in the index and the theme
  * name (if available) as the value.
  */
-function get_css_themes () {
-	$theme_dir = 'include/styles/';
+function get_css_themes ($path = false) {
+	if ($path)
+		$theme_dir = $path;
+	else
+		$theme_dir = 'include/styles/';
 	
-	$files = list_files ($theme_dir, "pandora", 1, 0);
+	if ($path)
+		$files = list_files ($theme_dir, "pandora", 0, 0);
+	else	
+		$files = list_files ($theme_dir, "pandora", 1, 0);
 	
 	$retval = array ();
 	foreach ($files as $file) {
+		//Skip '..' and '.' entries and files not ended in '.css'
+		if ($path && ($file == '.' || $file == '..' || strtolower(substr ($file, strlen ($file) - 4)) !== '.css'))
+			continue;
 		$data = implode ('', file ($theme_dir.'/'.$file));
 		preg_match ('|Name:(.*)$|mi', $data, $name);
 		if (isset ($name[1]))

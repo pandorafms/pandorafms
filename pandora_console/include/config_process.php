@@ -103,6 +103,12 @@ if (isset ($config['id_user'])){
 		$config['user_language'] = $userinfo["language"];
 	}
 
+	// If block_size or flash_chart are provided then override global settings
+	if (!empty($userinfo["block_size"]))
+		$config["block_size"] = $userinfo["block_size"];
+	if (!empty($userinfo["block_size"]))
+		$config["flash_charts"] = $userinfo["flash_chart"];			
+
 	// Each user could have it's own timezone)
 	if (isset($userinfo["timezone"])) {
 		if ($userinfo["timezone"] != ""){

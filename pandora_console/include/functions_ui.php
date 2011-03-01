@@ -831,13 +831,35 @@ function process_page_head ($string, $bitfield) {
 	if (empty ($config['css'])) {
 		$config['css'] = array ();
 	}
+
+	//First, if user has assigned a skin then try to use css files of skin subdirectory
+	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		//Checks if user's skin is available 
+		$exists_skin = enterprise_hook('is_skin_path_set');
+		if ($exists_skin){
+			$skin_path = enterprise_hook('get_skin_path');
+			$skin_styles = get_css_themes ($skin_path . 'include/styles/');
+			$exists_css = !empty($skin_styles);
+		}		
+	}
+	//If skin's css files exists then add them
+	if ($exists_css){
+		foreach ($skin_styles as $filename => $name){
+			$style = substr ($filename, 0, strlen ($filename) - 4);
+			$config['css'] = array_merge(array ($style => $skin_path . 'include/styles/' . $filename));
+		}
+	}
+	//Otherwise assign default and user's css
+	else{
 	
-	//User style should go last so it can rewrite common styles
-	$config['css'] = array_merge (array (
-		"common" => "include/styles/common.css", 
-		"menu" => "include/styles/menu.css", 
-		"tip", "include/styles/tip.css", 
-		$config['style'] => "include/styles/".$config['style'].".css"), $config['css']);
+		//User style should go last so it can rewrite common styles
+		$config['css'] = array_merge (array (
+			"common" => "include/styles/common.css", 
+			"menu" => "include/styles/menu.css", 
+			"tip", "include/styles/tip.css", 
+			$config['style'] => "include/styles/".$config['style'].".css"), $config['css']);
+	}	
 	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');

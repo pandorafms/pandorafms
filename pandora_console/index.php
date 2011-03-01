@@ -116,7 +116,7 @@ enterprise_include ('index.php');
 // This tag is included in the buffer passed to process_page_head so 
 // technically it can be stripped
 echo '</head>'."\n";
-
+require_once ("include/functions_themes.php");
 ob_start ('process_page_body');
 
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];

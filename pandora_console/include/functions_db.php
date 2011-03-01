@@ -2259,34 +2259,17 @@ function get_db_all_rows_sql($sql, $search_history_db = false, $cache = true) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function get_db_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
-	//TODO: Validate and clean fields
-	if (empty ($fields)) {
-		$fields = '*';
-	}
-	elseif (is_array ($fields)) {
-		$fields = implode (',', $fields);
-	}
-	elseif (! is_string ($fields)) {
-		return false;
-	}
+function get_db_all_rows_filter($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
+	global $config;
 
-	//TODO: Validate and clean filter options
-	if (is_array ($filter)) {
-		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_all_rows_filter($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
+			break;
+		case "postgresql":
+			return postgresql_get_db_all_rows_sql($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
+			break;
 	}
-	elseif (is_string ($filter)) {
-		$filter = 'WHERE '.$filter;
-	}
-	else {
-		$filter = '';
-	}
-
-	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-	if ($returnSQL)
-	return $sql;
-	else
-	return get_db_all_rows_sql ($sql, $search_history_db);
 }
 
 /**
@@ -2312,10 +2295,17 @@ function get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
  * @param $sql
  * @return integer The count of rows of query.
  */
-function get_db_num_rows ($sql) {
-	$result = mysql_query($sql);
+function get_db_num_rows($sql) {
+	global $config;
 
-	return mysql_num_rows($result);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_num_rows($sql);
+			break;
+		case "postgresql":
+			return postgresql_get_db_num_rows($sql);
+			break;
+	}
 }
 
 /**
@@ -2331,10 +2321,10 @@ function sql_error_handler ($errno, $errstr) {
 
 	/* If debug is activated, this will also show the backtrace */
 	if (debug ($errstr))
-	return false;
+		return false;
 
 	if (error_reporting () <= $errno)
-	return false;
+		return false;
 
 	echo "<strong>SQL error</strong>: ".$errstr."<br />\n";
 
@@ -2448,21 +2438,17 @@ function get_db_all_rows_in_table ($table, $order_field = "", $order = 'ASC') {
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field or false
  */
-function get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
-	if (is_int ($condition) || is_bool ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = %d", $table, $field, $condition);
-	}
-	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = %f", $table, $field, $condition);
-	}
-	else {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s'", $table, $field, $condition);
-	}
+function get_db_all_rows_field_filter($table, $field, $condition, $order_field = "") {
+	global $config;
 
-	if ($order_field != "")
-	$sql .= sprintf (" ORDER BY %s", $order_field);
-
-	return get_db_all_rows_sql ($sql);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_all_rows_field_filter($table, $field, $condition, $order_field);
+			break;
+		case "postgresql":
+			return postgresql_get_db_all_rows_field_filter($table, $field, $condition, $order_field);
+			break;
+	}
 }
 
 /**
@@ -2473,16 +2459,17 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field
  */
-function get_db_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
-	$sql = sprintf ("SELECT * FROM `%s`", $table);
-	if ($condition != '') {
-		$sql .= sprintf (" WHERE `%s` = '%s'", $field, $condition);
+function get_db_all_fields_in_table($table, $field = '', $condition = '', $order_field = '') {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_all_fields_in_table($table, $field, $condition, $order_field);
+			break;
+		case "postgresql":
+			return postgresql_get_db_all_fields_in_table($table, $field, $condition, $order_field);
+			break;
 	}
-
-	if ($order_field != "")
-	$sql .= sprintf (" ORDER BY %s", $order_field);
-
-	return get_db_all_rows_sql ($sql);
 }
 
 /**

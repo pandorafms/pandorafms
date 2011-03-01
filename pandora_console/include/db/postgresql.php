@@ -650,4 +650,119 @@ function postgresql_get_db_row_filter ($table, $filter, $fields = false, $where_
 
 	return get_db_row_sql ($sql);
 }
+
+/**
+ * Get all the rows of a table in the database that matches a filter.
+ *
+ * @param string Table to retrieve the data (warning: not cleaned)
+ * @param mixed Filters elements. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword). Example:
+ * <code>
+ * Both are similars:
+ * get_db_all_rows_filter ('table', array ('disabled', 0));
+ * get_db_all_rows_filter ('table', 'disabled = 0');
+ *
+ * Both are similars:
+ * get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+ * get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+ * </code>
+ * @param mixed Fields of the table to retrieve. Can be an array or a coma
+ * separated string. All fields are retrieved by default
+ * @param string Condition of the filter (AND, OR).
+ * @param bool $returnSQL Return a string with SQL instead the data, by default false.
+ *
+ * @return mixed Array of the row or false in case of error.
+ */
+function postgresql_get_db_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
+	//TODO: Validate and clean fields
+	if (empty($fields)) {
+		$fields = '*';
+	}
+	elseif (is_array($fields)) {
+		$fields = '"' . implode('" , "', $fields) . '"';
+	}
+	elseif (!is_string($fields)) {
+		return false;
+	}
+
+	//TODO: Validate and clean filter options
+	if (is_array ($filter)) {
+		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+	}
+	elseif (is_string ($filter)) {
+		$filter = 'WHERE '.$filter;
+	}
+	else {
+		$filter = '';
+	}
+
+	$sql = sprintf ('SELECT %s FROM "%s" %s', $fields, $table, $filter);
+	
+	if ($returnSQL)
+		return $sql;
+	else
+		return get_db_all_rows_sql ($sql, $search_history_db);
+}
+
+/**
+ * Return the count of rows of query.
+ *
+ * @param $sql
+ * @return integer The count of rows of query.
+ */
+function postgresql_get_db_num_rows ($sql) {
+	$result = pg_query($sql);
+
+	return pg_num_rows($result);
+}
+
+/**
+ * Get all the rows in a table of the databes filtering from a field.
+ *
+ * @param string Database table name.
+ * @param string Field of the table.
+ * @param string Condition the field must have to be selected.
+ * @param string Field to order by.
+ *
+ * @return mixed A matrix with all the values in the table that matches the condition in the field or false
+ */
+function postgresql_get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
+	if (is_int ($condition) || is_bool ($condition)) {
+		$sql = sprintf ("SELECT * FROM \"%s\" WHERE \"%s\" = %d", $table, $field, $condition);
+	}
+	else if (is_float ($condition) || is_double ($condition)) {
+		$sql = sprintf ("SELECT * FROM \"%s\" WHERE \"%s\" = %f", $table, $field, $condition);
+	}
+	else {
+		$sql = sprintf ("SELECT * FROM \"%s\" WHERE \"%s\" = '%s'", $table, $field, $condition);
+	}
+
+	if ($order_field != "")
+		$sql .= sprintf (" ORDER BY %s", $order_field);
+
+	return get_db_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the rows in a table of the databes filtering from a field.
+ *
+ * @param string Database table name.
+ * @param string Field of the table.
+ *
+ * @return mixed A matrix with all the values in the table that matches the condition in the field
+ */
+function postgresql_get_db_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
+	$sql = sprintf ("SELECT * FROM \"%s\"", $table);
+	
+	if ($condition != '') {
+		$sql .= sprintf (" WHERE \"%s\" = '%s'", $field, $condition);
+	}
+
+	if ($order_field != "")
+		$sql .= sprintf (" ORDER BY \"%s\"", $order_field);
+
+	return get_db_all_rows_sql ($sql);
+}
 ?>

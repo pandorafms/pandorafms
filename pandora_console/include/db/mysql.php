@@ -928,4 +928,12 @@ function mysql_process_sql_commit() {
 	mysql_query ('COMMIT');
 	mysql_query ('SET AUTOCOMMIT = 0');
 }
+
+/**
+ * Rollbacks a database transaction.
+ */
+function mysql_process_sql_rollback() {
+	mysql_query ('ROLLBACK ');
+	mysql_query ('SET AUTOCOMMIT = 0');
+}
 ?>

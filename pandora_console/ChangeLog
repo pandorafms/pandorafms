@@ -1,5 +1,11 @@
 2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
+	separate the function "process_sql_rollback" into the two version for
+	MySQL and PostgreSQL engine.
+
+2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* index.php: cleaned source code.
 
 2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>

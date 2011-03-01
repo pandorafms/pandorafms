@@ -943,6 +943,13 @@ function postgresql_process_sql_begin() {
  * Commits a database transaction.
  */
 function postgresql_process_sql_commit() {
-	pg_query('COMMIT');
+	pg_query('COMMIT TRANSACTION');
+}
+
+/**
+ * Rollbacks a database transaction.
+ */
+function postgresql_process_sql_rollback() {
+	pg_query('ROLLBACK TRANSACTION');
 }
 ?>

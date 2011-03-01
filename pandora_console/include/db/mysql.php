@@ -895,4 +895,37 @@ function mysql_process_sql_delete($table, $where, $where_join = 'AND') {
 
 	return process_sql ($query);
 }
+
+/**
+ * Get row by row the DB by SQL query. The first time pass the SQL query and
+ * rest of times pass none for iterate in table and extract row by row, and
+ * the end return false.
+ *
+ * @param bool $new Default true, if true start to query.
+ * @param resource $result The resource of mysql for access to query.
+ * @param string $sql
+ * @return mixed The row or false in error.
+ */
+function mysql_get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
+	if ($new == true)
+		$result = mysql_query($sql);
+
+	return mysql_fetch_assoc($result);
+}
+
+/**
+ * Starts a database transaction.
+ */
+function mysql_process_sql_begin() {
+	mysql_query ('SET AUTOCOMMIT = 0');
+	mysql_query ('START TRANSACTION');
+}
+
+/**
+ * Commits a database transaction.
+ */
+function mysql_process_sql_commit() {
+	mysql_query ('COMMIT');
+	mysql_query ('SET AUTOCOMMIT = 0');
+}
 ?>

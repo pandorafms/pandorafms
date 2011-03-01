@@ -1,3 +1,7 @@
+2011-03-01 Miguel de Dios  <miguel.dedios@artica.es>
+	* operation/events/events_list.php: fixed the html entities in the extend
+	list.
+
 2011-02-28 Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_db.php: cleaned source code, and erased the deprecated
 	functions "dame_nombre_real" and "show_alert_row_mini".

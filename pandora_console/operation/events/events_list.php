@@ -459,7 +459,7 @@ foreach ($result as $event) {
 	$string = '<table border="0" width="90%"><tr>';
 	$string .= '<td align="left" valign="top" width="25%">';
 	$string .= '<b>' . __('Event name') . ':</b></td><td align="left">';
-	$string .= $event["evento"];
+	$string .= safe_output($event["evento"]);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Severity') . ':</b></td><td align="left">';

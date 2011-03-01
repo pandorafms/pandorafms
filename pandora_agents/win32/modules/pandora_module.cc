@@ -43,7 +43,10 @@ Pandora_Module::Pandora_Module (string name) {
 	this->module_timeout  = 15000;
 	this->max             = 0;
 	this->min             = 0;
+	this->post_process    = "";
 	this->has_limits      = false;
+	this->has_min         = false;
+	this->has_max         = false;
 	this->async           = false;
 	this->data_list       = NULL;
     this->inventory_list  = NULL;
@@ -418,7 +421,7 @@ Pandora_Module::run () {
  */
 string
 Pandora_Module::getXml () {
-	ostringstream module_interval;
+	ostringstream module_interval, min, max;
  	string        module_xml, data_clean, interval_str;
 	Pandora_Data *data;
 	
@@ -435,16 +438,43 @@ Pandora_Module::getXml () {
     module_xml += "]]></name>\n\t<type><![CDATA[";
     module_xml += this->module_type_str;
     module_xml += "]]></type>\n";
+    
+    /* Description */
     if (this->module_description != "") {
 		module_xml += "\t<description><![CDATA[";
 		module_xml += this->module_description;
 		module_xml += "]]></description>\n";
 	}
+	
+	/* Interval */
     if (this->module_interval > 1) {
 		module_interval << this->module_interval;
 		module_xml += "\t<module_interval><![CDATA[";
 		module_xml += module_interval.str ();
 		module_xml += "]]></module_interval>\n";
+	}
+	
+	/* Min */
+    if (this->has_min) {
+		min << this->min;
+		module_xml += "\t<min><![CDATA[";
+		module_xml += min.str ();
+		module_xml += "]]></min>\n";
+	}
+	
+	/* Max */
+	if (this->has_max) {
+		max << this->max;
+		module_xml += "\t<max><![CDATA[";
+		module_xml += max.str ();
+		module_xml += "]]></max>\n";
+	}
+	
+	/* Post process */
+	if (this->post_process != "") {
+		module_xml += "\t<post_process><![CDATA[";
+		module_xml += this->post_process;
+		module_xml += "]]></post_process>\n";
 	}
 
     /* Write module data */
@@ -505,6 +535,7 @@ Pandora_Module::getXml () {
 void
 Pandora_Module::setMax (int value) {
 	this->has_limits = true;
+	this->has_max = true;
 	this->max        = value;
 }
 
@@ -518,7 +549,18 @@ Pandora_Module::setMax (int value) {
 void
 Pandora_Module::setMin (int value) {
 	this->has_limits = true;
+	this->has_min = true;
 	this->min        = value;
+}
+
+/** 
+ * Set the post process value for the module.
+ *
+ * @param value Post process value .
+ */
+void
+Pandora_Module::setPostProcess (string value) {
+	this->post_process = value;
 }
 
 /** 

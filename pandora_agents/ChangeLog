@@ -1,3 +1,12 @@
+2011-03-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module.h,
+	  win32/modules/pandora_module_factory.cc,
+	  win32/modules/pandora_module.cc,
+	  unix/pandora_agent,
+	  shellscript/linux/pandora_agent: Set the module min, max and
+	  post_process in the XML data file.
+
 2011-02-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* embedded/INSTALL: Added instructions to cross-compile for

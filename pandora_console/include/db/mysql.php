@@ -548,4 +548,87 @@ function mysql_format_array_to_where_clause_sql ($values, $join = 'AND', $prefix
 
 	return (! empty ($query) ? $prefix: '').$query.$group.$order.$limit.$offset;
 }
+
+/**
+ * Get the first value of the first row of a table result from query.
+ *
+ * @param string SQL select statement to execute.
+ *
+ * @return the first value of the first row of a table result from query.
+ *
+ */
+function mysql_get_db_value_sql($sql) {	
+	$sql .= " LIMIT 1";
+	$result = get_db_all_rows_sql ($sql);
+
+	if($result === false)
+		return false;
+
+	foreach ($result[0] as $f)
+		return $f;
+}
+
+/**
+ * Get the first row of an SQL database query.
+ *
+ * @param string SQL select statement to execute.
+ *
+ * @return mixed The first row of the result or false
+ */
+function mysql_get_db_row_sql ($sql, $search_history_db = false) {
+	$sql .= " LIMIT 1";
+	$result = get_db_all_rows_sql ($sql, $search_history_db);
+
+	if($result === false)
+		return false;
+
+	return $result[0];
+}
+
+/**
+ * Get the row of a table in the database using a complex filter.
+ *
+ * @param string Table to retrieve the data (warning: not cleaned)
+ * @param mixed Filters elements. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword). Example:
+ <code>
+ Both are similars:
+ get_db_row_filter ('table', array ('disabled', 0));
+ get_db_row_filter ('table', 'disabled = 0');
+
+ Both are similars:
+ get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name, description', 'OR');
+ get_db_row_filter ('table', 'disabled = 0 OR history_data = 0', 'name, description');
+ get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), array ('name', 'description'), 'OR');
+ </code>
+ * @param mixed Fields of the table to retrieve. Can be an array or a coma
+ * separated string. All fields are retrieved by default
+ * @param string Condition to join the filters (AND, OR).
+ *
+ * @return mixed Array of the row or false in case of error.
+ */
+function mysql_get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+	if (empty ($fields)) {
+		$fields = '*';
+	}
+	else {
+		if (is_array ($fields))
+		$fields = implode (',', $fields);
+		else if (! is_string ($fields))
+		return false;
+	}
+
+	if (is_array ($filter))
+		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+	else if (is_string ($filter))
+		$filter = 'WHERE '.$filter;
+	else
+		$filter = '';
+	
+	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
+
+	return get_db_row_sql ($sql);
+}
 ?>

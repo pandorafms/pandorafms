@@ -670,7 +670,7 @@ function install_step4() {
 							
 							if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
 								//Set the privileges for DB
-								pg_send_query($connection, "GRANT ALL PRIVILEGES ON DATABASE pandora to pandora;");
+								pg_send_query($connection, "GRANT ALL PRIVILEGES ON DATABASE pandora TO pandora;");
 								$result = pg_get_result($connection);
 								
 								$setDBPrivileges = 0;
@@ -690,7 +690,16 @@ function install_step4() {
 									
 									$correct = 1;
 									foreach ($tables as $table) {
-										pg_send_query($connection, "GRANT ALL PRIVILEGES ON TABLE " . $table . " to pandora;");
+										pg_send_query($connection, "GRANT ALL PRIVILEGES ON TABLE " . $table . " TO pandora;");
+										$result = pg_get_result($connection);
+										
+										if (pg_result_status($result) == PGSQL_FATAL_ERROR) {
+											$correct = 0;
+											break;
+										}
+										
+										//For each table make owner pandora
+										pg_send_query($connection, "ALTER TABLE " . $table . " OWNER TO pandora;");
 										$result = pg_get_result($connection);
 										
 										if (pg_result_status($result) == PGSQL_FATAL_ERROR) {

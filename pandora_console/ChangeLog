@@ -1,3 +1,7 @@
+2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.data.postgreSQL.sql: fixed the serial values.
+
 2011-03-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_ui.php: Added missing variable initialization in function

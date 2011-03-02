@@ -357,7 +357,7 @@ sub read_config (;$) {
 			$module->{'max'} = $1;
 		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
 			$module->{'min'} = $1;
-		} elsif ($line =~ /^\s*module_post_process\s+(.*)\s*$/) {
+		} elsif ($line =~ /^\s*module_postprocess\s+(.*)\s*$/) {
 			$module->{'post_process'} = $1;
 		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
 			$module->{'interval'} = $1;

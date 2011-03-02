@@ -1,5 +1,11 @@
 2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php, include/db/mysql.php, include/functions.php:
+	separate the function "mysql_safe_sql_string" into the two version for MySQL
+	and PostgreSQL engine.
+
+2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php: fixed in the function
 	"postgresql_get_db_all_rows_in_table" unclose quotes.
 

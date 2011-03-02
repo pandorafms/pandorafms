@@ -1549,9 +1549,9 @@ function get_agent_module_info ($id_agent, $filter = false) {
 	foreach ($modules as $key => $module) {
 		$return["modules"]++;
 		
-		$module_status = get_agentmodule_status($key);
+		$module_status = get_agentmodule_status($key, true);
 		
-		switch($module_status){
+		switch ($module_status) {
 			case 0:
 					$return["monitor_normal"]++;
 					break;

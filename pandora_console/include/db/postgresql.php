@@ -268,7 +268,7 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
  */
 function postgresql_get_db_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return get_db_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY "'.$order_field . ' ' . $order);
+		return get_db_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY "'.$order_field . '" ' . $order);
 	}
 	else {	
 		return get_db_all_rows_sql ('SELECT * FROM "'.$table.'"');

@@ -1,5 +1,13 @@
 2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: added the call to
+	"get_agentmodule_status" without check the alerts status for the color.
+	 
+	* include/functions_db.php: in function "get_agentmodule_status" added new
+	parameter "$without_alerts" flag for check without alerts. 
+
+2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php, include/db/mysql.php, include/functions.php:
 	separate the function "mysql_safe_sql_string" into the two version for MySQL
 	and PostgreSQL engine.

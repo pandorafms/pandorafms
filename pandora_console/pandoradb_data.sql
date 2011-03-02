@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2010 Artica Soluciones Tecnologicas, http://www.artica.es
+-- Copyright (c) 2011 Artica Soluciones Tecnologicas, http://www.artica.es
 -- Please see http://www.pandorafms.org for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
--- Database Data for Pandora FMS 3.2
+-- Database Data for Pandora FMS 4.0dev
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them

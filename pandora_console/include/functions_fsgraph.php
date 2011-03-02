@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -134,36 +134,36 @@ function fs_2d_area_chart ($data, $width, $height, $step = 1, $params = '') {
 function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0, $caption = '', $baseline = 0) {
 	global $config;
 
-    $graph_type = "MSArea2D"; //MSLine is possible also
+	$graph_type = "MSArea2D"; //MSLine is possible also
 
 	// Generate the XML
 	$chart = new FusionCharts($graph_type, $width, $height);
 	$num_vlines = 0;
 	$count = 0;
 
-    // NO caption needed (graph avg/max/min stats are in the legend now)
-    /*
+	// NO caption needed (graph avg/max/min stats are in the legend now)
+	/*
 	if ($caption != '') {
 		$chart->setChartParam("caption", $caption);
 	}
-    */
+	*/
 
-    $total_max = 0;
-    $total_avg = 0;
-    $total_min = 0;
+	$total_max = 0;
+	$total_avg = 0;
+	$total_min = 0;
 
 	// Create categories
 	foreach ($data as $value) {
 
-        $total_avg +=$value["sum"];
+	$total_avg +=$value["sum"];
 
-        if ($avg_only != 1){
-             if ($value["max"] > $total_max)
-                $total_max =$value["max"];
-             if ($value["min"] < $total_min)
-                $total_min =$value["min"];
-        }
-        
+	if ($avg_only != 1){
+		if ($value["max"] > $total_max)
+			$total_max =$value["max"];
+		if ($value["min"] < $total_min)
+			$total_min =$value["min"];
+	}
+
 		if ($count++ % $step == 0) {
 			$show_name = '1';
 			$num_vlines++;
@@ -173,13 +173,13 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date (html_entity_decode ($config['date_format'], ENT_QUOTES, "UTF-8"), $value['timestamp_bottom']) .  ';showName=' . $show_name);
 	}
 
-    if ($count > 0)
-        $total_avg = format_for_graph($total_avg / $count);
-    else
-        $total_avg = 0;
+	if ($count > 0)
+		$total_avg = format_for_graph($total_avg / $count);
+	else
+		$total_avg = 0;
 
-    $total_min = format_for_graph ($total_min);
-    $total_max = format_for_graph ($total_max);
+	$total_min = format_for_graph ($total_min);
+	$total_max = format_for_graph ($total_max);
 
 	// Event chart
 	if ($show_events == 1) {
@@ -294,23 +294,23 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 	// Stack charts
 
 	$empty = 1;	
-    $prev = array();
+	$prev = array();
 	for ($i = 0; $i < sizeof ($data); $i++) {
-        $chart->addDataSet ($sets[$i]);  
+		$chart->addDataSet ($sets[$i]);
 		foreach ($data[$i] as $indice => $value) {
-            // Custom code to do the stack lines, because library doesn't do itself
-            if ($type == 3){
-                if ($i > 0){
-                    $prev[$indice] = $prev[$indice] + $value;
-                } else {
-                    $prev[$indice] = $value;
-                }
-                    $myvalue = $prev[$indice];                
-        			$chart->addChartData($myvalue);
-            } else {
-                $chart->addChartData($value);
-            }
-		}		      
+		// Custom code to do the stack lines, because library doesn't do itself
+		if ($type == 3){
+			if ($i > 0){
+				$prev[$indice] = $prev[$indice] + $value;
+			} else {
+				$prev[$indice] = $value;
+			}
+			$myvalue = $prev[$indice];
+			$chart->addChartData($myvalue);
+			} else {
+				$chart->addChartData($value);
+			}
+		}
 	}
 
 

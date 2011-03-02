@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -74,7 +74,7 @@ function get_reports ($filter = false, $fields = false, $returnAllGroup = true, 
 		$fields[] = 'id_user';
 	}
 	
-    	$groups = get_user_groups ($config['id_user'], $privileges, $returnAllGroup);
+	$groups = get_user_groups ($config['id_user'], $privileges, $returnAllGroup);
 
 	$reports = array ();
 	$all_reports = @get_db_all_rows_filter ('treport', $filter, $fields);

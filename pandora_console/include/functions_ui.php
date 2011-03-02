@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -384,7 +384,7 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '',
  */
 function format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
 
-    $actionText = "";
+	$actionText = "";
 	require_once ("include/functions_alerts.php");
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 	
@@ -956,7 +956,7 @@ function process_page_head ($string, $bitfield) {
  * @param string Callback will fill this with the current buffer.
  * @param bitfield Callback will fill this with a bitfield (see ob_start)
  * 
- * @return string String to return to the browser  
+ * @return string String to return to the browser
  */
 function process_page_body ($string, $bitfield) {
 	global $config;
@@ -1158,8 +1158,8 @@ function debug ($var, $backtrace = true) {
 		foreach ($traces as $trace) {
 			$trace_id++;
 		
-			/* Many classes are used to allow better customization. Please, do not
-			  remove them */
+			/* Many classes are used to allow better customization. 
+			Please, do not remove them */
 			echo '<li>';
 			if (isset ($trace['class']))
 				echo '<span class="class">'.$trace['class'].'</span>';

@@ -58,7 +58,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_ODBC          ("module_odbc ")
 #define TOKEN_MAX           ("module_max ")
 #define TOKEN_MIN           ("module_min ")
-#define TOKEN_POST_PROCESS  ("module_post_process ")
+#define TOKEN_POST_PROCESS  ("module_postprocess ")
 #define TOKEN_DESCRIPTION   ("module_description ")
 #define TOKEN_ODBC_QUERY    ("module_odbc_query ")
 #define TOKEN_LOGEVENT      ("module_logevent")

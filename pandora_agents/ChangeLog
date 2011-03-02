@@ -1,3 +1,8 @@
+2011-03-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module_factory.cc, unix/pandora_agent: Changed
+	  module_post_process to module_postprocess to match the documentation.
+
 2011-03-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module.h,

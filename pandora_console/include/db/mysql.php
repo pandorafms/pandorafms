@@ -936,4 +936,18 @@ function mysql_process_sql_rollback() {
 	mysql_query ('ROLLBACK ');
 	mysql_query ('SET AUTOCOMMIT = 0');
 }
+
+/**
+ * Put quotes if magic_quotes protection
+ *
+ * @param string Text string to be protected with quotes if magic_quotes protection is disabled
+ */
+function mysql_safe_sql_string($string) {
+	if (get_magic_quotes_gpc () == 0) 
+		return $string;
+	
+	global $config;
+	
+	return mysql_real_escape_string($string, $config['dbconnection']);
+}
 ?>

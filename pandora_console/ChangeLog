@@ -1,5 +1,10 @@
 2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php: fixed in the function
+	"postgresql_get_db_all_rows_in_table" unclose quotes.
+
+2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/help/es/modu_group_list.php: erased the unused php file. I think
 	that this file wrong uploaded.
 

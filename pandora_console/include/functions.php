@@ -1005,12 +1005,17 @@ if (!function_exists ("mb_strtoupper")) {
  *
  * @param string Text string to be protected with quotes if magic_quotes protection is disabled
  */
-function safe_sql_string ($string) {
-	if (get_magic_quotes_gpc () == 0) 
-		return $string;
+function safe_sql_string($string) {
 	global $config;
-	
-	return mysql_real_escape_string ($string, $config['dbconnection']);
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_safe_sql_string($string);
+			break;
+		case "postgresql":
+			return postgresql_safe_sql_string($string);
+			break;
+	}
 }
 
 /**

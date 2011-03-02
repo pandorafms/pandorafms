@@ -952,4 +952,17 @@ function postgresql_process_sql_commit() {
 function postgresql_process_sql_rollback() {
 	pg_query('ROLLBACK TRANSACTION');
 }
+
+/**
+ * Put quotes if magic_quotes protection
+ *
+ * @param string Text string to be protected with quotes if magic_quotes protection is disabled
+ */
+function postgresql_safe_sql_string($string) {
+	if (get_magic_quotes_gpc () == 0) 
+		return $string;
+	global $config;
+	
+	return pg_escape_string($config['dbconnection'], $string);
+}
 ?>

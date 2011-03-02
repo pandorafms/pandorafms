@@ -2594,16 +2594,19 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
  * Get the status of an agent module.
  *
  * @param int Id agent module to check.
+ * @param bool $without_alerts The flag to check only the module, by default false.
  *
  * @return int Module status. Value 4 means that some alerts assigned to the
  * module were fired.
  */
-function get_agentmodule_status($id_agentmodule = 0) {
+function get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
 	$current_timestamp = get_system_time ();
 
-	$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
-	if ($times_fired > 0) {
-		return 4; // Alert fired
+	if (!$without_alerts) {
+		$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
+		if ($times_fired > 0) {
+			return 4; // Alert fired
+		}
 	}
 
 	$status_row = get_db_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);

@@ -1,3 +1,11 @@
+2011-03-02 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/functions*.php: Updated year in files changed this year. Also
+	changed spaces to tabs.
+
+	* pandora_console_install, pandora_console_upgrade,
+	pandora.data.postgreSQL.sql, pandoradb_data.sql
+
 2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.data.postgreSQL.sql: fixed the serial values.

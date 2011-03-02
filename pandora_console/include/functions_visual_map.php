@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -410,7 +410,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	
 	echo '<div id="layout_map"
 		style="z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
-	echo "<img  src='" . $backgroundImage . "' width='100%' height='100%' />";
+	echo "<img src='" . $backgroundImage . "' width='100%' height='100%' />";
 	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -1197,14 +1197,14 @@ function string2image($string, $width, $height, $fontsize = 3,
 **/
 
 function check_sql ($sql) {
-        // We remove "*" to avoid things like SELECT * FROM tusuario
+	// We remove "*" to avoid things like SELECT * FROM tusuario
 
-		//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
+	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
-        if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
-                return "";
-        }
-        return $sql;
+	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
+		return "";
+	}
+	return $sql;
 }
 
 ?>

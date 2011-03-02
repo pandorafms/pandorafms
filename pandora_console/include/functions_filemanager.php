@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -183,7 +183,7 @@ if ($create_text_file) {
 	
 	$config['filemanager'] = array();
 	$config['filemanager']['correct_upload_file'] = 0;
-	$config['filemanager']['message'] =  null;
+	$config['filemanager']['message'] = null;
 	
 	check_login ();
 	
@@ -254,7 +254,7 @@ if ($upload_zip) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			$config['filemanager']['message'] =  "<h4 class=error>".__('Security error.')."</h4>";
+			$config['filemanager']['message'] = "<h4 class=error>".__('Security error.')."</h4>";
 		}
 		else {
 			// Copy file to directory and change name
@@ -265,7 +265,7 @@ if ($upload_zip) {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-				$config['filemanager']['message'] =  "<h4 class=error>".__('attach_error')."</h4s>";
+				$config['filemanager']['message'] = "<h4 class=error>".__('attach_error')."</h4>";
 			}
 			else {
 				// Delete temporal file
@@ -369,8 +369,8 @@ function delete_directory($dir)
 				{
 					unlink($dir . $file);
 				}
-	        }
-	    }
+			}
+		}
 		closedir($handle);
 		rmdir($dir);
 	}
@@ -620,7 +620,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px;' title='" . __('Create text') . "'>";
 			echo print_image('images/mimetypes/text.png', true);
 			echo "</a>";
-			echo "<a href='javascript: show_upload_file();'  title='" . __('Upload file/s') . "'>";
+			echo "<a href='javascript: show_upload_file();' title='" . __('Upload file/s') . "'>";
 			echo print_image('images/mimetypes/unknown.png', true); 
 			echo "</a>";
 			echo "</div>";

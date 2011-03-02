@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -397,32 +397,32 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	$days = array();
 	//Translate to mysql week days
 
-    if ($daysWeek)
-	foreach ($daysWeek as $key => $value) {
-		if (!$value) {
-			if ($key == 'monday') {
-				$days[] = 2;
-			}
-			if ($key == 'tuesday') {
-				$days[] = 3;
-			}
-			if ($key == 'wednesday') {
-				$days[] = 4;
-			}
-			if ($key == 'thursday') {
-				$days[] = 5;
-			}
-			if ($key == 'friday') {
-				$days[] = 6;
-			}
-			if ($key == 'saturday') {
-				$days[] = 7;
-			}
-			if ($key == 'sunday') {
-				$days[] = 1;
+	if ($daysWeek)
+		foreach ($daysWeek as $key => $value) {
+			if (!$value) {
+				if ($key == 'monday') {
+					$days[] = 2;
+				}
+				if ($key == 'tuesday') {
+					$days[] = 3;
+				}
+				if ($key == 'wednesday') {
+					$days[] = 4;
+				}
+				if ($key == 'thursday') {
+					$days[] = 5;
+				}
+				if ($key == 'friday') {
+					$days[] = 6;
+				}
+				if ($key == 'saturday') {
+					$days[] = 7;
+				}
+				if ($key == 'sunday') {
+					$days[] = 1;
+				}
 			}
 		}
-	}
 
 	if (count($days) > 0) {
 		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
@@ -2020,8 +2020,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sql = safe_output_html ($content['external_source']);
 			}
 
-            // Do a security check on SQL coming from the user
-            $sql = check_sql ($sql);
+			// Do a security check on SQL coming from the user
+			$sql = check_sql ($sql);
 			
 			if($sql != '') {
 				$result = get_db_all_rows_sql($sql);
@@ -2052,8 +2052,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			break;
 
 		case 'sql_graph_pie':
-        case 'sql_graph_vbar':
-        case 'sql_graph_hbar':
+		case 'sql_graph_vbar':
+		case 'sql_graph_hbar':
 			$data = array();
 			$data[0] = $sizh. __('User defined graph') . " (".__($content["type"])  .")". $sizhfin;
 			array_push ($table->data, $data);
@@ -2075,7 +2075,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			if ($content['header_definition'] != '') {
 				$table2->head = explode('|', $content['header_definition']);
 			}
-          
+
 			$data = array ();
 
 			$data[0] = '<img src="include/fgraph.php?tipo='.$content["type"].'&report_id='.$content["id_rc"].'&width='.$sizgraph_w.'&pure=1" border="0" alt="">';

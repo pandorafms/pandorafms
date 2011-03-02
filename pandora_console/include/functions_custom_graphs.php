@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGr
 		$id_user = $config['id_user'];
 	}
 
-    	$groups = get_user_groups ($id_user, $privileges, $returnAllGroup);
+ 	$groups = get_user_groups ($id_user, $privileges, $returnAllGroup);
 
 	$all_graphs = get_db_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
@@ -61,9 +61,9 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGr
 			continue;
 
 		if ($graph["id_group"] > 0)
-		    if (!isset($groups[$graph["id_group"]])){
-		        continue;
-		    }
+			if (!isset($groups[$graph["id_group"]])){
+				continue;
+			}
 
 		if ($only_names) {
 			$graphs[$graph['id_graph']] = $graph['name'];

@@ -1,3 +1,8 @@
+2011-03-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php: Added missing variable initialization in function
+	process_page_head. 
+
 2011-03-02 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: added the call to

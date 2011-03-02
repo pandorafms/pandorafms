@@ -832,6 +832,7 @@ function process_page_head ($string, $bitfield) {
 		$config['css'] = array ();
 	}
 
+	$exists_css = false;
 	//First, if user has assigned a skin then try to use css files of skin subdirectory
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {

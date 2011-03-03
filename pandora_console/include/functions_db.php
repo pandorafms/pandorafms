@@ -2267,7 +2267,7 @@ function get_db_all_rows_filter($table, $filter = array(), $fields = false, $whe
 			return mysql_get_db_all_rows_filter($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
 			break;
 		case "postgresql":
-			return postgresql_get_db_all_rows_sql($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
+			return postgresql_get_db_all_rows_filter($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
 			break;
 	}
 }
@@ -2397,17 +2397,19 @@ function clean_cache() {
  *		'insert_id' will return the ID of an autoincrement value
  *		'info' will return the full (debug) information of a query
  *
+ * @param string $status The status and type of query (support only postgreSQL).
+ *
  * @return mixed An array with the rows, columns and values in a multidimensional array or false in error
  */
-function process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true) {
+function process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null) {
 	global $config;
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_process_sql($sql, $rettype, $dbconnection, $cache);
+			return @mysql_process_sql($sql, $rettype, $dbconnection, $cache);
 			break;
 		case "postgresql":
-			return postgresql_process_sql($sql, $rettype, $dbconnection, $cache);
+			return @postgresql_process_sql($sql, $rettype, $dbconnection, $cache, $status);
 			break;
 	}
 }
@@ -3485,5 +3487,23 @@ function user_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 
 	$id_group = (int) get_db_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
 	return (bool) check_acl ($id_user, $id_group, $mode);
+}
+
+/**
+ * Get last error.
+ * 
+ * @return string Return the string error.
+ */
+function get_db_last_error() {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_last_error();
+			break;
+		case "postgresql":
+			return postgresql_get_db_last_error();
+			break;
+	}
 }
 ?>

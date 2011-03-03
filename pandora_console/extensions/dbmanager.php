@@ -14,35 +14,64 @@
 
 function dbmanager_query ($sql, &$error) {
 	global $config;
-	
-	$retval = array();
 
-	if ($sql == '')
-		return false;
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$retval = array();
 		
-	$sql = html_entity_decode($sql, ENT_QUOTES);
-
-	$result = mysql_query ($sql);
-	if ($result === false) {
-		$backtrace = debug_backtrace ();
-		$error = mysql_error ();
-		return false;
+			if ($sql == '')
+				return false;
+				
+			$sql = html_entity_decode($sql, ENT_QUOTES);
+		
+			$result = mysql_query ($sql);
+			if ($result === false) {
+				$backtrace = debug_backtrace ();
+				$error = mysql_error ();
+				return false;
+			}
+			
+			if ($result === true) {
+				return mysql_affected_rows ();
+			}
+			
+			while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
+				array_push ($retval, $row);
+			}
+			mysql_free_result ($result);
+			
+			if (! empty ($retval))
+				return $retval;
+		
+			//Return false, check with === or !==
+			return "Empty";
+			break;
+		case "postgresql":
+			$retval = array();
+		
+			if ($sql == '')
+				return false;
+				
+			$sql = html_entity_decode($sql, ENT_QUOTES);
+			
+			$result = process_sql($sql, "affected_rows", '', false, $status);
+		
+			//$result = mysql_query ($sql);
+			if ($result === false) {
+				$backtrace = debug_backtrace();
+				$error = get_db_last_error();
+				
+				return false;
+			}
+			
+			if ($status == 2) {
+				return $result;
+			}
+			else {
+				return $result;
+			}
+			break;
 	}
-	
-	if ($result === true) {
-		return mysql_affected_rows ();
-	}
-	
-	while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
-		array_push ($retval, $row);
-	}
-	mysql_free_result ($result);
-	
-	if (! empty ($retval))
-		return $retval;
-
-	//Return false, check with === or !==
-	return "Empty";
 }
 
 
@@ -50,6 +79,7 @@ function dbmgr_extension_main () {
 	require_css_file ('dbmanager', 'extensions/dbmanager/');
 
     global $config;
+    
     if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	    pandora_audit("ACL Violation", "Trying to access Setup Management");
 	    require ("general/noaccess.php");

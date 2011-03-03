@@ -121,8 +121,13 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
 		echo '<select name="origen" style="width:200px">';
 		
-		$result=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
+		$rows = get_db_all_rows_sql($sql1);
+		
+		if ($rows === false) {
+			$rows = array();
+		}
+		
+		foreach ($rows as $row) {
 			if (check_acl ($config["id_user"], $row["id_grupo"], "AR")){
 				$source = $config["remote_config"]."/conf/". md5($row["nombre"]).".conf";
 				if (file_exists($source)){
@@ -142,8 +147,13 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		else
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
 
-		$result=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
+		$rows = get_db_all_rows_sql($sql1);
+		
+		if ($rows === false) {
+			$rows = array();
+		}
+		
+		foreach ($rows as $row) {
 			if (check_acl ($config["id_user"], $row["id_grupo"], "AW"))
 				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 		}

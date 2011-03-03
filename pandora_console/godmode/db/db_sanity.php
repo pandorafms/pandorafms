@@ -33,9 +33,13 @@ $sanity = get_parameter ("sanity", 0);
 if ($sanity == 1) {
 	// Create tagente estado when missing
 	echo "<h2>".__('Checking tagente_estado table')."</h2>";
-	$sql = "SELECT * FROM tagente_modulo";
-	$result = mysql_query ($sql);
-	while ($row = mysql_fetch_array ($result)) {
+	
+	$rows = get_db_all_rows_in_table('tagente_modulo');
+	if ($rows === false) {
+		$rows = array();
+	}
+	
+	foreach ($rows as $row) {
 		$id_agente_modulo = $row[0];
 		$id_agente = $row["id_agente"];
 		// check if exist in tagente_estado and create if not
@@ -50,35 +54,46 @@ if ($sanity == 1) {
 	}
 	
 	echo "<h3>".__('Checking database consistency')."</h2>";
-	$query1 = "SELECT * FROM tagente_estado";
-	$result = mysql_query($query1);
-	while ($row = mysql_fetch_array ($result)) {
-		$id_agente_modulo = $row[1];
+
+	$rows = get_db_all_rows_in_table('tagente_estado');
+	if ($rows === false) {
+		$rows = array();
+	}
+	
+	foreach ($rows as $row) {
+		$id_agente_modulo = $row['id_agente_modulo'];
 		# check if exist in tagente_estado and create if not
-		$query2 = "SELECT COUNT(*) FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
-		$result2 = mysql_query ($query2);
-		$row2 = mysql_fetch_array ($result2);
-		if ($row2[0] == 0) {
-			$query3 = "DELETE FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
-			echo "Deleting non-existing module $id_agente_modulo in state table <br>";
-			mysql_query($query3);
+		
+		$rows = get_db_all_rows_sql("SELECT COUNT(*) AS count FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo");
+		
+		if ($rows !== false) {
+			$row = reset($rows);
+			$count = $rows['count'];
+			
+			if ($count == 0) {
+				echo "Deleting non-existing module $id_agente_modulo in state table <br>";
+				
+				process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agente_modulo));
+			}
 		}
 	}
-} elseif ($sanity == 2) {
+}
+elseif ($sanity == 2) {
 	echo "<h3>".__('Deleting non-init data')."</h2>";
-	$query1 = "SELECT * FROM tagente_estado WHERE utimestamp = 0";
-	$result = mysql_query ($query1);
-	while ($row = mysql_fetch_array ($result)) {
-		$id_agente_modulo = $row[1];
+	
+	$rows = get_db_all_rows_filter("tagente_estado", array("utimestamp" => 0));
+	if ($rows === false) {
+		$rows = array();
+	}
+	
+	foreach ($rows as $row) {
 		echo "Deleting non init module $id_agente_modulo <br>";
-		$sql = "DELETE FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
-		mysql_query ($sql);
-		$sql = "DELETE FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
-		mysql_query ($sql);
+		
+		process_sql_delete('tagente_estado', array('id_agente_modulo' => $row['id_agente_modulo']));
 	}
 	echo "Deleting bad module (id 0)<br>";
-	$sql = "DELETE FROM tagente_modulo WHERE id_modulo = 0";
-	mysql_query ($sql);
+	
+	process_sql_delete('tagente_modulo', array('id_modulo' => 0));
 } 
 
 echo "<br>";
@@ -99,7 +114,4 @@ echo __('Delete non-initialized modules now');
 echo "</a></b>";
 
 echo "</div>";
-
-
-
 ?>

@@ -37,16 +37,20 @@ print_page_header (__('Graphs management'), "", false, "", true);
 // Delete module SQL code
 if ($delete_graph) {
 	if (check_acl ($config['id_user'], 0, "AW")) {
-		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
-		if ($res=mysql_query($sql))
+		$result = process_sql_delete("tgraph_source", array('id_graph' =>$id));
+		
+		if ($result)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
-		$sql = "DELETE FROM tgraph WHERE id_graph = $id";
-		if ($res=mysql_query($sql))
+			
+		$result = process_sql_delete("tgraph", array('id_graph' =>$id));
+		
+		if ($result)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
+		
 		echo $result;
 	}
 	else {

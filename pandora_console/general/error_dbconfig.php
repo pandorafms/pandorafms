@@ -42,7 +42,7 @@
 	Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
 	Probably one or more of your user, database or hostname values are incorrect or 
 	the database server is not running.</i><br /><br /><span class="error">
-	<b>MySQL ERROR:</b> '. mysql_error().'</span>
+	<b>DB ERROR:</b><?php echo get_db_last_error(); ?></span>
 	<br />&nbsp;
 	</div>
 </div>

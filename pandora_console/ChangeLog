@@ -1,3 +1,8 @@
+2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: refixed the status when the agent have
+	any module critical and any alert fired.
+
 2011-03-02 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/functions*.php: Updated year in files changed this year. Also

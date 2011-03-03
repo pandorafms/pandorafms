@@ -1549,24 +1549,26 @@ function get_agent_module_info ($id_agent, $filter = false) {
 	foreach ($modules as $key => $module) {
 		$return["modules"]++;
 		
+		$alert_status = get_agentmodule_status($key, false);
 		$module_status = get_agentmodule_status($key, true);
 		
 		switch ($module_status) {
 			case 0:
-					$return["monitor_normal"]++;
-					break;
+				$return["monitor_normal"]++;
+				break;
 			case 1:
-					$return["monitor_critical"]++;
-					break;
+				$return["monitor_critical"]++;
+				break;
 			case 2:
-					$return["monitor_warning"]++;
-					break;
+				$return["monitor_warning"]++;
+				break;
 			case 3:
-					$return["monitor_unknown"]++;
-					break;
-			case 4:
-					$return["monitor_alertsfired"]++;
-					break;
+				$return["monitor_unknown"]++;
+				break;
+		}
+		
+		if ($alert_status == 4) {
+			$return["monitor_alertsfired"]++;
 		}
 		
 	}
@@ -1595,7 +1597,8 @@ function get_agent_module_info ($id_agent, $filter = false) {
 		$return["alert_status"] = "fired";
 		$return["alert_img"] = print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
 		$return["alert_value"] = STATUS_ALERT_FIRED;
-	} elseif (give_disabled_group ($return["agent_group"])) {
+	}
+	elseif (give_disabled_group ($return["agent_group"])) {
 		$return["alert_status"] = "disabled";
 		$return["alert_value"] = STATUS_ALERT_DISABLED;
 		$return["alert_img"] = print_status_image (STATUS_ALERT_DISABLED, __('Alert disabled'), true);

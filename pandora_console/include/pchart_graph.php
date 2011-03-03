@@ -379,42 +379,44 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->xaxis_interval = ($this->xaxis_interval / 7 >= 1) ? ($this->xaxis_interval / 7) : 10;
 		$this->graph->drawScale ($this->dataset->GetData (),
 		$this->dataset->GetDataDescription (), SCALE_START0,
-		80, 80, 80, $this->show_axis, 0, 50, false,
-		$this->xaxis_interval);
+			80, 80, 80, $this->show_axis, 0, 50, false,
+			$this->xaxis_interval);
 		
 		$this->graph->drawGrid (1, true, 225, 225, 225, 100, false);
 		
 		// Draw the graph
 		if ($stacked == 1) { // Stacked solid
 			$this->graph->drawScale ($this->dataset->GetData (),
-			$this->dataset->GetDataDescription (),
-			SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
-			$this->xaxis_interval);
+				$this->dataset->GetDataDescription (),
+				SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
+				$this->xaxis_interval);
 			$this->graph->drawFilledCubicCurve ($this->dataset->GetData(),
-			$this->dataset->GetDataDescription(), 1, 30, true);
+				$this->dataset->GetDataDescription(), 1, 30, true);
 		}
 		elseif ($stacked == 3) { // Stacked wired
 			$this->graph->drawScale ($this->dataset->GetData (),
-			$this->dataset->GetDataDescription (),
-			SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
-			$this->xaxis_interval);
+				$this->dataset->GetDataDescription (),
+				SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
+				$this->xaxis_interval);
 			$this->graph->drawFilledCubicCurve ($this->dataset->GetData(),
-			$this->dataset->GetDataDescription(), 1, 0, true);
+				$this->dataset->GetDataDescription(), 1, 0, true);
 				
-		} else if ($stacked == 2) { // Wired mode
+		}
+		else if ($stacked == 2) { // Wired mode
 			$this->graph->drawScale ($this->dataset->GetData (),
-			$this->dataset->GetDataDescription (),
-			SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
-			$this->xaxis_interval);
+				$this->dataset->GetDataDescription (),
+				SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
+				$this->xaxis_interval);
 			$this->graph->drawLineGraph ($this->dataset->GetData (),
-			$this->dataset->GetDataDescription ());
-		} else { // Non-stacked, area overlapped
+				$this->dataset->GetDataDescription ());
+		}
+		else { // Non-stacked, area overlapped
 			$this->graph->drawScale ($this->dataset->GetData (),
-			$this->dataset->GetDataDescription (),
-			SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
-			$this->xaxis_interval);
+				$this->dataset->GetDataDescription (),
+				SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
+				$this->xaxis_interval);
 			$this->graph->drawFilledCubicCurve ($this->dataset->GetData(),
-			$this->dataset->GetDataDescription(), 1, 30, true);
+				$this->dataset->GetDataDescription(), 1, 30, true);
 		}
 
 		$this->graph->setFontProperties($this->fontpath,7);
@@ -608,13 +610,14 @@ class PchartGraph extends PandoraGraphAbstract {
 			if ($this->show_title){
 				$this->graph->setFontProperties ($this->fontpath, 7);
 				$this->graph->drawTextBox ($this->width - 8, 40,
-				$this->width - 240, 90, 'PANDORA FMS', 90,
-				174, 214, 174, ALIGN_BOTTOM_LEFT, false);
-			} else {
+					$this->width - 240, 90, 'PANDORA FMS', 90,
+					174, 214, 174, ALIGN_BOTTOM_LEFT, false);
+			}
+			else {
 				$this->graph->setFontProperties ($this->fontpath, 7);
 				$this->graph->drawTextBox ($this->width - 8, 50,
-				$this->width - 240, 60, 'PANDORA FMS', 90,
-				174, 214, 174, ALIGN_BOTTOM_LEFT, false);
+					$this->width - 240, 60, 'PANDORA FMS', 90,
+					174, 214, 174, ALIGN_BOTTOM_LEFT, false);
 		 	}
 		}
 	}

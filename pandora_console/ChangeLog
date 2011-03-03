@@ -1,4 +1,16 @@
 2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
+	* godmode/setup/news.php, godmode/setup/links.php, include/fgraph.php,
+	operation/agentes/status_monitor.php, operation/reporting/graph_viewer.php:
+	changed the calls to mysql functions to own functions.
+	
+	* godmode/agentes/module_manager.php: marked with a comment the source code
+	the SQL postgreSQL and mySQL standar querys.
+
+	* include/functions_html.php, include/db/postgresql.php,
+	include/functions_reporting.php, include/pchart_graph.php,
+	include/functions_db.php: cleaned source code style.
+	
+2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: refixed the status when the agent have
 	any module critical and any alert fired.

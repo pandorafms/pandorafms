@@ -3220,15 +3220,15 @@ function get_modulegroup_name ($modulegroup_id) {
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function process_sql_insert ($table, $values) {
+function process_sql_insert($table, $values) {
 	global $config;
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_process_sql_insert ($table, $values);
+			return mysql_process_sql_insert($table, $values);
 			break;
 		case "postgresql":
-			return postgresql_process_sql_insert ($table, $values);
+			return postgresql_process_sql_insert($table, $values);
 			break;
 	}
 }

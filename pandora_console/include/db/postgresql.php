@@ -334,7 +334,6 @@ function postgresql_process_sql_insert($table, $values) {
 }
 
 /**
- * 
  * Escape string to set it properly to use in sql queries
  * 
  * @param string String to be cleaned.

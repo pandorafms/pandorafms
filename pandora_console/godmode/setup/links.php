@@ -30,13 +30,14 @@ print_page_header (__('Link management'), "images/extensions.png", false, "", fa
 if (isset($_POST["create"])){ // If create
 	$name = get_parameter_post ("name");
 	$link = get_parameter_post ("link");
-	$sql_insert = "INSERT INTO tlink (name,link) VALUES ('$name','$link')";
-	$result=mysql_query($sql_insert);	
+	
+	$result = process_sql_insert("tlink", array('name' => $name, 'link' => $link));
+	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem creating link')."</h3>";
 	else {
 		echo "<h3 class='suc'>".__('Successfully created')."</h3>"; 
-		$id_link = mysql_insert_id();
+		$id_link = $result;
 	}
 }
 
@@ -44,8 +45,9 @@ if (isset($_POST["update"])){ // if update
 	$id_link = safe_input($_POST["id_link"]);
 	$name = safe_input($_POST["name"]);
 	$link = safe_input($_POST["link"]);
-$sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."' WHERE id_link = '".$id_link."'";
-	$result=mysql_query($sql_update);
+	
+	$result = process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
+	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem modifying link')."</h3>";
 	else
@@ -54,8 +56,9 @@ $sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."' WHERE id_li
 	
 if (isset($_GET["borrar"])){ // if delete
 	$id_link = safe_input($_GET["borrar"]);
-	$sql_delete= "DELETE FROM tlink WHERE id_link = ".$id_link;
-	$result=mysql_query($sql_delete);
+	
+	$result = process_sql_delete("tlink", array("id_link" => $id_link));
+	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem deleting link')."</h3>";
 	else
@@ -68,14 +71,16 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	if (isset($_GET["form_edit"])){
 		$creation_mode = 0;
 			$id_link = safe_input($_GET["id_link"]);
-			$sql1='SELECT * FROM tlink WHERE id_link = '.$id_link;
-			$result=mysql_query($sql1);
-			if ($row=mysql_fetch_array($result)){
-					$nombre = $row["name"];
-			$link = $row["link"];
+			
+			$row = get_db_row("tlink", "id_link", $id_link);
+			
+			if ($row !== false) {
+				$nombre = $row["name"];
+				$link = $row["link"];
         	}
 			else echo "<h3 class='error'>".__('Name error')."</h3>";
-	} else { // form_add
+	}
+	else { // form_add
 		$creation_mode =1;
 		$nombre = "";
 		$link = "";
@@ -87,7 +92,9 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	else
 		echo "<input type='hidden' name='update' value='1'>";
 	echo "<input type='hidden' name='id_link' value='";
-	if (isset($id_link)) {echo $id_link;}
+	if (isset($id_link)) {
+		echo $id_link;
+	}
 	echo "'>";
 	echo '<tr>
 	<td class="datos">'.__('Link name').'</td>
@@ -112,10 +119,14 @@ else {  // Main list view for Links editor
 	echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<th width='180px'>".__('Link name')."</th>";
 	echo "<th width='80px'>".__('Delete')."</th>";
-	$sql1='SELECT * FROM tlink ORDER BY name';
-	$result=mysql_query($sql1);
+	
+	$rows = get_db_all_rows_in_table('tlink', 'name');
+	if ($rows === false) {
+		$rows = array();
+	}
+	
 	$color=1;
-	while ($row=mysql_fetch_array($result)){
+	foreach ($rows as $row) {
 		if ($color == 1){
 			$tdcolor = "datos";
 			$color = 0;

@@ -130,10 +130,14 @@ else {
 	echo "<th>".__('Author')."</th>";
 	echo "<th>".__('Timestamp')."</th>";
 	echo "<th>".__('Delete')."</th>";
-	$sql = 'SELECT * FROM tnews ORDER BY timestamp';
-	$result = mysql_query ($sql);
+	
+	$rows = get_db_all_rows_in_table("tnews", "timestamp");
+	if ($rows === false) {
+		$rows = array();
+	} 
+	
 	$color = 1;
-	while ($row=mysql_fetch_array($result)){
+	foreach ($rows as $row) {
 		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;

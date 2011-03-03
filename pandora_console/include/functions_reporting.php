@@ -2078,7 +2078,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			if ($content['header_definition'] != '') {
 				$table2->head = explode('|', $content['header_definition']);
 			}
-
+			
 			$data = array ();
 
 			$data[0] = '<img src="include/fgraph.php?tipo='.$content["type"].'&report_id='.$content["id_rc"].'&width='.$sizgraph_w.'&pure=1" border="0" alt="">';

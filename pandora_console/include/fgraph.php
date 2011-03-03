@@ -1938,8 +1938,11 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
         grafico_modulo_log4x_trace("$sql1");
 
         $rows = 0;
-        $result=mysql_query($sql1);
-        while ($row=mysql_fetch_array($result)){
+        
+        $first = true;
+        while ($row = get_db_all_row_by_steps_sql($first, $result, $sql1)){
+        		$first = false;
+        	
                 $rows++;
                 $utimestamp = $row[0];
                 $severity = $row[1];

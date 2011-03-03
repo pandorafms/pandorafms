@@ -102,11 +102,18 @@ if ($create_group) {
 	
 	/*Check if name field is empty*/
 	if ($name != "") {
-		$sql = sprintf ('INSERT INTO tgrupo (nombre, icon, parent, disabled, custom_id, id_skin) 
-				VALUES ("%s", "%s", %d, %d, "%s", %d)',
-				$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled, $custom_id, $skin);
-		$result = mysql_query ($sql);
-	} else {
+		$values = array(
+			'nombre' => $name,
+			'icon' => substr ($icon, 0, -4),
+			'parent' => $id_parent,
+			'disabled' => $alerts_disabled,
+			'custom_id' => $custom_id,
+			'id_skin' => $skin
+		);
+		
+		$result = process_sql_insert('tgrupo', $values);
+	}
+	else {
 		$result = false;
 	}
 	

@@ -152,21 +152,23 @@ else {
 		$plugin_pass_opt = get_parameter ("form_pass_opt", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
 	
-		$sql_update ="UPDATE tplugin SET 
-		name = '$plugin_name',  
-		description = '$plugin_description', 
-		max_timeout = '$plugin_max_timeout', 
-		execute = '$plugin_execute', 
-		net_dst_opt = '$plugin_net_dst_opt', 
-		net_port_opt = '$plugin_net_port_opt', 
-		user_opt = '$plugin_user_opt', 
-		plugin_type = '$plugin_plugin_type',
-		pass_opt = '$plugin_pass_opt' 
-		WHERE id = $plugin_id";
-		$result=mysql_query($sql_update);	
+		$values = array(
+			'name' => $plugin_name,  
+			'description' => $plugin_description, 
+			'max_timeout' => $plugin_max_timeout, 
+			'execute' => $plugin_execute, 
+			'net_dst_opt' => $plugin_net_dst_opt, 
+			'net_port_opt' => $plugin_net_port_opt, 
+			'user_opt' => $plugin_user_opt, 
+			'plugin_type' => $plugin_plugin_type,
+			'pass_opt' => $plugin_pass_opt); 
+		
+		$result =process_sql_update('tplugin', $values, array('id' => $plugin_id));
+		
 		if (! $result) {
 			echo "<h3 class='error'>".__('Problem updating plugin')."</h3>";
-		} else {
+		}
+		else {
 			echo "<h3 class='suc'>".__('Plugin updated successfully')."</h3>";
 		}
 	}
@@ -182,43 +184,57 @@ else {
 		$plugin_user_opt = get_parameter ("form_user_opt", "");
 		$plugin_pass_opt = get_parameter ("form_pass_opt", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
-	
-		$sql_insert ="INSERT tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt, plugin_type) VALUES ('$plugin_name', '$plugin_description', '$plugin_max_timeout', '$plugin_execute', '$plugin_net_dst_opt', '$plugin_net_port_opt', '$plugin_user_opt', '$plugin_pass_opt', $plugin_plugin_type)";
-		$result=mysql_query($sql_insert);
-		if (! $result){
+		
+		$values = array(
+			'name' => $plugin_name,
+			'description' => $plugin_description,
+			'max_timeout' => $plugin_max_timeout,
+			'execute' => $plugin_execute,
+			'net_dst_opt' => $plugin_net_dst_opt,
+			'net_port_opt' => $plugin_net_port_opt,
+			'user_opt' => $plugin_user_opt,
+			'pass_opt' => $plugin_pass_opt,
+			'plugin_type' => $plugin_plugin_type);
+		
+		$result = process_sql_insert('tplugin', $values);
+		
+		if (! $result) {
 			echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
 			echo $sql_insert;
-		} else {
+		}
+		else {
 			echo "<h3 class='suc'>".__('Plugin created successfully')."</h3>";
 		}
 	}
 
 	if (isset($_GET["kill_plugin"])){ // if delete alert
 		$plugin_id = get_parameter ("kill_plugin", 0);
-		$sql_delete= "DELETE FROM tplugin WHERE id= ".$plugin_id;
-		$result=mysql_query($sql_delete);		
+		
+		$result = process_sql_delete('tplugin', array('id' => $plugin_id));
+			
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem deleting plugin')."</h3>";
-		} else {
+		}
+		else {
 			echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
 		}
-		if ($plugin_id != 0){
-			$sql_delete2 ="DELETE FROM tagente_modulo WHERE id_plugin = ".$plugin_id; 
-			$result=mysql_query($sql_delete2);
+		if ($plugin_id != 0){			
+			$result = process_sql_delete('tagente_modulo', array('id_plugin' => $plugin_id));
 		}
 	}
 
 	// If not edition or insert, then list available plugins
-	$sql1='SELECT * FROM tplugin ORDER BY name';
-	$result=mysql_query($sql1);
-	if (mysql_num_rows($result) > 0){
+	$rows = get_db_sql('SELECT * FROM tplugin ORDER BY name');
+	
+	if ($rows !== false) {
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Type')."</th>";
 		echo "<th>".__('Command')."</th>";
 		echo "<th>".__('Delete')."</th>";
 		$color = 0;
-		while ($row=mysql_fetch_array($result)){
+		
+		foreach ($rows as $row) {
 			if ($color == 1){
 				$tdcolor = "datos";
 				$color = 0;

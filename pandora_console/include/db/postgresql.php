@@ -180,7 +180,7 @@ function postgresql_insert_id($dbconnection = '') {
 	return $result;
 }
 
-function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true) {
+function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null) {
 	global $config;
 	global $sql_cache;
 	
@@ -205,7 +205,10 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 			$result = pg_get_result($config['dbconnection']);
 		}
 		$time = microtime (true) - $start;
-		if ($result === false) {
+		
+		$resultError = pg_result_error($result);
+		
+		if (($result === false) || (!empty($resultError))) {
 			$backtrace = debug_backtrace ();
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				pg_result_error($result), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
@@ -239,9 +242,9 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 			else { //The query IS a select.
 				add_database_debug_trace ($sql, 0, $rows, array ('time' => $time));
 				while ($row = pg_fetch_assoc($result)) {
-					array_push ($retval, $row);
+					array_push($retval, $row);
 				}
-	
+				
 				if ($cache === true)
 					$sql_cache[$sql] = $retval;
 				pg_free_result ($result);
@@ -595,7 +598,7 @@ function postgresql_get_db_value_sql($sql) {
  */
 function postgresql_get_db_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql ($sql, $search_history_db);
+	$result = get_db_all_rows_sql($sql, $search_history_db);
 
 	if($result === false)
 		return false;
@@ -963,5 +966,14 @@ function postgresql_safe_sql_string($string) {
 	global $config;
 	
 	return pg_escape_string($config['dbconnection'], $string);
+}
+
+/**
+ * Get last error.
+ * 
+ * @return string Return the string error.
+ */
+function postgresql_get_db_last_error() {
+	return pg_last_error();
 }
 ?>

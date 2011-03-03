@@ -37,11 +37,15 @@ if ($update_module) {
 	$icon = get_parameter_post ("icon");
 	$category = get_parameter_post ("category");
 	
-	$sql_update ="UPDATE ttipo_modulo
-		SET descripcion = '".$description."', categoria = '".$category."',
-		nombre = '".$name."', icon = '".$icon."'
-		WHERE id_tipo = '".$id_type."'";
-	$result = mysql_query($sql_update);
+	$values = array(
+		'descripcion' => $description,
+		'categoria' => $category,
+		'nombre' => $name,
+		'icon' => $icon
+		);
+	
+	$result = process_sql_update('ttipo_modulo', $values, array('id_tipo' => $id_type));
+	
 	if (! $result)
 		echo "<h3 class='error'>".__('Problem modifying module')."</h3>";
 	else
@@ -54,14 +58,19 @@ echo "<th>".__('Icon')."</th>";
 echo "<th>".__('ID')."</th>";
 echo "<th>".__('Name')."</th>";
 echo "<th>".__('Description')."</th>";
-$sql = 'SELECT * FROM ttipo_modulo ORDER BY nombre';
-$result = mysql_query ($sql);
+
+$rows = get_db_all_rows_sql('SELECT * FROM ttipo_modulo ORDER BY nombre');
+if ($rows === false) {
+	$rows = array();
+}
+
 $color = 0;
-while ($row = mysql_fetch_array ($result)){
+foreach ($rows as $row) {
 	if ($color == 1) {
 		$tdcolor = "datos";
 		$color = 0;
-	} else {
+	}
+	else {
 		$tdcolor = "datos2";
 		$color = 1;
 	}

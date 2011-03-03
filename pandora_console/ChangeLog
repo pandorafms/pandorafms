@@ -1,4 +1,20 @@
 2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
+	fixed the function "get_db_all_rows_filter" for PostgreSQL engine, added
+	new function "get_db_last_error" and derivate functions in DB engines. And
+	added new parameter $status in function "process_sql".
+	
+	* extensions/dbmanager.php, general/error_authconfig.php,
+	general/error_dbconfig.php, godmode/groups/modu_group_list.php,
+	godmode/groups/group_list.php, godmode/db/db_sanity.php,
+	godmode/agentes/fields_manager.php,
+	godmode/agentes/manage_config_remote.php, godmode/servers/recon_script.php,
+	godmode/servers/plugin.php, godmode/modules/module_list.php,
+	godmode/modules/manage_network_components_form_wmi.php,
+	godmode/reporting/graphs.php: changed the calls to mysql functions to own
+	functions, and rewrote some parts of source code for this action.
+
+2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
 	* godmode/setup/news.php, godmode/setup/links.php, include/fgraph.php,
 	operation/agentes/status_monitor.php, operation/reporting/graph_viewer.php:
 	changed the calls to mysql functions to own functions.

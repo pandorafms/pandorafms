@@ -157,16 +157,16 @@ else {
 
 	// If not edition or insert, then list available reconscripts
 	
-	$sql1='SELECT * FROM trecon_script ORDER BY name';
-	$result=mysql_query($sql1);
-	if (mysql_num_rows($result) > 0) {
+	$rows = get_db_all_rows_in_table('trecon_script');
+	
+	if ($rows !== false) {
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Command')."</th>";
 		echo "<th>".__('Description')."</th>";
 		echo "<th>".__('Delete')."</th>";
 		$color = 0;
-		while ($row=mysql_fetch_array($result)){
+		foreach ($rows as $row) {
 			if ($color == 1){
 				$tdcolor = "datos";
 				$color = 0;

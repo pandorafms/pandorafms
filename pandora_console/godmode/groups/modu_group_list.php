@@ -64,15 +64,15 @@ if ($create_group) {
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
-
-	$sql = sprintf ('INSERT INTO tmodule_group (name) 
-			VALUES ("%s")',
-			$name);
-	$result = mysql_query ($sql);
+	
+	$result = process_sql_insert('tmodule_group', array('name' => $name));
+	
 	if ($result) {
 		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
-	} else {
-		echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";	}
+	}
+	else {
+		echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
+	}
 }
 
 /* Update group */
@@ -97,10 +97,8 @@ if ($update_group) {
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
 	
-//	$sql = sprintf ('UPDATE tmodule_group set id_mg = 1 WHERE id_mg = %d', $id_group);
-//	$result = mysql_query ($sql);
-	$sql = sprintf ('DELETE FROM tmodule_group WHERE id_mg = %d', $id_group);
-	$result = mysql_query ($sql);
+	$result = process_sql_delete('tmodule_group', array('id_mg' => $id_group));
+	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
 	else

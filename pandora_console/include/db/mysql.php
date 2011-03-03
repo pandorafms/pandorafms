@@ -950,4 +950,13 @@ function mysql_safe_sql_string($string) {
 	
 	return mysql_real_escape_string($string, $config['dbconnection']);
 }
+
+/**
+ * Get last error.
+ * 
+ * @return string Return the string error.
+ */
+function mysql_get_db_last_error() {
+	return mysql_error();
+}
 ?>

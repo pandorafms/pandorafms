@@ -19,10 +19,11 @@ global $config;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, "PM")) {
+if (!check_acl($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
+	
 	return;
 }
 
@@ -40,44 +41,43 @@ $display_on_front = (int) get_parameter ('display_on_front', 0);
 if ($create_field) {
 	/*Check if name field is empty*/
 	if ($name != "") {
-		$sql = sprintf ('INSERT INTO tagent_custom_fields (name, display_on_front) 
-				VALUES ("%s", "%d")',
-				$name, $display_on_front);
-		$result = mysql_query ($sql);
-	} else {
+		$result = process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
+	}
+	else {
 		$result = false;
 	}
 	
 	if ($result) {
 		echo "<h3 class='suc'>".__('Field successfully created')."</h3>"; 
-	} else {
-		echo "<h3 class='error'>".__('There was a problem creating field')."</h3>";	}
+	}
+	else {
+		echo "<h3 class='error'>".__('There was a problem creating field')."</h3>";
+	}
 }
 
 /* Update field */
 if ($update_field) {
 	/*Check if name field is empty*/
 	if( $name != "") {	
-		$sql = sprintf ('UPDATE tagent_custom_fields SET name = "%s",
-				display_on_front = %d
-				WHERE id_field = %d',
-				$name, $display_on_front, $id_field);
-		$result = process_sql ($sql);
-	} else {
+		$values = array('name' => $name, 'display_on_front' => $display_on_front);
+		
+		$result = process_sql_update('tagent_custom_fields', $values, array('id_field' => $id_field));
+	}
+	else {
 		$result = false;
 	}
 	
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Field successfully updated')."</h3>";
-	} else {
+	}
+	else {
 		echo "<h3 class='error'>".__('There was a problem modifying field')."</h3>";
 	}
 }
 
 /* Delete field */
 if ($delete_field) {	
-	$sql = sprintf ('DELETE FROM tagent_custom_fields WHERE id_field = %d', $id_field);
-	$result = process_sql ($sql);
+	$result = process_sql_delete('tagent_custom_fields', array('id_field' => $id_field));
 	
 	if (!$result)
 		echo "<h3 class='error'>".__('There was a problem deleting field')."</h3>"; 
@@ -97,7 +97,8 @@ if ($fields) {
 	$table->align[1] = 'center';
 	$table->align[2] = 'center';
 	$table->data = array ();
-} else {
+}
+else {
 	echo '<div class="nf">'. __('No fields defined') .'</div>';
 }
 
@@ -109,7 +110,8 @@ foreach ($fields as $field) {
 
 	if($field['display_on_front']) {
 		$data[1] = print_image('images/tick.png', true);
-	}else {
+	}
+	else {
 		$data[1] = print_image('images/delete.png', true);
 	}
 		

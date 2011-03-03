@@ -89,8 +89,13 @@ echo '<td class="datos2">' . __('Module type') . '</td>';
 echo '<td class="datos2">';
 echo '<select name="tipo">';
 echo '<option value="' . $type . '">' . get_moduletype_name ($type);
-$result = mysql_query('SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
-while ($component = mysql_fetch_array($result)){
+
+$rows = get_db_all_rows_sql('SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
+if ($rows === false) {
+	$rows = array();
+}
+
+foreach ($rows as $row) {
 	echo '<option value="' . $component['id_tipo'] . '">' . $component['nombre'] . '</option>';
 }
 echo '</select>';
@@ -110,9 +115,15 @@ echo '<select name="id_module_group">';
 if ($id) {
 	echo '<option value="' . $id_module_group . '">' . get_modulegroup_name($id_module_group);
 }
-$result = mysql_query('SELECT * FROM tmodule_group');
-while ($component = mysql_fetch_array($result))
+
+$rows = get_db_all_rows_in_table('tmodule_group');
+if ($rows === false) {
+	$rows = array();
+}
+
+foreach ($rows as $row) {
 	echo '<option value="' . $component['id_mg'] . '">' . $component['name'] . '</option>';
+}
 echo '</select>';
 echo '<tr>';
 

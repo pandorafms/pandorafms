@@ -49,7 +49,14 @@ if (!getAgentMap($agentId, "500px", "98%", true, true, $period)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
 } 
 
-$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
+switch ($config["dbtype"]) {
+	case "mysql":
+		$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP();");
+		break;
+	case "postgresql":
+		$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+		break;
+}
 
 activateAjaxRefresh(null, $timestampLastOperation);
 activateSelectControl();

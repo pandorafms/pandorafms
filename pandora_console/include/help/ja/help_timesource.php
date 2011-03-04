@@ -29,7 +29,20 @@ $option = array ("prominent" => "timestamp");
 ?>
 <b>現在のシステムの時刻:</b> <?php print_timestamp (time (), false, $option); ?>
 <br />
-<b>現在のデータベースの時刻:</b> <?php print_timestamp (get_db_sql ("SELECT UNIX_TIMESTAMP()"), false, $option); ?>
+<b>現在のデータベースの時刻:</b>
+<?php
+global $config;
+
+switch ($config["dbtype"]) {
+	case "mysql":
+		$timestamp = get_db_value_sql("SELECT UNIX_TIMESTAMP();");
+		break;
+	case "postgresql":
+		$timestamp = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+		break;
+}
+print_timestamp ($timestamp, false, $option);
+?>
 <br />
 <b>あなたのブラウザの時刻:</b> <script type="text/javascript">document.write (date);</script>
 </p>

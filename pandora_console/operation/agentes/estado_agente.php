@@ -76,6 +76,13 @@ if (is_ajax ()) {
 	return;
 }
 
+$first = true;
+while ($row = get_db_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")){
+	$first = false;
+	
+	debugPrint($row);
+}
+
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
 $search = safe_output(get_parameter ("search", ""));

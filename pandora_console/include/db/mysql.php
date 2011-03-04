@@ -959,4 +959,29 @@ function mysql_safe_sql_string($string) {
 function mysql_get_db_last_error() {
 	return mysql_error();
 }
+
+/**
+ * This function gets the time from either system or sql based on preference and returns it
+ *
+ * @return int Unix timestamp
+ */
+function mysql_get_system_time() {
+	global $config;
+	
+	static $time = 0;
+	
+	if ($time != 0)
+		return $time;
+	
+	if ($config["timesource"] = "sql") {
+		$time = get_db_sql ("SELECT UNIX_TIMESTAMP();");
+		if (empty ($time)) {
+			return time ();
+		}
+		return $time;
+	}
+	else {
+		return time ();
+	}
+}
 ?>

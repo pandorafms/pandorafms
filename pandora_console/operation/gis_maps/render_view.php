@@ -171,8 +171,15 @@ if ($layers != false) {
 		}
 	}
 	addParentLines();
-	
-	$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP();");
+			break;
+		case "postgresql":
+			$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+			break;
+	}
 	
 	activateSelectControl();
 	activateAjaxRefresh($layers, $timestampLastOperation);

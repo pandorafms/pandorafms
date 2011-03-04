@@ -314,19 +314,14 @@ function human_time_comparation ($timestamp, $units = 'large') {
  */
 function get_system_time () {
 	global $config;
-	static $time = 0;
-	
-	if ($time != 0)
-		return $time;
-	
-	if ($config["timesource"] = "sql") {
-		$time = get_db_sql ("SELECT UNIX_TIMESTAMP()");
-		if (empty ($time)) {
-			return time ();
-		}
-		return $time;
-	} else {
-		return time ();
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			require_once ($config['homedir'] . '/include/db/mysql.php');
+			break;
+		case "postgresql":
+			require_once ($config['homedir'] . '/include/db/postgresql.php');
+			break;
 	}
 }
 

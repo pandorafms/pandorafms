@@ -1,3 +1,15 @@
+2011-03-04 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
+	the function "get_system_time" and derivate functions in DB engines.
+	
+	* include/functions_gis.php, include/functions_servers.php,
+	include/help/en/help_timesource.php, include/help/es/help_timesource.php,
+	include/help/ja/help_timesource.php, include/functions.php,
+	operation/agentes/estado_agente.php, operation/agentes/gis_view.php,
+	operation/gis_maps/render_view.php: added the SQL queries PostgreSQL
+	compatible, in this case with the function to get unix_timestamp.
+
 2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
 	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
 	fixed the function "get_db_all_rows_filter" for PostgreSQL engine, added

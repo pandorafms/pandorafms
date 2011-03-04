@@ -502,12 +502,20 @@ function get_agent_icon_map($idAgent, $state = false, $status = null) {
  * @return None
  */
 function addPath($layerName, $idAgent, $lastPosition = null, $history_time = null) {
+	global $config;
 	
 	if ($history_time === null) {
 		$where = '1 = 1';
 	}
 	else {
-		$where = 'start_timestamp >= FROM_UNIXTIME(UNIX_TIMESTAMP() - ' . $history_time . ')';
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$where = 'start_timestamp >= FROM_UNIXTIME(UNIX_TIMESTAMP() - ' . $history_time . ')';
+				break;
+			case "postgresql":
+				$where = 'start_timestamp >= to_timestamp(ceil(date_part("epoch", CURRENT_TIMESTAMP)) - ' . $history_time . ')';
+				break;
+		}
 	}
 	
 	$listPoints = get_db_all_rows_sql('SELECT *

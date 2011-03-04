@@ -1,5 +1,10 @@
 2011-03-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: made rollback the version of function
+	"select_db_engine" because I had a mistake in the previous commit.
+
+2011-03-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
 	the function "get_system_time" and derivate functions in DB engines.
 	

@@ -26,10 +26,10 @@ function select_db_engine() {
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_get_system_time();
+			require_once ($config['homedir'] . '/include/db/mysql.php');
 			break;
 		case "postgresql":
-			return postgresql_get_system_time();
+			require_once ($config['homedir'] . '/include/db/postgresql.php');
 			break;
 	}
 }

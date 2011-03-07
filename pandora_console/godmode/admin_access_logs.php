@@ -103,7 +103,14 @@ if ($filter_ip != '') {
 }
 
 if ($filter_hours_old != 0) {
-	$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL -' . $filter_hours_old . ' HOUR)';
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL -' . $filter_hours_old . ' HOUR)';
+			break;
+		case "postgresql":
+			$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL - \'' . $filter_hours_old . ' HOUR \')';
+			break;
+	}
 }
 
 $sql = "SELECT COUNT(*) FROM tsesion " . $filter;

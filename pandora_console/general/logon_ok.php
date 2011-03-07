@@ -160,10 +160,10 @@ switch ($config["dbtype"]) {
 			AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
 		break;
 	case "postgresql":
-		$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion
+		$sql = sprintf ("SELECT \"ID_usuario\", accion, fecha, \"IP_origen\", descripcion
 			FROM tsesion
 			WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 604800) 
-			AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
+			AND \"ID_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
 		break;
 }
 
@@ -175,10 +175,22 @@ if ($sessions === false)
 foreach ($sessions as $session) {
 	$data = array ();
 	
-	$data[0] = '<strong>'.$session['id_usuario'].'</strong>';
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$session_id_usuario = $session['id_usuario'];
+			$session_ip_origen = $session['ip_origen'];
+			break;
+		case "postgresql":
+			$session_id_usuario = $session['ID_usuario'];
+			$session_ip_origen = $session['IP_origen'];
+			break;
+	}
+	
+	
+	$data[0] = '<strong>' . $session_id_usuario . '</strong>';
 	$data[1] = $session['accion'];
 	$data[2] = $session['fecha'];
-	$data[3] = $session['ip_origen'];
+	$data[3] = $session_ip_origen;
 	$data[4] = safe_output ($session['descripcion']);
 	
 	array_push ($table->data, $data);

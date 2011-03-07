@@ -586,9 +586,18 @@ function get_group_stats ($id_group = 0) {
 		foreach ($id_group as $group){
 
 
-			$data["agents_unknown"] += get_db_sql ("SELECT COUNT(*)
-				FROM tagente
-				WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo * 2)");
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$data["agents_unknown"] += get_db_sql ("SELECT COUNT(*)
+						FROM tagente
+						WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo * 2)");
+					break;
+				case "postgresql":
+					$data["agents_unknown"] += get_db_sql ("SELECT COUNT(*)
+						FROM tagente
+						WHERE id_grupo = $group AND disabled = 0 AND ceil(date_part('epoch', ultimo_contacto)) < ceil(date_part('epoch', NOW())) - (intervalo * 2)");
+					break;
+			}
 
 			$data["total_agents"] += get_db_sql ("SELECT COUNT(*)
 					FROM tagente WHERE id_grupo = $group AND disabled = 0");

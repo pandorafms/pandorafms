@@ -1,5 +1,10 @@
 2011-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: added the SQL query with correct
+	date operations for PostgreSQL.
+
+2011-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php, godmode/admin_access_logs.php: changes for the
 	interval operator in PostgreSQL.
 

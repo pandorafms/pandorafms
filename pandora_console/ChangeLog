@@ -1,5 +1,10 @@
 2011-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* general/logon_ok.php: change the SQL in postgreSQL and some parts of
+	source code to use the colummns with the case sensitive.
+
+2011-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_events.php, include/functions_reporting.php,
 	include/functions_db.php, extensions/users_connected.php,
 	general/logon_ok.php: added the SQL queries PostgreSQL

@@ -574,7 +574,8 @@ function get_group_stats ($id_group = 0) {
 	// -------------------------------------------------------------------
 	// Realtime stats, done by PHP Console
 	// -------------------------------------------------------------------
-	} else {
+	}
+	else {
 
 		if (!is_array($id_group)){
 			$my_group = $id_group;
@@ -585,28 +586,126 @@ function get_group_stats ($id_group = 0) {
 		foreach ($id_group as $group){
 
 
-			$data["agents_unknown"] += get_db_sql ("SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo *2)");
+			$data["agents_unknown"] += get_db_sql ("SELECT COUNT(*)
+				FROM tagente
+				WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo * 2)");
 
-			$data["total_agents"] += get_db_sql ("SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
+			$data["total_agents"] += get_db_sql ("SELECT COUNT(*)
+					FROM tagente WHERE id_grupo = $group AND disabled = 0");
 
-			$data["monitor_checks"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
+			$data["monitor_checks"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+				FROM tagente_estado, tagente, tagente_modulo
+				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+					AND tagente_estado.id_agente = tagente.id_agente
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
 
-			$data["total_not_init"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-	 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND tagente_estado.utimestamp = 0");
+			$data["total_not_init"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+				FROM tagente_estado, tagente, tagente_modulo
+				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+					AND tagente_estado.id_agente = tagente.id_agente
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+					AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24)
+					AND tagente_estado.utimestamp = 0");
 
-			$data["monitor_ok"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$data["monitor_ok"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+							AND tagente_estado.id_agente = tagente.id_agente
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+							AND tagente_modulo.disabled = 0 AND estado = 0
+							AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
+							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
+					break;
+				case "postgresql":
+					$data["monitor_ok"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+							AND tagente_estado.id_agente = tagente.id_agente
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+							AND tagente_modulo.disabled = 0 AND estado = 0
+							AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
+							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
+					break;
+			}
 
-			$data["monitor_critical"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$data["monitor_critical"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+						AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente_modulo.disabled = 0 AND estado = 1 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+					break;
+				case "postgresql":
+					$data["monitor_critical"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+						AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+					break;
+			}
 			
-			$data["monitor_warning"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$data["monitor_warning"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+						AND estado = 2 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+						OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+					break;
+				case "postgresql":
+					$data["monitor_warning"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+						AND estado = 2 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+						OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+					break;
+			}
 
-			$data["monitor_unknown"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100) AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$data["monitor_unknown"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+						AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
+						AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+					break;
+				case "postgresql":
+					$data["monitor_unknown"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+						AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
+						AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+					break;
+			}
 
-			$data["monitor_not_init"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");
+			$data["monitor_not_init"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+				FROM tagente_estado, tagente, tagente_modulo
+				WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");
 
-			$data["monitor_alerts"] += get_db_sql ("SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+			$data["monitor_alerts"] += get_db_sql ("SELECT COUNT(talert_template_modules.id)
+				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
+				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
+				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
 
-			$data["monitor_alerts_fired"] += get_db_sql ("SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
+			$data["monitor_alerts_fired"] += get_db_sql ("SELECT COUNT(talert_template_modules.id)
+				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
+				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
+				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
 		}
 		/*
 		 Monitor health (percentage)

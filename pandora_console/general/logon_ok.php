@@ -152,10 +152,21 @@ $table->head[2] = __('Date');
 $table->head[3] = __('Source IP');
 $table->head[4] = __('Comments');
 
-$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion
-				FROM tsesion
-				WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - 604800) 
-				AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion
+			FROM tsesion
+			WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - 604800) 
+			AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
+		break;
+	case "postgresql":
+		$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion
+			FROM tsesion
+			WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 604800) 
+			AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
+		break;
+}
+
 $sessions = get_db_all_rows_sql ($sql);
 
 if ($sessions === false)

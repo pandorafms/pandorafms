@@ -2638,6 +2638,8 @@ function get_agentmodule_last_status($id_agentmodule = 0) {
  * The value -1 is returned in case the agent has exceed its interval.
  */
 function get_agent_status($id_agent = 0) {
+	global $config;
+	
 	$modules = get_agent_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
 
 	$modules_status = array();
@@ -2654,12 +2656,24 @@ function get_agent_status($id_agent = 0) {
 	// If all the modules are asynchronous or keep alive, the group cannot be unknown
 	if($modules_async < count($modules)) {
 		$time = get_system_time ();
-		$status = get_db_value_filter ('COUNT(*)',
-			'tagente',
-		array ('id_agente' => (int) $id_agent,
-				'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time));
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$status = get_db_value_filter ('COUNT(*)',
+					'tagente',
+					array ('id_agente' => (int) $id_agent,
+						'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time));
+				break;
+			case "postgresql":
+				$status = get_db_value_filter ('COUNT(*)',
+					'tagente',
+					array ('id_agente' => (int) $id_agent,
+						'ceil(date_part(\'epoch\', ultimo_contacto)) + intervalo * 2 > '.$time));
+				break;
+		}
+			
 		if (! $status)
-		return -1;
+			return -1;
 	}
 
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3 for unknown. 4 for alert fired
@@ -2738,13 +2752,6 @@ function get_group_status ($id_group = 0) {
  */
 function get_module_status ($id_module = 0) {
 	$time = get_system_time ();
-	/*$status = get_db_value_filter ('COUNT(*)',
-		'tagente',
-		array ('id_agente' => (int) $id_agent,
-		'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time,
-		'UNIX_TIMESTAMP(ultimo_contacto_remoto) + intervalo * 2 > '.$time));
-		if (! $status)
-		return -1;*/
 
 	$status = get_db_sql ("SELECT estado
 			FROM tagente_estado, tagente_modulo 

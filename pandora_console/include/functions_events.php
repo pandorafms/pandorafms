@@ -259,12 +259,26 @@ function get_event_description ($id_event) {
  * @return int event id
  */
 function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0) {
-	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
-		estado, utimestamp, id_usuario, event_type, criticity,
-		id_agentmodule, id_alert_am) 
-		VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d)',
-		$id_agent, $id_group, $event, $status, $id_user, $event_type,
-		$priority, $id_agent_module, $id_aam);
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+				estado, utimestamp, id_usuario, event_type, criticity,
+				id_agentmodule, id_alert_am) 
+				VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d)',
+				$id_agent, $id_group, $event, $status, $id_user, $event_type,
+				$priority, $id_agent_module, $id_aam);
+			break;
+		case "postgresql":
+			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+				estado, utimestamp, id_usuario, event_type, criticity,
+				id_agentmodule, id_alert_am) 
+				VALUES (%d, %d, "%s", NOW(), %d, ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s", "%s", %d, %d, %d)',
+				$id_agent, $id_group, $event, $status, $id_user, $event_type,
+				$priority, $id_agent_module, $id_aam);
+			break;
+	}
 	
 	return (int) process_sql ($sql, "insert_id");
 }

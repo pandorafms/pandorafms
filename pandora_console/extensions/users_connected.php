@@ -17,6 +17,8 @@ function users_extension_main() {
 }
 
 function users_extension_main_god ($god = true) {
+	global $config;
+	
 	if (isset($config["id_user"])) {
 		if (!check_acl ($config["id_user"], 0, "UM")) {
 			return;
@@ -25,9 +27,19 @@ function users_extension_main_god ($god = true) {
 	
 	// Header
 	print_page_header (__("Users connected"), "images/extensions.png", false, "", $god);
-	
-	$sql = "SELECT id_usuario, ip_origen, fecha, accion FROM tsesion WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
 
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = "SELECT id_usuario, ip_origen, fecha, accion
+				FROM tsesion
+				WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
+		case "postgresql":
+			$sql = "SELECT id_usuario, ip_origen, fecha, accion
+				FROM tsesion
+				WHERE descripcion = 'Logged in' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, accion";
+		break;
+	}
+	
 	$rows = get_db_all_rows_sql ($sql);
 	if (empty ($rows)) {
 		$rows = array ();

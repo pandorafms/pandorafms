@@ -3081,7 +3081,16 @@ function __ ($string /*, variable arguments */) {
  * @return int The number of servers alive.
  */
 function check_server_status () {
-	$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
+			break;
+		case "postgresql":
+			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL '15 MINUTE'";
+			break;
+	}
 	$status = (int) get_db_sql ($sql); //Cast as int will assure a number value
 	// This function should just ack of server down, not set it down.
 	return $status;

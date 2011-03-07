@@ -1,3 +1,8 @@
+2011-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php, godmode/admin_access_logs.php: changes for the
+	interval operator in PostgreSQL.
+
 2011-03-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.oracle.sql: Added to repository. Creation script with some

@@ -1836,8 +1836,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$table->style[1] = 'text-align: right';
 			$data = array ();
-			$data[0] = $sizh.__('S.L.A.').$sizhfin;
-			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;;
+			$data[0] = $sizh . __('S.L.A.').$sizhfin;
+			$data[1] = $sizh . human_time_description_raw($content['period']) . $sizhfin;;
 			$n = array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2116,7 +2116,14 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			if ($content['treport_custom_sql_id'] != 0) {
-				$sql = safe_output_html (get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+				switch ($config["dbtype"]) {
+					case "mysql":
+						$sql = safe_output_html (get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						break;
+					case "postgresql":
+						$sql = safe_output_html (get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						break;
+				}
 			}
 			else {
 				$sql = safe_output_html ($content['external_source']);

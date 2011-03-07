@@ -31,9 +31,11 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 if (isset ($_GET["update_netgroup"])) {
 	$group = get_parameter_get ("update_netgroup", 0);
 	if (check_acl ($config['id_user'], $group, "AW")) {
-		$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$group);
-		process_sql ($sql);
-	} else {
+		$where = array('id_agente' => 'ANY(SELECT id_agente FROM tagente WHERE id_grupo = ' . $group . ')');
+		
+		process_sql_update('tagente_modulo', array('flag' => 1), $where);
+	}
+	else {
 		pandora_audit("ACL Violation", "Trying to set flag for groups");
 		require ("general/noaccess.php");
 		exit;

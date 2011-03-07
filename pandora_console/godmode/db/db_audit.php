@@ -63,8 +63,8 @@ $time["3month"] = $time["all"]-(86400*90);
 # Purge data using dates
 if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 	$from_date = get_parameter_post("date_purge");
-	$query = sprintf("DELETE FROM `tsesion` WHERE `utimestamp` < '%s';",$from_date);
-	(int) $deleted = process_sql($query);
+	
+	$deleted = process_sql_delete('tsesion', array('utimestamp' => '< ' . $from_date));
 }
 # End of get parameters block
 

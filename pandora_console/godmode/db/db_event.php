@@ -31,11 +31,13 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 # Purge data using dates
 if (isset ($_POST["date_purge"])){
 	$from_date = (int) get_parameter_post ("date_purge");
-	$query = sprintf ("DELETE FROM `tevento` WHERE `utimestamp` < %d",$from_date);
-	$deleted = process_sql ($query);			
+	
+	$deleted = process_sql_delete('tevento', array('utimestamp' => '< ' . $from_date));
+	
 	if ($deleted !== false) {
 		echo '<h3 class="suc">'.__('Successfully deleted old events').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="error">'.__('Error deleting old events').'</h3>';
 	}
 }

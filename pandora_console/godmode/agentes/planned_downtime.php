@@ -95,27 +95,32 @@ if ($create_downtime || $update_downtime) {
 	
 	if ($datetime_from > $datetime_to) {
 		echo '<h3 class="error">'.__('Not created. Error inserting data').': START &gt; END</h3>';
-	} else {
+	}
+	else {
 		$sql = '';
 		if ($create_downtime) {
-			$sql = sprintf ("INSERT INTO tplanned_downtime (`name`,
-				`description`, `date_from`, `date_to`, `id_group`) 
-				VALUES ('%s','%s',%d,%d, %d)",
-				$name, $description, $datetime_from,
-				$datetime_to, $id_group);
-		} else if ($update_downtime) {
-			$sql = sprintf ("UPDATE tplanned_downtime 
-				SET `name`='%s', `description`='%s', `date_from`=%d,
-				`date_to`=%d, `id_group`=%d
-				WHERE `id` = '%d'",
-				$name, $description, $datetime_from,
-				$datetime_to, $id_group, $id_downtime);
+			$values = array(
+				'name' => $name,
+				'description' => $description,
+				'date_from' => $datetime_from,
+				'date_to' => $datetime_to,
+				'id_group' => $id_group);
+			$result = process_sql_insert('tplanned_downtime', $values);
+		}
+		else if ($update_downtime) {
+			$values = array(
+				'name' => $name,
+				'description' => $description,
+				'date_from' => $datetime_from,
+				'date_to' => $datetime_to,
+				'id_group' => $id_group);
+			$result = process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 		}
 		
-		$result = process_sql ($sql);
 		if ($result === false) {
 			echo '<h3 class="error">'.__('Could not be created').'</h3>';
-		} else {
+		}
+		else {
 			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		}
 	}
@@ -126,9 +131,18 @@ if ($create_downtime || $update_downtime) {
 	if (($first_create != 0) OR ($first_update != 0)){
 		// Have any data to show ?
 		if ($id_downtime > 0) {
-			$sql = sprintf ("SELECT `id`, `name`, `description`, `date_from`, `date_to`, `id_group`
-					FROM `tplanned_downtime` WHERE `id` = %d",
-					$id_downtime);
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$sql = sprintf ("SELECT `id`, `name`, `description`, `date_from`, `date_to`, `id_group`
+						FROM `tplanned_downtime` WHERE `id` = %d",
+						$id_downtime);
+					break;
+				case "postgresql":
+					$sql = sprintf ("SELECT \"id\", \"name\", \"description\", \"date_from\", \"date_to\", \"id_group\"
+						FROM \"tplanned_downtime\" WHERE \"id\" = %d",
+						$id_downtime);
+					break;
+			}
 			
 			$result = get_db_row_sql ($sql);
 			$name = $result["name"];

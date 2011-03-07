@@ -69,7 +69,14 @@ if ($add_sla) {
 }
 
 if ($get_custom_sql) {
-	$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $id));
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $id));
+			break;
+		case "postgresql":
+			$sql = get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $id));
+			break;
+	}
 	
 	if ($sql === false) {
 		$data['correct'] = 0;

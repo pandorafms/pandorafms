@@ -14,6 +14,7 @@
 
 function mainAgentsModules() {
 	global $config;
+	
 	// Load global vars
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
@@ -33,8 +34,9 @@ function mainAgentsModules() {
 	if (isset ($_GET["update_netgroup"])) {
 		$group = get_parameter_get ("update_netgroup", 0);
 		if (check_acl ($config['id_user'], $group, "AW")) {
-			$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$group);
-			process_sql ($sql);
+			$where = array("id_agente" => "ANY(SELECT id_agente FROM tagente WHERE id_grupo = " . $group);
+			
+			process_sql_update('tagente_modulo', array("flag" => 1), $where);
 		}
 		else {
 			pandora_audit("ACL Violation", "Trying to set flag for groups");

@@ -230,11 +230,12 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 function get_agents_with_module_name ($module_name, $id_group, $filter = false, $fields = 'tagente.*') {
 	if (empty ($module_name))
 		return false;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
-	$filter['`tagente_modulo`.nombre'] = $module_name;
-	$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
+	$filter['tagente_modulo.nombre'] = $module_name;
+	$filter['tagente.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
 	
 	return get_db_all_rows_filter ('tagente, tagente_modulo',
 		$filter, $fields);

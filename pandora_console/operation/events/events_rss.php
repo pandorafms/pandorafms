@@ -78,40 +78,40 @@ $sql_post = "";
 
 if ($event_view_hr > 0) {
 	$unixtime = (int) (get_system_time () - ($event_view_hr * 3600)); //Put hours in seconds
-	$sql_post .= " AND `tevento`.`utimestamp` > ".$unixtime;
+	$sql_post .= " AND tevento.utimestamp > ".$unixtime;
 }
 if ($ev_group > 1)
-	$sql_post .= " AND `tevento`.`id_grupo` = $ev_group";
+	$sql_post .= " AND tevento.id_grupo = $ev_group";
 
 	
 switch($status) {
 	case 0:
 	case 1:
 	case 2:
-		$sql_post .= " AND `tevento`.`estado` = ".$status;
+		$sql_post .= " AND tevento.estado = ".$status;
 		break;
 	case 3:
-		$sql_post .= " AND (`tevento`.`estado` = 0 OR `tevento`.`estado` = 2)";
+		$sql_post .= " AND (tevento.estado = 0 OR tevento.estado = 2)";
 		break;
 }
 
 	
 if ($search != "")
-	$sql_post .= " AND `tevento`.`evento` LIKE '%$search%'";
+	$sql_post .= " AND tevento.evento LIKE '%$search%'";
 if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
 	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
-		$sql_post .= " AND `tevento`.`event_type` LIKE '%$event_type%' ";
+		$sql_post .= " AND tevento.event_type LIKE '%$event_type%' ";
 	}
 	elseif ($event_type == "not_normal") {
-		$sql_post .= " AND `tevento`.`event_type` LIKE '%warning%' OR `tevento`.`event_type` LIKE '%critical%' OR `tevento`.`event_type` LIKE '%unknown%' ";
+		$sql_post .= " AND tevento.event_type LIKE '%warning%' OR tevento.event_type LIKE '%critical%' OR tevento.event_type LIKE '%unknown%' ";
 	}
 	else
-		$sql_post .= " AND `tevento`.`event_type` = '".$event_type."'";
+		$sql_post .= " AND tevento.event_type = '".$event_type."'";
 }
 if ($severity != -1)
-	$sql_post .= " AND `tevento`.`criticity` >= ".$severity;
+	$sql_post .= " AND tevento.criticity >= ".$severity;
 	
 
 
@@ -149,22 +149,22 @@ else {
 	
 	
 if ($id_agent != -1)
-	$sql_post .= " AND `tevento`.`id_agente` = ".$id_agent;
+	$sql_post .= " AND tevento.id_agente = ".$id_agent;
 if ($id_event != -1)
 	$sql_post .= " AND id_evento = ".$id_event;
 		
 // Avoid to show system events to not administrators
 if(!check_acl($user, 0, "PM"))
-	$sql_post .= " AND `tevento`.`event_type` <> 'system'";
+	$sql_post .= " AND tevento.event_type <> 'system'";
 	
-$sql="SELECT `tevento`.`id_evento` AS event_id,
-	`tevento`.`id_agente` AS id_agent,
-	`tevento`.`id_usuario` AS validated_by,
-	`tevento`.`id_grupo` AS id_group,
-	`tevento`.`estado` AS validated,
-	`tevento`.`evento` AS event_descr,
-	`tevento`.`utimestamp` AS unix_timestamp,
-	`tevento`.`event_type` AS event_type 
+$sql="SELECT tevento.id_evento AS event_id,
+		tevento.id_agente AS id_agent,
+		tevento.id_usuario AS validated_by,
+		tevento.id_grupo AS id_group,
+		tevento.estado AS validated,
+		tevento.evento AS event_descr,
+		tevento.utimestamp AS unix_timestamp,
+		tevento.event_type AS event_type 
 	FROM tevento
 	WHERE 1 = 1".$sql_post."
 	ORDER BY utimestamp DESC LIMIT 0 , 30";

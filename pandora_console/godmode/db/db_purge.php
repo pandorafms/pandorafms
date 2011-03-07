@@ -98,32 +98,33 @@ if (isset($_POST["purgedb"])) {
 			echo "<br />";
 			flush (); //Flush here in case there are errors and the script dies, at least we know where we ended
 			set_time_limit (); //Reset the time limit just in case
-			$sql = sprintf ("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
-			$result = process_sql ($sql);
+			
+			$result = process_sql_delete('tagente_datos', array('id_agente_modulo' => $row["id_agente_modulo"], 'utimestamp' => '< ' . $from_date));
+			
 			if ($result === false)
 				$errors++;
 			else
 				$affected += $result;
 
 			if ($errors == 0) {
-				$sql = sprintf ("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
-				$result = process_sql ($sql);
+				$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $row["id_agente_modulo"], 'utimestamp' => '< ' . $from_date));
+				
 				if ($result === false)
 					$errors++;
 				else
 					$affected += $result;
 			}
 			if ($errors == 0) {
-				$sql = sprintf ("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
-				$result = process_sql ($sql);
+				$result = process_sql_delete('tagente_datos_string', array('id_agente_modulo' => $row["id_agente_modulo"], 'utimestamp' => '< ' . $from_date));
+				
 				if ($result === false)
 					$errors++;
 				else
 					$affected += $result;
 			}
 			if ($errors == 0) {
-				$sql = sprintf ("DELETE FROM `tagente_datos_log4x` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
-				$result = process_sql ($sql);
+				$result = process_sql_delete('tagente_datos_log4x', array('id_agente_modulo' => $row["id_agente_modulo"], 'utimestamp' => '< ' . $from_date));
+				
 				if ($result === false)
 					$errors++;
 				else
@@ -133,7 +134,8 @@ if (isset($_POST["purgedb"])) {
 		
 		if ($errors > 0) {
 			process_sql_rollback ();
-		} else {
+		}
+		else {
 			process_sql_commit ();
 
 			echo __('Total records deleted: ') . $affected;
@@ -142,14 +144,11 @@ if (isset($_POST["purgedb"])) {
 		//All agents
 		echo __('Deleting records for all agents');
 		flush ();
-		$query = sprintf ("DELETE FROM `tagente_datos` WHERE `utimestamp` < %d",$from_date);
-		process_sql ($query);
-		$query = sprintf ("DELETE FROM `tagente_datos_inc` WHERE `utimestamp` < %d",$from_date);
-		process_sql ($query);
-		$query = sprintf ("DELETE FROM `tagente_datos_string` WHERE `utimestamp` < %d",$from_date);
-		process_sql ($query);
-		$query = sprintf ("DELETE FROM `tagente_datos_log4x` WHERE `utimestamp` < %d",$from_date);
-		process_sql ($query);
+		
+		process_sql_delete('tagente_datos', array('utimestamp' => '< ' . $from_date));
+		process_sql_delete('tagente_datos_inc', array('utimestamp' => '< ' . $from_date));
+		process_sql_delete('tagente_datos_string', array('utimestamp' => '< ' . $from_date));
+		process_sql_delete('tagente_datos_log4x', array('utimestamp' => '< ' . $from_date));
 	}
 	echo "<br /><br />";
 }

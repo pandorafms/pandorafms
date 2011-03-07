@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 function xml_array ($array) {
 	foreach ($array as $name => $value) {
 		if (is_int ($name)) {
@@ -100,6 +99,8 @@ else {
 	require_once ("include/auth/mysql.php");	
 }
 
+global $config;
+
 check_login ();
 
 $id_report = (int) get_parameter ('id');
@@ -141,7 +142,14 @@ if ($datetime === false || $datetime == -1) {
 }
 
 $group_name = get_group_name ($report['id_group']);
-$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
+switch ($config["dbtype"]) {
+	case "mysql":
+		$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
+		break;
+	case "postgresql":
+		$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '"order"');
+		break;
+}
 
 $time = get_system_time ();
 echo '<report>';
@@ -350,7 +358,14 @@ foreach ($contents as $content) {
 			}
 			
 			if ($content['treport_custom_sql_id'] != 0) {
-				$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+				switch ($config["dbtype"]) {
+					case "mysql":
+						$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+						break;
+					case "postgresql":
+						$sql = get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+						break;
+				}
 			}
 			else {
 				$sql = $content['external_source'];

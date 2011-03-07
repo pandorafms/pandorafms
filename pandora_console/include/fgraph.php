@@ -680,9 +680,19 @@ function graphic_incident_source ($width = 320, $height = 200) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
-			FROM tincidencia GROUP BY `origen`
-			ORDER BY 1 DESC LIMIT %d', $max_items);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
+					FROM tincidencia GROUP BY `origen`
+					ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
+					FROM tincidencia GROUP BY "origen"
+					ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+	}
 	$origins = get_db_all_rows_sql ($sql);
 	
 	if($origins == false) {

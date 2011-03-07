@@ -57,7 +57,14 @@ $table->data = array ();
 
 // Current config["language"] could be set by user, not taken from global setup !
 
-$current_system_lang = get_db_sql ('SELECT `value` FROM tconfig WHERE `token` = "language"');
+switch ($config["dbtype"]) {
+	case "mysql":
+		$current_system_lang = get_db_sql ('SELECT `value` FROM tconfig WHERE `token` = "language"');
+		break;
+	case "postgresql":
+		$current_system_lang = get_db_sql ('SELECT "value" FROM tconfig WHERE "token" = \'language\'');
+		break;
+}
 
 if ($current_system_lang == ""){
 	$current_system_lang = "en";

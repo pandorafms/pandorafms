@@ -44,7 +44,7 @@ function get_server ($id_server, $filter = false, $fields = false) {
  * @return All the servers available.
  */
 function get_server_names () {
-	$all_servers = @get_db_all_rows_filter ('tserver', false, array ('DISTINCT(`name`) as name'));
+	$all_servers = @get_db_all_rows_filter ('tserver', false, array ('DISTINCT(name) as name'));
 	if ($all_servers === false)
 		return array ();
 	

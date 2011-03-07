@@ -1028,14 +1028,28 @@ function validateMapData($map_name, $map_zoom_level,
  * @return Array Return a asociative array whith the items 'map', 'connections' and 'layers'. And in 'layers' has data and item 'agents'.
  */
 function getMapData($idMap) {
+	global $config;
+	
 	$returnVar = array();
 	
 	$map = get_db_row('tgis_map', 'id_tgis_map', $idMap);
-	$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
-			t1.default_map_connection AS `default`,
-			(SELECT t2.num_zoom_levels
-				FROM tgis_map_connection AS t2 WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-		FROM tgis_map_has_tgis_map_connection AS t1 WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
+					t1.default_map_connection AS `default`,
+					(SELECT t2.num_zoom_levels
+						FROM tgis_map_connection AS t2 WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
+				FROM tgis_map_has_tgis_map_connection AS t1 WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+			break;
+		case "postgresql":
+			$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
+					t1.default_map_connection AS "default",
+					(SELECT t2.num_zoom_levels
+						FROM tgis_map_connection AS t2 WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
+				FROM tgis_map_has_tgis_map_connection AS t1 WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+			break;
+	}
 	$layers = get_db_all_rows_sql('SELECT id_tmap_layer, layer_name, tgrupo_id_grupo AS layer_group, view_layer AS layer_visible FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map']);
 	if ($layers === false) $layers = array();
 	

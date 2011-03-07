@@ -36,7 +36,7 @@ if (is_ajax ()) {
 		
 		$agents_modules = get_agents_with_module_name ($module_name, $id_group,
 			array ('delete_pending' => 0,
-				'`tagente_modulo`.disabled' => 0),
+				'tagente_modulo.disabled' => 0),
 			array ('tagente.id_agente', 'tagente.nombre'));
 		
 		echo json_encode (index_array ($agents_modules, 'id_agente', 'nombre'));
@@ -127,7 +127,7 @@ $table->data[2][0] .= print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $agents = get_agents_with_module_name ($module_name, $id_group,
 	array ('delete_pending' => 0,
-		'`tagente_modulo`.disabled' => 0),
+		'tagente_modulo.disabled' => 0),
 	array ('tagente.id_agente', 'tagente.nombre'));
 $table->data[2][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));

@@ -48,7 +48,7 @@ if (is_ajax ()) {
 			$standby = (int) get_parameter ('standby');
 
 			$agents_alerts = get_agents_with_alert_template ($id_alert_templates, false,
-				array('order' => 'tagente.nombre, talert_template_modules.standby', '`talert_template_modules`.standby' => $standby), 
+				array('order' => 'tagente.nombre, talert_template_modules.standby', 'talert_template_modules.standby' => $standby), 
 				array ('LEFT(CONCAT(LEFT(tagente.nombre,40), " - ", tagente_modulo.nombre), 85) as agent_agentmodule_name', 
 				'talert_template_modules.id as template_module_id'), $id_agents);
 

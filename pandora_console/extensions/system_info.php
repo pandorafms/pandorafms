@@ -42,14 +42,28 @@ function getPandoraDiagnostic(&$systemInfo) {
 	$systemInfo['tusuario'] = get_db_sql("SELECT COUNT(*) FROM tusuario");
 	$systemInfo['tsesion'] = get_db_sql("SELECT COUNT(*) FROM tsesion");
 
-	$systemInfo['db_scheme_version'] = get_db_sql("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_version'");
-	$systemInfo['db_scheme_build'] = get_db_sql("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_build'");
-	$systemInfo['enterprise_installed'] = get_db_sql("SELECT `value` FROM tconfig WHERE `token` = 'enterprise_installed'");
-	$systemInfo['db_maintance'] = date ("Y/m/d H:i:s", get_db_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'"));
-	$systemInfo['customer_key'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'customer_key';");
-	$systemInfo['updating_code_path'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'updating_code_path'");
-	$systemInfo['keygen_path'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'keygen_path'");
-	$systemInfo['current_update'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'current_update'");
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$systemInfo['db_scheme_version'] = get_db_sql("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_version'");
+			$systemInfo['db_scheme_build'] = get_db_sql("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_build'");
+			$systemInfo['enterprise_installed'] = get_db_sql("SELECT `value` FROM tconfig WHERE `token` = 'enterprise_installed'");
+			$systemInfo['db_maintance'] = date ("Y/m/d H:i:s", get_db_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'"));
+			$systemInfo['customer_key'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'customer_key';");
+			$systemInfo['updating_code_path'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'updating_code_path'");
+			$systemInfo['keygen_path'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'keygen_path'");
+			$systemInfo['current_update'] = get_db_sql("SELECT value FROM tupdate_settings WHERE `key` = 'current_update'");
+			break;
+		case "postgresql":
+			$systemInfo['db_scheme_version'] = get_db_sql("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_version'");
+			$systemInfo['db_scheme_build'] = get_db_sql("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_build'");
+			$systemInfo['enterprise_installed'] = get_db_sql("SELECT \"value\" FROM tconfig WHERE \"token\" = 'enterprise_installed'");
+			$systemInfo['db_maintance'] = date ("Y/m/d H:i:s", get_db_sql ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_maintance'"));
+			$systemInfo['customer_key'] = get_db_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'customer_key';");
+			$systemInfo['updating_code_path'] = get_db_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'updating_code_path'");
+			$systemInfo['keygen_path'] = get_db_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'keygen_path'");
+			$systemInfo['current_update'] = get_db_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'current_update'");
+			break;
+	}
 }
 
 function getSystemInfo(&$systemInfo, $script = false) {

@@ -184,6 +184,8 @@ function get_report_content ($id_report_content, $filter = false, $fields = fals
  * @return array All the contents of a report. 
  */
 function create_report_content ($id_report, $values) {
+	global $config;
+	
 	$id_report = safe_int ($id_report);
 	if (empty ($id_report))
 		return false;
@@ -193,9 +195,21 @@ function create_report_content ($id_report, $values) {
 	if (! is_array ($values))
 		return false;
 	$values['id_report'] = $id_report;
-	unset ($values['`order`']);
-	$order = (int) get_db_value ('MAX(`order`)', 'treport_content', 'id_report', $id_report);
-	$values['`order`'] = $order + 1;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			unset ($values['`order`']);
+			
+			$order = (int) get_db_value ('MAX(`order`)', 'treport_content', 'id_report', $id_report);
+			$values['`order`'] = $order + 1;
+			break;
+		case "postgresql":
+			unset ($values['"order"']);
+			
+			$order = (int) get_db_value ('MAX("order")', 'treport_content', 'id_report', $id_report);
+			$values['"order"'] = $order + 1;
+			break;
+	}
 	
 	return @process_sql_insert ('treport_content', $values);
 }
@@ -236,21 +250,41 @@ function get_report_contents ($id_report, $filter = false, $fields = false) {
  * @return bool True if moved, false otherwise.
  */
 function move_report_content_up ($id_report_content) {
+	global $config;
+	
 	if (empty ($id_report_content))
 		return false;
 	
 	$content = get_report_content ($id_report_content);
 	if ($content === false)
 		return false;
-	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-	/* Set the previous element order to the current of the content we want to change */
-	process_sql_update ('treport_content', 
-		array ('`order` = `order` + 1'),
-		array ('id_report' => $content['id_report'],
-			'`order` = '.($order - 1)));
-	return (@process_sql_update ('treport_content',
-		array ('`order` = `order` - 1'),
-		array ('id_rc' => $id_report_content))) !== false;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+			/* Set the previous element order to the current of the content we want to change */
+			process_sql_update ('treport_content', 
+				array ('`order` = `order` + 1'),
+				array ('id_report' => $content['id_report'],
+					'`order` = '.($order - 1)));
+				
+			return (@process_sql_update ('treport_content',
+				array ('`order` = `order` - 1'),
+				array ('id_rc' => $id_report_content))) !== false;
+			break;
+		case "postgresql":
+			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
+			/* Set the previous element order to the current of the content we want to change */
+			process_sql_update ('treport_content', 
+				array ('"order" = "order" + 1'),
+				array ('id_report' => $content['id_report'],
+					'"order" = '.($order - 1)));
+				
+			return (@process_sql_update ('treport_content',
+				array ('"order" = "order" - 1'),
+				array ('id_rc' => $id_report_content))) !== false;
+			break;
+	}
 }
 
 /**
@@ -261,21 +295,39 @@ function move_report_content_up ($id_report_content) {
  * @return bool True if moved, false otherwise.
  */
 function move_report_content_down ($id_report_content) {
+	global $config;
+	
 	if (empty ($id_report_content))
 		return false;
 	
 	$content = get_report_content ($id_report_content);
 	if ($content === false)
 		return false;
-	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-	/* Set the previous element order to the current of the content we want to change */
-	process_sql_update ('treport_content', 
-		array ('`order` = `order` - 1'),
-		array ('id_report' => (int) $content['id_report'],
-			'`order` = '.($order + 1)));
-	return (@process_sql_update ('treport_content',
-		array ('`order` = `order` + 1'),
-		array ('id_rc' => $id_report_content))) !== false;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+			/* Set the previous element order to the current of the content we want to change */
+			process_sql_update ('treport_content', 
+				array ('`order` = `order` - 1'),
+				array ('id_report' => (int) $content['id_report'],
+					'`order` = '.($order + 1)));
+			return (@process_sql_update ('treport_content',
+				array ('`order` = `order` + 1'),
+				array ('id_rc' => $id_report_content))) !== false;
+			break;
+		case "postgresql":
+			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
+			/* Set the previous element order to the current of the content we want to change */
+			process_sql_update ('treport_content', 
+				array ('"order" = "order" - 1'),
+				array ('id_report' => (int) $content['id_report'],
+					'"order" = '.($order + 1)));
+			return (@process_sql_update ('treport_content',
+				array ('"order" = "order" + 1'),
+				array ('id_rc' => $id_report_content))) !== false;
+			break;
+	}
 }
 
 /**
@@ -292,11 +344,24 @@ function delete_report_content ($id_report_content) {
 	$content = get_report_content ($id_report_content);
 	if ($content === false)
 		return false;
-	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-	process_sql_update ('treport_content',
-		array ('`order` = `order` - 1'),
-		array ('id_report' => (int) $content['id_report'],
-			'`order` > '.$order));
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+			process_sql_update ('treport_content',
+				array ('`order` = `order` - 1'),
+				array ('id_report' => (int) $content['id_report'],
+					'`order` > '.$order));
+			break;
+		case "postgresql":
+			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
+			process_sql_update ('treport_content',
+				array ('"order" = "order" - 1'),
+				array ('id_report' => (int) $content['id_report'],
+					'"order" > '.$order));
+			break;
+	}
+		
 	return (@process_sql_delete ('treport_content',
 		array ('id_rc' => $id_report_content))) !== false;
 }

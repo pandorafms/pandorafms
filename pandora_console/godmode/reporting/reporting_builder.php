@@ -254,15 +254,30 @@ switch ($action) {
 						else {
 							$idItem = $result;
 							
-							$max = get_db_all_rows_sql('SELECT max(`order`) AS max 
-								FROM treport_content WHERE id_report = ' . $idReport . ';');
+							switch ($config["dbtype"]) {
+								case "mysql":
+									$max = get_db_all_rows_sql('SELECT max(`order`) AS max 
+										FROM treport_content WHERE id_report = ' . $idReport . ';');
+									break;
+								case "postgresql":
+									$max = get_db_all_rows_sql('SELECT max("order") AS max 
+										FROM treport_content WHERE id_report = ' . $idReport . ';');
+									break;
+							}
 							if ($max === false) {
 								$max = 0;
 							}
 							else {
 								$max = $max[0]['max'];
 							}
-							process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
+							switch ($config["dbtype"]) {
+								case "mysql":
+									process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
+									break;
+								case "postgresql":
+									process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
+									break;
+							}
 							
 							$resultOperationDB = true;
 						}
@@ -370,7 +385,14 @@ switch ($action) {
 				}
 				break;
 			default:
-				$oldOrder = get_db_value_sql('SELECT `order` FROM treport_content WHERE id_rc = ' . $idItem);
+				switch ($config["dbtype"]) {
+					case "mysql":
+						$oldOrder = get_db_value_sql('SELECT `order` FROM treport_content WHERE id_rc = ' . $idItem);
+						break;
+					case "postgresql":
+						$oldOrder = get_db_value_sql('SELECT "order" FROM treport_content WHERE id_rc = ' . $idItem);
+						break;
+				}
 				//get_db_value_filter('order', 'treport_content', array('id_rc' => $idItem));
 		
 				switch ($dir) {
@@ -383,10 +405,26 @@ switch ($action) {
 				}
 				
 				process_sql_begin();
-				$resultOperationDB = process_sql_update('treport_content',
-					array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_report' => $idReport));
+				
+				switch ($config["dbtype"]) {
+					case "mysql":
+						$resultOperationDB = process_sql_update('treport_content',
+							array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_report' => $idReport));
+						break;
+					case "postgresql":
+						$resultOperationDB = process_sql_update('treport_content',
+							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport));
+						break;
+				}
 				if ($resultOperationDB !== false) {
-					$resultOperationDB = process_sql_update('treport_content', array('`order`' => $newOrder), array('id_rc' => $idItem));
+					switch ($config["dbtype"]) {
+						case "mysql":
+							$resultOperationDB = process_sql_update('treport_content', array('`order`' => $newOrder), array('id_rc' => $idItem));
+							break;
+						case "postgresql":
+							$resultOperationDB = process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem));
+							break;
+					}
 					if ($resultOperationDB !== false) {
 						process_sql_commit();
 					}

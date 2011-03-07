@@ -120,7 +120,22 @@ if($moduleFilter != 0) {
 	$where .= ' AND id_agent_module = ' . $moduleFilter;
 }
 
-$items = get_db_all_rows_sql('SELECT * FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport . ' ORDER BY `order` LIMIT ' . $offset . ', ' . $config["block_size"]);
+switch ($config["dbtype"]) {
+	case "mysql":
+		$items = get_db_all_rows_sql('SELECT *
+			FROM treport_content
+			WHERE ' . $where . ' AND id_report = ' . $idReport . '
+			ORDER BY `order`
+			LIMIT ' . $offset . ', ' . $config["block_size"]);
+		break;
+	case "postgresql":
+		$items = get_db_all_rows_sql('SELECT *
+			FROM treport_content
+			WHERE ' . $where . ' AND id_report = ' . $idReport . '
+			ORDER BY "order"
+			LIMIT ' . $offset . ', ' . $config["block_size"]);
+		break;
+}
 $countItems = get_db_sql('SELECT COUNT(id_rc) FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport);
 $table = null;
 

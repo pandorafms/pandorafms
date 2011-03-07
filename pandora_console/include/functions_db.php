@@ -1018,16 +1018,31 @@ function get_agentmodule_type ($id_agentmodule) {
  * @return int The number of times a monitor went down.
  */
 function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
+	global $config;
+	
 	if ($date == 0) {
 		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
-	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
-			`event_type` = 'monitor_down' 
-			AND `id_agentmodule` = %d 
-			AND `utimestamp` > %d 
-			AND `utimestamp` <= %d",
-	$id_agent_module, $datelimit, $date);
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
+				`event_type` = 'monitor_down' 
+				AND `id_agentmodule` = %d 
+				AND `utimestamp` > %d 
+				AND `utimestamp` <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT COUNT(\"id_agentmodule\") FROM \"tevento\" WHERE
+				\"event_type\" = 'monitor_down' 
+				AND \"id_agentmodule\" = %d 
+				AND \"utimestamp\" > %d 
+				AND \"utimestamp\" <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+	}
 
 	return get_db_sql ($sql);
 }
@@ -1042,16 +1057,31 @@ function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
  * @return int The last time a monitor went down.
  */
 function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
+	global $config;	
+
 	if ($date == 0) {
 		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
-	$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
-			event_type = 'monitor_down' 
-			AND `id_agentmodule` = %d 
-			AND `utimestamp` > %d 
-			AND `utimestamp` <= %d",
-	$id_agent_module, $datelimit, $date);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
+				event_type = 'monitor_down' 
+				AND `id_agentmodule` = %d 
+				AND `utimestamp` > %d 
+				AND `utimestamp` <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT MAX(\"timestamp\") FROM \"tevento\" WHERE
+				event_type = 'monitor_down' 
+				AND \"id_agentmodule\" = %d 
+				AND \"utimestamp\" > %d 
+				AND \"utimestamp\" <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+	}
 
 	return get_db_sql ($sql);
 }
@@ -1064,6 +1094,8 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
  * @return array An array with all the monitors defined in the group (tagente_modulo).
  */
 function get_monitors_in_group ($id_group) {
+	global $config;
+	
 	if ($id_group <= 0) {
 		//We select all groups the user has access to if it's 0 or -1
 		global $config;
@@ -1074,11 +1106,23 @@ function get_monitors_in_group ($id_group) {
 		$id_group = implode (",",$id_group);
 	}
 
-	$sql = sprintf ("SELECT `tagente_modulo`.* FROM `tagente_modulo`, `ttipo_modulo`, `tagente` WHERE
-			`id_tipo_modulo` = `id_tipo` 
-			AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
-			AND `ttipo_modulo`.`nombre` LIKE '%%_proc' 
-			AND `tagente`.`id_grupo` IN (%s) ORDER BY `tagente`.`nombre`", $id_group);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT `tagente_modulo`.* FROM `tagente_modulo`, `ttipo_modulo`, `tagente` WHERE
+					`id_tipo_modulo` = `id_tipo` 
+					AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
+					AND `ttipo_modulo`.`nombre` LIKE '%%_proc' 
+					AND `tagente`.`id_grupo` IN (%s) ORDER BY `tagente`.`nombre`", $id_group);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT tagente_modulo.* FROM tagente_modulo, ttipo_modulo, tagente WHERE
+					id_tipo_modulo = id_tipo 
+					AND tagente.id_agente = tagente_modulo.id_agente 
+					AND ttipo_modulo.nombre LIKE '%%_proc' 
+					AND tagente.id_grupo IN (%s) ORDER BY tagente.nombre", $id_group);
+			break;
+	}
+				
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -1238,12 +1282,27 @@ function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0
  * @return array An array with all the monitors defined (tagente_modulo).
  */
 function get_monitors_in_agent ($id_agent) {
-	$sql = sprintf ("SELECT `tagente_modulo`.*
-			FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
-			WHERE `id_tipo_modulo` = `id_tipo`
-			AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente`
-			AND `ttipo_modulo`.`nombre` LIKE '%%_proc'
-			AND `tagente`.`id_agente` = %d", $id_agent);
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT `tagente_modulo`.*
+				FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
+				WHERE `id_tipo_modulo` = `id_tipo`
+					AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente`
+					AND `ttipo_modulo`.`nombre` LIKE '%%_proc'
+					AND `tagente`.`id_agente` = %d", $id_agent);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT tagente_modulo.*
+				FROM tagente_modulo, ttipo_modulo, tagente
+				WHERE id_tipo_modulo = id_tipo
+					AND tagente.id_agente = tagente_modulo.id_agente
+					AND ttipo_modulo.nombre LIKE '%%_proc'
+					AND tagente.id_agente = %d", $id_agent);
+			break;
+	}	
+		
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -1281,15 +1340,34 @@ function get_monitors_down ($monitors, $period = 0, $date = 0) {
  * @return int The number of times an alert fired.
  */
 function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
+	global $config;
+	
 	if (!$date)
-	$date = get_system_time ();
+		$date = get_system_time ();
+		
 	$datelimit = $date - $period;
-	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
-			`event_type` = 'alert_fired'
-			AND `id_alert_am` = %d
-			AND `utimestamp` > %d 
-			AND `utimestamp` <= %d",
-	$id_alert_module, $datelimit, $date);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT COUNT(`id_agentmodule`)
+				FROM `tevento`
+				WHERE `event_type` = 'alert_fired'
+					AND `id_alert_am` = %d
+					AND `utimestamp` > %d 
+					AND `utimestamp` <= %d",
+				$id_alert_module, $datelimit, $date);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT COUNT(id_agentmodule)
+				FROM tevento
+				WHERE event_type = 'alert_fired'
+					AND id_alert_am = %d
+					AND utimestamp > %d 
+					AND utimestamp <= %d",
+				$id_alert_module, $datelimit, $date);
+			break;
+	}
+	
 	return (int) get_db_sql ($sql);
 }
 
@@ -1358,16 +1436,34 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
  * @return int The last time an alert fired. It's an UNIX timestamp.
  */
 function get_alert_last_fire_timestamp_in_period ($id_alert_module, $period, $date = 0) {
+	global $config;	
+
 	if ($date == 0) {
 		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
-	$sql = sprintf ("SELECT MAX(`utimestamp`) FROM `tevento` WHERE
-			`event_type` = 'alert_fired'
-			AND `id_alert_am` = %d
-			AND `utimestamp` > %d 
-			AND `utimestamp` <= %d",
-	$id_alert_module, $datelimit, $date);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT MAX(`utimestamp`)
+				FROM `tevento`
+				WHERE `event_type` = 'alert_fired'
+					AND `id_alert_am` = %d
+					AND `utimestamp` > %d 
+					AND `utimestamp` <= %d",
+				$id_alert_module, $datelimit, $date);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT MAX(utimestamp)
+				FROM tevento
+				WHERE event_type = 'alert_fired'
+					AND id_alert_am = %d
+					AND utimestamp > %d 
+					AND utimestamp <= %d",
+				$id_alert_module, $datelimit, $date);
+			break;
+	}
+	
 	return get_db_sql ($sql);
 }
 
@@ -1903,10 +1999,21 @@ function get_networkprofile_name ($id_network_profile) {
  * @param string IP address to assign
  */
 function agent_add_address ($id_agent, $ip_address) {
+	global $config;	
+
 	// Check if already is attached to agent
-	$sql = sprintf ("SELECT COUNT(`ip`) FROM taddress_agent, taddress
-		WHERE taddress_agent.id_a = taddress.id_a
-		AND ip = '%s' AND id_agent = %d",$ip_address,$id_agent);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT COUNT(`ip`) FROM taddress_agent, taddress
+				WHERE taddress_agent.id_a = taddress.id_a
+				AND ip = '%s' AND id_agent = %d",$ip_address,$id_agent);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT COUNT(ip) FROM taddress_agent, taddress
+				WHERE taddress_agent.id_a = taddress.id_a
+				AND ip = '%s' AND id_agent = %d", $ip_address, $id_agent);
+			break;
+	}
 	$current_address = get_db_sql ($sql);
 	if ($current_address > 0)
 	return;
@@ -1952,7 +2059,15 @@ function agent_delete_address ($id_agent, $ip_address) {
 	if (get_agent_address ($id_agent) == $ip_address) {
 		$new_ips = get_agent_addresses ($id_agent);
 		// Change main address in agent to first one in the list
-		$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d", current ($new_ips), $id_agent);
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d", current ($new_ips), $id_agent);
+				break;
+			case "postgresql":
+				$query = sprintf ("UPDATE tagente SET direccion = '%s' WHERE id_agente = %d", current ($new_ips), $id_agent);
+				break;
+		}
 		process_sql ($query);
 	}
 }

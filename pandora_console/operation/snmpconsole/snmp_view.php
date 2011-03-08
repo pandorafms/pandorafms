@@ -41,7 +41,8 @@ $url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_ag
 
 if ($config["pure"]) {
 	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . print_image("images/normalscreen.png", true, array("title" => __('Normal screen')))  . '</a>';
-} else {
+}
+else {
 	// Fullscreen
 	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . print_image("images/fullscreen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
@@ -60,7 +61,8 @@ if (isset ($_GET["delete"])){
 		print_result_message ($result,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
-	} else {
+	}
+	else {
 		pandora_audit("ACL Violation",
 			"Trying to delete SNMP event ID #".$id_trap);
 	}
@@ -70,12 +72,16 @@ if (isset ($_GET["delete"])){
 if (isset ($_GET["check"])) {
 	$id_trap = (int) get_parameter_get ("check", 0);
 	if ($id_trap > 1 && check_acl ($config['id_user'], 0, "IW")) {
-		$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
-		$result = process_sql ($sql);
+		$values = array(
+			'status' => 1,
+			'id_usuario' => $config["id_user"]);
+		$result = process_sql_update('ttrap', $values, array('id_trap' => $id_trap));
+		
 		print_result_message ($result,
 			__('Successfully updated'),
 			__('Could not be updated'));
-	} else {
+	}
+	else {
 		pandora_audit("ACL Violation",
 			"Trying to checkout SNMP Trap ID".$id_trap);
 	}
@@ -89,7 +95,8 @@ if (isset ($_POST["deletebt"])) {
 			$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
 			process_sql ($sql);
 		}
-	} else {
+	}
+	else {
 		pandora_audit("ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
 	}
@@ -103,7 +110,8 @@ if (isset ($_POST["updatebt"])) {
 			$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
 			process_sql ($sql);
 		}
-	} else {
+	}
+	else {
 		pandora_audit("ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
 	}

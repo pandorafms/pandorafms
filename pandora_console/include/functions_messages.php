@@ -119,11 +119,12 @@ function delete_message ($id_message) {
 function process_message_read ($message_id, $read = true) {
 	if (empty ($read)) {
 		$read = 0;
-	} else {
+	}
+	else {
 		$read = 1;
 	}
 	
-	return (bool) process_sql ("UPDATE tmensajes SET estado = ".$read." WHERE id_mensaje = ".$message_id);
+	return (bool) process_sql_update('tmensajes', array('estado' => $read), array('id_mensaje' => $message_id));
 }
 
 /** 

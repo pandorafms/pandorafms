@@ -327,16 +327,15 @@ $flag = get_parameter('flag', '');
 if ($flag !== '') {
 	if ($flag == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
 		$id_agent_module = get_parameter('id_agente_modulo');
-		$sql = sprintf("UPDATE tagente_modulo SET flag=1 WHERE id_agente_modulo = %d", $id_agent_module);
-		process_sql ($sql);
+		
+		process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente_modulo' => $id_agent_module));
 	}
 }
 // Check for Network FLAG change request
 $flag_agent = get_parameter('flag_agent','');
 if ($flag_agent !== ''){
 	if ($flag_agent == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
-		$sql = sprintf("UPDATE tagente_modulo SET flag=1 WHERE id_agente = %d", $id_agente);
-		process_sql ($sql);
+		process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente' =>$id_agente));
 	}
 }
 

@@ -76,21 +76,43 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 // --------------------------------
 if (isset($_GET["update"])) {
 	$id = get_parameter_get ("update");
-	$sql = sprintf ("UPDATE trecon_task SET snmp_community = '%s', id_os = %d, name = '%s', subnet = '%s', description = '%s', id_recon_server = %d, create_incident = %b, id_group = %d, interval_sweep = %u, id_network_profile = %d, recon_ports = '%s', id_recon_script = %d, field1 = '%s', field2 = '%s', field3 = '%s', field4 = '%s' WHERE id_rt = %u",$snmp_community, $id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$recon_ports, $id_recon_script, $field1, $field2, $field3, $field4, $id);
+	
+	$values = array(
+		'snmp_community' => $snmp_community,
+		'id_os' => $id_os,
+		'name' => $name,
+		'subnet' => $network,
+		'description' => $description,
+		'id_recon_server' => $id_recon_server,
+		'create_incident' => $create_incident,
+		'id_group' => $id_group,
+		'interval_sweep' => $interval,
+		'id_network_profile' => $id_network_profile,
+		'recon_ports' => $recon_ports,
+		'id_recon_script' => $id_recon_script,
+		'field1' => $field1,
+		'field2' => $field2,
+		'field3' => $field3,
+		'field4' => $field4,
+		);
+		
+	$where = array('id_rt' => $id);
 	
 	if ($name != "") {
 		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-			$result = process_sql ($sql);
+			$result = process_sql_update('trecon_task', $values, $where);
 		elseif ($id_recon_script != 0)
-			$result = process_sql ($sql);
+			$result = process_sql_update('trecon_task', $values, $where);
 		else 
 			$result = false;
-	} else
+	}
+	else
 		$result = false;
 		
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
 	}
 }

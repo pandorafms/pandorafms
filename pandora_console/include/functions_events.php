@@ -194,13 +194,17 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
 	
-		$sql = sprintf ("UPDATE tevento SET estado = %d, id_usuario = '%s', user_comment = '%s' WHERE id_evento = %d", $new_status, $config['id_user'], $comment, $event);
-		$ret = process_sql ($sql);
+		$values = array(
+			'estado' => $new_status,
+			'id_usuario' => $config['id_user'],
+			'user_comment' => $comment);
+		$ret = process_sql_update('tevento', $values, array('id_evento' => $event));
 		
 		if (check_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
 			//Check ACL
 			pandora_audit("ACL Violation", "Attempted updating event #".$event);
-		} elseif ($ret !== false) {
+		}
+		elseif ($ret !== false) {
 			//ACL didn't fail nor did return
 			continue;
 		}
@@ -212,7 +216,8 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	if ($errors > 1) {
 		process_sql_rollback ();
 		return false;
-	} else {
+	}
+	else {
 		foreach ($id_event as $event) {
 			pandora_audit("Event validated", "Validated event #".$event);
 		}

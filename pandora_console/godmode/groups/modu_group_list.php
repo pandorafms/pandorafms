@@ -83,12 +83,12 @@ if ($update_group) {
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
 	$custom_id = (string) get_parameter ('custom_id');
-
-	$sql = sprintf ('UPDATE tmodule_group  SET name = "%s" WHERE id_mg = %d', $name,$id_group);
-	$result = process_sql ($sql);
+	
+	$result = process_sql_update('tmodule_group', array('name' => $name), array('id_mg' => $id_group));
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
-	} else {
+	}
+	else {
 		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
 	}
 }

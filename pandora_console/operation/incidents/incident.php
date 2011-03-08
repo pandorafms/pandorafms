@@ -87,9 +87,18 @@ elseif ($action == "update") {
 	$grupo = get_parameter_post ("grupo_form", 1);
 	$usuario = get_parameter_post ("usuario_form", $config["id_user"]);
 	
-	$sql = sprintf ("UPDATE tincidencia SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s' WHERE id_incidencia = %d", 
-					$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_inc);
+	$values = array(
+		'titulo' => $titulo,
+		'origen' => $origen,
+		'estado' => $estado,
+		'id_grupo' => $grupo,
+		'id_usuario' => $usuario,
+		'prioridad' => $prioridad,
+		'descripcion' => $descripcion,
+		'id_lastupdate' => $config["id_user"]);
 	$result = process_sql ($sql);
+	
+	$result = process_sql_update('tincidencia', $values, array('id_incidencia' => $id_inc));
 
 	if ($result !== false) {
 		pandora_audit("Incident updated","User ".$config['id_user']." updated incident #".$id_inc);

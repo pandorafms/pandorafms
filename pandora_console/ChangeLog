@@ -1,3 +1,15 @@
+2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_events.php, include/functions_messages.php,
+	include/functions_incidents.php, include/functions_db.php,
+	operation/incidents/incident.php, operation/agentes/ver_agente.php,
+	operation/agentes/tactical.php, operation/servers/view_server_detail.php,
+	operation/snmpconsole/snmp_view.php, godmode/groups/modu_group_list.php,
+	godmode/agentes/configurar_agente.php, godmode/servers/manage_recontask.php,
+	godmode/servers/modificar_server.php, godmode/snmpconsole/snmp_filters.php,
+	godmode/setup/news.php, godmode/modules/manage_network_templates_form.php:
+	change the source code for to use process_sql_update instead of the SQL.
+
 2011-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: added the SQL query with correct

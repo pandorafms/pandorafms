@@ -43,9 +43,9 @@ $total_modules_data = 0;
 if (check_acl ($config['id_user'], 0, "PM")) {
 	if (isset ($_GET["force"])) {
 		$id = (int) get_parameter_get ("force", 0);
-		$sql = sprintf ("UPDATE trecon_task SET utimestamp = 0, status = 1 WHERE id_rt = %d", $id);
 		
-		process_sql ($sql);
+		$values = array('utimestamp' => 0, 'status' => 1);
+		process_sql_update('trecon_task', $values, array('id_rt' => $id));
 	}
 }
 

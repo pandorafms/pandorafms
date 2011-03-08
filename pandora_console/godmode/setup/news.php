@@ -46,9 +46,8 @@ if (isset ($_POST["update"])) { // if update
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
 	
-	$sql = sprintf ("UPDATE tnews SET subject = '%s', text ='%s', timestamp = NOW() WHERE id_news = %d", $subject, $text, $id_news);
-		
-	$result = process_sql ($sql);
+	$values = array('subject' => $subject, 'text' => $text, 'timestamp' => 'NOW()');
+	$result = process_sql_update('tnews', $values, array('id_news' => $id_news));
 
 	print_result_message ($result,
 		__('Successfully updated'),

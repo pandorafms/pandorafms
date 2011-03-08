@@ -51,7 +51,8 @@ if (isset($_GET["server"])) {
 	echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
 	echo "</div>";
 
-} else {
+}
+else {
 	print_page_header (__('Manage servers'), "", false, "", true);
 
 	if (isset ($_GET["delete"])) {
@@ -60,18 +61,22 @@ if (isset($_GET["server"])) {
 		$result = process_sql ($sql);
 		if ($result !== false) {
 			 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
-		} else { 
+		}
+		else { 
 			echo '<h3 class="error">'.__('There was a problem deleting the server').'</h3>';
 		}
-	} elseif (isset($_GET["update"])) {
+	}
+	elseif (isset($_GET["update"])) {
 		$address = get_parameter_post ("address");
 		$description = get_parameter_post ("description");
 		$id_server = get_parameter_post ("server");
-		$sql = sprintf ("UPDATE tserver SET ip_address = '%s', description = '%s' WHERE id_server = %d", $address, $description, $id_server);
-		$result = process_sql ($sql);
+		
+		$values = array('ip_address' => $address, 'description' => $description);
+		$result = process_sql_update('tserver', $values, array('id_server' => $id_server));
 		if ($result !== false) {
 			echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
-		} else { 
+		}
+		else { 
 			echo '<h3 class="error">'.__('There was a problem updating the server').'</h3>';
 		}
 	}

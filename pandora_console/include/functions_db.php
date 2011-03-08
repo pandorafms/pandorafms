@@ -2060,15 +2060,8 @@ function agent_delete_address ($id_agent, $ip_address) {
 		$new_ips = get_agent_addresses ($id_agent);
 		// Change main address in agent to first one in the list
 		
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d", current ($new_ips), $id_agent);
-				break;
-			case "postgresql":
-				$query = sprintf ("UPDATE tagente SET direccion = '%s' WHERE id_agente = %d", current ($new_ips), $id_agent);
-				break;
-		}
-		process_sql ($query);
+		process_sql_update('tagente', array('direccion' => current ($new_ips)),
+			array('id_agente' => $id_agent));
 	}
 }
 

@@ -135,13 +135,12 @@ function process_incidents_touch ($id_incident) {
 	if (empty ($id_incident)) {
 		return false;
 	}
-	$id_incident = implode (",", $id_incident);
+	
 	if (empty ($id_incident)) {
 		return false;
 	}
-
-	$sql = sprintf ("UPDATE tincidencia SET id_lastupdate = '%s' WHERE id_incidencia IN (%s)", $config["id_user"], $id_incident);
-	return process_sql ($sql);
+	
+	return process_sql_update('tincidencia', array('id_lastupdate' => $config["id_user"]), array('id_incidencia' => $id_incident));
 }
 
 /**

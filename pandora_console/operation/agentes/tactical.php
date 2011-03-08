@@ -51,8 +51,7 @@ function print_cells_temp ($cells) {
 		if (isset($row["href"]))
 			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.safe_input ($row["href"]).'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
 		else
-			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" s
-tyle="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
 	}
 }
 
@@ -60,14 +59,14 @@ if ($config["realtimestats"] == 0){
 	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
 	$updated_time .= __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	$updated_time .= "</a>"; 
-} else {
+}
+else {
 	$updated_time = __("Updated at realtime");
 }
 
 // Header
 print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
-
-$data = get_group_stats ();
+$data = get_group_stats();
 
 echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
 // Monitor checks

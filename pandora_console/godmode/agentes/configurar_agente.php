@@ -777,7 +777,12 @@ if ($delete_module) { // DELETE agent module !
 	// error. NOTICE that we don't delete all data here, just marking for deletion
 	// and delete some simple data.
 	
-	if (process_sql ("UPDATE tagente_modulo SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+	$values = array(
+		'nombre' => 'pendingdelete',
+		'disabled' => 1,
+		'delete_pending' => 1);
+	$result = process_sql_update('tagente_modulo', $values, array('id_agente_modulo' => $id_borrar_modulo));
+	if ($result === false)
 		$error++;
 	
 	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)

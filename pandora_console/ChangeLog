@@ -1,5 +1,13 @@
 2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_api.php, include/functions_db.php,
+	operation/incidents/incident_detail.php, godmode/agentes/agent_template.php,
+	godmode/servers/manage_recontask.php, godmode/snmpconsole/snmp_alert.php,
+	godmode/users/configure_profile.php: change the source code
+	for to use process_sql_insert instead of the SQL (SQL write in multiple lines). 
+
+2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_events.php, include/functions_messages.php,
 	include/auth/mysql.php, include/functions_api.php,
 	include/functions_incidents.php, include/functions_db.php,

@@ -115,16 +115,20 @@ if ($create_profile) {
 	$alert_management = (bool) get_parameter ("alert_management");
 	$pandora_management = (bool) get_parameter ("pandora_management");
 	
-	$sql = sprintf ('INSERT INTO tperfil 
-		(name, incident_view, incident_edit, incident_management, agent_view,
-		agent_edit, alert_edit, user_management, db_management,
-		alert_management, pandora_management) 
-		VALUES ("%s", %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)',
-		$name, $incident_view, $incident_edit, $incident_management,
-		$agent_view, $agent_edit, $alert_edit, $user_management,
-		$db_management, $alert_management, $pandora_management);
+	$values = array(
+		'name' => $name,
+		'incident_view' => $incident_view,
+		'incident_edit' => $incident_edit,
+		'incident_management' => $incident_management,
+		'agent_view' => $agent_view,
+		'agent_edit' => $agent_edit,
+		'alert_edit' => $alert_edit,
+		'user_management' => $user_management,
+		'db_management' => $db_management,
+		'alert_management' => $alert_management,
+		'pandora_management' => $pandora_management);
+	$ret = process_sql_insert('tperfil', $values);
 	
-	$ret = process_sql ($sql, 'insert_id');
 	if ($ret !== false) {
 		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';

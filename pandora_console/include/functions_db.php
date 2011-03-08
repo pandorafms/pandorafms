@@ -2028,10 +2028,8 @@ function agent_add_address ($id_agent, $ip_address) {
 	}
 
 	// Add address to agent
-	$sql = sprintf("INSERT INTO taddress_agent
-			(id_a, id_agent) VALUES
-			(%d, %d)",$id_address, $id_agent);
-	process_sql ($sql);
+	$values = array('id_a' => $id_address, 'id_agent' => $id_agent);
+	process_sql_insert('taddress_agent', $values);
 }
 
 /**

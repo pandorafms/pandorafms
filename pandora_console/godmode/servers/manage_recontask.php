@@ -123,24 +123,43 @@ if (isset($_GET["update"])) {
 // CREATE A RECON TASK
 // --------------------------------
 if (isset($_GET["create"])) {
-	$sql = sprintf ("INSERT INTO trecon_task 
-			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os, recon_ports, snmp_community, id_recon_script, field1, field2, field3, field4) 
-			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s', '%s', %s, '%s', '%s', '%s', '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports, $snmp_community,$id_recon_script, $field1, $field2, $field3, $field4);
+	$values = array(
+		'name' => $name,
+		'subnet' => $network,
+		'description' => $description,
+		'id_recon_server' => $id_recon_server,
+		'create_incident' => $create_incident,
+		'id_group' => $id_group,
+		'id_network_profile' => $id_network_profile,
+		'interval_sweep' => $interval,
+		'id_os' => $id_os,
+		'recon_ports' => $recon_ports,
+		'snmp_community' => $snmp_community,
+		'id_recon_script' => $id_recon_script,
+		'field1' => $field1,
+		'field2' => $field2,
+		'field3' => $field3,
+		'field4' => $field4);
 
 	if ($name != "") {
 		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-			$result = process_sql ($sql);
-		elseif ($id_recon_script != 0)
-			$result = process_sql ($sql);
+		{
+			$result = process_sql_insert('trecon_task', $values);
+		}
+		elseif ($id_recon_script != 0) {
+			$result = process_sql_insert('trecon_task', $values);
+		}
 		else 
 			$result = false;
-	} else
+	}
+	else
 		$result = false;
 		
 	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
 	}
 }

@@ -1,5 +1,15 @@
 2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_api.php, include/functions_db.php,
+	extensions/update_manager.php, extensions/plugin_registration.php,
+	operation/incidents/incident.php, operation/incidents/incident_detail.php,
+	godmode/agentes/planned_downtime.php, godmode/servers/recon_script.php,
+	godmode/snmpconsole/snmp_filters.php, godmode/setup/news.php,
+	godmode/modules/manage_network_templates_form.php: change the source code
+	for to use process_sql_insert instead of the SQL.
+
+2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_events.php, include/functions_messages.php,
 	include/functions_incidents.php, include/functions_db.php,
 	operation/incidents/incident.php, operation/agentes/ver_agente.php,

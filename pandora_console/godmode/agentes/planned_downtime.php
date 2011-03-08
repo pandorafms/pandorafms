@@ -57,8 +57,11 @@ if ($insert_downtime_agent == 1){
 	$agents = $_POST["id_agent"];
 	for ($a=0;$a <count($agents); $a++){ 
 		$id_agente_dt = $agents[$a];
-		$sql = "INSERT INTO tplanned_downtime_agents (id_downtime, id_agent) VALUES ($id_downtime, $id_agente_dt)";		
-		$result = process_sql ($sql);
+		
+		$values = array(
+			'id_downtime' => $id_downtime,
+			'id_agent' => $id_agente_dt);
+		$result = process_sql_insert('tplanned_downtime_agents', $values);
 	}
 }
 

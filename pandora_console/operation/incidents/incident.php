@@ -125,9 +125,19 @@ elseif ($action == "update") {
 	$prioridad = get_parameter_post ("prioridad_form");
 	$id_creator = $config['id_user'];
 	$estado = get_parameter_post ("estado_form");
-	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator) VALUES 
-					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"]);
-	$id_inc = process_sql ($sql, "insert_id");
+	
+	$values = array(
+		'inicio' => 'NOW()',
+		'actualizacion' => 'NOW()',
+		'titulo' => $titulo,
+		'descripcion' => $descripcion,
+		'id_usuario' => $config["id_user"],
+		'origen' => $origen,
+		'estado' => $estado,
+		'prioridad' => $prioridad,
+		'id_grupo' => $grupo,
+		'id_creator' => $config["id_user"]);
+	$id_inc = process_sql_insert('tincidencia', $values);
 
 	if ($id_inc === false) {
 		echo '<h3 class="error">'.__('Error creating incident').'</h3>';		

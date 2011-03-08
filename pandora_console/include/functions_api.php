@@ -1561,8 +1561,12 @@ function set_new_incident($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash2 Don't use.
  */
 function set_new_note_incident($id, $id2, $other, $thrash2) {
-	$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')", $id, $id, $other['data']);
-	$idNote = process_sql ($sql, "insert_id");
+	$values = array(
+		'id_usuario' => $id,
+		'id_incident' => $id2,
+		'nota' => $other['data']);
+	
+	$idNote = process_sql_insert('tnota', $values);
 	
 	if ($idNote === false)
 		returnError('error_new_incident', 'Error create new incident.');

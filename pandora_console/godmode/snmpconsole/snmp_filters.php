@@ -55,8 +55,11 @@ if ($update_filter > -2) {
 		}
 	}
 	else {
-		$sql = sprintf ("INSERT INTO tsnmp_filter (description, filter) VALUES ('%s', '%s')", $description, $filter);		
-		if (process_sql ($sql) === false) {
+		$values = array(
+			'description' => $description,
+			'filter' => $filter);
+		$result = process_sql_insert('tsnmp_filter', $values);
+		if ($result === false) {
 			print_error_message (__('There was a problem creating the filter'));
 		}
 		else {

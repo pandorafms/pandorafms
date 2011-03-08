@@ -33,8 +33,12 @@ if (isset ($_POST["create"])) { // If create
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
 	
-	$sql = sprintf ("INSERT INTO tnews (subject, text, author, timestamp) VALUES ('%s', '%s', '%s', NOW()) ", $subject, $text, $config["id_user"]);
-	$id_link = process_sql ($sql, "insert_id");
+	$values = array(
+		'subject' => $subject,
+		'text' => $text,
+		'author' => $config["id_user"],
+		'timestamp' => NOW());
+	$id_link = process_sql_insert('tnews', $values);
 	
 	print_result_message ($id_link,
 		__('Successfully created'),

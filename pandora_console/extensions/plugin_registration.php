@@ -99,46 +99,55 @@ function pluginreg_extension_main () {
 		return;;
 	}
 
-	$sql1 = "INSERT INTO tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt, plugin_type) VALUES (
-	'" . safe_input ($ini_array["plugin_definition"]["name"]) . "' ,
-	'" . safe_input ($ini_array["plugin_definition"]["description"]) . "' ,
-	'" . $ini_array["plugin_definition"]["timeout"] . "' ,
-	'" . safe_input ($exec_path) . "' ,
-	'" . $ini_array["plugin_definition"]["ip_opt"] . "' ,
-	'" . $ini_array["plugin_definition"]["port_opt"] . "' ,
-	'" . $ini_array["plugin_definition"]["user_opt"] . "' ,
-	'" . $ini_array["plugin_definition"]["pass_opt"] . "' ,
-	'" . $ini_array["plugin_definition"]["plugin_type"] . 
-	"')";
-
-	$create_id = process_sql($sql1, "insert_id");
+	$values = array(
+		'name' => safe_input ($ini_array["plugin_definition"]["name"]),
+		'description' => safe_input ($ini_array["plugin_definition"]["description"]),
+		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
+		'execute' => safe_input ($exec_path),
+		'net_dst_opt' => $ini_array["plugin_definition"]["ip_opt"],
+		'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
+		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
+		'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
+		'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
+	
+	$create_id = process_sql_insert('tplugin', $values);
+	
+	$values = array(
+		'name' => safe_input ($ini_array["plugin_definition"]["name"]),
+		'description' => safe_input ($ini_array["plugin_definition"]["description"]),
+		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
+		'execute' => safe_input ($exec_path),
+		'net_dst_opt' => $ini_array["plugin_definition"]["ip_opt"],
+		'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
+		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
+		'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
+		'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
+	$create_id = process_sql_insert('tplugin', $values);
 
 	for ($ax=1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++){
 		$label = "module".$ax;
-
-		$sql2 = "INSERT INTO tnetwork_component (name, description, id_group, type, max, min, module_interval, id_module_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, min_critical, min_ff_event, tcp_port, id_plugin) VALUES (
-
-		'".safe_input ($ini_array[$label]["name"])."', 
-		'".safe_input ($ini_array[$label]["description"]) ."', 
-		'".$ini_array[$label]["id_group"]."', 
-		'".$ini_array[$label]["type"]."', 
-		'".$ini_array[$label]["max"]."', 
-		'".$ini_array[$label]["min"]."', 
-		'".$ini_array[$label]["module_interval"]."', 
-		'".$ini_array[$label]["id_module_group"]."', 
-		'".$ini_array[$label]["id_modulo"]."', 
-		'".safe_input ($ini_array[$label]["plugin_user"])."', 
-		'".safe_input ($ini_array[$label]["plugin_pass"])."', 
-		'".safe_input ($ini_array[$label]["plugin_parameter"])."', 
-		'".$ini_array[$label]["max_timeout"]."', 
-		'".$ini_array[$label]["history_data"]."', 
-		'".$ini_array[$label]["min_warning"]."', 
-		'".$ini_array[$label]["min_critical"]."', 
-		'".$ini_array[$label]["min_ff_event"]."', 
-		'".$ini_array[$label]["tcp_port"]."', 
-		'".$create_id."')";
-	
-		process_sql($sql2);
+		
+		$values = array(
+			'name' => safe_input ($ini_array[$label]["name"]),
+			'description' => safe_input ($ini_array[$label]["description"]),
+			'id_group' => $ini_array[$label]["id_group"],
+			'type' => $ini_array[$label]["type"],
+			'max' => $ini_array[$label]["max"],
+			'min' => $ini_array[$label]["min"],
+			'module_interval' => $ini_array[$label]["module_interval"],
+			'id_module_group' => $ini_array[$label]["id_module_group"],
+			'id_modulo' => $ini_array[$label]["id_modulo"], 
+			'plugin_user' => safe_input ($ini_array[$label]["plugin_user"]),
+			'plugin_pass' => safe_input ($ini_array[$label]["plugin_pass"]),
+			'plugin_parameter' => safe_input ($ini_array[$label]["plugin_parameter"]),
+			'max_timeout' => $ini_array[$label]["max_timeout"],
+			'history_data' => $ini_array[$label]["history_data"],
+			'min_warning' => $ini_array[$label]["min_warning"],
+			'min_critical' => $ini_array[$label]["min_critical"],
+			'min_ff_event' => $ini_array[$label]["min_ff_event"],
+			'tcp_port' => $ini_array[$label]["tcp_port"],
+			'id_plugin' => $create_id);
+		process_sql_insert('tnetwork_component', $values);
 		
 		echo "<h3 class=suc>".__("Module plugin registered"). " : ". $ini_array[$label]["name"] ."</h2>";
 	}

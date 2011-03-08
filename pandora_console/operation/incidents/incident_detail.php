@@ -55,8 +55,11 @@ if (isset ($_GET["id"])) {
 	if (isset ($_GET["insertar_nota"])) {
 		$nota = get_parameter_post ("nota");
 
-		$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')",$config["id_user"],$id_inc, $nota);
-		$id_nota = process_sql ($sql, "insert_id");
+		$values = array(
+			'id_usuario' => $config["id_user"],
+			'id_incident' => $id_inc,
+			'nota' => $nota);
+		$id_nota = process_sql_insert('tnota', $values);
 
 		if ($id_nota !== false) {
 			process_incidents_touch ($id_inc);

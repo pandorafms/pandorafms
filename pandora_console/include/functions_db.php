@@ -2022,9 +2022,8 @@ function agent_add_address ($id_agent, $ip_address) {
 	$id_address = (int) get_db_value ('id_a', 'taddress', 'ip', $ip_address);
 
 	if ($id_address === 0) {
-		// Create IP address in tadress table
-		$sql = sprintf("INSERT INTO taddress (ip) VALUES ('%s')",$ip_address);
-		$id_address = process_sql ($sql, "insert_id");
+		// Create IP address in tadress table		
+		$id_address = process_sql_insert('taddress', array('ip' => $ip_address));
 	}
 
 	// Add address to agent

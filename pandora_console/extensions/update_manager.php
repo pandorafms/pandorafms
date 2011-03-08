@@ -87,7 +87,8 @@ function pandora_update_manager_login () {
 	// If first time, make the first autoupdate and disable it in DB
 	if (!isset($config["autoupdate"])){
 		$config["autoupdate"] = 1;
-		process_sql ("INSERT INTO tconfig (token,value) VALUES ('autoupdate', 0)");
+		
+		process_sql_insert('tconfig', array('token' => 'autoupdate', 'value' => 0));
 	}
 
 	if ($config["autoupdate"] == 0)

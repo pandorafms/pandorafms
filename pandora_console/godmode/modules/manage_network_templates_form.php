@@ -53,8 +53,9 @@ elseif (isset ($_GET["add_module"])) {
 	// Add module to profile
 	$errors = 0;
 	foreach ($id_nc as $component) {
-		$sql = sprintf ("INSERT INTO tnetwork_profile_component (id_np,id_nc) VALUES (%d, %d)", $id_np, $component);
-		$result = process_sql ($sql);
+		$values = array('id_np' => $id_np, 'id_nc' => $component);
+		$result = process_sql_insert('tnetwork_profile_component', $values);
+		
 		if ($result === false) {
 			$errors++;
 		}
@@ -83,8 +84,9 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	}
 	else {
 		//Profile doesn't exist
-		$sql = sprintf ("INSERT INTO tnetwork_profile (name, description) VALUES ('%s', '%s')", $name, $description);
-		$result = process_sql ($sql, "insert_id");
+		$values = array('name' => $name, 'description' => $description);
+		$result = process_sql_insert('tnetwork_profile', $values);
+		
 		print_result_message ($result,
 			__('Successfully added network profile'),
 			__('Error adding network profile'));

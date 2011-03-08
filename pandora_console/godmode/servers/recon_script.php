@@ -127,14 +127,16 @@ else {
 		$reconscript_description = get_parameter ("form_description", "");
 		$reconscript_script = get_parameter ("form_script", "");
 		
-	
-		$sql_insert = "INSERT trecon_script (name, description, script) VALUES ('$reconscript_name', '$reconscript_description', '$reconscript_script')";
-		
-		$result = process_sql ($sql_insert);
+		$values = array(
+			'name' => $reconscript_name,
+			'description' => $reconscript_description,
+			'script' => $reconscript_script);
+		$result = process_sql_insert('trecon_script', $values);
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem creating')."</h3>";
 			echo $sql_insert;
-		} else {
+		}
+		else {
 			echo "<h3 class='suc'>".__('Created successfully')."</h3>";
 		}
 	}

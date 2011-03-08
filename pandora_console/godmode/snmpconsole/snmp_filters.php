@@ -68,8 +68,8 @@ if ($update_filter > -2) {
 	}
 }
 else if ($delete_filter > -1) { // Delete
-	$sql = sprintf ("DELETE FROM tsnmp_filter WHERE id_snmp_filter = %d", $delete_filter);
-	if (process_sql ($sql) === false) {
+	$result = process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $delete_filter));
+	if ($result === false) {
 		print_error_message (__('There was a problem deleting the filter'));
 	}
 	else {

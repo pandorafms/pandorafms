@@ -36,8 +36,7 @@ if ($delete_graph) {
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		
 		$res = process_sql_delete('tgraph', array('id_graph' => $id_graph));
-			
-		$sql = "DELETE FROM tgraph WHERE id_graph = $id_graph";
+		
 		if ($res)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else

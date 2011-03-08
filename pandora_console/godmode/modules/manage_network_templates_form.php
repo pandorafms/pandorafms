@@ -38,8 +38,11 @@ if (isset ($_GET["delete_module"])) {
 	// Delete module from profile
 	$errors = 0;
 	foreach ($id_nc as $component) {
-		$sql = sprintf ("DELETE FROM tnetwork_profile_component WHERE id_np = %d AND id_nc = %d", $id_np, $component);
-		$result = process_sql ($sql);
+		$where = array(
+			'id_np' => $id_np,
+			'id_nc' => $component);
+		$result = process_sql_delete('tnetwork_profile_component', $where);
+		
 		if ($result === false) {
 			$errors++;
 		}

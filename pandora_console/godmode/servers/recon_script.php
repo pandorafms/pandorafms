@@ -143,8 +143,10 @@ else {
 
 	if (isset($_GET["kill_reconscript"])){ // if delete alert
 		$reconscript_id = get_parameter ("kill_reconscript", 0);
-		$sql_delete= "DELETE FROM trecon_script WHERE id_recon_script = ".$reconscript_id;
-		$result = process_sql($sql_delete);		
+		
+		$result = process_sql_delete('trecon_script',
+			array('id_recon_script' => $reconscript_id));
+		
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem deleting reconscript')."</h3>";
 		}
@@ -152,8 +154,8 @@ else {
 			echo "<h3 class='suc'>".__('reconscript deleted successfully')."</h3>";
 		}
 		if ($reconscript_id != 0){
-			$sql_delete2 = "DELETE FROM trecon_task WHERE id_recon_script = ".$reconscript_id; 
-			$result = process_sql ($sql_delete2);
+			$result = process_sql_delete('trecon_task',
+				array('id_recon_script' => $reconscript_id));
 		}
 	}
 

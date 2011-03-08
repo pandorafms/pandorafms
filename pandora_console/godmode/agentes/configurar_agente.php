@@ -359,9 +359,12 @@ if (isset( $_GET["fix_module"])) {
 	$error = "";
 	//If the value of media is 0 or something went wrong, don't delete
 	if (!empty ($media)) {
-		$sql = sprintf ("DELETE FROM tagente_datos WHERE datos > %f AND id_agente_modulo = %d", $media, $id_module);
-		$result = process_sql ($sql);
-	} else {
+		$where = array(
+			'datos' => '>' . $media,
+			'id_agente_modulo' => $id_module);
+		process_sql_delete('tagente_datos', $where);
+	}
+	else {
 		$result = false;
 		$error = " - ".__('No data to normalize');
 	}
@@ -785,10 +788,12 @@ if ($delete_module) { // DELETE agent module !
 	if ($result === false)
 		$error++;
 	
-	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+	$result = process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_borrar_modulo));
+	if ($result === false)
 		$error++;
-
-	if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+	
+	$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_borrar_modulo));	
+	if ($result === false)
 		$error++;
 
 	if (delete_alert_agent_module($id_borrar_modulo) === false)
@@ -799,7 +804,8 @@ if ($delete_module) { // DELETE agent module !
 	if ($error != 0) {
 		process_sql_rollback ();
 		print_error_message (__('There was a problem deleting the module'));
-	} else {
+	}
+	else {
 		process_sql_commit ();
 		print_success_message (__('Module deleted succesfully'));
 

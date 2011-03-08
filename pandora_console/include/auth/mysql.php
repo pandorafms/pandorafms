@@ -343,13 +343,12 @@ function create_user ($id_user, $password, $user_info) {
  * @param string User id
  */
 function delete_user ($id_user) {
-	$sql = "DELETE FROM tusuario_perfil WHERE id_usuario = '".$id_user."'";
-	$result = process_sql ($sql);
+	$result = process_sql_delete('tusuario_perfil', array('id_usuario' => $id_user));
 	if ($result === false) {
 		return false;
 	}
-	$sql = "DELETE FROM tusuario WHERE id_user = '".$id_user."'";
-	$result = process_sql ($sql);
+	
+	$result = process_sql_delete('tusuario', array('id_user' => $id_user));
 	if ($result === false) {
 		return false;
 	}

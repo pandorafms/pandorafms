@@ -242,8 +242,7 @@ function delete_incidents ($id_incident) {
 		
 	foreach ($ids as $id_inc) {
 		//Delete incident
-		$sql = sprintf ("DELETE FROM tincidencia WHERE id_incidencia = %d", $id_inc);
-		$ret = process_sql ($sql);
+		$ret = process_sql_delete('tincidencia', array('id_incidencia' => $id_inc));
 		if ($ret === false) {
 			$errors++;
 		}
@@ -333,8 +332,8 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 	//Delete attachment
 	foreach ($id_attach as $id) {
 		$filename = get_db_value ("filename", "tattachment", "id_attachment", $id);
-		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d", $id);
-		$ret = process_sql ($sql);
+		
+		$ret = process_sql_delete('tattachment', array('id_attachment' => $id));
 		if ($ret === false) {
 			$errors++;
 		}
@@ -344,12 +343,15 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 	if ($transact == true && $errors > 0) {
 		process_sql_rollback ();
 		return false;
-	} elseif ($transact == true) {
+	}
+	elseif ($transact == true) {
 		process_sql_commit ();
 		return true;
-	} elseif ($errors > 0) {
+	}
+	elseif ($errors > 0) {
 		return false;
-	} else {
+	}
+	else {
 		return true;
 	}
 }

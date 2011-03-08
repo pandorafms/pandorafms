@@ -104,8 +104,10 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
 function delete_message ($id_message) {
 	global $config;
 	
-	$sql = sprintf ("DELETE FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d", $config["id_user"], $id_message);
-	return (bool) process_sql ($sql);
+	$where = array(
+		'id_usuario_destino' => $config["id_user"],
+		'id_mensaje' => $id_message);
+	return (bool)process_sql_delete($tmensajes, $where);
 }
 
 /** 

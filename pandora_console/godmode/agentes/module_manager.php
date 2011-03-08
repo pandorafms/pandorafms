@@ -108,14 +108,16 @@ if ($multiple_delete) {
 		// error. NOTICE that we don't delete all data here, just marking for deletion
 		// and delete some simple data.
 		
-		if (process_sql ("UPDATE tagente_modulo
+		if (process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del) === false)
 			$error++;
 		
-		if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_agent_module_del) === false)
+		$result = process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
+		if ($result === false)
 			$error++;
-	
-		if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_agent_module_del) === false)
+		
+		$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
+		if ($result === false)
 			$error++;
 		
 	
@@ -123,7 +125,8 @@ if ($multiple_delete) {
 		if ($error != 0) {
 			process_sql_rollback ();
 			print_error_message (__('There was a problem deleting the module'));
-		} else {
+		}
+		else {
 			process_sql_commit ();
 			print_success_message (__('Module deleted succesfully'));
 		}

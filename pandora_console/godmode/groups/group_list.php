@@ -166,12 +166,10 @@ if ($delete_group) {
 		$group = get_db_row_filter('tgrupo', array('id_grupo' => $id_group));
 		
 		process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
-
-		$sql = sprintf ('DELETE FROM tgroup_stat WHERE id_group = %d', $id_group);
-		$result = process_sql ($sql);
 		
-		$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
-		$result = process_sql ($sql);
+		$result = process_sql_delete('tgroup_stat', array('id_group' => $id_group));
+		
+		$result = process_sql_delete('tgrupo', array('id_grupo' => $id_group));
 	}
 	else {
 		echo "<h3 class='error'>" .

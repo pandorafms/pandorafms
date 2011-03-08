@@ -56,8 +56,8 @@ print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", f
 if (isset ($_GET["delete"])){
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
-		$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
-		$result = process_sql ($sql);
+		
+		$result = process_sql_delete('ttrap', array('id_trap' => $id_trap));
 		print_result_message ($result,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
@@ -92,8 +92,7 @@ if (isset ($_POST["deletebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
 		foreach ($trap_ids as $id_trap) {
-			$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
-			process_sql ($sql);
+			process_sql_delete('ttrap', array('id_trap' => $id_trap));
 		}
 	}
 	else {

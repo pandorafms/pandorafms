@@ -42,7 +42,7 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
     this->source = source;
  
     // Compile the regular expression
-    if (regcomp (&this->regexp, pattern.c_str (), 0) != 0) {
+    if (regcomp (&this->regexp, pattern.c_str (), REG_EXTENDED) != 0) {
        pandoraLog ("Invalid regular expression %s", pattern.c_str ());
     }
  

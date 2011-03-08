@@ -125,10 +125,13 @@ if (isset ($_GET["id"])) {
 			}
 		}
 		
-		$sql = sprintf ("INSERT INTO tattachment (id_incidencia, id_usuario, filename, description, size) 
-			VALUES (%d, '%s', '%s', '%s', %d)", $id_inc, $config["id_user"],$filename,$description,$filesize);
-
-		$id_attachment = process_sql ($sql,"insert_id");
+		$values = array(
+			'id_incidencia' => $id_inc,
+			'id_usuario' => $config["id_user"],
+			'filename' => $filename,
+			'description' => $description,
+			'size' => $filesize);
+		$id_attachment = process_sql_insert('tattachment', $values);
 
 		// Copy file to directory and change name
 		if ($id_attachment !== false) {

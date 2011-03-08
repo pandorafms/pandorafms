@@ -1542,12 +1542,19 @@ function set_new_incident($thrash1, $thrash2, $other, $thrash3) {
 	$id_creator = 'API';
 	$state = $other['data'][4];
 	$group = $other['data'][5];
-	$sql = sprintf("INSERT INTO tincidencia 
-			(inicio, actualizacion, titulo, descripcion, id_usuario, origen, 
-			estado, prioridad, id_grupo, id_creator) VALUES 
-			(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
-		$title, $description, 'API', $origin, $state, $priority, $group, $id_creator);
-	$idIncident = process_sql ($sql, "insert_id");
+	
+	$values = array(
+		'inicio' => 'NOW()',
+		'actualizacion' => 'NOW()',
+		'titulo' => $title,
+		'descripcion' => $description,
+		'id_usuario' => 'API',
+		'origen' => $origin, 
+		'estado' => $state,
+		'prioridad' => $priority,
+		'id_grupo' => $group,
+		'id_creator' => $id_creator);
+	$idIncident = process_sql_insert('tincidencia', $values);
 	
 	if ($return === false)
 		returnError('error_new_incident', 'Error create new incident.');

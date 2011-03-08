@@ -52,18 +52,25 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 	}
 	
 	if ($id_as < 1) {
-		$sql = sprintf ("INSERT INTO talert_snmp 
-			(id_alert, al_field1, al_field2, al_field3, description,
-			agent, custom_oid, oid, time_threshold, max_alerts, min_alerts, priority)
-			VALUES
-			(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d) ",
-			$alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value, $oid, $time_threshold, $max_alerts, $min_alerts, $priority);
+		$values = array(
+			'id_alert' => $alert_type,
+			'al_field1' => $al_field1,
+			'al_field2' => $al_field2,
+			'al_field3' => $al_field3,
+			'description' => $description,
+			'agent' => $source_ip,
+			'custom_oid' => $custom_value,
+			'oid' => $oid,
+			'time_threshold' => $time_threshold,
+			'max_alerts' => $max_alerts,
+			'min_alerts' => $min_alerts,
+			'priority' => $priority);
+		$result = process_sql_insert('talert_snmp', $values);
 		
-		$result = process_sql ($sql);
-
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
-		} else {
+		}
+		else {
 			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		}
 		

@@ -52,27 +52,51 @@ if (isset ($_POST["template_id"])) {
 		}
 		foreach ($nc as $row2) {
 			// Insert each module from tnetwork_component into agent
-			$sql = sprintf ("INSERT INTO tagente_modulo
-			(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, 
-			tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, id_modulo, 
-			plugin_user, plugin_pass, plugin_parameter, max_timeout, id_plugin)
-			VALUES (%d, %d, '%s', '%s', %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', %d, %d)", 
-			$id_agente, $row2["type"], $row2["description"], $row2["name"], $row2["max"], $row2["min"], $row2["module_interval"], 
-			$row2["tcp_port"], $row2["tcp_send"], $row2["tcp_rcv"], $row2["snmp_community"], $row2["snmp_oid"], $direccion_agente, $row2["id_module_group"], $row2["id_modulo"], 
-			$row2["plugin_user"], $row2["plugin_pass"], $row2["plugin_parameter"], $row2["max_timeout"], $row2['id_plugin']);
-			
-			$id_agente_modulo = process_sql ($sql, "insert_id");
+			$values = array(
+				'id_agente' => $id_agente,
+				'id_tipo_modulo' => $row2["type"],
+				'descripcion' => $row2["description"],
+				'nombre' => $row2["name"],
+				'max' => $row2["max"],
+				'min' => $row2["min"],
+				'module_interval' => $row2["module_interval"],
+				'tcp_port' => $row2["tcp_port"],
+				'tcp_send' => $row2["tcp_send"],
+				'tcp_rcv' => $row2["tcp_rcv"],
+				'snmp_community' => $row2["snmp_community"],
+				'snmp_oid' => $row2["snmp_oid"],
+				'ip_target' => $direccion_agente,
+				'id_module_group' => $row2["id_module_group"],
+				'id_modulo' => $row2["id_modulo"], 
+				'plugin_user' => $row2["plugin_user"],
+				'plugin_pass' => $row2["plugin_pass"],
+				'plugin_parameter' => $row2["plugin_parameter"],
+				'max_timeout' => $row2["max_timeout"],
+				'id_plugin' => $row2['id_plugin']);
+			$id_agente_modulo = process_sql_insert('tagente_modulo', $values);
 			
 			// Create with different estado if proc type or data type
 			if ($id_agente_modulo !== false && ($row2["type"] == 2) || ($row2["type"] == 6) || ($row2["type"] == 9) || ($row2["type"] == 12) || ($row2["type"] == 18)) {
-				$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,estado,id_agente, utimestamp) 
-								VALUES (%d, 0,'0000-00-00 00:00:00',0, %d, 0)", $id_agente_modulo, $id_agente);
-				process_sql ($sql);
-			} elseif ($id_agente_modulo !== false) { 
-				$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,estado,id_agente, utimestamp) 
-								VALUES (%d, 0,'0000-00-00 00:00:00',100, %d, 0)", $id_agente_modulo, $id_agente);
-				process_sql ($sql);
-			} else {
+				$values = array(
+					'id_agente_modulo' => $id_agente_modulo,
+					'datos' => 0,
+					'timestamp' => '0000-00-00 00:00:00',
+					'estado' => 0,
+					'id_agente' => $id_agente,
+					'utimestamp' => 0);
+				process_sql_insert('tagente_estado', $values);
+			}
+			elseif ($id_agente_modulo !== false) { 
+				$values = array(
+					'id_agente_modulo' =>$id_agente_modulo,
+					'datos' => 0,
+					'timestamp' => '0000-00-00 00:00:00',
+					'estado' => 100,
+					'id_agente' => $id_agente,
+					'utimestamp' => 0);
+				process_sql_insert('tagente_estado', $values);
+			}
+			else {
 				echo '<h3 class="error">'.__('Error adding module').'</h3>';
 			}
 		}

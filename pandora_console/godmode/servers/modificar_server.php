@@ -57,8 +57,9 @@ else {
 
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
-		$sql = sprintf ("DELETE FROM tserver WHERE id_server='%d'",$id_server);
-		$result = process_sql ($sql);
+		
+		$result = process_sql_delete('tserver', array('id_server' => $id_server));
+		
 		if ($result !== false) {
 			 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
 		}

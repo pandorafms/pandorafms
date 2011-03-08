@@ -70,20 +70,19 @@ if ($delete_downtime_agent == 1){
 
 	$id_da = get_parameter ("id_downtime_agent");
 	
-	$sql = "DELETE FROM tplanned_downtime_agents WHERE id = $id_da";
-	$result = process_sql ($sql);
+	$result = process_sql_delete('tplanned_downtime_agents', array('id' => $id_da));
 }
 
 // DELETE WHOLE DOWNTIME!
 if ($delete_downtime) {
-	$sql = sprintf ("DELETE FROM tplanned_downtime WHERE id = %d", $id_downtime);
-	$result = process_sql ($sql);
-	$sql = sprintf ("DELETE FROM tplanned_downtime_agents WHERE id = %d", $id_downtime);
-	$result2 = process_sql ($sql);
+	$result = process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
+	
+	$result2 = process_sql_delete('tplanned_downtime_agents', array('id' => $id_downtime));
 
 	if (($result === false) OR ($result2 === false)){
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	}
 }
@@ -193,7 +192,8 @@ if ($create_downtime || $update_downtime) {
 			print_input_hidden ('update_downtime', 1);
 			print_input_hidden ('id_downtime', $id_downtime);
 			print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-		} else {
+		}
+		else {
 			print_input_hidden ('create_downtime', 1);
 			print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
 		}
@@ -244,7 +244,8 @@ if ($create_downtime || $update_downtime) {
 		$downtimes = get_db_all_rows_sql ($sql);
 		if ($downtimes === false) {
 			echo '<div class="nf">'. __('There are no scheduled downtimes').'</div>';
-		} else {
+		}
+		else {
 			$table->class = 'databox';
 			$table->width = '80%';
 			$table->data = array ();
@@ -277,7 +278,8 @@ if ($create_downtime || $update_downtime) {
 			print_table ($table);
 		}
 	}
-} else {
+}
+else {
 
 	// View available downtimes present in database (if any of them)
 		$table->class = 'databox';
@@ -302,7 +304,8 @@ if ($create_downtime || $update_downtime) {
 		$downtimes = get_db_all_rows_sql ($sql);
 		if (!$downtimes) {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
-		} else {
+		}
+		else {
 			echo '<h3>'.__('Planned Downtime present on system').':</h3>';
 			foreach ($downtimes as $downtime) {
 				$data = array();
@@ -319,7 +322,8 @@ if ($create_downtime || $update_downtime) {
 					print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
 					print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-				} else {
+				}
+				else {
 					$data[5]= "N/A";
 					$data[6]= "N/A";
 

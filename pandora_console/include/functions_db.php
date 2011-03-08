@@ -483,8 +483,10 @@ function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignU
  * @return bool Whether or not it's deleted
  */
 function delete_user_profile ($id_user, $id_profile) {
-	$sql = sprintf ("DELETE FROM tusuario_perfil WHERE id_usuario = '%s' AND id_up = %d", $id_user, $id_profile);
-	return (bool) process_sql ($sql);
+	$where = array(
+		'id_usuario' => $id_user,
+		'id_up' => $id_profile);
+	return (bool)process_sql_delete('tusuario_perfil', $where);
 }
 
 /**
@@ -495,8 +497,7 @@ function delete_user_profile ($id_user, $id_profile) {
  * @return bool Whether or not it's deleted
  */
 function delete_profile ($id_profile) {
-	$sql = sprintf ("DELETE FROM tperfil WHERE id_perfil = %d", $id_profile);
-	return (bool) process_sql ($sql);
+	return (bool)process_sql_delete('tperfil', array('id_perfil' => $id_profile));
 }
 
 /**
@@ -2047,8 +2048,7 @@ function agent_delete_address ($id_agent, $ip_address) {
 		AND id_agent = %d",$ip_address, $id_agent);
 	$id_ag = get_db_sql ($sql);
 	if ($id_ag !== false) {
-		$sql = sprintf ("DELETE FROM taddress_agent WHERE id_ag = %d",$id_ag);
-		process_sql ($sql);
+		process_sql_delete('taddress_agent', array('id_ag' => $id_ag));
 	}
 	$agent_name = get_agent_name($id_agent, "");
 	pandora_audit("Agent management",

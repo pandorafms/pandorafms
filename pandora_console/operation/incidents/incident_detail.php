@@ -92,8 +92,8 @@ if (isset ($_GET["id"])) {
 	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
 		$file_id = (int) get_parameter_post ("delete_file", 0);
 		$filename = get_db_value ("filename", "tattachment", "id_attachment", $file_id);
-		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
-		$result = process_sql ($sql);
+		
+		$result = process_sql_delete('tattachment', array('id_attachment' => $file_id));
 		
 		if (!empty ($result)) {
 			unlink ($config["attachment_store"]."/pand".$file_id."_".$filename);
@@ -134,7 +134,8 @@ if (isset ($_GET["id"])) {
 		if ($id_attachment !== false) {
 			$nombre_archivo = $config["attachment_store"]."/pand".$id_attachment."_".$filename;
 			$result = copy ($_FILES['userfile']['tmp_name'], $nombre_archivo);
-		} else {
+		}
+		else {
 			echo '<h3 class="error">'.__('File could not be saved due to database error').'</h3>';
 			$result = false;
 		}
@@ -142,8 +143,9 @@ if (isset ($_GET["id"])) {
 		if ($result !== false) {
 			unlink ($_FILES['userfile']['tmp_name']);
 			process_incidents_touch ($id_inc);
-		} else {
-			process_sql ("DELETE FROM tattachment WHERE id_attachment = ".$id_attachment);
+		}
+		else {
+			process_sql_delete('tattachment', array('id_attachment' => $id_attachment));
 		}
 		
 		print_result_message ($result,

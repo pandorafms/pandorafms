@@ -128,11 +128,12 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 // =============
 if (isset ($_GET["delete_alert"])) { // Delete alert
 	$alert_delete = (int) get_parameter_get ("delete_alert", 0);
-	$sql = sprintf ("DELETE FROM talert_snmp WHERE id_as = %d", $alert_delete);
-	$result = process_sql ($sql);
+	
+	$result = process_sql_delete('talert_snmp', array('id_as' => $alert_delete));
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	}
 }

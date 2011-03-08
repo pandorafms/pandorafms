@@ -1508,8 +1508,11 @@ function set_delete_user_profile($id, $thrash1, $other, $thrash2) {
 	$group = $other['data'][0];
 	$profile = $other['data'][1];
 	
-	$sql = sprintf ('DELETE FROM tusuario_perfil WHERE id_usuario LIKE "%s" AND id_perfil = %d AND id_grupo = %d', $id, $profile, $group);
-	$return = process_sql ($sql);
+	$where = array(
+		'id_usuario' => $id,
+		'id_perfil' => $profile,
+		'id_grupo' => $group);
+	$result = process_sql_delete('tusuario_perfil', $where);
 	if ($return === false)
 		returnError('error_delete_user_profile', 'Error delete user profile.');
 	else

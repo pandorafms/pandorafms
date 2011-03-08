@@ -1,5 +1,20 @@
 2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_events.php, include/functions_messages.php,
+	include/auth/mysql.php, include/functions_api.php,
+	include/functions_incidents.php, include/functions_db.php,
+	operation/incidents/incident_detail.php,
+	operation/snmpconsole/snmp_view.php, operation/reporting/graph_viewer.php,
+	godmode/groups/group_list.php, godmode/agentes/module_manager.php,
+	godmode/agentes/configurar_agente.php, godmode/agentes/planned_downtime.php,
+	godmode/servers/recon_script.php, godmode/servers/manage_recontask.php,
+	godmode/servers/modificar_server.php, godmode/snmpconsole/snmp_alert.php,
+	godmode/snmpconsole/snmp_filters.php,
+	godmode/modules/manage_network_templates_form.php: change the source code
+	for to use process_sql_delete instead of the SQL. 
+
+2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_api.php, include/functions_db.php,
 	extensions/update_manager.php, extensions/plugin_registration.php,
 	operation/incidents/incident.php, operation/incidents/incident_detail.php,

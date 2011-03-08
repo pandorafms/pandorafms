@@ -34,11 +34,13 @@ print_page_header (__('Manage recontask'), "", false, "", true);
 // --------------------------------
 if (isset ($_GET["delete"])) {
 	$id = get_parameter_get ("delete");
-	$sql = sprintf("DELETE FROM trecon_task WHERE id_rt = '%d'",$id);
-	$result = process_sql ($sql);
+	
+	$result = process_sql_delete('trecon_task', array('id_rt' => $id));
+	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully deleted recon task').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="error">'.__('Error deleting recon task').'</h3>';
 	}
 }

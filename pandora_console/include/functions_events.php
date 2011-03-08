@@ -116,8 +116,7 @@ function delete_event ($id_event, $similar = true) {
 	$errors = 0;
 	
 	foreach ($id_event as $event) {
-		$sql = sprintf ("DELETE FROM tevento WHERE id_evento = %d", $event);
-		$ret = process_sql ($sql);
+		$ret = process_sql_delete('tevento', array('id_evento' => $event));
 		
 		if (check_acl ($config["id_user"], get_event_group ($event), "IM") == 0) {
 			//Check ACL

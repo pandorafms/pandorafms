@@ -1,3 +1,8 @@
+2011-03-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_regexp.cc: Added support for extended regular
+	  expressions.
+
 2010-12-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/util/pandora_update.exe: Updated. Some paths may have been wrong.

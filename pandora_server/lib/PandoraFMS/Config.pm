@@ -231,9 +231,10 @@ sub pandora_load_config {
 	$pa_config->{"recon_reverse_geolocation_file"} = '/usr/local/share/GeoIP/GeoIPCity.dat'; # 3.1
 	$pa_config->{"recon_location_scatter_radius"} = 50; # 3.1
 	$pa_config->{"update_parent"} = 0; # 3.1
-    $pa_config->{"google_maps_description"} = 0;
+	$pa_config->{"google_maps_description"} = 0;
+	$pa_config->{'openstreetmaps_description'} = 0;
 
-	$pa_config->{"max_queue_files"} = 250; 
+	$pa_config->{"max_queue_files"} = 500; 
 
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -548,9 +549,12 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^restart\s+([0-1])/i) {
 			$pa_config->{'restart'} = clean_blank($1);
 		}
-        elsif ($parametro =~ m/^google_maps_description\s+([0-1])/i) {
-            $pa_config->{'google_maps_description'} = clean_blank($1);
-        }
+	        elsif ($parametro =~ m/^google_maps_description\s+([0-1])/i) {
+			$pa_config->{'google_maps_description'} = clean_blank($1);
+	        }
+		elsif ($parametro =~ m/^openstreetmaps_description\s+([0-1])/i) {
+                        $pa_config->{'openstreetmaps_description'} = clean_blank($1);
+                }
 		elsif ($parametro =~ m/^activate_gis\s+([0-1])/i) {
 			$pa_config->{'activate_gis'} = clean_blank($1);
 		}

@@ -181,15 +181,16 @@ $groups = get_user_groups ($config["id_user"], "IR");
 
 //Select incidencts where the user has access to ($groups from
 //get_user_groups), array_keys for the id, implode to pass to SQL
-$sql = "SELECT * FROM tincidencia WHERE 
-	id_grupo IN (".implode (",",array_keys ($groups)).")".$filter." 
+$sql = "SELECT * FROM tincidencia
+	WHERE id_grupo IN (".implode (",",array_keys ($groups)).")" . $filter . " 
 	ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
 
 $result = get_db_all_rows_sql ($sql);
 if (empty ($result)) {
 	$result = array ();
 	$count = 0;
-} else {
+}
+else {
 	$count = count ($result);
 }
 
@@ -243,7 +244,8 @@ echo '</form>';
 
 if ($count < 1) {
 	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
-} else {
+}
+else {
 	// TOTAL incidents
 	$url = "index.php?sec=incidencias&amp;sec2=operation/incidents/incident";
 

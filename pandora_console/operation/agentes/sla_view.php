@@ -104,7 +104,9 @@ print_table ($table);
 unset ($table);
 
 // Get all SLA report components
-$sql = "SELECT id_agent_module, sla_max, sla_min, sla_limit FROM treport_content_sla_combined WHERE id_agent_module IN (".implode (",",array_keys ($modules)).")";
+$sql = "SELECT id_agent_module, sla_max, sla_min, sla_limit
+	FROM treport_content_sla_combined
+	WHERE id_agent_module IN (".implode (",",array_keys ($modules)).")";
 $result = get_db_all_rows_sql ($sql);
 if ($result !== false) {
 	echo "<h3>".__('User-defined SLA items')." - ".human_time_description_raw ($config["sla_period"])."</h3>";

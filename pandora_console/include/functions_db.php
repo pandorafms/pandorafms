@@ -589,7 +589,14 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 		unset ($search["disabled"]);
 		if (isset ($search["string"])) {
 			$string = safe_input ($search["string"]);
-			$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
+					break;
+				case "postgresql":
+					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
+					break;
+			}
 				
 			unset ($search["string"]);
 		}
@@ -794,9 +801,9 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 		FROM tagente_modulo
 		%s
 		ORDER BY nombre',
-	($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-	safe_output(implode (",", (array) $details)),
-	$where);
+		($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+		safe_output(implode (",", (array) $details)),
+		$where);
 
 	$result = get_db_all_rows_sql ($sql);
 
@@ -805,11 +812,11 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 	}
 
 	if (! $indexed)
-	return $result;
+		return $result;
 
 	$modules = array ();
 	foreach ($result as $module) {
-		if($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+		if ($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
 			if (is_array ($details) || $details == '*') {
 				//Just stack the information in array by ID
 				$modules[$module['id_agente_modulo']] = $module;
@@ -836,11 +843,12 @@ function get_agent_modules_count ($id_agent = 0) {
 	if (empty ($id_agent)) {
 		//If the array proved empty or the agent is less than 1 (eg. -1)
 		$filter = '';
-	} else {
+	}
+	else {
 		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
 	}
 
-	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
+	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo" . $filter);
 }
 
 /**
@@ -1151,10 +1159,10 @@ function get_group_events ($id_group, $period, $date) {
 	$datelimit = $date - $period;
 
 	$sql = sprintf ('SELECT * FROM tevento
-			WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s)
-			ORDER BY utimestamp ASC',
-	$datelimit, $date, implode (",", $id_group));
+		WHERE utimestamp > %d AND utimestamp <= %d
+		AND id_grupo IN (%s)
+		ORDER BY utimestamp ASC',
+		$datelimit, $date, implode (",", $id_group));
 
 	return get_db_all_rows_sql ($sql);
 }
@@ -1180,9 +1188,12 @@ function get_agent_events ($id_agent, $period, $date = 0) {
 
 	$datelimit = $date - $period;
 
-	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
-		FROM tevento WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
-		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent, $datelimit, $date);
+	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
+			max(timestamp) AS time2
+		FROM tevento
+		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
+		GROUP BY id_agentmodule, evento
+		ORDER BY time2 DESC', $id_agent, $datelimit, $date);
 
 	return get_db_all_rows_sql ($sql);
 }
@@ -1209,7 +1220,8 @@ function get_module_events ($id_agent_module, $period, $date = 0) {
 	$datelimit = $date - $period;
 
 	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
-		FROM tevento WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
+		FROM tevento
+		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
 		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent_module, $datelimit, $date);
 
 	return get_db_all_rows_sql ($sql);
@@ -1239,7 +1251,7 @@ function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
 	$sql = sprintf ('SELECT timestamp
 		FROM tevento
 		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d
-		AND id_alert_am = %d 
+			AND id_alert_am = %d 
 		ORDER BY timestamp DESC', $id_agent, $datelimit, $date, $id_alert);
 
 	return get_db_all_rows_sql ($sql);
@@ -1269,7 +1281,7 @@ function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0
 	$sql = sprintf ('SELECT timestamp
 		FROM tevento
 		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d
-		AND id_alert_am = %d 
+			AND id_alert_am = %d 
 		ORDER BY timestamp DESC', $id_agent_module, $datelimit, $date, $id_alert);
 
 	return get_db_all_rows_sql ($sql);
@@ -1522,7 +1534,7 @@ function get_moduletypes ($type = "all", $rows = "nombre") {
 		return array_merge (range (1,4), range (19,24));
 	}
 
-	$sql = sprintf ("SELECT id_tipo,%s FROM ttipo_modulo", implode (",", $rows));
+	$sql = sprintf ("SELECT id_tipo, %s FROM ttipo_modulo", implode (",", $rows));
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {
 		return $return;
@@ -1564,8 +1576,6 @@ function get_agent_modules_data_count ($id_agent = 0) {
 	$count["total"] = 0;
 
 	$query[0] = "SELECT COUNT(*) FROM tagente_datos";
-	//$query[1] = "SELECT COUNT(*) FROM tagente_datos_inc";
-	//$query[2] = "SELECT COUNT(*) FROM tagente_datos_string";
 
 	foreach ($id_agent as $agent_id) {
 		//Init value
@@ -1614,12 +1624,13 @@ function check_alert_fired ($id_agent) {
 	$sql = sprintf ("SELECT COUNT(*)
 		FROM talert_template_modules, tagente_modulo
 		WHERE talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
-		AND times_fired > 0 AND id_agente = %d",
+			AND times_fired > 0 AND id_agente = %d",
 	$id_agent);
 
 	$value = get_db_sql ($sql);
 	if ($value > 0)
-	return true;
+		return true;
+	
 	return false;
 }
 
@@ -2017,7 +2028,7 @@ function agent_add_address ($id_agent, $ip_address) {
 	}
 	$current_address = get_db_sql ($sql);
 	if ($current_address > 0)
-	return;
+		return;
 
 	// Look for a record with this IP Address
 	$id_address = (int) get_db_value ('id_a', 'taddress', 'ip', $ip_address);
@@ -2043,14 +2054,14 @@ function agent_delete_address ($id_agent, $ip_address) {
 
 	$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a AND ip = '%s'
-		AND id_agent = %d",$ip_address, $id_agent);
+		AND id_agent = %d", $ip_address, $id_agent);
 	$id_ag = get_db_sql ($sql);
 	if ($id_ag !== false) {
 		process_sql_delete('taddress_agent', array('id_ag' => $id_ag));
 	}
 	$agent_name = get_agent_name($id_agent, "");
 	pandora_audit("Agent management",
-	"Deleted IP $ip_address from agent '$agent_name'");
+		"Deleted IP $ip_address from agent '$agent_name'");
 
 	// Need to change main address?
 	if (get_agent_address ($id_agent) == $ip_address) {
@@ -2081,11 +2092,24 @@ function get_agent_address ($id_agent) {
  * @return mixed The agent that has the IP address given. False if none were found.
  */
 function get_agent_with_ip ($ip_address) {
-	$sql = sprintf ('SELECT tagente.*
-		FROM tagente, taddress, taddress_agent
-		WHERE tagente.id_agente = taddress_agent.id_agent
-		AND taddress_agent.id_a = taddress.id_a
-		AND ip = "%s"', $ip_address);
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ('SELECT tagente.*
+				FROM tagente, taddress, taddress_agent
+				WHERE tagente.id_agente = taddress_agent.id_agent
+					AND taddress_agent.id_a = taddress.id_a
+					AND ip = "%s"', $ip_address);
+			break;
+		case "postgresql":
+			$sql = sprintf ('SELECT tagente.*
+				FROM tagente, taddress, taddress_agent
+				WHERE tagente.id_agente = taddress_agent.id_agent
+					AND taddress_agent.id_a = taddress.id_a
+					AND ip = \'%s\'', $ip_address);
+			break;
+	}
 
 	return get_db_row_sql ($sql);
 }
@@ -2098,9 +2122,10 @@ function get_agent_with_ip ($ip_address) {
  * @return array Array with the IP address of the given agent or an empty array.
  */
 function get_agent_addresses ($id_agent) {
-	$sql = sprintf ("SELECT ip FROM taddress_agent, taddress
+	$sql = sprintf ("SELECT ip
+		FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
-		AND id_agent = %d", $id_agent);
+			AND id_agent = %d", $id_agent);
 
 	$ips = get_db_all_rows_sql ($sql);
 
@@ -2861,9 +2886,9 @@ function get_module_status ($id_module = 0) {
 	$status = get_db_sql ("SELECT estado
 			FROM tagente_estado, tagente_modulo 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND tagente_modulo.disabled = 0 
-			AND tagente_modulo.delete_pending = 0 
-			AND tagente_modulo.id_agente_modulo = ".$id_module);
+				AND tagente_modulo.disabled = 0 
+				AND tagente_modulo.delete_pending = 0 
+				AND tagente_modulo.id_agente_modulo = ".$id_module);
 
 	// TODO: Check any alert for that agent who has recept alerts fired
 
@@ -2920,7 +2945,7 @@ function get_layoutdata_y ($id_layoutdata){
  */
 function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
-	$utimestamp = time ();
+		$utimestamp = time ();
 
 	if ($string == 1) {
 		$table = 'tagente_datos_string';
@@ -2930,11 +2955,13 @@ function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	}
 
 	// 172800 = 60×60×24*2 Search up to 2 days before utimestamp
-	$sql = sprintf ('SELECT * FROM ' . $table . ' WHERE id_agente_modulo = %d
+	$sql = sprintf ('SELECT *
+		FROM ' . $table . '
+		WHERE id_agente_modulo = %d
 			AND utimestamp <= %d 
 			AND utimestamp >= %d 
-			ORDER BY utimestamp DESC',
-	$id_agent_module, $utimestamp, $utimestamp - 172800);
+		ORDER BY utimestamp DESC',
+		$id_agent_module, $utimestamp, $utimestamp - 172800);
 
 	return get_db_row_sql ($sql, true);
 }
@@ -2950,7 +2977,7 @@ function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
  */
 function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
-	$utimestamp = time ();
+		$utimestamp = time ();
 
 	if ($string == 1) {
 		$table = 'tagente_datos_string';
@@ -2960,12 +2987,13 @@ function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	}
 
 	$interval = get_module_interval ($id_agent_module);
-	$sql = sprintf ('SELECT * FROM tagente_datos
-			WHERE id_agente_modulo = %d 
+	$sql = sprintf ('SELECT *
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d 
 			AND utimestamp <= %d 
 			AND utimestamp >= %d
-			ORDER BY utimestamp ASC',
-	$id_agent_module, $utimestamp + $interval, $utimestamp);
+		ORDER BY utimestamp ASC',
+		$id_agent_module, $utimestamp + $interval, $utimestamp);
 
 	return get_db_row_sql ($sql, true);
 }
@@ -2986,8 +3014,11 @@ function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 
 	$datelimit = $date - $period;
 
-	$sql = sprintf ("SELECT datos AS data, utimestamp FROM tagente_datos WHERE id_agente_modulo = %d
-					AND utimestamp > %d AND utimestamp <= %d ORDER BY utimestamp ASC",
+	$sql = sprintf ("SELECT datos AS data, utimestamp
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d
+			AND utimestamp > %d AND utimestamp <= %d
+		ORDER BY utimestamp ASC",
 	$id_agent_module, $datelimit, $date);
 
 	$values = get_db_all_rows_sql ($sql, true, false);
@@ -3152,9 +3183,10 @@ function delete_agent ($id_agents, $disableACL = false) {
 		$where_modules = "ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agent.")";
 
 		//IP address
-		$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
+		$sql = sprintf ("SELECT id_ag
+			FROM taddress_agent, taddress
 			WHERE taddress_agent.id_a = taddress.id_a
-			AND id_agent = %d",
+				AND id_agent = %d",
 		$id_agent);
 		$addresses = get_db_all_rows_sql ($sql);
 

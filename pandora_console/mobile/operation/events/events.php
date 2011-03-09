@@ -131,9 +131,6 @@ class EventsView {
 		$table = null;
 		$table->width = '100%';
 		$table->head = array();
-//		$table->head[0] = '<span title="' . __('Severity') . '" alt="' . __('Severity') . '">' . __('S') . '</span>';
-//		$table->head[1] = '<span title="' . __('Group') . '" alt="' . __('Group') . '">' . __('G') . '</span>';
-//		$table->head[2] = '<span title="' . __('Type') . '" alt="' . __('Type') . '">' . __('T') . '</span>';
 		$table->head[3] = '<span title="' . __('Timestamp') . '" alt="' . __('Timestamp') . '">' . __('T') . '</span>';
 		$table->head[4] = '<span title="' . __('Description') . '" alt="' . __('Description') . '">' . __('Des.') . '</span>';
 		$table->head[5] = '<span title="' . __('Agent') . '" alt="' . __('Agent') . '">' . __('Agent') . '</span>';
@@ -164,27 +161,6 @@ class EventsView {
 			
 			$table->rowclass[$iterator] = get_priority_class($row["criticity"]);
 			$iterator++;
-			
-//			$data[] = '<a href="index.php?page=events&offset=' . $offset .
-//				'&ev_group=' . $ev_group . '&event_type=' . $event_type .
-//				'&severity=' . $row["criticity"] . '&search=' . $search . '">' .
-//				print_image ($img, true, 
-//				array ("class" => "image_status",
-//					"width" => 15,
-//					"height" => 15,
-//					"title" => get_priority_name($row["criticity"]))) . '</a>';
-				
-//			$data[] = '<a href="index.php?page=events&ev_group=' .
-//				$row["id_grupo"] .  '&event_type=' . $event_type .
-//				'&severity='. $severity . '&search=' . $search . '">' . 
-//				str_replace('images/', '../images/', print_group_icon ($row["id_grupo"], true, "groups_small", '', false))
-//				. '</a>';
-//			
-//			$data[] = '<a href="index.php?page=events&ev_group=' . $ev_group .
-//				'&event_type=' . $row["event_type"] . '&severity=' . $severity .
-//				'&search=' . $search . '">' .
-//				str_replace('images/', '../images/', print_event_type_img($row["event_type"], true)) .
-//				'</a>';
 				
 			$data[] = print_timestamp($row["timestamp"], true, array('units' => 'tiny'));
 						

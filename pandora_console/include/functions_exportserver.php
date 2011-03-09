@@ -32,7 +32,8 @@ function get_exportservers ($active = 1) {
 		
 	if ($active == 1) {
 		$servers = get_db_all_rows_sql ($query.' AND status = 1');
-	} else {
+	}
+	else {
 		$servers = get_db_all_rows_sql ($query);
 	}
 	

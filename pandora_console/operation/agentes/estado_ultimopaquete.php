@@ -35,9 +35,9 @@ $intervalo_agente = $agent["intervalo"];
 // Get last packet
 $sql3 = 'SELECT * FROM tagente_modulo, tagente_estado
 	WHERE tagente_modulo.disabled = 0
-	AND tagente_modulo.id_agente = ' . $id_agente.
-	' AND tagente_estado.utimestamp != 0
-	AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+		AND tagente_modulo.id_agente = ' . $id_agente.
+		' AND tagente_estado.utimestamp != 0
+		AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 	ORDER BY id_module_group, nombre';
 $label_group = 0;
 $last_label = "";

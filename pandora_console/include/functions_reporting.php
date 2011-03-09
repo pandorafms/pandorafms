@@ -61,7 +61,8 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 		$min_necessary = 1;
 	
 	// Compressed module data
-	} else {
+	}
+	else {
 		// Get previous data
 		$previous_data = get_previous_data ($id_agent_module, $datelimit);
 		if ($previous_data !== false) {
@@ -74,7 +75,8 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 		if ($next_data !== false) {
 			$next_data['utimestamp'] = $date;
 			array_push ($interval_data, $next_data);
-		} else if (count ($interval_data) > 0) {
+		}
+		else if (count ($interval_data) > 0) {
 			// Propagate the last known data to the end of the interval
 			$next_data = array_pop ($interval_data);
 			array_push ($interval_data, $next_data);
@@ -99,7 +101,8 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 		if (! $uncompressed_module) {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
 			$previous_data = $data;
-		} else {
+		}
+		else {
 			$total += $data['datos'];
 			$count++;
 		}
@@ -313,7 +316,8 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 		$min_necessary = 1;
 	
 	// Compressed module data
-	} else {
+	}
+	else {
 		// Get previous data
 		$previous_data = get_previous_data ($id_agent_module, $datelimit);
 		if ($previous_data !== false) {
@@ -326,7 +330,8 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 		if ($next_data !== false) {
 			$next_data['utimestamp'] = $date;
 			array_push ($interval_data, $next_data);
-		} else if (count ($interval_data) > 0) {
+		}
+		else if (count ($interval_data) > 0) {
 			// Propagate the last known data to the end of the interval
 			$next_data = array_pop ($interval_data);
 			array_push ($interval_data, $next_data);
@@ -350,9 +355,11 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 	foreach ($interval_data as $data) {
 		if ($uncompressed_module) {
 			$total += $data['datos'];
-		} else if ($module_inc) {
+		}
+		else if ($module_inc) {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
-		} else {
+		}
+		else {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']) / $module_interval;
 		}
 		$previous_data = $data;
@@ -389,9 +396,9 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	
 	// Get interval data
 	$sql = sprintf ('SELECT * FROM tagente_datos
-			WHERE id_agente_modulo = %d
+		WHERE id_agente_modulo = %d
 			AND utimestamp > %d AND utimestamp <= %d',
-			$id_agent_module, $datelimit, $date);
+		$id_agent_module, $datelimit, $date);
 			
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
@@ -451,7 +458,8 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else if (count ($interval_data) > 0) {
+	}
+	else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -554,7 +562,10 @@ function get_group_stats ($id_group = 0) {
 		}
 
 		foreach ($id_group as $group){
-			$group_stat = get_db_all_rows_sql ("SELECT * FROM tgroup_stat, tgrupo WHERE tgrupo.id_grupo = tgroup_stat.id_group AND tgroup_stat.id_group = $group ORDER BY nombre");
+			$group_stat = get_db_all_rows_sql ("SELECT *
+				FROM tgroup_stat, tgrupo
+				WHERE tgrupo.id_grupo = tgroup_stat.id_group AND tgroup_stat.id_group = $group
+				ORDER BY nombre");
 			$data["monitor_checks"] += $group_stat[0]["modules"];
 			$data["monitor_not_init"] += $group_stat[0]["non-init"];
 			$data["monitor_unknown"] += $group_stat[0]["unknown"];
@@ -646,15 +657,17 @@ function get_group_stats ($id_group = 0) {
 					$data["monitor_critical"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 						FROM tagente_estado, tagente, tagente_modulo
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-						AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente_modulo.disabled = 0 AND estado = 1 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+							AND tagente_estado.id_agente = tagente.id_agente
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+							AND tagente_modulo.disabled = 0 AND estado = 1
+							AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
 					break;
 				case "postgresql":
 					$data["monitor_critical"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 						FROM tagente_estado, tagente, tagente_modulo
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-						AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+							AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+							AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
 					break;
 			}
 			
@@ -663,17 +676,17 @@ function get_group_stats ($id_group = 0) {
 					$data["monitor_warning"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 						FROM tagente_estado, tagente, tagente_modulo
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-						AND estado = 2 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-						OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+							AND estado = 2 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
 					break;
 				case "postgresql":
 					$data["monitor_warning"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 						FROM tagente_estado, tagente, tagente_modulo
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-						AND estado = 2 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-						OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+							AND estado = 2 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
 					break;
 			}
 
@@ -682,39 +695,39 @@ function get_group_stats ($id_group = 0) {
 					$data["monitor_unknown"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 						FROM tagente_estado, tagente, tagente_modulo
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-						AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
-						AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
+							AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
 					break;
 				case "postgresql":
 					$data["monitor_unknown"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 						FROM tagente_estado, tagente, tagente_modulo
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-						AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
-						AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
+							AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
 					break;
 			}
 
 			$data["monitor_not_init"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 				FROM tagente_estado, tagente, tagente_modulo
 				WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");
 
 			$data["monitor_alerts"] += get_db_sql ("SELECT COUNT(talert_template_modules.id)
 				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
 				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
+					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
 
 			$data["monitor_alerts_fired"] += get_db_sql ("SELECT COUNT(talert_template_modules.id)
 				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
 				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
+					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
 		}
 		/*
 		 Monitor health (percentage)
@@ -2330,7 +2343,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$result = get_db_all_rows_sql('SELECT *
 				FROM tagente_datos_string
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-				AND utimestamp > ' . $datelimit . ' AND utimestamp <= ' . $report["datetime"]);
+					AND utimestamp > ' . $datelimit . '
+					AND utimestamp <= ' . $report["datetime"]);
 			if ($result === false) {
 				$result = array();
 			}
@@ -2485,8 +2499,8 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	// Read module configuration
 	$datelimit = $date - $period;	
 	$module = get_db_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
-				FROM tagente_modulo
-				WHERE id_agente_modulo = ' . (int) $id_agent_module);
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
 		return false;
 	}
@@ -2504,10 +2518,10 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
-			' AND utimestamp > ' . (int) $datelimit .
-			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
 	// Get previous data
@@ -2522,7 +2536,8 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else if (count ($interval_data) > 0) {
+	}
+	else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2542,7 +2557,8 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;
 		$critical_count = 1;
-	} else {
+	}
+	else {
 		$previous_status = 0;
 		$critical_count = 0;
 	}
@@ -2560,7 +2576,8 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 				$critical_count++;
 			}
 			$previous_status = 1;
-		} else {
+		}
+		else {
 			$previous_status = 0;
 		}
 		
@@ -2593,8 +2610,8 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	// Read module configuration
 	$datelimit = $date - $period;	
 	$module = get_db_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
-				FROM tagente_modulo
-				WHERE id_agente_modulo = ' . (int) $id_agent_module);
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
 		return false;
 	}
@@ -2612,10 +2629,10 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
-			' AND utimestamp > ' . (int) $datelimit .
-			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
 	// Get previous data
@@ -2630,7 +2647,8 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else if (count ($interval_data) > 0) {
+	}
+	else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2650,7 +2668,8 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;
 		$critical_count = 1;
-	} else {
+	}
+	else {
 		$previous_status = 0;
 		$critical_count = 0;
 	}
@@ -2668,7 +2687,8 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 				$critical_count++;
 			}
 			$previous_status = 1;
-		} else {
+		}
+		else {
 			$previous_status = 0;
 		}
 		
@@ -2700,8 +2720,8 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	// Read module configuration
 	$datelimit = $date - $period;	
 	$module = get_db_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
-				FROM tagente_modulo
-				WHERE id_agente_modulo = ' . (int) $id_agent_module);
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
 		return false;
 	}
@@ -2719,10 +2739,10 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
-			' AND utimestamp > ' . (int) $datelimit .
-			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
 	// Get previous data
@@ -2737,7 +2757,8 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else if (count ($interval_data) > 0) {
+	}
+	else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2756,7 +2777,8 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;	
-	} else {
+	}
+	else {
 		$previous_status = 0;
 	}
 
@@ -2770,7 +2792,8 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		if ((($critical_max > $critical_min AND ($data['datos'] > $critical_max OR $data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $data['datos'] < $critical_min)) {
 			$previous_status = 1;
-		} else {
+		}
+		else {
 			$previous_status = 0;
 		}
 		
@@ -2798,8 +2821,8 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	// Read module configuration
 	$datelimit = $date - $period;	
 	$module = get_db_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
-				FROM tagente_modulo
-				WHERE id_agente_modulo = ' . (int) $id_agent_module);
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
 		return false;
 	}
@@ -2817,10 +2840,10 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
-			' AND utimestamp > ' . (int) $datelimit .
-			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
 	// Get previous data
@@ -2835,7 +2858,8 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else if (count ($interval_data) > 0) {
+	}
+	else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2854,7 +2878,8 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;	
-	} else {
+	}
+	else {
 		$previous_status = 0;
 	}
 
@@ -2868,7 +2893,8 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 		if ((($critical_max > $critical_min AND ($data['datos'] > $critical_max OR $data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $data['datos'] < $critical_min)) {
 			$previous_status = 1;
-		} else {
+		}
+		else {
 			$previous_status = 0;
 		}
 		

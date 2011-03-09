@@ -173,7 +173,9 @@ switch ($activeTab) {
 						foreach($name_modules as $mod){
 							$cont_ag = 1;
 							foreach($id_agents as $ag){
-								$sql = "SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = ".$ag." AND nombre = '".$mod."'";
+								$sql = "SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE delete_pending = 0 AND id_agente = ".$ag." AND nombre = '".$mod."'";
 								$result = get_db_row_sql ($sql);
 								$id_modules[$cont_dest] = $result['id_agente_modulo'];
 								$cont_ag = $cont_ag + 1;

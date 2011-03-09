@@ -135,7 +135,7 @@ if ($searchFlag) {
 	if ($enabledisable != -1)
 		$where .= " AND talert_template_modules.disabled =" . $enabledisable;
 	if ($standby != -1)
-		$where .= " AND talert_template_modules.standby =" . $standby;
+		$where .= " AND talert_template_modules.standby = " . $standby;
 }
 
 $total = get_agent_alerts_simple (array_keys ($agents), false,

@@ -29,14 +29,16 @@ if ($searchMaps) {
 		foreach($maps as $key => $map) {
 			if (!check_acl ($config["id_user"], $map["id_group"], "AR")) {
 				unset($maps[$key]);
-			}else {
+			}
+			else {
 				$maps_id[] = $map['id'];
 			}
 		}
 		
 		if(!$maps_id) {
 			$maps_condition = "";
-		}else {
+		}
+		else {
 			// Condition with the visible agents
 			$maps_condition = " AND id IN (\"".implode('","',$maps_id)."\")";
 		}

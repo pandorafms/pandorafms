@@ -46,7 +46,8 @@ if ($id_group) {
 		$custom_id = $group["custom_id"];
 		$propagate = $group["propagate"];
 		$skin = $group["id_skin"];
-	} else {
+	}
+	else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
 		echo "</table>"; 
 		include ("general/footer.php");
@@ -57,7 +58,8 @@ if ($id_group) {
 // Header
 if ($id_group) {
 	print_page_header (__("Update group"), "images/god1.png", false, "", true, "");
-} else {
+}
+else {
 	print_page_header (__("Create group"), "images/god1.png", false, "", true, "");
 }
 
@@ -113,7 +115,8 @@ if ($id_group) {
 	print_input_hidden ('update_group', 1);
 	print_input_hidden ('id_group', $id_group);
 	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-} else {
+}
+else {
 	print_input_hidden ('create_group', 1);
 	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 }

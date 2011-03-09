@@ -97,7 +97,9 @@ $table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
 // Recon server
 $table->data[1][0] = "<b>".__('Recon server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
 
-$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
+$table->data[1][1] = print_select_from_sql ('SELECT id_server, name
+	FROM tserver
+	WHERE server_type = 3 ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
 
 
 $fields['network_sweep'] = __("Network sweep");

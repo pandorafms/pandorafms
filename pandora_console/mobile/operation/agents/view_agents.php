@@ -246,13 +246,16 @@ class ViewAgent {
 			if ($module["estado"] == 1) {
 				$status = STATUS_MODULE_CRITICAL;
 				$title = __('CRITICAL');
-			} elseif ($module["estado"] == 2) {
+			}
+			elseif ($module["estado"] == 2) {
 				$status = STATUS_MODULE_WARNING;
 				$title = __('WARNING');
-			} elseif ($module["estado"] == 0) {
+			}
+			elseif ($module["estado"] == 0) {
 				$status = STATUS_MODULE_OK;
 				$title = __('NORMAL');
-			} elseif ($module["estado"] == 3) {
+			}
+			elseif ($module["estado"] == 3) {
 				$last_status =  get_agentmodule_last_status($module['id_agente_modulo']);
 				switch($last_status) {
 					case 0:
@@ -290,17 +293,20 @@ class ViewAgent {
 				case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
 				}
 				$salida = "<span style='$style'>$salida</span>";
-			} else {
+			}
+			else {
 				if (is_numeric($module["datos"])){
 					$salida = format_numeric($module["datos"]);
-				} else {
+				}
+				else {
 					$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
 				}
 			}
 			$data[] = $salida;
 			if ($module['estado'] == 3) {
 				$lastTime = '<span class="redb">';
-			} else {
+			}
+			else {
 				$lastTime = '<span>';
 			}
 			$lastTime .= print_timestamp ($module["utimestamp"], true, array('units' => 'tiny'));
@@ -316,7 +322,6 @@ class ViewAgent {
 		$table->head = array();
 		$table->head[0] = __('Module');
 		$table->head[1] = __('Template');
-//		$table->head[2] = __('Action');
 		$table->head[2] = '<span title="' . __('Last fired') . '" alt="' . __('Last fired') . '">' . __('Last') . '</span>';
 		$table->head[3] = '<span title="' . __('Status') . '" alt="' . __('Status') . '">' . __('S') . '</span>';
 		
@@ -475,10 +480,10 @@ class viewGraph {
 		}
 		else {
 			$sql_body = sprintf (" FROM tagente_datos
-				WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
+				WHERE id_agente_modulo = %d AND utimestamp > %d
+				ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
 			
 			$columns = array(
-				//"Timestamp"	=> array("utimestamp", 			"format_timestamp", 	"align" => "center"),
 				"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
 				"Time" 		=> array("utimestamp", 			"format_time", 			"align" => "center")
 			);

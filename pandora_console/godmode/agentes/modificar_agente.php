@@ -247,7 +247,7 @@ if ($agents !== false) {
 		$id_grupo = $agent["id_grupo"];
 		if (! check_acl ($config["id_user"], $id_grupo, "AW"))
 			continue;
-		if ($color == 1){
+		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;
 			}
@@ -265,7 +265,7 @@ if ($agents !== false) {
 		$iterator++;
 		// Agent name
 		echo "<tr class='$rowclass'><td class='$tdcolor' width='40%'>";
-		if ($agent["disabled"]){
+		if ($agent["disabled"]) {
 			echo "<em>";
 		}
 		echo '<span class="left">';
@@ -330,7 +330,8 @@ if ($agents !== false) {
 	echo "</table>";
 	pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
 	echo "<table width='95%'><tr><td align='right'>";
-} else {
+}
+else {
 	echo "<div class='nf'>".__('There are no defined agents')."</div>";
 	echo "&nbsp;</td></tr><tr><td>";
 }

@@ -119,7 +119,9 @@ if ($update) {
 			if($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
 				
-			$agents_ = get_db_all_rows_sql('SELECT DISTINCT(t1.id_agente) FROM tagente t1, tagente_modulo t2 WHERE t1.id_agente = t2.id_agente');
+			$agents_ = get_db_all_rows_sql('SELECT DISTINCT(t1.id_agente)
+				FROM tagente t1, tagente_modulo t2
+				WHERE t1.id_agente = t2.id_agente');
 			foreach($agents_ as $id_agent) {
 				$module_name = get_db_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
 
@@ -316,7 +318,8 @@ $table->data['edit5'][2] = __('Password');
 $table->data['edit5'][3] = print_input_password ('plugin_pass', '', '', 15, 60, true);
 
 $table->data['edit6'][0] = __('Export target');
-$table->data['edit6'][1] = print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
+$table->data['edit6'][1] = print_select_from_sql ('SELECT id, name
+	FROM tserver_export ORDER BY name',
 	'id_export', '', '',__('None'),'0', true, false, false);
 
 /* FF stands for Flip-flop */

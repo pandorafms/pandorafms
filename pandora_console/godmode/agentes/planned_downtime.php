@@ -211,7 +211,15 @@ if ($create_downtime || $update_downtime) {
 		$filter_cond = '';
 		if($filter_group > 0)
 			$filter_cond = " AND id_grupo = $filter_group ";
-		$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre, tagente.id_grupo FROM tagente WHERE tagente.id_agente NOT IN (SELECT tagente.id_agente FROM tagente, tplanned_downtime_agents WHERE tplanned_downtime_agents.id_agent = tagente.id_agente AND tplanned_downtime_agents.id_downtime = %d) AND disabled = 0 $filter_cond ORDER by tagente.nombre", $id_downtime);
+		$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre, tagente.id_grupo
+			FROM tagente
+			WHERE tagente.id_agente NOT IN (
+					SELECT tagente.id_agente
+					FROM tagente, tplanned_downtime_agents
+					WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+						AND tplanned_downtime_agents.id_downtime = %d
+				) AND disabled = 0 $filter_cond
+			ORDER by tagente.nombre", $id_downtime);
 		$downtimes = get_db_all_rows_sql ($sql);
 		$data = array ();
 		if ($downtimes)
@@ -239,7 +247,12 @@ if ($create_downtime || $update_downtime) {
 		//Start Overview of existing planned downtime
 		echo '<h3>'.__('Agents planned for this downtime').':</h3>';
 		
-		$sql = sprintf ("SELECT tagente.nombre, tplanned_downtime_agents.id, tagente.id_os, tagente.id_agente, tagente.id_grupo, tagente.ultimo_contacto FROM tagente, tplanned_downtime_agents WHERE tplanned_downtime_agents.id_agent = tagente.id_agente AND tplanned_downtime_agents.id_downtime = %d ",$id_downtime);
+		$sql = sprintf ("SELECT tagente.nombre, tplanned_downtime_agents.id,
+				tagente.id_os, tagente.id_agente, tagente.id_grupo,
+				tagente.ultimo_contacto
+			FROM tagente, tplanned_downtime_agents
+			WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+				AND tplanned_downtime_agents.id_downtime = %d ",$id_downtime);
 		
 		$downtimes = get_db_all_rows_sql ($sql);
 		if ($downtimes === false) {

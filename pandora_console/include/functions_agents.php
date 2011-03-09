@@ -149,10 +149,13 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	
 	if (($id_agent === false) && ($idGroup !== false)) {
 		if ($idGroup != 0) { //All group
-			$subQuery = 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = ' . $idGroup . ')';
+			$subQuery = 'SELECT id_agente_modulo
+				FROM tagente_modulo
+				WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = ' . $idGroup . ')';
 		}
 		else {
-			$subQuery = 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0';
+			$subQuery = 'SELECT id_agente_modulo
+				FROM tagente_modulo WHERE delete_pending = 0';
 		}
 	}
 	else if ($id_agent === false) {
@@ -540,7 +543,12 @@ function get_agents_common_modules_with_alerts ($id_agent, $filter = false, $ind
 
 	$where = '';
 	if (! empty ($id_agent)) {
-		$where = sprintf (' WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0 AND id_agente IN (%s) AND (SELECT count(nombre) FROM tagente_modulo t3, talert_template_modules t4 WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0 AND t1.nombre = t3.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
+		$where = sprintf (' WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0
+			AND id_agente IN (%s) AND (
+				SELECT count(nombre)
+				FROM tagente_modulo t3, talert_template_modules t4
+				WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0
+					AND t1.nombre = t3.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
 	}
 		
 	if (! empty ($filter)) {
@@ -611,7 +619,12 @@ function get_agents_common_modules ($id_agent, $filter = false, $indexed = true,
 
 	$where = '';
 	if (! empty ($id_agent)) {
-		$where = sprintf (' WHERE delete_pending = 0 AND id_agente IN (%s) AND (SELECT count(nombre) FROM tagente_modulo t2 WHERE delete_pending = 0 AND t1.nombre = t2.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
+		$where = sprintf (' WHERE delete_pending = 0 AND id_agente IN (%s)
+				AND (
+					SELECT count(nombre)
+					FROM tagente_modulo t2
+					WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+						AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
 	}
 		
 	if (! empty ($filter)) {
@@ -622,7 +635,8 @@ function get_agents_common_modules ($id_agent, $filter = false, $indexed = true,
 				array_push ($fields, $field.'="'.$value.'"');
 			}
 			$where .= implode (' AND ', $fields);
-		} else {
+		}
+		else {
 			$where .= $filter;
 		}
 	}

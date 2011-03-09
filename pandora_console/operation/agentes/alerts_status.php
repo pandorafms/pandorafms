@@ -88,18 +88,36 @@ if ($alert_validate) {
 }
 
 if ($free_search != '') {
-	$whereAlertSimple = 'AND (' .
-		'id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE "%' . $free_search . '%") OR ' .
-		'id_alert_template IN (SELECT id FROM talert_templates WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%")) OR ' .
-		'talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%")) OR ' .
-		'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE "%' . $free_search . '%") OR ' .
-		'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE "%' . $free_search . '%"))' .
-		')';
-	
-	$whereAlertCombined = 'AND (' .
-		'name LIKE  "%' . $free_search . '%" OR ' .
-		'id IN (SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%"))) ' .
-		')';
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$whereAlertSimple = 'AND (' .
+				'id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE "%' . $free_search . '%") OR ' .
+				'id_alert_template IN (SELECT id FROM talert_templates WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%")) OR ' .
+				'talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%")) OR ' .
+				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE "%' . $free_search . '%") OR ' .
+				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE "%' . $free_search . '%"))' .
+				')';
+			
+			$whereAlertCombined = 'AND (' .
+				'name LIKE  "%' . $free_search . '%" OR ' .
+				'id IN (SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%"))) ' .
+				')';
+			break;
+		case "postgresql":
+			$whereAlertSimple = 'AND (' .
+				'id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE \'%' . $free_search . '%\') OR ' .
+				'id_alert_template IN (SELECT id FROM talert_templates WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE \'%' . $free_search . '%\')) OR ' .
+				'talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE \'%' . $free_search . '%\')) OR ' .
+				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE \'%' . $free_search . '%\') OR ' .
+				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE \'%' . $free_search . '%\'))' .
+				')';
+			
+			$whereAlertCombined = 'AND (' .
+				'name LIKE  "%' . $free_search . '%" OR ' .
+				'id IN (SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE \'%' . $free_search . '%\'))) ' .
+				')';
+			break;
+	}
 }
 else {
 	$whereAlertSimple = '';

@@ -179,8 +179,9 @@ flush ();
 
 if ($id_agent > 0) { //If the agent is not All or Not selected
 	$modules = get_agent_modules ($id_agent);
-	$query = sprintf ("AND id_agente_modulo IN(%s)", implode (",", array_keys ($modules)));
-} else {
+	$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
+}
+else {
 	$query = "";
 }
 

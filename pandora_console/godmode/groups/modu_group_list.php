@@ -113,8 +113,6 @@ $table->align = array ();
 $table->align[1] = 'center';
 $table->data = array ();
 
-//$groups = get_user_groups ($config['id_user']);
-
 $sql = "SELECT * 
 		FROM tmodule_group ";
 $groups = get_db_all_rows_sql ($sql, true);
@@ -123,15 +121,7 @@ $groups = get_db_all_rows_sql ($sql, true);
 foreach ($groups as $id_group ) {
 	$data = array ();
 	
-//	$group = get_db_row ('tmodule_group', 'id_mg', $id_group);
-	
-//	if (!empty ($group["icon"]))
-//		$data[0] = '<img src="images/groups_small/'.$group["icon"].'.png" border="0">';
-//	else
-//		$data[0] = '&nbsp;';
 	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">'.printTruncateText($id_group["name"], 50).'</a></strong>';
-//	$data[2] = get_group_name ($group["parent"]);
-//	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
 	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	
 	array_push ($table->data, $data);

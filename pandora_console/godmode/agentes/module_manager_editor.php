@@ -67,7 +67,14 @@ if (is_ajax ()) {
 		
 		$typeName = parseLocalModuleExtractValue('module_type',$component['data']);
 		
-		$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
+		switch ($config["dbtype"]) {
+			case "mysql":
+						$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
+				break;
+			case "postgresql":
+						$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE \'' . $typeName . '\'');
+				break;
+		}
 		
 		echo json_encode ($component);
 		return;

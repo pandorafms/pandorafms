@@ -176,7 +176,7 @@ foreach ($contents as $content) {
 	$data = array ();
 	$data["module"] = safe_output_xml (get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 	$data["agent"] = safe_output_xml (get_agentmodule_agent_name ($content['id_agent_module']));
-	$data["period"] = human_time_description ($content['period']);
+	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
 

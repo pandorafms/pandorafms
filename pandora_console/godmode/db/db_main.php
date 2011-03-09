@@ -179,7 +179,7 @@ if (!isset($config['db_maintance'])){
 	else
 		echo "<font><b>";
 
-	echo human_time_description($seconds);
+	echo human_time_description_raw($seconds);
 	echo " *";
 }
 echo "</td></tr>";

@@ -79,7 +79,7 @@ $data["total"] = 0;
 if (isset($_POST["purgedb"])) {
 	$from_date = get_parameter_post ("date_purge", 0);
 	if ($id_agent > 0) {
-		echo __('Purge task launched for agent')." ".get_agent_name ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
+		echo __('Purge task launched for agent')." ".get_agent_name ($id_agent)." :: ".__('Data older than')." ".human_time_description_raw ($from_date);
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
 		
 		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d", $id_agent);

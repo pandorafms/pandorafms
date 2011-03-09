@@ -106,7 +106,7 @@ if ($result === false) {
 }
 
 $header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id); 
-$header_title .= "<br><br>" . __("From the last") . " " . human_time_description ($period);
+$header_title .= "<br><br>" . __("From the last") . " " . human_time_description_raw ($period);
 
 echo "<h3>".$header_title. "</h3>";
 

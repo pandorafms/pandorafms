@@ -122,7 +122,7 @@ if ($view_graph) {
 	echo "<tr><td>";
 	print_custom_graph ($id_graph, $height, $width, $period, $stacked, false, $unixdate);
 	echo "</td></tr></table>";
-	$period_label = human_time_description ($period);
+	$period_label = human_time_description_raw ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
 	echo "<table class='databox_frame' cellpadding='4' cellspacing='4'>";
 	echo "<tr>";

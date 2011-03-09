@@ -231,16 +231,30 @@ sub process_xml_data ($$$$$) {
 			$valid_position_data = 0;
                 }
 
-                if (!defined($position_description) ) { #FIXME: Validate the data with a regexp
+		if ((!defined($position_description)) && ($latitude != '')) { #FIXME: Validate the data with a regexp
 
                         # This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
                         # This requires a connection to internet and could be very slow and have a huge impact in performance.
-                        # Other methods for reverse geocoding will be supplied in the future (openstreetmaps in a local server)
+                        # Other methods for reverse geocoding are OpenStreetmaps, in nternet or in a local server
 
                         if ($pa_config->{'google_maps_description'}){
                                 my $content = get ('http://maps.google.com/maps/geo?q='.$latitude.','.$longitude.'&output=csv&sensor=false');
                                 my @address = split (/\"/,$content);
                                 $position_description = $address[1];
+			}
+			elsif ($pa_config->{'openstreetmaps_description'}){
+                                # Sample Query: http://nominatim.openstreetmap.org/reverse?format=csv&lat=40.43197&lon=-3.6993818&zoom=18&addressdetails=1&email=info@pandorafms.org
+                                # Email address is sent by courtesy to OpenStreetmaps people. 
+				# I read the API :-), thanks guys for your work.
+                                # Change here URL to make request to a local openstreetmap server
+                                my $content = get ('http://nominatim.openstreetmap.org/reverse?format=csv&lat='.$latitude.'&lon='.$longitude.'&zoom=18&addressdetails=1&email=info@pandorafms.org');
+
+				# Yep, I need to parse the XML output.
+
+				my $xs1 = XML::Simple->new();
+				my $doc = $xs1->XMLin($content);
+				$position_description = safe_input ($doc->{result}{content});
+
                         } else {
                                 $position_description = ''; # Default value
                         }
@@ -248,6 +262,7 @@ sub process_xml_data ($$$$$) {
 
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
 	}
+
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
 		logger($pa_config, "$file_name has data from an unnamed agent", 3);

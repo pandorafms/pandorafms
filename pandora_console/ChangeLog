@@ -1,5 +1,9 @@
 2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* ChangeLog: fixed date of one my previous commit.
+
+2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* install.php, operation/incidents/incident.php,
 	operation/agentes/status_monitor.php, operation/agentes/datos_agente.php,
 	operation/servers/view_server.php, operation/snmpconsole/snmp_view.php,
@@ -33,7 +37,7 @@
 	* pandoradb.postgreSQL.sql: in the table "tusuario" added empty string for
 	the column "middlename".
 
-2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
+2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_html.php, include/functions_messages.php,
 	include/functions_exportserver.php, include/functions_reporting.php,

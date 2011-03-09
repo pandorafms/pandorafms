@@ -1,5 +1,9 @@
 2011-03-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Merged fro mtrunk. Fixed a typo.
+
+2011-03-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Merged from trunk. Several fixes.
 
 2011-02-23  Ramon Novoa  <rnovoa@artica.es>

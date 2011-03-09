@@ -353,8 +353,8 @@ sub read_config (;$) {
 		} elsif ($line =~ /^\s*module_freepercentdisk\s+(.*)$/) {
 			$module->{'func'} = \&module_freepercentdisk;
 			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_ocupiedpercentdisk\s+(.*)$/) {
-			$module->{'func'} = \&module_ocupiedpercentdisk;
+		} elsif ($line =~ /^\s*module_occupiedpercentdisk\s+(.*)$/) {
+			$module->{'func'} = \&module_occupiedpercentdisk;
 			$module->{'params'} = $1;
 		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
 			$module->{'max'} = $1;
@@ -1051,9 +1051,9 @@ sub module_freepercentdisk ($) {
 }
 
 ################################################################################
-# Get the ocupied space in a partition in %.
+# Get the occupied space in a partition in %.
 ################################################################################
-sub module_ocupiedpercentdisk ($) {
+sub module_occupiedpercentdisk ($) {
 	my $module = shift;
 
 	# Check module parameters
@@ -1064,8 +1064,8 @@ sub module_ocupiedpercentdisk ($) {
 
 	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
 	
-	my $ocupiedp = sprintf("%d", ($Parts{$module->{'params'}}{'total'} - $Parts{$module->{'params'}}{'avail'}) * 100 / $Parts{$module->{'params'}}{'total'});
-	return ($ocupiedp);
+	my $occupiedp = sprintf("%d", ($Parts{$module->{'params'}}{'total'} - $Parts{$module->{'params'}}{'avail'}) * 100 / $Parts{$module->{'params'}}{'total'});
+	return ($occupiedp);
 }
 
 ################################################################################

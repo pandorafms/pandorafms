@@ -353,6 +353,9 @@ sub read_config (;$) {
 		} elsif ($line =~ /^\s*module_freepercentdisk\s+(.*)$/) {
 			$module->{'func'} = \&module_freepercentdisk;
 			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_ocupiedpercentdisk\s+(.*)$/) {
+			$module->{'func'} = \&module_ocupiedpercentdisk;
+			$module->{'params'} = $1;
 		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
 			$module->{'max'} = $1;
 		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
@@ -1045,6 +1048,24 @@ sub module_freepercentdisk ($) {
 	
 	my $availp = sprintf("%d", $Parts{$module->{'params'}}{'avail'} * 100 / $Parts{$module->{'params'}}{'total'});
 	return ($availp);
+}
+
+################################################################################
+# Get the ocupied space in a partition in %.
+################################################################################
+sub module_ocupiedpercentdisk ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_parts ();
+
+	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
+	
+	my $ocupiedp = sprintf("%d", ($Parts{$module->{'params'}}{'total'} - $Parts{$module->{'params'}}{'avail'}) * 100 / $Parts{$module->{'params'}}{'total'});
+	return ($ocupiedp);
 }
 
 ################################################################################

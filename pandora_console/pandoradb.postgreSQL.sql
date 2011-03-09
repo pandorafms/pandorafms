@@ -649,7 +649,7 @@ CREATE TABLE "tusuario" (
 	"fullname" varchar(255) NOT NULL,
 	"firstname" varchar(255) NOT NULL,
 	"lastname" varchar(255) NOT NULL,
-	"middlename" varchar(255) NOT NULL,
+	"middlename" varchar(255) NOT NULL default '',
 	"password" varchar(45) default NULL,
 	"comments" varchar(200) default NULL,
 	"last_connect" BIGINT NOT NULL default 0,

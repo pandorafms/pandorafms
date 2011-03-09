@@ -1775,7 +1775,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Simple graph').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1798,7 +1798,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Simple baseline graph').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1822,7 +1822,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Custom graph').$sizhfin;
 			$data[1] = $sizh.$graph['name'].$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1936,7 +1936,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Monitor report').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1970,7 +1970,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Avg. Value').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1999,7 +1999,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Max. Value').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2023,7 +2023,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Min. Value').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2052,7 +2052,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh.__('Summatory').$sizhfin;
 			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
-			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)

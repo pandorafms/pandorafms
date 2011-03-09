@@ -407,13 +407,6 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 }
 
 /** 
- * @deprecated Use print_timestamp for output.
- */
-function human_time_description ($period) {
-	return human_time_description_raw ($period); //human_time_description_raw does the same but by calculating instead of a switch
-}
-
-/** 
  * @deprecated Get current time minus some seconds. (Do your calculations yourself on unix timestamps)
  * 
  * @param int $seconds Seconds to substract from current time.

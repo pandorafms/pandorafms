@@ -1,5 +1,16 @@
 2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php, include/functions.php,
+	operation/agentes/datos_agente.php, operation/agentes/gis_view.php,
+	operation/servers/view_server_detail.php,
+	operation/reporting/reporting_xml.php, operation/reporting/graph_viewer.php,
+	godmode/db/db_main.php, godmode/db/db_purge.php,
+	godmode/snmpconsole/snmp_alert.php, godmode/users/configure_user.php:
+	cleaned source code, and erased the deprecated function
+	"human_time_description".
+
+2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: fixed in the function "get_system_time" copy&paste
 	mistake.
 	

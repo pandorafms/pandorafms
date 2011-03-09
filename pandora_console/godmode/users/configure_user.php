@@ -119,7 +119,7 @@ if ($create_user) {
 			' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'] . 
 			' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
 		
-		$result = create_user ($id, $password_new, $values);
+		$result = create_user($id, $password_new, $values);
 
 		pandora_audit("User management",
 			"Created user ".safe_input($id), false, false, $info);

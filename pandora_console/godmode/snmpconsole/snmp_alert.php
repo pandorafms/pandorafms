@@ -213,17 +213,17 @@ if (isset ($_GET["update_alert"])) {
 	echo '<tr><td class="datos2">'.__('Time threshold').'</td><td class="datos2">';
 	
 	$fields = array ();
-	$fields[$time_threshold] = human_time_description ($time_threshold);
-	$fields[300] = human_time_description (300);
-	$fields[600] = human_time_description (600);
-	$fields[900] = human_time_description (900);
-	$fields[1800] = human_time_description (1800);
-	$fields[3600] = human_time_description (3600);
-	$fields[7200] = human_time_description (7200);
-	$fields[18000] = human_time_description (18000);
-	$fields[43200] = human_time_description (43200);
-	$fields[86400] = human_time_description (86400);
-	$fields[604800] = human_time_description (604800);
+	$fields[$time_threshold] = human_time_description_raw ($time_threshold);
+	$fields[300] = human_time_description_raw (300);
+	$fields[600] = human_time_description_raw (600);
+	$fields[900] = human_time_description_raw (900);
+	$fields[1800] = human_time_description_raw (1800);
+	$fields[3600] = human_time_description_raw (3600);
+	$fields[7200] = human_time_description_raw (7200);
+	$fields[18000] = human_time_description_raw (18000);
+	$fields[43200] = human_time_description_raw (43200);
+	$fields[86400] = human_time_description_raw (86400);
+	$fields[604800] = human_time_description_raw (604800);
 	$fields[-1] = __('Other value');
 	
 	print_select ($fields, "time_threshold", $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');

@@ -216,20 +216,40 @@ $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";
 
 // Build final SQL sentences
 $count = get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)".$sql);
-$sql = "SELECT tagente_modulo.id_agente_modulo,
-	tagente.intervalo AS agent_interval,
-	tagente.nombre AS agent_name, 
-	tagente_modulo.nombre AS module_name,
-	tagente_modulo.id_agente_modulo,
-	tagente_modulo.history_data,
-	tagente_modulo.flag AS flag,
-	tagente.id_grupo AS id_group, 
-	tagente.id_agente AS id_agent, 
-	tagente_modulo.id_tipo_modulo AS module_type,
-	tagente_modulo.module_interval, 
-	tagente_estado.datos, 
-	tagente_estado.estado,
-	tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = "SELECT tagente_modulo.id_agente_modulo,
+			tagente.intervalo AS agent_interval,
+			tagente.nombre AS agent_name, 
+			tagente_modulo.nombre AS module_name,
+			tagente_modulo.id_agente_modulo,
+			tagente_modulo.history_data,
+			tagente_modulo.flag AS flag,
+			tagente.id_grupo AS id_group, 
+			tagente.id_agente AS id_agent, 
+			tagente_modulo.id_tipo_modulo AS module_type,
+			tagente_modulo.module_interval, 
+			tagente_estado.datos, 
+			tagente_estado.estado,
+			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
+		break;
+	case "postgresql":
+		$sql = "SELECT tagente_modulo.id_agente_modulo,
+			tagente.intervalo AS agent_interval,
+			tagente.nombre AS agent_name, 
+			tagente_modulo.nombre AS module_name,
+			tagente_modulo.id_agente_modulo,
+			tagente_modulo.history_data,
+			tagente_modulo.flag AS flag,
+			tagente.id_grupo AS id_group, 
+			tagente.id_agente AS id_agent, 
+			tagente_modulo.id_tipo_modulo AS module_type,
+			tagente_modulo.module_interval, 
+			tagente_estado.datos, 
+			tagente_estado.estado,
+			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT " . $config["block_size"] . " OFFSET " . $offset;
+		break;
+}
 $result = get_db_all_rows_sql ($sql);
 
 if ($count > $config["block_size"]) {

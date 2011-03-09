@@ -133,7 +133,7 @@ switch ($config["dbtype"]) {
 			FROM treport_content
 			WHERE ' . $where . ' AND id_report = ' . $idReport . '
 			ORDER BY "order"
-			LIMIT ' . $offset . ', ' . $config["block_size"]);
+			LIMIT ' . $config["block_size"] . ' OFFSET ' . $offset);
 		break;
 }
 $countItems = get_db_sql('SELECT COUNT(id_rc) FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport);

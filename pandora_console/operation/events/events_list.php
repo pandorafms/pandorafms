@@ -244,16 +244,37 @@ echo '<div id="steps_clean">&nbsp;</div>';
 echo '</div>';
 
 if ($group_rep == 0) {
-	$sql = "SELECT *
-		FROM tevento
-		WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = "SELECT *
+				FROM tevento
+				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+			break;
+		case "postgresql":
+			$sql = "SELECT *
+				FROM tevento
+				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
+			break;
+	}
 }
 else {
-	$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
-		FROM tevento
-		WHERE 1=1 ".$sql_post."
-		GROUP BY evento, id_agentmodule
-		ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+				FROM tevento
+				WHERE 1=1 ".$sql_post."
+				GROUP BY evento, id_agentmodule
+				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+			break;
+		case "postgresql":
+			$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+				FROM tevento
+				WHERE 1=1 ".$sql_post."
+				GROUP BY evento, id_agentmodule
+				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+			break;
+	}
+
 }
 
 //Extract the events by filter (or not) from db

@@ -25,6 +25,7 @@ class EventsView {
 	
 	function show() {
 		global $config;
+		
 		$config['text_char_long'] = 12;
 		
 		$offset = $this->system->getRequest("offset", 0);
@@ -119,7 +120,14 @@ class EventsView {
 		
 		$sql_count = str_replace('*', 'COUNT(*)', $sql);
 		
-		$sql = $sql . sprintf(' LIMIT %d,%d', $offset, $this->system->getPageSize());
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = $sql . sprintf(' LIMIT %d,%d', $offset, $this->system->getPageSize());
+				break;
+			case "postgresql":
+				$sql = $sql . sprintf(' LIMIT %d OFFSET %d', $this->system->getPageSize(), $offset);
+				break;
+		}
 		
 		$count = get_db_value_sql($sql_count);
 		

@@ -182,20 +182,45 @@ if ($ag_group > 0) {
 		$ag_group, $search_sql);
 	$total_agents = get_db_sql ($sql);
 	
-	$sql = sprintf ('SELECT *
-		FROM tagente
-		WHERE id_grupo = %d
-		%s
-		ORDER BY %s %s LIMIT %d, %d',
-		$ag_group, $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
-} else {
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ('SELECT *
+				FROM tagente
+				WHERE id_grupo = %d
+				%s
+				ORDER BY %s %s LIMIT %d, %d',
+				$ag_group, $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+			break;
+		case "postgresql":
+			$sql = sprintf ('SELECT *
+				FROM tagente
+				WHERE id_grupo = %d
+				%s
+				ORDER BY %s %s LIMIT %d OFFSET %d',
+				$ag_group, $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
+			break;
+	}
+}
+else {
 
     // Admin user get ANY group, even if they doesnt exist
     if (check_acl ($config['id_user'], 0, "PM")){
 	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
 	    $total_agents = get_db_sql ($sql);
-	    $sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
-    } else {
+    	switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = sprintf ('SELECT *
+					FROM tagente WHERE 1=1 %s
+					ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+				break;
+			case "postgresql":
+				$sql = sprintf ('SELECT *
+					FROM tagente WHERE 1=1 %s
+					ORDER BY %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
+				break;
+		}
+    }
+    else {
 
 	    $sql = sprintf ('SELECT COUNT(*)
 		    FROM tagente
@@ -204,14 +229,27 @@ if ($ag_group > 0) {
 		    implode (',', array_keys (get_user_groups ())),
 		    $search_sql);
 	    $total_agents = get_db_sql ($sql);
-	
-	    $sql = sprintf ('SELECT *
-		    FROM tagente
-		    WHERE id_grupo IN (%s)
-		    %s
-		    ORDER BY %s %s LIMIT %d, %d',
-		    implode (',', array_keys (get_user_groups ())),
-		    $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+		
+        switch ($config["dbtype"]) {
+			case "mysql":
+			    $sql = sprintf ('SELECT *
+				    FROM tagente
+				    WHERE id_grupo IN (%s)
+				    %s
+				    ORDER BY %s %s LIMIT %d, %d',
+				    implode (',', array_keys (get_user_groups ())),
+				    $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+				break;
+			case "postgresql":
+			    $sql = sprintf ('SELECT *
+				    FROM tagente
+				    WHERE id_grupo IN (%s)
+				    %s
+				    ORDER BY %s %s LIMIT %d OFFSET %d',
+				    implode (',', array_keys (get_user_groups ())),
+				    $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
+				break;
+		}
    }
 }
 

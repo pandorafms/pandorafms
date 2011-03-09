@@ -351,24 +351,6 @@ class ViewAgent {
 			$template = safe_output(get_alert_template ($alert['id_alert_template']));
 			$data[] = printTruncateText(safe_output($template['name']), 20, true, true);
 			
-//			$actions = get_alert_agent_module_actions ($alert['id'], false, false);
-//			if (!empty($actions)){
-//				$actionText = '<ul class="action_list">';
-//				foreach ($actions as $action) {
-//					$actionText .= '<li><div><span class="action_name">' . $action['name'];
-//					if ($action["fires_min"] != $action["fires_max"]){
-//						$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
-//					}
-//					$actionText .= '</li></span><br></div>';
-//				}
-//				$actionText .= '</div></ul>';
-//			}
-//			else {
-//				if ($actionDefault != "")
-//				$actionText = get_db_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
-//			}
-//		
-//			$data[] = $actionText;
 			$data[] = print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
 			$status = STATUS_ALERT_NOT_FIRED;
@@ -377,10 +359,12 @@ class ViewAgent {
 			if ($alert["times_fired"] > 0) {
 				$status = STATUS_ALERT_FIRED;
 				$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
-			} elseif ($alert["disabled"] > 0) {
+			}
+			elseif ($alert["disabled"] > 0) {
 				$status = STATUS_ALERT_DISABLED;
 				$title = __('Alert disabled');
-			} else {
+			}
+			else {
 				$status = STATUS_ALERT_NOT_FIRED;
 				$title = __('Alert not fired');
 			}
@@ -391,17 +375,6 @@ class ViewAgent {
 			$table->data[] = $data;
 		}
 		print_table($table);
-		
-//		echo "<h3 class='title_h3'>" . __('Alerts compound') . "</h3>";
-//		
-//		$alertsCombined = get_agent_alerts_compound(array($this->idAgent));
-//		
-//		$table->data = array();
-//		foreach ($alertsCombined as $alert) {
-//			$data = array();
-//			
-//			$table->data[] = $data;
-//		}
 	}
 }
 
@@ -415,7 +388,7 @@ class viewGraph {
 		$this->system = $system;
 		$this->idAgentModule = $idAgentModule;
 		$this->agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $this->idAgentModule));
-		//$this->system->debug($this->agentModule);
+		
 		$this->period = $this->system->getRequest('period', 86400);
 		$this->offset = $this->system->getRequest("offset", 0);
 		
@@ -493,7 +466,14 @@ class viewGraph {
 		
 		$count = get_db_value_sql($sql_count);
 		
-		$sql = 'SELECT * ' . $sql_body . ' LIMIT ' . $this->offset . ',' . $this->system->getPageSize();
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = 'SELECT * ' . $sql_body . ' LIMIT ' . $this->offset . ',' . $this->system->getPageSize();
+				break;
+			case "postgresql":
+				$sql = 'SELECT * ' . $sql_body . ' LIMIT ' . $this->system->getPageSize() . ' OFFSET ' . $this->offset;
+				break;
+		}
 		
 		$result = get_db_all_rows_sql ($sql);
 		

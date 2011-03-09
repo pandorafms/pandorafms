@@ -65,7 +65,8 @@ foreach ($servers as $server) {
 	
 	if ($server['status'] == 0) {
 		$data[1] = print_status_image (STATUS_SERVER_DOWN, '', true);
-	} else {
+	}
+	else {
 		$data[1] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	

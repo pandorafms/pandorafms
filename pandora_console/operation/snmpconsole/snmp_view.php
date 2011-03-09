@@ -116,7 +116,14 @@ if (isset ($_POST["updatebt"])) {
 	}
 }
 
-$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$pagination);
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$pagination);
+		break;
+	case "postgresql":
+		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d OFFSET %d", $pagination, $offset);
+		break;
+}
 $traps = get_db_all_rows_sql ($sql);
 
 // No traps 
@@ -150,7 +157,14 @@ foreach ($traps as $trap) {
 }
 
 //Make query to extract traps of DB.
-$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d,%d";
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d,%d";
+		break;
+	case "postgresql":
+		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d OFFSET %d";
+		break;
+}
 $whereSubquery = 'WHERE 1=1';
 
 if ($filter_agent != '') {
@@ -214,8 +228,14 @@ if ($filter_severity != -1) {
 if ($filter_status != -1)
 	$whereSubquery .= ' AND status = ' . $filter_status;
 	
-
-$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
+		break;
+	case "postgresql":
+		$sql = sprintf($sql, $whereSubquery, $pagination, $offset);
+		break;
+}
 
 $traps = get_db_all_rows_sql($sql);
 

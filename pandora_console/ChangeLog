@@ -1,5 +1,21 @@
 2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* install.php, operation/incidents/incident.php,
+	operation/agentes/status_monitor.php, operation/agentes/datos_agente.php,
+	operation/servers/view_server.php, operation/snmpconsole/snmp_view.php,
+	operation/events/events_rss.php, operation/events/events_list.php,
+	operation/events/events_marquee.php, operation/search_users.php,
+	mobile/operation/agents/monitor_status.php,
+	mobile/operation/agents/view_agents.php,
+	mobile/operation/agents/view_alerts.php, mobile/operation/events/events.php,
+	mobile/include/functions_web.php, godmode/admin_access_logs.php,
+	godmode/agentes/modificar_agente.php, godmode/alerts/alert_actions.php,
+	godmode/reporting/reporting_builder.list_items.php: changed and addded in
+	the source, the SQL queries for the "LIMIT x, x" to "LIMIT x OFFSET x", that
+	it is standard for PostgreSQL.
+
+2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php, include/functions.php,
 	operation/agentes/datos_agente.php, operation/agentes/gis_view.php,
 	operation/servers/view_server_detail.php,

@@ -156,18 +156,35 @@ if ($id_event != -1)
 // Avoid to show system events to not administrators
 if(!check_acl($user, 0, "PM"))
 	$sql_post .= " AND tevento.event_type <> 'system'";
-	
-$sql="SELECT tevento.id_evento AS event_id,
-		tevento.id_agente AS id_agent,
-		tevento.id_usuario AS validated_by,
-		tevento.id_grupo AS id_group,
-		tevento.estado AS validated,
-		tevento.evento AS event_descr,
-		tevento.utimestamp AS unix_timestamp,
-		tevento.event_type AS event_type 
-	FROM tevento
-	WHERE 1 = 1" . $sql_post . "
-	ORDER BY utimestamp DESC LIMIT 0 , 30";
+
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql="SELECT tevento.id_evento AS event_id,
+				tevento.id_agente AS id_agent,
+				tevento.id_usuario AS validated_by,
+				tevento.id_grupo AS id_group,
+				tevento.estado AS validated,
+				tevento.evento AS event_descr,
+				tevento.utimestamp AS unix_timestamp,
+				tevento.event_type AS event_type 
+			FROM tevento
+			WHERE 1 = 1" . $sql_post . "
+			ORDER BY utimestamp DESC LIMIT 0 , 30";
+		break;
+	case "postgresql":
+		$sql="SELECT tevento.id_evento AS event_id,
+				tevento.id_agente AS id_agent,
+				tevento.id_usuario AS validated_by,
+				tevento.id_grupo AS id_group,
+				tevento.estado AS validated,
+				tevento.evento AS event_descr,
+				tevento.utimestamp AS unix_timestamp,
+				tevento.event_type AS event_type 
+			FROM tevento
+			WHERE 1 = 1" . $sql_post . "
+			ORDER BY utimestamp DESC LIMIT 30 OFFSET 0";
+		break;
+}
 
 $result= get_db_all_rows_sql ($sql);
 

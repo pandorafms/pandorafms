@@ -209,7 +209,8 @@ if ($delete_action) {
 				// Header
 				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 		// If user tries to delete an action of others groups
-		}else{
+		}
+		else{
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
@@ -227,7 +228,8 @@ if ($delete_action) {
 				exit;
 			}
 		}	
-	}else
+	}
+	else
 		// Header
 		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 

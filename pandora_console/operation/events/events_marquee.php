@@ -57,8 +57,14 @@ if (!check_acl ($config["id_user"], 0, "PM")) {
     $sql_group_filter .= " AND id_grupo != 0";
 }
 
-	
-$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
+		break;
+	case "postgresql":
+		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT $MAX_MARQUEE_EVENTS OFFSET 0";
+		break;
+}
 
 $result = get_db_all_rows_sql ($sql);
 foreach ($result as $row) {

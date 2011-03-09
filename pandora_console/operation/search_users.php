@@ -143,7 +143,8 @@ if ($searchUsers) {
 		
 		if(!$users_id) {
 			$user_condition = "";
-		}else {
+		}
+		else {
 			// Condition with the visible agents
 			$user_condition = " AND id_user IN (\"".implode('","',$users_id)."\")";
 		}
@@ -200,7 +201,8 @@ else {
 			$profileCell = print_image ("images/user_suit.png", true,
 			array ("alt" => __('Admin'),
 				"title" => __('Administrator'))).'&nbsp;';
-		} else {
+		}
+		else {
 			$profileCell = print_image ("images/user_green.png", true,
 			array ("alt" => __('User'),
 				"title" => __('Standard User'))).'&nbsp;';
@@ -214,7 +216,8 @@ else {
 				$profileCell .= get_group_name ($row["id_grupo"]);
 				$profileCell .= "<br />";
 			}
-		} else {
+		}
+		else {
 			$profileCell .= __('The user doesn\'t have any assigned profile/group');
 		}
 		$profileCell .= "</span></a>";

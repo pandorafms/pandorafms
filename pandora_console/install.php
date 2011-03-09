@@ -312,16 +312,15 @@ function install_step1_licence() {
 	if (!file_exists("COPYING")){
 		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
 		echo "</div>";
-	} else {
-
+	}
+	else {
 		echo "<form method=post action='install.php?step=2'>";
 		echo "<textarea name='gpl2' cols=50 rows=17>";
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";
 		echo "<input type=submit value='Yes, I accept licence terms'>";
-
-		}
+	}
 	echo "</div>";
 
 	print_logo_status (2, 5);

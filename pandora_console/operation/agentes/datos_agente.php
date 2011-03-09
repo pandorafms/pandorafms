@@ -98,7 +98,14 @@ $sql_count = "SELECT count(*) " . $sql_body;
 
 $count = get_db_value_sql($sql_count);
 
-$sql .= " LIMIT " . $offset . "," . $block_size;
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql .= " LIMIT " . $offset . "," . $block_size;
+		break;
+	case "postgresql":
+		$sql .= " LIMIT " . $block_size . " OFFSET " . $offset;
+		break;
+}
 
 $result = get_db_all_rows_sql ($sql);
 if ($result === false) {

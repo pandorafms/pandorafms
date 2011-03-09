@@ -181,9 +181,18 @@ $groups = get_user_groups ($config["id_user"], "IR");
 
 //Select incidencts where the user has access to ($groups from
 //get_user_groups), array_keys for the id, implode to pass to SQL
-$sql = "SELECT * FROM tincidencia
-	WHERE id_grupo IN (".implode (",",array_keys ($groups)).")" . $filter . " 
-	ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = "SELECT * FROM tincidencia
+			WHERE id_grupo IN (".implode (",",array_keys ($groups)).")" . $filter . " 
+			ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
+		break;
+	case "postgresql":
+		$sql = "SELECT * FROM tincidencia
+			WHERE id_grupo IN (".implode (",",array_keys ($groups)).")" . $filter . " 
+			ORDER BY actualizacion DESC LIMIT ".$config["block_size"]." OFFSET ".$offset;
+		break;
+}
 
 $result = get_db_all_rows_sql ($sql);
 if (empty ($result)) {

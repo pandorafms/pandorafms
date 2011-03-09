@@ -69,10 +69,12 @@ class ViewAlerts {
 			if ($alert["times_fired"] > 0) {
 				$status = STATUS_ALERT_FIRED;
 				$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
-			} elseif ($alert["disabled"] > 0) {
+			}
+			elseif ($alert["disabled"] > 0) {
 				$status = STATUS_ALERT_DISABLED;
 				$title = __('Alert disabled');
-			} else {
+			}
+			else {
 				$status = STATUS_ALERT_NOT_FIRED;
 				$title = __('Alert not fired');
 			}

@@ -119,7 +119,14 @@ $url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_lo
 
 pagination ($count, $url);
 
-$sql = sprintf ("SELECT * FROM tsesion %s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = sprintf ("SELECT * FROM tsesion %s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
+		break;
+	case "postgresql":
+		$sql = sprintf ("SELECT * FROM tsesion %s ORDER BY fecha DESC LIMIT %d OFFSET %d", $filter, $config["block_size"], $offset);
+		break;
+}
 $result = get_db_all_rows_sql ($sql);
 
 if (empty ($result)) {

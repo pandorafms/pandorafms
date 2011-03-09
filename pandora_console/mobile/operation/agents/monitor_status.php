@@ -144,7 +144,14 @@ class MonitorStatus {
 		$total = get_db_value_sql('SELECT COUNT(*) ' . $sql);
 		
 		
-		$rows = get_db_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->offset . ', ' . $this->system->getPageSize());
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$rows = get_db_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->offset . ', ' . $this->system->getPageSize());
+				break;
+			case "postgresql":
+				$rows = get_db_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->system->getPageSize() . ' OFFSET ' . $this->offset);
+				break;
+		}
 		
 		if ($rows === false) $rows = array();
 		

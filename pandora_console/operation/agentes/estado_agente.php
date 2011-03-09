@@ -93,7 +93,8 @@ print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_statu
 
 if ($group_id > 1) {
 	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id, 'offset' => 0)).'">';
-} else {
+}
+else {
 	echo '<form method="post" action="'.get_url_refresh (array('offset' => 0)).'">';
 }
 

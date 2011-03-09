@@ -151,9 +151,18 @@ function isInACL($ip) {
 function get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
 {
 	$idAgent = get_agent_id($agentName);
-	$sql = sprintf('SELECT id_agente_modulo
-		FROM tagente_modulo
-		WHERE id_agente = %d AND nombre LIKE "%s"', $idAgent, $moduleName);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf('SELECT id_agente_modulo
+				FROM tagente_modulo
+				WHERE id_agente = %d AND nombre LIKE "%s"', $idAgent, $moduleName);
+			break;
+		case "postgresql":
+			$sql = sprintf('SELECT id_agente_modulo
+				FROM tagente_modulo
+				WHERE id_agente = %d AND nombre LIKE \'%s\'', $idAgent, $moduleName);
+			break;
+	}
 	
 	$idModuleAgent = get_db_value_sql($sql);
 	
@@ -625,6 +634,15 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$disabled = $other['data'][10];
 	$description = $other['data'][11];
 	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql1 = 'SELECT name FROM tserver WHERE name LIKE "' . $nameServer . '"';
+			break;
+		case "postgresql":
+			$sql1 = 'SELECT name FROM tserver WHERE name LIKE \'' . $nameServer . '\'';
+			break;
+	}
+	
 	if (get_agent_id ($name)) {
 		returnError('agent_name_exist', 'The name of agent yet exist in DB.');
 	}
@@ -638,7 +656,7 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	else if (get_db_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = ' . $idOS) === false) {
 		returnError('id_os_not_exist', 'The OS don`t exist.');
 	}
-	else if (get_db_value_sql('SELECT name FROM tserver WHERE name LIKE "' . $nameServer . '"') === false) {
+	else if (get_db_value_sql($sql1) === false) {
 		returnError('server_not_exist', 'The Pandora Server don`t exist.');
 	}
 	else {

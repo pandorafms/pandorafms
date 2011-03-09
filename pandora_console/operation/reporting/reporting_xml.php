@@ -531,7 +531,7 @@ foreach ($contents as $content) {
 			$result = get_db_all_rows_sql('SELECT *
 				FROM tagente_datos_string
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-				AND utimestamp > ' . $datelimit . ' AND utimestamp <= ' . $report["datetime"]);
+					AND utimestamp > ' . $datelimit . ' AND utimestamp <= ' . $report["datetime"]);
 			if ($result === false) {
 				$result = array();
 			}

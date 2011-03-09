@@ -142,7 +142,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub = array ();		
 	// Show all recon servers, and generate menu for details
 
-	$servers = get_db_all_rows_sql ('SELECT * FROM tserver WHERE server_type = 3');
+	$servers = get_db_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
 	if ($servers === false) {
 		$servers = array ();
 	}

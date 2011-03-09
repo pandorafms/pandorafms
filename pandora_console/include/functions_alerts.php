@@ -52,7 +52,8 @@ function get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1
 	
 	$result = get_db_all_rows_sql('SELECT id_evento
 		FROM tevento
-		WHERE estado = 0 AND id_agente IN (' . implode(',', $idAgents) . ') ' . $typeWhere . $query . ' ORDER BY id_evento DESC LIMIT 1');
+		WHERE estado = 0 AND id_agente IN (' . implode(',', $idAgents) . ') ' . $typeWhere . $query . '
+		ORDER BY id_evento DESC LIMIT 1');
 	
 	if ($result === false) {
 		return false;

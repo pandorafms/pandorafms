@@ -116,16 +116,19 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
-			} elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
+			}
+			elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
 				//This fixes string ($value) to int ($selected) comparisons 
 				$output .= ' selected="selected"';
-			} elseif ($value === $selected) {
+			}
+			elseif ($value === $selected) {
 				//Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
 			}
 			if ($label === '') {
 				$output .= '>'.$value."</option>";
-			} else {
+			}
+			else {
 				$output .= '>'.$label."</option>";
 			}
 		}
@@ -288,10 +291,12 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
-			} elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
+			}
+			elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
 				//This fixes string ($value) to int ($selected) comparisons 
 				$output .= ' selected="selected"';
-			} elseif ($value === $selected) {
+			}
+			elseif ($value === $selected) {
 				//Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
 			}
@@ -300,7 +305,8 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			}
 			if ($optlabel === '') {
 				$output .= '>'.$value."</option>";
-			} else {
+			}
+			else {
 				$output .= '>'.$optlabel."</option>";
 			}
 		}

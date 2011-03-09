@@ -65,18 +65,18 @@ if ($view_graph) {
 	//Increase the height to fix the leyend rise
 	if ($zoom > 0) {
 		switch ($zoom) {
-		case 1:
-			$width = 500;
-			$height = 200 + count($sources) * 15;
-			break;
-		case 2:
-			$width = 650;
-			$height = 300 + count($sources) * 10;
-			break;
-		case 3:
-			$width = 770;
-			$height = 400 + count($sources) * 5;
-			break;
+			case 1:
+				$width = 500;
+				$height = 200 + count($sources) * 15;
+				break;
+			case 2:
+				$width = 650;
+				$height = 300 + count($sources) * 10;
+				break;
+			case 3:
+				$width = 770;
+				$height = 400 + count($sources) * 5;
+				break;
 		}
 	}
 

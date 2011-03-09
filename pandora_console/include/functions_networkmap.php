@@ -205,7 +205,8 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 			foreach ($modules as $key => $module) {
 				$node_count ++;
 				$agent_module = get_agentmodule($key);
-				$alerts_module = get_db_sql('SELECT count(*) as num FROM talert_template_modules WHERE id_agent_module = '.$key);
+				$alerts_module = get_db_sql('SELECT count(*) as num
+					FROM talert_template_modules WHERE id_agent_module = '.$key);
 				
 				if($alerts_module == 0 && $modwithalerts){
 					continue;

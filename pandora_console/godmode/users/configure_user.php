@@ -248,16 +248,6 @@ $table->data[2][0] = __('Language');
 $table->data[2][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info["language"], '', '', '', true);
 
-/*
-$table->data[2][0] = __('First name');
-$table->data[2][1] = print_input_text_extended ('firstname', $user_info['firstname'],
-	'', '', 30, 255, $view_mode, '', '', true);
-
-$table->data[3][0] = __('Last name');
-$table->data[3][1] = print_input_text_extended ('lastname', $user_info['lastname'],
-	'', '', 30, 255, $view_mode, '', '', true);
-*/
-
 if ($config['user_can_update_password']) {
 	$table->data[4][0] = __('Password');
 	$table->data[4][1] = print_input_text_extended ('password_new', '', '', '',

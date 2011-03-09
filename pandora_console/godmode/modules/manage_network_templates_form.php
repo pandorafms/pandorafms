@@ -229,7 +229,8 @@ if ($id_np > 0) {
 	echo '<div style="width:540px">';
 	if ($ncgroup > 0) {
 		$sql = sprintf ("SELECT id_nc, name, id_group FROM tnetwork_component WHERE id_group = %d ORDER BY name", $ncgroup);
-	} else {
+	}
+	else {
 		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component ORDER BY name"; 
 	}
 

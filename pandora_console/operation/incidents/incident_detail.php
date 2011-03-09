@@ -241,7 +241,8 @@ echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td></tr>';
@@ -260,7 +261,8 @@ foreach ($return as $row) {
 // Only owner could change source or user with Incident management privileges
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';

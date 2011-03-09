@@ -370,10 +370,10 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 	global $config;
 	
 	$data = array ();
-	$sql = sprintf ('SELECT ttipo_modulo.nombre,COUNT(id_agente_modulo)
-			FROM tagente_modulo,ttipo_modulo WHERE
-			id_tipo_modulo = id_tipo AND id_agente = %d
-			GROUP BY id_tipo_modulo', $id_agent);
+	$sql = sprintf ('SELECT ttipo_modulo.nombre, COUNT(id_agente_modulo)
+		FROM tagente_modulo,ttipo_modulo
+		WHERE id_tipo_modulo = id_tipo AND id_agente = %d
+		GROUP BY id_tipo_modulo', $id_agent);
 	$modules = get_db_all_rows_sql ($sql);
 	foreach ($modules as $module) {
 		$data[$module['nombre']] = $module[1];
@@ -539,7 +539,8 @@ function grafico_incidente_prioridad () {
 
 	$data_tmp = array (0, 0, 0, 0, 0, 0);
 	$sql = 'SELECT COUNT(id_incidencia) n_incidents, prioridad
-		FROM tincidencia GROUP BY prioridad
+		FROM tincidencia
+		GROUP BY prioridad
 		ORDER BY 2 DESC';
 	$incidents = get_db_all_rows_sql ($sql);
 	
@@ -576,10 +577,10 @@ function graphic_incident_group () {
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
-			FROM tincidencia,tgrupo
-			WHERE tgrupo.id_grupo = tincidencia.id_grupo
-			GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
-			$max_items);
+		FROM tincidencia,tgrupo
+		WHERE tgrupo.id_grupo = tincidencia.id_grupo
+		GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
+		$max_items);
 	$incidents = get_db_all_rows_sql ($sql);
 	
 	if($incidents == false) {
@@ -611,8 +612,9 @@ function graphic_incident_user () {
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
-			FROM tincidencia GROUP BY id_usuario
-			ORDER BY 1 DESC LIMIT %d', $max_items);
+		FROM tincidencia
+		GROUP BY id_usuario
+		ORDER BY 1 DESC LIMIT %d', $max_items);
 	$incidents = get_db_all_rows_sql ($sql);
 	
 	if($incidents == false) {
@@ -650,8 +652,9 @@ function graphic_user_activity ($width = 350, $height = 230) {
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
-			FROM tsesion GROUP BY id_usuario
-			ORDER BY 1 DESC LIMIT %d', $max_items);
+		FROM tsesion
+		GROUP BY id_usuario
+		ORDER BY 1 DESC LIMIT %d', $max_items);
 	$logins = get_db_all_rows_sql ($sql);
 	
 	if($logins == false) {
@@ -684,13 +687,13 @@ function graphic_incident_source ($width = 320, $height = 200) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
-					FROM tincidencia GROUP BY `origen`
-					ORDER BY 1 DESC LIMIT %d', $max_items);
+				FROM tincidencia GROUP BY `origen`
+				ORDER BY 1 DESC LIMIT %d', $max_items);
 			break;
 		case "postgresql":
 			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
-					FROM tincidencia GROUP BY "origen"
-					ORDER BY 1 DESC LIMIT %d', $max_items);
+				FROM tincidencia GROUP BY "origen"
+				ORDER BY 1 DESC LIMIT %d', $max_items);
 			break;
 	}
 	$origins = get_db_all_rows_sql ($sql);
@@ -721,9 +724,10 @@ function graph_db_agentes_modulos ($width, $height) {
 
 	$data = array ();
 	
-	$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo),id_agente
-					FROM tagente_modulo GROUP BY id_agente
-					ORDER BY 1 DESC LIMIT 10');
+	$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+		FROM tagente_modulo
+		GROUP BY id_agente
+		ORDER BY 1 DESC LIMIT 10');
 	if ($modules === false)
 		$modules = array ();
 	
@@ -751,9 +755,10 @@ function grafico_eventos_usuario ($width, $height) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_evento) events,id_usuario
-			FROM tevento GROUP BY id_usuario
-			ORDER BY 1 DESC LIMIT %d', $max_items);
+	$sql = sprintf ('SELECT COUNT(id_evento) events, id_usuario
+		FROM tevento
+		GROUP BY id_usuario
+		ORDER BY 1 DESC LIMIT %d', $max_items);
 	$events = get_db_all_rows_sql ($sql);
 
 	foreach ($events as $event) {
@@ -819,10 +824,10 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	$data = array ();
 	$max_items = 6;
 	$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
-			FROM tevento, tagente_modulo
-			WHERE id_agentmodule = id_agente_modulo
+		FROM tevento, tagente_modulo
+		WHERE id_agentmodule = id_agente_modulo
 			AND disabled = 0 AND tevento.id_agente = %d
-			GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
+		GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
 	$events = get_db_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {

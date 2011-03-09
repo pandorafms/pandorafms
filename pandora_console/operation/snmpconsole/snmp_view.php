@@ -152,34 +152,67 @@ foreach ($traps as $trap) {
 //Make query to extract traps of DB.
 $sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d,%d";
 $whereSubquery = 'WHERE 1=1';
-	if ($filter_agent != '')
-		$whereSubquery .= ' AND source LIKE "' . $filter_agent . '"';
-	
-	if ($filter_oid != '') {
-		//Test if install the enterprise to search oid in text or oid field in ttrap.
-		if ($config['enterprise_installed'])
-			$whereSubquery .= ' AND (text LIKE "' . $filter_oid . '" OR oid LIKE "' . $filter_oid . '")';
-		else
-			$whereSubquery .= ' AND oid LIKE "' . $filter_oid . '"';
-	}
-	if ($filter_fired != -1)
-		$whereSubquery .= ' AND alerted = ' . $filter_fired;
-	if ($search_string != '')
-		$whereSubquery .= ' AND value LIKE "%' . $search_string . '%"';
 
-	if ($filter_severity != -1) {
-		//Test if install the enterprise to search oid in text or oid field in ttrap.
-		if ($config['enterprise_installed'])
-			$whereSubquery .= ' AND (
-				(alerted = 0 AND severity = ' . $filter_severity . ') OR
-				(alerted = 1 AND priority = ' . $filter_severity . '))';
-		else
-			$whereSubquery .= ' AND (
-				(alerted = 0 AND 1 = ' . $filter_severity . ') OR
-				(alerted = 1 AND priority = ' . $filter_severity . '))';
+if ($filter_agent != '') {
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$whereSubquery .= ' AND source LIKE "' . $filter_agent . '"';
+			break;
+		case "postgresql":
+			$whereSubquery .= ' AND source LIKE \'' . $filter_agent . '\'';
+			break;
 	}
-	if ($filter_status != -1)
-		$whereSubquery .= ' AND status = ' . $filter_status;
+}
+
+if ($filter_oid != '') {
+	//Test if install the enterprise to search oid in text or oid field in ttrap.
+	if ($config['enterprise_installed']) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$whereSubquery .= ' AND (text LIKE "' . $filter_oid . '" OR oid LIKE "' . $filter_oid . '")';
+				break;
+			case "postgresql":
+				$whereSubquery .= ' AND (text LIKE \'' . $filter_oid . '\' OR oid LIKE \'' . $filter_oid . '\')';
+				break;
+		}
+	}
+	else {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$whereSubquery .= ' AND oid LIKE "' . $filter_oid . '"';
+				break;
+			case "postgresql":
+				$whereSubquery .= ' AND oid LIKE \'' . $filter_oid . '\'';
+				break;
+		}
+	}
+}
+if ($filter_fired != -1)
+	$whereSubquery .= ' AND alerted = ' . $filter_fired;
+if ($search_string != '') {
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$whereSubquery .= ' AND value LIKE "%' . $search_string . '%"';
+			break;
+		case "postgresql":
+			$whereSubquery .= ' AND value LIKE \'%' . $search_string . '%\'';
+			break;
+	}
+}
+
+if ($filter_severity != -1) {
+	//Test if install the enterprise to search oid in text or oid field in ttrap.
+	if ($config['enterprise_installed'])
+		$whereSubquery .= ' AND (
+			(alerted = 0 AND severity = ' . $filter_severity . ') OR
+			(alerted = 1 AND priority = ' . $filter_severity . '))';
+	else
+		$whereSubquery .= ' AND (
+			(alerted = 0 AND 1 = ' . $filter_severity . ') OR
+			(alerted = 1 AND priority = ' . $filter_severity . '))';
+}
+if ($filter_status != -1)
+	$whereSubquery .= ' AND status = ' . $filter_status;
 	
 
 $sql = sprintf($sql, $whereSubquery, $offset, $pagination);

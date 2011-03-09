@@ -133,11 +133,12 @@ if ($searchUsers) {
 		//Check ACLs
 		$users_id = array();
 		foreach($users as $key => $user){
-				if (!check_acl ($config["id_user"], get_user_groups ($user["id_user"]), "UM") && $config["id_user"] != $user["id_user"]) {
-					unset($users[$key]);
-				} else {
-					$users_id[] = $user["id_user"];
-				}
+			if (!check_acl ($config["id_user"], get_user_groups ($user["id_user"]), "UM") && $config["id_user"] != $user["id_user"]) {
+				unset($users[$key]);
+			}
+			else {
+				$users_id[] = $user["id_user"];
+			}
 		}
 		
 		if(!$users_id) {

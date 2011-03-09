@@ -44,14 +44,18 @@ switch ($opt) {
 		$returnJSON['correct'] = 1;
 		
 		if ($agentView == 0) {
-			$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 0;'); //group 0 = all groups
+			$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo
+				FROM tgis_map_layer
+				WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 0;'); //group 0 = all groups
 			
 			$defaultCoords = get_db_row_sql('SELECT default_longitude, default_latitude
 				FROM tgis_map
 				WHERE id_tgis_map IN (SELECT tgis_map_id_tgis_map FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')');
 			
 			if ($flagGroupAll === false) {
-				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN
+				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT id_agente
+					FROM tagente
+					WHERE id_grupo IN
 						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
 						OR id_agente IN
 						(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
@@ -72,12 +76,24 @@ switch ($opt) {
 			$idAgentsWithGIS[] = $id_features;
 		}
 		
-		$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
-				IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
-				IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-			FROM tagente AS t1
-			LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
-				WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+						IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+						IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+					FROM tagente AS t1
+					LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				break;
+			case "postgresql":
+				$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+						COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+						COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+					FROM tagente AS t1
+					LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				break;
+		}
 		
 		if ($agentsGISStatus === false) {
 			$agentsGISStatus = array();

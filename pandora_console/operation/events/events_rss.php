@@ -166,7 +166,7 @@ $sql="SELECT tevento.id_evento AS event_id,
 		tevento.utimestamp AS unix_timestamp,
 		tevento.event_type AS event_type 
 	FROM tevento
-	WHERE 1 = 1".$sql_post."
+	WHERE 1 = 1" . $sql_post . "
 	ORDER BY utimestamp DESC LIMIT 0 , 30";
 
 $result= get_db_all_rows_sql ($sql);

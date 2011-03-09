@@ -103,30 +103,35 @@ foreach ($recon_tasks as $task) {
 
 	$data[2] = human_time_description ($task["interval_sweep"]);
 
-if ($task["id_recon_script"] == 0){
-	$data[3] = $task["subnet"];
-} else {
-	$data[3] = __("N/A");
-}
+	if ($task["id_recon_script"] == 0){
+		$data[3] = $task["subnet"];
+	}
+	else {
+		$data[3] = __("N/A");
+	}
+	
 	if ($task["status"] <= 0) {
 		$data[4] = __('Done');
-	} else {
+	}
+	else {
 		$data[4] = __('Pending');
 	}
 
-if ($task["id_recon_script"] == 0){
-	// Network recon task
-	$data[5] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
-	$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
-} else {
-	// APP recon task
-	$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
-	$data[5] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
-}	
+	if ($task["id_recon_script"] == 0){
+		// Network recon task
+		$data[5] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
+		$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
+	}
+	else {
+		// APP recon task
+		$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
+		$data[5] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
+	}
 		
 	if ($task["status"] <= 0 || $task["status"] > 100) {
 		$data[6] = "-";
-	} else {
+	}
+	else {
 		$data[6] = print_image ("include/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
 	}
 	
@@ -134,7 +139,8 @@ if ($task["id_recon_script"] == 0){
 
 	if (check_acl ($config["id_user"], $task["id_group"], "PM")) {
 		$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';
-	} else {
+	}
+	else {
 		$data[8] = '';
 	}
 	
@@ -143,7 +149,8 @@ if ($task["id_recon_script"] == 0){
 
 if (empty ($table->data)) {
 	echo '<div class="nf">'.__("This server has no recon tasks assigned").'</div>';
-} else {
+}
+else {
 	print_table ($table);
 }
 unset ($table);

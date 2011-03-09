@@ -141,7 +141,9 @@ function process_message_read ($message_id, $read = true) {
 function get_message ($message_id) {
 	global $config;
 
-	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje, timestamp FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
+	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje, timestamp
+		FROM tmensajes
+		WHERE id_usuario_destino='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
     $row = get_db_row_sql ($sql);
 	
 	if (empty ($row)) {
@@ -174,7 +176,8 @@ function get_message_count ($user = false, $incl_read = false) {
 	} else {
 		$filter = "";
 	}
-	$sql = sprintf("SELECT COUNT(*) FROM tmensajes WHERE id_usuario_destino='%s' %s", $user, $filter);
+	$sql = sprintf("SELECT COUNT(*)
+		FROM tmensajes WHERE id_usuario_destino='%s' %s", $user, $filter);
     
 	return (int) get_db_sql ($sql);
 }
@@ -199,6 +202,7 @@ function get_message_overview ($order = "status", $order_dir = "ASC") {
 		case "status":
 		default:
 			$order = "estado";
+			break;
 	}
 	
 	if ($order_dir != "ASC") {

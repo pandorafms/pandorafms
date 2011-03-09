@@ -90,7 +90,8 @@ echo '<td class="datos2">';
 echo '<select name="tipo">';
 echo '<option value="' . $type . '">' . get_moduletype_name ($type);
 
-$rows = get_db_all_rows_sql('SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
+$rows = get_db_all_rows_sql('SELECT id_tipo, nombre
+	FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
 if ($rows === false) {
 	$rows = array();
 }

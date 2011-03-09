@@ -70,7 +70,8 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents_id) {
 		$idAgents = get_parameter('id_agent');
 		
-		$nameModules = get_db_all_rows_sql('SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
+		$nameModules = get_db_all_rows_sql('SELECT nombre, id_agente_modulo
+			FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
 		
 		echo json_encode($nameModules);
 		return;
@@ -79,7 +80,15 @@ if (is_ajax ()) {
 	if ($get_agents_json_for_multiple_modules) {
 		$nameModules = get_parameter('module_name');
 		
-		$nameAgents = get_db_all_rows_sql('SELECT DISTINCT(t1.nombre) as name FROM tagente t1, tagente_modulo t2 WHERE t1.id_agente = t2.id_agente AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\') AND (SELECT count(t3.nombre) FROM tagente t3, tagente_modulo t4 WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules));
+		$nameAgents = get_db_all_rows_sql('SELECT DISTINCT(t1.nombre) as name
+			FROM tagente t1, tagente_modulo t2
+			WHERE t1.id_agente = t2.id_agente
+				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')
+				AND (
+					SELECT count(t3.nombre)
+					FROM tagente t3, tagente_modulo t4
+					WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre
+						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules));
 		
 		foreach($nameAgents as $nameAgent) {
 			$names[] = $nameAgent['name'];
@@ -93,7 +102,16 @@ if (is_ajax ()) {
 		$idAgents = get_parameter('id_agent');
 		$id_template = get_parameter('template');
 		
-		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre) FROM tagente_modulo t1, talert_template_modules t2 WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t3, talert_template_modules t4 WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0 AND t1.nombre = t3.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre)
+			FROM tagente_modulo t1, talert_template_modules t2
+			WHERE t2.id_agent_module = t1.id_agente_modulo
+				AND delete_pending = 0
+				AND id_agente IN (' . implode(',', $idAgents) . ') AND (
+					SELECT count(nombre)
+					FROM tagente_modulo t3, talert_template_modules t4
+					WHERE t4.id_agent_module = t3.id_agente_modulo
+						AND delete_pending = 0 AND t1.nombre = t3.nombre
+						AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
 		
 		if ($nameModules == false) {
 			$nameModules = array();
@@ -123,7 +141,13 @@ if (is_ajax ()) {
 		
 		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre)
 			FROM tagente_modulo t1
-			WHERE ' . $enabled . ' AND delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t2 WHERE delete_pending = 0 AND t1.nombre = t2.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+			WHERE ' . $enabled . '
+				AND delete_pending = 0
+				AND id_agente IN (' . implode(',', $idAgents) . ') AND (
+					SELECT count(nombre)
+					FROM tagente_modulo t2
+					WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+						AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
 		
 		if ($nameModules == false) {
 			$nameModules = array();
@@ -184,17 +208,16 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
-				FROM tagente_estado, tagente_modulo 
-				WHERE tagente_modulo.id_agente = %d
+			FROM tagente_estado, tagente_modulo 
+			WHERE tagente_modulo.id_agente = %d
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.disabled = 0 
 				AND tagente_estado.estado = 1', $id_agent);
 		$bad_modules = get_db_all_rows_sql ($sql);
 		$sql = sprintf ('SELECT COUNT(*)
-				FROM tagente_modulo
-				WHERE id_agente = %d
+			FROM tagente_modulo
+			WHERE id_agente = %d
 				AND disabled = 0', $id_agent);
-				//AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
 		$total_modules = get_db_sql ($sql);
 		
 		if ($bad_modules === false)
@@ -218,22 +241,22 @@ if (is_ajax ()) {
 		$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
 				FROM talert_template_modules, tagente_modulo, tagente
 				WHERE tagente.id_agente = %d
-				AND tagente.disabled = 0
-				AND tagente.id_agente = tagente_modulo.id_agente
-				AND tagente_modulo.disabled = 0
-				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-				AND talert_template_modules.times_fired > 0 ',
+					AND tagente.disabled = 0
+					AND tagente.id_agente = tagente_modulo.id_agente
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
 		$alert_modules = get_db_sql ($sql);
 		if ($alert_modules > 0){
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
 				FROM talert_template_modules, tagente_modulo, tagente
 				WHERE tagente.id_agente = %d
-				AND tagente.disabled = 0
-				AND tagente.id_agente = tagente_modulo.id_agente
-				AND tagente_modulo.disabled = 0
-				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-				AND talert_template_modules.times_fired > 0 ',
+					AND tagente.disabled = 0
+					AND tagente.id_agente = tagente_modulo.id_agente
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
 			$alerts = get_db_all_rows_sql ($sql);
 			echo '<strong>'.__('Alerts fired').':</strong>';

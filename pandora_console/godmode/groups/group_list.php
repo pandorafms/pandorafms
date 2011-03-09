@@ -155,9 +155,6 @@ if ($update_group) {
 /* Delete group */
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
-	
-//	$sql = sprintf ('SELECT * FROM tagente WHERE id_grupo = %d', $id_group);
-//	$agent = process_sql ($sql);
 
 	$usedGroup = checkUsedGroup($id_group);
 	

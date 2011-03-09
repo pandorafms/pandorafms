@@ -40,7 +40,16 @@ $stat_data_string = get_db_sql ("SELECT COUNT(*) FROM tagente_datos_string WHERE
 $stat_modules = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE id_agente_modulo != 0");
 $stat_event = get_db_sql (" SELECT COUNT(*) FROM tevento");
 $stat_agente = get_db_sql (" SELECT COUNT(*) FROM tagente");
-$stat_uknown = get_db_sql ("SELECT COUNT(*) FROM tagente WHERE ultimo_contacto < NOW() - (intervalo *2)");
+switch ($config["dbtype"]) {
+	case "mysql":
+		$stat_uknown = get_db_sql ("SELECT COUNT(*) FROM tagente WHERE ultimo_contacto < NOW() - (intervalo * 2)");
+		break;
+	case "postgresql":
+		$stat_uknown = get_db_sql ("SELECT COUNT(*)
+			FROM tagente
+			WHERE ceil(date_part('epoch', ultimo_contacto)) < ceil(date_part('epoch', NOW())) - (intervalo * 2)");
+		break;
+}
 $stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0;");
 
 // Todo: Recalculate this data dinamically using the capacity and total agents

@@ -60,9 +60,15 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$sql1="SELECT * FROM tdatos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agentmodule";
 	$tipo = get_moduletype_name (get_agentmodule_type ($id_agentmodule));
 	if ($tipo == "generic_data_string")
-		$sql1 = "SELECT * FROM tagente_datos_string WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule ORDER BY utimestamp DESC";
+		$sql1 = "SELECT *
+			FROM tagente_datos_string
+			WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule
+			ORDER BY utimestamp DESC";
 	else
-		$sql1 = "SELECT * FROM tagente_datos WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule ORDER BY utimestamp DESC";
+		$sql1 = "SELECT *
+			FROM tagente_datos
+			WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule
+			ORDER BY utimestamp DESC";
 	$result1 = get_db_all_rows_sql ($sql1, true);
 	if ($result1 === false) {
 		$result1 = array ();

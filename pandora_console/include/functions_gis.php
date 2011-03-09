@@ -392,8 +392,12 @@ function getAgentsLayer($idLayer, $fields = null) {
 		$select = implode(',',$fields);
 	}
 	
-	$agents = get_db_all_rows_sql('SELECT ' . $select . ' FROM tagente WHERE id_agente IN (
-SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
+	$agents = get_db_all_rows_sql('SELECT ' . $select . '
+		FROM tagente
+		WHERE id_agente IN (
+				SELECT tagente_id_agente
+				FROM tgis_map_layer_has_tagente
+				WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
 	
 	if ($agents !== false) {
 		foreach ($agents as $index => $agent) {
@@ -431,8 +435,10 @@ function getMaps() {
  * @return An array of arrays of configuration parameters
  */
 function getMapConf($idMap) {
-	$mapConfs= get_db_all_rows_sql('SELECT tconn.*, trel.default_map_connection FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
-			 WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection AND trel.tgis_map_id_tgis_map = ' . $idMap);
+	$mapConfs= get_db_all_rows_sql('SELECT tconn.*, trel.default_map_connection
+		FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
+		WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection
+			AND trel.tgis_map_id_tgis_map = ' . $idMap);
 	return $mapConfs;
 }
 
@@ -441,7 +447,9 @@ function getMapConnection($idMapConnection) {
 }
 
 function getLayers($idMap) {
-	$layers = get_db_all_rows_sql('SELECT * FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $idMap);
+	$layers = get_db_all_rows_sql('SELECT *
+		FROM tgis_map_layer
+		WHERE tgis_map_id_tgis_map = ' . $idMap);
 	
 	return $layers;
 }
@@ -1037,26 +1045,36 @@ function getMapData($idMap) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
-					t1.default_map_connection AS `default`,
-					(SELECT t2.num_zoom_levels
-						FROM tgis_map_connection AS t2 WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-				FROM tgis_map_has_tgis_map_connection AS t1 WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+					t1.default_map_connection AS `default`, (
+						SELECT t2.num_zoom_levels
+						FROM tgis_map_connection AS t2
+						WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
+				FROM tgis_map_has_tgis_map_connection AS t1
+				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
 			break;
 		case "postgresql":
 			$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
-					t1.default_map_connection AS "default",
-					(SELECT t2.num_zoom_levels
-						FROM tgis_map_connection AS t2 WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-				FROM tgis_map_has_tgis_map_connection AS t1 WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+					t1.default_map_connection AS "default", (
+						SELECT t2.num_zoom_levels
+						FROM tgis_map_connection AS t2
+						WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
+				FROM tgis_map_has_tgis_map_connection AS t1
+				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
 			break;
 	}
-	$layers = get_db_all_rows_sql('SELECT id_tmap_layer, layer_name, tgrupo_id_grupo AS layer_group, view_layer AS layer_visible FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map']);
+	$layers = get_db_all_rows_sql('SELECT id_tmap_layer, layer_name,
+			tgrupo_id_grupo AS layer_group, view_layer AS layer_visible
+		FROM tgis_map_layer
+		WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map']);
 	if ($layers === false) $layers = array();
 	
 	foreach ($layers as $index => $layer) {
 		$agents = get_db_all_rows_sql('SELECT nombre
 			FROM tagente
-			WHERE id_agente IN (SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layer['id_tmap_layer'] . ')');
+			WHERE id_agente IN (
+				SELECT tagente_id_agente
+				FROM tgis_map_layer_has_tagente
+				WHERE tgis_map_layer_id_tmap_layer = ' . $layer['id_tmap_layer'] . ')');
 		if ($agents !== false)
 			$layers[$index]['layer_agent_list'] = $agents;
 		else

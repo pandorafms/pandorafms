@@ -1,10 +1,49 @@
 2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_html.php, include/functions_messages.php,
+	include/functions_exportserver.php, include/functions_reporting.php,
+	include/functions_gis.php, include/functions_networkmap.php,
+	include/functions_servers.php, include/functions_api.php,
+	include/fgraph.php, include/functions_agents.php, include/functions_db.php,
+	include/functions_alerts.php, extensions/module_groups.php,
+	operation/incidents/incident.php, operation/incidents/incident_detail.php,
+	operation/search_modules.php, operation/agentes/status_monitor.php,
+	operation/agentes/export_csv.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/alerts_status.php, operation/agentes/estado_agente.php,
+	operation/agentes/sla_view.php, operation/agentes/ver_agente.php,
+	operation/servers/view_server_detail.php, operation/menu.php,
+	operation/search_graphs.php, operation/snmpconsole/snmp_view.php,
+	operation/gis_maps/ajax.php, operation/events/events_rss.php,
+	operation/events/events_list.php, operation/search_alerts.php,
+	operation/search_reports.php, operation/reporting/reporting_xml.php,
+	operation/reporting/graph_viewer.php, operation/search_maps.php,
+	operation/search_users.php, mobile/operation/agents/view_agents.php,
+	mobile/operation/events/events.php, godmode/groups/modu_group_list.php,
+	godmode/groups/configure_group.php, godmode/groups/group_list.php,
+	godmode/db/db_main.php, godmode/db/db_purge.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/planned_downtime.php,
+	godmode/servers/manage_recontask_form.php,
+	godmode/alerts/alert_list.list.php, godmode/users/configure_user.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/modules/manage_network_templates_form.php,
+	godmode/modules/manage_network_components_form_wmi.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php: changed or added in
+	some cases the SQL queries for to be PostgreSQL standard, and cleaned source
+	style.
+
+2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_api.php, include/functions_db.php,
 	operation/incidents/incident_detail.php, godmode/agentes/agent_template.php,
 	godmode/servers/manage_recontask.php, godmode/snmpconsole/snmp_alert.php,
 	godmode/users/configure_profile.php: change the source code
-	for to use process_sql_insert instead of the SQL (SQL write in multiple lines). 
+	for to use process_sql_insert instead of the SQL (SQL write in multiple
+	lines). 
 
 2011-03-08 Miguel de Dios  <miguel.dedios@artica.es>
 

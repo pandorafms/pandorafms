@@ -79,9 +79,9 @@ $user_groups = implode (",", array_keys (get_user_groups ()));
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = '
-		select distinct(nombre) 
-		from tagente_modulo 
-		where nombre <> "delete_pending" and id_agente in 
+		SELECT distinct(nombre) 
+		FROM tagente_modulo 
+		WHERE nombre <> "delete_pending" and id_agente in 
 		(
 			select id_agente 
 			from tagente where id_grupo IN (

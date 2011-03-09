@@ -317,10 +317,10 @@ function get_system_time () {
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			require_once ($config['homedir'] . '/include/db/mysql.php');
+			return mysql_get_system_time();
 			break;
 		case "postgresql":
-			require_once ($config['homedir'] . '/include/db/postgresql.php');
+			return postgresql_get_system_time();
 			break;
 	}
 }

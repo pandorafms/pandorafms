@@ -1,5 +1,9 @@
 2011-03-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Fixed a typo.
+
+2011-03-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Added a module to get the ocupied space % in a
 	  partition.
 

@@ -1,5 +1,15 @@
 2011-03-10 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/update_manager.php,
+	extensions/update_manager/sql/update_manager.postgreSQL.sql,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_manager/lib/libupdate_manager_components.php,
+	extensions/update_manager/lib/libupdate_manager_updates.php: some changes
+	for the PostgreSQL.
+
+2011-03-10 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
 	added function "get_db_type_field_table" and subfunctions for the engines.
 

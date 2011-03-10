@@ -984,4 +984,18 @@ function mysql_get_system_time() {
 		return time ();
 	}
 }
+
+/**
+ * Get the type of field.
+ * 
+ * @param string $table The table to examine the type of field.
+ * @param integer $field The field order in table.
+ * 
+ * @return mixed Return the type name or False in error case.
+ */
+function mysql_get_db_type_field_table($table, $field) {
+	$result = mysql_query('SELECT parameters FROM ' . $table);
+	
+	return mysql_field_type($result, $field); 
+}
 ?>

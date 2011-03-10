@@ -384,12 +384,22 @@ function um_package_info_from_paths ($tmpDir) {
 }
 
 function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type) {
+	global $config;
+	
 	$update = array();
 	$i = 0;
 	
 	// The number of the prefixs names is to keep alphabetic order to appliyng priority
-	$sql_schema_file = '01_package_'.$num_package.'_schema.sql';
-	$sql_data_file = '02_package_'.$num_package.'_data.sql';
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql_schema_file = '01_package_'.$num_package.'_schema.sql';
+			$sql_data_file = '02_package_'.$num_package.'_data.sql';
+			break;
+		case "postgresql":
+			$sql_schema_file = '01_package_'.$num_package.'_schema.postgreSQL.sql';
+			$sql_data_file = '02_package_'.$num_package.'_data.postgreSQL.sql';
+			break;
+	}
 
 	foreach($file_paths as $file_name => $paths) {
 		if($file_name == $sql_data_file && $type == 'sql') {

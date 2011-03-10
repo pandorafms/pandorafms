@@ -47,6 +47,7 @@ function pandora_update_manager_install () {
 	$sql = 'INSERT INTO `tconfig` (`token`, `value`)
 		VALUES ("update_manager_installed", 1)';
 	process_sql ($sql);
+	$values = array("token" => "update_manager_installed", "value" => 1);
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
@@ -56,11 +57,24 @@ function pandora_update_manager_install () {
 }
 
 function pandora_update_manager_uninstall () {
-	process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
-	process_sql ('DROP TABLE `tupdate_settings`');
-	process_sql ('DROP TABLE `tupdate_journal`');
-	process_sql ('DROP TABLE `tupdate`');
-	process_sql ('DROP TABLE `tupdate_package`');
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
+			process_sql ('DROP TABLE `tupdate_settings`');
+			process_sql ('DROP TABLE `tupdate_journal`');
+			process_sql ('DROP TABLE `tupdate`');
+			process_sql ('DROP TABLE `tupdate_package`');
+			break;
+		case "postgresql":
+			process_sql ('DELETE FROM "tconfig" WHERE "token" =  \'update_manager_installed\'');
+			process_sql ('DROP TABLE "tupdate_settings"');
+			process_sql ('DROP TABLE "tupdate_journal"');
+			process_sql ('DROP TABLE "tupdate"');
+			process_sql ('DROP TABLE "tupdate_package"');
+			break;
+	}
 }
 
 function pandora_update_manager_main () {

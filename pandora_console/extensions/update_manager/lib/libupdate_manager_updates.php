@@ -15,18 +15,38 @@
 
 
 function um_update_get_last_from_filename ($component_name, $filename) {
+	global $config;
+	
 	$component = um_db_get_component ($component_name);
+	
 	if (! $component)
 		return;
 	
-	$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
+			break;
+		case "postgresql":
+			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
+			break;
+	}
 
 	if ($result === false) {
 		echo '<strong>Error getting update from filename</strong> <br />';
 		return NULL;
 	}
 	
-	$result = process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
+			break;
+		case "postgresql":
+			$result = process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate
+				WHERE component = \''.$component_name.'\'
+					AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
+			break;
+	}
 
 	$update = um_std_from_result($result);
 
@@ -104,6 +124,7 @@ function um_db_delete_update ($id_update) {
 
 function um_db_create_update ($type, $component_name, $id_package, $update, $db_data = NULL) {
 	global $db;
+	global $config;
 	
 	if ($id_package == 0)
 		return false;
@@ -143,8 +164,14 @@ function um_db_create_update ($type, $component_name, $id_package, $update, $db_
 		$field = $component_db->field_name;
 		$values['db_field_value'] = $db_data->$field;
 		$values['id_component_db'] = $update->id_component_db;
-		$values['data'] = um_data_encode('INSERT INTO `'.$component_db->table_name.'` (`'.implode('`,`', array_keys (get_object_vars ($db_data))).'`) VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
-		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$values['data'] = um_data_encode('INSERT INTO `'.$component_db->table_name.'` (`'.implode('`,`', array_keys (get_object_vars ($db_data))).'`) VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
+				break;
+			case "postgresql":
+				$values['data'] = um_data_encode('INSERT INTO "'.$component_db->table_name.'" ("'.implode('", "', array_keys (get_object_vars ($db_data))).'") VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
+				break;
+		}
 		break;
 	case 'db_schema':
 		$values['data'] = um_data_encode($update->data);

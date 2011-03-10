@@ -52,13 +52,22 @@ function um_component_database_get_data ($component_db) {
 }
 
 function um_component_database_get_all_tables () {
+	global $config;
+	
 	$db = um_component_db_connect ();
 	
 	if ($db === false) {
 		return array ();
 	}
 	
-	$result = process_sql('SHOW TABLES');
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SHOW TABLES');
+			break;
+		case "postgresql":
+			$result = process_sql('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\';');
+			break;
+	}
 
 	if ($result === false) {
 		echo '<strong>Error getting tables</strong> <br />';
@@ -86,13 +95,22 @@ function um_component_database_get_available_tables ($component_name) {
 }
 
 function um_component_database_get_table_fields ($table_name) {
+	global $config;
+	
 	$db = um_component_db_connect ();
 
 	if ($db === false) {
 		return array ();
 	}
 
-	$result = process_sql('SHOW COLUMNS FROM '.$table_name.' WHERE `Key` != "PRI"');
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SHOW COLUMNS FROM '.$table_name.' WHERE `Key` != "PRI"');
+			break;
+		case "postgresql":
+			$result = process_sql("SELECT * FROM pg_indexes WHERE tablename = '" . $table_name . "'");
+			break;
+	}
 
 	if ($result === false) {
 		echo '<strong>Error getting table fields</strong> <br />';
@@ -154,14 +172,34 @@ function um_component_directory_get_modified_files ($component, $binary = false)
 }
 
 function um_component_get_all_blacklisted ($component) {
-	$result = process_sql('SELECT COUNT(name) FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SELECT COUNT(name) FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+			break;
+		case "postgresql":
+			$result = process_sql('SELECT COUNT(name)
+				FROM '.DB_PREFIX.'tupdate_component_blacklist
+				WHERE component = \''.$component->name.'\'');
+			break;
+	}
 
 	if ($result === false) {
 		echo '<strong>Error getting all blacklisted items</strong> <br />';
 		return array();
 	}
 	
-	$result = process_sql('SELECT name FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SELECT name FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+			break;
+		case "postgresql":
+			$result = process_sql('SELECT name
+			FROM '.DB_PREFIX.'tupdate_component_blacklist
+			WHERE component = \''.$component->name.'\'');
+			break;
+	}
 
 	$cont = 0;
 	$list = array();
@@ -178,7 +216,18 @@ function um_component_get_all_blacklisted ($component) {
 }
 
 function um_component_is_blacklisted ($component, $name) {
-	$result = process_sql('SELECT COUNT(*) AS blacklisted FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'" AND name = "'.$name.'"');
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$result = process_sql('SELECT COUNT(*) AS blacklisted FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'" AND name = "'.$name.'"');
+			break;
+		case "postgresql":
+			$result = process_sql('SELECT COUNT(*) AS blacklisted
+				FROM '.DB_PREFIX.'tupdate_component_blacklist
+				WHERE component = \''.$component->name.'\' AND name = \''.$name.'\'');
+			break;
+	}
 
 	if ($result === false) {
 		echo '<strong>Error getting blacklist item</strong> <br />';

@@ -18,11 +18,13 @@ function view_logfile ($file_name) {
 	if (!file_exists($file_name)){
 		echo "<h2 class='error'>".__("Cannot find file"). "(".$file_name;
 		echo ")</h2>";
-	}  else {
+	}
+	else {
 		if (filesize ($file_name) > 512000) {
 			echo "<h2 class='error'>".__("File is too large (> 500KB)"). "(".$file_name;
 			echo ")</h2>";
-		} else {
+		}
+		else {
 			$data = file_get_contents ($file_name);			
 			echo "<h2>$file_name (".format_numeric(filesize ($file_name)/1024)." KB) </h2>";
 			echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";

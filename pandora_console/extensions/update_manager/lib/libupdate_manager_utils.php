@@ -21,8 +21,10 @@ function add_prefix (&$string, $key, $prefix) {
 function is_binary ($filepath) {
 	$output = array ();
 	exec ('file -b -i '.$filepath.' | cut -f1 -d"/"', $output);
+	
 	if (isset ($output[0]))
 		return $output[0] != 'text';
+		
 	return false;
 }
 
@@ -50,7 +52,8 @@ function directory_to_array ($directory, $ignores = NULL, $only_binary_files = f
 		}
 		if (is_dir ($filepath)) {
 			array_push ($dirs, $filepath);
-		} else {
+		}
+		else {
 			if ($only_binary_files && ! is_binary ($filepath)) {
 				$file = readdir ($handle);
 				continue;

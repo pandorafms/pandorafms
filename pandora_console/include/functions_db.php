@@ -3659,4 +3659,25 @@ function get_db_last_error() {
 			break;
 	}
 }
+
+/**
+ * Get the type of field.
+ * 
+ * @param string $table The table to examine the type of field.
+ * @param integer $field The field order in table.
+ * 
+ * @return mixed Return the type name or False in error case.
+ */
+function get_db_type_field_table($table, $field) {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_type_field_table($table, $field);
+			break;
+		case "postgresql":
+			return postgresql_get_db_type_field_table($table, $field);
+			break;
+	}
+}
 ?>

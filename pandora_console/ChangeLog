@@ -1,3 +1,12 @@
+2011-03-10 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/db/postgresql.php, include/db/mysql.php, include/functions_db.php:
+	added function "get_db_type_field_table" and subfunctions for the engines.
+
+	* extensions/pandora_logs.php,
+	extenions/update_manager/lib/libupdate_manager_utils.php: fixed source code
+	style.
+
 2011-03-10  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/update_manager/sql/update_manager.sql

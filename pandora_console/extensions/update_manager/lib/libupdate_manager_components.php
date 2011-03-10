@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,24 +19,33 @@ function um_component_database_get_data ($component_db) {
 	if ($db === false) {
 		return false;
 	}
-	$db->setFetchMode (DB_FETCHMODE_OBJECT);
-	
+
 	$fields = um_component_database_get_table_fields ($component_db->table_name);
-	$sql =& $db->prepare ('SELECT '.implode (',', $fields).' FROM !');
-	$result =& $db->execute ($sql, $component_db->table_name);
-	if (PEAR::isError ($result)) {
-		echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
+	
+	$result = process_sql('SELECT COUNT(*) FROM '.$component_db->table_name);
+	if ($result === false) {
+		echo '<strong>Error getting table fields</strong> <br />';
 		return NULL;
 	}
-	$resultdata = array ();
+	
+	$result = process_sql('SELECT '.implode (',', $fields).' FROM '.$component_db->table_name);
+
+	$cont = 0;
+	$resultdata = array();
 	$field = $component_db->field_name;
-	while ($result->fetchInto ($data)) {
+
+	while(true) {
+		$data = um_std_from_result($result, $cont);
+		if($data === false) {
+			break;
+		}
 		$update = um_update_get_last_from_table_field_value ($component_db->component,
-								$component_db->id,
-								$data->$field);
+										$component_db->id,
+										$data->$field);
 		if ($update && $update->db_field_value == $data->$field)
 			continue;
-		array_push ($resultdata, $data);
+		$resultdata[] = $data;
+		$cont++;
 	}
 	
 	return $resultdata;
@@ -49,14 +58,17 @@ function um_component_database_get_all_tables () {
 		return array ();
 	}
 	
-	$result =& $db->query ('SHOW TABLES');
-	if (PEAR::isError ($result)) {
-		echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
-		return array ();
+	$result = process_sql('SHOW TABLES');
+
+	if ($result === false) {
+		echo '<strong>Error getting tables</strong> <br />';
+		return array();
 	}
-	$tables = array ();
-	while ($result->fetchInto ($table)) {
-		array_push ($tables, $table[0]);
+	
+	$cont = 0;
+	$tables = array();
+	foreach($result as $table) {
+			$tables[] = $table[0];
 	}
 	
 	return $tables;
@@ -75,22 +87,29 @@ function um_component_database_get_available_tables ($component_name) {
 
 function um_component_database_get_table_fields ($table_name) {
 	$db = um_component_db_connect ();
-	
+
 	if ($db === false) {
 		return array ();
 	}
-	
-	$sql =& $db->prepare ('SHOW COLUMNS FROM ! WHERE `Key` \!= "PRI"');
-	$result =& $db->execute ($sql, $table_name);
-	if (PEAR::isError ($result)) {
-		echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
-		return array ();
+
+	$result = process_sql('SHOW COLUMNS FROM '.$table_name.' WHERE `Key` != "PRI"');
+
+	if ($result === false) {
+		echo '<strong>Error getting table fields</strong> <br />';
+		return array();
+	}
+
+	$cont = 0;
+	$fields = array();
+	while(true) {
+		$field = um_std_from_result($result, $cont);
+		if($field === false) {
+			break;
+		}
+		$fields[$cont] = $field->Field;
+		$cont++;
 	}
 	
-	$fields = array ();
-	while ($result->fetchInto ($field)) {
-		array_push ($fields, $field[0]);
-	}
 	return $fields;
 }
 
@@ -107,9 +126,10 @@ function um_component_directory_get_all_files ($component, $binary = false) {
 	if (substr ($path, -1) != '/')
 		$path .= "/";
 	$files = directory_to_array ($path,
-					array ('.svn', '.cvs', '.git', '.', '..' ), $binary);
+					array ('.svn', '.cvs', '.git', '.', '..'), $binary);
+	$blacklisted = um_component_get_all_blacklisted ($component);
 	
-	return $files;
+	return (array_diff ($files, $blacklisted));
 }
 
 function um_component_directory_get_modified_files ($component, $binary = false) {
@@ -117,16 +137,68 @@ function um_component_directory_get_modified_files ($component, $binary = false)
 	
 	$files = array ();
 	foreach ($all_files as $file) {
-		$last_update = um_update_get_last_from_filename ($component->name, $file);
+		if (um_component_is_blacklisted ($component, $file))
+			continue;
+		
+		$last_update = um_update_get_last_from_filename ($component->name,
+			$file);
 		if ($last_update) {
 			$checksum = md5_file (realpath ($component->path.'/'.$file));
 			if ($last_update->checksum == $checksum)
 				continue;
 		}
-		
 		array_push ($files, $file);
 	}
 	
 	return $files;
+}
+
+function um_component_get_all_blacklisted ($component) {
+	$result = process_sql('SELECT COUNT(name) FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+
+	if ($result === false) {
+		echo '<strong>Error getting all blacklisted items</strong> <br />';
+		return array();
+	}
+	
+	$result = process_sql('SELECT name FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+
+	$cont = 0;
+	$list = array();
+	while(true) {
+		$element = um_std_from_result($result, $cont);
+		if($element === false) {
+			break;
+		}
+		$list[$cont] = $element->name;
+		$cont++;
+	}
+	
+	return $list;
+}
+
+function um_component_is_blacklisted ($component, $name) {
+	$result = process_sql('SELECT COUNT(*) AS blacklisted FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'" AND name = "'.$name.'"');
+
+	if ($result === false) {
+		echo '<strong>Error getting blacklist item</strong> <br />';
+		return false;
+	}
+	
+	$retval = um_std_from_result($result);
+		
+	return $retval->blacklisted ? true : false;
+}
+
+function um_component_add_blacklist ($component, $name) {
+	$values = array('component' => $component->name, 'name' => $name);
+	$result = process_sql_insert(DB_PREFIX.'tupdate_component_blacklist', $values);
+
+	if ($result === false) {
+		echo '<strong>Error creating blacklist component</strong> <br />';
+		return false;
+	}
+	
+	return true;
 }
 ?>

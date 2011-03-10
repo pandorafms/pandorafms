@@ -1,3 +1,21 @@
+2011-03-10  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/update_manager/sql/update_manager.sql
+	extensions/update_manager/load_updatemanager.php
+	extensions/update_manager/lib/load_updatemanager.php
+	extensions/update_manager/lib/xmlrpc
+	extensions/update_manager/lib/xmlrpc/xmlrpcs.inc
+	extensions/update_manager/lib/xmlrpc/xmlrpc_wrappers.inc
+	extensions/update_manager/lib/xmlrpc/xmlrpc.inc
+	extensions/update_manager/lib/libupdate_manager_client.php
+	extensions/update_manager/lib/libupdate_manager.php
+	extensions/update_manager/lib/libupdate_manager_utils.php
+	extensions/update_manager/lib/libupdate_manager_components.php
+	extensions/update_manager/lib/libupdate_manager_updates.php
+	extensions/update_manager/settings.php
+	extensions/update_manager/main.php: Upgraded the open update
+	manager client to v2.
+
 2011-03-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: fixed date of one my previous commit.

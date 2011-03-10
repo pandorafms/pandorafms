@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,9 +19,8 @@ function load_update_manager_lib () {
 
 function update_settings_database_connection () {
 	global $config;
-	global $db;
 	
-	$db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
 	um_db_update_setting ('dbname', $config['dbname']);
 	um_db_update_setting ('dbuser', $config['dbuser']);
@@ -31,7 +30,6 @@ function update_settings_database_connection () {
 
 function pandora_update_manager_install () {
 	global $config;
-	global $db;
 	
 	if (isset ($config['update_manager_installed']))
 		/* Already installed */
@@ -50,7 +48,7 @@ function pandora_update_manager_install () {
 		VALUES ("update_manager_installed", 1)';
 	process_sql ($sql);
 	
-	$db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
 	um_db_update_setting ('updating_code_path',
 			dirname ($_SERVER['SCRIPT_FILENAME']));
@@ -67,7 +65,6 @@ function pandora_update_manager_uninstall () {
 
 function pandora_update_manager_main () {
 	global $config;
-	global $db;
 	
 	if (! check_acl($config['id_user'], 0, "PM")) {
 		require ("general/noaccess.php");
@@ -82,7 +79,6 @@ function pandora_update_manager_main () {
 
 function pandora_update_manager_login () {
 	global $config;
-	global $db;
 	
 	// If first time, make the first autoupdate and disable it in DB
 	if (!isset($config["autoupdate"])){
@@ -96,17 +92,17 @@ function pandora_update_manager_login () {
 
 	load_update_manager_lib ();
 	
-	$db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
 	$settings = um_db_load_settings ();
 	
 	$user_key = get_user_key ($settings);
-	
+
 	$package = um_client_check_latest_update ($settings, $user_key);
 	
 	if (is_object ($package)) {
 		echo '<div class="notify">';
-		echo print_image("images/information.png", true, array("alt" => 'info'));
+		echo '<img src="images/information.png" alt="info" /> ';
 		echo __('There\'s a new update for Pandora');
 		echo '. <a href="index.php?sec=extensions&amp;sec2=extensions/update_manager">';
 		echo __('More info');
@@ -117,7 +113,6 @@ function pandora_update_manager_login () {
 
 function pandora_update_manager_godmode () {
 	global $config;
-	global $db;
 	
 	load_update_manager_lib ();
 	
@@ -133,6 +128,8 @@ if(isset($config['id_user'])) {
 		add_extension_login_function ('pandora_update_manager_login');
 	}
 }
+
+pandora_update_manager_install ();
 
 $db = NULL;
 switch ($config['dbtype']) {

@@ -386,12 +386,10 @@ function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 
 		$field, $table,
 		format_array_to_where_clause_sql ($filter, $where_join));
 	
-	$result = get_db_all_rows_sql ($sql); debugPrint($sql);
+	$result = get_db_all_rows_sql ($sql);
 
 	if ($result === false)
 		return false;
-	
-	debugPrint($field);
 
 	$fieldClean = str_replace('`', '', $field);
 

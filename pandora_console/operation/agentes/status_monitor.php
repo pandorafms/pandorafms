@@ -394,7 +394,7 @@ foreach ($result as $row) {
 		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
 
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".$row["module_name"]."&refresh=600','day_".$win_handle."')";
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
 
 		$data[6] = '<a href="javascript:'.$link.'">' . print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";

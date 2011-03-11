@@ -1,4 +1,9 @@
-2011-03-10 Miguel de Dios  <miguel.dedios@artica.es>
+2011-03-11 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* extensions/update_manager.php,
+	extensions/update_manager/load_updatemanager.php: changes for PostgreSQL.
+
+2011-03-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/db/postgresql.php, operation/agentes/estado_agente.php: erased
 	the lost call to traces messages.

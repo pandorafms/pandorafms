@@ -38,16 +38,22 @@ function pandora_update_manager_install () {
 	load_update_manager_lib ();
 	
 	/* SQL installation */
-	$sentences = file (EXTENSIONS_DIR.'/update_manager/sql/update_manager.sql');
+	switch ($config['dbtype']) {
+		case 'mysql':
+			$sentences = file (EXTENSIONS_DIR.'/update_manager/sql/update_manager.sql');
+			break;
+		case 'postgresql':
+			$sentences = file (EXTENSIONS_DIR.'/update_manager/sql/update_manager.postgreSQL.sql');
+			break;
+	}
 	foreach ($sentences as $sentence) {
 		$success = process_sql ($sentence);
 		if ($success === false)
 			return;
 	}
-	$sql = 'INSERT INTO `tconfig` (`token`, `value`)
-		VALUES ("update_manager_installed", 1)';
-	process_sql ($sql);
+	
 	$values = array("token" => "update_manager_installed", "value" => 1);
+	process_sql_insert('tconfig', $values);
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
@@ -146,12 +152,4 @@ if(isset($config['id_user'])) {
 pandora_update_manager_install ();
 
 $db = NULL;
-switch ($config['dbtype']) {
-	case 'mysql':
-		pandora_update_manager_install ();
-		break;
-	case 'postgresql':
-		//TODO MAKE THE UPDATE MANAGER FOR POSTGRESQL
-		break;
-}
 ?>

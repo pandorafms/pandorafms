@@ -77,10 +77,8 @@ if (is_ajax ()) {
 }
 
 $first = true;
-while ($row = get_db_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")){
+while ($row = get_db_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")) {
 	$first = false;
-	
-	debugPrint($row);
 }
 
 // Take some parameters (GET)

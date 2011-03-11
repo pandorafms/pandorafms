@@ -323,7 +323,7 @@ foreach ($modules as $module) {
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".$module["nombre"]."&amp;refresh=600','day_".$win_handle."')";
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
 
 	//	if ($nombre_tipo_modulo != "log4x")
 			$data[7] .= '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border="0" alt="" /></a>';

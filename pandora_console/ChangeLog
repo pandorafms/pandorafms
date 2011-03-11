@@ -1,3 +1,15 @@
+2011-03-11 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* extensions/agents_modules.php, operation/search_modules.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php: fixed the label for the graphs in
+	new window.
+	
+	Fixes: #3203474
+
 2011-03-03 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

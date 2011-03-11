@@ -238,7 +238,7 @@ function mainAgentsModules() {
 					echo "<td style='text-align: center; background-color: #DDD;'>";
 					$win_handle = dechex(crc32($module_id.$module["name"]));
 					$graph_type = return_graphtype (get_agentmodule_type($module_id));
-					$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module_id."&label=".$module["name"]."&refresh=600','day_".$win_handle."')";
+					$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module_id."&label=".base64_encode($module["name"])."&refresh=600','day_".$win_handle."')";
 					
 					echo '<a href="javascript:'.$link.'">';
 					switch($status){

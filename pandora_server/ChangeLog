@@ -1,3 +1,10 @@
+2011-03-14  Raúl Mateos <raulolfpandora@gmail.com>
+
+	* lib/PandoraFMS/Config.pm, lib/PandoraFMS/Core.pm,
+	lib/PandoraFMS/DataServer.pm, lib/PandoraFMS/DB.pm,
+	lib/PandoraFMS/Tools.pm, lib/PandoraFMS/WMIServer.pm: Cleared code and
+	updated year.
+
 2011-03-09  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf

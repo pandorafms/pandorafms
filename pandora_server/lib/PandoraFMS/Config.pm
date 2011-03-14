@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -549,12 +549,12 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^restart\s+([0-1])/i) {
 			$pa_config->{'restart'} = clean_blank($1);
 		}
-	        elsif ($parametro =~ m/^google_maps_description\s+([0-1])/i) {
+		elsif ($parametro =~ m/^google_maps_description\s+([0-1])/i) {
 			$pa_config->{'google_maps_description'} = clean_blank($1);
-	        }
+		}
 		elsif ($parametro =~ m/^openstreetmaps_description\s+([0-1])/i) {
-                        $pa_config->{'openstreetmaps_description'} = clean_blank($1);
-                }
+			$pa_config->{'openstreetmaps_description'} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^activate_gis\s+([0-1])/i) {
 			$pa_config->{'activate_gis'} = clean_blank($1);
 		}

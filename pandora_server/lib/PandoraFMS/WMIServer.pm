@@ -3,7 +3,7 @@ package PandoraFMS::WMIServer;
 # Pandora FMS WMI Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -62,8 +62,8 @@ sub new ($$;$) {
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 6, \&PandoraFMS::WMIServer::data_producer, \&PandoraFMS::WMIServer::data_consumer, $dbh);
 
-    bless $self, $class;
-    return $self;
+	bless $self, $class;
+	return $self;
 }
 
 ###############################################################################
@@ -98,10 +98,10 @@ sub data_producer ($) {
 			AND tagente_modulo.disabled = 0
 			AND	tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
-			  OR tagente_modulo.flag = 1)				
+			OR tagente_modulo.flag = 1)				
 			ORDER BY tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC', $pa_config->{'servername'});		
-    } else {
-		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left  
+	} else {
+		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try AS time_left 
 			FROM tagente, tagente_modulo, tagente_estado, tserver
 			WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status = 0)))
 			AND tagente_modulo.id_agente = tagente.id_agente
@@ -138,7 +138,7 @@ sub data_consumer ($$) {
 
 	# Build command to execute
 	my $wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"%"' . $module->{'plugin_pass'} . '"';
-    
+
 	# Use a custom namespace
 	my $namespace = $module->{'tcp_send'};
 	if ($namespace ne '') {
@@ -152,7 +152,7 @@ sub data_consumer ($$) {
 
 	$wmi_command .= ' //' . $module->{'ip_target'} . ' "' . $wmi_query . '"';
 	logger ($pa_config, "Executing AM # $module_id WMI command '$wmi_command'", 9);
-  
+
 	# Execute command
 	my $module_data = `$wmi_command`;
 	if (! defined ($module_data)) {

@@ -3,7 +3,7 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -58,9 +58,9 @@ our @EXPORT = qw(
 	md5_init
 	pandora_ping
 	pandora_ping_latency
-    ticks_totime
-    safe_input
-    safe_output
+	ticks_totime
+	safe_input
+	safe_output
 );
 
 ##########################################################################
@@ -90,8 +90,8 @@ sub safe_input($) {
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/\\/&#92;/gi;
 
-    #// First attempt to avoid SQL Injection based on SQL comments
-    #// Specific for MySQL.
+	#// First attempt to avoid SQL Injection based on SQL comments
+	#// Specific for MySQL.
 	$value =~ s/\/\*/&#47;&#42;/gi;
 	$value =~ s/\*\//&#42;&#47;/gi;
 	
@@ -131,8 +131,8 @@ sub safe_output($) {
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/&#92;/\\/gi;
 
-    #// First attempt to avoid SQL Injection based on SQL comments
-    #// Specific for MySQL.
+	#// First attempt to avoid SQL Injection based on SQL comments
+	#// Specific for MySQL.
 	$value =~ s/&#47;&#42;/\/\*/gi;
 	$value =~ s/&#42;&#47;/\*\//gi;
 	
@@ -292,7 +292,7 @@ sub pandora_daemonize {
 
 
 # -------------------------------------------+
-# Pandora other General functions  |
+# Pandora other General functions |
 # -------------------------------------------+
 
 
@@ -305,15 +305,15 @@ sub pandora_daemonize {
 # param4 - Email Message body
 ##########################################################################
 
-sub pandora_sendmail {                  
+sub pandora_sendmail {
 	
 	my $pa_config = $_[0];
 	my $to_address = $_[1];
 	my $subject = $_[2];
 	my $message = $_[3];
 
-    $subject = decode_entities ($subject);
-    $message = decode_entities ($message);
+	$subject = decode_entities ($subject);
+	$message = decode_entities ($message);
 
 	my %mail = ( To   => $to_address,
 			  Message => $message,
@@ -332,9 +332,9 @@ sub pandora_sendmail {
 		return;
 	} else {
 		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-        if (defined($Mail::Sendmail::error)){
-    		logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
-        }
+		if (defined($Mail::Sendmail::error)){
+			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+		}
 	}
 
 }
@@ -425,12 +425,12 @@ sub logger ($$;$) {
 # limpia_cadena (string) - Purge a string for any forbidden characters (esc, etc)
 ##########################################################################
 sub limpia_cadena {
-    my $micadena;
-    $micadena = $_[0];
+	my $micadena;
+	$micadena = $_[0];
 	if (defined($micadena)){
-    	$micadena =~ s/[^\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]//g;
-    	$micadena =~ s/[\n\l\f]//g;
-    	return $micadena;
+		$micadena =~ s/[^\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]//g;
+		$micadena =~ s/[\n\l\f]//g;
+		return $micadena;
 	} else {
 		return "";
 	}
@@ -447,15 +447,15 @@ sub clean_blank {
 
 ########################################################################################
 # sub sqlWrap(texto)
-# Elimina comillas  y caracteres problematicos y los sustituye por equivalentes
+# Elimina comillas y caracteres problematicos y los sustituye por equivalentes
 ########################################################################################
 
 sub sqlWrap {
 	my $toBeWrapped = shift(@_);
 	if (defined $toBeWrapped){
-			$toBeWrapped =~ s/\'/\\\'/g;
-			$toBeWrapped =~ s/\"/\\\'/g; # " This is for highlighters that don't understand escaped quotes
-			return "'".$toBeWrapped."'";
+		$toBeWrapped =~ s/\'/\\\'/g;
+		$toBeWrapped =~ s/\"/\\\'/g; # " This is for highlighters that don't understand escaped quotes
+		return "'".$toBeWrapped."'";
 	}
 }
 
@@ -661,12 +661,12 @@ sub leftrotate ($$) {
 ## Convert a date (yyy-mm-ddThh:ii:ss) to Timestamp.
 ##########################################################################
 sub dateTimeToTimestamp {
-        $_[0] =~ /(\d{4})-(\d{2})-(\d{2})([ |T])(\d{2}):(\d{2}):(\d{2})/;
-        my($year, $mon, $day, $GMT, $hour, $min, $sec) = ($1, $2, $3, $4, $5, $6, $7);
-        #UTC
-        return timegm($sec, $min, $hour, $day, $mon - 1, $year - 1900);
-        #BST
-        #print "BST\t" . mktime($sec, $min, $hour, $day, $mon - 1, $year - 1900, 0, 0) . "\n";
+	$_[0] =~ /(\d{4})-(\d{2})-(\d{2})([ |T])(\d{2}):(\d{2}):(\d{2})/;
+	my($year, $mon, $day, $GMT, $hour, $min, $sec) = ($1, $2, $3, $4, $5, $6, $7);
+	#UTC
+	return timegm($sec, $min, $hour, $day, $mon - 1, $year - 1900);
+	#BST
+	#print "BST\t" . mktime($sec, $min, $hour, $day, $mon - 1, $year - 1900, 0, 0) . "\n";
 }
 
 ##############################################################################
@@ -730,91 +730,91 @@ Returns:
 
 =cut
 ##############################################################################
-sub pandora_ping ($$) { 
+sub pandora_ping ($$) {
 	my ($pa_config, $host) = @_;
 
-    my $output = 0;
-    my $i;
+	my $output = 0;
+	my $i;
 
-    # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
-    my $OSNAME = $^O;
+	# See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
+	my $OSNAME = $^O;
 
-    # Windows XP .. Windows 7
-    if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
-        my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-       	    $output = `ping -n 1 -w $ms_timeout $host`;
-            if ($output =~ /TTL/){
-        	return 1;
-	    }
-	    sleep 1;
-	}
+	# Windows XP .. Windows 7
+	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
+		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
+		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+			$output = `ping -n 1 -w $ms_timeout $host`;
+			if ($output =~ /TTL/){
+				return 1;
+			}
+			sleep 1;
+		}
 	return 0;
-    }
-
-    elsif ($OSNAME eq "solaris"){
-	my $ping_command = "ping";
-
-	if ($host =~ /\d+:|:\d+/ ) {
-	    $ping_command = "ping -A inet6"
 	}
 
-	# Note: timeout option is not implemented in ping.
-	# 'networktimeout' is not used by ping on Solaris.
+	elsif ($OSNAME eq "solaris"){
+		my $ping_command = "ping";
 
-	# Ping the host
-	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-	    `$ping_command -s -n $host 56 1 >/dev/null 2>&1`;
-	    if ($? == 0) {
-		return 1;
-	    }
-	    sleep 1;
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping -A inet6"
+		}
+
+		# Note: timeout option is not implemented in ping.
+		# 'networktimeout' is not used by ping on Solaris.
+
+		# Ping the host
+		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+			`$ping_command -s -n $host 56 1 >/dev/null 2>&1`;
+			if ($? == 0) {
+				return 1;
+			}
+			sleep 1;
+		}
+		return 0;
 	}
-	return 0;
-    }
 
-    elsif ($OSNAME eq "freebsd"){
-	my $ping_command = "ping -t $pa_config->{'networktimeout'}";
+	elsif ($OSNAME eq "freebsd"){
+		my $ping_command = "ping -t $pa_config->{'networktimeout'}";
 
-	if ($host =~ /\d+:|:\d+/ ) {
-	    $ping_command = "ping6";
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping6";
+		}
+
+		# Note: timeout(-t) option is not implemented in ping6.
+		# 'networktimeout' is not used by ping6 on FreeBSD.
+
+		# Ping the host
+		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+			`$ping_command -q -n -c 1 $host >/dev/null 2>&1`;
+			if ($? == 0) {
+				return 1;
+			}
+			sleep 1;
+		}
+		return 0;
 	}
 
-	# Note: timeout(-t) option is not implemented in ping6.
-	# 'networktimeout' is not used by ping6 on FreeBSD.
+	# by default LINUX calls
+	else {
 
-	# Ping the host
-	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-	    `$ping_command -q -n -c 1 $host >/dev/null 2>&1`;
-	    if ($? == 0) {
-		return 1;
-	    }
-	    sleep 1;
+		my $ping_command = "ping";
+
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping6";
+		}
+
+		# Ping the host
+		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+			`$ping_command -q -W $pa_config->{'networktimeout'} -n -c 1 $host >/dev/null 2>&1`;
+				if ($? == 0) {
+					return 1;
+				}
+			sleep 1;
+		}
+		return 0;
 	}
-	return 0;
-    }
 
-    # by default LINUX calls
-    else {
-
-        my $ping_command = "ping";
-
-        if ($host =~ /\d+:|:\d+/ ) {
-            $ping_command = "ping6";
-        }
-
-	# Ping the host
-	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-	    `$ping_command -q -W $pa_config->{'networktimeout'} -n -c 1 $host >/dev/null 2>&1`;
-	    if ($? == 0) {
-		return 1;
-	    }
-	    sleep 1;
-	}
-	return 0;
-   }
-
-    return $output;
+	return $output;
 }
 
 ##############################################################################
@@ -827,102 +827,101 @@ Ping the given host. Returns the average round-trip time.
 sub pandora_ping_latency ($$) {
 	my ($pa_config, $host) = @_;
 
+	my $output = 0;
 
-    my $output = 0;
+	# See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
+	my $OSNAME = $^O;
 
-    # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
-    my $OSNAME = $^O;
+	# Windows XP .. Windows 2008, I assume Win7 is the same
+	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
 
-    # Windows XP .. Windows 2008, I assume Win7 is the same
-    if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
+		# System ping reports in different languages, but with the same format:
+		# Mínimo = xxms, Máximo = xxms, Media = XXms
+		# Minimun = xxms, Mamimun = xxms, Average = XXms
 
-        # System ping reports in different languages, but with the same format:
-        # Mínimo = xxms, Máximo = xxms, Media = XXms
-        # Minimun = xxms, Mamimun = xxms, Average = XXms
+		# If this fails, ping can be replaced by fping which also have the same format
+		# but always in english
 
-        # If this fails, ping can be replaced by fping which also have the same format
-        # but always in english
+		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
+		$output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
 
-        my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-        $output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
-    
-        if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
-            return $1;
-        } else {
-            return 0;
-        }
+		if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
+			return $1;
+		} else {
+			return 0;
+		}
 
-    }
-
-    elsif ($OSNAME eq "solaris"){
-	my $ping_command = "ping";
-
-	if ($host =~ /\d+:|:\d+/ ) {
-	    $ping_command = "ping -A inet6";
 	}
 
-	# Note: timeout option is not implemented in ping.
-	# 'networktimeout' is not used by ping on Solaris.
+	elsif ($OSNAME eq "solaris"){
+		my $ping_command = "ping";
 
-	# Ping the host
-	my @output = `$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} 2>/dev/null`;
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping -A inet6";
+		}
 
-	# Something went wrong
-	return 0 if ($? != 0);
+		# Note: timeout option is not implemented in ping.
+		# 'networktimeout' is not used by ping on Solaris.
 
-	# Parse the output
-	my $stats = pop (@output);
-	return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
-	return $2;
-    }
+		# Ping the host
+		my @output = `$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} 2>/dev/null`;
 
-    elsif ($OSNAME eq "freebsd"){
-	my $ping_command = "ping";
+		# Something went wrong
+		return 0 if ($? != 0);
 
-	if ($host =~ /\d+:|:\d+/ ) {
-	    $ping_command = "ping6";
+		# Parse the output
+		my $stats = pop (@output);
+		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return $2;
 	}
 
-	# Note: timeout(-t) option is not implemented in ping6. 
-	# timeout(-t) and waittime(-W) options in ping are not the same as
-	# Linux. On latency, there are no way to set timeout.
-	# 'networktimeout' is not used on FreeBSD.
+	elsif ($OSNAME eq "freebsd"){
+		my $ping_command = "ping";
 
-	# Ping the host
-	my @output = `$ping_command -q -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping6";
+		}
 
-	# Something went wrong
-	return 0 if ($? != 0);
+		# Note: timeout(-t) option is not implemented in ping6. 
+		# timeout(-t) and waittime(-W) options in ping are not the same as
+		# Linux. On latency, there are no way to set timeout.
+		# 'networktimeout' is not used on FreeBSD.
 
-	# Parse the output
-	my $stats = pop (@output);
-	return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
-	return $2;
-    }
+		# Ping the host
+		my @output = `$ping_command -q -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
 
-    # by default LINUX calls
-    else {
-        my $ping_command = "ping";
+		# Something went wrong
+		return 0 if ($? != 0);
 
-        if ($host =~ /\d+:|:\d+/ ) {
-            $ping_command = "ping6";
-        }
+		# Parse the output
+		my $stats = pop (@output);
+		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return $2;
+	}
+
+	# by default LINUX calls
+	else {
+		my $ping_command = "ping";
+
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping6";
+		}
 
 
-        # Ping the host
-        my @output = `$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+		# Ping the host
+		my @output = `$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
 
-        # Something went wrong
-        return 0 if ($? != 0);
+		# Something went wrong
+		return 0 if ($? != 0);
 
-        # Parse the output
-        my $stats = pop (@output);
-        return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
-        return $2;
-    }
+		# Parse the output
+		my $stats = pop (@output);
+		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return $2;
+	}
 
-    # If no valid get values until now, just return with empty value (not valid)
-    return $output;
+	# If no valid get values until now, just return with empty value (not valid)
+	return $output;
 }
 
 # End of function declaration

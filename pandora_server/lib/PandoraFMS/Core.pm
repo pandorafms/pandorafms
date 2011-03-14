@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -192,10 +192,10 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 
 	foreach my $alert (@alerts) {
 		my $rc = pandora_evaluate_alert($pa_config, $agent, $data, $status, $alert,
-				$utimestamp, $dbh,  $last_data_value);
+					$utimestamp, $dbh, $last_data_value);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
-		                       $alert, $rc, $dbh, $timestamp, $extra_macros);
+					$alert, $rc, $dbh, $timestamp, $extra_macros);
 
 		# Evaluate compound alerts even if the alert status did not change in
 		# case the compound alert does not recover
@@ -414,7 +414,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
 
-		db_do($dbh, 'UPDATE  ' . $table . '  SET times_fired = ?,
+		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, $extra_macros);
@@ -521,7 +521,7 @@ Execute the given alert.
 ##########################################################################
 sub pandora_execute_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
-	    $alert, $alert_mode, $dbh, $timestamp, $extra_macros) = @_;
+		$alert, $alert_mode, $dbh, $timestamp, $extra_macros) = @_;
 
 	# Alerts in stand-by are not executed
 	if ($alert->{'standby'} == 1) {
@@ -600,7 +600,7 @@ Execute the given action.
 ##########################################################################
 sub pandora_execute_action ($$$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $alert,
-	    $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros) = @_;
+		$alert_mode, $action, $module, $dbh, $timestamp, $extra_macros) = @_;
 
 	logger($pa_config, "Executing action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 10);
 
@@ -629,7 +629,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($agent)) ? get_group_name ($dbh, $agent->{'id_grupo'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
-                                _timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
+				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_data_ => $data,
 				_alert_name_ => $alert->{'name'},
 				_alert_description_ => $alert->{'description'},
@@ -642,7 +642,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_id_alert_ => $alert->{'id'}
 				 );
 	
-	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH"))  {
+	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
 		while ((my $macro, my $value) = each (%{$extra_macros})) {
 			$macros{$macro} = $value;
 		}
@@ -719,7 +719,7 @@ Process Pandora module.
 ##########################################################################
 sub pandora_process_module ($$$$$$$$$;$) {
 	my ($pa_config, $data_object, $agent, $module, $module_type,
-	    $timestamp, $utimestamp, $server_id, $dbh, $extra_macros) = @_;
+		$timestamp, $utimestamp, $server_id, $dbh, $extra_macros) = @_;
 	
 	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 
@@ -835,13 +835,13 @@ sub pandora_planned_downtime ($$) {
 
 	foreach my $downtime (@downtimes) {
 
-        if (!defined($downtime->{'description'})){
-            $downtime->{'description'} = "N/A";
-        }
+		if (!defined($downtime->{'description'})){
+			$downtime->{'description'} = "N/A";
+		}
 
-        if (!defined($downtime->{'name'})){
-            $downtime->{'name'} = "N/A";
-        }
+		if (!defined($downtime->{'name'})){
+			$downtime->{'name'} = "N/A";
+		}
 
 		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
 
@@ -948,50 +948,50 @@ defined also the parent is updated.
 =cut
 ##########################################################################
 sub pandora_update_agent ($$$$$$$;$$$$$$) {
-    my ($pa_config, $agent_timestamp, $agent_id, $os_version,
-        $agent_version, $agent_interval, $dbh, $timezone_offset,
+	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
+		$agent_version, $agent_interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description, $parent_agent_id) = @_;
 
-    my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
 
 	# No access update for data without interval.
 	# Single modules from network server, for example. This could be very
 	# Heavy for Pandora FMS
 	if ($agent_interval != -1){
-	    pandora_access_update ($pa_config, $agent_id, $dbh);
+		pandora_access_update ($pa_config, $agent_id, $dbh);
 	}
 	
-    # No update for interval, timezone and position fields (some old agents don't support it)
-    if ($agent_interval == -1){
-        db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
-        $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
-        return;
-    }
+	# No update for interval, timezone and position fields (some old agents don't support it)
+	if ($agent_interval == -1){
+		db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
+		$agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
+	return;
+	}
 	
 	if ( defined ($timezone_offset)) {
 		if (defined($parent_agent_id)) {
 			# Update the table tagente with all the new data and set the new parent
 			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
-			   	  timezone_offset = ?, id_parent = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, 
-				  $timezone_offset, $parent_agent_id, $agent_id);
+				timezone_offset = ?, id_parent = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp,
+				$timestamp, $os_version, $timezone_offset, $parent_agent_id, $agent_id);
 		}
 		else {
 			# Update the table tagente with all the new data
 			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
-			   	  timezone_offset = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
+				timezone_offset = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
 		}
 	}
 	else {
 		if (defined($parent_agent_id)) {
 			# Update the table tagente with all the new data and set the new parent
 			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, id_parent = ?
-						  WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version,  $parent_agent_id, $agent_id);
+				WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $parent_agent_id, $agent_id);
 		}
 		else {
 			# Update the table tagente with all the new data
 			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
-		   		   $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
+				$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
 		}
 	}
 
@@ -1003,14 +1003,14 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 		if(defined($last_agent_position)) {
 
 			logger($pa_config, "Old Agent data: current_longitude=". $last_agent_position->{'current_longitude'}. " current_latitude="
-			   .$last_agent_position->{'current_latitude'}. " current_altitude=". $last_agent_position->{'current_altitude'}. " ID: $agent_id ", 10);
+				.$last_agent_position->{'current_latitude'}. " current_altitude=". $last_agent_position->{'current_altitude'}. " ID: $agent_id ", 10);
 
 			# If the agent has moved outside the range stablised as location error
-	    	if (distance_moved($pa_config, $last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
-						   $last_agent_position->{'stored_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
+			if (distance_moved($pa_config, $last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
+				$last_agent_position->{'stored_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
 				#Archive the old position and save new one as status
 				archive_agent_position($pa_config, $last_agent_position->{'start_timestamp'},$timestamp,$last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
-                          		    $last_agent_position->{'stored_altitude'},$last_agent_position->{'description'}, $last_agent_position->{'number_of_packages'},$agent_id, $dbh);
+				$last_agent_position->{'stored_altitude'},$last_agent_position->{'description'}, $last_agent_position->{'number_of_packages'},$agent_id, $dbh);
 				if(!defined($altitude) ) {
 					$altitude = 0;
 				}
@@ -1138,21 +1138,21 @@ sub pandora_create_module ($$$$$$$$$$) {
 ## Delete a module given its id.
 ##########################################################################
 sub pandora_delete_module ($$) {
-        my ($dbh, $module_id) = @_;
-		      
-        # Delete Graphs, layouts & reports
-        db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
-        db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo = ?', $module_id);
-        db_do ($dbh, 'DELETE FROM treport_content WHERE id_agent_module = ?', $module_id);
-        
-        # Delete the module state
-        db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
-        
-        # Delete templates asociated to the module
-        db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $module_id);
-        
-        # Set pending delete the module
-        db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ?', $module_id);
+	my ($dbh, $module_id) = @_;
+
+	# Delete Graphs, layouts & reports
+	db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
+	db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo = ?', $module_id);
+	db_do ($dbh, 'DELETE FROM treport_content WHERE id_agent_module = ?', $module_id);
+
+	# Delete the module state
+	db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
+
+	# Delete templates asociated to the module
+	db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $module_id);
+
+	# Set pending delete the module
+	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ?', $module_id);
 }
 
 ##########################################################################
@@ -1160,13 +1160,13 @@ sub pandora_delete_module ($$) {
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
-			
+
  	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 
 	my $module_id = db_process_insert($dbh, 'tagente_modulo', $parameters);
 
 	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $parameters->{'id_agente'});
-	
+
 	return $module_id;
 }
 
@@ -1175,11 +1175,11 @@ sub pandora_create_module_from_hash ($$$) {
 ##########################################################################
 sub pandora_update_module_from_hash ($$$$$) {
 	my ($pa_config, $parameters, $where_column, $where_value, $dbh) = @_;
-			
+	
  	logger($pa_config, "Updating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 
 	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, $where_column, $where_value);
-	
+
 	return $module_id;
 }
 
@@ -1220,7 +1220,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 		}
 		# Save the first position
 		my $utimestamp = time ();
-  	 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+	 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 		
 		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp,$position_description) ;
 	}
@@ -1234,36 +1234,36 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 ## Delete an agent given its id.
 ##########################################################################
 sub pandora_delete_agent ($$;$) {
-        my ($dbh, $agent_id, $conf) = @_;
-        my $agent_name = get_agent_name($dbh, $agent_id);
+	my ($dbh, $agent_id, $conf) = @_;
+	my $agent_name = get_agent_name($dbh, $agent_id);
 
-        # Delete from all their policies
-        enterprise_hook('pandora_delete_agent_from_policies', [$agent_id, $dbh]);
+	# Delete from all their policies
+	enterprise_hook('pandora_delete_agent_from_policies', [$agent_id, $dbh]);
 
-        # Delete the agent
-        db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
-        
-        # Delete agent access data
-        db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
-        
-        # Delete addresses
-        db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
-        
-        my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ?', $agent_id);
-                
-        if(defined $conf) {
-			# Delete the conf files
-			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-				unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-			}
-			if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-				unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-			}
+	# Delete the agent
+	db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
+
+	# Delete agent access data
+	db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
+
+	# Delete addresses
+	db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
+
+	my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ?', $agent_id);
+		
+	if(defined $conf) {
+		# Delete the conf files
+		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
 		}
-        
-        foreach my $module (@modules) {
+		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
+			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
+		}
+	}
+
+	foreach my $module (@modules) {
 			pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
-        }
+	}
 }
 
 ##########################################################################
@@ -1576,8 +1576,8 @@ sub process_inc_data ($$$$) {
 	# No previous data
 	if (! defined ($data_inc)) {
 		db_insert ($dbh, 'INSERT INTO tagente_datos_inc
-		              (`id_agente_modulo`, `datos`, `utimestamp`)
-		              VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
+				(`id_agente_modulo`, `datos`, `utimestamp`)
+				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
 		return undef;
 	}
 
@@ -1585,8 +1585,8 @@ sub process_inc_data ($$$$) {
 	if ($data < $data_inc->{'datos'}) {
 		db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});		
 		db_insert ($dbh, 'INSERT INTO tagente_datos_inc
-		              (`id_agente_modulo`, `datos`, `utimestamp`)
-		              VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
+				(`id_agente_modulo`, `datos`, `utimestamp`)
+				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
 		return undef;
 	}
 
@@ -1630,7 +1630,7 @@ sub log4x_get_severity_num($) {
 sub get_module_status ($$$) {
 	my ($data, $module, $module_type) = @_;
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
-	   ($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
+		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 
 	# Set default critical max/min for *proc modules
 	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
@@ -1724,11 +1724,11 @@ sub generate_status_event ($$$$$$$) {
 	# Generate the event
 	if ($status != 0){
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh);
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh);
 	} else { 
 		# Self validate this event if has "normal" status
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh);
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh);
 	}
 
 }
@@ -1781,8 +1781,8 @@ sub export_module_data ($$$$$$$) {
 
 	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
 	db_do($dbh, 'INSERT INTO tserver_export_data 
-	         (`id_export_server`, `agent_name` , `module_name`, `module_type`, `data`, `timestamp`) VALUES
-	         (?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
+		(`id_export_server`, `agent_name` , `module_name`, `module_type`, `data`, `timestamp`) VALUES
+		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
 }
 
 ##########################################################################
@@ -1816,7 +1816,7 @@ sub pandora_inhibit_alerts {
 
 ##########################################################################
 =head2 C<< save_agent_position (I<$pa_config>, I<$current_longitude>, I<$current_latitude>, 
-		  I<$current_altitude>, I<$agent_id>, I<$dbh>, [I<$start_timestamp>], [I<$description>]) >>
+		 I<$current_altitude>, I<$agent_id>, I<$dbh>, [I<$start_timestamp>], [I<$description>]) >>
 
 Saves a new agent GIS information record in B<tgis_data_status> table. 
 
@@ -1828,20 +1828,20 @@ sub save_agent_position($$$$$$;$$) {
 	if (!defined($description)) {
 		$description = '';
 	}
-    logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, start_timestamp=$start_timestamp agent_id=$agent_id", 10);
+	logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, start_timestamp=$start_timestamp agent_id=$agent_id", 10);
 	
 	if (defined($start_timestamp)) {
 		# Upadate the timestamp of the received agent
 		db_insert ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
 					 stored_longitude , stored_latitude, stored_altitude, start_timestamp, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				  $agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
+					$agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
 					$current_latitude, $current_altitude, $start_timestamp, $description);
 	}
 	else {
 		# Upadate the data of the received agent using the default timestamp
 		db_insert ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
-					 stored_longitude , stored_latitude, stored_altitude,  description) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
-				  $agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
+					 stored_longitude , stored_latitude, stored_altitude, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
+					$agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
 					$current_latitude, $current_altitude, , $description);
 	}
 }
@@ -1859,21 +1859,21 @@ sub update_agent_position($$$$$$;$$$$$) {
 		 $agent_id, $dbh, $stored_longitude, $stored_latitude, $stored_altitude, $start_timestamp, $description) = @_;
 	if (defined($stored_longitude) && defined($stored_latitude) && defined($start_timestamp) ) {
 		# Upadate all the position data of the agent
-    	logger($pa_config, "Updating agent position: current_longitude=$current_longitude, current_latitude=$current_latitude,
+		logger($pa_config, "Updating agent position: current_longitude=$current_longitude, current_latitude=$current_latitude,
 						 current_altitude=$current_altitude, stored_longitude=$stored_longitude, stored_latitude=$stored_latitude,
 						 stored_altitude=$stored_altitude, start_timestamp=$start_timestamp, agent_id=$agent_id", 10);
 		db_do ($dbh, 'UPDATE tgis_data_status SET current_longitude = ?, current_latitude = ?, current_altitude = ?,
-				  stored_longitude = ?,stored_latitude = ?,stored_altitude = ?, start_timestamp = ?, description = ?,
-				  number_of_packages = 1 WHERE tagente_id_agente = ?', 
-				  $current_longitude, $current_latitude, $current_altitude, $stored_longitude, $stored_latitude,
-				  $stored_altitude, $start_timestamp, $description, $agent_id);
+				stored_longitude = ?,stored_latitude = ?,stored_altitude = ?, start_timestamp = ?, description = ?,
+				number_of_packages = 1 WHERE tagente_id_agente = ?', 
+				$current_longitude, $current_latitude, $current_altitude, $stored_longitude, $stored_latitude,
+				$stored_altitude, $start_timestamp, $description, $agent_id);
 	}
 	else {
-    	logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, agent_id=$agent_id", 10);
+		logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, agent_id=$agent_id", 10);
 		# Upadate the timestamp of the received agent
 		db_do ($dbh, 'UPDATE tgis_data_status SET current_longitude = ?, current_latitude = ?, current_altitude = ?,
-				  number_of_packages = number_of_packages + 1 WHERE tagente_id_agente = ?', 
-				  $current_longitude, $current_latitude, $current_altitude, $agent_id);
+				number_of_packages = number_of_packages + 1 WHERE tagente_id_agente = ?', 
+				$current_longitude, $current_latitude, $current_altitude, $agent_id);
 	}
 }
 
@@ -1886,14 +1886,14 @@ Archives the last position of an agent in the B<tgis_data_history> table
 =cut
 ##########################################################################
 sub archive_agent_position($$$$$$$$$$) {
-    my ($pa_config, $start_timestamp, $end_timestamp, $longitude, $latitude, 
+	my ($pa_config, $start_timestamp, $end_timestamp, $longitude, $latitude, 
 		$altitude, $description, $number_packages, $agent_id, $dbh) = @_;
 
-    logger($pa_config, "Saving new agent position: start_timestamp=$start_timestamp longitude=$longitude latitude=$latitude altitude=$altitude", 10);
+	logger($pa_config, "Saving new agent position: start_timestamp=$start_timestamp longitude=$longitude latitude=$latitude altitude=$altitude", 10);
 
 	db_insert($dbh, 'INSERT INTO tgis_data_history (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`,
 					`end_timestamp`, `description`, `number_of_packages`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-		  			$longitude, $latitude, $altitude, $agent_id, $start_timestamp, $end_timestamp, $description, $number_packages);
+					$longitude, $latitude, $altitude, $agent_id, $start_timestamp, $end_timestamp, $description, $number_packages);
 
 }
 
@@ -1913,7 +1913,7 @@ sub pandora_server_statistics ($$) {
 	my $lag_modules = 0;
 	my $total_modules_running = 0;
 	my $my_modules = 0;
-	my $stat_utimestamp  = 0;
+	my $stat_utimestamp = 0;
 	my $lag_row;
 
 	# Get all servers with my name (each server only refresh it's own stats)
@@ -1929,25 +1929,27 @@ sub pandora_server_statistics ($$) {
 			$server->{"modules_total"} = get_db_value ($dbh,"SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ".$server->{"server_type"});
 
 			if ($server->{"server_type"} != 0){
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
-						WHERE utimestamp > 0
-						AND tagente_modulo.disabled = 0
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-						AND current_interval > 0
-						AND running_by = ".$server->{"id_server"}."
-						AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-						AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
+				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
+					FROM tagente_estado, tagente_modulo
+					WHERE utimestamp > 0
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND current_interval > 0
+					AND running_by = ".$server->{"id_server"}."
+					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
 			} else {
 				# Local/Dataserver server LAG calculation:
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
-						WHERE utimestamp > 0
-						AND tagente_modulo.disabled = 0
-						AND tagente_modulo.id_tipo_modulo < 5 
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-						AND current_interval > 0
-						AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-						AND running_by = ".$server->{"id_server"}."
-						AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
+				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
+					FROM tagente_estado, tagente_modulo
+					WHERE utimestamp > 0
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_tipo_modulo < 5 
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND current_interval > 0
+					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+					AND running_by = ".$server->{"id_server"}."
+					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
 			}
 
 			$server->{"module_lag"} = $lag_row->{'module_lag'};
@@ -1964,9 +1966,9 @@ sub pandora_server_statistics ($$) {
 		
 				# Lag (take average active time of all active tasks)			
 
-				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
+				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
 
-				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
+				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
 
 		}
 
@@ -1989,7 +1991,7 @@ sub pandora_server_statistics ($$) {
 		}
 
 		# Update server record
-		db_do ($dbh, "UPDATE tserver SET lag_time = '".$server->{"lag"}."', lag_modules = '".$server->{"module_lag"}."', total_modules_running = '".$server->{"modules_total"}."', my_modules = '".$server->{"modules"}."' , stat_utimestamp =  UNIX_TIMESTAMP() WHERE id_server = " . $server->{"id_server"} );
+		db_do ($dbh, "UPDATE tserver SET lag_time = '".$server->{"lag"}."', lag_modules = '".$server->{"module_lag"}."', total_modules_running = '".$server->{"modules_total"}."', my_modules = '".$server->{"modules"}."' , stat_utimestamp = UNIX_TIMESTAMP() WHERE id_server = " . $server->{"id_server"} );
 	}
 }
 
@@ -2021,7 +2023,7 @@ sub pandora_group_statistics ($$) {
 	# Get all groups
 	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
 
-	# For each valid group get the stats:  Simple uh?
+	# For each valid group get the stats: Simple uh?
 	foreach my $group_row (@groups) {
 
 		$group = $group_row->{'id_grupo'};
@@ -2047,9 +2049,9 @@ sub pandora_group_statistics ($$) {
 
 		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
 
-		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente  AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0");
+		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0");
 
-		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente  AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) AND utimestamp = 0");
+		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) AND utimestamp = 0");
 
 		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
 
@@ -2080,7 +2082,7 @@ sub pandora_self_monitoring ($$) {
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
-    my $xml_output = "";
+	my $xml_output = "";
 	
 	$xml_output = "<agent_data os_name='Linux' os_version='".$pa_config->{'version'}."' agent_name='".$pa_config->{'servername'}."' interval='".$pa_config->{"stats_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
@@ -2098,14 +2100,14 @@ sub pandora_self_monitoring ($$) {
 	my $agents_unknown = 0;
 	if (defined ($my_data_server)) {
 		$agents_unknown = get_db_value ($dbh, "SELECT * FROM tagente_estado, tagente WHERE tagente.disabled =0 AND tagente.id_agente = tagente_estado.id_agente AND running_by = $my_data_server AND utimestamp < NOW() - (current_interval * 2) limit 10;");
-    		$agents_unknown = 0 if (!defined($agents_unknown));
-    	}
-    
-    my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+		$agents_unknown = 0 if (!defined($agents_unknown));
+	}
 
-    if (!defined($queued_modules)){
-        $queued_modules = 0;
-    }
+my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+
+	if (!defined($queued_modules)){
+		$queued_modules = 0;
+	}
 
 	my $dbmaintance = get_db_value ($dbh, "SELECT COUNT(*) FROM tconfig WHERE token = 'db_maintance' AND `value` > UNIX_TIMESTAMP() - 86400");
 
@@ -2165,21 +2167,21 @@ sub pandora_module_unknown ($$) {
 	my ($pa_config, $dbh) = @_;
 
 	my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.*, tagente_estado.id_agente_estado
-					FROM tagente_modulo, tagente_estado, tagente 
-					WHERE tagente.id_agente = tagente_estado.id_agente 
-					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-					AND tagente.disabled = 0 
-					AND tagente_modulo.disabled = 0 
-					AND tagente_estado.estado <> 3 
-					AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) 
-                    AND (tagente_estado.current_interval = 0 OR (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP())');
+				FROM tagente_modulo, tagente_estado, tagente 
+				WHERE tagente.id_agente = tagente_estado.id_agente 
+				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+				AND tagente.disabled = 0 
+				AND tagente_modulo.disabled = 0 
+				AND tagente_estado.estado <> 3 
+				AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) 
+				AND (tagente_estado.current_interval = 0 OR (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP())');
 
 	foreach my $module (@modules) {
 		
 		# Set the module state to unknown
 		logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
 		db_do ($dbh, 'UPDATE tagente_estado SET last_status = estado, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
-		
+
 		# Get agent information
 		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 		if (! defined ($agent)) {
@@ -2216,6 +2218,6 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 
 =cut

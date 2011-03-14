@@ -3,7 +3,7 @@ package PandoraFMS::DataServer;
 # Pandora FMS Data Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -61,8 +61,8 @@ sub new ($$;$) {
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 0, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
 
-    bless $self, $class;
-    return $self;
+	bless $self, $class;
+	return $self;
 }
 
 ###############################################################################
@@ -89,7 +89,7 @@ sub data_producer ($) {
 
 	# Open the incoming directory
 	opendir (DIR, $pa_config->{'incomingdir'})
-	        || die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
+		|| die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
 
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
@@ -167,8 +167,8 @@ sub data_consumer ($$) {
 		# Ignore the timestamp in the XML and use the file timestamp instead
 		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
 
-    	# Double check that the file exists
-    	return unless (-f $file_name);
+		# Double check that the file exists
+		return unless (-f $file_name);
 
 		unlink ($file_name);
 		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
@@ -198,7 +198,7 @@ sub process_xml_data ($$$$$) {
 	my $parent_id = 0; # Default value for unknown parent
 	my $parent_agent_name = $data->{'parent_agent_name'};
 	if (defined ($parent_agent_name)) {
-		$parent_id  =  get_agent_id ($dbh, $parent_agent_name);
+		$parent_id = get_agent_id ($dbh, $parent_agent_name);
 		if ($parent_id < 1)	{ # Unknown parent
 			$parent_id = 0;
 		}
@@ -217,37 +217,37 @@ sub process_xml_data ($$$$$) {
 		# Validate the GIS informtation
 
 		if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
-                        $altitude = ''; # Default value
+			$altitude = ''; # Default value
 			# This could be a valid position data, not always will get altitude
-                }
+		}
 	
 		if (!defined($longitude) || $longitude !~ /[-+]?[0-9,11,12]/) {
-                        $longitude = ''; # Default value
+			$longitude = ''; # Default value
 			$valid_position_data = 0;
-                }
+		}
 
 		if (!defined($latitude) || $latitude !~ /[-+]?[0-9,11,12]/) {
-                        $latitude = ''; # Default value
+			$latitude = ''; # Default value
 			$valid_position_data = 0;
-                }
+		}
 
 		if ((!defined($position_description)) && ($latitude != '')) { #FIXME: Validate the data with a regexp
 
-                        # This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
-                        # This requires a connection to internet and could be very slow and have a huge impact in performance.
-                        # Other methods for reverse geocoding are OpenStreetmaps, in nternet or in a local server
+			# This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
+			# This requires a connection to internet and could be very slow and have a huge impact in performance.
+			# Other methods for reverse geocoding are OpenStreetmaps, in nternet or in a local server
 
-                        if ($pa_config->{'google_maps_description'}){
-                                my $content = get ('http://maps.google.com/maps/geo?q='.$latitude.','.$longitude.'&output=csv&sensor=false');
-                                my @address = split (/\"/,$content);
-                                $position_description = $address[1];
+			if ($pa_config->{'google_maps_description'}){
+				my $content = get ('http://maps.google.com/maps/geo?q='.$latitude.','.$longitude.'&output=csv&sensor=false');
+				my @address = split (/\"/,$content);
+				$position_description = $address[1];
 			}
 			elsif ($pa_config->{'openstreetmaps_description'}){
-                                # Sample Query: http://nominatim.openstreetmap.org/reverse?format=csv&lat=40.43197&lon=-3.6993818&zoom=18&addressdetails=1&email=info@pandorafms.org
-                                # Email address is sent by courtesy to OpenStreetmaps people. 
+				# Sample Query: http://nominatim.openstreetmap.org/reverse?format=csv&lat=40.43197&lon=-3.6993818&zoom=18&addressdetails=1&email=info@pandorafms.org
+				# Email address is sent by courtesy to OpenStreetmaps people. 
 				# I read the API :-), thanks guys for your work.
-                                # Change here URL to make request to a local openstreetmap server
-                                my $content = get ('http://nominatim.openstreetmap.org/reverse?format=csv&lat='.$latitude.'&lon='.$longitude.'&zoom=18&addressdetails=1&email=info@pandorafms.org');
+				# Change here URL to make request to a local openstreetmap server
+				my $content = get ('http://nominatim.openstreetmap.org/reverse?format=csv&lat='.$latitude.'&lon='.$longitude.'&zoom=18&addressdetails=1&email=info@pandorafms.org');
 
 				# Yep, I need to parse the XML output.
 
@@ -255,10 +255,10 @@ sub process_xml_data ($$$$$) {
 				my $doc = $xs1->XMLin($content);
 				$position_description = safe_input ($doc->{result}{content});
 
-                        } else {
-                                $position_description = ''; # Default value
-                        }
-                }
+			} else {
+				$position_description = ''; # Default value
+			}
+		}
 
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
 	}
@@ -362,8 +362,8 @@ sub process_xml_data ($$$$$) {
 
 	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
 		if (!defined($parent_agent_name)){
-                        $parent_agent_name = "";
-                }
+			$parent_agent_name = "";
+		}
 		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
 		if ($pa_config->{'update_parent'} == 1 && $parent_id != 0) {
 		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
@@ -380,7 +380,7 @@ sub process_xml_data ($$$$$) {
 	else {
 		if ($pa_config->{'update_parent'} == 1 && $parent_id != 0) {
 			logger($pa_config, "Updating agent $agent_name parent_id: $parent_id", 5);
-			# Update agent information including the parent  without position information
+			# Update agent information including the parent without position information
 			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $parent_id);
 		}
 		else {
@@ -593,12 +593,12 @@ sub update_module_configuration ($$$$) {
 
 	# Update if at least one of the configuration tokens has changed
 	if ($module->{'min'} != $module_conf->{'min'} || $module->{'max'} != $module_conf->{'max'} ||
-	    $module->{'descripcion'} ne $module_conf->{'descripcion'} || $module->{'post_process'} != $module_conf->{'post_process'} ||
-	    $module->{'module_interval'} != $module_conf->{'module_interval'}) {
+		$module->{'descripcion'} ne $module_conf->{'descripcion'} || $module->{'post_process'} != $module_conf->{'post_process'} ||
+		$module->{'module_interval'} != $module_conf->{'module_interval'}) {
 			logger($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
 			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?
-			              WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
-			       $module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
+				WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
+				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
 			return;
 	}
 }

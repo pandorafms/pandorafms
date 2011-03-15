@@ -1,3 +1,8 @@
+2011-03-15  Sancho Lerena <slerena@artica.es>
+
+	* util/recon_scripts/snmpdevices.pl: Fixed a typo in interface
+	detection :-(
+
 2011-03-14  Raúl Mateos <raulolfpandora@gmail.com>
 
 	* lib/PandoraFMS/Config.pm, lib/PandoraFMS/Core.pm,

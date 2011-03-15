@@ -1,3 +1,8 @@
+2011-03-15  Sancho Lerena <slerena@artica.es>
+
+	* util/recon_scripts/snmpdevices.pl: Fixed a typo in interface
+	detection :-(
+
 2011-02-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/WMIServer.pm: Merged from trunk. Fixed a typo.

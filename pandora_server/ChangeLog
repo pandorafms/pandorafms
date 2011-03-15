@@ -1,4 +1,4 @@
-2011-03-13 Dario Rodriguez <dario.rodriguez@artica.es>
+2011-03-15 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	*util/plugin/babel_plugin/plugin_definition.ini, 
 	util/plugin/babel_plugin/babel_plugin.sh: Created plugin to connect 

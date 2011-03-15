@@ -254,7 +254,7 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 	# Process interface list
 	# Get interface indexes
 		
-	my $interface_indexes = `/usr/bin/snmpwalk -Ouvq -c '$target_community' -v 1 $addr ifIndex>/dev/null`;
+	my $interface_indexes = `/usr/bin/snmpwalk -Ouvq -c '$target_community' -v 1 $addr ifIndex 2>/dev/null`;
 	
 	my @ids = split("\n", $interface_indexes);
 

@@ -78,7 +78,7 @@ API_CALL=$INTEGRIA_CONSOLE_PATH"/include/api.php?user="$USER"&pass="$KEY"&op="$R
 DATE=`date +%s%N`
 FILE_OUTPUT="temp$DATE"
 
-wget $API_CALL -o /dev/null -O "$FILE_OUTPUT"
+wget "$API_CALL" -o /dev/null -O "$FILE_OUTPUT"
 
 # Check if wget was OK
 

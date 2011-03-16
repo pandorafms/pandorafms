@@ -78,7 +78,7 @@ API_CALL=$BABEL_CONSOLE_PATH"/include/api.php?user="$USER"&pass="$KEY"&op="$REQU
 DATE=`date +%s%N`
 FILE_OUTPUT="temp$DATE"
 
-wget $API_CALL -o /dev/null -O "$FILE_OUTPUT"
+wget "$API_CALL" -o /dev/null -O "$FILE_OUTPUT"
 
 # Check if wget was OK
 

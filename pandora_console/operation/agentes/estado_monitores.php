@@ -205,7 +205,12 @@ foreach ($modules as $module) {
 		if ($module["id_policy_module"] != 0) {
 			$linked = isModuleLinked($module['id_agente_modulo']);
 			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
-			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+
+            if ($id_policy != "")
+                $name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+            else
+                $name_policy = __("Unknown");
+
 			$policyInfo = infoModulePolicy($module["id_policy_module"]);
 			
 			$adopt = false;

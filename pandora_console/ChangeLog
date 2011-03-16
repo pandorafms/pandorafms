@@ -1,3 +1,8 @@
+2011-03-16  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/estado_monitores.php: Fixed an ugly error when cannot
+	get the policy name. Show unknown in that case, avoiding the SQL error.
+	
 2011-03-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.preview.php: fixed a typing error.

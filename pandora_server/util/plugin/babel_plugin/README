@@ -1,0 +1,21 @@
+############################################
+#										   #
+# Babel Integration Plugin for Pandora FMS #
+#										   #
+############################################
+
+This plugin provide access to Babel Enterprise API to gather data to be
+monitored with Pandora FMS.
+
+This plugin has the following requirements:
+
+1.- You need a Babel Enterprise installed with the API enable.
+
+2.- This plugin was developed to collect single data not arrays of values
+	so you only can collect for example the risk of one host or the risk
+	of one domain per call. If you need to monitor the risk of all Babel 
+	hosts you should do a call per each host.
+	
+If you need more information about plugin parameters just type:
+
+$> ./babel_plugin -h

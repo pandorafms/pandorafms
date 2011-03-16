@@ -1,5 +1,5 @@
 #!/bin/bash
-# Integria Plugin for Pandora FMS
+# Create Integria Incident Script for Pandora FMS
 # This plugin uses Integria API
 # (c) Dario Rodriguez 2011
 
@@ -16,7 +16,7 @@ INVENTORY=""
 # Help menu
 
 function help {
-	echo -e "Integria Plugin for Pandora FMS. http://pandorafms.com" 
+	echo -e "Create Integria Incident Script for Pandora FMS. http://pandorafms.com" 
 	echo -e "Syntax:" 
 	echo -e "\t\t-c   : integria console path"	
 	echo -e "\t\t-u   : user"

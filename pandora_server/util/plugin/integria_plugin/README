@@ -1,0 +1,25 @@
+############################################
+#										   #
+# Integria Plugin for Pandora FMS          #
+#										   #
+############################################
+
+This plugin provide access to Integria API to gather data to be monitored 
+with Pandora FMS.
+
+This plugin has the following requirements:
+
+1.- You need a Integira installed with the API enable.
+
+2.- This plugin was developed to collect single data not arrays of values
+	so you only can collect for example the number of incidents open.
+	You can NOT monitor all incidents you need to specify a parameter of
+	one ot them indicent
+	
+If you need more information about plugin parameters just type:
+
+$> ./integria_plugin -h
+
+You can see more information about Integria API at:
+
+http://www.openideas.info/wiki/index.php?title=Integria

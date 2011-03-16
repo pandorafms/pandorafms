@@ -22,7 +22,7 @@ function help {
 	echo -e "\t\t[-f] : parameters (default '')"
 	echo -e "\t\t[-s] : separator token (default ',')"
 	echo -e "Samples:"
-	echo "   ./babel_plugin.sh -s http://127.0.0.1/babel_console -u user -r host_risk -f main_server"
+	echo "   ./babel_plugin.sh -c http://127.0.0.1/babel_console -u user -r host_risk -f main_server"
 	echo ""
 	exit
 }

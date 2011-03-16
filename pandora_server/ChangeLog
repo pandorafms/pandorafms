@@ -1,5 +1,11 @@
 2011-03-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* util/plugin/babel_plugin/babel_plugin.sh: Fixed an error in help text
+	with a wrong parameter.
+	* util/plugin/babel_plugin/README: Improved README text.
+
+2011-03-16 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* util/plugin/babel_plugin/README: Create README file for babel plugin
 
 2011-03-15 Dario Rodriguez <dario.rodriguez@artica.es>

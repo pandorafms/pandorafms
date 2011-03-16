@@ -19,3 +19,7 @@ This plugin has the following requirements:
 If you need more information about plugin parameters just type:
 
 $> ./babel_plugin -h
+
+You can see more information about Babel Enterprise API at:
+
+http://www.openideas.info/wiki/index.php?title=Babel

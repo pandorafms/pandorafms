@@ -1,5 +1,10 @@
 2011-03-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* util/plugin/integria_plugin/integria_plugin.sh,
+	util/plugin/babel_plugin/babel_plugin.sh: Fixed an error with wget call.
+
+2011-03-16 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* util/plugin/create_integria_incident.sh: Create script to create a new
 	incident in Integria, this script could be used as an action in Pandora FMS.
 

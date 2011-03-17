@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -29,9 +29,7 @@ $menu['class'] = 'operation';
 if (check_acl ($config['id_user'], 0, "AR")) {
 
 	enterprise_hook ('metaconsole_menu');
-
 	enterprise_hook ('dashboard_menu');
-
 	enterprise_hook ('services_menu');
 
 	//View agents
@@ -225,11 +223,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu["eventos"]["sub"] = $sub;
 }
 
-// ANY user can view itself !
-    // Users
-    $menu["usuarios"]["text"] = __('Edit my user');
-    $menu["usuarios"]["sec2"] = "operation/users/user_edit";
-    $menu["usuarios"]["id"] = "oper-users";
+// ANY user can view him/herself !
+// Users
+$menu["usuarios"]["text"] = __('Edit my user');
+$menu["usuarios"]["sec2"] = "operation/users/user_edit";
+$menu["usuarios"]["id"] = "oper-users";
 
 //End of Users
 
@@ -260,7 +258,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub = array ();
 	$sub["operation/reporting/custom_reporting"]["text"] = __('Custom reporting');
-
 	$sub["operation/reporting/graph_viewer"]["text"] = __('Custom graphs');	
 	
 	$menu["reporting"]["sub"] = $sub;

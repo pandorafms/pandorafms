@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -34,7 +34,6 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
 		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
-
 		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
 		$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
 	}
@@ -50,11 +49,8 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 		
 	$sub = array ();
 	$sub["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
-	
 	$sub["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
-	
 	$sub["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
-	
 	enterprise_hook('massivepolicies_submenu');
 	
 	$menu["gmassive"]["sub"] = $sub;
@@ -71,15 +67,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	
 	$sub = array ();
 	$sub["godmode/modules/manage_nc_groups"]["text"] = __('Component groups');
-	
 	$sub["godmode/modules/manage_network_components"]["text"] = __('Network components');
-	
 	enterprise_hook ('components_submenu');
-	
 	$sub["godmode/modules/manage_network_templates"]["text"] = __('Module templates');
-	
 	enterprise_hook ('inventory_submenu');
-	
+
 	$menu["gmodules"]["sub"] = $sub;
 }
 
@@ -90,9 +82,8 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 	
 	$sub = array ();
 	$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
-	
 	$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
-	
+
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
 	}
@@ -121,7 +112,6 @@ if (check_acl($config['id_user'], 0, "LW")) {
 	$sub = array ();
 	//$sub["godmode/snmpconsole/snmp_alert"]["text"] = __('Component groups');
 	$sub['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
-	
 	enterprise_hook ('snmpconsole_submenu');
 
 	$menu["gsnmpconsole"]["sub"] = $sub;
@@ -139,9 +129,8 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 
 	// Custom graph builder
 	$sub["godmode/reporting/graphs"]["text"] = __('Graph builder');
-	
 	enterprise_hook ('reporting_godmenu');
-	
+
 	$menu["greporting"]["sub"] = $sub;
 }
 if (check_acl ($config['id_user'], 0, "IW")) {
@@ -164,16 +153,13 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["gservers"]["text"] = __('Manage servers');
 	$menu["gservers"]["sec2"] = "godmode/servers/modificar_server";
 	$menu["gservers"]["id"] = "god-servers";
-	
+
 	$sub = array ();
 	$sub["godmode/servers/manage_recontask"]["text"] = __('Manage recontask');
-	
 	$sub["godmode/servers/plugin"]["text"] = __('Manage plugins');
-	
 	$sub["godmode/servers/recon_script"]["text"] = __('Manage recon script');
-	
 	enterprise_hook('export_target_submenu');
-	
+
 	$menu["gservers"]["sub"] = $sub;
 }
 
@@ -186,7 +172,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["glog"]["text"] = __('System audit log');
 	$menu["glog"]["sec2"] = "godmode/admin_access_logs";
 	$menu["glog"]["id"] = "god-audit";
-	
+
 	// Setup
 	$menu["gsetup"]["text"] = __('Setup');
 	$menu["gsetup"]["sec2"] = "godmode/setup/setup";
@@ -206,8 +192,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('historydb_submenu');
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
-
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
+
 	$menu["gsetup"]["sub"] = $sub;
 }
 
@@ -218,15 +204,10 @@ if (check_acl ($config['id_user'], 0, "DM")) {
 	
 	$sub = array ();
 	$sub["godmode/db/db_info"]["text"] = __('DB information');
-	
 	$sub["godmode/db/db_purge"]["text"] = __('Database purge');
-	
 	$sub["godmode/db/db_refine"]["text"] = __('Database debug');
-	
 	$sub["godmode/db/db_audit"]["text"] = __('Database audit');
-
 	$sub["godmode/db/db_event"]["text"] = __('Database event');
-
 	$sub["godmode/db/db_sanity"]["text"] = __('Database sanity');
 
 	$menu["gdbman"]["sub"] = $sub;

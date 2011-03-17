@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -78,21 +78,20 @@ function dbmanager_query ($sql, &$error) {
 function dbmgr_extension_main () {
 	require_css_file ('dbmanager', 'extensions/dbmanager/');
 
-    global $config;
-    
-    if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	    pandora_audit("ACL Violation", "Trying to access Setup Management");
-	    require ("general/noaccess.php");
-	    return;
-    }
+	global $config;
 
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		require ("general/noaccess.php");
+		return;
+	}
 
 	$sql = (string) get_parameter ('sql');
 
 	print_page_header (__('Database interface'), "", false, false, true);
 
 	echo '<div class="notify">';
-	echo "This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledgue of Pandora FMS internals.";
+	echo "This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you are doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledge of Pandora FMS internals.";
 	echo '</div>';
 
 	echo "<br />";

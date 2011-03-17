@@ -1,3 +1,9 @@
+2011-03-17  Raul Mateos <raulofpandora@gmail.com>
+
+	* operation/menu.php, godmode/menu.php, godmode/setup/setup.php,
+	extensions/pandora_logs.php, extensions/dbmanager.php:
+	Cleaned code and updated year.
+
 2011-03-17  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/integria_incidents

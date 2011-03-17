@@ -161,8 +161,15 @@ enterprise_hook ('inventory_menu');
 
 //Incidents
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
+	if($config['integria_enabled']) {
+		$sec2 = "operation/integria_incidents/incident";
+	}
+	else {
+		$sec2 = "operation/incidents/incident";
+	}
+	
 	$menu["incidencias"]["text"] = __('Manage incidents');
-	$menu["incidencias"]["sec2"] = "operation/incidents/incident";
+	$menu["incidencias"]["sec2"] = $sec2;
 	$menu["incidencias"]["refr"] = 0;
 	$menu["incidencias"]["id"] = "oper-incidents";
 	

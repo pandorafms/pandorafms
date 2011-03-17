@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -24,343 +24,247 @@ if (! check_acl ($config['id_user'], 0, "IR")) {
 	exit;
 }
 
+$tab = get_parameter('tab', 'list');
+$id_incident = get_parameter('id_incident', 0);
+
+// We choose a strange token to use texts with commas, etc.
+$token = ';,;';
+
 // Header
-print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, "");
+if($tab == 'list' || $tab == 'editor') {
+	$buttons = array(
+			'list' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
+					print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+			'editor' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=editor">' . 
+					print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
+}
+else {
+	$buttons = array(
+			'list' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
+					print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+			'incident' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
+					print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
+			'workunits' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
+					print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
+			'files' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
+					print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
+			'tracking' => array(
+				'active' => false,
+				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
+					print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
+}
+	
+$buttons[$tab]['active'] = true;
 
-// Take input parameters
+print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, $buttons);
 
-// Offset adjustment
-if (isset($_GET["offset"])) {
-	$offset = get_parameter_get ("offset");
-} else {
-	$offset = 0;
+$update_incident = get_parameter('update_incident', 0);
+
+$integria_api = $config['integria_url']."/include/api.php?return_type=xml&user=".$config['id_user']."&pass=".$config['integria_api_password'];
+
+if($update_incident == 1) {				
+	$values[0] = $id_incident;
+	$values[1] = str_replace(" ", "%20", safe_output(get_parameter('title')));
+	$values[2] = str_replace(" ", "%20", safe_output(get_parameter('description')));
+	$values[3] = str_replace(" ", "%20", safe_output(get_parameter('epilog')));
+	$values[4] = get_parameter('group');
+	$values[5] = get_parameter('priority');
+	$values[6] = get_parameter('source');
+	$values[7] = get_parameter('resolution');
+	$values[8] = get_parameter('status');
+	$values[9] = get_parameter('creator', get_parameter('creator_fix'));
+
+	$params = implode($token, $values);
+
+	$url = $integria_api."&op=update_incident&token=".$token."&params=".$params;
+	// Call the integria API
+	$result = call_api($url);
 }
 
-// Check action. Try to get author and group
-$action = get_parameter_get ("action");
+$create_incident = get_parameter('create_incident', 0);
 
-if ($action == "mass") {
-	$id_inc = get_parameter_post ("id_inc", array ());
-	$delete_btn = get_parameter_post ("delete_btn", -1);
-	$own_btn = get_parameter_post ("own_btn", -1);
+if($create_incident == 1) {
+	$values[0] = str_replace(" ", "%20", safe_output(get_parameter('title')));
+	$values[1] = get_parameter('group');
+	$values[2] = get_parameter('priority');
+	$values[3] = str_replace(" ", "%20", safe_output(get_parameter('description')));
+	$values[4] = $config['integria_inventory'];
 	
-	foreach ($id_inc as $incident) {
-		if (check_acl ($config['id_user'], get_incidents_group ($incident), "IM") || get_incidents_author ($incident) == $config["id_user"] || get_incidents_owner ($incident) == $config["id_user"]) {
-			continue;
-		}
-		pandora_audit("ACL Forbidden","Mass-update or deletion of incident");
-		require ("general/noaccess.php");
-		exit;
-	}
-	
-	if ($delete_btn != -1) {
-		$result = delete_incidents ($id_inc);
-		print_result_message ($result,
-			__('Successfully deleted'),
-			__('Could not be deleted'));
-	}
-	if ($own_btn != -1) {
-		$result = process_incidents_chown ($id_inc, $config["id_user"]);
-		print_result_message ($result,
-			__('Successfully reclaimed ownership'),
-			__('Could not reclame ownership'));
-	}
+	$params = implode($token, $values);
 
+	$url = $integria_api."&op=create_incident&token=".$token."&params=".$params;
+
+	// Call the integria API
+	$result = call_api($url);
 }
-elseif ($action == "update") {
-	$id_inc = get_parameter ("id_inc", 0);
-	$author = get_incidents_author ($id_inc);
-	$owner = get_incidents_owner ($id_inc);
-	$grupo = get_incidents_group ($id_inc);
-	
-	if ($author != $config["id_user"] && $owner != $config["id_user"] && !check_acl ($config['id_user'], $grupo, "IM")) { // Only admins (manage incident) or owners/creators can modify incidents
-		pandora_audit("ACL Forbidden", "Update incident #".$id_inc, $author);
-		require ("general/noaccess.php");
-		exit;
-	}
-	
-	$titulo = get_parameter_post ("titulo");
-	$descripcion = get_parameter_post ("descripcion");
-	$origen = get_parameter_post ("origen_form");
-	$prioridad = get_parameter_post ("prioridad_form", 0);
-	$estado = get_parameter_post ("estado_form", 0);
-	$grupo = get_parameter_post ("grupo_form", 1);
-	$usuario = get_parameter_post ("usuario_form", $config["id_user"]);
-	
-	$values = array(
-		'titulo' => $titulo,
-		'origen' => $origen,
-		'estado' => $estado,
-		'id_grupo' => $grupo,
-		'id_usuario' => $usuario,
-		'prioridad' => $prioridad,
-		'descripcion' => $descripcion,
-		'id_lastupdate' => $config["id_user"]);
-	$result = process_sql ($sql);
-	
-	$result = process_sql_update('tincidencia', $values, array('id_incidencia' => $id_inc));
 
-	if ($result !== false) {
-		pandora_audit("Incident updated","User ".$config['id_user']." updated incident #".$id_inc);
-	}
-	
-	print_result_message ($result,
-		__('Successfully updated'),
-		__('Could not be updated'));
-	
-} elseif ($action == "insert") {
-	//Create incident
-	$grupo = get_parameter_post ("grupo_form", 1);
-	
-	if (!check_acl ($config['id_user'], $grupo, "IW")) {
-		pandora_audit("ACL Forbidden", "User ".$config["id_user"]." tried to update incident");
-		require ("general/noaccess.php");
-		exit;
-	}
+$attach_file = get_parameter('attach_file', 0);
 
-	// Read input variables
-	$titulo = get_parameter_post ("titulo"); 
-	$descripcion = get_parameter_post ("descripcion");
-	$origen = get_parameter_post ("origen_form");
-	$prioridad = get_parameter_post ("prioridad_form");
-	$id_creator = $config['id_user'];
-	$estado = get_parameter_post ("estado_form");
-	
-	$values = array(
-		'inicio' => 'NOW()',
-		'actualizacion' => 'NOW()',
-		'titulo' => $titulo,
-		'descripcion' => $descripcion,
-		'id_usuario' => $config["id_user"],
-		'origen' => $origen,
-		'estado' => $estado,
-		'prioridad' => $prioridad,
-		'id_grupo' => $grupo,
-		'id_creator' => $config["id_user"]);
-	$id_inc = process_sql_insert('tincidencia', $values);
+if($attach_file == 1) {
+	if($_FILES['new_file']['name'] != "" && $_FILES['new_file']['error'] == 0) {
+		$file_content = file_get_contents($_FILES["new_file"]["tmp_name"]);
+		
+		$values[0] = $id_incident;
+		$values[1] = $_FILES['new_file']['name'];
+		$values[2] = $_FILES['new_file']['size'];
+		$values[3] = str_replace(" ", "%20", safe_output(get_parameter('description'), __('No description available')));
+		$values[4] = base64_encode($file_content);
+		
+		
+		$params = implode($token, $values);
 
-	if ($id_inc === false) {
-		echo '<h3 class="error">'.__('Error creating incident').'</h3>';		
+		$url = $integria_api."&op=attach_file&token=".$token;
+
+		// Call the integria API
+		$result = call_api($url, array('params' => $params));
 	}
 	else {
-		pandora_audit("Incident created", "User ".$config["id_user"]." created incident #".$id_inc);
-	}
-}
-
-// Search
-$filter = "";
-
-$texto = (string) get_parameter ("texto", "");
-if ($texto != "") 
-	$filter .= sprintf (" AND (titulo LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')", $texto, $texto);
-
-$usuario = (string) get_parameter ("usuario", "");
-if ($usuario != "") 
-	$filter .= sprintf (" AND id_usuario = '%s'", $usuario);
-
-$estado = (int) get_parameter ("estado", -1);
-if ($estado >= 0) //-1 = All
-	$filter .= sprintf (" AND estado = %d", $estado);
-
-$grupo = (int) get_parameter ("grupo", 0);
-if ($grupo > 0) {
-	$filter .= sprintf (" AND id_grupo = %d", $grupo);
-	if (check_acl ($config['id_user'], $grupo, "IM") == 0) {
-		pandora_audit("ACL Forbidden","User tried to read incidents from group without access");
-		include ("general/noaccess.php");
-		exit;
-	}
-}
-
-$prioridad = (int) get_parameter ("prioridad", -1);
-if ($prioridad != -1) //-1 = All
-	$filter .= sprintf (" AND prioridad = %d", $prioridad);
-
-$offset = (int) get_parameter ("offset", 0);
-$groups = get_user_groups ($config["id_user"], "IR");
-
-//Select incidencts where the user has access to ($groups from
-//get_user_groups), array_keys for the id, implode to pass to SQL
-switch ($config["dbtype"]) {
-	case "mysql":
-		$sql = "SELECT * FROM tincidencia
-			WHERE id_grupo IN (".implode (",",array_keys ($groups)).")" . $filter . " 
-			ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
-		break;
-	case "postgresql":
-		$sql = "SELECT * FROM tincidencia
-			WHERE id_grupo IN (".implode (",",array_keys ($groups)).")" . $filter . " 
-			ORDER BY actualizacion DESC LIMIT ".$config["block_size"]." OFFSET ".$offset;
-		break;
-}
-
-$result = get_db_all_rows_sql ($sql);
-if (empty ($result)) {
-	$result = array ();
-	$count = 0;
-}
-else {
-	$count = count ($result);
-}
-
-
-echo '<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">';
-
-echo '<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
-<td valign="middle"><h3>'.__('Filter').'</h3>';
-
-$fields = get_incidents_status ();
-print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
-
-//Legend
-echo '</td><td valign="middle"><noscript>';
-print_submit_button (__('Show'), 'submit-estado', false, array ("class" => "sub"));
-
-echo '</noscript></td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
-foreach (get_incidents_status () as $id => $str) {
-	print_incidents_status_img ($id);
-	echo ' - ' . $str . '<br />';
-}
-
-echo '</td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Priority').'</h3>';
-foreach (get_incidents_priorities () as $id => $str) {
-	print_incidents_priority_img ($id);
-	echo ' - ' . $str . '<br />';
-}
-
-echo '</td></tr><tr><td>';
-
-$fields = get_incidents_priorities ();
-
-print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', __('All priorities'), -1,false,false,false,'w155');
-
-echo '</td></tr><tr><td>';
-
-print_select (get_users_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
-
-echo '</td></tr><tr><td colspan=3>';
-	
-print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
-
-echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-
-print_input_text ('texto', $texto, '', 45);	
-echo '&nbsp;';
-print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
-
-echo "</td></tr></table>";
-echo '</form>';
-
-if ($count < 1) {
-	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
-}
-else {
-	// TOTAL incidents
-	$url = "index.php?sec=incidencias&amp;sec2=operation/incidents/incident";
-
-	$estado = -1;
-
-	// add form filter values for group, priority, state, and search fields: user and text
-	if ($grupo != -1)
-		$url .= "&amp;grupo=".$grupo;
-	if ($prioridad != -1)
-		$url .= "&amp;prioridad=".$prioridad;
-	if ($estado != -1)
-		$url .= "&amp;estado=".$estado;
-	if ($usuario != '')
-		$url .= "&amp;usuario=".$usuario;
-	if ($texto != '')
-		$url .= "&amp;texto=".$texto;
-
-	// Show pagination
-	pagination ($count + $offset, $url, $offset, 15, false);	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
-	echo '<br />';
-	
-	// Show headers
-	$table->width = "100%";
-	$table->class = "databox";
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->head = array ();
-	$table->data = array ();
-	$table->size = array ();
-	$table->align = array ();
-
-	$table->head[0] = __('ID');
-	$table->head[1] = __('Status');
-	$table->head[2] = __('Incident');
-	$table->head[3] = __('Priority');
-	$table->head[4] = __('Group');
-	$table->head[5] = __('Updated');
-	$table->head[6] = __('Source');
-	$table->head[7] = __('Owner');
-	$table->head[8] = __('Action');
-	
-	$table->size[0] = 43;
-	$table->size[7] = 50;
-	
-	$table->align[1] = "center";
-	$table->align[3] = "center";
-	$table->align[4] = "center";
-	$table->align[8] = "center";
-	
-	$rowPair = true;
-	$iterator = 0;
-	foreach ($result as $row) {
-		if ($rowPair)
-			$table->rowclass[$iterator] = 'rowPair';
-		else
-			$table->rowclass[$iterator] = 'rowOdd';
-		$rowPair = !$rowPair;
-		$iterator++;
-		
-		$data = array();
-
-		$data[0] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
-		$attach = get_incidents_attach ($row["id_incidencia"]);
-		
-		if (!empty ($attach))
-			$data[0] .= '&nbsp;&nbsp;'.print_image ("images/attachment.png", true, array ("style" => "align:middle;"));
-		
-		$data[1] = print_incidents_status_img ($row["estado"], true);
-		$data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.substr(safe_output($row["titulo"]),0,45).'</a>';
-		$data[3] = print_incidents_priority_img ($row["prioridad"], true);
-		$data[4] = print_group_icon ($row["id_grupo"], true);
-		$data[5] = print_timestamp ($row["actualizacion"], true);
-		$data[6] = $row["origen"];
-		$data[7] = print_username ($row["id_usuario"], true);
-		
-		if (check_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
-			$data[8] = print_checkbox ("id_inc[]", $row["id_incidencia"], false, true);
-		} else {
-			$data[8] = '';
+		switch ($_FILES['new_file']['error']) {
+		case 1:
+			echo '<h3 class="error">'.__('File is too big').'</h3>';
+			break;
+		case 3:
+			echo '<h3 class="error">'.__('File was partially uploaded. Please try again').'</h3>';
+			break;
+		case 4:
+			echo '<h3 class="error">'.__('No file was uploaded').'</h3>';
+			break;
+		default:
+			echo '<h3 class="error">'.__('Generic upload error').'(Code: '.$_FILES['new_file']['error'].')</h3>';
 		}
-
-		array_push ($table->data, $data);
 	}
+}
+
+$delete_file = get_parameter('delete_file', 0);
+
+if($delete_file != 0) {
+	$url = $integria_api."&op=delete_file&params=".$delete_file;
+
+	// Call the integria API
+	$result = call_api($url);
+}
+
+$delete_incident = get_parameter('delete_incident', 0);
+
+if($delete_incident != 0) {
+	$url = $integria_api."&op=delete_incident&params=".$delete_incident;
+
+	// Call the integria API
+	$result = call_api($url);
+}
+
+$create_workunit = get_parameter('create_workunit', 0);
+
+if($create_workunit == 1) {
+	$values[0] = $id_incident;
+	$values[1] = str_replace(" ", "%20", safe_output(get_parameter('description')));
+	$values[2] = get_parameter('time_used');
+	$values[3] = get_parameter('have_cost');
+	$values[4] = get_parameter('public');
+	$values[5] = get_parameter('profile');
 	
-	echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
-	print_table ($table);
-	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
-	echo '<b>'.__('Action').': </b>' ;
-	if (check_acl ($config["id_user"], 0, "IW")) {
-		print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
-	}
+	$params = implode($token, $values);
+	
+	$url = $integria_api."&op=create_workunit&token=".$token."&params=".$params;
 
-	if (check_acl ($config["id_user"], 0, "IM")) {
-		print_submit_button (__('Become owner'), 'own_btn', false, 'class="sub upd"');
+	// Call the integria API
+	$result = call_api($url);
+}
+
+// Set the url with parameters to call the api
+switch($tab) {
+	case 'list':
+		$search_string = get_parameter('search_string', "");
+		$params[0] = $search_string;
+		
+		$search_status = get_parameter('search_status', -10);
+		$params[1] = $search_status;
+		
+		$search_group = get_parameter('search_group', 1);
+		$params[2] = $search_group;
+		
+		$params = implode($token,$params);
+		
+		$url = $integria_api."&op=get_incidents&token=".$token."&params=".$params;
+		$url_resolutions =  $integria_api."&op=get_incidents_resolutions";
+		$url_status =  $integria_api."&op=get_incidents_status";
+		$url_groups =  $integria_api."&op=get_groups&params=1";
+		break;
+	case 'incident':
+		$url = $integria_api."&op=get_incident_details&params=".$id_incident;
+	case 'editor':
+		$url_resolutions =  $integria_api."&op=get_incidents_resolutions";
+		$url_status =  $integria_api."&op=get_incidents_status";
+		$url_sources =  $integria_api."&op=get_incidents_sources";
+		$url_groups =  $integria_api."&op=get_groups&params=0";
+		$url_users =  $integria_api."&op=get_users";
+		break;
+	case 'workunits':
+		$url = $integria_api."&op=get_incident_workunits&params=".$id_incident;
+		break;
+	case 'files':
+		$url = $integria_api."&op=get_incident_files&params=".$id_incident;
+		break;
+	case 'tracking':
+		$url = $integria_api."&op=get_incident_tracking&params=".$id_incident;
+		break;
+}
+
+if(isset($url)) {
+	// Call the integria API
+	$xml = call_api($url);
+}
+else {
+	$xml = "<xml></xml>";
+}
+
+// If is a valid XML, parse it
+if(xml_parse(xml_parser_create(), $xml)) {
+	$result = xml_to_array($xml);
+	if($result == false) {
+		$result = array();
 	}
-	echo '</div>';
-	echo '</form>';
-	unset ($table);
+	switch($tab) {
+		case 'list':
+			$result_resolutions = xml_to_array(call_api($url_resolutions));
+			$result_status = xml_to_array(call_api($url_status));
+			$result_groups = xml_to_array(call_api($url_groups));
+			require_once('incident.list.php');
+			break;
+		case 'editor':
+		case 'incident':
+			$result_resolutions = xml_to_array(call_api($url_resolutions));
+			$result_status = xml_to_array(call_api($url_status));
+			$result_sources = xml_to_array(call_api($url_sources));
+			$result_groups = xml_to_array(call_api($url_groups));
+			$result_users = xml_to_array(call_api($url_users));
+
+			require_once('incident.incident.php');
+			break;
+		case 'workunits':
+			require_once('incident.workunits.php');
+			break;
+		case 'files':
+			require_once('incident.files.php');
+			break;
+		case 'tracking':
+			require_once('incident.tracking.php');
+			break;
+	}
 }
-	echo '<br><br>';
-if (check_acl ($config["id_user"], 0, "IW")) {
-	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
-	echo '<form method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
-	print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
-	echo '</form>';
-	echo '</div>';
-}
+
+
 echo '<div style="clear:both">&nbsp;</div>';
 ?>

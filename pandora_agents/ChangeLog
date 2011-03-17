@@ -1,3 +1,9 @@
+2011-03-17  Dario Rodriguez  <dario.rodriguez@artica.es>
+
+	* unix/pandora_agent: Fixed a typo with logfile parameter. Also fixed
+	the gathering of secondary_server_opts parameters when transfer mode is 
+	Tentacle. Thanks to KIKUCHI Koichiro for the report.
+
 2011-03-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_factory.cc, unix/pandora_agent: Changed

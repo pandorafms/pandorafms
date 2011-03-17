@@ -227,6 +227,11 @@ function update_config () {
 	update_config_value ('rintegria_user', get_parameter ('rintegria_user', $config['rintegria_user']));
 	update_config_value ('rintegria_pass', get_parameter ('rintegria_pass', $config['rintegria_pass']));
 	
+	update_config_value ('integria_enabled', get_parameter ('integria_enabled', $config['integria_enabled']));
+	update_config_value ('integria_inventory', get_parameter ('integria_inventory', $config['integria_inventory']));
+	update_config_value ('integria_api_password', get_parameter ('integria_api_password', $config['integria_api_password']));
+	update_config_value ('integria_url', get_parameter ('integria_url', $config['integria_url']));
+	
 	update_config_value ('sound_alert', get_parameter('sound_alert', $config['sound_alert']));
 	update_config_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	update_config_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
@@ -595,6 +600,22 @@ function process_config () {
 
 	if (!isset ($config['rintegria_pass'])) {
 		update_config_value ( 'rintegria_pass', '');
+	}
+	
+	if (!isset ($config['integria_enabled'])) {
+		update_config_value ( 'integria_enabled', '0');
+	}
+	
+	if (!isset ($config['integria_api_password'])) {
+		update_config_value ( 'integria_api_password', '');
+	}
+	
+	if (!isset ($config['integria_inventory'])) {
+		update_config_value ( 'integria_inventory', '0');
+	}
+	
+	if (!isset ($config['integria_url'])) {
+		update_config_value ( 'integria_url', '');
 	}
 	
 	if (!isset ($config['autoupdate'])) {

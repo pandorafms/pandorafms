@@ -46,22 +46,22 @@ function get_incidents_priorities () {
 function print_incidents_priority_img ($id_priority, $return = false) {
 	switch ($id_priority) {
 	case 0:
-		$img = print_image ("images/dot_green.png", true).print_image ("images/dot_green.png", true).print_image ("images/dot_yellow.png", true);
+		$img = print_image ("images/dot_green.png", true, array('title' => __('Informative'))).print_image ("images/dot_green.png", true, array('title' => __('Informative'))).print_image ("images/dot_yellow.png", true, array('title' => __('Informative')));
 		break;
 	case 1:
-		$img = print_image ("images/dot_green.png", true).print_image ("images/dot_yellow.png", true).print_image ("images/dot_yellow.png", true);
+		$img = print_image ("images/dot_green.png", true, array('title' => __('Low'))).print_image ("images/dot_yellow.png", true, array('title' => __('Low'))).print_image ("images/dot_yellow.png", true, array('title' => __('Low')));
 		break;
 	case 2:
-		$img = print_image ("images/dot_yellow.png", true).print_image ("images/dot_yellow.png", true).print_image ("images/dot_red.png", true);
+		$img = print_image ("images/dot_yellow.png", true, array('title' => __('Medium'))).print_image ("images/dot_yellow.png", true, array('title' => __('Medium'))).print_image ("images/dot_red.png", true, array('title' => __('Medium')));
 		break;
 	case 3:
-		$img = print_image ("images/dot_yellow.png", true).print_image ("images/dot_red.png", true).print_image ("images/dot_red.png", true);
+		$img = print_image ("images/dot_yellow.png", true, array('title' => __('Serious'))).print_image ("images/dot_red.png", true, array('title' => __('Serious'))).print_image ("images/dot_red.png", true, array('title' => __('Serious')));
 		break;
 	case 4:
-		$img = print_image ("images/dot_red.png", true).print_image ("images/dot_red.png", true).print_image ("images/dot_red.png", true);
+		$img = print_image ("images/dot_red.png", true, array('title' => __('Very serious'))).print_image ("images/dot_red.png", true, array('title' => __('Very serious'))).print_image ("images/dot_red.png", true, array('title' => __('Very serious')));
 		break;
 	case 10:
-		$img = print_image ("images/dot_green.png", true).print_image ("images/dot_green.png", true).print_image ("images/dot_green.png", true);
+		$img = print_image ("images/dot_green.png", true, array('title' => __('Maintenance'))).print_image ("images/dot_green.png", true, array('title' => __('Maintenance'))).print_image ("images/dot_green.png", true, array('title' => __('Maintenance')));
 		break;
 	}
 	
@@ -98,19 +98,19 @@ function get_incidents_status () {
 function print_incidents_status_img ($id_status, $return = false) {
 	switch ($id_status) {
 		case 0:
-			$img = print_image ("images/dot_red.png", true);
+			$img = print_image ("images/dot_red.png", true, array('title' => __('Active incidents')));
 		break;
 		case 1:
-			$img = print_image ("images/dot_yellow.png", true);
+			$img = print_image ("images/dot_yellow.png", true, array('title' => __('Active incidents, with comments')));
 		break;
 		case 2:
-			$img = print_image ("images/dot_blue.png", true);
+			$img = print_image ("images/dot_blue.png", true, array('title' => __('Rejected incidents')));
 		break;
 		case 3:
-			$img = print_image ("images/dot_green.png", true);
+			$img = print_image ("images/dot_green.png", true, array('title' => __('Expired incidents')));
 		break;
 		case 13:
-			$img = print_image ("images/dot_white.png", true);
+			$img = print_image ("images/dot_white.png", true, array('title' => __('Closed incidents')));
 		break;
 	}
 	
@@ -411,4 +411,24 @@ function get_incidents_attach ($id_incident) {
 function get_incidents_notes_author ($id_note) {
 	return (string) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
+
+function call_api($url, $postparameters = false) {
+
+	$curlObj = curl_init();
+	curl_setopt($curlObj, CURLOPT_URL, $url);
+	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+	if($postparameters !== false) {
+		curl_setopt($curlObj, CURLOPT_POSTFIELDS, $postparameters);
+	}
+	$result = curl_exec($curlObj);
+	curl_close($curlObj);
+
+	return $result;
+}
+
+function xml_to_array($xml) {
+	$xmlObj = simplexml_load_string($xml);
+	return json_decode(json_encode($xmlObj), true);
+}
+
 ?>

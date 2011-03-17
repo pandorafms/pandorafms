@@ -1,3 +1,22 @@
+2011-03-17  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	include/functions_config.php
+	include/functions_incidents.php
+	operation/menu.php
+	operation/integria_incidents
+	operation/integria_incidents/incident.incident.php
+	operation/integria_incidents/incident.php
+	operation/integria_incidents/incident.files.php
+	operation/integria_incidents/incident.tracking.php
+	operation/integria_incidents/incident_detail.php
+	operation/integria_incidents/incident.workunits.php
+	operation/integria_incidents/incident.download_file.php
+	operation/integria_incidents/incident_statistics.php
+	operation/integria_incidents/incident.list.php
+	godmode/setup/setup.php: Added the integria incidents interface
+	with switch in the setup
+
 2011-03-16  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/estado_monitores.php: Fixed an ugly error when cannot

@@ -2,16 +2,17 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -32,21 +33,21 @@
 <body>
 
 <div id="main" style='float:left; margin-left: 100px'>
-<div align='center'>
-<div id='login_f'>
-	<h1 id="log_f" class="error">No configuration file found</h1>
-	<div>
-		<img src="images/pandora_logo.png" border="0">
+	<div align='center'>
+		<div id='login_f'>
+			<h1 id="log_f" class="error">No configuration file found</h1>
+			<div>
+				<img src="images/pandora_logo.png" border="0">
+			</div>
+			<div class="msg">
+			<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+			permissions and HTTP server cannot read it. Please read documentation to fix this problem.
+			</div>
+			<div class="msg">
+			You may try to run the <b><a href="install.php">installation wizard</a></b> to create one.
+			</div>
+		</div>
 	</div>
-	<div class="msg">
-	<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-	permissions and HTTP server cannot read it. Please read documentation to fix this problem.
-	</div>
-	<div class="msg">
-	You may try to run the <b><a href="install.php">installation wizard</a></b> to create one.
-	</div>
-</div>
-</div>
 </div>
 
 </body>

@@ -2,14 +2,16 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 global $config;
@@ -228,7 +230,7 @@ else {
 		$manage_agent = '';
 		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 			$manage_agent = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='. $agent["id_agente"] . '">' .
-				print_image("images/setup.png", true, array("title" =>  __('Manage'), "alt" => __('Manage'))) . '</a>';
+				print_image("images/setup.png", true, array("title" => __('Manage'), "alt" => __('Manage'))) . '</a>';
 		}
 	
 		array_push($table->data, array(

@@ -2,15 +2,16 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 check_login ();
@@ -181,12 +182,11 @@ $table->data = array();
 foreach ($extensions as $file => $extension) {
 	$data = array();
 	
-	
 	$on = print_image("images/dot_green.png", true);
 	$off = print_image("images/dot_red.png", true); 
 	if (!$extension['enabled']) {
 		$on = print_image("images/dot_green.disabled.png", true); 
-		$off =  print_image("images/dot_red.disabled.png", true);
+		$off = print_image("images/dot_red.disabled.png", true);
 		$data[] = '<i style="color: grey;">' . $file . '</i>';
 	}
 	else {
@@ -255,7 +255,7 @@ foreach ($extensions as $file => $extension) {
 	}
 	else {
 		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . print_image("images/cross.png", true) . '</a>' .
-			' <a title="' . __('Disable') . '"  href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . print_image("images/lightbulb.png", true) . '</a>';
+			' <a title="' . __('Disable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . print_image("images/lightbulb.png", true) . '</a>';
 	}
 	
 	$table->data[] = $data;

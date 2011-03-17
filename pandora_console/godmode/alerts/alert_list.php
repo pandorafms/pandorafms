@@ -90,6 +90,7 @@ if ($create_alert) {
 		}
 
 		$messageAction =  print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
+		
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');
 			

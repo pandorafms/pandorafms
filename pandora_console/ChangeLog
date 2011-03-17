@@ -1,3 +1,10 @@
+ 2011-03-17  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_alerts.php: erased the "module_action_threshold"
+	in the function "add_alert_agent_module_action".
+        
+ 	* godmode/alerts/alert_list.php: cleaned source code style.
+
 2011-03-16  Sancho Lerena <slerena@artica.es>
 
         * operation/agentes/estado_monitores.php: Fixed an ugly error when cannot

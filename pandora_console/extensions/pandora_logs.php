@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,11 +38,11 @@ function view_logfile ($file_name) {
 function pandoralogs_extension_main () {
 	global $config;
 
-    if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	    pandora_audit("ACL Violation", "Trying to access Setup Management");
-	    require ("general/noaccess.php");
-	    return;
-    }
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		require ("general/noaccess.php");
+		return;
+	}
 
 
 	print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );

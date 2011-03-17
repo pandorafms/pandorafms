@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -98,7 +98,6 @@ $table->data[10][1] .= __('No').'&nbsp;'.print_radio_button ('autoupdate', 0, ''
 $table->data[11][0] = __('Enforce https');
 $table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('https', 0, '', $config["https"], true);
-
 
 $table->data[14][0] = __('Attachment store');
 $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);

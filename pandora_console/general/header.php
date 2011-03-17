@@ -2,14 +2,16 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 require_once ("include/functions_messages.php");
@@ -129,43 +131,43 @@ $msg_cnt = 0;
 		</td>
 	</tr>
 	<tr>
-	<td colspan="2">
+		<td colspan="2">
 
-<?php
+		<?php
+		if ($config["metaconsole"] == 0){
+		?>
+		<form method="get" style="" name="quicksearch" action="">
+			<script type="text/javascript" language="javascript">
+			var fieldKeyWordEmpty = true;
+			</script>
+			<input type="text" id="keywords" name="keywords"
+				<?php
+				if (!isset($config['search_keywords']))
+					echo "value='" . __("Enter keywords to search") . "'";
+				else if (strlen($config['search_keywords']) == 0)
+					echo "value='" . __("Enter keywords to search") . "'";
+				else echo "value='" . $config['search_keywords'] . "'";
+				?>
+				onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
+				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
+			<!-- onClick="javascript: document.quicksearch.submit()" -->					
+			<input type='hidden' name='head_search_keywords' value='abc' />
+		</form>				
+		<?php
+		}
+		?>
+		</td>
+		<td>
+		<?php
 if ($config["metaconsole"] == 0){
-?>
-	<form method="get" style="" name="quicksearch" action="">
-				<script type="text/javascript" language="javascript">
-				var fieldKeyWordEmpty = true;
-				</script>
-				<input type="text" id="keywords" name="keywords"
-					<?php
-					if (!isset($config['search_keywords']))
-						echo "value='" . __("Enter keywords to search") . "'";
-					else if (strlen($config['search_keywords']) == 0)
-						echo "value='" . __("Enter keywords to search") . "'";
-					else echo "value='" . $config['search_keywords'] . "'";
-					?>
-					onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
-					size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
-				<!-- onClick="javascript: document.quicksearch.submit()" -->					
-				<input type='hidden' name='head_search_keywords' value='abc' />
-				</form>				
-<?php
+	echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
 }
-?>
-				</td>
-				<td>
-				 <?php
-if ($config["metaconsole"] == 0){
-                   echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
-}
-                 ?>
-				</td>
+		?>
+		</td>
 	</tr>
 </table>
 <?php
-require_jquery_file ('countdown');
+	require_jquery_file ('countdown');
 ?>
 
 <script language="javascript" type="text/javascript">

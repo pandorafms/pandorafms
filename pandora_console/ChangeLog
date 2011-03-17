@@ -1,5 +1,12 @@
 2011-03-17  Raul Mateos <raulofpandora@gmail.com>
 
+	* extensions/dbmanager.php, extensions/pandora_logs.php, general/*.php,
+	index.php, ajax.php, operation/search_*.php, operation/menu.php,
+	operation/extensions.php, godmode/menu.php, godmode/extensions.php,
+	admin_access_logs.php: Cleaned code and updated page disclaimers.	
+
+2011-03-17  Raul Mateos <raulofpandora@gmail.com>
+
 	* operation/menu.php, godmode/menu.php, godmode/setup/setup.php,
 	extensions/pandora_logs.php, extensions/dbmanager.php:
 	Cleaned code and updated year.

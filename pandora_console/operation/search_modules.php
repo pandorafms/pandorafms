@@ -2,14 +2,16 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 global $config;
@@ -79,7 +81,7 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					t1.nombre COLLATE utf8_general_ci LIKE "%' . $stringSearchSQL . '%"  OR
+					t1.nombre COLLATE utf8_general_ci LIKE "%' . $stringSearchSQL . '%" OR
 					t3.nombre LIKE "%' . $stringSearchSQL . '%"';
 			break;
 		case "postgresql":
@@ -102,7 +104,7 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					t1.nombre COLLATE utf8_general_ci LIKE \'%' . $stringSearchSQL . '%\'  OR
+					t1.nombre COLLATE utf8_general_ci LIKE \'%' . $stringSearchSQL . '%\' OR
 					t3.nombre LIKE \'%' . $stringSearchSQL . '%\'';
 			break;
 	}
@@ -183,7 +185,7 @@ else {
 			$statusCell = print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$module["datos"], true);
 		}
 		else {
-			$last_status =  get_agentmodule_last_status($module['id_agente_modulo']);
+			$last_status = get_agentmodule_last_status($module['id_agente_modulo']);
 			switch($last_status) {
 				case 0:
 					$statusCell = print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$module["datos"], true);

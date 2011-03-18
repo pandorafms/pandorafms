@@ -1,3 +1,8 @@
+2011-03-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+        * pandoradb.oracle.sql
+        pandoradb.data.oracle.sql: First version of pandora's DB schema and data for 
+	Oracle DBMS.
+
 2011-03-17  Raul Mateos <raulofpandora@gmail.com>
 
 	* extensions/dbmanager.php, extensions/pandora_logs.php, general/*.php,

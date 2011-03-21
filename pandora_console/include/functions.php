@@ -656,6 +656,9 @@ function get_report_types () {
 	$types['event_report_agent'] = __('Event report agent'); 
 	$types['event_report_module'] = __('Event report module'); 
 	$types['event_report_group'] = __('Event report group');
+	$types['general'] = __('General');
+	$types['top_n'] = __('Top n');
+	$types['exception'] = __('Exception');
 //	$types['agent_detailed_event'] = __('Agent detailed event');
 //	$types['list_events_module'] = __('List events of module');
 //	$types['list_events_agent'] = __('List events of agent');

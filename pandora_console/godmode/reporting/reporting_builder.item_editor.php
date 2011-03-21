@@ -49,6 +49,14 @@ switch ($action) {
 		$sunday = true;
 		$time_from = '00:00';
 		$time_to = '23:59';
+		$group_by_agent = 0;
+		$order_uptodown = 0;
+		$show_resume = 0;
+		$top_n = 0;
+		$top_n_value = 10;
+		$exception_condition = 0;
+		$exception_condition_value = 10;
+		$show_graph = 0;
 		break;
 	default:
 		$actionParameter = 'update';
@@ -87,6 +95,7 @@ switch ($action) {
 				$sunday = $item['sunday'];
 				$time_from = $item['time_from'];
 				$time_to = $item['time_to'];
+				$show_graph = $item['show_graph'];
 				break;
 			case 'monitor_report':
 				$description = $item['description'];
@@ -212,6 +221,31 @@ switch ($action) {
 				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
+			case 'general':
+				$description = $item['description'];
+				$group_by_agent = $item['group_by_agent'];
+				$period = $item['period'];
+				$order_uptodown = $item['order_uptodown'];
+				$show_resume = $item['show_resume'];
+				$show_graph = $item['show_graph'];
+				break;
+			case 'top_n':
+				$description = $item['description'];
+				$period = $item['period'];
+				$top_n = $item ['top_n'];
+				$top_n_value = $item ['top_n_value'];
+				$show_resume = $item['show_resume'];
+				$show_graph = $item['show_graph'];
+				$order_uptodown = $item['order_uptodown'];
+				break;
+			case 'exception':
+				$description = $item['description'];
+				$period = $item['period'];
+				$exception_condition = $item['exception_condition'];
+				$exception_condition_value = $item['exception_condition_value'];
+				$show_resume = $item['show_resume'];
+				$show_graph = $item['show_graph'];
+				$order_uptodown = $item['order_uptodown'];
 		}
 		
 		break;
@@ -230,7 +264,7 @@ $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&ta
 echo '<form action="' . $urlForm . '" method="post">';
 print_input_hidden('id_item', $idItem);
 ?>
-<table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="90%">
+<table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="95%">
 	<tbody>
 		<tr id="row_type" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Type'); ?></td>
@@ -284,7 +318,9 @@ print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
-			<td style=""><?php print_select(get_all_groups(), 'group', $group, '', __('All'), '0'); ?></td>
+			<td style="">
+				<?php print_select_groups($config['id_user'], "AR", true, 'combo_group', '', 'extract_group_agents()');?>
+			</td>
 		</tr>
 		<tr id="row_agent" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
@@ -363,11 +399,69 @@ print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Line separator'); ?></td>
 			<td style=""><?php print_input_text('line', $line, '', 2, 4); ?></td>
 		</tr>
+		<tr id="row_group_by_agent" style="" class="datos">
+			<td><?php echo __('Group by agent');?></td>
+			<td><?php print_checkbox('checkbox_row_group_by_agent', 1, $group_by_agent);?></td>
+		</tr>
+		<tr id="row_order_uptodown" style="" class="datos">
+			<td><?php echo __('Order');?></td>
+			<td><?php
+				echo __('Ascending');
+				print_radio_button ('radiobutton_order_uptodown', 2, '', $order_uptodown);
+				echo __('Descending');
+				print_radio_button ('radiobutton_order_uptodown', 1, '', $order_uptodown);
+				echo __('By agent name');
+				print_radio_button ('radiobutton_order_uptodown', 3, '', $order_uptodown);
+				?></td>
+		</tr>
+		<tr id="row_quantity" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
+			<td style=""><?php print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
+		</tr>
+		<tr id="row_max_min_avg" style="" class="datos">
+			<td><?php echo __('Display');?></td>
+			<td><?php
+				echo __('Max');
+				print_radio_button ('radiobutton_max_min_avg', 1, '', $top_n);
+				echo __('Min');
+				print_radio_button ('radiobutton_max_min_avg', 2, '', $top_n);
+				echo __('Avg');
+				print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
+				?></td>
+		</tr>
+		<tr id="row_exception_condition_value" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
+			<td style=""><?php print_input_text('exception_condition_value', $exception_condition_value, '', 5, 5); ?></td>
+		</tr>
+		<tr id="row_exception_condition" style="" class="datos">
+			<td><?php echo __('Condition');?></td>
+			<td><?php
+				echo __('Everything');
+				print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
+				echo __('>=');
+				print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
+				echo __('<');
+				print_radio_button ('radiobutton_exception_condition', 2, '', $exception_condition);
+				echo __('OK');
+				print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
+				echo __('Not OK');
+				print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
+				?></td>
+		</tr>
+		<tr id="row_show_graph" style="" class="datos">
+			<td><?php echo __('Show graph');?></td>
+			<td><?php print_checkbox('checkbox_show_graph', 1, $show_graph);?></td>
+		</tr>
+		<tr id="row_show_resume" style="" class="datos">
+			<td><?php echo __('Show resume');?></td>
+			<td><?php print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
+		</tr>
 	</tbody>
 </table>
 <?php
-print_SLA_list('90%', $action, $idItem);
-echo '<div class="action-buttons" style="width: 90%">';
+print_SLA_list('95%', $action, $idItem);
+print_General_list('95%', $action, $idItem);
+echo '<div class="action-buttons" style="width: 95%">';
 if ($action == 'new') {
 	print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
 }
@@ -386,7 +480,7 @@ if ($enterpriseEnable) {
 
 function print_SLA_list($width, $action, $idItem = null) {
 	?>
-	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="90%">
+	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="95%">
 		<thead>
 			<tr>
 				<th class="header" scope="col"><?php echo __('Agent');?></th>
@@ -420,11 +514,11 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$nameModule = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
-								<td>' . $nameAgent . '</td>
-								<td>' . $nameModule . '</td>
-								<td>' . $item['sla_min'] . '</td>
-								<td>' . $item['sla_max'] . '</td>
-								<td>' . $item['sla_limit'] . '</td>
+								<td>' . printTruncateText($nameAgent, 20) . '</td>
+								<td>' . printTruncateText($nameModule, 20) . '</td>
+								<td>' . print_input_text('input_min', $item['sla_min'], '', 15, 255, true) . '</td>
+								<td>' . print_input_text('input_max', $item['sla_max'], '', 15, 255, true) . '</td>
+								<td>' . print_input_text('input_limit', $item['sla_limit'], '', 10, 255, true) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
 								</td>
@@ -447,7 +541,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td>
 								<input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
 								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_sla" id="text-agent_sla" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
-							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
+							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
 							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
@@ -464,11 +558,82 @@ function print_SLA_list($width, $action, $idItem = null) {
 	<span style="display: none" id="module_sla_text"><?php echo __('Select an Agent first'); ?></span>
 	<?php
 }
+
+function print_General_list($width, $action, $idItem = null) {
+	?>
+	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="95%">
+		<thead>
+			<tr>
+				<th class="header" scope="col"><?php echo __('Agent');?></th>
+				<th class="header" scope="col"><?php echo __('Module');?></th>
+				<th class="header" scope="col"><?php echo __('Action');?></th>
+			</tr>
+		</thead>
+			<?php
+			switch ($action) {
+				case 'new':
+					?>
+					<tr id="general_template" style="" class="datos">
+						<td colspan="3"><?php echo __('Please save the report to start adding items into the list.');?></td>
+					</tr>
+					<?php
+					break;
+				case 'save':
+				case 'update':
+				case 'edit':
+					echo '<tbody id="list_general">';
+					$itemsGeneral = get_db_all_rows_filter('treport_content_item', array('id_report_content' => $idItem));
+					if ($itemsGeneral === false) {
+						$itemsGeneral = array();
+					}
+					foreach ($itemsGeneral as $item) {
+						$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$nameAgent = get_agent_name ($idAgent);
+						$nameModule = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						
+						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+								<td>' . printTruncateText($nameAgent, 35) . '</td>
+								<td>' . printTruncateText($nameModule, 35) . '</td>
+								<td style="text-align: center;">
+									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
+								</td>
+							</tr>';
+					}
+					echo '</tbody>';
+					?>
+					<tbody id="general_template">
+						<tr id="row" style="display: none;" class="datos">
+							<td class="agent_name"></td>
+							<td class="module_name"></td>
+							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php print_image("images/cross.png", false); ?></a></td>
+						</tr>
+					</tbody>
+					<tbody>
+						<tr id="general_form" style="" class="datos">
+							<td>
+								<input id="hidden-id_agent_general" name="id_agent_general" value="" type="hidden">
+								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_general" id="text-agent_general" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
+							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
+							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php print_image("images/disk.png", false); ?></a></td>
+						</tr>
+					</tbody>
+					<?php
+					break;
+				default:
+					break;
+			}
+			?>
+	</table>
+	<span style="display: none" id="module_general_text"><?php echo __('Select an Agent first'); ?></span>
+	<?php
+}
+
 ?>
 <script>
 $(document).ready (function () {
 	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module');
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla');
+	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general');
 	chooseType();
 	chooseSQLquery();
 
@@ -541,6 +706,26 @@ function deleteSLARow(id_row) {
 	});
 }
 
+function deleteGeneralRow(id_row) {
+	//ajax to delete
+	var params = [];
+	params.push("delete_general_item=1");
+	params.push("id=" + id_row);
+	params.push("page=include/ajax/reporting.ajax");
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action="ajax.php",
+		timeout: 10000,
+		dataType: 'json',
+		success: function (data) {
+			if (data['correct']) {
+				$("#general_" + id_row).remove();
+			}
+		}
+	});
+}
+
 function addSLARow() {
 	var nameAgent = $("input[name=agent_sla]").val();
 	var idAgent = $("input[name=id_agent_sla]").val();
@@ -552,13 +737,123 @@ function addSLARow() {
 
 	if ((idAgent != '') && (slaMin != '') && (slaMax != '')
 		&& (slaLimit != '')) {
+			//Truncate nameAgent
+			var params = [];
+			params.push("truncate_text=1");
+			params.push("text=" + nameAgent);
+			params.push("page=include/ajax/reporting.ajax");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					nameAgent = data;
+				}
+			});
+			//Truncate nameModule
+			var params = [];
+			params.push("truncate_text=1");
+			params.push("text=" + nameModule);
+			params.push("page=include/ajax/reporting.ajax");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					nameModule = data;
+				}
+			});
+			
+			var params = [];
+			params.push("add_sla=1");
+			params.push("id=" + $("input[name=id_item]").val());
+			params.push("id_module=" + idModule);
+			params.push("sla_min=" + slaMin);
+			params.push("sla_max=" + slaMax);
+			params.push("sla_limit=" + slaLimit);
+		
+			params.push("page=include/ajax/reporting.ajax");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				timeout: 10000,
+				dataType: 'json',
+				success: function (data) {
+					if (data['correct']) {
+						row = $("#sla_template").clone();
+					
+						$("#row", row).css('display', '');
+						$("#row", row).attr('id', 'sla_' + data['id']);
+						$(".agent_name", row).html(nameAgent);
+						$(".module_name", row).html(nameModule);
+						$(".sla_min", row).html(slaMin);
+						$(".sla_max", row).html(slaMax);
+						$(".sla_limit", row).html(slaLimit);
+						$(".delete_button", row).attr('href', 'javascript: deleteSLARow(' + data['id'] + ');');
+						$("#list_sla").append($(row).html());
+						$("input[name=id_agent_sla]").val('');
+						$("input[name=agent_sla]").val('');
+						$("#id_agent_module_sla").empty();
+						$("#id_agent_module_sla").attr('disabled', 'true');
+						$("#id_agent_module_sla").append(
+							$("<option></option>")
+							.attr ("value", 0)
+							.html ($("#module_sla_text").html()));
+						$("input[name=sla_min]").val('');
+						$("input[name=sla_max]").val('');
+						$("input[name=sla_limit]").val('');					
+					}
+				}
+			});
+	}
+}
+
+function addGeneralRow() {
+	var nameAgent = $("input[name=agent_general]").val();
+	var idAgent = $("input[name=id_agent_general]").val();
+	var idModule = $("#id_agent_module_general").val();
+	var nameModule = $("#id_agent_module_general :selected").text();
+
+	if (idAgent != '') {
+		//Truncate nameAgent
 		var params = [];
-		params.push("add_sla=1");
+		params.push("truncate_text=1");
+		params.push("text=" + nameAgent);
+		params.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				nameAgent = data;
+			}
+		});
+		//Truncate nameModule
+		var params = [];
+		params.push("truncate_text=1");
+		params.push("text=" + nameModule);
+		params.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				nameModule = data;
+			}
+		});
+		var params = [];
+		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
 		params.push("id_module=" + idModule);
-		params.push("sla_min=" + slaMin);
-		params.push("sla_max=" + slaMax);
-		params.push("sla_limit=" + slaLimit);
 		params.push("page=include/ajax/reporting.ajax");
 		jQuery.ajax ({
 			data: params.join ("&"),
@@ -568,30 +863,24 @@ function addSLARow() {
 			dataType: 'json',
 			success: function (data) {
 				if (data['correct']) {
-					row = $("#sla_template").clone();
+					row = $("#general_template").clone();
 					
 					$("#row", row).css('display', '');
-					$("#row", row).attr('id', 'sla_' + data['id']);
+					$("#row", row).attr('id', 'general_' + data['id']);
 					$(".agent_name", row).html(nameAgent);
 					$(".module_name", row).html(nameModule);
-					$(".sla_min", row).html(slaMin);
-					$(".sla_max", row).html(slaMax);
-					$(".sla_limit", row).html(slaLimit);
-					$(".delete_button", row).attr('href', 'javascript: deleteSLARow(' + data['id'] + ');');
+					$(".delete_button", row).attr('href', 'javascript: deleteGeneralRow(' + data['id'] + ');');
 					
-					$("#list_sla").append($(row).html());
+					$("#list_general").append($(row).html());
 				
-					$("input[name=id_agent_sla]").val('');
-					$("input[name=agent_sla]").val('');
-					$("#id_agent_module_sla").empty();
-					$("#id_agent_module_sla").attr('disabled', 'true');
-					$("#id_agent_module_sla").append(
+					$("input[name=id_agent_general]").val('');
+					$("input[name=agent_general]").val('');
+					$("#id_agent_module_general").empty();
+					$("#id_agent_module_general").attr('disabled', 'true');
+					$("#id_agent_module_general").append(
 						$("<option></option>")
 						.attr ("value", 0)
-						.html ($("#module_sla_text").html()));
-					$("input[name=sla_min]").val('');
-					$("input[name=sla_max]").val('');
-					$("input[name=sla_limit]").val('');					
+						.html ($("#module_general_text").html()));
 				}
 			}
 		});
@@ -619,7 +908,18 @@ function chooseType() {
 	$("#row_group").css('display', 'none');
 	$("#row_working_time").css('display', 'none');
 	$("#row_only_display_wrong").css('display', 'none');
-	
+	$("#row_combo_module").css('display', 'none');
+	$("#row_only_display_wrong").css('display', 'none');
+	$("#row_group_by_agent").css('display', 'none');
+	$("#general_list").css('display', 'none');
+	$("#row_order_uptodown").css('display', 'none');
+	$("#row_show_resume").css('display', 'none');
+	$("#row_show_graph").css('display', 'none');
+	$("#row_max_min_avg").css('display', 'none');
+	$("#row_quantity").css('display', 'none');
+	$("#row_exception_condition_value").css('display', 'none');
+	$("#row_exception_condition").css('display', 'none');
+		
 	switch (type) {
 		case 'event_report_group':
 			$("#row_description").css('display', '');
@@ -644,6 +944,7 @@ function chooseType() {
 			$("#sla_list").css('display', '');
 			$("#row_working_time").css('display', '');
 			$("#row_only_display_wrong").css('display', '');
+			$("#row_show_graph").css('display', '');
 			break;
 		case 'monitor_report':
 			$("#row_description").css('display', '');
@@ -767,6 +1068,35 @@ function chooseType() {
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			break;
+		case 'general':
+			$("#row_description").css('display', '');
+			$("#row_group_by_agent").css('display', '');
+			$("#row_period").css('display', '');
+			$("#general_list").css('display', '');
+			$("#row_order_uptodown").css('display', '');
+			$("#row_show_resume").css('display', '');
+			$("#row_show_graph").css('display', '');
+			break;
+		case 'top_n':
+			$("#row_description").css('display', '');
+			$("#row_period").css('display', '');
+			$("#row_max_min_avg").css('display', '');
+			$("#row_quantity").css('display', '');
+			$("#general_list").css('display', '');
+			$("#row_order_uptodown").css('display', '');
+			$("#row_show_resume").css('display', '');
+			$("#row_show_graph").css('display', '');
+			break;
+		case 'exception':
+			$("#row_description").css('display', '');
+			$("#row_period").css('display', '');
+			$("#general_list").css('display', '');
+			$("#row_exception_condition_value").css('display', '');
+			$("#row_exception_condition").css('display', '');
+			$("#row_order_uptodown").css('display', '');
+			$("#row_show_resume").css('display', '');
+			$("#row_show_graph").css('display', '');
 			break;
 	}
 }

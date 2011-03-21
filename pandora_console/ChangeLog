@@ -1,3 +1,27 @@
+2011-03-21 Javier Lanz <javier.lanz@artica.es>
+	
+	* include/functions_events.php: Truncated agent and module name
+	* include/functions_reporting.php: Added functionality to store info of
+	General, Top n and Exception reports
+	* include/pchart_graph.php: Added function graph_sla_horizontal to print
+	sla horizontal graph bar. (Not working properly yet)
+	* include/pandora_graph.php: Added prototipe for
+	function graph_sla_horizontal
+	* include/fgraph.php: Added function graph_sla_pie to print sla pie graph
+	* include/functions.php: Added options top n, exception and general for
+	the combo box to select report type.
+	* pandoradb.sql: added fome fields to treport_content table
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: added some fields to 
+	treport_content table
+	* godmode/reporting/reporting_builder.list_items.php: Truncated agent
+	and module name
+	* godmode/reporting/reporting_builder.preview.php: Added a bottom scroll
+	bar to the report table
+	* godmode/reporting/reporting_builder.php: Added variables for the new
+	kinds of reports, top n, exception and general
+	* godmode/reporting/reporting_builder.item_editor.php: Added html
+	elements for the new kind of reports
+
 2011-03-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.oracle.sql

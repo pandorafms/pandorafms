@@ -25,6 +25,7 @@
 require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
+include_once ("include/fgraph.php");
 
 
 /** 
@@ -1742,6 +1743,7 @@ function get_agent_module_info ($id_agent, $filter = false) {
 
 function render_report_html_item ($content, $table, $report, $mini = false) {
 	global $config;
+	global $graphic_type;
 		
 	if($mini){
 		$sizh = '';
@@ -1779,8 +1781,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[2][0] = 4;
 			if ($content["description"] != ""){
-				$table->colspan[2][0] = 4;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1802,8 +1804,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[2][0] = 4;
 			if ($content["description"] != "") {
-				$table->colspan[2][0] = 4;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1826,8 +1828,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[2][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[2][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1855,16 +1857,17 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			break;
 		case 3:
 		case 'SLA':
+			$show_graph = $content['show_graph'];
 			//RUNNING
 			$table->style[1] = 'text-align: right';
 			$data = array ();
 			$data[0] = $sizh . __('S.L.A.').$sizhfin;
-			$data[1] = $sizh . human_time_description_raw($content['period']) . $sizhfin;;
+			$data[1] = $sizh . human_time_description_raw($content['period']) . $sizhfin;
 			$n = array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1880,21 +1883,40 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$slas = array ();
 			}
 			
+			$data_graph = array ();
+			$data_graph[__('Inside limits')] = 0;
+			$data_graph[__('Out of limits')] = 0;
+			$data_graph[__('On the edge')] = 0;
+			$data_graph[__('Unknown')] = 0;
+			
 			$sla_failed = false;
 			foreach ($slas as $sla) {
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+				if ($sla_value === false) {
+					$data_graph[__('Unknown')]++;
+				}
+				else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
+					$data_graph[__('On the edge')]++;
+				}
+				else if ($sla_value > ($sla['sla_limit']+10)) {
+					$data_graph[__('Inside limits')]++;
+				}
+				else if ($sla_value < ($sla['sla_limit']-10)) {
+					$data_graph[__('Out of limits')]++;
+				}
+
 				//Do not show right modules if 'only_display_wrong' is active
 				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
 				
 				$data = array ();
 				
 				$data[0] = '<strong>'.__('Agent')."</strong> : ";
-				$data[0] .= get_agentmodule_agent_name ($sla['id_agent_module'])."<br />";
+				$data[0] .= printTruncateText(get_agentmodule_agent_name ($sla['id_agent_module']))."<br />";
 				$data[0] .= '<strong>'.__('Module')."</strong> : ";
-				$data[0] .= get_agentmodule_name ($sla['id_agent_module'])."<br />";
+				$data[0] .= printTruncateText(get_agentmodule_name ($sla['id_agent_module']))."<br />";
 				$data[0] .= '<strong>'.__('SLA Max. (value)')."</strong> : ";
 				$data[0] .= $sla['sla_max']."<br />";
 				$data[0] .= '<strong>'.__('SLA Min. (value)')."</strong> : ";
@@ -1928,6 +1950,25 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$table->colspan[$n - 1][0] = 3;
 				$table->rowstyle[$n - 1] = 'text-align: right';
 			}
+			if ($show_graph && !empty($slas)) {
+				if($config['flash_charts']) {
+					echo fs_3d_pie_chart ($data_graph, 370, 180);
+				}
+				else {
+					//Display pie graph
+					echo '<img src="include/fgraph.php?tipo=sla_pie_graph&value1='.$data_graph[__('Inside limits')].
+					'&value2='.$data_graph[__('Out of limits')].'&value3='.$data_graph[__('On the edge')].
+					'&value4='.$data_graph[__('Unknown')].'&height=150&width=500">';
+				}
+				//Display horizontal bar graphs
+/*
+				foreach ($slas as $sla) {
+					echo '<img src="include/fgraph.php?tipo=sla_horizontal_graph&id='.$sla['id_agent_module'].
+					'&period='.$content['period'].'&value1='.$sla['sla_min'].'&value2='.$sla['sla_max'].
+					'&value3='.$content['time_from'].'&value4='.$content['time_to'].'&height=25&width=600">';
+				}
+*/
+			}
 			
 			break;
 		case 6:
@@ -1940,8 +1981,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1969,13 +2010,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Avg. Value').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name).' - '.printTruncateText($module_name).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2003,8 +2044,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2027,8 +2068,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[0][0] = 2;
 			if ($content["description"] != ""){
-				$table->colspan[0][0] = 2;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2056,8 +2097,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[0][0] = 2;
 			if ($content["description"] != ""){
-				$table->colspan[0][0] = 2;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2085,8 +2126,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2104,8 +2145,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[0][0] = 2;
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[0][0] = 2;
 			if ($content["description"] != ""){
-				$table->colspan[0][0] = 2;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2121,8 +2162,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[0][0] = 2;
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[0][0] = 2;
 			if ($content["description"] != ""){
-				$table->colspan[0][0] = 2;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2191,8 +2232,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[0][0] = 2;
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[0][0] = 2;
 			if ($content["description"] != ""){
-				$table->colspan[0][0] = 2;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2220,8 +2261,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data[1] = $sizh . get_group_name($content['id_agent']) . $sizhfin;
 			array_push ($table->data, $data);
 			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2240,8 +2282,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2259,8 +2301,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2278,8 +2320,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2297,8 +2339,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2321,8 +2363,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2372,8 +2414,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2400,8 +2442,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2428,8 +2470,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2456,8 +2498,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2476,6 +2518,556 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$mttr.'</p>';
 			array_push ($table->data, $data);
+			break;
+		case 'general':
+			$group_by_agent = $content['group_by_agent'];
+			$order_uptodown = $content['order_uptodown'];
+		
+			$table->style[1] = 'text-align: right';
+			$data = array ();
+			$data[0] = $sizh.__('General').$sizhfin;
+			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
+			if ($content["description"] != ""){
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			switch ($group_by_agent) {
+				//0 means not group by agent
+				case 0:
+					$sql = sprintf("select a.id_agent_module, b.nombre as agent_name,
+					c.nombre as module_name from treport_content_item as a, tagente as b,
+					tagente_modulo as c where a.id_agent_module = c.id_agente_modulo and
+					c.id_agente = b.id_agente and id_report_content = %d", $content['id_rc']);
+
+					$generals = process_sql ($sql);
+					if ($generals === false) {
+						$data = array ();
+						$table->colspan[2][0] = 3;
+						$data[0] = __('There are no Agent/Modules defined');
+						array_push ($table->data, $data);
+						break;
+					}
+					
+					$table1->width = '99%';
+					$table1->data = array ();
+					$table1->head = array ();
+					$table1->head[0] = __('Agent');
+					$table1->head[1] = __('Module');
+					$table1->head[2] = __('Value');
+					$table1->style[0] = 'text-align: center';
+					$table1->style[1] = 'text-align: center';
+					$table1->style[2] = 'text-align: center';
+					
+					$data_avg = array();
+					foreach ($generals as $key => $row) {
+						$data_avg[$key] = get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
+						$id_agent_module[$key] = $row['id_agent_module'];
+						$agent_name[$key] = $row['agent_name'];
+						$module_name[$key] = $row['module_name'];
+					}
+					
+					if ($order_uptodown == 0 || $order_uptodown == 1 || $order_uptodown == 2) {
+						switch ($order_uptodown) {
+							//Descending
+							case 1:
+								array_multisort($data_avg, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+								break;
+							//Ascending
+							case 2:
+								array_multisort($data_avg, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+								break;
+						}
+						$i=0;
+						foreach ($data_avg as $d) {
+							$data = array();
+							$data[0] = printTruncateText($agent_name[$i], 30);
+							$data[1] = printTruncateText($module_name[$i], 30);
+							$d === false ? $data[2] = '--':$data[2] = $d;
+							array_push ($table1->data, $data);
+							$i++;
+						}
+					}
+					elseif ($order_uptodown == 3) {
+						array_multisort($agent_name, SORT_ASC, $data_avg, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+						$i=0;
+						foreach ($agent_name as $a) {
+							$data = array();
+							$data[0] = printTruncateText($agent_name[$i], 30);
+							$data[1] = printTruncateText($module_name[$i], 30);
+							$data_avg[$i] === false ? $data[2] = '--':$data[2] = $data_avg[$i];
+							array_push ($table1->data, $data);
+							$i++;
+						}
+					}
+					
+					$table->colspan[2][0] = 3;
+					$data = array();
+					$data[0] = print_table($table1, true);
+					array_push ($table->data, $data);
+					break;
+				//1 means group by agent
+				case 1:
+					//Get the list of agents
+					$sql_agents = sprintf ("select distinct ta.nombre from tagente as ta,
+					tagente_modulo as tam, treport_content_item as trci
+					where ta.id_agente = tam.id_agente and tam.id_agente_modulo = trci.id_agent_module
+					and trci.id_report_content = %d", $content['id_rc']);
+					$agent_list = process_sql ($sql_agents);
+
+					//Get the list of modules
+					$sql_modules = sprintf ("select distinct tam.nombre from tagente_modulo as tam,
+					treport_content_item as trci where tam.id_agente_modulo = trci.id_agent_module
+					and trci.id_report_content = %d", $content['id_rc']);
+					$modules_list = process_sql ($sql_modules);
+					
+					//Get the data
+					$sql_data = sprintf("select trci.id_agent_module, ta.nombre as agent_name,
+					tam.nombre as module_name from treport_content_item as trci, tagente as ta,
+					tagente_modulo as tam where ta.id_agente = tam.id_agente and
+					tam.id_agente_modulo = trci.id_agent_module
+					and id_report_content = %d", $content['id_rc']);
+					$generals = process_sql ($sql_data);
+					
+					if ($generals === false) {
+						$data = array ();
+						$table->colspan[2][0] = 3;
+						$data[0] = __('There are no Agent/Modules defined');
+						array_push ($table->data, $data);
+						break;
+					}
+
+					$table2->width = '99%';
+					$table2->data = array ();
+					$table2->head = array ();
+					$table2->head[0] = __('Agent');
+					$table2->style[0] = 'text-align: center';
+					$i = 1;
+					foreach ($modules_list as $m) {
+						$table2->head[$i] = printTruncateText($m['nombre'], 20);
+						$table2->style[$i] = 'text-align: center';
+						$i++;
+					}
+
+					foreach ($agent_list as $a) {
+						$data = array();
+						$data[0] = printTruncateText($a['nombre'], 20);
+						$i = 1;
+						foreach ($modules_list as $m) {
+							foreach ($generals as $g) {
+								$agent_name = $g['agent_name'];
+								$module_name = $g['module_name'];
+								$found = false;
+								if (strcmp($a['nombre'], $agent_name) == 0 && strcmp($m['nombre'], $module_name) == 0) {
+									if (get_agentmodule_data_average($g['id_agent_module'], $content['period']) === false)
+										$data[$i] = '--';
+									else {
+										$data[$i] = get_agentmodule_data_average($g['id_agent_module'], $content['period']);
+									}
+									$found = true;
+								}
+								else {
+									$data[$i] = '--';
+								}
+								if ($found == true) break;
+							}
+							$i++;
+						}
+						array_push($table2->data, $data);
+					}
+					
+					$table->colspan[2][0] = 3;
+					$data = array();
+					$data[0] = print_table($table2, true);
+					array_push ($table->data, $data);
+					break;
+			}
+			if ($content['show_resume'] && count($generals) > 0) {
+
+				//Get the first valid value and assign it to $min & $max
+				$min = false;
+				$i=0;
+				do {
+					$min = get_agentmodule_data_average($generals[$i]['id_agent_module'], $content['period']);
+					$i++;
+				} while ($min === false && $i < count($generals));
+				$max = $min;
+				$avg = 0;
+				$length = 0;
+				foreach ($generals as $g) {
+					$value = get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+					if ($value !== false) {
+						if ($value > $max) {
+							$max = $value;
+						}
+						if ($value < $min ) {
+							$min = $value;
+						}
+						$avg += $value;
+						$length++;
+					}
+				}
+				$avg = $avg / $length;
+				
+				$data_resume = array();
+				$data_resume[0] = "Max Value: ".$max;
+				array_push ($table->data, $data_resume);
+				$data_resume[0] = "Min Value: ".$min;
+				array_push ($table->data, $data_resume);
+				$data_resume[0] = "Average Value: ".$avg;
+				array_push ($table->data, $data_resume);
+			}
+			break;
+		case 'top_n':
+			$order_uptodown = $content['order_uptodown'];
+			$top_n = $content['top_n'];
+			$top_n_value = $content['top_n_value'];
+			
+			$table->style[1] = 'text-align: right';
+			$data = array ();
+			$data[0] = $sizh.__('Top').' '.$content['top_n_value'].$sizhfin;
+			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
+			if ($content["description"] != ""){
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			//Get all the related data
+			$sql = sprintf("select a.id_agent_module, b.nombre as agent_name,
+			c.nombre as module_name from treport_content_item as a, tagente as b,
+			tagente_modulo as c where a.id_agent_module = c.id_agente_modulo and
+			c.id_agente = b.id_agente and id_report_content = %d", $content['id_rc']);
+			
+			$tops = process_sql ($sql);
+			if ($tops === false) {
+				$data = array ();
+				$table->colspan[2][0] = 3;
+				$data[0] = __('There are no Agent/Modules defined');
+				array_push ($table->data, $data);
+				break;
+			}
+			
+			$table1->width = '99%';
+			$table1->data = array ();
+			$table1->head = array ();
+			$table1->head[0] = __('Agent');
+			$table1->head[1] = __('Module');
+			$table1->head[2] = __('Value');
+			$table1->style[0] = 'text-align: center';
+			$table1->style[1] = 'text-align: center';
+			$table1->style[2] = 'text-align: center';
+			
+			$data_top = array();
+			foreach ($tops as $key => $row) {
+				switch ($top_n) {
+					//Max
+					case 1:
+						$value = get_agentmodule_data_max ($row['id_agent_module'], $content['period']);
+						break;
+					//Min
+					case 2:
+						$value = get_agentmodule_data_min ($row['id_agent_module'], $content['period']);
+						break;
+					//Nothing or Average
+					case 0: //If nothing is selected then it will be shown the average data
+					case 3:
+						$value = get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
+						break;
+				}
+				//If the returned value from get_agentmodule_data... is false it won't be stored.
+				if ($value !== false) {
+					$data_top[$key] = $value;
+					$id_agent_module[$key] = $row['id_agent_module'];
+					$agent_name[$key] = $row['agent_name'];
+					$module_name[$key] = $row['module_name'];
+				}
+			}
+
+			switch ($top_n) {
+				//Max
+				case 1:
+					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+				//Min
+				case 2:
+					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+				//By agent name or without selection
+				case 0:
+				case 3:
+					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+			}
+			
+			$data_top_values = array ();
+			$data_top_values['data_top'] = $data_top;
+			$data_top_values['agent_name'] = $agent_name;
+			$data_top_values['module_name'] = $module_name; 
+			$data_top_values['id_agent_module'] = $id_agent_module;
+
+			array_splice ($data_top, $top_n_value);
+			array_splice ($agent_name, $top_n_value);
+			array_splice ($module_name, $top_n_value);
+			array_splice ($id_agent_module, $top_n_value);
+			
+			switch ($order_uptodown) {
+				//Descending
+				case 1:
+					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+				//Ascending
+				case 2:
+					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+				//By agent name or without selection
+				case 0:
+				case 3:
+					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+			}
+
+			if ($order_uptodown == 1 || $order_uptodown == 2) {
+				$i = 0;
+				foreach ($data_top as $dt) {
+					$data = array();
+					$data[0] = printTruncateText($agent_name[$i], 30);
+					$data[1] = printTruncateText($module_name[$i], 30);
+					$data[2] = $dt;
+					array_push ($table1->data, $data);
+					$i++;
+					if ($i >= $top_n_value) break;
+				}
+			}
+			else if ($order_uptodown == 0 || $order_uptodown == 3) {
+				$i = 0;
+				foreach ($agent_name as $an) {
+					$data = array();
+					$data[0] = printTruncateText($an, 30);
+					$data[1] = printTruncateText($module_name[$i], 30);
+					$data[2] = $data_top[$i];
+					array_push ($table1->data, $data);
+					$i++;
+					if ($i >= $top_n_value) break;
+				}
+			}
+			
+			$table->colspan[2][0] = 3;
+			$data = array();
+			$data[0] = print_table($table1, true);
+			array_push ($table->data, $data);
+
+			if ($content['show_resume'] && count($data_top_values) > 0) {
+				//Get the very first not null value 
+				$i=0;
+				do {
+					$min = $data_top_values['data_top'][$i];
+					$i++;
+				} while ($min === false && $i < count($data_top_values));
+				$max = $min;
+				$avg = 0;
+
+				$i=0;
+				foreach ($data_top_values['data_top'] as $key => $dtv) {
+					if ($dtv < $min) $min = $dtv;
+					if ($dtv > $max) $max = $dtv;
+					$avg += $dtv;
+					$i++;
+				}
+				$avg = $avg / $i;
+				
+				$data_resume = array();
+				$data_resume[0] = __('Max Value').': '.$max;
+				array_push ($table->data, $data_resume);
+				$data_resume[0] = __('Min Value').': '.$min;
+				array_push ($table->data, $data_resume);
+				$data_resume[0] = __('Average Value').': '.$avg;
+				array_push ($table->data, $data_resume);
+			}
+			break;
+		case 'exception':
+			$order_uptodown = $content['order_uptodown'];
+			$exception_condition = $content['exception_condition'];
+			$exception_condition_value = $content['exception_condition_value'];
+			
+			$table->style[1] = 'text-align: right';
+			$data = array ();
+			$data[0] = $sizh.__('Exception');
+			switch ($exception_condition) {
+				case 0:
+					$data[0] .= ' - '.__('Everything');
+					break;
+				case 1:
+					$data[0] .= ' - '.__('Modules over or equal to').' '.$exception_condition_value;
+					break;
+				case 2:
+					$data[0] .= ' - '.__('Modules under').' '.$exception_condition_value;
+					break;
+				case 3:
+					$data[0] .= ' - '.__('Modules at normal status');
+					break;
+				case 4:
+					$data[0] .= ' - '.__('Modules at critial or warning status');
+					break;
+			}
+			$data[0].=$sizhfin;
+			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
+			if ($content["description"] != ""){
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			//Get all the related data
+			$sql = sprintf("select a.id_agent_module, b.nombre as agent_name,
+			c.nombre as module_name from treport_content_item as a, tagente as b,
+			tagente_modulo as c where a.id_agent_module = c.id_agente_modulo and
+			c.id_agente = b.id_agente and id_report_content = %d", $content['id_rc']);
+			
+			$exceptions = process_sql ($sql);
+			if ($exceptions === false) {
+				$data = array ();
+				$table->colspan[2][0] = 3;
+				$data[0] = __('There are no Agent/Modules defined');
+				array_push ($table->data, $data);
+				break;
+			}
+
+			$table1->width = '99%';
+			$table1->data = array ();
+			$table1->head = array ();
+			$table1->head[0] = __('Agent');
+			$table1->head[1] = __('Module');
+			$table1->head[2] = __('Value');
+			$table1->style[0] = 'text-align: center';
+			$table1->style[1] = 'text-align: center';
+			$table1->style[2] = 'text-align: center';
+			
+			//Get the very first not null value 
+			$i=0;
+			do {
+				$min = get_agentmodule_data_average ($exceptions[$i]['id_agent_module'], $content['period']);
+				$i++;
+			} while ($min === false && $i < count($exceptions));
+			$max = $min;
+			$avg = 0;
+			
+			$i=0;
+			foreach ($exceptions as $exc) {
+				$value = get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
+				if ($value !== false) {
+					if ($value > $max) $max = $value;
+					if ($value < $min) $min = $value;
+					$avg += $value;
+					$i++;
+					switch ($exception_condition) {
+						//Display everything
+						case 0:
+							break;
+						//Display modules over or equal to certain value
+						case 1:
+							//Skip modules under 'value'
+							if ($value < $exception_condition_value) {
+								continue 2;
+							}
+							break;
+						//Display modules under a certain value
+						case 2:
+							//Skip modules over or equal to 'value'
+							if ($value >= $exception_condition_value) {
+								continue 2;
+							}
+							break;
+						//Display modules at Normal status
+						case 3:
+							//Skip modules without normal status
+							if (get_agentmodule_status($exc['id_agent_module']) != 0) {
+								continue 2;
+							}
+							break;
+						//Display modules at critical, warning or unknown status
+						case 4:
+							//Skip modules at normal status
+							if (get_agentmodule_status($exc['id_agent_module']) == 0) {
+								continue 2;
+							}
+							break;
+					}
+					$data_exceptions[] = $value;
+					$id_agent_module[] = $exc['id_agent_module'];
+					$agent_name[] = $exc['agent_name'];
+					$module_name[] = $exc['module_name'];
+				}
+			}
+			//$i > 0 means that there is at least one row on the table
+			if ($i > 0) {
+				$avg = $avg / $i;
+
+				switch ($order_uptodown) {
+					//Descending
+					case 1:
+						array_multisort($data_exceptions, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+						break;
+					//Ascending
+					case 2:
+						array_multisort($data_exceptions, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+						break;
+					//By agent name or without selection
+					case 0:
+					case 3:
+						array_multisort($agent_name, SORT_ASC, $data_exceptions, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+						break;
+				}
+
+				if ($order_uptodown == 1 || $order_uptodown == 2) {
+					$j=0;
+					foreach ($data_exceptions as $dex) {
+						$data = array();
+						$data[0] = printTruncateText($agent_name[$j], 30);
+						$data[1] = printTruncateText($module_name[$j], 30);
+						$data[2] = $dex;
+						array_push ($table1->data, $data);
+						$j++;
+					}
+				}
+				else if ($order_uptodown == 0 || $order_uptodown == 3) {
+					$j=0;
+					foreach ($agent_name as $an) {
+						$data = array();
+						$data[0] = printTruncateText($an, 30);
+						$data[1] = printTruncateText($module_name[$j], 30);
+						$data[2] = $data_exceptions[$j];
+						array_push ($table1->data, $data);
+						$j++;
+					}
+				}
+			}
+			
+			$table->colspan[2][0] = 3;
+			$data = array();
+			$data[0] = print_table($table1, true);
+			array_push ($table->data, $data);
+
+			if ($content['show_resume'] && $i>0) {
+				$data_resume = array();
+				$data_resume[0] = __('Max Value').': '.$max;
+				array_push ($table->data, $data_resume);
+				$data_resume[0] = __('Min Value').': '.$min;
+				array_push ($table->data, $data_resume);
+				$data_resume[0] = __('Average Value').': '.$avg;
+				array_push ($table->data, $data_resume);
+			}
 			break;
 	}
 }

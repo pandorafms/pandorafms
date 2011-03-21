@@ -405,7 +405,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$data[4] = print_agent_name ($event["id_agente"], true);
+				$data[4] = print_agent_name ($event["id_agente"], true, 25, '', true);
 			// for System or SNMP generated alerts
 			}
 			elseif ($event["event_type"] == "system") {

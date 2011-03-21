@@ -26,12 +26,20 @@ ALTER TABLE `tgrupo` MODIFY `nombre` text;
 -- -----------------------------------------------------
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
-ALTER TABLE `tnetwork_component` ADD COLUMN `post_process` double(18,13) default 0;
+ALTER TABLE `tnetwork_component` ADD COLUMN `post_process` double(18,13) DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `treport_content`
 -- -----------------------------------------------------
-ALTER TABLE treport_content ADD only_display_wrong tinyint(1) unsigned DEFAULT 0 NOT NULL;
+ALTER TABLE `treport_content` ADD COLUMN `only_display_wrong` tinyint(1) unsigned NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `top_n` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `top_n_value` INT NOT NULL DEFAULT 10;
+ALTER TABLE `treport_content` ADD COLUMN `exception_condition` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `exception_condition_value` DOUBLE (18,6) NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `show_resume` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `order_uptodown` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `show_graph` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `group_by_agent` INT NOT NULL DEFAULT 0
 
 -- -----------------------------------------------------
 -- Table `tusuario`

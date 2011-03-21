@@ -214,18 +214,18 @@ foreach ($items as $item) {
 			$row[3] = '-';
 		}
 		else {
-			$row[2] = get_agent_name(get_agent_module_id($item['id_agent_module']));
-			$row[3] = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+			$row[2] = printTruncateText(get_agent_name(get_agent_module_id($item['id_agent_module'])), 20);
+			$row[3] = printTruncateText(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
 		}
 	}
 	else {
-		$row[2] = get_agent_name($item['id_agent']);
+		$row[2] = printTruncateText(get_agent_name($item['id_agent']), 20);
 		
 		if ($item['id_agent_module'] == '') {
 			$row [3] = '-';
 		}
 		else {
-			$row[3] = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+			$row[3] = printTruncateText(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),20);
 		}
 	}
 	

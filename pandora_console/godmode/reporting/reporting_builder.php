@@ -187,6 +187,14 @@ switch ($action) {
 						$values['sunday'] = get_parameter('sunday', 0);
 						$values['time_from'] = get_parameter('time_from');
 						$values['time_to'] = get_parameter('time_to');
+						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
+						$values['show_resume'] = get_parameter ('checkbox_show_resume');
+						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
+						$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+						$values['top_n_value'] = get_parameter('quantity');
+						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
+						$values['exception_condition_value'] = get_parameter('exception_condition_value');
+						$values['show_graph'] = get_parameter('checkbox_show_graph');
 					
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
@@ -227,6 +235,14 @@ switch ($action) {
 						$values['sunday'] = get_parameter('sunday', 0);
 						$values['time_from'] = get_parameter('time_from');
 						$values['time_to'] = get_parameter('time_to');
+						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
+						$values['show_resume'] = get_parameter ('checkbox_show_resume');
+						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
+						$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+						$values['top_n_value'] = get_parameter('quantity');
+						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
+						$values['exception_condition_value'] = get_parameter('exception_condition_value');
+						$values['show_graph'] = get_parameter('checkbox_show_graph');
 						
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
  

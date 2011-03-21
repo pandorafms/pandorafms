@@ -463,11 +463,6 @@ CREATE TABLE tconfig_os (
 	icon_name VARCHAR2(100) default ''
 );
 
-CREATE SEQUENCE tconfig_os_s INCREMENT BY 1 START WITH 1;
-
-CREATE OR REPLACE TRIGGER tconfig_os_inc BEFORE INSERT ON tconfig_os REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_os_s.nextval INTO :NEW.ID_OS FROM dual; END; 
-/
-
 CREATE TABLE tevento (
 	id_evento NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_agente NUMBER(10, 0) default 0 NOT NULL,

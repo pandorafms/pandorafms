@@ -1,3 +1,9 @@
+2011-03-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.oracle.sql
+	pandoradb.data.oracle.sql: Changed the autoincrement of tconfig_os's pk 
+	in order to respect sequence on this field.
+
 2011-03-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
         * pandoradb.oracle.sql
         pandoradb.data.oracle.sql: First version of pandora's DB schema and data for 

@@ -106,6 +106,24 @@ COMMIT;
 END;
 /
 
+CREATE SEQUENCE tconfig_os_s INCREMENT BY 1 START WITH 1;
+
+CREATE OR REPLACE TRIGGER tconfig_os_inc BEFORE INSERT ON tconfig_os REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_os_s.nextval INTO :NEW.ID_OS FROM dual; END; 
+/
+
+-- PLSQL for update curr val of sequence
+BEGIN 
+	DECLARE key_max NUMBER := 0; 
+	key_currval NUMBER := 0; 
+BEGIN 
+	SELECT MAX(ID_OS) INTO key_max FROM tconfig_os; 
+	EXECUTE IMMEDIATE 'ALTER SEQUENCE TCONFIG_OS_S INCREMENT BY ' || key_max; 
+	SELECT TCONFIG_OS_S.NEXTVAL INTO key_currval FROM dual; 
+	EXECUTE IMMEDIATE 'ALTER SEQUENCE TCONFIG_OS_S INCREMENT BY 1'; 
+END; 
+END;
+/
+
 --
 -- Dumping data for table "tgrupo"
 --

@@ -651,5 +651,64 @@ class PchartGraph extends PandoraGraphAbstract {
 			$this->graph->setColorPalette ($a, $color['r'], $color['g'], $color['b']);
 		}
 	}
+	
+	public function graph_sla_horizontal ($value, $color) {
+		set_time_limit (0);
+		$date = (string) get_parameter ('date', date ('Y-m-j'));
+		$time = (string) get_parameter ('time', date ('h:iA'));
+		$datetime = strtotime ($date.' '.$time);
+		// Dataset definition
+		$this->graph = new pChart ($this->width, $this->height);
+		$this->graph->setFontProperties ($this->fontpath, 8);
+
+		// Round corners defined in global setup
+		global $config;
+		if ($config["round_corner"] != 0)
+			$radius = ($this->height > 18) ? 8 : 0;
+		else
+			$radius = 0;
+		$ratio = 200;
+		//$ratio = (int) $value / 100 * $this->width;
+		
+		/* Color stuff */
+		$bgcolor = $this->get_rgb_values ($this->background_color);
+		$r = hexdec (substr ($this->background_color, 1, 2));
+		$g = hexdec (substr ($this->background_color, 3, 2));
+		$b = hexdec (substr ($this->background_color, 5, 2));
+		
+		/* Actual percentage */
+		if (! $this->show_title || $value > 0) {
+			debugPrint("entra en el if show title or value > 0", "/tmp/prueba.txt");
+			$color = $this->get_rgb_values ($color);
+			$this->graph->drawFilledRoundedRectangle (50, 0, $ratio+50, 
+				$this->height, $radius, $color['r'], $color['g'], $color['b']);
+			$this->graph->drawFilledRoundedRectangle (300, 0, $ratio+300, 
+				$this->height, $radius, $color['r'], $color['g'], $color['b']);
+		}
+		
+		if ($config["round_corner"]) {
+			debugPrint("entra en el if de round_corner", "/tmp/prueba.txt");
+			/* Under this value, the rounded rectangle is painted great */
+			if ($ratio <= 16) {
+				/* Clean a bit of pixels */
+				for ($i = 0; $i < 7; $i++) {
+					$this->graph->drawLine (0, $i, 6 - $i, $i, 255, 255, 255);
+				}
+				$end = $this->height - 1;
+				for ($i = 0; $i < 7; $i++) {
+					$this->graph->drawLine (0, $end - $i, 5 - $i, $end - $i, 255, 255, 255);
+				}
+			}
+		}
+				
+		if ($this->border) {
+			debugPrint("entra en el último if, el de border", "/tmp/prueba.txt");
+			$this->graph->drawRoundedRectangle (0, 0, $this->width + 50,
+				$this->height - 1,
+				$radius, 157, 157, 157);
+		}
+		
+		$this->graph->Stroke ();
+	}
 }
 ?>

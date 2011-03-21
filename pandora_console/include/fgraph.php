@@ -42,7 +42,7 @@ else {
 
 }
 
-enterprise_include ('include/functions_reporting.php');
+enterprise_include_once ('include/functions_reporting.php');
 
 set_time_limit (0);
 //error_reporting (0);
@@ -2321,6 +2321,33 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 1) {
 
 }
 
+function graph_sla_pie ($value1, $value2, $value3, $value4, $width, $height) {
+	$data_graph = array ();
+	$data_graph[__('Inside limits')] = $value1;
+	$data_graph[__('Out of limits')] = $value2;
+	$data_graph[__('On the edge')] = $value3;
+	$data_graph[__('Unknown')] = $value4;
+
+	generic_pie_graph ($width, $height, $data_graph, array ('show_legend' => true));
+}
+
+function graph_sla_horizontal ($progress, $width, $height, $id) {
+	global $config;
+
+	$engine = get_graph_engine ();
+	
+	$engine->width = $width;
+	$engine->height = $height;
+	$engine->fontpath = $config['fontpath'];
+	
+	$engine->background_color = '#FFFFFF';
+	$engine->show_title = true;
+	$engine->title = format_numeric ($progress).' %';
+	$color = '#2C5196';
+	
+	$engine->graph_sla_horizontal ($progress, $color);
+}
+
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
@@ -2382,6 +2409,7 @@ $draw_alerts = (int) get_parameter ('draw_alerts');
 $value1 = get_parameter ('value1');
 $value2 = get_parameter ('value2');
 $value3 = get_parameter("value3", 0);
+$value4 = get_parameter ('value4');
 $stacked = get_parameter ("stacked", 0);
 $date = get_parameter ("date");
 $graphic_type = (string) get_parameter ('tipo');
@@ -2514,6 +2542,13 @@ if ($graphic_type) {
 	    case 'sql_graph_pie':
 	        graph_custom_sql_graph ($report_id, $width, $height, 3);
 	        break;
+		
+		case 'sla_pie_graph':
+			graph_sla_pie ($value1, $value2, $value3, $value4, $width, $height);
+			break;
+		case 'sla_horizontal_graph':
+			graph_sla_horizontal (20, $width, $height, $id);
+			break;
 	
 		case 'graphic_error':
 		default:

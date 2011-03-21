@@ -815,6 +815,14 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`saturday` tinyint(1) default 1,
 	`sunday` tinyint(1) default 1,
 	`only_display_wrong` tinyint (1) unsigned default 0 not null,
+	`top_n` INT NOT NULL default 0,
+	`top_n_value` INT NOT NULL default 10,
+	`exception_condition` INT NOT NULL default 0,
+	`exception_condition_value` DOUBLE (18,6) NOT NULL default 0,
+	`show_resume` INT NOT NULL default 0,
+	`order_uptodown` INT NOT NULL default 0,
+	`show_graph` INT NOT NULL default 0,
+	`group_by_agent` INT NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE

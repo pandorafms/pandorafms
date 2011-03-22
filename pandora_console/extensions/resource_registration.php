@@ -1,15 +1,17 @@
 <?php
 
-//Pandora FMS- http://pandorafms.com
+// Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 //Remember the hard-coded values
@@ -613,8 +615,8 @@ function process_upload_xml_component($xml) {
 		$auth_password = safe_input((string)$componentElement->auth_password);
 		$auth_method = safe_input((string)$componentElement->auth_method);
 		$privacy_method = safe_input((string)$componentElement->privacy_method);
-		$privacy_pass =  safe_input((string)$componentElement->privacy_pass);
-		$security_level =  safe_input((string)$componentElement->security_level);
+		$privacy_pass = safe_input((string)$componentElement->privacy_pass);
+		$security_level = safe_input((string)$componentElement->security_level);
 		$wmi_query = safe_input((string)$componentElement->wmi_query);
 		$key_string = safe_input((string)$componentElement->key_string);
 		$field_number = (int)$componentElement->field_number;
@@ -813,7 +815,7 @@ function resource_registration_extension_main() {
 	require_once($config['homedir'] . '/include/functions_network_components.php');
 	require_once($config['homedir'] . '/include/functions_db.php');
 	enterprise_include_once('include/functions_local_components.php');
-    
+
 	print_page_header (__('Resource registration'), "images/extensions.png", false, "", true, "" );
 	
 	if (!extension_loaded("libxml")) {

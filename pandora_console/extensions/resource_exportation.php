@@ -1,15 +1,17 @@
 <?php
 
-//Pandora FMS- http://pandorafms.com
+// Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 if (isset($_GET['get_ptr'])) {
@@ -17,7 +19,7 @@ if (isset($_GET['get_ptr'])) {
 		
 		if (file_exists("../include/config.php"))
 			require ("../include/config.php");
-		else  {
+		else {
 			//TODO FIX AND SET AS RELATIVE DIRECTORY
 			if (file_exists("/var/www/pandora_console/include/config.php"))
 				require ("/var/www/pandora_console/include/config.php");
@@ -134,7 +136,7 @@ function output_xml_report($id) {
 					echo "<time_to>" . $item['time_to'] . "</time_to>\n";
 					
 					$slas = get_db_all_rows_field_filter('treport_content_sla_combined', 'id_report_content', $item['id_rc']);
-					if ($slas === false)  $slas = array();
+					if ($slas === false) $slas = array();
 					
 					foreach ($slas as $sla) {
 						$module = get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
@@ -243,22 +245,22 @@ function output_xml_visual_console($id) {
 		echo "<item>\n";
 		echo "<other_id>" . $item['id'] . "</other_id>\n"; //OLD ID USE FOR parent item 
 		if (!empty($item['label'])) {
-			echo "<label><![CDATA[" . safe_output($item['label']) .  "]]></label>\n";
+			echo "<label><![CDATA[" . safe_output($item['label']) . "]]></label>\n";
 		}
-		echo "<x>" . $item['pos_x'] .  "</x>\n";
-		echo "<y>" . $item['pos_y'] .  "</y>\n";
+		echo "<x>" . $item['pos_x'] . "</x>\n";
+		echo "<y>" . $item['pos_y'] . "</y>\n";
 		echo "<type>" . $item['type'] . "</type>\n";
 		if ($item['width'] != 0) {
-			echo "<width>" . $item['width'] .  "</width>\n";
+			echo "<width>" . $item['width'] . "</width>\n";
 		}
 		if ($item['height'] != 0) {
-			echo "<height>" . $item['height'] .  "</height>\n";
+			echo "<height>" . $item['height'] . "</height>\n";
 		}
 		if (!empty($item['image'])) {
 			echo "<image>" . $item['image'] . "</image>\n";
 		}
 		if ($item['period'] != 0) {
-			echo "<period>" . $item['period'] .  "</period>\n";
+			echo "<period>" . $item['period'] . "</period>\n";
 		}
 		$agent = '';
 		if ($item['id_agent'] != 0) {

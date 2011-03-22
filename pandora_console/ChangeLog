@@ -1,3 +1,11 @@
+2011-03-22  Raul Mateos <raulofpandora@gmail.com>
+
+	* extensions/resource_registration.php,
+	extensions/resource_exporation.php, extensions/agent_modules.php:
+	Cleaned code and updated page disclaimers.
+
+	* include/functions_reporting.php: Removed SVN errors in code.
+
 2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_config.php: fixed the update "collection_max_size"

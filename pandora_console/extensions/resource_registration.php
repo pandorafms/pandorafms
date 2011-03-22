@@ -27,7 +27,7 @@ In the xml is the tag "module_source"
 */
 
 require_once ($config['homedir'].'/include/functions_agents.php');
-enterprise_include ('include/functions_local_components.php');
+enterprise_include_once('include/functions_local_components.php');
 
 function insert_item_report($report_id, $values) {
 	foreach ($report_id as $id => $name) {

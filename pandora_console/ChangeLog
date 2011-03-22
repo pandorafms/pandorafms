@@ -1,5 +1,12 @@
 2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_config.php: fixed the update "collection_max_size"
+	value.
+	
+	Fixes: #3220485
+
+2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* extensions/resource_registration.php: fixed the require once enterprise
 	file.
 

@@ -1,4 +1,13 @@
- 2011-03-17  Sancho Lerena <slerena@artica.es>
+ 2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* include/functions.php: fixed the function "safe_url_extraclean" to pass
+	the url with character -.
+	
+	Fixes: #3234360
+
+2011-03-17  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_alerts.php: erased the "module_action_threshold"
 	in the function "add_alert_agent_module_action".

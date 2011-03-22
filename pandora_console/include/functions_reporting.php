@@ -1828,8 +1828,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+<<<<<<< .mine
+			if ($content["description"] != "") {
+=======
 			$table->colspan[2][0] = 3;
 			if ($content["description"] != ""){
+>>>>>>> .r4112
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1866,8 +1870,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$n = array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
+<<<<<<< .mine
+			if ($content["description"] != "") {
+=======
 			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
+>>>>>>> .r4112
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);

@@ -1,5 +1,10 @@
 2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/resource_registration.php: fixed the require once enterprise
+	file.
+
+2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: fixed the function "safe_url_extraclean" to pass
 	the url with character -.
 	

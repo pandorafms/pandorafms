@@ -101,7 +101,7 @@ function safe_url_extraclean ($string, $default_string = '') {
 	$string = substr ($string, 0, 125);
 
 	/* Search for unwanted characters */
-	if (preg_match ('/[^a-zA-Z0-9_\/\.]|(\/\/)|(\.\.)/', $string)) {
+	if (preg_match ('/[^a-zA-Z0-9_\/\.\-]|(\/\/)|(\.\.)/', $string)) {
 		return $default_string;
 	}
 

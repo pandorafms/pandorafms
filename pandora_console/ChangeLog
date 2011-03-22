@@ -2,6 +2,15 @@
 
 	Merged bugfix from trunk.
 
+	* include/functions_config.php: fixed the update "collection_max_size"
+	value.
+	
+	Fixes: #3220485
+ 
+2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
 	* include/functions.php: fixed the function "safe_url_extraclean" to pass
 	the url with character -.
 	

@@ -224,6 +224,8 @@ function update_config () {
 	
 	update_config_value ('api_password', get_parameter('api_password', $config['api_password']));
 	
+	update_config_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));	
+	
 	$enterprise = enterprise_include_once('include/functions_policies.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 		$locked = enterprise_hook('semaphore_policy_test_and_set');
@@ -324,51 +326,51 @@ function process_config () {
 		update_config_value ('round_corner', false);
 	}
 
-	if (!isset ($config["agentaccess"])){
+	if (!isset ($config["agentaccess"])) {
 		update_config_value ('agentaccess', true);
 	}
 	
-	if (!isset ($config["timezone"])){
+	if (!isset ($config["timezone"])) {
 		update_config_value ('timezone', "Europe/Berlin");
 	}
 
-	if (!isset ($config["stats_interval"])){
+	if (!isset ($config["stats_interval"])) {
 		update_config_value ('stats_interval', 300);
 	}
 
-	if (!isset ($config["realtimestats"])){
+	if (!isset ($config["realtimestats"])) {
 		update_config_value ('realtimestats', 1);
 	}
 
-	if (!isset ($config["event_purge"])){
+	if (!isset ($config["event_purge"])) {
 		update_config_value ('event_purge', 15);
 	}
 
-	if (!isset ($config["trap_purge"])){
+	if (!isset ($config["trap_purge"])) {
 		update_config_value ('trap_purge', 7);
 	}
 
-	if (!isset ($config["string_purge"])){
+	if (!isset ($config["string_purge"])) {
 		update_config_value ('string_purge', 14);
 	}
 
-	if (!isset ($config["audit_purge"])){
+	if (!isset ($config["audit_purge"])) {
 		update_config_value ('audit_purge', 30);
 	}
 
-	if (!isset ($config["acl_enterprise"])){
+	if (!isset ($config["acl_enterprise"])) {
 		update_config_value ('acl_enterprise', 0);
 	}
 
-	if (!isset ($config["metaconsole"])){
+	if (!isset ($config["metaconsole"])) {
 		update_config_value ('metaconsole', 0);
 	}
 
-	if (!isset ($config["gis_purge"])){
+	if (!isset ($config["gis_purge"])) {
 		update_config_value ('gis_purge', 7);
 	}
 	
-	if (!isset ($config["collection_max_size"])){
+	if (!isset ($config["collection_max_size"])) {
 		update_config_value ('collection_max_size', 1000000);
 	}
 

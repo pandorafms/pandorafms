@@ -1,15 +1,17 @@
 <?php
 
-//Pandora FMS- http://pandorafms.com
+// Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 function createXMLData($agent, $agentModule, $time, $data) {
@@ -44,20 +46,19 @@ function mainInsertData() {
 	global $config;
 	
 	
-    print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
-    
-    
+	print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
 
-    if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
-	    pandora_audit("ACL Violation", "Trying to access Setup Management");
-	    require ("general/noaccess.php");
-	    return;
-    }
-    
-    $save = (bool)get_parameter('save', false);
-    $id_agent = (string)get_parameter('id_agent', '');
-    $id_agent_module = (int)get_parameter('id_agent_module', '');
-    $data = (string)get_parameter('data');
+
+	if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
+		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		require ("general/noaccess.php");
+		return;
+	}
+
+	$save = (bool)get_parameter('save', false);
+	$id_agent = (string)get_parameter('id_agent', '');
+	$id_agent_module = (int)get_parameter('id_agent_module', '');
+	$data = (string)get_parameter('data');
 	$date = (string) get_parameter ('date', date ('Y-m-d'));
 	$time = (string) get_parameter ('time', date ('h:00A'));
 	if (isset($_FILES['csv'])) {
@@ -73,82 +74,79 @@ function mainInsertData() {
 	}
 	
 	
-    if ($save) {
-    	if (!check_acl($config['id_user'], get_agent_group(get_agent_id($id_agent)), "AW")) {
-    		print_error_message(__('You haven\'t privileges for insert data in the agent.'));
-    	}
-    	else {
-	    	$agent = get_db_row_filter('tagente', array('nombre' => $id_agent));
-	    	$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
-	    	
-	    	$date2 = str_replace('-', '/', $date);
-	    	$time2 = DATE("H:i", strtotime($time));
-	    	
-	    	$date_xml = $date2 . ' ' . $time2 . ':00';
-	    	
-	    	
-	    	
-	    	if ($csv !== false) {
-	    		$file = file($csv['tmp_name']);
-	    		foreach ($file as $line) {
-	    			$tokens = explode(';', $line);
-	    			
-	    			createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
-	    		}
-	    	}
-	    	else {
-	    		createXMLData($agent, $agentModule, $date_xml, $data);
-	    	}
-    	}
-    }
-    
-    
-    
-    echo '<div class="notify">';
-   	echo __("Please check that the directory \"/var/spool/pandora/data_in\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.");
-    echo '</div>';
-    
-    $table = null;
-    $table->width = '80%';
-    $table->style = array();
-    $table->style[0] = 'font-weight: bolder;';
-    
-    $table->data = array();
-    $table->data[0][0] = __('Agent');
+	if ($save) {
+		if (!check_acl($config['id_user'], get_agent_group(get_agent_id($id_agent)), "AW")) {
+			print_error_message(__('You haven\'t privileges for insert data in the agent.'));
+		}
+	else {
+		$agent = get_db_row_filter('tagente', array('nombre' => $id_agent));
+		$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
+	
+		$date2 = str_replace('-', '/', $date);
+		$time2 = DATE("H:i", strtotime($time));
+
+		$date_xml = $date2 . ' ' . $time2 . ':00';
+
+		if ($csv !== false) {
+			$file = file($csv['tmp_name']);
+			foreach ($file as $line) {
+				$tokens = explode(';', $line);
+				createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
+			}
+		}
+		else {
+			createXMLData($agent, $agentModule, $date_xml, $data);
+		}
+	}
+}
+
+
+
+	echo '<div class="notify">';
+	echo __("Please check that the directory \"/var/spool/pandora/data_in\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.");
+	echo '</div>';
+
+	$table = null;
+	$table->width = '80%';
+	$table->style = array();
+	$table->style[0] = 'font-weight: bolder;';
+
+	$table->data = array();
+	$table->data[0][0] = __('Agent');
 	$table->data[0][1] = print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 		. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
-    $table->data[1][0] = __('Module');
+	$table->data[1][0] = __('Module');
 	$modules = array ();
 	if ($id_agent)
 		$modules = get_agent_modules ($id_agent, false, array("delete_pending" => 0));
 	$table->data[1][1] = print_select ($modules, 'id_agent_module', $id_agent_module, true,
 		__('Select'), 0, true, false, true, '', ($id_agent === ''));
-    $table->data[2][0] = __('Data');
-    $table->data[2][1] = print_input_text('data', $data, __('Data'), 40, 60, true);
-    $table->data[3][0] = __('Date');
-    $table->data[3][1] = print_input_text ('date', $date, '', 11, 11, true).' ';
+	$table->data[2][0] = __('Data');
+	$table->data[2][1] = print_input_text('data', $data, __('Data'), 40, 60, true);
+	$table->data[3][0] = __('Date');
+	$table->data[3][1] = print_input_text ('date', $date, '', 11, 11, true).' ';
 	$table->data[3][1] .= print_input_text ('time', $time, '', 7, 7, true);
-    $table->data[4][0] = __('CSV');
-    $table->data[4][1] = print_input_file('csv', true);
-    
-    echo "<form method='post' enctype='multipart/form-data'>";
-    
-    print_table($table);
-    
-    echo "<div style='text-align: right; width: " . $table->width . "'>";
-    print_input_hidden('save', 1);
-    print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
-    echo "</div>";
-    
-    echo "</form>";
-    
-    require_css_file ('datepicker');
+	$table->data[4][0] = __('CSV');
+	$table->data[4][1] = print_input_file('csv', true);
+
+	echo "<form method='post' enctype='multipart/form-data'>";
+
+	print_table($table);
+
+	echo "<div style='text-align: right; width: " . $table->width . "'>";
+	print_input_hidden('save', 1);
+	print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
+	echo "</div>";
+
+	echo "</form>";
+
+	require_css_file ('datepicker');
 	require_jquery_file ('ui.core');
 	require_jquery_file ('ui.datepicker');
 	require_jquery_file ('timeentry');
 	require_jquery_file ('autocomplete');
-    ?>
+?>
 	<script type="text/javascript">
 		/* <![CDATA[ */
 		$(document).ready (function () {
@@ -223,7 +221,7 @@ function mainInsertData() {
 		);
 		/* ]]> */
 	</script>
-    <?php
+<?php
 }
 
 add_extension_godmode_function('mainInsertData');

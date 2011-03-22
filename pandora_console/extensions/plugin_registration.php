@@ -1,25 +1,26 @@
 <?php
 
-//Pandora FMS- http://pandorafms.com
+// Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-
 function pluginreg_extension_main () {
-    global $config;
-    if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	    pandora_audit("ACL Violation", "Trying to access Setup Management");
-	    require ("general/noaccess.php");
-	    return;
-    }
+	global $config;
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		require ("general/noaccess.php");
+		return;
+	}
 
 	print_page_header (__('Plugin registration'), "images/extensions.png", false, "", true, "" );
 
@@ -45,20 +46,20 @@ function pluginreg_extension_main () {
 
 	if ($zip) {
 		while ($zip_entry = zip_read($zip)) {
-		    if (zip_entry_open($zip, $zip_entry, "r")) {
-		    	if (zip_entry_name($zip_entry) == "plugin_definition.ini"){
-		    		$basepath = $config["attachment_store"];
-		    	} else {
-		    		$basepath = $config["plugin_store"];
-		    	}
-		    	$filename = $basepath . "/". zip_entry_name($zip_entry);
-		    	$fp = fopen($filename, 'w');
-		    	$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
-				fwrite($fp, $buf);
-				fclose($fp);
-				chmod ($filename, 0755);
-		        zip_entry_close($zip_entry);
-		    }
+			if (zip_entry_open($zip, $zip_entry, "r")) {
+				if (zip_entry_name($zip_entry) == "plugin_definition.ini"){
+					$basepath = $config["attachment_store"];
+				} else {
+					$basepath = $config["plugin_store"];
+				}
+				$filename = $basepath . "/". zip_entry_name($zip_entry);
+				$fp = fopen($filename, 'w');
+				$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+					fwrite($fp, $buf);
+					fclose($fp);
+					chmod ($filename, 0755);
+				zip_entry_close($zip_entry);
+			}
 		}
 		zip_close($zip);
 	}
@@ -74,7 +75,7 @@ function pluginreg_extension_main () {
 	$file_exec_path = $exec_path;
 	
 	if (isset($ini_array["plugin_definition"]["execution_command"]) && ($ini_array["plugin_definition"]["execution_command"] != "")){
-		$exec_path =  $ini_array["plugin_definition"]["execution_command"] . " " . $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
+		$exec_path = $ini_array["plugin_definition"]["execution_command"] . " " . $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
 	}
 	
 	if (isset($ini_array["plugin_definition"]["execution_postcommand"]) && ($ini_array["plugin_definition"]["execution_postcommand"] != "")){

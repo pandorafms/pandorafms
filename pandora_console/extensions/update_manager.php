@@ -1,15 +1,17 @@
 <?php
 
-//Pandora FMS- http://pandorafms.com
+// Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 function load_update_manager_lib () {
@@ -74,7 +76,7 @@ function pandora_update_manager_uninstall () {
 			process_sql ('DROP TABLE `tupdate_package`');
 			break;
 		case "postgresql":
-			process_sql ('DELETE FROM "tconfig" WHERE "token" =  \'update_manager_installed\'');
+			process_sql ('DELETE FROM "tconfig" WHERE "token" = \'update_manager_installed\'');
 			process_sql ('DROP TABLE "tupdate_settings"');
 			process_sql ('DROP TABLE "tupdate_journal"');
 			process_sql ('DROP TABLE "tupdate"');

@@ -1,15 +1,17 @@
 <?php
+
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 function extension_uploader_extensions() {
@@ -59,9 +61,9 @@ function extension_uploader_extensions() {
 	echo "<form method='post' enctype='multipart/form-data'>";
 	print_table($table);
 	echo "<div style='text-align: right; width: " . $table->width . "'>";
-    print_input_hidden('upload', 1);
-    print_submit_button(__('Upload'), 'submit', false, 'class="sub add"');
-    echo "</div>";
+	print_input_hidden('upload', 1);
+	print_submit_button(__('Upload'), 'submit', false, 'class="sub add"');
+	echo "</div>";
 	echo "</form>";
 }
 

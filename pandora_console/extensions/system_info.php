@@ -1,15 +1,17 @@
 <?php
 
-//Pandora FMS- http://pandorafms.com
+// Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 function getPandoraDiagnostic(&$systemInfo) {
@@ -147,7 +149,7 @@ function show_logfile($file_name, $numLines = 2000) {
 		else {
 			echo "<h2>" . $file_name . "</h2>";
 			echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";
-			echo shell_exec('tail -n ' . $numLines . '  ' . $file_name);
+			echo shell_exec('tail -n ' . $numLines . ' ' . $file_name);
 			echo "</textarea>";
 		}
 	}
@@ -164,7 +166,7 @@ function logFilesLines($file_name, $numLines) {
 			return '';
 		}
 		else {
-			return shell_exec('tail -n ' . $numLines . '  ' . $file_name);
+			return shell_exec('tail -n ' . $numLines . ' ' . $file_name);
 		}
 	}
 }
@@ -227,104 +229,104 @@ function show_array($title, $anchor, $array = array()) {
 function mainSystemInfo() {
 	global $config;
 
-    if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	    pandora_audit("ACL Violation", "Trying to access Setup Management");
-	    require ("general/noaccess.php");
-	    return;
-    }
-    
-    $show = (bool) get_parameter('show');
-    $generate = (bool) get_parameter('generate');
-    $pandora_diag = (bool) get_parameter('pandora_diag', 0);
-    $system_info = (bool) get_parameter('system_info', 0);
-    $log_info = (bool) get_parameter('log_info', 0);
-    $log_num_lines = (int) get_parameter('log_num_lines', 2000);
-    
-    print_page_header (__("System Info"), "images/extensions.png", false, "", true, "" );
-    
-    echo '<div class="notify">';
-   	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");
-    echo '</div>';
-    
-    echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
-    
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		require ("general/noaccess.php");
+		return;
+	}
+
+	$show = (bool) get_parameter('show');
+	$generate = (bool) get_parameter('generate');
+	$pandora_diag = (bool) get_parameter('pandora_diag', 0);
+	$system_info = (bool) get_parameter('system_info', 0);
+	$log_info = (bool) get_parameter('log_info', 0);
+	$log_num_lines = (int) get_parameter('log_num_lines', 2000);
+
+	print_page_header (__("System Info"), "images/extensions.png", false, "", true, "" );
+
+	echo '<div class="notify">';
+	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");
+	echo '</div>';
+
+	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
+
 	echo "<form method='post'>";
-    $table = null;
-    $table->width = '80%';
-    $table->align = array();
-    $table->align[1] = 'right';
+	$table = null;
+	$table->width = '80%';
+	$table->align = array();
+	$table->align[1] = 'right';
 	if ($pandora_diag) {
-    	$table->data[0][0] = '<a href="#diag_info">' . __('Pandora Diagnostic info') . "</a>";
+		$table->data[0][0] = '<a href="#diag_info">' . __('Pandora Diagnostic info') . "</a>";
 	}
 	else {
 		$table->data[0][0] = __('Pandora Diagnostic info');
 	}
-    $table->data[0][1] = print_checkbox('pandora_diag', 1, $pandora_diag, true);
-    if ($system_info) {
+	$table->data[0][1] = print_checkbox('pandora_diag', 1, $pandora_diag, true);
+	if ($system_info) {
 		$table->data[1][0] = '<a href="#system_info">' . __('System info') . '</a>';
-    }
-    else {
-    	$table->data[1][0] = __('System info');
-    }
-    $table->data[1][1] = print_checkbox('system_info', 1, $system_info, true);
-    if ($log_info) {
+	}
+	else {
+		$table->data[1][0] = __('System info');
+	}
+	$table->data[1][1] = print_checkbox('system_info', 1, $system_info, true);
+	if ($log_info) {
 		$table->data[2][0] = '<a href="#log_info">' . __('Log Info') . '</a>';
-    }
-    else {
-    	$table->data[2][0] = __('Log Info');
-    }
-    $table->data[2][1] = print_checkbox('log_info', 1, $log_info, true);
+	}
+	else {
+		$table->data[2][0] = __('Log Info');
+	}
+	$table->data[2][1] = print_checkbox('log_info', 1, $log_info, true);
 	$table->data[3][0] = __('Number lines of log');
-    $table->data[3][1] = print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
-    print_table($table);
-    echo "<div style='width: " . $table->width . "; text-align: right;'>";
-   	//print_submit_button(__('Show'), 'show', false, 'class="sub next"');
-   	print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
-   	echo "</div>";
-    echo "</form>";
-    
-    if ($show) {
-	    if ($pandora_diag) {
-	    	$info = array();
-	    	getPandoraDiagnostic($info);
-	    	show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
-	    }
-	    
-	    if ($system_info) {
-	    	$info = array();
-	    	getSystemInfo($info);
-	    	show_array(__('System info'), 'system_info', $info);
-	    }
-	    
-	    if ($log_info) {
-	    	echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
-	    	getLastLog($log_num_lines);
-	    }
-    }
-    elseif ($generate) {
+	$table->data[3][1] = print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
+	print_table($table);
+	echo "<div style='width: " . $table->width . "; text-align: right;'>";
+	//print_submit_button(__('Show'), 'show', false, 'class="sub next"');
+		print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
+	echo "</div>";
+	echo "</form>";
+
+	if ($show) {
+		if ($pandora_diag) {
+			$info = array();
+			getPandoraDiagnostic($info);
+			show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
+		}
+
+		if ($system_info) {
+			$info = array();
+			getSystemInfo($info);
+			show_array(__('System info'), 'system_info', $info);
+		}
+
+		if ($log_info) {
+			echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
+			getLastLog($log_num_lines);
+		}
+	}
+	elseif ($generate) {
 		$tempDirSystem = sys_get_temp_dir();
 		$nameDir = 'dir_' . uniqid();
 		$tempDir = $tempDirSystem . '/' . $nameDir . '/';
 		mkdir($tempDir);
 		
-    	
-    	$zipArchive = $config['attachment_store'] . '/last_info.zip';
-    	@unlink($zipArchive);
-    	
-        if ($config['https']) {
+
+		$zipArchive = $config['attachment_store'] . '/last_info.zip';
+		@unlink($zipArchive);
+
+		if ($config['https']) {
 			$http = 'https://';
 		}
 		else {
-	        $http = "http://";
-	    }
+			$http = "http://";
+		}
 
 		$url = '<a href="' .$http.$_SERVER['HTTP_HOST'].$config["homeurl"].'/attachment/last_info.zip">' . __('System info file zipped') . '</a>';
 		echo '<b>' . __('File:') . '</b> ' . $url;
-    	
+
 		$zip = new ZipArchive;
 		
-    	if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
-	    	if ($pandora_diag) {
+		if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
+			if ($pandora_diag) {
 				$systemInfo = array();
 				getPandoraDiagnostic($systemInfo);
 				
@@ -351,10 +353,9 @@ function mainSystemInfo() {
 			}
 			
 			if ($system_info) {
-		    	$info = array();
-		    	getSystemInfo($info);
-		    	
-		    	
+				$info = array();
+				getSystemInfo($info);
+
 				$file = fopen($tempDir . 'system_info.txt', 'w');
 				
 				if ($file !== false) {
@@ -375,11 +376,11 @@ function mainSystemInfo() {
 				}
 				
 				$zip->addFile($tempDir . 'system_info.txt', 'system_info.txt');
-		    }
-		    
-		    if ($log_info) {
-		    	file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
-		    	$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
+			}
+
+			if ($log_info) {
+				file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
+				$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
 				file_put_contents($tempDir . 'pandora_server.log.lines_' . $log_num_lines, getLastLinesLog("/var/log/pandora/pandora_server.log", $log_num_lines));
 				$zip->addFile($tempDir . 'pandora_server.log.lines_' . $log_num_lines, 'pandora_server.log.lines_' . $log_num_lines);
 				file_put_contents($tempDir . 'pandora_server.error.lines_' . $log_num_lines, getLastLinesLog("/var/log/pandora/pandora_server.error", $log_num_lines));
@@ -392,28 +393,28 @@ function mainSystemInfo() {
 				$zip->addFile($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, 'pandora_server.conf.lines_' . $log_num_lines);
 				file_put_contents($tempDir . 'syslog.lines_' . $log_num_lines, getLastLinesLog("/var/log/syslog", $log_num_lines));
 				$zip->addFile($tempDir . 'syslog.lines_' . $log_num_lines, 'syslog.lines_' . $log_num_lines);
-		    }
-    		
+			}
+	
 			$zip->close();
-    	}
-//    	
-//    	    if ($pandora_diag) {
-//	    	$info = array();
-//	    	getPandoraDiagnostic($info);
-//	    	show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
-//	    }
-//	    
-//	    if ($system_info) {
-//	    	$info = array();
-//	    	getSystemInfo($info);
-//	    	show_array(__('System info'), 'system_info', $info);
-//	    }
-//	    
-//	    if ($log_info) {
-//	    	echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
-//	    	getLastLog($log_num_lines);
-//	    }
-    }
+		}
+//		
+//	if ($pandora_diag) {
+//		$info = array();
+//		getPandoraDiagnostic($info);
+//		show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
+//	}
+//		
+//	if ($system_info) {
+//		$info = array();
+//		getSystemInfo($info);
+//		show_array(__('System info'), 'system_info', $info);
+//	}
+//
+//	if ($log_info) {
+//		echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
+//		getLastLog($log_num_lines);
+//	}
+	}
 }
 
 function consoleMode() {

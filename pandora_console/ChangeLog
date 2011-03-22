@@ -1,7 +1,15 @@
 2011-03-22  Raul Mateos <raulofpandora@gmail.com>
 
+	* extensions/ssh_console.php, extensions/vnc_view.php,
+	extensions/update_manager.php, extensions/users_connected.php,
+	extensions/extension_uploader.php, extensions/insert_data.php,
+	extensions/module_groups.php, extensions/plugin_registration.php:
+	Cleaned code and updated page disclaimers.
+
+2011-03-22  Raul Mateos <raulofpandora@gmail.com>
+
 	* extensions/resource_registration.php,
-	extensions/resource_exporation.php, extensions/agent_modules.php:
+	extensions/resource_exportation.php, extensions/agent_modules.php:
 	Cleaned code and updated page disclaimers.
 
 	* include/functions_reporting.php: Removed SVN errors in code.

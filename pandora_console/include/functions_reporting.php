@@ -1864,7 +1864,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$data[0] = $sizh . __('S.L.A.').$sizhfin;
 			$data[1] = $sizh . human_time_description_raw($content['period']) . $sizhfin;
-			$n = array_push ($table->data, $data);
+			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
 
@@ -1883,6 +1883,24 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$data[0] = __('There are no SLAs defined');
 				array_push ($table->data, $data);
 				$slas = array ();
+				break;
+			}
+			else {
+				$table1->width = '99%';
+				$table1->data = array ();
+				$table1->head = array ();
+				$table1->head[0] = __('Agent');
+				$table1->head[1] = __('Module');
+				$table1->head[2] = __('Max/Min Values');
+				$table1->head[3] = __('SLA Limit');
+				$table1->head[4] = __('Value');
+				$table1->head[5] = __('Status');
+				$table1->style[0] = 'text-align: center';
+				$table1->style[1] = 'text-align: center';
+				$table1->style[2] = 'text-align: center';
+				$table1->style[3] = 'text-align: center';
+				$table1->style[4] = 'text-align: center';
+				$table1->style[5] = 'text-align: center';
 			}
 			
 			$data_graph = array ();
@@ -1897,6 +1915,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
 				}
@@ -1915,53 +1934,54 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				
 				$data = array ();
 				
-				$data[0] = '<strong>'.__('Agent')."</strong> : ";
-				$data[0] .= printTruncateText(get_agentmodule_agent_name ($sla['id_agent_module']))."<br />";
-				$data[0] .= '<strong>'.__('Module')."</strong> : ";
-				$data[0] .= printTruncateText(get_agentmodule_name ($sla['id_agent_module']))."<br />";
-				$data[0] .= '<strong>'.__('SLA Max. (value)')."</strong> : ";
-				$data[0] .= $sla['sla_max']."<br />";
-				$data[0] .= '<strong>'.__('SLA Min. (value)')."</strong> : ";
-				$data[0] .= $sla['sla_min']."<br />";
-				$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
-				$data[0] .= $sla['sla_limit'];
+				$data[0] = printTruncateText(get_agentmodule_agent_name ($sla['id_agent_module']));
+				$data[1] = printTruncateText(get_agentmodule_name ($sla['id_agent_module']));
+				$data[2] = $sla['sla_max'].' / ';
+				$data[2] .= $sla['sla_min'];
+				$data[3] = $sla['sla_limit'];
+				//$data[4] .= $sla_value;
 				
 				if ($sla_value === false) {
-					$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-					$data[1] .= __('Unknown');
+					$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
+					$data[5] .= __('Unknown');
 				} else {
-					if ($sla_value >= $sla['sla_limit'])
-						$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
+					if ($sla_value >= $sla['sla_limit']) {
+						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
+						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+					}
 					else {
 						$sla_failed = true;
-						$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
+						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
+						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 					}
-					$data[1] .= format_numeric ($sla_value). " %";
+					$data[4] .= format_numeric ($sla_value). " %";
 				}
-				$data[1] .= "</span>";
+				$data[4] .= "</span>";
 				
-				$n = array_push ($table->data, $data);
+				array_push ($table1->data, $data);
 			}
-			if (!empty ($slas)) {
-				$data = array ();
-				if ($sla_failed == false)
-					$data[0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
-				else
-					$data[0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
-				$n = array_push ($table->data, $data);
-				$table->colspan[$n - 1][0] = 3;
-				$table->rowstyle[$n - 1] = 'text-align: right';
-			}
+			$table->colspan[2][0] = 3;
+			$data = array();
+			$data[0] = print_table($table1, true);
+			array_push ($table->data, $data);
+
+			$table->colspan[3][0] = 3;
+			$data = array();
+			//$data[0] = $content["description"];
+			//array_push ($table->data, $data_desc);
+			
 			if ($show_graph && !empty($slas)) {
 				if($config['flash_charts']) {
-					echo fs_3d_pie_chart ($data_graph, 370, 180);
+					$data[0] = fs_3d_pie_chart ($data_graph, 370, 180);
 				}
 				else {
 					//Display pie graph
-					echo '<img src="include/fgraph.php?tipo=sla_pie_graph&value1='.$data_graph[__('Inside limits')].
+					$data[0] = '<img src="include/fgraph.php?tipo=sla_pie_graph&value1='.$data_graph[__('Inside limits')].
 					'&value2='.$data_graph[__('Out of limits')].'&value3='.$data_graph[__('On the edge')].
 					'&value4='.$data_graph[__('Unknown')].'&height=150&width=500">';
 				}
+				$table->style[0] = 'text-align: center';
+				array_push ($table->data, $data);
 				//Display horizontal bar graphs
 /*
 				foreach ($slas as $sla) {
@@ -2528,7 +2548,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->style[1] = 'text-align: right';
 			$data = array ();
 			$data[0] = $sizh.__('General').$sizhfin;
-			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[1] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2733,7 +2753,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->style[1] = 'text-align: right';
 			$data = array ();
 			$data[0] = $sizh.__('Top').' '.$content['top_n_value'].$sizhfin;
-			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[1] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2921,7 +2941,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					break;
 			}
 			$data[0].=$sizhfin;
-			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
+			$data[1] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)

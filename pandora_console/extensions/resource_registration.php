@@ -815,7 +815,7 @@ function resource_registration_extension_main() {
 	require_once($config['homedir'] . '/include/functions_network_components.php');
 	require_once($config['homedir'] . '/include/functions_db.php');
 	enterprise_include_once('include/functions_local_components.php');
-
+    
 	print_page_header (__('Resource registration'), "images/extensions.png", false, "", true, "" );
 	
 	if (!extension_loaded("libxml")) {

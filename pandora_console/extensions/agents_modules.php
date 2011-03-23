@@ -167,15 +167,15 @@ function mainAgentsModules() {
 	$nmodules = 0;
 	foreach($modules_by_name as $module) {
 		$nmodules++;
-	
+		
 		if($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
 			continue;
 		}
-	
+		
 		$file_name = string2image(printTruncateText($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
 		echo '<th width="22px">'.print_image($file_name, true, array('title' => $module['name']))."</th>";
 	}
-			
+	
 	if(($hor_offset + $block) < $nmodules) {
 		$new_hor_offset = $hor_offset+$block;
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";

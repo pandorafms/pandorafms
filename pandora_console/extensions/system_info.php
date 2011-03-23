@@ -232,22 +232,23 @@ function mainSystemInfo() {
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
+		
 		return;
 	}
-
+	
 	$show = (bool) get_parameter('show');
 	$generate = (bool) get_parameter('generate');
 	$pandora_diag = (bool) get_parameter('pandora_diag', 0);
 	$system_info = (bool) get_parameter('system_info', 0);
 	$log_info = (bool) get_parameter('log_info', 0);
 	$log_num_lines = (int) get_parameter('log_num_lines', 2000);
-
+	
 	print_page_header (__("System Info"), "images/extensions.png", false, "", true, "" );
-
+	
 	echo '<div class="notify">';
 	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");
 	echo '</div>';
-
+	
 	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
 
 	echo "<form method='post'>";
@@ -284,20 +285,20 @@ function mainSystemInfo() {
 		print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
 	echo "</div>";
 	echo "</form>";
-
+	
 	if ($show) {
 		if ($pandora_diag) {
 			$info = array();
 			getPandoraDiagnostic($info);
 			show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
 		}
-
+		
 		if ($system_info) {
 			$info = array();
 			getSystemInfo($info);
 			show_array(__('System info'), 'system_info', $info);
 		}
-
+		
 		if ($log_info) {
 			echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
 			getLastLog($log_num_lines);
@@ -309,10 +310,9 @@ function mainSystemInfo() {
 		$tempDir = $tempDirSystem . '/' . $nameDir . '/';
 		mkdir($tempDir);
 		
-
 		$zipArchive = $config['attachment_store'] . '/last_info.zip';
 		@unlink($zipArchive);
-
+		
 		if ($config['https']) {
 			$http = 'https://';
 		}
@@ -322,7 +322,7 @@ function mainSystemInfo() {
 
 		$url = '<a href="' .$http.$_SERVER['HTTP_HOST'].$config["homeurl"].'/attachment/last_info.zip">' . __('System info file zipped') . '</a>';
 		echo '<b>' . __('File:') . '</b> ' . $url;
-
+    	
 		$zip = new ZipArchive;
 		
 		if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
@@ -355,7 +355,7 @@ function mainSystemInfo() {
 			if ($system_info) {
 				$info = array();
 				getSystemInfo($info);
-
+				
 				$file = fopen($tempDir . 'system_info.txt', 'w');
 				
 				if ($file !== false) {
@@ -377,7 +377,7 @@ function mainSystemInfo() {
 				
 				$zip->addFile($tempDir . 'system_info.txt', 'system_info.txt');
 			}
-
+			
 			if ($log_info) {
 				file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
 				$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
@@ -394,26 +394,9 @@ function mainSystemInfo() {
 				file_put_contents($tempDir . 'syslog.lines_' . $log_num_lines, getLastLinesLog("/var/log/syslog", $log_num_lines));
 				$zip->addFile($tempDir . 'syslog.lines_' . $log_num_lines, 'syslog.lines_' . $log_num_lines);
 			}
-	
+			
 			$zip->close();
 		}
-//		
-//	if ($pandora_diag) {
-//		$info = array();
-//		getPandoraDiagnostic($info);
-//		show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
-//	}
-//		
-//	if ($system_info) {
-//		$info = array();
-//		getSystemInfo($info);
-//		show_array(__('System info'), 'system_info', $info);
-//	}
-//
-//	if ($log_info) {
-//		echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
-//		getLastLog($log_num_lines);
-//	}
 	}
 }
 

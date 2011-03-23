@@ -842,6 +842,13 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
      ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `treport_content_item` (
+  `id` INTEGER UNSIGNED NOT NULL auto_increment, 
+  `id_report_content` INTEGER UNSIGNED NOT NULL, 
+  `id_agent_module` int(10) unsigned NOT NULL, 
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
   `id` INTEGER UNSIGNED NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',

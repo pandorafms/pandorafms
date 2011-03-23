@@ -42,6 +42,16 @@ ALTER TABLE `treport_content` ADD COLUMN `show_graph` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `group_by_agent` INT NOT NULL DEFAULT 0;
 
 -- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treport_content_item` (
+  `id` INTEGER UNSIGNED NOT NULL auto_increment, 
+  `id_report_content` INTEGER UNSIGNED NOT NULL, 
+  `id_agent_module` int(10) unsigned NOT NULL, 
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
 ALTER TABLE `tusuario` ADD COLUMN `block_size` int(4) NOT NULL DEFAULT 20;

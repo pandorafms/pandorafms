@@ -929,7 +929,15 @@ CREATE TABLE treport_content (
 	friday NUMBER(5, 0) default 1 NOT NULL,
 	saturday NUMBER(5, 0) default 1 NOT NULL,
 	sunday NUMBER(5, 0) default 1 NOT NULL,
-	only_display_wrong NUMBER(5, 0) default 0 NOT NULL
+	only_display_wrong NUMBER(5, 0) default 0 NOT NULL,
+	top_n NUMBER(10, 0) default 0 NOT NULL,
+	top_n_value NUMBER(10, 0) default 10 NOT NULL ,
+	exception_condition NUMBER(10, 0) default 0 NOT NULL,
+	exception_condition_value DOUBLE (18,6) default 0 NOT NULL,
+	show_resume NUMBER(10, 0) default 0 NOT NULL,
+	order_uptodown NUMBER(10, 0) default 0 NOT NULL,
+	show_graph NUMBER(10, 0) default 0 NOT NULL,
+	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
 );
 
 CREATE SEQUENCE treport_content_s INCREMENT BY 1 START WITH 1;
@@ -961,6 +969,17 @@ CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF ID_RC ON 
 
 -- on update trigger 1
 CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update1 AFTER UPDATE OF ID_AGENTE_MODULO ON tagente_modulo FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET ID_AGENT_MODULE = :NEW.ID_AGENTE_MODULO WHERE ID_AGENT_MODULE = :OLD.ID_AGENTE_MODULO; END; 
+/
+
+CREATE TABLE treport_content_item (
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_report_content NUMBER(10, 0) NOT NULL,
+	id_agent_module NUMBER(10, 0) NOT NULL
+);
+
+CREATE SEQUENCE treport_cont_i_s INCREMENT BY 1 START WITH 1;
+
+CREATE OR REPLACE TRIGGER treport_content_i_inc BEFORE INSERT ON treport_content_item REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_cont_i_s.nextval INTO :NEW.ID FROM dual; END treport_content_i_inc;
 /
 
 CREATE TABLE treport_custom_sql (

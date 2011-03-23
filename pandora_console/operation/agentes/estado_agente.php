@@ -16,6 +16,8 @@
 // Load global vars
 global $config;
 
+ob_start();
+
 require_once ("include/functions_reporting.php");
 check_login ();
 
@@ -27,6 +29,8 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 if (is_ajax ()) {
+	ob_get_clean();
+	
 	$get_agent_module_last_value = (bool) get_parameter ('get_agent_module_last_value');
 	$get_actions_alert_template = (bool) get_parameter("get_actions_alert_template");
 	
@@ -75,6 +79,7 @@ if (is_ajax ()) {
 	
 	return;
 }
+ob_end_clean();
 
 $first = true;
 while ($row = get_db_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")) {

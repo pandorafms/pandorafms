@@ -1,3 +1,7 @@
+2011-03-23 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_agente.php: fixed the output of ajax request.
+
 2011-03-23  Raul Mateos <raulofpandora@gmail.com>
 
 	* extensions/ssh_console.php, extensions/vnc_view.php,

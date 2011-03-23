@@ -1,5 +1,13 @@
 2011-03-23 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/insert_data.php, extensions/system_info.php,
+	extensions/agents_modules.php, extensions/ssh_console.php,
+	extensions/resource_registration.php, extensions/resource_exportation.php,
+	extensions/plugin_registration.php: re-ordered and re-cleaned some parts or
+	lines of source code. 
+
+2011-03-23 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fixed the include "fgraph", did'nt show
 	warning message in the generation of PDF.
 

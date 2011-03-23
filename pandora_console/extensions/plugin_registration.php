@@ -16,6 +16,7 @@
 
 function pluginreg_extension_main () {
 	global $config;
+
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
@@ -47,9 +48,10 @@ function pluginreg_extension_main () {
 	if ($zip) {
 		while ($zip_entry = zip_read($zip)) {
 			if (zip_entry_open($zip, $zip_entry, "r")) {
-				if (zip_entry_name($zip_entry) == "plugin_definition.ini"){
+				if (zip_entry_name($zip_entry) == "plugin_definition.ini") {
 					$basepath = $config["attachment_store"];
-				} else {
+				}
+				else {
 					$basepath = $config["plugin_store"];
 				}
 				$filename = $basepath . "/". zip_entry_name($zip_entry);

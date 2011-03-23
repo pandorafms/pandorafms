@@ -45,16 +45,14 @@ function createXMLData($agent, $agentModule, $time, $data) {
 function mainInsertData() {
 	global $config;
 	
-	
 	print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
-
 
 	if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
 		pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	$save = (bool)get_parameter('save', false);
 	$id_agent = (string)get_parameter('id_agent', '');
 	$id_agent_module = (int)get_parameter('id_agent_module', '');
@@ -78,39 +76,38 @@ function mainInsertData() {
 		if (!check_acl($config['id_user'], get_agent_group(get_agent_id($id_agent)), "AW")) {
 			print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
-	else {
-		$agent = get_db_row_filter('tagente', array('nombre' => $id_agent));
-		$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
-	
-		$date2 = str_replace('-', '/', $date);
-		$time2 = DATE("H:i", strtotime($time));
-
-		$date_xml = $date2 . ' ' . $time2 . ':00';
-
-		if ($csv !== false) {
-			$file = file($csv['tmp_name']);
-			foreach ($file as $line) {
-				$tokens = explode(';', $line);
-				createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
+		else {
+			$agent = get_db_row_filter('tagente', array('nombre' => $id_agent));
+			$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
+			
+			$date2 = str_replace('-', '/', $date);
+			$time2 = DATE("H:i", strtotime($time));
+			
+			$date_xml = $date2 . ' ' . $time2 . ':00';
+			
+			if ($csv !== false) {
+				$file = file($csv['tmp_name']);
+				foreach ($file as $line) {
+					$tokens = explode(';', $line);
+					
+					createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
+				}
+			}
+			else {
+				createXMLData($agent, $agentModule, $date_xml, $data);
 			}
 		}
-		else {
-			createXMLData($agent, $agentModule, $date_xml, $data);
-		}
 	}
-}
-
-
-
+	
 	echo '<div class="notify">';
 	echo __("Please check that the directory \"/var/spool/pandora/data_in\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.");
 	echo '</div>';
-
+	
 	$table = null;
 	$table->width = '80%';
 	$table->style = array();
 	$table->style[0] = 'font-weight: bolder;';
-
+	
 	$table->data = array();
 	$table->data[0][0] = __('Agent');
 	$table->data[0][1] = print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
@@ -129,98 +126,98 @@ function mainInsertData() {
 	$table->data[3][1] .= print_input_text ('time', $time, '', 7, 7, true);
 	$table->data[4][0] = __('CSV');
 	$table->data[4][1] = print_input_file('csv', true);
-
+	
 	echo "<form method='post' enctype='multipart/form-data'>";
-
+	
 	print_table($table);
-
+	
 	echo "<div style='text-align: right; width: " . $table->width . "'>";
 	print_input_hidden('save', 1);
 	print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
 	echo "</div>";
-
+	
 	echo "</form>";
-
+	
 	require_css_file ('datepicker');
 	require_jquery_file ('ui.core');
 	require_jquery_file ('ui.datepicker');
 	require_jquery_file ('timeentry');
 	require_jquery_file ('autocomplete');
 ?>
-	<script type="text/javascript">
-		/* <![CDATA[ */
-		$(document).ready (function () {
-		
-			$("#text_id_agent").autocomplete(
-				"ajax.php",
-				{
-					minChars: 2,
-					scroll:true,
-					extraParams: {
-						page: "operation/agentes/exportdata",
-						search_agents: 1,
-						id_group: function() { return $("#id_group").val(); }
-					},
-					formatItem: function (data, i, total) {
-						if (total == 0)
-							$("#text_id_agent").css ('background-color', '#cc0000');
-						else
-							$("#text_id_agent").css ('background-color', '');
-						if (data == "")
-							return false;
-						
-						return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-					},
-					delay: 200
-				}
-			);
+<script type="text/javascript">
+	/* <![CDATA[ */
+	$(document).ready (function () {
 	
-			$("#text-time").timeEntry ({
-				spinnerImage: 'images/time-entry.png',
-				spinnerSize: [20, 20, 0]
-			});
-			
-			$("#text-date").datepicker ();
-			
-		});
-	
-		$("#text_id_agent").result (
-			function () {
-				selectAgent = true;
-				var agent_name = this.value;
-				$('#id_agent_module').fadeOut ('normal', function () {
-					$('#id_agent_module').empty ();
-					var inputs = [];
-					inputs.push ("agent_name=" + agent_name);
-					inputs.push ('filter=delete_pending = 0');
-					inputs.push ("get_agent_modules_json=1");
-					inputs.push ("page=operation/agentes/ver_agente");
-					jQuery.ajax ({
-						data: inputs.join ("&"),
-						type: 'GET',
-						url: action="ajax.php",
-						timeout: 10000,
-						dataType: 'json',
-						success: function (data) {
-							$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
-							jQuery.each (data, function (i, val) {
-								s = js_html_entity_decode (val['nombre']);
-								$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-							});
-							$('#id_agent_module').enable();
-							$('#id_agent_module').fadeIn ('normal');
-	
-							$('#submit-submit').enable();
-							$('#submit-submit').fadeIn ('normal');
-						}
-					});
-				});
-		
-				
+		$("#text_id_agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "operation/agentes/exportdata",
+					search_agents: 1,
+					id_group: function() { return $("#id_group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text_id_agent").css ('background-color', '#cc0000');
+					else
+						$("#text_id_agent").css ('background-color', '');
+					if (data == "")
+						return false;
+					
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+				},
+				delay: 200
 			}
 		);
-		/* ]]> */
-	</script>
+
+		$("#text-time").timeEntry ({
+			spinnerImage: 'images/time-entry.png',
+			spinnerSize: [20, 20, 0]
+		});
+		
+		$("#text-date").datepicker ();
+		
+	});
+
+	$("#text_id_agent").result (
+		function () {
+			selectAgent = true;
+			var agent_name = this.value;
+			$('#id_agent_module').fadeOut ('normal', function () {
+				$('#id_agent_module').empty ();
+				var inputs = [];
+				inputs.push ("agent_name=" + agent_name);
+				inputs.push ('filter=delete_pending = 0');
+				inputs.push ("get_agent_modules_json=1");
+				inputs.push ("page=operation/agentes/ver_agente");
+				jQuery.ajax ({
+					data: inputs.join ("&"),
+					type: 'GET',
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: 'json',
+					success: function (data) {
+						$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+						jQuery.each (data, function (i, val) {
+							s = js_html_entity_decode (val['nombre']);
+							$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+						});
+						$('#id_agent_module').enable();
+						$('#id_agent_module').fadeIn ('normal');
+
+						$('#submit-submit').enable();
+						$('#submit-submit').fadeIn ('normal');
+					}
+				});
+			});
+	
+			
+		}
+	);
+	/* ]]> */
+</script>
 <?php
 }
 

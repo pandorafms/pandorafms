@@ -1,5 +1,9 @@
 2011-03-23 Javier Lanz <javier.lanz@artica.es>
 
+	* include/functions_reporting.php: Changed SLA report table layout
+
+2011-03-23 Javier Lanz <javier.lanz@artica.es>
+
 	* pandoradb.sql: Added creation of treport_content_item and updated
 	treport_content table
 	* pandoradb.postgreSQL.sql: Added creation of treport_content_item and

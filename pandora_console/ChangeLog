@@ -1,3 +1,7 @@
+2011-03-23 Javier Lanz <javier.lanz@artica.es>
+
+	* images/global.png: Added image 'global.png' for the global report tab
+
 2011-03-22  Raul Mateos <raulofpandora@gmail.com>
 
 	* extensions/ssh_console.php, extensions/vnc_view.php,

@@ -1,3 +1,7 @@
+2011-03-23  Raul Mateos <raulofpandora@gmail.com>
+
+	* operation/search_agents.php: Updated forgotten file
+
 2011-03-23 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_agente.php: fixed the output of ajax request.
@@ -13,7 +17,7 @@
 	extensions/pandora_logs.php, general/*.php, ajax.php, 
 	operation/search_*.php, operation/menu.php, operation/extensions.php,
 	godmode/menu.php, godmode/extensions.php, godmode/admin_access_logs.php:
-	CReverted unwanted license changes.
+	Reverted unwanted license changes.
 
 2011-03-23 Javier Lanz <javier.lanz@artica.es>
 

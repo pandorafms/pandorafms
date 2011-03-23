@@ -1,3 +1,13 @@
+2011-03-23 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: fixed the include "fgraph", did'nt show
+	warning message in the generation of PDF.
+
+2011-03-23 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: erased the svn diff messages lost in
+	old times.
+
 2011-03-23 Javier Lanz <javier.lanz@artica.es>
 
 	* images/global.png: Added image 'global.png' for the global report tab

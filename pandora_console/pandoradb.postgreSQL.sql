@@ -742,7 +742,15 @@ CREATE TABLE "treport_content" (
 	"friday" SMALLINT NOT NULL default 1,
 	"saturday" SMALLINT NOT NULL default 1,
 	"sunday" SMALLINT NOT NULL default 1,
-	"only_display_wrong" SMALLINT NOT NULL default 0
+	"only_display_wrong" SMALLINT NOT NULL default 0,
+	"top_n" INTEGER NOT NULL default 0,
+	"top_n_value" INTEGER NOT NULL default 10,
+	"exception_condition" INTEGER NOT NULL default 0,
+	"exception_condition_value" DOUBLE PRECISION NOT NULL default 0,
+	"show_resume" INTEGER NOT NULL default 0,
+	"order_uptodown" INTEGER NOT NULL default 0,
+	"show_graph" INTEGER NOT NULL default 0,
+	"group_by_agent" INTEGER NOT NULL default 0
 );
 
 CREATE TABLE "treport_content_sla_combined" (
@@ -752,6 +760,12 @@ CREATE TABLE "treport_content_sla_combined" (
 	"sla_max" DOUBLE PRECISION NOT NULL default 0,
 	"sla_min" DOUBLE PRECISION NOT NULL default 0,
 	"sla_limit" DOUBLE PRECISION NOT NULL default 0
+);
+
+CREATE TABLE "treport_content_item" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_report_content" INTEGER NOT NULL,
+	"id_agent_module" INTEGER NOT NULL
 );
 
 CREATE TABLE "treport_custom_sql" (

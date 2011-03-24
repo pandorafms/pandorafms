@@ -1090,7 +1090,22 @@
        $Value2     = $Value[$DataDescription["Position"]];
        $Position   = imageftbbox($this->FontSize,0,$this->FontName,$Value2);
        $TextHeight = $Position[1]-$Position[7];
-       $this->drawFilledRectangle($XPos+10,$YPos+$YOffset-6,$XPos+14,$YPos+$YOffset-2,$this->Palette[$ID]["R"],$this->Palette[$ID]["G"],$this->Palette[$ID]["B"]);
+       
+        if (isset($this->Palette[$Key])) {
+      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+      	}
+      	else {
+      	  $this_Palette_Key_R = 0;
+      	  $this_Palette_Key_G = 0;
+      	  $this_Palette_Key_B = 0;
+      	}
+       
+       $this->drawFilledRectangle($XPos+10,$YPos+$YOffset-6,$XPos+14,$YPos+$YOffset-2,
+       $this_Palette_Key_R,
+       $this_Palette_Key_G,
+       $this_Palette_Key_B);
 
        imagettftext($this->Picture,$this->FontSize,0,$XPos+22,$YPos+$YOffset,$C_TextColor,$this->FontName,$Value2);
        $YOffset = $YOffset + $TextHeight + 4;
@@ -2797,13 +2812,41 @@
      /* Draw Bottom polygons */
      foreach($iValues as $Key => $Value)
       {
-       $C_GraphLo = $this->AllocateColor($this->Picture,$this->Palette[$Key]["R"],$this->Palette[$Key]["G"],$this->Palette[$Key]["B"],-20);
+      	if (isset($this->Palette[$Key])) {
+      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+      	}
+      	else {
+      	  $this_Palette_Key_R = 0;
+      	  $this_Palette_Key_G = 0;
+      	  $this_Palette_Key_B = 0;
+      	}
+       $C_GraphLo = $this->AllocateColor($this_Palette_Key_R,$this_Palette_Key_G,$this_Palette_Key_B,-20);
        imagefilledpolygon($this->Picture,$BotPlots[$Key],(count($BotPlots[$Key])+1)/2,$C_GraphLo);
 
        if ( $EnhanceColors ) { $En = -10; } else { $En = 0; }
  
-       for($j=0;$j<=count($aBotPlots[$Key])-4;$j=$j+2)
-        $this->drawLine($aBotPlots[$Key][$j],$aBotPlots[$Key][$j+1],$aBotPlots[$Key][$j+2],$aBotPlots[$Key][$j+3],$this->Palette[$Key]["R"]+$En,$this->Palette[$Key]["G"]+$En,$this->Palette[$Key]["B"]+$En);
+       for($j=0;$j<=count($aBotPlots[$Key])-4;$j=$j+2) {
+			if (isset($this->Palette[$Key])) {
+	      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+	      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+	      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+	      	}
+	      	else {
+	      	  $this_Palette_Key_R = 0;
+	      	  $this_Palette_Key_G = 0;
+	      	  $this_Palette_Key_B = 0;
+	      	}
+       
+            $this->drawLine($aBotPlots[$Key][$j],
+            	$aBotPlots[$Key][$j+1],
+            	$aBotPlots[$Key][$j+2],
+            	$aBotPlots[$Key][$j+3],
+            	$this_Palette_Key_R+$En,
+            	$this_Palette_Key_G+$En,
+            	$this_Palette_Key_B+$En);
+        }
       }
 
      /* Draw pie layers */
@@ -2814,7 +2857,21 @@
         $iValues = array();
        foreach($iValues as $Key => $Value)
         {
-         $C_GraphLo = $this->AllocateColor($this->Picture,$this->Palette[$Key]["R"],$this->Palette[$Key]["G"],$this->Palette[$Key]["B"],-10);
+            if (isset($this->Palette[$Key])) {
+	      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+	      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+	      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+	      	}
+	      	else {
+	      	  $this_Palette_Key_R = 0;
+	      	  $this_Palette_Key_G = 0;
+	      	  $this_Palette_Key_B = 0;
+	      	}
+        
+         $C_GraphLo = $this->AllocateColor($this->Picture,
+         	$this_Palette_Key_R,
+         	$this_Palette_Key_G,
+         	$this_Palette_Key_B,-10);
          $Plots = ""; $Plot = 0;
          foreach($TopPlots[$Key] as $Key2 => $Value2)
           {
@@ -2829,21 +2886,71 @@
          $Index       = count($Plots);
          if ($EnhanceColors ) {$ColorFactor = -20 + ($SpliceHeight - $i) * $ColorRatio; } else { $ColorFactor = 0; }
 
-         $this->drawAntialiasPixel($Plots[0],$Plots[1],$this->Palette[$Key]["R"]+$ColorFactor,$this->Palette[$Key]["G"]+$ColorFactor,$this->Palette[$Key]["B"]+$ColorFactor);
-         $this->drawAntialiasPixel($Plots[2],$Plots[3],$this->Palette[$Key]["R"]+$ColorFactor,$this->Palette[$Key]["G"]+$ColorFactor,$this->Palette[$Key]["B"]+$ColorFactor);
-         $this->drawAntialiasPixel($Plots[$Index-4],$Plots[$Index-3],$this->Palette[$Key]["R"]+$ColorFactor,$this->Palette[$Key]["G"]+$ColorFactor,$this->Palette[$Key]["B"]+$ColorFactor);
+		if (isset($this->Palette[$Key])) {
+      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+      	}
+      	else {
+      	  $this_Palette_Key_R = 0;
+      	  $this_Palette_Key_G = 0;
+      	  $this_Palette_Key_B = 0;
+      	}
+
+
+         $this->drawAntialiasPixel($Plots[0],$Plots[1],
+         $this_Palette_Key_R+$ColorFactor,
+         $this_Palette_Key_G+$ColorFactor,$this_Palette_Key_B+$ColorFactor);
+         $this->drawAntialiasPixel($Plots[2],$Plots[3],
+         $this_Palette_Key_R+$ColorFactor,
+         $this_Palette_Key_G+$ColorFactor,
+         $this_Palette_Key_B+$ColorFactor);
+         $this->drawAntialiasPixel($Plots[$Index-4],$Plots[$Index-3],
+         $this_Palette_Key_R+$ColorFactor,
+         $this_Palette_Key_G+$ColorFactor,
+         $this_Palette_Key_B+$ColorFactor);
         }
       }
 
      /* Draw Top polygons */
      for($Key=count($iValues)-1;$Key>=0;$Key--)
-      { 
-       $C_GraphLo = $this->AllocateColor($this->Picture,$this->Palette[$Key]["R"],$this->Palette[$Key]["G"],$this->Palette[$Key]["B"]);
+      {
+      if (isset($this->Palette[$Key])) {
+      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+      	}
+      	else {
+      	  $this_Palette_Key_R = 0;
+      	  $this_Palette_Key_G = 0;
+      	  $this_Palette_Key_B = 0;
+      	}
+      
+      
+       $C_GraphLo = $this->AllocateColor($this->Picture,
+       $this_Palette_Key_R,
+       $this_Palette_Key_G,
+       $this_Palette_Key_B);
        imagefilledpolygon($this->Picture,$TopPlots[$Key],(count($TopPlots[$Key])+1)/2,$C_GraphLo);
 
        if ( $EnhanceColors ) { $En = 10; } else { $En = 0; }
-       for($j=0;$j<=count($aTopPlots[$Key])-4;$j=$j+2)
-        $this->drawLine($aTopPlots[$Key][$j],$aTopPlots[$Key][$j+1],$aTopPlots[$Key][$j+2],$aTopPlots[$Key][$j+3],$this->Palette[$Key]["R"]+$En,$this->Palette[$Key]["G"]+$En,$this->Palette[$Key]["B"]+$En);
+       for($j=0;$j<=count($aTopPlots[$Key])-4;$j=$j+2) {
+        if (isset($this->Palette[$Key])) {
+      	   $this_Palette_Key_R = $this->Palette[$Key]["R"];
+      	   $this_Palette_Key_G = $this->Palette[$Key]["G"];
+      	   $this_Palette_Key_B = $this->Palette[$Key]["B"];
+      	}
+      	else {
+      	  $this_Palette_Key_R = 0;
+      	  $this_Palette_Key_G = 0;
+      	  $this_Palette_Key_B = 0;
+      	}
+       
+        $this->drawLine($aTopPlots[$Key][$j],$aTopPlots[$Key][$j+1],$aTopPlots[$Key][$j+2],$aTopPlots[$Key][$j+3],
+        $this_Palette_Key_R+$En,
+        $this_Palette_Key_G+$En,
+        $this_Palette_Key_B+$En);
+       }
       }
     }
 
@@ -3245,7 +3352,7 @@
     }
 
    /* Color helper */
-   function AllocateColor($Picture,$R,$G,$B,$Factor=0)
+   function AllocateColor($Picture,$R = 0,$G = 0,$B = 0,$Factor=0)
     {
      $R = $R + $Factor;
      $G = $G + $Factor;
@@ -3254,7 +3361,7 @@
      if ( $G < 0 ) { $G = 0; } if ( $G > 255 ) { $G = 255; }
      if ( $B < 0 ) { $B = 0; } if ( $B > 255 ) { $B = 255; }
 
-     return(imagecolorallocate($Picture,$R,$G,$B));
+     return(@imagecolorallocate($Picture,$R,$G,$B));
     }
 
    /* Add a border to the picture */

@@ -956,7 +956,7 @@ function generic_single_graph ($width = 380, $height = 200, &$data, $interval = 
  * @param mixed data Data for make the graph
  * @param string legend Legend to show in graph
  */
-function generic_vertical_bar_graph ($width = 380, $height = 200, &$data, &$legend) {
+function generic_vertical_bar_graph ($width = 380, $height = 200, &$data, &$legend = '') {
 	global $config;
 	
 	if (sizeof ($data) == 0)

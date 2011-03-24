@@ -1,5 +1,13 @@
 2011-03-24 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/pChart/pChart.class: some fixes to prevent notices and warning
+	PHP messages that corrupt image file.
+	 
+	* include/fgraph.php: some fixes to prevent noticies and warning PHP
+	messages that corrupt image file.
+
+2011-03-24 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fixed in the content "general" when the
 	report haven't agents.
 	

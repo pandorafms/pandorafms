@@ -20,7 +20,8 @@
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
 
-SET ESCAPE \
+-- PL/SQL blocks must end with two semicolons because Pandora installer need it 
+
 
 -- Dumping data for table talert_commands
 --
@@ -36,8 +37,7 @@ INSERT INTO talert_commands VALUES (7,'Sound Alert','/usr/bin/play /usr/share/so
 INSERT INTO talert_commands VALUES (8,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name', 0);
 INSERT INTO talert_commands VALUES (9,'SMS','sendsms _field1_ _field2_','Send SMS using the Pandora FMS standard SMS device, using smstools.  Uses field2 as text message, field1 as destination phone (include international prefix!)', 0);
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table tconfig
@@ -79,9 +79,12 @@ INSERT INTO tconfig (token, value) VALUES ('gis_purge', 15);
 INSERT INTO tconfig (token, value) VALUES ('sound_alert', 'include/sounds/air_shock_alarm.wav');
 INSERT INTO tconfig (token, value) VALUES ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav');
 INSERT INTO tconfig (token, value) VALUES ('sound_warning', 'include/sounds/negativebeep.wav');
+INSERT INTO tconfig (token, value) VALUES ('integria_enabled', '0');
+INSERT INTO tconfig (token, value) VALUES ('integria_api_password', ' ');
+INSERT INTO tconfig (token, value) VALUES ('integria_inventory', '0');
+INSERT INTO tconfig (token, value) VALUES ('integria_url', ' ');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tconfig_os"
@@ -103,13 +106,11 @@ INSERT INTO tconfig_os VALUES (13,'Octopods','Octopods Pandora FMS Hardware Agen
 INSERT INTO tconfig_os VALUES (14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png');
 INSERT INTO tconfig_os VALUES (15,'Android','Android agent','android.png');
 COMMIT;
-END;
-/
+END;;
 
 CREATE SEQUENCE tconfig_os_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tconfig_os_inc BEFORE INSERT ON tconfig_os REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_os_s.nextval INTO :NEW.ID_OS FROM dual; END; 
-/
+CREATE OR REPLACE TRIGGER tconfig_os_inc BEFORE INSERT ON tconfig_os REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_os_s.nextval INTO :NEW.ID_OS FROM dual; END;;
 
 -- PLSQL for update curr val of sequence
 BEGIN 
@@ -121,8 +122,7 @@ BEGIN
 	SELECT TCONFIG_OS_S.NEXTVAL INTO key_currval FROM dual; 
 	EXECUTE IMMEDIATE 'ALTER SEQUENCE TCONFIG_OS_S INCREMENT BY 1'; 
 END; 
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tgrupo"
@@ -138,8 +138,7 @@ INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (12,'Applications','applications',0,0,0,'');
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (13,'Web','world',0,0,0,'');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tlanguage"
@@ -181,8 +180,7 @@ INSERT INTO tlanguage VALUES ('uk','Українська');
 INSERT INTO tlanguage VALUES ('zh_CN','简化字');
 INSERT INTO tlanguage VALUES ('zh_TW','簡化字');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tlink"
@@ -191,12 +189,12 @@ BEGIN
 LOCK TABLE tlink IN EXCLUSIVE MODE;
 INSERT INTO tlink VALUES (1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora');
 INSERT INTO tlink VALUES (2,'Pandora FMS','http://pandorafms.org');
-INSERT INTO tlink VALUES (3,'Report a bug','{https://sourceforge.net/tracker/?func=add\&amp;group_id=155200\&amp;atid=794852}');
-INSERT INTO tlink VALUES (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200\&amp;atid=794855');
-INSERT INTO tlink VALUES (5,'Module library','http://pandorafms.org/?sec=community\&amp;sec2=repository\&amp;lng=es');
+INSERT INTO tlink VALUES (3,'Report a bug','{https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852}');
+INSERT INTO tlink VALUES (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855');
+INSERT INTO tlink VALUES (5,'Module library','http://pandorafms.org/?sec=community&amp;sec2=repository&amp;lng=es');
 INSERT INTO tlink VALUES (6,'Commercial support','http://pandorafms.com');
 COMMIT;
-END;
+END;;
 
 --
 -- Dumping data for table "tmodule_group"
@@ -213,8 +211,7 @@ INSERT INTO tmodule_group VALUES (7,'Database');
 INSERT INTO tmodule_group VALUES (8,'Enviromental');
 INSERT INTO tmodule_group VALUES (9,'Users');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "torigen"
@@ -231,8 +228,7 @@ INSERT INTO torigen VALUES ('Pandora FMS Event');
 INSERT INTO torigen VALUES ('User report');
 INSERT INTO torigen VALUES ('Unknown source');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "ttipo_modulo"
@@ -261,8 +257,7 @@ INSERT INTO ttipo_modulo VALUES (23,'async_string', 8, 'Asyncronous string data'
 INSERT INTO ttipo_modulo VALUES (24,'log4x',0,'Log4x','mod_log4x.png');
 INSERT INTO ttipo_modulo VALUES (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 COMMIT;
-END;
-/
+END;;
 
 -- Categoria field is used to segregate several types
 -- (plugin, agents, network) on their data
@@ -276,8 +271,7 @@ LOCK TABLE tusuario IN EXCLUSIVE MODE;
 INSERT INTO tusuario (id_user, fullname, firstname, lastname, middlename, password, comments, last_connect, registered, email, phone, is_admin) VALUES
 ('admin', 'Pandora', 'Pandora', 'Admin', ' ', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1);
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tusuario_perfil"
@@ -286,8 +280,7 @@ BEGIN
 LOCK TABLE tusuario_perfil IN EXCLUSIVE MODE;
 INSERT INTO tusuario_perfil VALUES (1,'admin',5,0,'admin');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tperfil"
@@ -300,8 +293,7 @@ INSERT INTO tperfil VALUES (3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0);
 INSERT INTO tperfil VALUES (4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0);
 INSERT INTO tperfil VALUES (5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1);
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tnews"
@@ -311,8 +303,7 @@ LOCK TABLE tnews IN EXCLUSIVE MODE;
 INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (1,'admin','Welcome to Pandora FMS 3.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',current_timestamp);
 INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (2,'admin','New GIS Feature','Try our new GIS representation, activate GIS in Setup to see new available options.',current_timestamp);
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tmodule"
@@ -325,8 +316,7 @@ INSERT INTO tmodule VALUES (4,'Plugin&#x20;module');
 INSERT INTO tmodule VALUES (5,'Prediction&#x20;module');
 INSERT INTO tmodule VALUES (6,'WMI&#x20;module');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tnetwork_component"
@@ -370,12 +360,11 @@ INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, m
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo) VALUES (176,'Catalyst Free Mem','Taken from ftp://ftp.cisco.com/pub/mibs/oid/OLD-CISCO-MEMORY-MIB.oid',2,15,0,0,180,0,' ',' ','public','1.3.6.1.4.1.9.2.1.8',4,2);
 
 -- WMI components
-INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, plugin_user, max_timeout) VALUES (200, 'CPU load', 'CPU0 load average', 14, 1, 100, 0, 300, 1, ' ', ' ', ' ', 'SELECT LoadPercentage from Win32_Processor WHERE DeviceID = \&quot;CPU0\&quot;', 1, 6, 'Administrator', 10);
+INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, plugin_user, max_timeout) VALUES (200, 'CPU load', 'CPU0 load average', 14, 1, 100, 0, 300, 1, ' ', ' ', ' ', 'SELECT LoadPercentage from Win32_Processor WHERE DeviceID = &quot;CPU0&quot;', 1, 6, 'Administrator', 10);
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, plugin_user, max_timeout) VALUES (201, 'Free RAM', 'Available RAM memory in bytes', 14, 1, 0, 0, 300, 0, ' ', ' ', ' ', 'SELECT AvailableBytes from Win32_PerfRawData_PerfOS_Memory', 1, 6, 'Administrator', 10);
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, plugin_user, max_timeout) VALUES (202, 'Windows version', 'Operating system version', 14, 3, 0, 0, 300, 1, ' ', ' ', ' ', 'SELECT Caption FROM Win32_OperatingSystem', 1, 6, 'Administrator', 10);
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tnetwork_component_group"
@@ -391,8 +380,7 @@ INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (12,'Operating
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (13,'UCD Mibs (Linux, UCD-SNMP)',12);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (14,'WMI',12);
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "Network profile"
@@ -406,8 +394,7 @@ INSERT INTO tnetwork_profile (id_np, name, description) VALUES (4,'Full SNMP Mon
 INSERT INTO tnetwork_profile (id_np, name, description) VALUES (5,'Linux Server','Full Monitoring of a Linux server services.');
 INSERT INTO tnetwork_profile (id_np, name, description) VALUES (6,'Basic WMI monitoring','Basic monitoring of a Windows host.');
 COMMIT;
-END;
-/
+END;;
 
 --
 -- Dumping data for table "tnetwork_profile_component"
@@ -460,23 +447,20 @@ INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (200,6);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (201,6);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (202,6);
 COMMIT;
-END;
-/
+END;;
 
 -- GIS
 BEGIN
 LOCK TABLE tgis_map IN EXCLUSIVE MODE;
 INSERT INTO tgis_map VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,0,1);
 COMMIT;
-END;
-/
+END;;
 
 BEGIN
 LOCK TABLE tgis_map_connection IN EXCLUSIVE MODE;
 INSERT INTO tgis_map_connection VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
 COMMIT;
-END;
-/
+END;;
 
 -- This table is commented because table name length is more 30 chars. TODO: Change it's name
 
@@ -491,24 +475,21 @@ BEGIN
 LOCK TABLE tgis_map_layer IN EXCLUSIVE MODE;
 INSERT INTO tgis_map_layer VALUES (1,'Group All',1,0,1,0);
 COMMIT;
-END;
-/
+END;;
 
 -- example alert template
 BEGIN
 LOCK TABLE talert_commands IN EXCLUSIVE MODE;
-INSERT INTO talert_commands VALUES (10,'Remote\&#x20;agent\&#x20;control','/usr/share/pandora_server/udp_client.pl _address_ 41122 \&quot;_field1_\&quot;','This command is used to send commands to the Pandora FMS agents with the UDP server enabled. The UDP server is used to order agents (Windows and UNIX) to \&quot;refresh\&quot; the agent execution: that means, to force the agent to execute and send data to s',0);
+INSERT INTO talert_commands VALUES (10,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/udp_client.pl _address_ 41122 &quot;_field1_&quot;','This command is used to send commands to the Pandora FMS agents with the UDP server enabled. The UDP server is used to order agents (Windows and UNIX) to &quot;refresh&quot; the agent execution: that means, to force the agent to execute and send data to s',0);
 COMMIT;
-END;
-/
+END;;
 
 BEGIN
 LOCK TABLE talert_actions IN EXCLUSIVE MODE;
 INSERT INTO talert_actions VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','',0,0);
 INSERT INTO talert_actions VALUES (2,'Restart&#x20;agent',10,'REFRESH AGENT','','',0,0);
 COMMIT;
-END;
-/
+END;;
 
 BEGIN
 LOCK TABLE talert_templates IN EXCLUSIVE MODE;
@@ -516,8 +497,7 @@ INSERT INTO talert_templates VALUES (1,'Critical&#x20;condition','This is a gene
 INSERT INTO talert_templates VALUES (2,'Manual&#x20;alert','This is a template used to fire manual alerts, condition defined here never will be executed. Use this template to assign to your actions/commands used to do remote management (Agent restart, execute commands on server, etc).',NULL,'','',' ','max_min','',1,0.00,1.00,86400,1,0,to_date('12:00:00','hh24:mi:ss'),to_date('12:00:00','hh24:mi:ss'),1,1,1,1,1,1,1,0,' ',' ',1,0);
 INSERT INTO talert_templates VALUES (3,'Warning&#x20;condition','This&#x20;is&#x20;a&#x20;generic&#x20;alert&#x20;template&#x20;to&#x20;fire&#x20;on&#x20;WARNING&#x20;condition.',1,'','','Hello,&#x20;this&#x20;is&#x20;an&#x20;automated&#x20;email&#x20;coming&#x20;from&#x20;Pandora&#x20;FMS&#x0d;&#x0a;&#x0d;&#x0a;This&#x20;alert&#x20;has&#x20;been&#x20;fired&#x20;because&#x20;a&#x20;WARNING&#x20;condition&#x20;in&#x20;one&#x20;of&#x20;your&#x20;monitored&#x20;items:&#x0d;&#x0a;&#x0d;&#x0a;Agent&#x20;:&#x20;_agent_&#x0d;&#x0a;Module:&#x20;_module_&#x0d;&#x0a;Module&#x20;description:&#x20;_moduledescription_&#x0d;&#x0a;Timestamp&#x20;_timestamp_&#x0d;&#x0a;Current&#x20;value:&#x20;_data_&#x0d;&#x0a;&#x0d;&#x0a;Thanks&#x20;for&#x20;your&#x20;time.&#x0d;&#x0a;&#x0d;&#x0a;Best&#x20;regards&#x0d;&#x0a;Pandora&#x20;FMS&#x0d;&#x0a;','warning','',1,0.00,0.00,86400,1,0,to_date('12:00:00','hh24:mi:ss'),to_date('12:00:00','hh24:mi:ss'),1,1,1,1,1,1,1,1,'[PANDORA]&#x20;Alert&#x20;RECOVERED&#x20;for&#x20;WARNING&#x20;status&#x20;on&#x20;_agent_&#x20;/&#x20;_module_','Hello,&#x20;this&#x20;is&#x20;an&#x20;automated&#x20;email&#x20;coming&#x20;from&#x20;Pandora&#x20;FMS&#x0d;&#x0a;&#x0d;&#x0a;This&#x20;alert&#x20;has&#x20;been&#x20;RECOVERED&#x20;from&#x20;a&#x20;WARNING&#x20;condition&#x20;in&#x20;one&#x20;of&#x20;your&#x20;monitored&#x20;items:&#x0d;&#x0a;&#x0d;&#x0a;Agent&#x20;:&#x20;_agent_&#x0d;&#x0a;Module:&#x20;_module_&#x0d;&#x0a;Module&#x20;description:&#x20;_moduledescription_&#x0d;&#x0a;Timestamp&#x20;_timestamp_&#x0d;&#x0a;Current&#x20;value:&#x20;_data_&#x0d;&#x0a;&#x0d;&#x0a;Thanks&#x20;for&#x20;your&#x20;time.&#x0d;&#x0a;&#x0d;&#x0a;Best&#x20;regards&#x0d;&#x0a;Pandora&#x20;FMS&#x0d;&#x0a;',3,0);
 COMMIT;
-END;
-/
+END;;
 
 -- treport_custom_sql Data
 BEGIN
@@ -526,71 +506,70 @@ INSERT INTO treport_custom_sql (id, name, sql) VALUES (1, 'Monitoring&#x20;Repor
 INSERT INTO treport_custom_sql (id, name, sql) VALUES (2, 'Monitoring&#x20;Report&#x20;Modules', 'select&#x20;&#40;select&#x20;tagente.nombre&#x20;from&#x20;tagente&#x20;where&#x20;tagente.id_agente&#x20;=&#x20;tagente_modulo.id_agente&#41;&#x20;as&#x20;agent_name,&#x20;nombre&#x20;,&#x20;&#40;select&#x20;tmodule_group.name&#x20;from&#x20;tmodule_group&#x20;where&#x20;tmodule_group.id_mg&#x20;=&#x20;tagente_modulo.id_module_group&#41;&#x20;as&#x20;module_group,&#x20;module_interval&#x20;from&#x20;tagente_modulo&#x20;where&#x20;delete_pending&#x20;=&#x20;0&#x20;order&#x20;by&#x20;agent_name;');
 INSERT INTO treport_custom_sql (id, name, sql) VALUES (3, 'Monitoring&#x20;Report&#x20;Alerts', 'select&#x20;t1.nombre&#x20;as&#x20;agent_name,&#x20;t2.nombre&#x20;as&#x20;module_name,&#x20;&#40;select&#x20;talert_templates.name&#x20;from&#x20;talert_templates&#x20;where&#x20;talert_templates.id&#x20;=&#x20;t3.id_alert_template&#41;&#x20;as&#x20;template,&#x20;&#40;select&#x20;group_concat&#40;t02.name&#41;&#x20;from&#x20;talert_template_module_actions&#x20;as&#x20;t01&#x20;inner&#x20;join&#x20;talert_actions&#x20;as&#x20;t02&#x20;on&#x20;t01.id_alert_action&#x20;=&#x20;t02.id&#x20;where&#x20;t01.id_alert_template_module&#x20;=&#x20;t3.id&#x20;group&#x20;by&#x20;t01.id_alert_template_module&#41;&#x20;as&#x20;actions&#x20;from&#x20;tagente&#x20;as&#x20;t1&#x20;inner&#x20;join&#x20;tagente_modulo&#x20;as&#x20;t2&#x20;on&#x20;t1.id_agente&#x20;=&#x20;t2.id_agente&#x20;inner&#x20;join&#x20;talert_template_modules&#x20;as&#x20;t3&#x20;on&#x20;t2.id_agente_modulo&#x20;=&#x20;t3.id_agent_module&#x20;order&#x20;by&#x20;agent_name,&#x20;module_name;');
 COMMIT;
-END;
-/
+END;;
 
 -- procedure to insert more than 4000 chars into a string 
-CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER) AS g_nclob NCLOB; BEGIN if FLAG = 0 then insert into treport_custom_sql values (IDX, NAME, empty_clob()) returning SQL into g_nclob; dbms_lob.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); else select SQL into g_nclob from treport_custom_sql where ID = IDX for update; dbms_lob.writeappend( g_nclob, length(SQL_TXT), SQL_TXT); end if; END;
-/
+CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER) AS g_nclob NCLOB; BEGIN if FLAG = 0 then insert into treport_custom_sql values (IDX, NAME, empty_clob()) returning SQL into g_nclob; dbms_lob.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); else select SQL into g_nclob from treport_custom_sql where ID = IDX for update; dbms_lob.writeappend( g_nclob, length(SQL_TXT), SQL_TXT); end if; END;;
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=',0);
+BEGIN
+treport_custom_sql_insert(4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=',0);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;t3.id_grupo&#41;&#x20;as&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;as&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;t3.id_grupo&#41;&#x20;as&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;as&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','t4&#x20;WHERE&#x20;t4.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;t4.disabled&#x20;=&#x20;0&#x20;AND&#x20;t4.ultimo_contacto&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','t4&#x20;WHERE&#x20;t4.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;t4.disabled&#x20;=&#x20;0&#x20;AND&#x20;t4.ultimo_contacto&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','\&lt;&#x20;NOW&#40;&#41;&#x20;-&#x20;&#40;intervalo&#x20;/',1); 
+treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;NOW&#40;&#41;&#x20;-&#x20;&#40;intervalo&#x20;/',1); 
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;agent_unknown,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;agent_unknown,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,',1);
 
-EXEC treport_custom_sql_insert(4,'Group&#x20;view','&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;',1);
+treport_custom_sql_insert(4,'Group&#x20;view','&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente.id_agente&#x20;=&#x20;tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente.id_agente&#x20;=&#x20;tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;utimestamp&#x20;\&gt;&#x20;0&#x20;AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#40;21,22,23,24,100&#41;&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#x20;AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#40;21,22,23,24,100&#41;&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;\&gt;=&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;&gt;=&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
 
-EXEC treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;monitor_unknow,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,',1);
+treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;monitor_unknow,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#x20;&#40;21,22,23,24&#41;&#x20;AND&#x20;utimestamp&#x20;=&#x20;0&#41;&#x20;as&#x20;monitor_no_init,&#x20;&#40;SELECT&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#x20;&#40;21,22,23,24&#41;&#x20;AND&#x20;utimestamp&#x20;=&#x20;0&#41;&#x20;as&#x20;monitor_no_init,&#x20;&#40;SELECT&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;0&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;0&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;\&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
 
-EXEC treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;&#40;utimestamp&#x20;\&gt;&#x20;0&#x20;OR&#x20;',1);
+treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;&#40;utimestamp&#x20;&gt;&#x20;0&#x20;OR&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24&#41;&#41;&#41;&#41;&#x20;as&#x20;monitor_ok,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24&#41;&#41;&#41;&#41;&#x20;as&#x20;monitor_ok,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','tagente_estado.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;1&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','#x20;=&#x20;0&#x20;AND&#x20;estado&#x20;=&#x20;1&#x20;AND&#x20;&#40;&#40;UNIX_TIMESTAMP&#40;NOW&#40;&#41;&#41;&#x20;-',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;\&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;utimestamp&#x20;\&gt;&#x20;0&#41;&#x20;as&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','monitor_critical,&#x20;&#40;SELECT&#x20;COUNT&#40;talert_template_modules.id&#41;&#x20;FROM&#x20;talert_template_modules,&#x20;tagente_modulo,&#x20;tagente_estado,&#x20;tagente&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','monitor_critical,&#x20;&#40;SELECT&#x20;COUNT&#40;talert_template_modules.id&#41;&#x20;FROM&#x20;talert_template_modules,&#x20;tagente_modulo,&#x20;tagente_estado,&#x20;tagente&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente_modulo.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente_modulo.id_agente&#x20;=&#x20;tagente.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;talert_template_modules.id_agent_module&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;talert_template_modules.id_agent_module&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;\&gt;&#x20;0&#41;&#x20;as&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;as&#x20;t1&#x20;where&#x20;0&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;as&#x20;t1&#x20;where&#x20;0&#x20;',1);
 
-EXEC treport_custom_sql_insert(4, 'Group&#x20;view','\&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;',1);
-
+treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;',1);
 COMMIT;
+END;;

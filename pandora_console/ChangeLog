@@ -1,3 +1,11 @@
+2011-03-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.oracle.sql: Added modifications in queries needed for 
+	Pandora installer.
+	* pandoradb.data.postgreSQL.sql
+	  pandoradb.data.oracle.sql: Added data for tconfig table like in 
+	the mysql script version.
+
 2011-03-24 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/pChart/pChart.class: some fixes to prevent notices and warning

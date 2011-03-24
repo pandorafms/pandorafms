@@ -1,5 +1,9 @@
 2011-03-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb.data.postgreSQL.sql: Forgotten file from my last commit.
+
+2011-03-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb.oracle.sql: Added modifications in queries needed for 
 	Pandora installer.
 	* pandoradb.data.postgreSQL.sql

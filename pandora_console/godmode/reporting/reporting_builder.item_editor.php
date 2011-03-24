@@ -357,13 +357,13 @@ print_input_hidden('id_item', $idItem);
 				<?php
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")';
+						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")';
 						break;
 					case "postgresql":
-						$sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
+						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
 						break;
 				}
-				print_select_from_sql($sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
+				print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
 				?>
 			</td>
 		</tr>

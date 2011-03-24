@@ -2721,6 +2721,11 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$max = $min;
 				$avg = 0;
 				$length = 0;
+				
+				if ($generals === false) {
+					$generals = array();
+				}
+				
 				foreach ($generals as $g) {
 					$value = get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
 					if ($value !== false) {
@@ -2734,7 +2739,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 						$length++;
 					}
 				}
-				$avg = $avg / $length;
+				if ($length == 0) {
+					$avg = 0;
+				}
+				else {
+					$avg = $avg / $length;
+				}
 				
 				$data_resume = array();
 				$data_resume[0] = "Max Value: ".$max;

@@ -2266,12 +2266,12 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
         $n = "";
 
         switch($number) {
-        case 6: $n = "FATAL"; break;
-        case 5: $n = "ERROR"; break;
-        case 4: $n = "WARN"; break;
-        case 3: $n = "INFO"; break;
-        case 2: $n = "DEBUG"; break;
-        case 1: $n = "TRACE"; break;
+	        case 6: $n = "FATAL"; break;
+	        case 5: $n = "ERROR"; break;
+	        case 4: $n = "WARN"; break;
+	        case 3: $n = "INFO"; break;
+	        case 2: $n = "DEBUG"; break;
+	        case 1: $n = "TRACE"; break;
         }
 
         return "$n";
@@ -2293,7 +2293,8 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 1) {
         $sql = safe_output ($report_content["external_source"]);
     }
     else {
-        $sql = get_db_sql (sprintf ("SELECT sql FROM treport_custom_sql WHERE id = %d",$report_content["treport_custom_sql_id"]));
+    	$sql = get_db_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
+    	$sql = safe_output($sql['sql']);
     }
 
 	$data_result = get_db_all_rows_sql ($sql);

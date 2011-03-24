@@ -30,6 +30,7 @@ $delete_sla_item = get_parameter('delete_sla_item', 0);
 $get_custom_sql = get_parameter('get_custom_sql', 0);
 $add_sla = get_parameter('add_sla', 0);
 $id = get_parameter('id', 0);
+$truncate_text = get_parameter ('truncate_text', 0);
 
 if ($delete_sla_item) {
 	$result = process_sql_delete('treport_content_sla_combined', array('id' => (int)$id));
@@ -89,4 +90,10 @@ if ($get_custom_sql) {
 	echo json_encode($data);
 	return;
 }
+
+if ($truncate_text) {
+	$text = get_parameter ('text', '');
+	return printTruncateText ($text, 20, true, false);
+}
+
 ?>

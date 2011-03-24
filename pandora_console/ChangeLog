@@ -1,3 +1,8 @@
+2011-03-24 Javier Lanz <javier.lanz@artica.es>
+	
+	* include/ajax/reporting.ajax.php: Added truncating for the agent and
+	module name into report SLA list.
+
 2011-03-23  Raul Mateos <raulofpandora@gmail.com>
 
 	* operation/search_agents.php: Updated forgotten file

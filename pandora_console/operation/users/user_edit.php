@@ -159,9 +159,8 @@ if (count($usr_groups) > 1){
 }
 
 echo '</td></tr><tr><td class="datos">'.__('Flash charts').'</td><td class="datos2">';
-echo __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $user_info["flash_chart"], true).'&nbsp;&nbsp;';
-echo __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $user_info["flash_chart"], true);
-
+$values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
+echo print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 echo '</td></tr><tr><td class="datos">'.__('Block size for pagination').'</td><td class="datos2">';
 echo print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 

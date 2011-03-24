@@ -1,5 +1,13 @@
 2011-03-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/config_process.php
+	* operation/users/user_edit.php 
+	* godmode/users/configure_user.php:Now global configuration for 
+	"flash_charts" and "block_size" options are not override for 
+	default user values.
+
+2011-03-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb.data.postgreSQL.sql: Forgotten file from my last commit.
 
 2011-03-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

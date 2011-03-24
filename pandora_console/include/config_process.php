@@ -104,9 +104,9 @@ if (isset ($config['id_user'])){
 	}
 
 	// If block_size or flash_chart are provided then override global settings
-	if (!empty($userinfo["block_size"]))
+	if (!empty($userinfo["block_size"]) && $userinfo["block_size"] != 0)
 		$config["block_size"] = $userinfo["block_size"];
-	if (!empty($userinfo["block_size"]))
+	if (!empty($userinfo["flash_charts"]) && $userinfo["flash_charts"] == -1)
 		$config["flash_charts"] = $userinfo["flash_chart"];			
 
 	// Each user could have it's own timezone)

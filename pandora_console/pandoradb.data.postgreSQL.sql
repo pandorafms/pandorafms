@@ -75,7 +75,11 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('gis_purge', 15),
 ('sound_alert', 'include/sounds/air_shock_alarm.wav'),
 ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav'),
-('sound_warning', 'include/sounds/negativebeep.wav');
+('sound_warning', 'include/sounds/negativebeep.wav'),
+('integria_enabled', '0'),
+('integria_api_password', ''),
+('integria_inventory', '0'),
+('integria_url', '');
 COMMIT WORK;
 
 

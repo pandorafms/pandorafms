@@ -72,7 +72,7 @@ while ($row = mysql_fetch_array ($result)){
 		border='0'>
 		</td>
 		<td class='$tdcolor'>
-		<b>".$row[0]."
+		<b>".$row["id_tipo"]."
 		</b></td>
 		<td class='$tdcolor'>
 		<b>".$row["nombre"]."

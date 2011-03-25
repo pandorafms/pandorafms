@@ -1,4 +1,10 @@
- 2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
+2011-03-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk.
+
+	* godmode/modules/module_list.php: Fixed wrong variable call.
+
+2011-03-22 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.
 

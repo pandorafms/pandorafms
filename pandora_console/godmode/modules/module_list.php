@@ -80,7 +80,7 @@ foreach ($rows as $row) {
 		print_image("images/".$row["icon"], true, array("border" => '0')) .
 		"</td>
 		<td class='$tdcolor'>
-		<b>".$row[0]."
+		<b>".$row["id_tipo"]."
 		</b></td>
 		<td class='$tdcolor'>
 		<b>".$row["nombre"]."

@@ -23,6 +23,8 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
+enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
+
 switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
@@ -57,10 +59,16 @@ switch ($action) {
 		$exception_condition = 0;
 		$exception_condition_value = 10;
 		$show_graph = 0;
+		$show_in_two_columns = 0;
+		$show_in_landscape = 0;
 		break;
 	default:
 		$actionParameter = 'update';
 		$item = get_db_row_filter('treport_content', array('id_rc' => $idItem));
+		
+		$style = json_decode(safe_output($item['style']), true);
+		$show_in_two_columns = $style['show_in_two_columns'];
+		$show_in_landscape = $style['show_in_landscape'];
 		
 		$type = $item['type'];
 		switch ($type) {
@@ -455,6 +463,16 @@ print_input_hidden('id_item', $idItem);
 		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume');?></td>
 			<td><?php print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
+		</tr>
+		<tr id="row_show_in_two_columns" style="" class="datos">
+			<td><?php echo __('Show in two columns');?></td>
+			<td><?php print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
+				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
+		</tr>
+		<tr id="row_show_in_landscape" style="" class="datos">
+			<td><?php echo __('Show in landscape');?></td>
+			<td><?php print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
+				'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');?></td>
 		</tr>
 	</tbody>
 </table>
@@ -919,12 +937,15 @@ function chooseType() {
 	$("#row_quantity").css('display', 'none');
 	$("#row_exception_condition_value").css('display', 'none');
 	$("#row_exception_condition").css('display', 'none');
+	$("#row_show_in_two_columns").css('display', 'none');
+	$("#row_show_in_landscape").css('display', 'none');
 		
 	switch (type) {
 		case 'event_report_group':
 			$("#row_description").css('display', '');
 			$("#row_period").css('display', '');
 			$("#row_group").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'simple_graph':
 		case 'simple_baseline_graph':
@@ -932,11 +953,15 @@ function chooseType() {
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			$("#row_show_in_landscape").css('display', '');
 			break;
 		case 'custom_graph':
 			$("#row_description").css('display', '');
 			$("#row_period").css('display', '');
 			$("#row_custom_graph").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			$("#row_show_in_landscape").css('display', '');
 			break;
 		case 'SLA':
 			$("#row_description").css('display', '');
@@ -945,45 +970,53 @@ function chooseType() {
 			$("#row_working_time").css('display', '');
 			$("#row_only_display_wrong").css('display', '');
 			$("#row_show_graph").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'monitor_report':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'avg_value':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'max_value':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'min_value':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'sumatory':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'agent_detailed':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'text':
 			$("#row_description").css('display', '');
 			$("#row_text").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'sql':
 			$("#row_description").css('display', '');
@@ -991,24 +1024,31 @@ function chooseType() {
 			$("#row_header").css('display', '');
 			$("#row_custom").css('display', '');
 			$("#row_custom_example").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'sql_graph_pie':
 			$("#row_description").css('display', '');
 			$("#row_query").css('display', '');
 			$("#row_custom").css('display', '');
 			$("#row_custom_example").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			$("#row_show_in_landscape").css('display', '');
 			break;
 		case 'sql_graph_hbar':
 			$("#row_description").css('display', '');
 			$("#row_query").css('display', '');
 			$("#row_custom").css('display', '');
 			$("#row_custom_example").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			$("#row_show_in_landscape").css('display', '');
 			break;
         case 'sql_graph_vbar':
 			$("#row_description").css('display', '');
 			$("#row_query").css('display', '');
 			$("#row_custom").css('display', '');
 			$("#row_custom_example").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			$("#row_show_in_landscape").css('display', '');
 			break;
 		case 'url':
 			$("#row_description").css('display', '');
@@ -1022,52 +1062,61 @@ function chooseType() {
 			$("#row_field_separator").css('display', '');
 			$("#row_line_separator").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'TTRT':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'TTO':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'MTBF':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'MTTR':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'alert_report_module':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'alert_report_agent':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'event_report_agent':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'event_report_module':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'general':
 			$("#row_description").css('display', '');
@@ -1077,6 +1126,7 @@ function chooseType() {
 			$("#row_order_uptodown").css('display', '');
 			$("#row_show_resume").css('display', '');
 			$("#row_show_graph").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'top_n':
 			$("#row_description").css('display', '');
@@ -1087,6 +1137,7 @@ function chooseType() {
 			$("#row_order_uptodown").css('display', '');
 			$("#row_show_resume").css('display', '');
 			$("#row_show_graph").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'exception':
 			$("#row_description").css('display', '');
@@ -1097,6 +1148,7 @@ function chooseType() {
 			$("#row_order_uptodown").css('display', '');
 			$("#row_show_resume").css('display', '');
 			$("#row_show_graph").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
 			break;
 	}
 }

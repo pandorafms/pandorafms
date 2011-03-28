@@ -213,6 +213,11 @@ switch ($action) {
 						$values['column_separator'] = get_parameter('field');
 						$values['line_separator'] = get_parameter('line');
 						
+						$style = array();
+						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
+						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
+						$values['style'] = safe_input(json_encode($style));
+						
 						$resultOperationDB = process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						break;
 					case 'save':
@@ -261,6 +266,11 @@ switch ($action) {
 						$values['header_definition'] = get_parameter('header');
 						$values['column_separator'] = get_parameter('field');
 						$values['line_separator'] = get_parameter('line');
+						
+						$style = array();
+						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
+						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
+						$values['style'] = safe_input(json_encode($style));
 						
 						$result = process_sql_insert('treport_content', $values);
 						

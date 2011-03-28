@@ -652,11 +652,8 @@ class PchartGraph extends PandoraGraphAbstract {
 		}
 	}
 	
-	public function graph_sla_horizontal ($value, $color) {
+	public function graph_sla_horizontal ($data, $sla_limit) {
 		set_time_limit (0);
-		$date = (string) get_parameter ('date', date ('Y-m-j'));
-		$time = (string) get_parameter ('time', date ('h:iA'));
-		$datetime = strtotime ($date.' '.$time);
 		// Dataset definition
 		$this->graph = new pChart ($this->width, $this->height);
 		$this->graph->setFontProperties ($this->fontpath, 8);
@@ -667,27 +664,40 @@ class PchartGraph extends PandoraGraphAbstract {
 			$radius = ($this->height > 18) ? 8 : 0;
 		else
 			$radius = 0;
-		$ratio = 200;
-		//$ratio = (int) $value / 100 * $this->width;
+
+		$ratio = $this->width / count($data);
 		
 		/* Color stuff */
 		$bgcolor = $this->get_rgb_values ($this->background_color);
 		$r = hexdec (substr ($this->background_color, 1, 2));
 		$g = hexdec (substr ($this->background_color, 3, 2));
 		$b = hexdec (substr ($this->background_color, 5, 2));
+		$black = '#FFFFFF';
+		$colorOK = '#38B800';
+		$colorEdge = '#FFFF00';
+		$colorWrong = '#FF0000';
+		$colorUnknown = '#C3C3C3';
+		$color_black = $this->get_rgb_values ($black);
 		
-		/* Actual percentage */
-		if (! $this->show_title || $value > 0) {
-			debugPrint("entra en el if show title or value > 0", "/tmp/prueba.txt");
-			$color = $this->get_rgb_values ($color);
-			$this->graph->drawFilledRoundedRectangle (50, 0, $ratio+50, 
-				$this->height, $radius, $color['r'], $color['g'], $color['b']);
-			$this->graph->drawFilledRoundedRectangle (300, 0, $ratio+300, 
-				$this->height, $radius, $color['r'], $color['g'], $color['b']);
+		$i = 0;
+		foreach ($data as $d) {
+			if ($d === false) {
+				$color = $this->get_rgb_values ($colorUnknown);
+			} elseif ($d <= $sla_limit+10 && $d >= $sla_limit-10) {
+				$color = $this->get_rgb_values ($colorEdge);
+			} elseif ($d > $sla_limit+10) {
+				$color = $this->get_rgb_values ($colorOK);
+			} elseif ($d < $sla_limit-10) {
+				$color = $this->get_rgb_values ($colorWrong);
+			}
+			$this->graph->drawFilledRoundedRectangle ($i, 0, $ratio+$i, 
+					$this->height, $radius, $color['r'], $color['g'], $color['b']);
+			$i+=$ratio;
+
+
 		}
 		
 		if ($config["round_corner"]) {
-			debugPrint("entra en el if de round_corner", "/tmp/prueba.txt");
 			/* Under this value, the rounded rectangle is painted great */
 			if ($ratio <= 16) {
 				/* Clean a bit of pixels */
@@ -702,10 +712,8 @@ class PchartGraph extends PandoraGraphAbstract {
 		}
 				
 		if ($this->border) {
-			debugPrint("entra en el último if, el de border", "/tmp/prueba.txt");
-			$this->graph->drawRoundedRectangle (0, 0, $this->width + 50,
-				$this->height - 1,
-				$radius, 157, 157, 157);
+			$this->graph->drawRoundedRectangle (0, 0, $this->width,
+				$this->height - 1, $radius, 157, 157, 157);
 		}
 		
 		$this->graph->Stroke ();

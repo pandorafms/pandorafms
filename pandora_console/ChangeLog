@@ -1,5 +1,13 @@
 2011-03-28  Sergio Martin <sergio.martin@artica.es>
 
+	* include/fonts/FreeSans.ttf
+	include/FreeSans.ttf
+	include/functions_config.php Moved the freesans 
+	font to the new fonts folder and set the unicode 
+	font as default font into setup
+
+2011-03-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/fonts
 	include/fonts/DejaVuSerif-Bold.ttf
 	include/fonts/DejaVuSerif.ttf

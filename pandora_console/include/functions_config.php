@@ -429,7 +429,7 @@ function process_config () {
 	}
 	
 	if (!isset ($config['fontpath'])) {
-		update_config_value ( 'fontpath', $config['homedir'].'/include/FreeSans.ttf');
+		update_config_value ( 'fontpath', $config['homedir'].'/include/fonts/code.ttf');
 	}
 
 	if (!isset ($config['style'])) {

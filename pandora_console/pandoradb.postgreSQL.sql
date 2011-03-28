@@ -750,7 +750,8 @@ CREATE TABLE "treport_content" (
 	"show_resume" INTEGER NOT NULL default 0,
 	"order_uptodown" INTEGER NOT NULL default 0,
 	"show_graph" INTEGER NOT NULL default 0,
-	"group_by_agent" INTEGER NOT NULL default 0
+	"group_by_agent" INTEGER NOT NULL default 0,
+	"style" TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE "treport_content_sla_combined" (

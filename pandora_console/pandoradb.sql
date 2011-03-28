@@ -823,6 +823,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`order_uptodown` INT NOT NULL default 0,
 	`show_graph` INT NOT NULL default 0,
 	`group_by_agent` INT NOT NULL default 0,
+	`style` TEXT NOT NULL DEFAULT '',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE

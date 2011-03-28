@@ -1,3 +1,9 @@
+2011-03-28 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: added column "style" for to
+	add style (as json encode) the many styles for the contents.
+
 2011-03-28 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_reporting.php: Added get_agentmodule_sla_array

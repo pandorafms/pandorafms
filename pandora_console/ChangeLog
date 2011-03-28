@@ -1,3 +1,9 @@
+2011-03-28 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php: added suppor for styles
+	in the report content, now support in columns and landscape in some cases.
+
 2011-03-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/fonts/FreeSans.ttf

@@ -507,6 +507,30 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	return (float) (100 - ($bad_period / $period) * 100);
 }
 
+function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $daysWeek = null, $timeFrom = null, $timeTo = null) {
+	global $config;
+	// Get date
+	$date = (string) get_parameter ('date', date ('Y-m-j'));
+	$time = (string) get_parameter ('time', date ('h:iA'));
+	$datetime = strtotime ($date.' '.$time);
+	
+	$k=10;
+	$slices = $config["graph_res"] * $k;
+	$sub_period = $period / ($config["graph_res"] * 10);
+	$final_time = $datetime - $period + $sub_period;
+
+	$data = array();
+	$i = 0;
+	while ($final_time <= $datetime) {
+		$sla_value = get_agentmodule_sla ($id_agent_module, $sub_period, $min_value, $max_value, $final_time,
+			$daysWeek, $timeFrom, $timeTo);
+		$data[$i] = $sla_value;
+		$final_time += $sub_period;
+		$i++;
+	}
+	return $data;
+}
+
 /** 
  * Get general statistical info on a group
  * 
@@ -1876,7 +1900,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
-								'id_report_content', $content['id_rc']);
+				'id_report_content', $content['id_rc']);
 			if ($slas === false) {
 				$data = array ();
 				$table->colspan[2][0] = 3;
@@ -1939,11 +1963,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$data[2] = $sla['sla_max'].' / ';
 				$data[2] .= $sla['sla_min'];
 				$data[3] = $sla['sla_limit'];
-				//$data[4] .= $sla_value;
-				
+								
 				if ($sla_value === false) {
 					$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-					$data[5] .= __('Unknown');
+					$data[5] = __('Unknown');
 				} else {
 					if ($sla_value >= $sla['sla_limit']) {
 						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
@@ -1967,8 +1990,6 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 
 			$table->colspan[3][0] = 3;
 			$data = array();
-			//$data[0] = $content["description"];
-			//array_push ($table->data, $data_desc);
 			
 			if ($show_graph && !empty($slas)) {
 				if($config['flash_charts']) {
@@ -1980,18 +2001,28 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					'&value2='.$data_graph[__('Out of limits')].'&value3='.$data_graph[__('On the edge')].
 					'&value4='.$data_graph[__('Unknown')].'&height=150&width=500">';
 				}
-				$table->style[0] = 'text-align: center';
 				array_push ($table->data, $data);
+				
 				//Display horizontal bar graphs
-/*
+				$table2->width = '99%';
+				$table2->data = array ();
 				foreach ($slas as $sla) {
-					echo '<img src="include/fgraph.php?tipo=sla_horizontal_graph&id='.$sla['id_agent_module'].
+					$data = array();
+					$data[0] = 
+					$data[0] = get_agentmodule_agent_name ($sla['id_agent_module']);
+					$data[0] .= '/';
+					$data[0] .= get_agentmodule_name ($sla['id_agent_module']);
+					$data[1] = '<img src="include/fgraph.php?tipo=sla_horizontal_graph&id='.$sla['id_agent_module'].
 					'&period='.$content['period'].'&value1='.$sla['sla_min'].'&value2='.$sla['sla_max'].
-					'&value3='.$content['time_from'].'&value4='.$content['time_to'].'&height=25&width=600">';
+					'&value3='.$content['time_from'].'&value4='.$content['time_to'].'&percent='.$sla['sla_limit'].
+					'&height=15&width=550">';
+					array_push ($table2->data, $data);
 				}
-*/
+				$table->colspan[4][0] = 3;
+				$data = array();
+				$data[0] = print_table($table2, true);
+				array_push ($table->data, $data);
 			}
-			
 			break;
 		case 6:
 		case 'monitor_report':

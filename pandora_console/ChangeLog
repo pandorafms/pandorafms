@@ -1,3 +1,17 @@
+2011-03-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/fonts
+	include/fonts/DejaVuSerif-Bold.ttf
+	include/fonts/DejaVuSerif.ttf
+	include/fonts/DejaVuSerifCondensed-Bold.ttf
+	include/fonts/DejaVuSerifCondensed.ttf
+	include/fonts/DejaVuSerif-Italic.ttf
+	include/fonts/code.ttf
+	include/fonts/DejaVuSerif-BoldItalic.ttf
+	include/fonts/DejaVuSerifCondensed-Italic.ttf
+	include/fonts/DejaVuSerifCondensed-BoldItalic.ttf: move the
+	pdf library fonts from enterprise to open
+
 2011-03-28 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,

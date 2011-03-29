@@ -1,3 +1,9 @@
+2011-03-29  Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_console_upgrade: Use PI_VERSION variable.
+	
+	* pandora_console_install: Changed small text.
+
 2011-03-28 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.php,

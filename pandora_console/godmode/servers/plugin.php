@@ -238,7 +238,7 @@ else {
 			if ($color == 1){
 				$tdcolor = "datos";
 				$color = 0;
-				}
+			}
 			else {
 				$tdcolor = "datos2";
 				$color = 1;
@@ -260,7 +260,8 @@ else {
 			echo "</td></tr>";
 		}
 		echo "</table>";
-	} else {
+	}
+	else {
 		echo '<div class="nf">'. __('There are no plugins in the system');
 		echo "<br>";
 	}

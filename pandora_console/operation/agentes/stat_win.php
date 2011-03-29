@@ -138,22 +138,25 @@ else
 //
 if ($config['flash_charts'] && $graph_type != "log4x") {
 	switch ($graph_type) {
-		case 'sparse':	echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-						                            $label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
-						break;
+		case 'sparse':
+			echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
+			break;
 		case 'boolean': 
 			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
 				$label, $unit_name, $draw_alerts, 1, $pure, $date);
 			break;
-		case 'string': 	echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
-						                            $label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-						break;
-
-		case 'log4x':   echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
-						           $label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-						break;
-
-		default: 	echo fs_error_image ('../images');
+		case 'string':
+			echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+			break;
+		case 'log4x':
+			echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+			break;
+		default:
+			echo fs_error_image ('../images');
+			break;
 	}
 }
 else {

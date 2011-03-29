@@ -1,3 +1,8 @@
+2011-03-29 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/stat_win.php, godmode/servers/plugin.php: cleaned source
+	code style.
+
 2011-03-29  Raul Mateos <raulofpandora@gmail.com>
 
 	* pandora_console_upgrade: Use PI_VERSION variable.

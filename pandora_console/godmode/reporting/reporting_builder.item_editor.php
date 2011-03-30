@@ -1130,7 +1130,6 @@ function chooseType() {
 			$("#general_list").css('display', '');
 			$("#row_order_uptodown").css('display', '');
 			$("#row_show_resume").css('display', '');
-			$("#row_show_graph").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
 			break;
 		case 'top_n':

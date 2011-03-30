@@ -1,3 +1,7 @@
+2011-03-30 Javier Lanz <javier.lanz@artica.es>
+	* include/functions_reporting.php: Fixed a small problem when displaying
+	only the graph and not the table for the exception report.
+
 2011-03-30 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php, include/graphs/*, include/graphs/fgraph.php:

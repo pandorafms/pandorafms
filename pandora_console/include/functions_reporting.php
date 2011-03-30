@@ -3189,11 +3189,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data_pie_graph = array();
 					foreach ($data_exceptions as $dex) {
 						$data_pie_graph[$agent_name[$j]] = $dex;
-						$data = array();
-						$data[0] = printTruncateText($agent_name[$j], 30);
-						$data[1] = printTruncateText($module_name[$j], 30);
-						$data[2] = $dex;
-						array_push ($table1->data, $data);
+						if  ($show_graph == 0 || $show_graph == 1) {
+							$data = array();
+							$data[0] = printTruncateText($agent_name[$j], 30);
+							$data[1] = printTruncateText($module_name[$j], 30);
+							$data[2] = $dex;
+							array_push ($table1->data, $data);
+						}
 						$j++;
 					}
 				}
@@ -3202,11 +3204,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data_pie_graph = array();
 					foreach ($agent_name as $an) {
 						$data_pie_graph[$an] = $data_exceptions[$j];
-						$data = array();
-						$data[0] = printTruncateText($an, 30);
-						$data[1] = printTruncateText($module_name[$j], 30);
-						$data[2] = $data_exceptions[$j];
-						array_push ($table1->data, $data);
+						if  ($show_graph == 0 || $show_graph == 1) {
+							$data = array();
+							$data[0] = printTruncateText($an, 30);
+							$data[1] = printTruncateText($module_name[$j], 30);
+							$data[2] = $data_exceptions[$j];
+							array_push ($table1->data, $data);
+						}
 						$j++;
 					}
 				}

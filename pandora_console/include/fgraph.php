@@ -2319,20 +2319,9 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 1) {
             generic_pie_graph ($width, $height, $data);
             break;
     }
-
 }
 
-function graph_sla_pie ($value1, $value2, $value3, $value4, $width, $height) {
-	$data_graph = array ();
-	$data_graph[__('Inside limits')] = $value1;
-	$data_graph[__('Out of limits')] = $value2;
-	$data_graph[__('On the edge')] = $value3;
-	$data_graph[__('Unknown')] = $value4;
-
-	generic_pie_graph ($width, $height, $data_graph, array ('show_legend' => true));
-}
-
-function graph_sla_horizontal ($progress, $width, $height, $id) {
+function graph_sla_horizontal ($id, $period, $sla_min, $sla_max, $daysWeek, $time_from, $time_to, $sla_limit, $width, $height) {
 	global $config;
 
 	$engine = get_graph_engine ();
@@ -2340,13 +2329,9 @@ function graph_sla_horizontal ($progress, $width, $height, $id) {
 	$engine->width = $width;
 	$engine->height = $height;
 	$engine->fontpath = $config['fontpath'];
-	
-	$engine->background_color = '#FFFFFF';
-	$engine->show_title = true;
-	$engine->title = format_numeric ($progress).' %';
-	$color = '#2C5196';
-	
-	$engine->graph_sla_horizontal ($progress, $color);
+	$days = json_decode ($daysWeek, true);
+	$data = get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $sla_limit, $days, $time_from, $time_to);
+	$engine->graph_sla_horizontal ($data);
 }
 
 
@@ -2418,7 +2403,8 @@ $mode = get_parameter ("mode", 1);
 $url = get_parameter ("url");
 $report_id = (int) get_parameter ("report_id", 0);
 $baseline = (int) get_parameter ('baseline', 0);
-
+$daysWeek = (string) get_parameter ('daysWeek', null);
+$array = (string) get_parameter('array', null);
 if ($graphic_type) {
 	switch ($graphic_type) {
 		case 'sparse':
@@ -2544,11 +2530,18 @@ if ($graphic_type) {
 	        graph_custom_sql_graph ($report_id, $width, $height, 3);
 	        break;
 		
-		case 'sla_pie_graph':
-			graph_sla_pie ($value1, $value2, $value3, $value4, $width, $height);
-			break;
 		case 'sla_horizontal_graph':
-			graph_sla_horizontal (20, $width, $height, $id);
+			graph_sla_horizontal ($id, $period, $value1, $value2, $daysWeek, $value3, $value4, $percent, $width, $height);
+			break;
+		case 'generic_pie_graph':
+			$data_pie_graph = array();
+			$data_pie_graph = json_decode(safe_output($array), true);
+			generic_pie_graph ($width, $height, $data_pie_graph, array ('show_legend' => true));
+			break;
+		case 'generic_horizontal_bar_graph':
+			$data_pie_graph = array();
+			$data_pie_graph = json_decode(safe_output($array), true);
+			generic_horizontal_bar_graph ($width, $height, $data_pie_graph);
 			break;
 	
 		case 'graphic_error':

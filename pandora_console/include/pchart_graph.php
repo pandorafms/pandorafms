@@ -652,7 +652,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		}
 	}
 	
-	public function graph_sla_horizontal ($data, $sla_limit) {
+	public function graph_sla_horizontal ($data) {
 		set_time_limit (0);
 		// Dataset definition
 		$this->graph = new pChart ($this->width, $this->height);
@@ -681,14 +681,19 @@ class PchartGraph extends PandoraGraphAbstract {
 		
 		$i = 0;
 		foreach ($data as $d) {
-			if ($d === false) {
-				$color = $this->get_rgb_values ($colorUnknown);
-			} elseif ($d <= $sla_limit+10 && $d >= $sla_limit-10) {
-				$color = $this->get_rgb_values ($colorEdge);
-			} elseif ($d > $sla_limit+10) {
-				$color = $this->get_rgb_values ($colorOK);
-			} elseif ($d < $sla_limit-10) {
-				$color = $this->get_rgb_values ($colorWrong);
+			switch ($d) {
+				case 1:
+					$color = $this->get_rgb_values ($colorOK);
+					breaK;
+				case 2:
+					$color = $this->get_rgb_values ($colorEdge);
+					break;
+				case 3:
+					$color = $this->get_rgb_values ($colorWrong);
+					break;
+				case 4:
+					$color = $this->get_rgb_values ($colorUnknown);
+					break;
 			}
 			$this->graph->drawFilledRoundedRectangle ($i, 0, $ratio+$i, 
 					$this->height, $radius, $color['r'], $color['g'], $color['b']);

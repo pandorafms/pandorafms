@@ -506,25 +506,47 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	// Return the percentage of SLA compliance
 	return (float) (100 - ($bad_period / $period) * 100);
 }
-
-function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $daysWeek = null, $timeFrom = null, $timeTo = null) {
+/** 
+ * Get several SLA data for an agentmodule within a period divided on subperiods
+ * 
+ * @param int Agent module to calculate SLA
+ * @param int Period to check the SLA compliance.
+ * @param int Minimum data value the module in the right interval
+ * @param int Maximum data value the module in the right interval. False will
+ * ignore max value
+ * @param array $days Array of days week to extract as array('monday' => false, 'tuesday' => true....), and by default is null.
+ * @param string $timeFrom Time in the day to start to extract in mysql format, by default null.
+ * @param string $timeTo Time in the day to end to extract in mysql format, by default null.
+ * 
+ * @return Array with values either 1, 2, 3 or 4 depending if the SLA percentage for this subperiod
+ * is within the sla limits, on the edge, outside or with an unknown value.
+ */
+function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $sla_limit = 0, $days = null, $timeFrom = null, $timeTo = null) {
 	global $config;
 	// Get date
 	$date = (string) get_parameter ('date', date ('Y-m-j'));
 	$time = (string) get_parameter ('time', date ('h:iA'));
 	$datetime = strtotime ($date.' '.$time);
 	
-	$k=10;
+	$k=20;
 	$slices = $config["graph_res"] * $k;
-	$sub_period = $period / ($config["graph_res"] * 10);
+	$sub_period = $period / $slices;
 	$final_time = $datetime - $period + $sub_period;
 
 	$data = array();
 	$i = 0;
 	while ($final_time <= $datetime) {
 		$sla_value = get_agentmodule_sla ($id_agent_module, $sub_period, $min_value, $max_value, $final_time,
-			$daysWeek, $timeFrom, $timeTo);
-		$data[$i] = $sla_value;
+			$days, $timeFrom, $timeTo);
+		if ($sla_value == false) {// 4 for the Unknown value
+			$data[$i] = 4;
+		} elseif (($sla_value >= ($sla_limit - 10)) && ($sla_value <= ($sla_limit + 10))) {//2 when value is within the edges
+			$data[$i] = 2;
+		} elseif ($sla_value > ($sla_limit + 10)) { //1 when value is OK
+			$data[$i] = 1; 
+		} elseif ($sla_value < ($sla_value - 10)) { //3 when value is Wrong
+			$data[$i] = 3;
+		}
 		$final_time += $sub_period;
 		$i++;
 	}
@@ -1909,7 +1931,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$slas = array ();
 				break;
 			}
-			else {
+			elseif ($show_graph == 0 || $show_graph == 1) {
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array ();
@@ -1939,6 +1961,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
@@ -1956,66 +1979,72 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				//Do not show right modules if 'only_display_wrong' is active
 				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
 				
-				$data = array ();
-				
-				$data[0] = printTruncateText(get_agentmodule_agent_name ($sla['id_agent_module']));
-				$data[1] = printTruncateText(get_agentmodule_name ($sla['id_agent_module']));
-				$data[2] = $sla['sla_max'].' / ';
-				$data[2] .= $sla['sla_min'];
-				$data[3] = $sla['sla_limit'];
-								
-				if ($sla_value === false) {
-					$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-					$data[5] = __('Unknown');
-				} else {
-					if ($sla_value >= $sla['sla_limit']) {
-						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+				if ($show_graph == 0 || $show_graph == 1) {
+					$data = array ();
+					$data[0] = printTruncateText(get_agentmodule_agent_name ($sla['id_agent_module']));
+					$data[1] = printTruncateText(get_agentmodule_name ($sla['id_agent_module']));
+					$data[2] = $sla['sla_max'].' / ';
+					$data[2] .= $sla['sla_min'];
+					$data[3] = $sla['sla_limit'];
+									
+					if ($sla_value === false) {
+						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
+						$data[5] = __('Unknown');
+					} else {
+						if ($sla_value >= $sla['sla_limit']) {
+							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
+							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+						}
+						else {
+							$sla_failed = true;
+							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
+							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
+						}
+						$data[4] .= format_numeric ($sla_value). " %";
 					}
-					else {
-						$sla_failed = true;
-						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
-						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
-					}
-					$data[4] .= format_numeric ($sla_value). " %";
+					$data[4] .= "</span>";
+					
+					array_push ($table1->data, $data);
 				}
-				$data[4] .= "</span>";
-				
-				array_push ($table1->data, $data);
 			}
 			$table->colspan[2][0] = 3;
-			$data = array();
-			$data[0] = print_table($table1, true);
-			array_push ($table->data, $data);
+			if ($show_graph == 0 || $show_graph == 1) {
+				$data = array();
+				$data[0] = print_table($table1, true);
+				array_push ($table->data, $data);
+			}
 
 			$table->colspan[3][0] = 3;
 			$data = array();
-			
-			if ($show_graph && !empty($slas)) {
+			$data_pie_graph = json_encode ($data_graph);
+			if (($show_graph == 1 || $show_graph == 2) && !empty($slas)) {
 				if($config['flash_charts']) {
 					$data[0] = fs_3d_pie_chart ($data_graph, 370, 180);
 				}
 				else {
 					//Display pie graph
-					$data[0] = '<img src="include/fgraph.php?tipo=sla_pie_graph&value1='.$data_graph[__('Inside limits')].
-					'&value2='.$data_graph[__('Out of limits')].'&value3='.$data_graph[__('On the edge')].
-					'&value4='.$data_graph[__('Unknown')].'&height=150&width=500">';
+					$data[0] = "<img src='include/fgraph.php?tipo=generic_pie_graph&array=".$data_pie_graph.
+					"&height=150&width=500'>";
 				}
 				array_push ($table->data, $data);
 				
 				//Display horizontal bar graphs
+				$days = array ('monday' => $content['monday'], 'tuesday' => $content['tuesday'],
+				'wednesday' => $content['wednesday'], 'thursday' => $content['thursday'],
+				'friday' => $content['friday'], 'saturday' => $content['saturday'], 'sunday' => $content['sunday']);
+				$daysWeek = json_encode ($days);
+				
 				$table2->width = '99%';
 				$table2->data = array ();
 				foreach ($slas as $sla) {
 					$data = array();
-					$data[0] = 
 					$data[0] = get_agentmodule_agent_name ($sla['id_agent_module']);
 					$data[0] .= '/';
 					$data[0] .= get_agentmodule_name ($sla['id_agent_module']);
-					$data[1] = '<img src="include/fgraph.php?tipo=sla_horizontal_graph&id='.$sla['id_agent_module'].
-					'&period='.$content['period'].'&value1='.$sla['sla_min'].'&value2='.$sla['sla_max'].
-					'&value3='.$content['time_from'].'&value4='.$content['time_to'].'&percent='.$sla['sla_limit'].
-					'&height=15&width=550">';
+					$data[1] = "<img src='include/fgraph.php?tipo=sla_horizontal_graph&id=".$sla['id_agent_module'].
+					"&period=".$content['period']."&value1=".$sla['sla_min']."&value2=".$sla['sla_max'].
+					"&value3=".$content['time_from']."&value4=".$content['time_to']."&percent=".$sla['sla_limit'].
+					"&daysWeek=".$daysWeek."&height=15&width=550'>";
 					array_push ($table2->data, $data);
 				}
 				$table->colspan[4][0] = 3;
@@ -2790,6 +2819,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$order_uptodown = $content['order_uptodown'];
 			$top_n = $content['top_n'];
 			$top_n_value = $content['top_n_value'];
+			$show_graph = $content['show_graph'];
 			
 			$table->style[1] = 'text-align: right';
 			$data = array ();
@@ -2819,16 +2849,17 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				break;
 			}
 			
-			$table1->width = '99%';
-			$table1->data = array ();
-			$table1->head = array ();
-			$table1->head[0] = __('Agent');
-			$table1->head[1] = __('Module');
-			$table1->head[2] = __('Value');
-			$table1->style[0] = 'text-align: center';
-			$table1->style[1] = 'text-align: center';
-			$table1->style[2] = 'text-align: center';
-			
+			if ($show_graph == 0 || $show_graph == 1) {
+				$table1->width = '99%';
+				$table1->data = array ();
+				$table1->head = array ();
+				$table1->head[0] = __('Agent');
+				$table1->head[1] = __('Module');
+				$table1->head[2] = __('Value');
+				$table1->style[0] = 'text-align: center';
+				$table1->style[1] = 'text-align: center';
+				$table1->style[2] = 'text-align: center';
+			}
 			$data_top = array();
 			foreach ($tops as $key => $row) {
 				switch ($top_n) {
@@ -2900,33 +2931,65 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 
 			if ($order_uptodown == 1 || $order_uptodown == 2) {
 				$i = 0;
+				$data_pie_graph = array();
 				foreach ($data_top as $dt) {
-					$data = array();
-					$data[0] = printTruncateText($agent_name[$i], 30);
-					$data[1] = printTruncateText($module_name[$i], 30);
-					$data[2] = $dt;
-					array_push ($table1->data, $data);
+					$data_pie_graph[$agent_name[$i]] = $dt;
+					if  ($show_graph == 0 || $show_graph == 1) {
+						$data = array();
+						$data[0] = printTruncateText($agent_name[$i], 30);
+						$data[1] = printTruncateText($module_name[$i], 30);
+						$data[2] = $dt;
+						array_push ($table1->data, $data);
+					}
 					$i++;
 					if ($i >= $top_n_value) break;
 				}
 			}
 			else if ($order_uptodown == 0 || $order_uptodown == 3) {
 				$i = 0;
+				$data_pie_graph = array();
 				foreach ($agent_name as $an) {
-					$data = array();
-					$data[0] = printTruncateText($an, 30);
-					$data[1] = printTruncateText($module_name[$i], 30);
-					$data[2] = $data_top[$i];
-					array_push ($table1->data, $data);
+					$data_pie_graph[$an] = $data_top[$i];
+					if  ($show_graph == 0 || $show_graph == 1) {
+						$data = array();
+						$data[0] = printTruncateText($an, 30);
+						$data[1] = printTruncateText($module_name[$i], 30);
+						$data[2] = $data_top[$i];
+						array_push ($table1->data, $data);
+					}
 					$i++;
 					if ($i >= $top_n_value) break;
 				}
 			}
 			
 			$table->colspan[2][0] = 3;
+			if ($show_graph == 0 || $show_graph == 1) {
+				$data = array();
+				$data[0] = print_table($table1, true);
+				array_push ($table->data, $data);
+			}
+			
+			$table->colspan[3][0] = 3;
 			$data = array();
-			$data[0] = print_table($table1, true);
-			array_push ($table->data, $data);
+			if ($show_graph == 1 || $show_graph == 2) {
+				if($config['flash_charts']) {
+					$data[0] = fs_3d_pie_chart ($data_pie_graph, 370, 180);
+				}
+				else {
+					$data_graph = json_encode ($data_pie_graph);
+					//Display pie graph
+					$data[0] = "<img src='include/fgraph.php?tipo=generic_pie_graph&array=".$data_graph.
+					"&height=150&width=600'>";
+				}
+				array_push ($table->data, $data);
+				//Display bars graph
+				$table->colspan[4][0] = 3;
+				$height = count($data_pie_graph)*20+35;
+				$data = array();
+				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_graph.
+				"&height=".$height."width=600'>";
+				array_push ($table->data, $data);
+			}
 
 			if ($content['show_resume'] && count($data_top_values) > 0) {
 				//Get the very first not null value 
@@ -2960,6 +3023,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$order_uptodown = $content['order_uptodown'];
 			$exception_condition = $content['exception_condition'];
 			$exception_condition_value = $content['exception_condition_value'];
+			$show_graph = $content['show_graph'];
 			
 			$table->style[1] = 'text-align: right';
 			$data = array ();
@@ -3007,15 +3071,17 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				break;
 			}
 
-			$table1->width = '99%';
-			$table1->data = array ();
-			$table1->head = array ();
-			$table1->head[0] = __('Agent');
-			$table1->head[1] = __('Module');
-			$table1->head[2] = __('Value');
-			$table1->style[0] = 'text-align: center';
-			$table1->style[1] = 'text-align: center';
-			$table1->style[2] = 'text-align: center';
+			if ($show_graph == 0 || $show_graph == 1) {
+				$table1->width = '99%';
+				$table1->data = array ();
+				$table1->head = array ();
+				$table1->head[0] = __('Agent');
+				$table1->head[1] = __('Module');
+				$table1->head[2] = __('Value');
+				$table1->style[0] = 'text-align: center';
+				$table1->style[1] = 'text-align: center';
+				$table1->style[2] = 'text-align: center';
+			}
 			
 			//Get the very first not null value 
 			$i=0;
@@ -3033,7 +3099,6 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					if ($value > $max) $max = $value;
 					if ($value < $min) $min = $value;
 					$avg += $value;
-					$i++;
 					switch ($exception_condition) {
 						//Display everything
 						case 0:
@@ -3067,14 +3132,40 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 							}
 							break;
 					}
+					$i++;
 					$data_exceptions[] = $value;
 					$id_agent_module[] = $exc['id_agent_module'];
 					$agent_name[] = $exc['agent_name'];
 					$module_name[] = $exc['module_name'];
 				}
 			}
+			//$i <= 0 means that there are no rows on the table, therefore no modules under the conditions defined.
+			if ($i<=0) {
+				$data = array ();
+				$table->colspan[2][0] = 3;
+				$data[0] = __('There are no');
+				switch ($exception_condition) {
+					case 1:
+						$data[0] .= ' '.__('Modules over or equal to').' '.$exception_condition_value;
+						break;
+					case 2:
+						$data[0] .= ' '.__('Modules under').' '.$exception_condition_value;
+						break;
+					case 3:
+						$data[0] .= ' '.__('Modules at normal status');
+						break;
+					case 4:
+						$data[0] .= ' '.__('Modules at critial or warning status');
+						break;
+					default:
+						$data[0] .= ' '.__('Modules under those conditions');
+						break;
+				}
+				array_push ($table->data, $data);
+				break;
+			}
 			//$i > 0 means that there is at least one row on the table
-			if ($i > 0) {
+			elseif ($i > 0) {
 				$avg = $avg / $i;
 
 				switch ($order_uptodown) {
@@ -3095,7 +3186,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 
 				if ($order_uptodown == 1 || $order_uptodown == 2) {
 					$j=0;
+					$data_pie_graph = array();
 					foreach ($data_exceptions as $dex) {
+						$data_pie_graph[$agent_name[$j]] = $dex;
 						$data = array();
 						$data[0] = printTruncateText($agent_name[$j], 30);
 						$data[1] = printTruncateText($module_name[$j], 30);
@@ -3106,7 +3199,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				}
 				else if ($order_uptodown == 0 || $order_uptodown == 3) {
 					$j=0;
+					$data_pie_graph = array();
 					foreach ($agent_name as $an) {
+						$data_pie_graph[$an] = $data_exceptions[$j];
 						$data = array();
 						$data[0] = printTruncateText($an, 30);
 						$data[1] = printTruncateText($module_name[$j], 30);
@@ -3118,9 +3213,33 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$table->colspan[2][0] = 3;
+			if ($show_graph == 0 || $show_graph == 1) {
+				$data = array();
+				$data[0] = print_table($table1, true);
+				array_push ($table->data, $data);
+			}
+			
+			$table->colspan[3][0] = 3;
 			$data = array();
-			$data[0] = print_table($table1, true);
-			array_push ($table->data, $data);
+			if ($show_graph == 1 || $show_graph == 2) {
+				if($config['flash_charts']) {
+					$data[0] = fs_3d_pie_chart ($data_pie_graph, 370, 180);
+				}
+				else {
+					$data_graph = json_encode ($data_pie_graph);
+					//Display pie graph
+					$data[0] = "<img src='include/fgraph.php?tipo=generic_pie_graph&array=".$data_graph.
+					"&height=150&width=600'>";
+				}
+				array_push ($table->data, $data);
+				//Display bars graph
+				$table->colspan[4][0] = 3;
+				$height = count($data_pie_graph)*20+35;
+				$data = array();
+				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_graph.
+				"&height=".$height."&width=600'>";
+				array_push ($table->data, $data);
+			}
 
 			if ($content['show_resume'] && $i>0) {
 				$data_resume = array();

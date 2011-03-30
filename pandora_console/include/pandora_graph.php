@@ -60,7 +60,7 @@ abstract class PandoraGraphAbstract {
 	abstract protected function single_graph ();
 	abstract protected function combined_graph ($values, $events, $alerts, $unit_name, $max_value, $stacked);
 	abstract protected function progress_bar ($value, $color);
-	abstract protected function graph_sla_horizontal ($data, $sla_limit);
+	abstract protected function graph_sla_horizontal ($data);
 }
 
 function get_graph_engine ($period = 3600) {

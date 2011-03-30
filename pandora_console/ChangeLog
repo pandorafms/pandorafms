@@ -1,3 +1,8 @@
+2011-03-30 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/graphs/*, include/graphs/fgraph.php:
+	added first version of common graph libraries with Integria and Babel.
+
 2011-03-30 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_reporting.php: Fixed get_agentmodule_sla_array and

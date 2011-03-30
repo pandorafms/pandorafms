@@ -194,7 +194,7 @@ switch ($action) {
 						$values['top_n_value'] = get_parameter('quantity');
 						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
-						$values['show_graph'] = get_parameter('checkbox_show_graph');
+						$values['show_graph'] = get_parameter('combo_graph_options');
 					
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
@@ -247,7 +247,7 @@ switch ($action) {
 						$values['top_n_value'] = get_parameter('quantity');
 						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
-						$values['show_graph'] = get_parameter('checkbox_show_graph');
+						$values['show_graph'] = get_parameter('combo_graph_options');
 						
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
  

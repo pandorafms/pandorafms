@@ -22,6 +22,10 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	require ("general/noaccess.php");
 	exit;
 }
+$show_graph_options = Array();
+$show_graph_options[0] = __('Only table');
+$show_graph_options[1] = __('Table & Graph');
+$show_graph_options[2] = __('Only graph');
 
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
 
@@ -458,7 +462,8 @@ print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_show_graph" style="" class="datos">
 			<td><?php echo __('Show graph');?></td>
-			<td><?php print_checkbox('checkbox_show_graph', 1, $show_graph);?></td>
+			<td><?php print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
+			
 		</tr>
 		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume');?></td>

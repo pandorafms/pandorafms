@@ -1,3 +1,18 @@
+2011-03-30 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_reporting.php: Fixed get_agentmodule_sla_array and
+	added functionality to show the table, table+graph or only graph
+	* include/pchart_graph.php: Fixed function graph_sla_horizontal
+	* include/pandora_graph.php: Changed function graph_sla_horizontal
+	prototype
+	* include/fgraph.php: Deleted function graph_sla_pie, fixed function
+	graph_sla_horizontal and added two more cases for printing graphs
+	* godmode/reporting/reporting_builder.php: Changed getting parameter
+	of two checkboxes for two comboboxes
+	* godmode/reporting/reporting_builder.item_editor.php: Added the options
+	for the combo to select display table, table+graph or only graph
+
+
 2011-03-29 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/stat_win.php, godmode/servers/plugin.php: cleaned source

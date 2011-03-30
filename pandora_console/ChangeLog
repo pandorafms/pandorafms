@@ -1,4 +1,9 @@
 2011-03-30 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_reporting.php: Fixed a small problem passing 'width'
+	parameter in 'top_n' reports
+
+2011-03-30 Javier Lanz <javier.lanz@artica.es>
 	* include/functions_reporting.php: Fixed a small problem when displaying
 	only the graph and not the table for the exception report.
 

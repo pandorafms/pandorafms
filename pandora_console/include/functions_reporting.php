@@ -2987,7 +2987,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
 				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_graph.
-				"&height=".$height."width=600'>";
+				"&height=".$height."&width=600'>";
 				array_push ($table->data, $data);
 			}
 

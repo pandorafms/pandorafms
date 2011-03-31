@@ -31,6 +31,9 @@ function select_db_engine() {
 		case "postgresql":
 			require_once ($config['homedir'] . '/include/db/postgresql.php');
 			break;
+		case "oracle":
+			require_once ($config['homedir'] . '/include/db/oracle.php');
+			break;			
 	}
 }
 
@@ -44,6 +47,9 @@ function connect_db($host = null, $db = null, $user = null, $pass = null) {
 		case "postgresql":
 			return postgresql_connect_db($host, $db, $user, $pass);
 			break;
+		case "oracle":
+			return oracle_connect_db($host, $db, $user, $pass);
+			break;			
 	}
 }
 
@@ -110,6 +116,9 @@ function escape_string_sql($string) {
 			break;
 		case "postgresql":
 			return postgresql_escape_string_sql($string);
+			break;
+		case "oracle":
+			return oracle_escape_string_sql($string);
 			break;
 	}
 }
@@ -596,6 +605,9 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 				case "postgresql":
 					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
 					break;
+				case "oracle":
+					$search_sql .= ' AND (nombre  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
+					break;
 			}
 				
 			unset ($search["string"]);
@@ -603,7 +615,17 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 
 		if (isset ($search["name"])) {
 			$name = safe_input ($search["name"]);
-			$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE "' . $name . '" ';
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE "' . $name . '" ';
+					break;
+				case "postgresql":
+					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
+					break;
+				case "oracle":
+					$search_sql .= ' AND nombre LIKE UPPER("' . $name . '") ';
+					break;
+			}
 				
 			unset ($search["name"]);
 		}
@@ -1051,6 +1073,14 @@ function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
 				AND \"utimestamp\" <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
+		case "oracle":
+			$sql = sprintf ("SELECT COUNT(id_agentmodule) FROM tevento WHERE
+				event_type = 'monitor_down' 
+				AND id_agentmodule = %d 
+				AND utimestamp > %d 
+				AND utimestamp <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
 	}
 
 	return get_db_sql ($sql);
@@ -1090,6 +1120,14 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
 				AND \"utimestamp\" <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
+		case "oracle":
+			$sql = sprintf ("SELECT MAX(timestamp) FROM tevento WHERE
+				event_type = 'monitor_down' 
+				AND id_agentmodule = %d 
+				AND utimestamp > %d 
+				AND utimestamp <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
 	}
 
 	return get_db_sql ($sql);
@@ -1124,6 +1162,7 @@ function get_monitors_in_group ($id_group) {
 					AND `tagente`.`id_grupo` IN (%s) ORDER BY `tagente`.`nombre`", $id_group);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf ("SELECT tagente_modulo.* FROM tagente_modulo, ttipo_modulo, tagente WHERE
 					id_tipo_modulo = id_tipo 
 					AND tagente.id_agente = tagente_modulo.id_agente 
@@ -1307,6 +1346,7 @@ function get_monitors_in_agent ($id_agent) {
 					AND `tagente`.`id_agente` = %d", $id_agent);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf ("SELECT tagente_modulo.*
 				FROM tagente_modulo, ttipo_modulo, tagente
 				WHERE id_tipo_modulo = id_tipo
@@ -1371,6 +1411,7 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
 				$id_alert_module, $datelimit, $date);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf ("SELECT COUNT(id_agentmodule)
 				FROM tevento
 				WHERE event_type = 'alert_fired'
@@ -1467,6 +1508,7 @@ function get_alert_last_fire_timestamp_in_period ($id_alert_module, $period, $da
 				$id_alert_module, $datelimit, $date);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf ("SELECT MAX(utimestamp)
 				FROM tevento
 				WHERE event_type = 'alert_fired'
@@ -2021,6 +2063,7 @@ function agent_add_address ($id_agent, $ip_address) {
 				AND ip = '%s' AND id_agent = %d",$ip_address,$id_agent);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf ("SELECT COUNT(ip) FROM taddress_agent, taddress
 				WHERE taddress_agent.id_a = taddress.id_a
 				AND ip = '%s' AND id_agent = %d", $ip_address, $id_agent);
@@ -2103,6 +2146,7 @@ function get_agent_with_ip ($ip_address) {
 					AND ip = "%s"', $ip_address);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf ('SELECT tagente.*
 				FROM tagente, taddress, taddress_agent
 				WHERE tagente.id_agente = taddress_agent.id_agent
@@ -2174,6 +2218,9 @@ function get_db_value($field, $table, $field_search = 1, $condition = 1, $search
 		case "postgresql":
 			return postgresql_get_db_value($field, $table, $field_search, $condition, $search_history_db);
 			break;
+		case "oracle":
+			return oracle_get_db_value($field, $table, $field_search, $condition, $search_history_db);
+			break;
 	}
 }
 
@@ -2212,6 +2259,9 @@ function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
 		case "postgresql":
 			return postgresql_get_db_value_filter($field, $table, $filter, $where_join);
 			break;
+		case "oracle":
+			return oracle_get_db_value_filter($field, $table, $filter, $where_join);
+			break;
 	}
 }
 
@@ -2233,6 +2283,9 @@ function get_db_value_sql($sql) {
 		case "postgresql":
 			return postgresql_get_db_value_sql($sql);
 			break;
+		case "oracle":
+			return oracle_get_db_value_sql($sql);
+			break;
 	}
 }
 
@@ -2253,6 +2306,10 @@ function get_db_row_sql($sql, $search_history_db = false) {
 		case "postgresql":
 			return postgresql_get_db_row_sql($sql, $search_history_db);
 			break;
+		case "oracle":
+			return oracle_get_db_row_sql($sql, $search_history_db);
+			break;
+			
 	}
 }
 
@@ -2278,6 +2335,9 @@ function get_db_row ($table, $field_search, $condition, $fields = false) {
 			break;
 		case "postgresql":
 			return postgresql_get_db_row($table, $field_search, $condition, $fields);
+			break;
+		case "oracle":
+			return oracle_get_db_row($table, $field_search, $condition, $fields);
 			break;
 	}
 }
@@ -2315,6 +2375,9 @@ function get_db_row_filter($table, $filter, $fields = false, $where_join = 'AND'
 			break;
 		case "postgresql":
 			return postgresql_get_db_row_filter($table, $filter, $fields, $where_join);
+			break;
+		case "oracle":
+			return oracle_get_db_row_filter($table, $filter, $fields, $where_join);
 			break;
 	}
 }
@@ -2362,6 +2425,9 @@ function get_db_all_rows_sql($sql, $search_history_db = false, $cache = true) {
 		case "postgresql":
 			return postgresql_get_db_all_rows_sql($sql, $search_history_db, $cache);
 			break;
+		case "oracle":
+			return oracle_get_db_all_rows_sql($sql, $search_history_db, $cache);
+			break;
 	}
 }
 
@@ -2399,6 +2465,9 @@ function get_db_all_rows_filter($table, $filter = array(), $fields = false, $whe
 		case "postgresql":
 			return postgresql_get_db_all_rows_filter($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
 			break;
+		case "oracle":
+			return oracle_get_db_all_rows_filter($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
+			break;
 	}
 }
 
@@ -2422,6 +2491,9 @@ function get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 		case "postgresql":
 			return postgresql_get_db_all_row_by_steps_sql($new, $result, $sql);
 			break;
+		case "oracle":
+			return oracle_get_db_all_row_by_steps_sql($new, $result, $sql);
+			break;
 	}
 }
 
@@ -2440,6 +2512,9 @@ function get_db_num_rows($sql) {
 			break;
 		case "postgresql":
 			return postgresql_get_db_num_rows($sql);
+			break;
+		case "oracle":
+			return oracle_get_db_num_rows($sql);
 			break;
 	}
 }
@@ -2529,9 +2604,11 @@ function clean_cache() {
  *
  * @param string $status The status and type of query (support only postgreSQL).
  *
+ * @param bool $autocommit (Only oracle) Set autocommit transaction mode true/false 
+ *
  * @return mixed An array with the rows, columns and values in a multidimensional array or false in error
  */
-function process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null) {
+function process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null, $autocommit = true) {
 	global $config;
 
 	switch ($config["dbtype"]) {
@@ -2541,6 +2618,9 @@ function process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cach
 		case "postgresql":
 			return @postgresql_process_sql($sql, $rettype, $dbconnection, $cache, $status);
 			break;
+		case "oracle":
+			return @oracle_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
+			break;			
 	}
 }
 
@@ -2562,6 +2642,9 @@ function get_db_all_rows_in_table ($table, $order_field = "", $order = 'ASC') {
 			break;
 		case "postgresql":
 			return postgresql_get_db_all_rows_in_table($table, $order_field, $order);
+			break;
+		case "oracle":
+			return oracle_get_db_all_rows_in_table($table, $order_field, $order);
 			break;
 	}
 }
@@ -2586,6 +2669,9 @@ function get_db_all_rows_field_filter($table, $field, $condition, $order_field =
 		case "postgresql":
 			return postgresql_get_db_all_rows_field_filter($table, $field, $condition, $order_field);
 			break;
+		case "oracle":
+			return oracle_get_db_all_rows_field_filter($table, $field, $condition, $order_field);
+			break;
 	}
 }
 
@@ -2606,6 +2692,9 @@ function get_db_all_fields_in_table($table, $field = '', $condition = '', $order
 			break;
 		case "postgresql":
 			return postgresql_get_db_all_fields_in_table($table, $field, $condition, $order_field);
+			break;
+		case "oracle":
+			return oracle_get_db_all_fields_in_table($table, $field, $condition, $order_field);
 			break;
 	}
 }
@@ -2642,6 +2731,9 @@ function format_array_to_update_sql($values) {
 			break;
 		case "postgresql":
 			return postgresql_format_array_to_update_sql($values);
+			break;
+		case "oracle":
+			return oracle_format_array_to_update_sql($values);
 			break;
 	}
 }
@@ -2708,6 +2800,9 @@ function format_array_to_update_sql($values) {
  *
  * @return string Values joined into an SQL string that can fits into the WHERE
  * clause of an SQL sentence.
+
+ // IMPORTANT!!! OFFSET parameter is not allowed for Oracle because Oracle needs to recode the complete query. 
+ // use oracle_format_query() function instead.
  */
 function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
 	global $config;
@@ -2718,6 +2813,9 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 			break;
 		case "postgresql":
 			return postgresql_format_array_to_where_clause_sql($values, $join, $prefix);
+			break;
+		case "oracle":
+			return oracle_format_array_to_where_clause_sql($values, $join, $prefix);
 			break;
 	}
 }
@@ -2799,6 +2897,12 @@ function get_agent_status($id_agent = 0) {
 					'tagente',
 					array ('id_agente' => (int) $id_agent,
 						'ceil(date_part(\'epoch\', ultimo_contacto)) + intervalo * 2 > '.$time));
+				break;
+			case "oracle":
+				$status = get_db_value_filter ('COUNT(*)',
+					'tagente',
+					array ('id_agente' => (int) $id_agent,
+						'ceil((to_date(ultimo_contacto, \'DD/MM/YYYY HH24:MI:SS\') - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)) > ' . $time));
 				break;
 		}
 			
@@ -3111,6 +3215,10 @@ function check_server_status () {
 		case "postgresql":
 			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL '15 MINUTE'";
 			break;
+
+		case "oracle":
+		$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > systimestamp - INTERVAL '15' MINUTE";
+		break;
 	}
 	$status = (int) get_db_sql ($sql); //Cast as int will assure a number value
 	// This function should just ack of server down, not set it down.
@@ -3131,13 +3239,22 @@ function server_status ($id_server) {
 }
 
 /**
- * Subfunciton for less typing
+ * Subfunction for less typing
  * @ignore
  */
 function temp_sql_delete ($table, $row, $value) {
 	global $error; //Globalize the errors variable
 
-	$result = process_sql_delete ($table, $row.' = '.$value);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$result = process_sql_delete ($table, $row.' = '.$value);
+			break;
+		case "oracle":
+			$result = oracle_process_sql_delete_temp ($table, $row.' = '.$value);
+			break;			
+	}
+
 	if ($result === false) {
 		$error = true;
 	}
@@ -3385,6 +3502,9 @@ function process_sql_insert($table, $values) {
 		case "postgresql":
 			return postgresql_process_sql_insert($table, $values);
 			break;
+		case "oracle":
+			return oracle_process_sql_insert($table, $values);
+			break;
 	}
 }
 
@@ -3421,6 +3541,9 @@ function process_sql_update($table, $values, $where = false, $where_join = 'AND'
 			break;
 		case "postgresql":
 			return postgresql_process_sql_update($table, $values, $where, $where_join);
+			break;
+		case "oracle":
+			return oracle_process_sql_update($table, $values, $where, $where_join);
 			break;
 	}
 }
@@ -3463,6 +3586,9 @@ function process_sql_delete($table, $where, $where_join = 'AND') {
 		case "postgresql":
 			return postgresql_process_sql_delete($table, $where, $where_join);
 			break;
+		case "oracle":
+			return oracle_process_sql_delete($table, $where, $where_join);
+			break;
 	}
 }
 
@@ -3478,6 +3604,9 @@ function process_sql_begin() {
 			break;
 		case "postgresql":
 			return postgresql_process_sql_begin();
+			break;
+		case "oracle":
+			return oracle_process_sql_begin();
 			break;
 	}
 }
@@ -3495,6 +3624,9 @@ function process_sql_commit() {
 		case "postgresql":
 			return postgresql_process_sql_commit();
 			break;
+		case "oracle":
+			return oracle_process_sql_commit();
+			break;
 	}
 }
 
@@ -3510,6 +3642,9 @@ function process_sql_rollback() {
 			break;
 		case "postgresql":
 			return postgresql_process_sql_rollback();
+			break;
+		case "oracle":
+			return oracle_process_sql_rollback();
 			break;
 	}
 }
@@ -3657,6 +3792,9 @@ function get_db_last_error() {
 		case "postgresql":
 			return postgresql_get_db_last_error();
 			break;
+		case "oracle":
+			return oracle_get_db_last_error();
+			break;
 	}
 }
 
@@ -3677,6 +3815,9 @@ function get_db_type_field_table($table, $field) {
 			break;
 		case "postgresql":
 			return postgresql_get_db_type_field_table($table, $field);
+			break;
+		case "oracle":
+			return oracle_get_db_type_field_table($table, $field);
 			break;
 	}
 }

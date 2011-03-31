@@ -52,13 +52,13 @@ CREATE TABLE tagente (
 	direccion VARCHAR2(100) default NULL,
 	comentarios VARCHAR2(255) default '',
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	ultimo_contacto DATE default NULL,
+	ultimo_contacto TIMESTAMP default NULL,
 	modo NUMBER(5, 0) default 0 NOT NULL,
 	intervalo NUMBER(10, 0) default 300 NOT NULL,
 	id_os NUMBER(10, 0) default 0,
 	os_version VARCHAR2(100) default '',
 	agent_version VARCHAR2(100) default '',
-	ultimo_contacto_remoto DATE default NULL,
+	ultimo_contacto_remoto TIMESTAMP default NULL,
 	disabled NUMBER(5, 0) default 0 NOT NULL,
 	id_parent NUMBER(10, 0) default 0,
 	custom_id VARCHAR2(255) default '',
@@ -125,10 +125,10 @@ CREATE TABLE tagente_estado (
 	id_agente_estado NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
 	datos NCLOB default '' NOT NULL,
-	timestamp DATE default NULL,
+	timestamp TIMESTAMP default NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
 	id_agente NUMBER(10, 0) default 0 NOT NULL,
-	last_try DATE default NULL,
+	last_try TIMESTAMP default NULL,
 	utimestamp NUMBER(19, 0) default 0 NOT NULL,
 	current_interval NUMBER(10, 0) default 0 NOT NULL,
 	running_by NUMBER(10, 0) default 0,
@@ -231,7 +231,7 @@ CREATE TABLE talert_snmp (
 	oid VARCHAR2(255) default '' NOT NULL,
 	time_threshold NUMBER(10, 0) default 0 NOT NULL,
 	times_fired NUMBER(5, 0) default 0 NOT NULL,
-	last_fired DATE default NULL,
+	last_fired TIMESTAMP default NULL,
 	max_alerts NUMBER(10, 0) default 1 NOT NULL,
 	min_alerts NUMBER(10, 0) default 1 NOT NULL,
 	internal_counter NUMBER(10, 0) default 0 NOT NULL,
@@ -930,7 +930,7 @@ CREATE TABLE treport_content (
 	show_resume NUMBER(10, 0) default 0 NOT NULL,
 	order_uptodown NUMBER(10, 0) default 0 NOT NULL,
 	show_graph NUMBER(10, 0) default 0 NOT NULL,
-	group_by_agent NUMBER(10, 0) default 0 NOT NULL
+	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
 	style NCLOB default '' NOT NULL
 );
 
@@ -1391,3 +1391,7 @@ CREATE OR REPLACE TRIGGER tagent_custom_data_update AFTER UPDATE OF ID_FIELD ON 
 
 -- on update trigger 1
 CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF ID_AGENTE ON tagente FOR EACH ROW BEGIN UPDATE tagent_custom_data SET ID_AGENT = :NEW.ID_AGENTE WHERE ID_AGENT = :OLD.ID_AGENTE; END;;
+
+-- Procedure for retrieve PK information after an insert statement
+CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER) IS BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT ' ||table_name||'_s.currval FROM DUAL' INTO id; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
+

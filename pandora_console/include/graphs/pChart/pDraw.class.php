@@ -3676,7 +3676,14 @@
       {
        if ( $Serie["isDrawable"] == TRUE && $SerieName != $Data["Abscissa"] )
         {
-         $R = $Serie["Color"]["R"]; $G = $Serie["Color"]["G"]; $B = $Serie["Color"]["B"]; $Alpha = $Serie["Color"]["Alpha"]; $Ticks = $Serie["Ticks"];
+         $R = $Serie["Color"]["R"]; 
+         $G = $Serie["Color"]["G"]; 
+         $B = $Serie["Color"]["B"];
+         $BorderR = $Serie["Color"]["BorderR"]; 
+         $BorderG = $Serie["Color"]["BorderG"]; 
+         $BorderB = $Serie["Color"]["BorderB"];
+         $Alpha = $Serie["Color"]["Alpha"]; 
+         $Ticks = $Serie["Ticks"];
          if ( $DisplayColor == DISPLAY_AUTO ) { $DisplayR = $R; $DisplayG = $G; $DisplayB = $B; }
 
          $AxisID	= $Serie["Axis"];
@@ -3705,10 +3712,14 @@
            foreach($PosArray as $Key => $Y)
             {
 			 // Hack to avoid draw zero values
-			 debugPrint($Serie["Data"][$Key]." - ".$lastKey, '/tmp/logo');
+			 debugPrint((int)$DisplayZeros . " - " . $Serie["Data"][$Key]." - ".$lastKey, '/tmp/logo');
 			 if(!$DisplayZeros && $Serie["Data"][$Key] == 0 && $lastKey == 0) {
+				debugPrint("HOLA", "/tmp/logo");
 				$Y = VOID;
 			 }
+			else {
+				//debugPrint("ADIOS", "/tmp/logo");
+			}
              $lastKey = $Serie["Data"][$Key];
 
              if ( $DisplayValues && $Serie["Data"][$Key] != VOID )
@@ -3743,7 +3754,7 @@
            if ( $AroundZero ) { $Areas[$AreaID][] = $YZero; } else { $Areas[$AreaID][] = $this->GraphAreaY2-1; }
 
            $Alpha = $ForceTransparency != -1 ? $ForceTransparency : $Alpha;
-           $Color = array("R"=>$R,"G"=>$G,"B"=>$B,"Alpha"=>$Alpha);
+           $Color = array("BorderR" => $BorderR, "BorderG" => $BorderG, "BorderB" => $BorderB, "R"=>$R,"G"=>$G,"B"=>$B,"Alpha"=>$Alpha);
            foreach($Areas as $Key => $Points)
             $this->drawPolygon($Points,$Color);
           }
@@ -3795,7 +3806,7 @@
            $Areas[$AreaID][] = $LastY;
 
            $Alpha = $ForceTransparency != -1 ? $ForceTransparency : $Alpha;
-           $Color = array("R"=>$R,"G"=>$G,"B"=>$B,"Alpha"=>$Alpha);
+           $Color = array("BorderR" => $BorderR, "BorderG" => $BorderG, "BorderB" => $BorderB, "R"=>$R,"G"=>$G,"B"=>$B,"Alpha"=>$Alpha);
            foreach($Areas as $Key => $Points)
             $this->drawPolygon($Points,$Color);
           }

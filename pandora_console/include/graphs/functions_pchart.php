@@ -37,9 +37,8 @@ $id_graph = get_parameter('id_graph', false);
 
 if ($id_graph) {
 	session_start();
-	$graph = $_SESSION['graph'][$id_graph];
-	
-	unset($_SESSION['graph'][$id_graph]);
+	$graph = $_SESSION['graph_session'][$id_graph];	
+	unset($_SESSION['graph_session'][$id_graph]);
 	session_write_close();
 
 	if (isset($graph)) {
@@ -50,10 +49,10 @@ if ($id_graph) {
 		$legend = $graph['legend'];
 /*
 	$colors = array();
-	$colors['pep1'] = array('border' => '#000000', 'color' => '#000000', 'alpha' => 100);
+	$colors['pep1'] = array('border' => '#000000', 'color' => '#000000', 'alpha' => 50);
 	$colors['pep2'] = array('border' => '#ff7f00', 'color' => '#ff0000', 'alpha' => 50);
-	$colors['pep3'] = array('border' => '#ff0000', 'color' => '#00ff00', 'alpha' => 20);
-	$colors['pep4'] = array('border' => '#000000', 'color' => '#0000ff', 'alpha' => 100);
+	$colors['pep3'] = array('border' => '#ff0000', 'color' => '#00ff00', 'alpha' => 50);
+	$colors['pep4'] = array('border' => '#000000', 'color' => '#0000ff', 'alpha' => 50);
 */
 		$rgb_color = array();
 		foreach($colors as $i => $color) {		
@@ -82,7 +81,7 @@ if ($id_graph) {
 
 if($graph_type != 'pie3d' && $graph_type != 'pie2d') {
 	
-	$pixels_between_xdata = 10;
+	$pixels_between_xdata = 25;
 	$max_xdata_display = round($width / $pixels_between_xdata);
 	$ndata = count($data);
 	if($max_xdata_display > $ndata) {
@@ -94,20 +93,21 @@ if($graph_type != 'pie3d' && $graph_type != 'pie2d') {
 	
 	$step = round($ndata/$xdata_display);
 	$c = 0;
+	
 	foreach($data as $i => $d) {
 		$data_values[] = $d;
 		
-		if($c == 0) {
+		
+		if (($c % $step) == 0) {
 			$data_keys[] = $i;
 		}
 		else {
-			if($c == $step) {
-				$c = -1;
-			}
 			$data_keys[] = "";
 		}
+		
 		$c++;
 	}
+	//debugPrint($data_values);
 }
 
 switch($graph_type) {
@@ -299,14 +299,16 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	if(!is_array($legend) || empty($legend)) {
 		unset($legend);
 	}
-	 //$legend=array('pep1','pep2','pep3','pep4');
-	 //$data=array(array(1,1,3,3), array(1,3,1,4), array(3,1,1,1), array(1,1,1,0));
-     if(is_array($data[0])) {
+	 /*$legend=array('pep1' => 'pep1','pep2' => 'pep2','pep3' => 'pep3','pep4' => 'pep4');
+	 $data=array(array('pep1' => 1, 'pep2' => 1, 'pep3' => 3, 'pep4' => 3), array('pep1' => 1, 'pep2' => 3, 'pep3' => 1,'pep4' => 4), array('pep1' => 3, 'pep2' => 1, 'pep3' => 1,'pep4' =>1), array('pep1' => 1, 'pep2' =>1, 'pep3' =>1,'pep4' =>0));
+	 $index=array(1,2,3,4);
+     */
+     if(is_array(reset($data))) {
 	 	$data2 = array();
 		foreach($data as $i =>$values) {
 			$c = 0;
-			foreach($values as $value) {
-				$data2[$c][$i] = $value;
+			foreach($values as $i2 => $value) {
+				$data2[$i2][$i] = $value;
 				$c++;
 			}
 		}
@@ -318,15 +320,28 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 
 	 /* Create and populate the pData object */
 	 $MyData = new pData();
+	 //debugPrint($data);
 	 foreach($data as $i => $values) {
-		 if(isset($legend)) { 
+		 if(isset($legend)) {
 			$point_id = $legend[$i];
 		 }
 		 else {
 			$point_id = $i;
 		 }
+		 
+		if ($i == 'alert') {
+			$values[100] = 100;
+		}
+		 
 		$MyData->addPoints($values,$point_id);
-		$MyData->setPalette($point_id, array("R" => $rgb_color[$point_id]['color']["R"], "G" => $rgb_color[$point_id]['color']["G"], "B" => $rgb_color[$point_id]['color']["B"], "Alpha" => $rgb_color[$point_id]['alpha']));
+		$MyData->setPalette($point_id, 
+				array("R" => $rgb_color[$i]['color']["R"], 
+					"G" => $rgb_color[$i]['color']["G"], 
+					"B" => $rgb_color[$i]['color']["B"],
+					"BorderR" => $rgb_color[$i]['border']["R"], 
+					"BorderG" => $rgb_color[$i]['border']["G"], 
+					"BorderB" => $rgb_color[$i]['border']["B"], 
+					"Alpha" => $rgb_color[$i]['alpha']));
 	 }
 
 	 //$MyData->addPoints($data,"Yaxis");
@@ -353,17 +368,25 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 /* Draw the scale */
 	 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "XMargin" => 40, "LabelRotation" => 90);
 	 $myPicture->drawScale($scaleSettings);
-
+	
 	 if(isset($legend)) {
 		/* Write the chart legend */
-		$myPicture->drawLegend($height/2,$width/1.8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
+		//$myPicture->drawLegend($height/2,$width/1.8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
+		$myPicture->drawLegend($height/2,$height-20,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 	 }
 	 
 	 /* Turn on shadow computing */ 
 	 //$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
 	 /* Draw the chart */
-	 $settings = array("ForceTransparency"=>"-1", "Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
+	 $settings = array("ForceTransparency"=>"-1",
+	 	"Gradient"=>TRUE,
+	 	"GradientMode"=>GRADIENT_EFFECT_CAN,
+	 	"DisplayValues"=>$show_values,
+	 	"DisplayZeroValues"=>FALSE,
+	 	"DisplayR"=>100,
+	 	"DisplayZeros"=> FALSE,
+	 	"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	 
 	 switch($graph_type) {
 		case "area":

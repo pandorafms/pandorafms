@@ -167,7 +167,34 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 			}
 			$k++;
 		}
+		
+		// Set the title and time format
+		if ($period <= 3600) {
+			$title_period = __('Last hour');
+			$time_format = 'G:i:s';
+		}
+		elseif ($period <= 86400) {
+			$title_period = __('Last day');
+			$time_format = 'G:i';
+		}
+		elseif ($period <= 604800) {
+			$title_period = __('Last week');
+			$time_format = 'M j';
+		}
+		elseif ($period <= 2419200) {
+			$title_period = __('Last month');
+			$time_format = 'M j';
+		} 
+		else {
+			$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+			$time_format = 'M j';
+		}
 
+		$timestamp_short = date($time_format, $timestamp);
+		$long_index[$timestamp_short] = date(
+			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+		$timestamp = $timestamp_short;
+		
 		// Data
 		if ($count > 0) {
 			$chart[$timestamp]['sum'] = $total;
@@ -187,13 +214,17 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 			}
 		}
 
-		$chart[$timestamp]['count'] = 0;
+		//$chart[$timestamp]['count'] = 0;
 		/////////
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		/////////
-		$chart[$timestamp]['event'] = $event_value;
-		$chart[$timestamp]['alert'] = $alert_value;
+		if($show_events) {
+			$chart[$timestamp]['event'] = $event_value;
+		}
+		if($show_alerts) {
+			$chart[$timestamp]['alert'] = $alert_value;
+		}
 		$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
 		if ($chart[$timestamp]['baseline'] == NULL) {
 			$chart[$timestamp]['baseline'] = 0;
@@ -213,34 +244,12 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
 	foreach ($chart as $timestamp => $chart_data) {
-		if ($chart_data['event'] > 0) {
+		if ($show_events && $chart_data['event'] > 0) {
 			$chart[$timestamp]['event'] = $event_max;
 		}
-		if ($chart_data['alert'] > 0) {
+		if ($show_alerts && $chart_data['alert'] > 0) {
 			$chart[$timestamp]['alert'] = $event_max;
 		}
-	}
-	
-	// Set the title and time format
-	if ($period <= 3600) {
-		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
-	}
-	elseif ($period <= 86400) {
-		$title_period = __('Last day');
-		$time_format = 'G:i';
-	}
-	elseif ($period <= 604800) {
-		$title_period = __('Last week');
-		$time_format = 'M j';
-	}
-	elseif ($period <= 2419200) {
-		$title_period = __('Last month');
-		$time_format = 'M j';
-	} 
-	else {
-		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
 	}
 
     // Only show caption if graph is not small
@@ -252,21 +261,30 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	
 	///////
 	$color = array();
-	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 100);
-	$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
-	$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
-	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 100);
-	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 100);
+	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
+	if($show_events) {
+		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+	}
+	if($show_alerts) {
+		$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+	}
+	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	
 	$legend = array();
 	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
-	$legend['event'] = __('Events');
-	$legend['alert'] = __('Alerts');
+	if($show_events) {
+		$legend['event'] = __('Events');
+	}
+	if($show_alerts) {
+		$legend['alert'] = __('Alerts');
+	}
 	$legend['max'] = __('Max') . ' (' . $max_value . ')';
 	$legend['min'] = __('Min') . ' (' . $min_value . ')';
 	$legend['baseline'] = __('Baseline');
+	//$legend = null;
 	
-	area_graph(0, $chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption, $baseline, $color, $legend);
+	area_graph(0, $chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption, $baseline, $color, $legend, $long_index);
 }
 ?>

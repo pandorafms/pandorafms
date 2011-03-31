@@ -1,3 +1,10 @@
+2011-03-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/pChart/pDraw.class.php: Fixed 
+	pchart library bug with default value for
+	forcetransparency attribute. Changed from NULL
+	to -1
+
 2011-03-31 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php, include/graphs/functions_fsgraph.php: add

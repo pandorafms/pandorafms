@@ -3040,7 +3040,7 @@
      $DisplayB		= isset($Format["DisplayB"]) ? $Format["DisplayB"] : 0;
 
      $Data = $this->DataSet->getData();
-     
+     debugPrint($Data, '/tmp/logo');
      list($XMargin,$XDivs) = $this->scaleGetXSettings();
      foreach($Data["Series"] as $SerieName => $Serie)
       {
@@ -3525,7 +3525,7 @@
      $DisplayValues	= isset($Format["DisplayValues"]) ? $Format["DisplayValues"] :FALSE;
      $DisplayOffset	= isset($Format["DisplayOffset"]) ? $Format["DisplayOffset"] : 2;
      $DisplayColor	= isset($Format["DisplayColor"]) ? $Format["DisplayColor"] : DISPLAY_MANUAL;
-     $ForceTransparency	= isset($Format["ForceTransparency"]) ? $Format["ForceTransparency"] : NULL;
+     $ForceTransparency	= isset($Format["ForceTransparency"]) ? $Format["ForceTransparency"] : -1;
      $DisplayR		= isset($Format["DisplayR"]) ? $Format["DisplayR"] : 0;
      $DisplayG		= isset($Format["DisplayG"]) ? $Format["DisplayG"] : 0;
      $DisplayB		= isset($Format["DisplayB"]) ? $Format["DisplayB"] : 0;
@@ -3547,7 +3547,7 @@
          $Unit		= $Data["Axis"][$AxisID]["Unit"];
 
          $Color		= array("R"=>$R,"G"=>$G,"B"=>$B);
-         if ( $ForceTransparency != NULL ) { $Color["Alpha"] = $ForceTransparency; } else { $Color["Alpha"] = $Alpha; }
+         if ( $ForceTransparency != -1 ) { $Color["Alpha"] = $ForceTransparency; } else { $Color["Alpha"] = $Alpha; }
 
          $PosArray = $this->scaleComputeY($Serie["Data"],array("AxisID"=>$Serie["Axis"]));
          $YZero    = $this->scaleComputeY(0,array("AxisID"=>$Serie["Axis"]));
@@ -3733,7 +3733,7 @@
            $Areas[$AreaID][] = $LastX;
            if ( $AroundZero ) { $Areas[$AreaID][] = $YZero; } else { $Areas[$AreaID][] = $this->GraphAreaY2-1; }
 
-           $Alpha = $ForceTransparency != NULL ? $ForceTransparency : $Alpha;
+           $Alpha = $ForceTransparency != -1 ? $ForceTransparency : $Alpha;
            $Color = array("R"=>$R,"G"=>$G,"B"=>$B,"Alpha"=>$Alpha);
            foreach($Areas as $Key => $Points)
             $this->drawPolygon($Points,$Color);
@@ -3785,7 +3785,7 @@
            if ( $AroundZero ) { $Areas[$AreaID][] = $YZero; } else { $Areas[$AreaID][] = $this->GraphAreaX1+1; }
            $Areas[$AreaID][] = $LastY;
 
-           $Alpha = $ForceTransparency != NULL ? $ForceTransparency : $Alpha;
+           $Alpha = $ForceTransparency != -1 ? $ForceTransparency : $Alpha;
            $Color = array("R"=>$R,"G"=>$G,"B"=>$B,"Alpha"=>$Alpha);
            foreach($Areas as $Key => $Points)
             $this->drawPolygon($Points,$Color);
@@ -4357,7 +4357,7 @@
         {
          $R = $Serie["Color"]["R"]; $G = $Serie["Color"]["G"]; $B = $Serie["Color"]["B"]; $Alpha = $Serie["Color"]["Alpha"]; $Ticks = $Serie["Ticks"];
 
-         if ( $ForceTransparency != NULL ) { $Alpha = $ForceTransparency; }
+         if ( $ForceTransparency != -1 ) { $Alpha = $ForceTransparency; }
          if ( $DisplayColor == DISPLAY_AUTO ) { $DisplayR = 255; $DisplayG = 255; $DisplayB = 255; }
          if ( $Surrounding != NULL )
           { $BorderR = $R+$Surrounding; $BorderG = $G+$Surrounding; $BorderB = $B+$Surrounding; }

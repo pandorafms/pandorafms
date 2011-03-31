@@ -1,3 +1,9 @@
+2011-03-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php: Improved 
+	legend control and added limitation in showing
+	xaxis data to one each 10 pixels
+
 2011-03-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php: Fixed bad 

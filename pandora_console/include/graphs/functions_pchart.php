@@ -81,9 +81,32 @@ if ($id_graph) {
 
 
 if($graph_type != 'pie3d' && $graph_type != 'pie2d') {
+	
+	$pixels_between_xdata = 10;
+	$max_xdata_display = round($width / $pixels_between_xdata);
+	$ndata = count($data);
+	if($max_xdata_display > $ndata) {
+		$xdata_display = $ndata;
+	}
+	else {
+		$xdata_display = $max_xdata_display;
+	}
+	
+	$step = round($ndata/$xdata_display);
+	$c = 0;
 	foreach($data as $i => $d) {
 		$data_values[] = $d;
-		$data_keys[] = $i;
+		
+		if($c == 0) {
+			$data_keys[] = $i;
+		}
+		else {
+			if($c == $step) {
+				$c = -1;
+			}
+			$data_keys[] = "";
+		}
+		$c++;
 	}
 }
 
@@ -273,6 +296,9 @@ function pch_vbar_graph ($graph_type, $index, $data, $width, $height, $rgb_color
 
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false, $legend = array()) {
 	/* CAT:Vertical Charts */
+	if(!is_array($legend) || empty($legend)) {
+		unset($legend);
+	}
 	 //$legend=array('pep1','pep2','pep3','pep4');
 	 //$data=array(array(1,1,3,3), array(1,3,1,4), array(3,1,1,1), array(1,1,1,0));
      if(is_array($data[0])) {
@@ -293,8 +319,14 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 /* Create and populate the pData object */
 	 $MyData = new pData();
 	 foreach($data as $i => $values) {
-		$MyData->addPoints($values,$legend[$i]);
-		$MyData->setPalette($legend[$i], array("R" => $rgb_color[$legend[$i]]['color']["R"], "G" => $rgb_color[$legend[$i]]['color']["G"], "B" => $rgb_color[$legend[$i]]['color']["B"], "Alpha" => $rgb_color[$legend[$i]]['alpha']));
+		 if(isset($legend)) { 
+			$point_id = $legend[$i];
+		 }
+		 else {
+			$point_id = $i;
+		 }
+		$MyData->addPoints($values,$point_id);
+		$MyData->setPalette($point_id, array("R" => $rgb_color[$point_id]['color']["R"], "G" => $rgb_color[$point_id]['color']["G"], "B" => $rgb_color[$point_id]['color']["B"], "Alpha" => $rgb_color[$point_id]['alpha']));
 	 }
 
 	 //$MyData->addPoints($data,"Yaxis");
@@ -322,7 +354,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "XMargin" => 40, "LabelRotation" => 90);
 	 $myPicture->drawScale($scaleSettings);
 
-	 if(is_array($legend) && !empty($legend)) {
+	 if(isset($legend)) {
 		/* Write the chart legend */
 		$myPicture->drawLegend($height/2,$width/1.8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 	 }

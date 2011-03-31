@@ -1,5 +1,11 @@
 2011-03-31  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/pChart/pDraw.class.php: Added to 
+	library an option to avoid draw zeros in area 
+	charts
+
+2011-03-31  Sergio Martin <sergio.martin@artica.es>
+
 	* include/graphs/pChart/pDraw.class.php: Fixed 
 	pchart library bug with default value for
 	forcetransparency attribute. Changed from NULL

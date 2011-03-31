@@ -3660,6 +3660,7 @@
    function drawAreaChart($Format=NULL)
     {
      $DisplayValues	= isset($Format["DisplayValues"]) ? $Format["DisplayValues"] : FALSE;
+     $DisplayZeros	= isset($Format["DisplayZeros"]) ? $Format["DisplayZeros"] : TRUE;
      $DisplayOffset	= isset($Format["DisplayOffset"]) ? $Format["DisplayOffset"] : 2;
      $DisplayColor	= isset($Format["DisplayColor"]) ? $Format["DisplayColor"] : DISPLAY_MANUAL;
      $DisplayR		= isset($Format["DisplayR"]) ? $Format["DisplayR"] : 0;
@@ -3700,8 +3701,16 @@
            $X = $this->GraphAreaX1 + $XMargin; $LastX = NULL; $LastY = NULL;
 
            if ( !is_array($PosArray) ) { $Value = $PosArray; $PosArray = ""; $PosArray[0] = $Value; }
+           $lastKey = 0;
            foreach($PosArray as $Key => $Y)
             {
+			 // Hack to avoid draw zero values
+			 debugPrint($Serie["Data"][$Key]." - ".$lastKey, '/tmp/logo');
+			 if(!$DisplayZeros && $Serie["Data"][$Key] == 0 && $lastKey == 0) {
+				$Y = VOID;
+			 }
+             $lastKey = $Serie["Data"][$Key];
+
              if ( $DisplayValues && $Serie["Data"][$Key] != VOID )
               {
                if ( $Serie["Data"][$Key] > 0 ) { $Align = TEXT_ALIGN_BOTTOMMIDDLE; $Offset = $DisplayOffset; } else { $Align = TEXT_ALIGN_TOPMIDDLE; $Offset = -$DisplayOffset; }

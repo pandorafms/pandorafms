@@ -257,8 +257,16 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 100);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 100);
-	$color['min'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
+	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	
-	area_graph(0, $chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption, $baseline, $color);
+	$legend = array();
+	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
+	$legend['event'] = __('Events');
+	$legend['alert'] = __('Alerts');
+	$legend['max'] = __('Max') . ' (' . $max_value . ')';
+	$legend['min'] = __('Min') . ' (' . $min_value . ')';
+	$legend['baseline'] = __('Baseline');
+	
+	area_graph(0, $chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption, $baseline, $color, $legend);
 }
 ?>

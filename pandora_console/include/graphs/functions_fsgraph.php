@@ -49,7 +49,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 	$total_min = 0;
 
 	// Create categories
-	foreach ($data as $value) {
+	foreach ($data as $i => $value) {
 
 	$total_avg +=$value["sum"];
 
@@ -66,7 +66,8 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		} else {
 			$show_name = '0';
 		}
-		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date (html_entity_decode ($config['date_format'], ENT_QUOTES, "UTF-8"), $value['timestamp_bottom']) .  ';showName=' . $show_name);
+		$chart->addCategory(date($time_format, $i), 
+			'hoverText=' . date (html_entity_decode ($config['date_format'], ENT_QUOTES, "UTF-8"), $i) .  ';showName=' . $show_name);
 	}
 
 	if ($count > 0)
@@ -74,12 +75,20 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 	else
 		$total_avg = 0;
 
-	$total_min = format_for_graph ($total_min);
-	$total_max = format_for_graph ($total_max);
-
+	//$total_min = format_for_graph ($total_min);
+	//$total_max = format_for_graph ($total_max);
+	
 	// Event chart
 	if ($show_events == 1) {
-		$chart->addDataSet(__('Events'), 'alpha=50;showAreaBorder=1;areaBorderColor=#ff7f00;color=#ff7f00');
+		$showAreaBorder = 0;
+		if (!is_null($color['event']['border'])) {
+			$showAreaBorder = 1;
+		}
+		
+		$chart->addDataSet($caption['event'], 'alpha=' . $color['event']['alpha'] . ';' . 
+			'showAreaBorder=' . $showAreaBorder . ';' .
+			'areaBorderColor=' . $color['event']['border'] . ';' . 
+			'color=#' . $color['event']['color']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['event']);
 		}
@@ -87,15 +96,23 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Alert chart
 	if ($show_alerts == 1) {
-		$chart->addDataSet(__('Alerts'), 'alpha=50;showAreaBorder=1;areaBorderColor=#ff0000;color=#ff0000');
+		$showAreaBorder = 0;
+		if (!is_null($color['alert']['border'])) {
+			$showAreaBorder = 1;
+		}
+		
+		$chart->addDataSet($caption['alert'], 'alpha=' . $color['alert']['alpha'] . ';' .
+			'showAreaBorder=' . $showAreaBorder . ';' .
+			'areaBorderColor=' . $color['alert']['border'] . ';' .
+			'color=' . $color['alert']['color']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['alert']);
 		}
 	}
 
 	// Max chart
-	if ($avg_only == 0) {
-		$chart->addDataSet(__('Max')." ($total_max)", 'color=' . $config['graph_color3']);
+	if ($avg_only == 0) {		
+		$chart->addDataSet($caption['max'], 'color=' . $color['max']['color']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['max']);
 		}
@@ -103,7 +120,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Avg chart
 	$empty = 1;
-	$chart->addDataSet(__('Avg'). " ($total_avg)", 'color=' . $config['graph_color2']);
+	$chart->addDataSet($caption['sum'], 'color=' . $color['sum']['color']);
 	foreach ($data as $value) {
 		if ($value['sum'] > 0) {
 			$empty = 0;
@@ -113,7 +130,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Min chart
 	if ($avg_only == 0) {
-		$chart->addDataSet(__('Min'). " ($total_min)", 'color=' . $config['graph_color1']);
+		$chart->addDataSet($caption['min'], 'color=' . $color['min']['color']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['min']);
 		}
@@ -121,7 +138,14 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Baseline chart
 	if ($baseline == 1) {
-		$chart->addDataSet(__('Baseline'), 'color=0097BD;alpha=10;showAreaBorder=0;');
+		$showAreaBorder = 0;
+		if (!is_null($color['baseline']['border'])) {
+			$showAreaBorder = 1;
+		}
+		
+		$chart->addDataSet($caption['baseline'], 'color=' . $color['baseline']['color'] . ';' .
+			'alpha=' . $color['baseline']['alpha'] . ';' .
+			'showAreaBorder=' . $showAreaBorder . ';');
 		foreach ($data as $value) {
 			$chart->addChartData($value['baseline']);
 		}

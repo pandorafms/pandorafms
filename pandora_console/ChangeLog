@@ -1,5 +1,10 @@
 2011-03-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/config_process.php: Fixed wrong condition when global 
+	configuration for "flash_charts" option is override by user value.
+
+2011-03-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/db/oracle.php: Added new functions for Oracle support.
 	include/functions_db.php: Added conditional code for Oracle engine.
 	* pandoradb.oracle.sql: Added new db procedure "insert_id" to 

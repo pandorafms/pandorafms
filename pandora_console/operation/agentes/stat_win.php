@@ -27,7 +27,8 @@ if (! isset($_SESSION["id_user"])) {
 require_once ($config["homedir"] . '/include/functions.php');
 require_once ($config["homedir"] . '/include/functions_db.php');
 require_once ($config["homedir"] . '/include/functions_reporting.php');
-require_once ($config["homedir"] . '/include/fgraph.php');
+require_once ($config["homedir"] . '/include/functions_graph.php');
+//require_once ($config["homedir"] . '/include/fgraph.php');
 
 check_login ();
 ?>
@@ -137,9 +138,11 @@ else
 // log4x doesnt support flash yet
 //
 if ($config['flash_charts'] && $graph_type != "log4x") {
+//if (true) {
+
 	switch ($graph_type) {
 		case 'sparse':
-			echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
+			echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
 				$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
 			break;
 		case 'boolean': 
@@ -160,11 +163,33 @@ if ($config['flash_charts'] && $graph_type != "log4x") {
 	}
 }
 else {
-	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=". base64_encode ($label) ."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only."&baseline=".$baseline;
-
-	$image .= "&date=" . $date;
-
-	print_image ($image, false, array ("border" => 0));
+	switch ($graph_type) {
+		case 'sparse':
+			echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
+			break;
+		case 'boolean': 
+			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, 1, $pure, $date);
+			break;
+		case 'string':
+			echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+			break;
+		case 'log4x':
+			echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+			break;
+		default:
+			echo fs_error_image ('../images');
+			break;
+	}
+	
+//$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=". base64_encode ($label) ."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only."&baseline=".$baseline;
+//
+//$image .= "&date=" . $date;
+//
+//print_image ($image, false, array ("border" => 0));
 }
 
 //z-index is 1 because 2 made the calendar show under the divmenu.

@@ -33,9 +33,12 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	}
 }
 
-function area_graph($flash_chart, $chart_data, $width, $height, $avg_only, $resolution, $time_format, $show_events, $show_alerts, $caption, $baseline, $color) {
+function area_graph($flash_chart, $chart_data, $width, $height, $avg_only, $resolution, $time_format, $show_events, $show_alerts, $caption, $baseline, $color,$legend, $long_index) {
+	$flash_chart = 1;
+	
 	if($flash_chart) {
-		echo fs_module_chart ($chart_data, $width, $height, $avg_only, $resolution, $time_format, $show_events, $show_alerts, $caption, $baseline);
+		echo fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
+		//echo fs_module_chart ($chart_data, $width, $height, $avg_only, $resolution, $time_format, $show_events, $show_alerts, $legend, $baseline, $color);
 	}
 	else {
 		$id_graph = uniqid();
@@ -45,6 +48,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $avg_only, $reso
 		$graph['width'] = $width;
 		$graph['height'] = $height;
 		$graph['color'] = $color;
+		$graph['legend'] = $legend;
 //		$graph['avg_only'] = $avg_only;
 //		$graph['resolution'] = $resolution;
 //		$graph['time_format'] = $time_format;
@@ -54,7 +58,9 @@ function area_graph($flash_chart, $chart_data, $width, $height, $avg_only, $reso
 //		$graph['baseline'] = $baseline;
 		
 		session_start();
-		$_SESSION['graph'][$id_graph] = $graph;
+		//unset($_SESSION['graph']);
+		$_SESSION['graph_session'][$id_graph] = $graph;
+		//debugPrint($_SESSION);
 		session_write_close();
 		
 		//echo "<img src='include/graphs/functions_pchart.php?graph_type=area&data=".json_encode($chart_data)."&width=".$width."&height=".$height."'>";

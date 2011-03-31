@@ -344,19 +344,35 @@
      $G	    = isset($Format["G"]) ? $Format["G"] : 0;
      $B	    = isset($Format["B"]) ? $Format["B"] : 0;
      $Alpha = isset($Format["Alpha"]) ? $Format["Alpha"] : 100;
+     $BorderR = isset($Format["BorderR"]) ? $Format["BorderR"] : $R;
+     $BorderG = isset($Format["BorderG"]) ? $Format["BorderG"] : $G;
+     $BorderB = isset($Format["BorderB"]) ? $Format["BorderB"] : $B;
 
      if ( isset($this->Data["Series"][$Serie]) )
       {
-       $OldR = $this->Data["Series"][$Serie]["Color"]["R"]; $OldG = $this->Data["Series"][$Serie]["Color"]["G"]; $OldB = $this->Data["Series"][$Serie]["Color"]["B"];
+       $OldR = $this->Data["Series"][$Serie]["Color"]["R"]; 
+       $OldG = $this->Data["Series"][$Serie]["Color"]["G"]; 
+       $OldB = $this->Data["Series"][$Serie]["Color"]["B"];
        $this->Data["Series"][$Serie]["Color"]["R"] = $R;
        $this->Data["Series"][$Serie]["Color"]["G"] = $G;
        $this->Data["Series"][$Serie]["Color"]["B"] = $B;
+       $this->Data["Series"][$Serie]["Color"]["BorderR"] = $BorderR;
+       $this->Data["Series"][$Serie]["Color"]["BorderG"] = $BorderG;
+       $this->Data["Series"][$Serie]["Color"]["BorderB"] = $BorderB;
        $this->Data["Series"][$Serie]["Color"]["Alpha"] = $Alpha;
 
        /* Do reverse processing on the internal palette array */
-       foreach ($this->Palette as $Key => $Value)
-        { if ($Value["R"] == $OldR && $Value["G"] == $OldG && $Value["B"] == $OldB) { $this->Palette[$Key]["R"] = $R; $this->Palette[$Key]["G"] = $G; $this->Palette[$Key]["B"] = $B; $this->Palette[$Key]["Alpha"] = $Alpha;} }
-      }
+       foreach ($this->Palette as $Key => $Value) { 
+        	if ($Value["R"] == $OldR && $Value["G"] == $OldG && $Value["B"] == $OldB) { 
+        		$this->Palette[$Key]["R"] = $R; 
+        		$this->Palette[$Key]["G"] = $G; 
+        		$this->Palette[$Key]["B"] = $B; 
+         		$this->Palette[$Key]["BorderR"] = $BorderR; 
+        		$this->Palette[$Key]["BorderG"] = $BorderG; 
+        		$this->Palette[$Key]["BorderB"] = $BorderB; 
+        		$this->Palette[$Key]["Alpha"] = $Alpha;} 
+       		}
+       }
     }
 
    /* Load a palette file */

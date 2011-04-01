@@ -1,8 +1,5 @@
 <?php
-// INTEGRIA - the ITIL Management System
-// http://integria.sourceforge.net
-// ==================================================
-// Copyright (c) 2008-2011 Ártica Soluciones Tecnológicas
+// Copyright (c) 2011-2011 Ártica Soluciones Tecnológicas
 // http://www.artica.es  <info@artica.es>
 
 // This program is free software; you can redistribute it and/or
@@ -14,13 +11,25 @@
 // GNU General Public License for more details.
 
 include_once('functions_fsgraph.php');
+include_once('functions_utils.php');
 
-function vbar_graph($flash_chart, $chart_data, $width, $height) {
+function vbar_graph($flash_chart, $chart_data, $width, $height, $color, $legend) {
 	if($flash_chart) {
 		echo fs_2d_column_chart ($chart_data, $width, $height);
 	}
 	else {
-		echo "<img src='include/graphs/functions_pchart.php?graph_type=vbar&data=".json_encode($chart_data)."&width=".$width."&height=".$height."'>";
+		$id_graph = uniqid();
+		
+		$graph = array();
+		$graph['data'] = $chart_data;
+		$graph['width'] = $width;
+		$graph['height'] = $height;
+		$graph['color'] = $color;
+		$graph['legend'] = $legend;
+		
+		$id_graph = serialize_in_temp($graph);
+	
+		echo "<img src='include/graphs/functions_pchart.php?graph_type=vbar&id_graph=".$id_graph."'>";
 	}
 }
 

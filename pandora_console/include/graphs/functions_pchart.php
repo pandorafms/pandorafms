@@ -13,8 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-include_once("../functions.php");
-include_once("../functions_html.php");
+include_once('functions_utils.php');
+include_once('../functions.php');
+include_once('../functions_html.php');
 
 /* pChart library inclusions */
 include_once("pChart/pData.class.php");
@@ -36,10 +37,7 @@ $legend = json_decode(safe_output(get_parameter('legend')), true);
 $id_graph = get_parameter('id_graph', false);
 
 if ($id_graph) {
-	session_start();
-	$graph = $_SESSION['graph_session'][$id_graph];	
-	unset($_SESSION['graph_session'][$id_graph]);
-	session_write_close();
+	$graph = unserialize_in_temp($id_graph, false);
 
 	if (isset($graph)) {
 		$data = $graph['data'];
@@ -68,13 +66,6 @@ if ($id_graph) {
 			
 			$rgb_color[$i]['alpha'] = $color['alpha'];
 		}
-//		$graph['avg_only'] = $avg_only;
-//		$graph['resolution'] = $resolution;
-//		$graph['time_format'] = $time_format;
-//		$graph['show_events'] = $show_events;
-//		$graph['show_alerts'] = $show_alerts;
-//		$graph['caption'] = $caption;
-//		$graph['baseline'] = $baseline;
 	}
 }
 
@@ -157,8 +148,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 	 $myPicture = new pImage($width,$height,$MyData,TRUE);
 
 	 /* Set the default font properties */ 
-	 //$myPicture->setFontProperties(array("FontName"=>"pChart/fonts/verdana.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
 
 	 /* Create the pPie object */ 
 	 $PieChart = new pPie($myPicture,$MyData);
@@ -199,7 +189,7 @@ function pch_radar_graph ($graph_type, $data_values, $legend_values, $width, $he
 	 $myPicture = new pImage($width,$height,$MyData,TRUE);
 
 	 /* Set the default font properties */ 
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
 
 	 /* Create the pRadar object */ 
 	 $SplitChart = new pRadar();
@@ -210,11 +200,11 @@ function pch_radar_graph ($graph_type, $data_values, $legend_values, $width, $he
 	 /* Draw an AA pie chart */
 	 switch($graph_type) {
 		 case "radar":
-				$Options = array("SkipLabels"=>0,"LabelPos"=>RADAR_LABELS_HORIZONTAL, "LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), "FontName"=>"pChart/fonts/pf_arma_five.ttf","FontSize"=>6);
+				$Options = array("SkipLabels"=>0,"LabelPos"=>RADAR_LABELS_HORIZONTAL, "LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), "FontName"=>"../fonts/code.ttf","FontSize"=>6);
 			    $SplitChart->drawRadar($myPicture,$MyData,$Options); 
 				break;
 		 case "polar":
-				$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), "FontName"=>"pChart/fonts/pf_arma_five.ttf","FontSize"=>6); 
+				$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), "FontName"=>"../fonts/code.ttf","FontSize"=>6); 
  			    $SplitChart->drawRadar($myPicture,$MyData,$Options); 
 				break;
 	 }
@@ -224,7 +214,7 @@ function pch_radar_graph ($graph_type, $data_values, $legend_values, $width, $he
 }
 
 /* TOFIX */
-function pch_vbar_graph ($graph_type, $index, $data, $width, $height, $rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false, $show_legend = true) {
+function pch_bar_graph ($graph_type, $index, $data, $width, $height, $rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false, $show_legend = true) {
 	/* CAT: Vertical Bar Chart */
      if(is_array($data[0])) {
 	 	$data2 = array();
@@ -244,11 +234,19 @@ function pch_vbar_graph ($graph_type, $index, $data, $width, $height, $rgb_color
 	 /* Create and populate the pData object */
 	 $MyData = new pData();
 	 foreach($data as $i => $values) {
-		$MyData->addPoints($values,$i);
-		$MyData->setPalette($i, array("R" => $rgb_color[$i]['color']["R"], "G" => $rgb_color[$i]['color']["G"], "B" => $rgb_color[$i]['color']["B"], "Alpha" => $rgb_color[$i]['alpha']));
+		$MyData->addPoints($values,"bar");
+		if($rgb_color !== false) {
+			$MyData->setPalette($i, 
+					array("R" => $rgb_color[$i]['color']["R"], 
+						"G" => $rgb_color[$i]['color']["G"], 
+						"B" => $rgb_color[$i]['color']["B"],
+						"BorderR" => $rgb_color[$i]['border']["R"], 
+						"BorderG" => $rgb_color[$i]['border']["G"], 
+						"BorderB" => $rgb_color[$i]['border']["B"], 
+						"Alpha" => $rgb_color[$i]['alpha']));	
+		}
 	 }
 
-	 //$MyData->addPoints($data,"Yaxis");
 	 $MyData->setAxisName(0,$yaxisname);
 	 $MyData->addPoints($index,"Xaxis");
 	 $MyData->setSerieDescription("Xaxis", $xaxisname);
@@ -264,13 +262,15 @@ function pch_vbar_graph ($graph_type, $index, $data, $width, $height, $rgb_color
 	 //$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 
 	 /* Set the default font */
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>7));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>10));
 
 	 /* Define the chart area */
 	 $myPicture->setGraphArea(30,20,$width,$height-100);
 
 	 /* Draw the scale */
-	 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "XMargin" => 40, "LabelRotation" => 90);
+	 // TODO: AvoidTickWhenEmpty = FALSE When the distance between two ticks will be less than 50 px
+	 // TODO: AvoidTickWhenEmpty = TRUE When the distance between two ticks will be greater than 50 px
+	 $scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, "GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "XMargin" => 40, "LabelRotation" => 90);
 	 $myPicture->drawScale($scaleSettings);
 
 	 if($show_legend) {
@@ -289,7 +289,7 @@ function pch_vbar_graph ($graph_type, $index, $data, $width, $height, $rgb_color
 				$myPicture->drawBarChart($settings);
 				break;
 	 }
-	 
+
 	 /* Render the picture */
 	 $myPicture->stroke(); 
 }
@@ -329,19 +329,17 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 			$point_id = $i;
 		 }
 		 
-		if ($i == 'alert') {
-			$values[100] = 100;
-		}
-		 
 		$MyData->addPoints($values,$point_id);
-		$MyData->setPalette($point_id, 
-				array("R" => $rgb_color[$i]['color']["R"], 
-					"G" => $rgb_color[$i]['color']["G"], 
-					"B" => $rgb_color[$i]['color']["B"],
-					"BorderR" => $rgb_color[$i]['border']["R"], 
-					"BorderG" => $rgb_color[$i]['border']["G"], 
-					"BorderB" => $rgb_color[$i]['border']["B"], 
-					"Alpha" => $rgb_color[$i]['alpha']));
+		if($rgb_color !== false) {
+			$MyData->setPalette($point_id, 
+					array("R" => $rgb_color[$i]['color']["R"], 
+						"G" => $rgb_color[$i]['color']["G"], 
+						"B" => $rgb_color[$i]['color']["B"],
+						"BorderR" => $rgb_color[$i]['border']["R"], 
+						"BorderG" => $rgb_color[$i]['border']["G"], 
+						"BorderB" => $rgb_color[$i]['border']["B"], 
+						"Alpha" => $rgb_color[$i]['alpha']));	
+		}
 	 }
 
 	 //$MyData->addPoints($data,"Yaxis");
@@ -360,7 +358,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 //$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 
 	 /* Set the default font */
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>7));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>7));
 
 	 /* Define the chart area */
 	 $myPicture->setGraphArea(30,20,$width,$height-100);
@@ -371,7 +369,6 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	
 	 if(isset($legend)) {
 		/* Write the chart legend */
-		//$myPicture->drawLegend($height/2,$width/1.8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 		$myPicture->drawLegend($height/2,$height-20,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 	 }
 	 
@@ -420,7 +417,7 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $xaxi
 	 $myPicture->drawRectangle(0,0,699,229,array("R"=>200,"G"=>200,"B"=>200));
 	 
 	 /* Write the picture title */ 
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>11));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>11));
 	 $myPicture->drawText(60,35,$title,array("FontSize"=>20,"Align"=>TEXT_ALIGN_BOTTOMLEFT));
 
 	 /* Do some cosmetic and draw the chart */
@@ -428,7 +425,7 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $xaxi
 	 $myPicture->drawFilledRectangle(60,40,670,190,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
 	 $myPicture->drawScale(array("GridR"=>180,"GridG"=>180,"GridB"=>180, "Mode" => SCALE_MODE_START0));
 	 $myPicture->setShadow(TRUE,array("X"=>2,"Y"=>2,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>6));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>6));
 	 $settings = array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	 $myPicture->drawSplineChart($settings);
 	 $myPicture->setShadow(FALSE);
@@ -462,7 +459,7 @@ function pch_horizontal_graph ($graph_type, $index, $data, $width, $height, $xax
 	 //$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 
 	 /* Set the default font */
-	 $myPicture->setFontProperties(array("FontName"=>"pChart/fonts/code.ttf","FontSize"=>7));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>7));
 
 	 /* Define the chart area */
 	 $myPicture->setGraphArea(75,20,$width,$height);

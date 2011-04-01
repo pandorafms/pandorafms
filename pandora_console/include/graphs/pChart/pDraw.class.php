@@ -1707,6 +1707,7 @@
      $OuterTickWidth	= isset($Format["OuterTickWidth"]) ? $Format["OuterTickWidth"] : 2;
      $DrawXLines	= isset($Format["DrawXLines"]) ? $Format["DrawXLines"] : TRUE;
      $DrawYLines	= isset($Format["DrawYLines"]) ? $Format["DrawYLines"] : ALL;
+     $AvoidGridWhenEmpty		= isset($Format["AvoidGridWhenEmpty"]) ? $Format["AvoidGridWhenEmpty"] : FALSE;
      $GridTicks		= isset($Format["GridTicks"]) ? $Format["GridTicks"] : 4;
      $GridR		= isset($Format["GridR"]) ? $Format["GridR"] : 255;
      $GridG		= isset($Format["GridG"]) ? $Format["GridG"] : 255;
@@ -1716,6 +1717,7 @@
      $AxisGo		= isset($Format["AxisG"]) ? $Format["AxisG"] : 0;
      $AxisBo		= isset($Format["AxisB"]) ? $Format["AxisB"] : 0;
      $AxisAlpha		= isset($Format["AxisAlpha"]) ? $Format["AxisAlpha"] : 100;
+     $AvoidTickWhenEmpty		= isset($Format["AvoidTickWhenEmpty"]) ? $Format["AvoidTickWhenEmpty"] : FALSE;
      $TickRo		= isset($Format["TickR"]) ? $Format["TickR"] : 0;
      $TickGo		= isset($Format["TickG"]) ? $Format["TickG"] : 0;
      $TickBo		= isset($Format["TickB"]) ? $Format["TickB"] : 0;
@@ -1978,8 +1980,16 @@
                 }
                else
                 {
-                 if ( $DrawXLines && ($XPos != $this->GraphAreaX1 && $XPos != $this->GraphAreaX2) ) { $this->drawLine($XPos,$this->GraphAreaY1+$FloatingOffset,$XPos,$this->GraphAreaY2-$FloatingOffset,array("R"=>$GridR,"G"=>$GridG,"B"=>$GridB,"Alpha"=>$GridAlpha,"Ticks"=>$GridTicks)); }
-                 if ( $InnerTickWidth !=0 || $OuterTickWidth != 0 ) { $this->drawLine($XPos,$YPos-$InnerTickWidth,$XPos,$YPos+$OuterTickWidth,array("R"=>$TickR,"G"=>$TickG,"B"=>$TickB,"Alpha"=>$TickAlpha)); }
+                 if ( $DrawXLines && ($XPos != $this->GraphAreaX1 && $XPos != $this->GraphAreaX2) ) { 
+					 if($Data["Series"][$Abscissa]["Data"][$i] != "" || $AvoidGridWhenEmpty) {
+						$this->drawLine($XPos,$this->GraphAreaY1+$FloatingOffset,$XPos,$this->GraphAreaY2-$FloatingOffset,array("R"=>$GridR,"G"=>$GridG,"B"=>$GridB,"Alpha"=>$GridAlpha,"Ticks"=>$GridTicks)); 
+					 }
+				 }
+                 if ( $InnerTickWidth !=0 || $OuterTickWidth != 0 ) { 
+					 if($Data["Series"][$Abscissa]["Data"][$i] != "" || $AvoidTickWhenEmpty) {
+						$this->drawLine($XPos,$YPos-$InnerTickWidth,$XPos,$YPos+$OuterTickWidth,array("R"=>$TickR,"G"=>$TickG,"B"=>$TickB,"Alpha"=>$TickAlpha)); 
+					 }
+				 }
                 }
 
               }

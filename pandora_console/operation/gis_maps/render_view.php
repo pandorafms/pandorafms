@@ -174,10 +174,10 @@ if ($layers != false) {
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP();");
+			$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
 			break;
 		case "postgresql":
-			$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+			$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
 			break;
 	}
 	

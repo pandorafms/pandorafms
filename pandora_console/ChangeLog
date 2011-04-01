@@ -1,3 +1,14 @@
+2011-04-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/pChart/pDraw.class.php
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php: Changed the send data method 
+	from sessions to files with serialize functions. Creation of a
+	utils functions file. Improvement of the pChart library adding 
+	attributes to avoid ticks and grids when the data under the 
+	xaxis is empty.
+
 2011-04-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/gis_maps/render_view.php: Fixed bad sql query sintax.

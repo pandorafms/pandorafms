@@ -82,6 +82,40 @@ sub compare_twofiles ($$) {
 	return 0;
 }
 
+# Get agent pid
+sub get_agent_pid ($$) {
+	my $daemon = shift;
+	my $app_path = shift;
+
+	$ENV{'COLUMNS'}=400;
+        my $os_name=`uname -s`;
+	my $pid = "";
+	my $cmd = "";
+
+	if ($os_name eq "HP-UX") {
+
+        	$cmd ="ps -ex | grep \"$daemon $app_path\" | grep -v grep | head -1 | awk '{ print \$1 }'";
+	} 
+	elsif ($os_name eq "SunOS") {
+		my $cmd_aux="echo \"$daemon $app_path\" | cut -c1-40";
+		my $truncated_daemon = `$cmd_aux`;
+
+                my $zone = `/bin/zonename`;
+                
+                if ( $zone eq "global") {
+                   	$cmd ="ps -f -z global | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
+                } else {
+			$cmd ="ps -Af | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
+                }
+	} else {
+		$cmd ="ps -Af | grep \"$daemon $app_path\" | grep -v grep | head -1 | awk '{ print \$2 }'";
+	}
+
+	$pid = `$cmd`;
+	return $pid;
+
+}
+
 # -------------------------------------------------------------------------
 
 # MAIN CODE starts here
@@ -89,14 +123,19 @@ sub compare_twofiles ($$) {
 
 # Get the required path (relative to basepath) to find pandora agent binary
 
-if ($#ARGV != 0) {
-	print "Usage: $0 <relative path (filecollection id) to updated binary \n";
-	print "For example: $0 fc2 \n\n";
+if ($#ARGV < 0) {
+	print "Usage: $0 <relative path (filecollection id) [custom_path]\n";
+	print "For example: $0 fc2 /var/opt/PandoraFMS\n\n";
 	exit 1;
 }
 
 my $fc_path = $ARGV[0];
 my $base_path = return_basepath();
+my $opt_dir = "";
+
+if (defined($ARGV[1])) {
+	$opt_dir = $ARGV[1];
+}
 
 # Setup your particular paths / process settings here
 # [SETUP BEGIN] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,12 +146,14 @@ my $base_path = return_basepath();
 my $running_binary;
 my $updated_binary;
 if ($^O eq 'freebsd') {
-    $running_binary = "/usr/local/bin/pandora_agent";
-    $updated_binary = "/usr/local/etc/pandora/collections/$fc_path/pandora_agent";
+    $running_binary = $opt_dir."/usr/local/bin/pandora_agent";
+    $updated_binary = $opt_dir."/usr/local/etc/pandora/collections/$fc_path/pandora_agent";
 } else {
-    $running_binary = "/usr/bin/pandora_agent";
-    $updated_binary = "/etc/pandora/collections/$fc_path/pandora_agent";
+    $running_binary = $opt_dir."/usr/bin/pandora_agent";
+    $updated_binary = $opt_dir."/etc/pandora/collections/$fc_path/pandora_agent";
 }
+
+my $conf_path = $opt_dir."/etc/pandora";
 
 # Windows 
 
@@ -126,11 +167,11 @@ if ($^O eq 'freebsd') {
 my $start_pandora;
 my $stop_pandora;
 if ($^O eq 'freebsd') {
-    $start_pandora = "/usr/local/etc/rc.d/pandora_agent start";
-    $stop_pandora = "/usr/local/etc/rc.d/pandora_agent stop";
+    $start_pandora = $opt_dir."/usr/local/etc/rc.d/pandora_agent start";
+    $stop_pandora = $opt_dir."/usr/local/etc/rc.d/pandora_agent stop";
 } else {
-    $start_pandora = "/etc/init.d/pandora_agent_daemon start";
-    $stop_pandora = "/etc/init.d/pandora_agent_daemon stop";
+    $start_pandora = $opt_dir."/etc/init.d/pandora_agent_daemon start";
+    $stop_pandora = $opt_dir."/etc/init.d/pandora_agent_daemon stop";
 }
 
 # Windows stuff
@@ -155,10 +196,19 @@ if (compare_twofiles ($running_binary, $updated_binary) == 0 ){
 	open (FILE3,">$local_log");
 	close (FILE3);
 
-	my $output = `$stop_pandora`;
+	my $ppid = get_agent_pid($running_binary, $conf_path);
+
+	# Kill parent process (a.k.a the Agent)
+	my $output = `kill -9 $ppid`;
 	sleep SERVICE_STOP_WAIT;
+
+	# Copy the updated agent
 	copy($updated_binary, $running_binary) or unlink $local_log;
-	$output = `$start_pandora`;
+
+	# Starting the agent again
+	my $log = $opt_dir."/var/log/pandora/pandora_agent.log";
+	$output = `nohup $running_binary $conf_path >/dev/null 2>$log &`
+	
 
 } else {
 	if (-e $local_log){

@@ -1,5 +1,10 @@
 2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* plugins/pandora_update: Fixed a problem getting pandora_agent pid
+	in SunOS.
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* pandora_agent_installer: Added correct user to tentacle_client binary.
 
 2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>

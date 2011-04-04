@@ -94,17 +94,19 @@ sub get_agent_pid ($$) {
 
 	if ($os_name eq "HP-UX") {
 
-        	$cmd ="ps -ex | grep \"$daemon $app_path\" | grep -v grep | head -1 | awk '{ print \$1 }'";
+		$cmd ="ps -ex | grep \"$daemon $app_path\" | grep -v grep | head -1 | awk '{ print \$1 }'";
 	} 
-	elsif ($os_name eq "SunOS") {
+	elsif ($os_name =~ /SunOS/) {
 		my $cmd_aux="echo \"$daemon $app_path\" | cut -c1-40";
 		my $truncated_daemon = `$cmd_aux`;
 
-                my $zone = `/bin/zonename`;
-                
-                if ( $zone eq "global") {
-                   	$cmd ="ps -f -z global | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
-                } else {
+		chop($truncated_daemon);
+
+		my $zone = `/bin/zonename`;
+
+		if ( $zone =~ /global/) {
+			$cmd ="ps -f -z global | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
+       	} else {
 			$cmd ="ps -Af | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
                 }
 	} else {

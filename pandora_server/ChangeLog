@@ -1,3 +1,11 @@
+2011-04-04  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Added UTF-8 flags deletion from multibyte
+	characters when files are opened.
+
+	* lib/PandoraFMS/DB.pm: Added mysql_enable_utf8. It enables character
+	semantics (support for multibyte characters).
+
 2011-03-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* util/plugin/create_integria_incident.sh: Fixed an error in help text.

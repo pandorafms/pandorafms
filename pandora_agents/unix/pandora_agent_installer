@@ -294,11 +294,11 @@ install () {
 	chmod 755 $PANDORA_BASE$PANDORA_EXEC_BIN
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
-		chown root:wheel $PANDORA_BASE$PANDORA_BIN
-		chown root:wheel $PANDORA_BASE$PANDORA_EXEC_BIN
+		chown $PANDORA_USER:wheel $PANDORA_BASE$PANDORA_BIN
+		chown $PANDORA_USER:wheel $PANDORA_BASE$PANDORA_EXEC_BIN
 	else
-		chown root:root $PANDORA_BASE$PANDORA_BIN
-		chown root:root $PANDORA_BASE$PANDORA_EXEC_BIN
+		chown $PANDORA_USER:root $PANDORA_BASE$PANDORA_BIN
+		chown $PANDORA_USER:root $PANDORA_BASE$PANDORA_EXEC_BIN
 	fi
 
 	echo "Copying Pandora FMS Agent configuration file to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf..."
@@ -339,7 +339,7 @@ install () {
 		chmod -R 770 $PANDORA_BASE$PANDORA_TEMP
 		chmod 775 $PANDORA_BASE$PANDORA_TEMP
 	else
-		chown root:root $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
+		chown $PANDORA_USER:root $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	fi
 
     echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"

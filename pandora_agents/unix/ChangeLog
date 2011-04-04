@@ -1,5 +1,10 @@
 2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* pandora_agent_installer: Modified agent isntaller to deal with 
+	specified user installation. 
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* plugins/pandora_update: Modified plugin for agent autoupdate.
 
 2011-03-09  Ramon Novoa  <rnovoa@artica.es>

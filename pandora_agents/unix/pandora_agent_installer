@@ -321,6 +321,13 @@ install () {
 	echo "Copying tentacle client to $PANDORA_BASE$TENTACLE"
 	cp tentacle_client $PANDORA_BASE$TENTACLE
 	chmod 755 $PANDORA_BASE$TENTACLE
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+		chown $PANDORA_USER:wheel $PANDORA_BASE$TENTACLE	
+	else
+		chown $PANDORA_USER:root $PANDORA_BASE$TENTACLE
+	fi	
+	
 
 	echo "Installing the Pandora Agent and Tentacle Client manuals"
 	cp man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1

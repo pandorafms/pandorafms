@@ -1,5 +1,9 @@
 2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* pandora_agent_installer: Added correct user to tentacle_client binary.
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* pandora_agent_installer: Modified agent isntaller to deal with 
 	specified user installation. 
 

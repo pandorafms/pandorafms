@@ -36,7 +36,7 @@ $delete_profile = (bool) get_parameter ('delete_profile');
 $export_profile = (bool) get_parameter ('export_profile');
 
 if ($delete_profile) { // if delete
-	$id = (int) get_parameter_post ('delete_profile');
+	$id = (int) get_parameter ('delete_profile');
 	
 	$result = delete_network_profile ($id);
 	print_result_message ($result,
@@ -45,7 +45,7 @@ if ($delete_profile) { // if delete
 }
 
 if ($export_profile) {
-	$id = (int) get_parameter_post ("export_profile");
+	$id = (int) get_parameter("export_profile");
 	$profile_info = get_network_profile ($id);
 	
 	if (empty ($profile_info)) {
@@ -123,13 +123,18 @@ $table->data = array ();
 
 foreach ($result as $row) {
 	$data = array ();
-	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'.safe_input ($row["name"]).'</a>';
-	$data[1] = safe_input ($row["description"]);
+	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. safe_output($row["name"]).'</a>';
+	$data[1] = printTruncateText(safe_output($row["description"]), 70, true, true, true, true);
 	$data[2] = print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));
 	$data[2] .= print_input_image ("export_profile", "images/lightning_go.png",
 		$row["id_np"], '', true);
+	$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
+		'&delete_profile=1&delete_profile=' . $row['id_np'] . '" ' .
+		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true) . '</a>';
+	$data[2] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
+		'&export_profile=' . $row['id_np'] . '">' . print_image("images/lightning_go.png", true) . '</a>';
 	
 	array_push ($table->data, $data);
 }

@@ -1,3 +1,10 @@
+2011-04-3 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+	
+	* pandora_console/godmode/modules/manage_network_templates.php: fixed the
+	output of description and name, and fixed the buttons to delete and export.
+
 2011-03-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	Merged bugfix from trunk.

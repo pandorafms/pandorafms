@@ -297,8 +297,8 @@ install () {
 		chown $PANDORA_USER:wheel $PANDORA_BASE$PANDORA_BIN
 		chown $PANDORA_USER:wheel $PANDORA_BASE$PANDORA_EXEC_BIN
 	else
-		chown $PANDORA_USER:root $PANDORA_BASE$PANDORA_BIN
-		chown $PANDORA_USER:root $PANDORA_BASE$PANDORA_EXEC_BIN
+		chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_BIN
+		chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_EXEC_BIN
 	fi
 
 	echo "Copying Pandora FMS Agent configuration file to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf..."
@@ -325,7 +325,7 @@ install () {
 	then
 		chown $PANDORA_USER:wheel $PANDORA_BASE$TENTACLE	
 	else
-		chown $PANDORA_USER:root $PANDORA_BASE$TENTACLE
+		chown $PANDORA_USER:0 $PANDORA_BASE$TENTACLE
 	fi	
 	
 
@@ -346,7 +346,7 @@ install () {
 		chmod -R 770 $PANDORA_BASE$PANDORA_TEMP
 		chmod 775 $PANDORA_BASE$PANDORA_TEMP
 	else
-		chown $PANDORA_USER:root $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
+		chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	fi
 
     echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"
@@ -369,7 +369,7 @@ install () {
 		cp pandora_agent_daemon /etc/rc.pandora_agent_daemon		
 		ln -s /etc/rc.pandora_agent_daemon /etc/rc.d/rc2.d/S90pandora_agent_daemon
 		chmod 755 $PANDORA_STARTUP
-		chown root:root $PANDORA_STARTUP
+		chown root:0 $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /etc/rc.d/rc2.d/S90pandora_agent_daemon"
 	fi
 	
@@ -380,7 +380,7 @@ install () {
 		ln -s /sbin/init.d/pandora_agent_daemon /sbin/rc3.d/S90pandora_agent_daemon 2> /dev/null
 		ln -s /sbin/init.d/pandora_agent_daemon /sbin/rc2.d/S90pandora_agent_daemon 2> /dev/null
 		chmod 755 $PANDORA_STARTUP
-		chown root:root $PANDORA_STARTUP
+		chown root:0 $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /sbin/rcX.d/S90pandora_agent_daemon"
 	fi
 	
@@ -390,7 +390,7 @@ install () {
 		cp pandora_agent_daemon $PANDORA_STARTUP 
 		ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent_daemon 2> /dev/null
 		chmod 755 $PANDORA_STARTUP
-		chown root:root $PANDORA_STARTUP
+		chown root:0 $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /etc/rc2.d/S90pandora_agent_daemon"
 	fi
 	
@@ -407,7 +407,7 @@ install () {
 			ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
 		fi
 		chmod 755 $PANDORA_STARTUP
-		chown root:root $PANDORA_STARTUP
+		chown root:0 $PANDORA_STARTUP
 	fi
 
 	if [ "$OS_NAME" = "FreeBSD" ]

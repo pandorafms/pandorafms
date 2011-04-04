@@ -30,6 +30,10 @@ use HTML::Entities;
 # Used to calculate the MD5 checksum of a string
 use constant MOD232 => 2**32;
 
+# UTF-8 flags deletion from multibyte characters when files are opened.
+use open OUT => ":utf8";
+use open ":std";
+
 require Exporter;
 
 our @ISA = ("Exporter");

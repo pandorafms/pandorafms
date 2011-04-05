@@ -1,4 +1,17 @@
-2011-04-3 Miguel de Dios  <miguel.dedios@artica.es>
+2011-04-04 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_fsgraph.php: added check if loaded the class.
+
+	* include/graphs/functions_fsgraph.php: added check if loaded the class.
+	Rename some functions and erased the function "fs_module_chart".
+
+	* include/graphs/functions_pchart.php: erased some debug traces.
+
+	* include/graphs/fgraph.php: cleaned the function "area_graph".
+
+	* operation/agentes/stat_win.php: cleaned source code.
+
+2011-04-03 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/godmode/modules/manage_network_templates.php: fixed the
 	output of description and name, and fixed the buttons to delete and export.

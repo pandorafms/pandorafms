@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 // Load global vars
 global $config;
 
@@ -383,7 +382,7 @@ $(document).ready( function() {
 			},
 			function (data, status) {
 				if (data == "ok") {
-					$("#status_img_"+id).attr ("src", "images/spiner.gif");
+					$("#status_img_"+id).attr ("src", "images/spinner.gif");
 					location.reload();
 				} else {
 					$("#result")
@@ -393,7 +392,7 @@ $(document).ready( function() {
 			},
 			"html"
 		);
-		toggleCommentForm(id);
+		//toggleCommentForm(id);
 	});
 	
 	$("a.delete_event").click (function () {

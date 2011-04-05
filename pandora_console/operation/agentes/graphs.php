@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
 	return;
 }
 
-require_once('include/fgraph.php');
+require_once ($config["homedir"] . '/include/functions_graph.php');
 
 $period = get_parameter ( "period", 3600);
 $draw_alerts = get_parameter("draw_alerts", 0);
@@ -123,26 +123,8 @@ else
 
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
 	echo "<h3>" . $modules[$idModuleShowGraph] . '</h3>';
-	if ($config['flash_charts']) {
-		echo grafico_modulo_sparse ($idModuleShowGraph, $period, $draw_events, $width, $height,
-			$modules[$idModuleShowGraph], $unit_name, $draw_alerts, $avg_only, $pure, $date);
-	}
-	else {
-		$image = 'include/fgraph.php?' . 
-			'tipo=sparse' . 
-			'&draw_alerts=' . $draw_alerts .
-			'&draw_events=' . $draw_events .
-			'&id=' . $idModuleShowGraph .
-			'&zoom=' . $zoom .
-			'&label=' . $modules[$idModuleShowGraph] .
-			'&height=' . $height .
-			'&width=' . $width .
-			'&period=' . $period .
-			'&avg_only=' . $avg_only .
-			'&date=' . $date;
-	
-		print_image ($image, false, array ("border" => 0));
-	}
+	echo grafico_modulo_sparse2($idModuleShowGraph, $period, $draw_events, $width, $height,
+		$modules[$idModuleShowGraph], $unit_name, $draw_alerts, $avg_only, $pure, $date);
 }
 
 echo "<div style='clear: both;'></div>";

@@ -1,5 +1,11 @@
 2011-04-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/events/events_list.php, operation/events/events.php: fixed
+	nested forms incompatible with some browsers that fail when validate
+	several events and some errors in javascript when validate individual error.
+
+2011-04-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_fsgraph.php: added check if loaded the class.
 
 	* include/graphs/functions_fsgraph.php: added check if loaded the class.

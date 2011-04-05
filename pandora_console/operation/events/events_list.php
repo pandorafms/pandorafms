@@ -452,7 +452,7 @@ foreach ($result as $event) {
 	array_push ($table->data, $data);
 
 	//Hiden row with description form
-	$string = '<form method="post" action="'.$url.'&amp;section=list">';
+	$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
 	$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
 	$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
 	$string .=  '<td align="left" width="450px"><b>' . print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
@@ -472,7 +472,7 @@ foreach ($result as $event) {
 	if($event["id_alert_am"] != 0) {
 		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
 	}
-	$string .= '</td></tr></table></form>';	
+	$string .= '</td></tr></table>'; //</form>';	
 	
 	$data = array($string);
 	
@@ -598,7 +598,8 @@ echo '<div id="events_list">';
 if (!empty ($table->data)) {
 	pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);
 	
-	echo '<form method="post" action="'.$url.'&amp;section=validate">';
+	echo '<form method="post" id="form_events" action="'.$url.'&amp;section=validate">';
+	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 
 	print_table ($table);
 
@@ -607,7 +608,16 @@ if (!empty ($table->data)) {
 		print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
-		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
+
+		print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
+		?>
+		<script type="text/javascript">
+		function submit_delete() {
+			$("#hidden_delete_events").val(1);
+			$("#form_events").submit();
+		}
+		</script>
+		<?php
 	}
 	echo '</div></form>';
 

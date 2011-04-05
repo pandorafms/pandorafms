@@ -98,7 +98,6 @@ if($graph_type != 'pie3d' && $graph_type != 'pie2d') {
 		
 		$c++;
 	}
-	//debugPrint($data_values);
 }
 
 switch($graph_type) {
@@ -289,7 +288,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $rgb_color 
 				$myPicture->drawBarChart($settings);
 				break;
 	 }
-
+	 
 	 /* Render the picture */
 	 $myPicture->stroke(); 
 }
@@ -320,7 +319,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 
 	 /* Create and populate the pData object */
 	 $MyData = new pData();
-	 //debugPrint($data);
+		
 	 foreach($data as $i => $values) {
 		 if(isset($legend)) {
 			$point_id = $legend[$i];

@@ -22,7 +22,9 @@
 /**
  * Include the FusionCharts class
  */
-require_once ('FusionCharts/FusionCharts_Gen.php');
+if (!class_exists("FusionCharts")) {
+	require_once ('FusionCharts/FusionCharts_Gen.php');
+}
 
 // Returns the code needed to display the chart
 function get_chart_code ($chart, $width, $height, $swf) {

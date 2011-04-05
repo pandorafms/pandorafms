@@ -17,8 +17,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 
-
-require_once ("FusionCharts/FusionCharts_Gen.php");
+if (!class_exists("FusionCharts")) {
+	require_once ("FusionCharts/FusionCharts_Gen.php");
+}
 
 
 
@@ -154,157 +155,6 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	
 	return $output;	
 }
-
-function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0, $caption = '', $baseline = 0, $color) {
-	global $config;
-
-	$graph_type = "MSArea2D"; //MSLine is possible also
-
-	// Generate the XML
-	$chart = new FusionCharts($graph_type, $width, $height);
-	$num_vlines = 0;
-	$count = 0;
-
-	// NO caption needed (graph avg/max/min stats are in the legend now)
-	/*
-	if ($caption != '') {
-		$chart->setChartParam("caption", $caption);
-	}
-	*/
-
-	$total_max = 0;
-	$total_avg = 0;
-	$total_min = 0;
-
-	// Create categories
-	foreach ($data as $i => $value) {
-
-	$total_avg +=$value["sum"];
-
-	if ($avg_only != 1){
-		if ($value["max"] > $total_max)
-			$total_max =$value["max"];
-		if ($value["min"] < $total_min)
-			$total_min =$value["min"];
-	}
-
-		if ($count++ % $step == 0) {
-			$show_name = '1';
-			$num_vlines++;
-		} else {
-			$show_name = '0';
-		}
-		//$chart->addCategory(date($time_format, $i), '');
-		$chart->addCategory(date($time_format, $i), 
-			'hoverText=' . date (html_entity_decode ($config['date_format'], ENT_QUOTES, "UTF-8"), $i) .  ';showName=' . $show_name);
-	}
-
-	if ($count > 0)
-		$total_avg = format_for_graph($total_avg / $count);
-	else
-		$total_avg = 0;
-
-	//$total_min = format_for_graph ($total_min);
-	//$total_max = format_for_graph ($total_max);
-	
-	// Event chart
-	if ($show_events == 1) {
-		$showAreaBorder = 0;
-		if (!is_null($color['event']['border'])) {
-			$showAreaBorder = 1;
-		}
-		
-		$chart->addDataSet($caption['event'], 'alpha=' . $color['event']['alpha'] . ';' . 
-			'showAreaBorder=' . $showAreaBorder . ';' .
-			'areaBorderColor=' . $color['event']['border'] . ';' . 
-			'color=#' . $color['event']['color']);
-		foreach ($data as $value) {
-			$chart->addChartData($value['event']);
-		}
-	}
-
-	// Alert chart
-	if ($show_alerts == 1) {
-		$showAreaBorder = 0;
-		if (!is_null($color['alert']['border'])) {
-			$showAreaBorder = 1;
-		}
-		
-		$chart->addDataSet($caption['alert'], 'alpha=' . $color['alert']['alpha'] . ';' .
-			'showAreaBorder=' . $showAreaBorder . ';' .
-			'areaBorderColor=' . $color['alert']['border'] . ';' .
-			'color=' . $color['alert']['color']);
-		foreach ($data as $value) {
-			$chart->addChartData($value['alert']);
-		}
-	}
-
-	// Max chart
-	if ($avg_only == 0) {		
-		$chart->addDataSet($caption['max'], 'color=' . $color['max']['color']);
-		foreach ($data as $value) {
-			$chart->addChartData($value['max']);
-		}
-	}
-
-	// Avg chart
-	$empty = 1;
-	$chart->addDataSet($caption['sum'], 'color=' . $color['sum']['color']);
-	foreach ($data as $value) {
-		if ($value['sum'] > 0) {
-			$empty = 0;
-		}
-		$chart->addChartData($value['sum']);
-	}
-
-	// Min chart
-	if ($avg_only == 0) {
-		$chart->addDataSet($caption['min'], 'color=' . $color['min']['color']);
-		foreach ($data as $value) {
-			$chart->addChartData($value['min']);
-		}
-	}
-
-	// Baseline chart
-	if ($baseline == 1) {
-		$showAreaBorder = 0;
-		if (!is_null($color['baseline']['border'])) {
-			$showAreaBorder = 1;
-		}
-		//debugPrint($color);
-		$chart->addDataSet($caption['baseline'], 'color=' . $color['baseline']['color'] . ';' .
-			'alpha=' . $color['baseline']['alpha'] . ';' .
-			'showAreaBorder=' . $showAreaBorder . ';');
-		debugPrint('color=' . $color['baseline']['color'] . ';' .
-			'alpha=' . $color['baseline']['alpha'] . ';' .
-			'showAreaBorder=' . $showAreaBorder . ';');
-		foreach ($data as $value) {
-			$chart->addChartData($value['baseline']);
-		}
-	}
-	
- 	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
-
-	$random_number = rand ();
-	$div_id = 'chart_div_' . $random_number;
-	$chart_id = 'chart_' . $random_number;
-	$output = '<div id="' . $div_id. '" style="z-index:1;"></div>'; 
-	$pre_url = ($config["homeurl"] == "/") ? '' : $config["homeurl"];
-
-	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
-	$output .= '<script type="text/javascript">
-			<!--
-			function pie_' . $chart_id . ' () {
-				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
-				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
-				myChart.addParam("WMode", "Transparent");
-				myChart.render("' . $div_id . '");
-			}
-					pie_' . $chart_id . ' ();
-			-->
-		</script>';
-	return $output;
-}
 ///////////////////////////////
 ///////////////////////////////
 ///////////////////////////////
@@ -322,7 +172,7 @@ function date_to_epoch ($date) {
 }
 
 // Returns the code needed to display the chart
-function get_chart_code ($chart, $width, $height, $swf) {
+function get_chart_code2 ($chart, $width, $height, $swf) {
 	$random_number = rand ();
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
@@ -340,7 +190,7 @@ function get_chart_code ($chart, $width, $height, $swf) {
 }
 
 // Prints a 3D pie chart
-function fs_3d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE") {
+function fs_3d_pie_chart2 ($data, $names, $width, $height, $background = "EEEEEE") {
 	if ((sizeof ($data) != sizeof ($names)) OR (sizeof($data) == 0) ){
 		return;
 	}
@@ -356,7 +206,7 @@ function fs_3d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 	}
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie3D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie3D.swf');
 }
 
 // Prints a 2D pie chart
@@ -376,7 +226,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 	}
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie2D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie2D.swf');
 }
 
 // Prints a BAR Horizontalchart
@@ -396,7 +246,7 @@ function fs_hbar_chart ($data, $names, $width, $height) {
 	}
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
 }
 
 // Returns a 2D column chart
@@ -431,7 +281,7 @@ function fs_2d_column_chart ($data, $width, $height) {
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
 }
 
 // Returns a 3D column chart
@@ -466,7 +316,7 @@ function fs_3d_column_chart ($data, $width, $height) {
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column3D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column3D.swf');
 }
 
 // Prints a Gantt chart
@@ -622,7 +472,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 	$chart->addTrendLine ('start=' . date ('d/m/Y') . ';displayValue='. __('Today') . ';color=666666;isTrendZone=1;alpha=20');
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Gantt.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Gantt.swf');
 }
 
 ?>

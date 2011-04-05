@@ -138,8 +138,6 @@ else
 // log4x doesnt support flash yet
 //
 if ($config['flash_charts'] && $graph_type != "log4x") {
-//if (true) {
-
 	switch ($graph_type) {
 		case 'sparse':
 			echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
@@ -184,12 +182,6 @@ else {
 			echo fs_error_image ('../images');
 			break;
 	}
-	
-//$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=". base64_encode ($label) ."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only."&baseline=".$baseline;
-//
-//$image .= "&date=" . $date;
-//
-//print_image ($image, false, array ("border" => 0));
 }
 
 //z-index is 1 because 2 made the calendar show under the divmenu.

@@ -263,7 +263,7 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 	if (sizeof ($data) == 0) {
 		return fs_error_image ();
 	}
-
+	
 	// Generate the XML
 	switch ($type) {
 		case 0: $chart_type = 'MSArea2D';

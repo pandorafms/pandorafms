@@ -13,13 +13,13 @@
 function serialize_in_temp($array = array(), $serial_id = null) {
 	$json = json_encode($array);
 	
-	if($serial_id === null) {
+	if ($serial_id === null) {
 		$serial_id = uniqid();
 	}
 	
 	$file_path = sys_get_temp_dir()."/pandora_serialize_".$serial_id;
 		
-	if(file_put_contents($file_path, $json) === false) {
+	if (file_put_contents($file_path, $json) === false) {
 		return false;
 	}
 
@@ -27,7 +27,7 @@ function serialize_in_temp($array = array(), $serial_id = null) {
 }
 
 function unserialize_in_temp($serial_id = null, $delete = true) {
-	if($serial_id === null) {
+	if ($serial_id === null) {
 		return false;
 	}
 	
@@ -35,13 +35,13 @@ function unserialize_in_temp($serial_id = null, $delete = true) {
 
 	$content = file_get_contents($file_path);
 
-	if($content === false) {
+	if ($content === false) {
 		return false;
 	}
 	
 	$array = json_decode($content, true);
 	
-	if($delete) {
+	if ($delete) {
 		unlink($file_path);
 	}
 
@@ -49,7 +49,7 @@ function unserialize_in_temp($serial_id = null, $delete = true) {
 }
 
 function delete_unserialize_in_temp($serial_id = null) {
-	if($serial_id === null) {
+	if ($serial_id === null) {
 		return false;
 	}
 	

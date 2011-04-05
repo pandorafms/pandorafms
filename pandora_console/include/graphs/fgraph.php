@@ -42,12 +42,13 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	}
 }
 
-function area_graph($flash_chart, $chart_data, $width, $height, $color,$legend, $long_index) {	
+function area_graph($flash_chart, $chart_data, $width, $height, $color,$legend, $long_index) {
 	if($flash_chart) {
-		echo fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
+		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
 		$id_graph = uniqid();
+		
 		
 		$graph = array();
 		$graph['data'] = $chart_data;
@@ -56,12 +57,10 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,$legend, 
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
 		
-		session_start();
-		//unset($_SESSION['graph']);
-		$_SESSION['graph_session'][$id_graph] = $graph;
+		serialize_in_temp($graph, $id_graph);
 		session_write_close();
 		
-		echo "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
+		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
 	}	
 }
 

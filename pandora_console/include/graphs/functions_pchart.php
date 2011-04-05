@@ -329,7 +329,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 		 }
 		 
 		$MyData->addPoints($values,$point_id);
-		if($rgb_color !== false) {
+		if (!empty($rgb_color)) {
 			$MyData->setPalette($point_id, 
 					array("R" => $rgb_color[$i]['color']["R"], 
 						"G" => $rgb_color[$i]['color']["G"], 

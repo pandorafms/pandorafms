@@ -3689,9 +3689,19 @@
          $R = $Serie["Color"]["R"]; 
          $G = $Serie["Color"]["G"]; 
          $B = $Serie["Color"]["B"];
-         $BorderR = $Serie["Color"]["BorderR"]; 
-         $BorderG = $Serie["Color"]["BorderG"]; 
-         $BorderB = $Serie["Color"]["BorderB"];
+         debugPrint($Serie["Color"], true);
+         if (isset($Serie["Color"]["BorderR"]))
+         	$BorderR = $Serie["Color"]["BorderR"];
+         else
+         	 $BorderR = $R;
+         if (isset($Serie["Color"]["BorderG"]))
+         	$BorderG = $Serie["Color"]["BorderG"];
+         else
+         	$BorderG = $G; 
+         if (isset($Serie["Color"]["BorderB"]))
+         	$BorderB = $Serie["Color"]["BorderB"];
+         else
+         	$BorderB = $B;
          $Alpha = $Serie["Color"]["Alpha"]; 
          $Ticks = $Serie["Ticks"];
          if ( $DisplayColor == DISPLAY_AUTO ) { $DisplayR = $R; $DisplayG = $G; $DisplayB = $B; }

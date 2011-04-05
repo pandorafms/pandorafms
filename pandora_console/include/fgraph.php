@@ -135,7 +135,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0) {
 	global $config;
 	global $graphic_type;
-
+	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -336,9 +336,11 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}
 	
 	if (! $graphic_type) {
+		///FLASH
 		return fs_combined_chart ($graph_values, $graph, $module_name_list, $width, $height, $stacked, $resolution / 10, $time_format);
 	}
-
+	
+	//IMAGE
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;
@@ -1865,6 +1867,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 
     // Flash chart
 	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+	
 	if (! $graphic_type) {
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}

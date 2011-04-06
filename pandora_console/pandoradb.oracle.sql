@@ -931,7 +931,9 @@ CREATE TABLE treport_content (
 	order_uptodown NUMBER(10, 0) default 0 NOT NULL,
 	show_graph NUMBER(10, 0) default 0 NOT NULL,
 	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
-	style NCLOB default '' NOT NULL
+	style NCLOB default '' NOT NULL,
+	id_group NUMBER(10, 0) default 0 NOT NULL,
+	id_module_group NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE treport_content_s INCREMENT BY 1 START WITH 1;

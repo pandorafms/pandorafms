@@ -751,7 +751,9 @@ CREATE TABLE "treport_content" (
 	"order_uptodown" INTEGER NOT NULL default 0,
 	"show_graph" INTEGER NOT NULL default 0,
 	"group_by_agent" INTEGER NOT NULL default 0,
-	"style" TEXT NOT NULL DEFAULT ''
+	"style" TEXT NOT NULL DEFAULT '',
+	"id_group" INTEGER NOT NULL default 0,
+	"id_module_group" INTEGER NOT NULL default 0
 );
 
 CREATE TABLE "treport_content_sla_combined" (

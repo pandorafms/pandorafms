@@ -425,7 +425,10 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		$k = 0;
 	
 		// Set initial conditions
-		$graph_values[$i] = array();
+		
+		//$graph_values[$i] = array();
+		$temp_graph_values = array();
+		
 		if ($data[0]['utimestamp'] == $datelimit) {
 			$previous_data = $data[0]['datos'];
 			$j++;
@@ -474,23 +477,48 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 
 			// Data
 			if ($count > 0) {
-				$graph_values[$i][$timestamp] = $total * $weight_list[$i];
+				//$graph_values[$i][$timestamp] = $total * $weight_list[$i];
+				$temp_graph_values[$timestamp] = $total * $weight_list[$i];
+				
 				$previous_data = $total;
 			// Compressed data
 			} else {
 				if ($uncompressed_module || ($timestamp > time ())) {
-					$graph_values[$i][$timestamp] = 0;
-				} else {
-					$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
+					//$graph_values[$i][$timestamp] = 0;
+					$temp_graph_values[$timestamp] = 0;
+				}
+				else {
+					//$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
+					$temp_graph_values[$timestamp] = $previous_data * $weight_list[$i];
 				}
 			}
+			
+			$graph_values[$i] = $temp_graph_values;
+		}
+		
+		if ($weight_list[$i] != 1) {
+			$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
+		}
+		
+		$graph_values[$module_name_list[$i]] = $graph_values[$i];
+		unset($graph_values[$i]);
+	}
+	
+	$temp = array(); //debugPrint($graph_values);
+	foreach ($graph_values as $graph_group => $point) {
+		foreach ($point as $timestamp_point => $point_value) {
+			$temp[$timestamp_point][$graph_group] = $point_value;
 		}
 	}
+	$graph_values = $temp;
 
+	/*
 	for ($i = 0; $i < $module_number; $i++) {
-		if ($weight_list[$i] != 1)
+		if ($weight_list[$i] != 1) {
 			$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
+		}
 	}
+	*/
 	
 	if ($period <= 3600) {
 		$title_period = __('Last hour');
@@ -512,7 +540,7 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 	switch ($stacked) {
 		case 0:
 			return area_graph($config['flash_charts'], $graph_values, $width, $height,
-				$color, $legend, $long_index);
+				array(), $module_name_list, array());
 			return;
 			break;
 		default:

@@ -70,9 +70,11 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 				$show_name = '1';
 			}
 			
-			$chart->addCategory($i, //'');
-					'hoverText=' . $long_index[$i] .  
-					';showName=' . $show_name);
+			if (isset($long_index[$i])) {
+				$chart->addCategory($i, //'');
+						'hoverText=' . $long_index[$i] .  
+						';showName=' . $show_name);
+			}
 			
 			$c = 0;
 			foreach($values as $i2 => $value) {
@@ -90,15 +92,38 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	 
 	$empty = 1;
 	foreach ($data as $i => $value) {		
-		$showAreaBorder = 0;
-		if (!is_null($color[$i]['border'])) {
-			$showAreaBorder = 1;
+		
+		$legend = '';
+		if (isset($legend[$i])) {
+			$legend = $legend[$i];
 		}
 		
-		$chart->addDataSet($legend[$i], 'alpha=' . $color[$i]['alpha'] . ';' . 
+		$alpha = '';
+		$areaBorderColor = '';
+		$color = '';
+		$showAreaBorder = 0;
+		if (isset($color[$i])) {
+			if (!isset($color[$i]['border'])) {
+				$showAreaBorder = 1;
+			}
+			
+			if (isset($color[$i]['alpha'])) {
+				$alpha = 'alpha=' . $color[$i]['alpha'] . ';';
+			}
+			
+			if (isset($color[$i]['border'])) {
+				$areaBorderColor = 'areaBorderColor=' . $color[$i]['border'] . ';';
+			}
+			
+			if (isset($color[$i]['color'])) {
+				$color = 'color=#' . $color[$i]['color'];
+			}
+		}
+		
+		$chart->addDataSet($legend, $alpha . 
 			'showAreaBorder=' . $showAreaBorder . ';' .
-			'areaBorderColor=' . $color[$i]['border'] . ';' . 
-			'color=#' . $color[$i]['color']);
+			$areaBorderColor .
+			$color);
 			
 			$count = 0;
 			$step = 10;

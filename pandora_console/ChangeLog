@@ -1,3 +1,13 @@
+2011-04-06 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_graph.php: wip in the function
+	"graphic_combined_module2".
+	
+	* include/graphs/functions_fsgraph.php: fixed when "fs_area_graph" when
+	send a graph without the colours or and legend.
+	
+	* include/graphs/fgraph.php: erased lost session instructions in the
+	function "area_graph".
+
 2011-04-06 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_reporting.php: Added case to display 'agent_module'

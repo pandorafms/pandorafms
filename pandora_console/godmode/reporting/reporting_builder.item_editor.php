@@ -65,6 +65,7 @@ switch ($action) {
 		$show_graph = 0;
 		$show_in_two_columns = 0;
 		$show_in_landscape = 0;
+		$modulegroup = 0;
 		break;
 	default:
 		$actionParameter = 'update';
@@ -258,6 +259,12 @@ switch ($action) {
 				$show_resume = $item['show_resume'];
 				$show_graph = $item['show_graph'];
 				$order_uptodown = $item['order_uptodown'];
+				break;
+			case 'agent_module':
+				$description = $item['description'];
+				$group = $item['id_group'];
+				$modulegroup = $item ['id_module_group'];
+				break;
 		}
 		
 		break;
@@ -331,7 +338,14 @@ print_input_hidden('id_item', $idItem);
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
-				<?php print_select_groups($config['id_user'], "AR", true, 'combo_group', '', 'extract_group_agents()');?>
+				<?php print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, 'extract_group_agents()');?>
+			</td>
+		</tr>
+		<tr id="row_module_group" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Module group');?></td>
+			<td style="">
+				<?php print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+				'combo_modulegroup', $modulegroup, '',__('All'));?>
 			</td>
 		</tr>
 		<tr id="row_agent" style="" class="datos">
@@ -944,6 +958,7 @@ function chooseType() {
 	$("#row_exception_condition").css('display', 'none');
 	$("#row_show_in_two_columns").css('display', 'none');
 	$("#row_show_in_landscape").css('display', 'none');
+	$("#row_module_group").css('display', 'none');
 		
 	switch (type) {
 		case 'event_report_group':
@@ -1154,6 +1169,10 @@ function chooseType() {
 			$("#row_show_graph").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
 			break;
+		case 'agent_module':
+			$("#row_description").css('display', '');
+			$("#row_group").css('display', '');
+			$("#row_module_group").css('display', '');
 	}
 }
 </script>

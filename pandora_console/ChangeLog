@@ -1,3 +1,14 @@
+2011-04-06 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_reporting.php: Added case to display 'agent_module'
+	reports
+	* include/functions.php: Added the option 'agent_module' for the
+	reporting type in combo selecion
+	* godmode/reporting/reporting_builder.php: Added options to store
+	'agent_module' report info
+	* godmode/reporting/reporting_builder.item_editor.php: Added html fields
+	 for the 'agent_module' report
+
 2011-04-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/pChart/pData.class.php

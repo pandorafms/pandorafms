@@ -348,7 +348,7 @@
      $BorderG = isset($Format["BorderG"]) ? $Format["BorderG"] : $G;
      $BorderB = isset($Format["BorderB"]) ? $Format["BorderB"] : $B;
 
-     if ( isset($this->Data["Series"][$Serie]) )
+     if (isset($this->Data["Series"][$Serie]) )
       {
        $OldR = $this->Data["Series"][$Serie]["Color"]["R"]; 
        $OldG = $this->Data["Series"][$Serie]["Color"]["G"]; 

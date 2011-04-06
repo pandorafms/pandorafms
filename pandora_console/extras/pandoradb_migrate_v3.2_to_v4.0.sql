@@ -40,6 +40,8 @@ ALTER TABLE `treport_content` ADD COLUMN `show_resume` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `order_uptodown` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `show_graph` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `group_by_agent` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `id_group` int (10) unsigned NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `id_module_group` int (10) unsigned NOT NULL DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `treport_content_item`

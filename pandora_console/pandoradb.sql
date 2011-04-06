@@ -824,6 +824,8 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`show_graph` INT NOT NULL default 0,
 	`group_by_agent` INT NOT NULL default 0,
 	`style` TEXT NOT NULL DEFAULT '',
+	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE

@@ -1,3 +1,14 @@
+2011-04-06 Javier Lanz <javier.lanz@artica.es>
+
+	* pandoradb.sql: Added 'id_group' & 'id_module_group' fields to 
+	treport_content table
+	* pandoradb.postgreSQL.sql: Added 'id_group' & 'id_module_group' fields 
+	to treport_content table
+	* pandoradb.oracle.sql: Added 'id_group' & 'id_module_group' fields to 
+	treport_content table
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added 'id_group' &
+	'id_module_group' fields to treport_content table
+
 2011-04-06 Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_graph.php: wip in the function
 	"graphic_combined_module2".

@@ -1898,7 +1898,20 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$table->colspan[1][0] = 3;
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+			//$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+			require_once ($config["homedir"] . '/include/functions_graph.php');
+			$data[0] = 	graphic_combined_module2(
+				$modules,
+				$weights,
+				$content['period'],
+				$sizgraph_w, $sizgraph_h,
+				'Combined%20Sample%20Graph',
+				'',
+				0,
+				0,
+				0,
+				$graph["stacked"],
+				$report["datetime"]);
 			array_push ($table->data, $data);
 	
 			break;

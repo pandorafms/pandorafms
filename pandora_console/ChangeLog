@@ -1,3 +1,22 @@
+2011-04-07 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/graphs/fgraph.php: changed the img tag to autoclose.
+	
+	* include/graphs/functions_fsgraph.php: changed the border to default 1, and
+	fixed the show legend.
+
+	* include/functions_graph.php: cleaned source code style. And the function
+	"graphic_combined_module2" added the show timestamp as human, add the
+	min, max, avg values. 
+	
+	* include/graphs/functions_pchart.php: changed the show leyend in the top
+	of graph, and added some comments lines for debug.
+
+
+	* include/functions_reporting.php, include/functions_custom_graphs.php,
+	godmode/reporting/graph_builder.preview.php: changed the graph to show with
+	new engine.
+
 2011-04-06 Javier Lanz <javier.lanz@artica.es>
 
 	* pandoradb.sql: Added 'id_group' & 'id_module_group' fields to 

@@ -92,6 +92,8 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGr
 function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
 	global $config;
 	
+	require_once ($config["homedir"] . '/include/functions_graph.php');
+	
 	$sources = get_db_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
 	$modules = array ();
 	$weights = array ();
@@ -104,8 +106,12 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
 	foreach ($sources as $source) {
 		array_push ($modules, $source['id_agent_module']);
 		array_push ($weights, $source['weight']);
-	}	
+	}
+	
+	$output = graphic_combined_module2($modules, $weights, $period, $width, $height,
+		'', '', 0, 0, 0, $stacked, $date);
 
+	/*
 	if ($config['flash_charts']) {
 		$output = graphic_combined_module ($modules, $weights, $period, $width, $height,
 				'', '', 0, 0, 0, $stacked, $date);
@@ -114,6 +120,7 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
 		$weights = implode (',', $weights);
 		$output = '<img src="include/fgraph.php?tipo=combined&height='.$height.'&width='.$width.'&id='.$modules.'&period='.$period.'&weight_l='.$weights.'&stacked='.$stacked.'&date='.$date.'">';
 	}
+	*/
 	
 	if ($return)
 		return $output;

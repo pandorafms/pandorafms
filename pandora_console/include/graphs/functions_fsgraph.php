@@ -91,17 +91,17 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	 $a = 0;
 	 
 	$empty = 1;
-	foreach ($data as $i => $value) {		
+	foreach ($data as $i => $value) {	
 		
-		$legend = '';
+		$legend_text = '';
 		if (isset($legend[$i])) {
-			$legend = $legend[$i];
+			$legend_text = $legend[$i];
 		}
 		
 		$alpha = '';
 		$areaBorderColor = '';
 		$color = '';
-		$showAreaBorder = 0;
+		$showAreaBorder = 1; //0 old default
 		if (isset($color[$i])) {
 			if (!isset($color[$i]['border'])) {
 				$showAreaBorder = 1;
@@ -120,14 +120,14 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 			}
 		}
 		
-		$chart->addDataSet($legend, $alpha . 
+		$chart->addDataSet($legend_text, $alpha . 
 			'showAreaBorder=' . $showAreaBorder . ';' .
 			$areaBorderColor .
 			$color);
 			
-			$count = 0;
-			$step = 10;
-			$num_vlines = 0;
+		$count = 0;
+		$step = 10;
+		$num_vlines = 0;
 		
 		foreach ($value as $i2 => $v) {
 			if ($count++ % $step == 0) {

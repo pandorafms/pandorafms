@@ -255,10 +255,10 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 
     // Only show caption if graph is not small
     if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT)
-    // Flash chart
-	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+    	//Flash chart
+		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
     else
-	$caption = array();
+		$caption = array();
 	
 	///////
 	$color = array();
@@ -309,6 +309,29 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0) {
 	global $config;
 	global $graphic_type;
+	
+	// Set the title and time format
+	
+	if ($period <= 3600) {
+		$title_period = __('Last hour');
+		$time_format = 'G:i:s';
+	}
+	elseif ($period <= 86400) {
+		$title_period = __('Last day');
+		$time_format = 'G:i';
+	}
+	elseif ($period <= 604800) {
+		$title_period = __('Last week');
+		$time_format = 'M j';
+	}
+	elseif ($period <= 2419200) {
+		$title_period = __('Last month');
+		$time_format = 'M j';
+	} 
+	else {
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+		$time_format = 'M j';
+	}
 
 	// Set variables
 	if ($date == 0) $date = get_system_time();
@@ -332,7 +355,11 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 
 	// Set data containers
 	for ($i = 0; $i < $resolution; $i++) {
-			$timestamp = $datelimit + ($interval * $i);
+			$timestamp = $datelimit + ($interval * $i);/*
+			$timestamp_short = date($time_format, $timestamp);
+			$long_index[$timestamp_short] = date(
+			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+			$timestamp = $timestamp_short;*/
 			
 			$graph[$timestamp]['count'] = 0;
 			$graph[$timestamp]['timestamp_bottom'] = $timestamp;
@@ -343,6 +370,8 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			$graph[$timestamp]['alert'] = 0;
 	}
 
+	$long_index = array();
+	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
 
@@ -432,13 +461,25 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		if ($data[0]['utimestamp'] == $datelimit) {
 			$previous_data = $data[0]['datos'];
 			$j++;
-		} else {
+		}
+		else {
 			$previous_data = 0;
 		}
 
+		$max = 0;
+		$min = null;
+		$avg = 0;
+		$countAvg = 0;
+		
 		// Calculate chart data
 		for ($l = 0; $l < $resolution; $l++) {
+			$countAvg ++;
+			
 			$timestamp = $datelimit + ($interval * $l);
+			$timestamp_short = date($time_format, $timestamp);
+			$long_index[$timestamp_short] = date(
+			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+			//$timestamp = $timestamp_short;
 	
 			$total = 0;
 			$count = 0;
@@ -478,33 +519,56 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			// Data
 			if ($count > 0) {
 				//$graph_values[$i][$timestamp] = $total * $weight_list[$i];
-				$temp_graph_values[$timestamp] = $total * $weight_list[$i];
+				$temp_graph_values[$timestamp_short] = $total * $weight_list[$i];
 				
 				$previous_data = $total;
 			// Compressed data
 			} else {
 				if ($uncompressed_module || ($timestamp > time ())) {
 					//$graph_values[$i][$timestamp] = 0;
-					$temp_graph_values[$timestamp] = 0;
+					$temp_graph_values[$timestamp_short] = 0;
 				}
 				else {
 					//$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
-					$temp_graph_values[$timestamp] = $previous_data * $weight_list[$i];
+					$temp_graph_values[$timestamp_short] = $previous_data * $weight_list[$i];
 				}
 			}
+			
+			//Extract max, min, avg
+			if ($max < $temp_graph_values[$timestamp_short]) {
+				$max = $temp_graph_values[$timestamp_short];
+			}
+			
+			if (isset($min)) {
+				if ($min > $temp_graph_values[$timestamp_short]) {
+					$min = $temp_graph_values[$timestamp_short];
+				}
+			}
+			else {
+				$min = $temp_graph_values[$timestamp_short];
+			}
+			$avg += $temp_graph_values[$timestamp_short];
 			
 			$graph_values[$i] = $temp_graph_values;
 		}
 		
+		//Add the max, min and avg in the legend
+		$avg = round($avg / $countAvg, 1);
+		$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg)";
+		
 		if ($weight_list[$i] != 1) {
+			//$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
 			$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
 		}
 		
-		$graph_values[$module_name_list[$i]] = $graph_values[$i];
-		unset($graph_values[$i]);
+		//$graph_values[$module_name_list[$i]] = $graph_values[$i];
+		//unset($graph_values[$i]);
+		
+		//$graph_values[$i] = $graph_values[$i];
+
 	}
 	
-	$temp = array(); //debugPrint($graph_values);
+	$temp = array();
 	foreach ($graph_values as $graph_group => $point) {
 		foreach ($point as $timestamp_point => $point_value) {
 			$temp[$timestamp_point][$graph_group] = $point_value;
@@ -539,8 +603,14 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 	////////////////////////////////////////////////////////////////////////////
 	switch ($stacked) {
 		case 0:
+			/*$color = array(
+				0 => array('alpha' => 50),
+				1 => array('alpha' => 50),
+				2 => array('alpha' => 50)
+			);*/
+			$color = null;
 			return area_graph($config['flash_charts'], $graph_values, $width, $height,
-				array(), $module_name_list, array());
+				$color, $module_name_list, $long_index);
 			return;
 			break;
 		default:

@@ -45,6 +45,8 @@ if ($id_graph) {
 		$height = $graph['height'];
 		$colors = $graph['color'];
 		$legend = $graph['legend'];
+		
+		//debugPrint($graph, true);
 /*
 	$colors = array();
 	$colors['pep1'] = array('border' => '#000000', 'color' => '#000000', 'alpha' => 50);
@@ -53,6 +55,10 @@ if ($id_graph) {
 	$colors['pep4'] = array('border' => '#000000', 'color' => '#0000ff', 'alpha' => 50);
 */
 		$rgb_color = array();
+		
+		if (!isset($colors))
+			$colors = array();
+		
 		foreach($colors as $i => $color) {		
 			$rgb['border'] = html2rgb($color['border']);
 			$rgb_color[$i]['border']['R'] = $rgb['border'][0];
@@ -66,6 +72,26 @@ if ($id_graph) {
 			
 			$rgb_color[$i]['alpha'] = $color['alpha'];
 		}
+		
+		/*foreach($colors as $i => $color) {
+			if (isset($color['border'])) {
+				$rgb['border'] = html2rgb($color['border']);
+				$rgb_color[$i]['border']['R'] = $rgb['border'][0];
+				$rgb_color[$i]['border']['G'] = $rgb['border'][1];
+				$rgb_color[$i]['border']['B'] = $rgb['border'][2];
+			}
+			
+			if (isset($color['color'])) {
+				$rgb['color'] = html2rgb($color['color']);
+				$rgb_color[$i]['color']['R'] = $rgb['color'][0];
+				$rgb_color[$i]['color']['G'] = $rgb['color'][1];
+				$rgb_color[$i]['color']['B'] = $rgb['color'][2];
+			}
+			
+			if (isset($color['color'])) {
+				$rgb_color[$i]['alpha'] = $color['alpha'];
+			}
+		}*/
 	}
 }
 
@@ -331,22 +357,41 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 		$MyData->addPoints($values,$point_id);
 		if (!empty($rgb_color)) {
 			$MyData->setPalette($point_id, 
-					array("R" => $rgb_color[$i]['color']["R"], 
-						"G" => $rgb_color[$i]['color']["G"], 
-						"B" => $rgb_color[$i]['color']["B"],
-						"BorderR" => $rgb_color[$i]['border']["R"], 
-						"BorderG" => $rgb_color[$i]['border']["G"], 
-						"BorderB" => $rgb_color[$i]['border']["B"], 
-						"Alpha" => $rgb_color[$i]['alpha']));	
+				array("R" => $rgb_color[$i]['color']["R"], 
+					"G" => $rgb_color[$i]['color']["G"], 
+					"B" => $rgb_color[$i]['color']["B"],
+					"BorderR" => $rgb_color[$i]['border']["R"], 
+					"BorderG" => $rgb_color[$i]['border']["G"], 
+					"BorderB" => $rgb_color[$i]['border']["B"], 
+					"Alpha" => $rgb_color[$i]['alpha']));
+				
+			/*$palette_color = array();
+			if (isset($rgb_color[$i]['color'])) {
+				$palette_color["R"] = $rgb_color[$i]['color']["R"];
+				$palette_color["G"] = $rgb_color[$i]['color']["G"];
+				$palette_color["B"] = $rgb_color[$i]['color']["B"];
+			}
+	 		if (isset($rgb_color[$i]['color'])) {
+				$palette_color["BorderR"] = $rgb_color[$i]['border']["R"];
+				$palette_color["BorderG"] = $rgb_color[$i]['border']["G"];
+				$palette_color["BorderB"] = $rgb_color[$i]['border']["B"];
+			}
+			if (isset($rgb_color[$i]['color'])) {
+				$palette_color["Alpha"] = $rgb_color[$i]['Alpha'];
+			}
+		
+			$MyData->setPalette($point_id, $palette_color);*/
 		}
 	 }
-
+		
 	 //$MyData->addPoints($data,"Yaxis");
 	 $MyData->setAxisName(0,$yaxisname);
 	 $MyData->addPoints($index,"Xaxis");
 	 $MyData->setSerieDescription("Xaxis", $xaxisname);
 	 $MyData->setAbscissa("Xaxis");
 
+	 
+	 
 	 /* Create the pChart object */
 	 $myPicture = new pImage($width,$height,$MyData);
 
@@ -357,25 +402,38 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 //$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 
 	 /* Set the default font */
-	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>7));
+	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>10));
 
-	 /* Define the chart area */
-	 $myPicture->setGraphArea(30,20,$width,$height-100);
+ 	if(isset($legend)) {
+		/* Write the chart legend */
+		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL));
+		$myPicture->drawLegend($width-$size['Width'], 8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL));
+	 }
+	 
+	 if (isset($size['Height'])) {
+	 	/* Define the chart area */
+	 	$myPicture->setGraphArea(30,$size['Height'],$width,$height - 60);
+	 }
+	 else {
+	 	/* Define the chart area */
+	 	$myPicture->setGraphArea(30, 5,$width,$height - 60);
+	 }
 
 	 /* Draw the scale */
-	 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "XMargin" => 40, "LabelRotation" => 90);
+	 $scaleSettings = array("GridR"=>200,
+		 "GridG"=>200,
+		 "GridB"=>200,
+		 "DrawSubTicks"=>TRUE,
+		 "CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
 	 $myPicture->drawScale($scaleSettings);
 	
-	 if(isset($legend)) {
-		/* Write the chart legend */
-		$myPicture->drawLegend($height/2,$height-20,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
-	 }
+
 	 
 	 /* Turn on shadow computing */ 
 	 //$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
 	 /* Draw the chart */
-	 $settings = array("ForceTransparency"=>"-1",
+	 $settings = array("ForceTransparency"=>"50", //
 	 	"Gradient"=>TRUE,
 	 	"GradientMode"=>GRADIENT_EFFECT_CAN,
 	 	"DisplayValues"=>$show_values,

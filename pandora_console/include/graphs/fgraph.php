@@ -59,7 +59,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,$legend, 
 		
 		serialize_in_temp($graph, $id_graph);
 		
-		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
+		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "' />";
 	}	
 }
 

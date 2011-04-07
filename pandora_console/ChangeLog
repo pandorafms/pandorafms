@@ -1,5 +1,17 @@
 2011-04-07 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: added call to paint the other graphs.
+	
+	* include/graphs/functions_pchart.php: added stack area graph, and fixed
+	typo in the call to line graph.
+	
+	* include/graphs/functions_fsgraph.php: added line graph and area graph.
+	
+	* include/graphs/fgraph.php: added function "stacked_area_graph" and
+	"line_graph".
+
+2011-04-07 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/fgraph.php: changed the img tag to autoclose.
 	
 	* include/graphs/functions_fsgraph.php: changed the border to default 1, and

@@ -144,8 +144,9 @@ switch($graph_type) {
 	case 'vbar':
 			pch_bar_graph($graph_type, $data_keys, $data_values, $width, $height, $rgb_color, $xaxisname, $yaxisname);
 			break;
+	case 'stacked_area':
 	case 'area':
-	case 'spline':
+	case 'line':
 			pch_vertical_graph($graph_type, $data_keys, $data_values, $width, $height, $rgb_color, $xaxisname, $yaxisname, false, $legend);
 			break;
 	case 'threshold':
@@ -432,8 +433,17 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 /* Turn on shadow computing */ 
 	 //$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
+	 switch ($graph_type) {
+	 	case 'stacked_area':
+	 		$ForceTransparency = "-1";
+	 		break;
+	 	default:
+	 		$ForceTransparency = "50";
+	 		break;
+	 }
+	 
 	 /* Draw the chart */
-	 $settings = array("ForceTransparency"=>"50", //
+	 $settings = array("ForceTransparency"=> $ForceTransparency, //
 	 	"Gradient"=>TRUE,
 	 	"GradientMode"=>GRADIENT_EFFECT_CAN,
 	 	"DisplayValues"=>$show_values,
@@ -443,6 +453,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 	"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	 
 	 switch($graph_type) {
+	 	case "stacked_area":
 		case "area":
 				$myPicture->drawAreaChart($settings);
 				break;

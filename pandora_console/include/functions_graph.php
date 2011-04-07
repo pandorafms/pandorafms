@@ -603,11 +603,6 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 	////////////////////////////////////////////////////////////////////////////
 	switch ($stacked) {
 		case 0:
-			/*$color = array(
-				0 => array('alpha' => 50),
-				1 => array('alpha' => 50),
-				2 => array('alpha' => 50)
-			);*/
 			$color = null;
 			return area_graph($config['flash_charts'], $graph_values, $width, $height,
 				$color, $module_name_list, $long_index);
@@ -615,16 +610,19 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			break;
 		default:
 		case 1:
-			//TODO
-			$chart_type = 'StackedArea2D';
+			$color = null;
+			return stacked_area_graph($config['flash_charts'], $graph_values, $width, $height,
+				$color, $module_name_list, $long_index);
 			break;
 		case 2:
-			$chart_type = 'MSLine';
-			//TODO
+			$color = null;
+			return line_graph($config['flash_charts'], $graph_values, $width, $height,
+				$color, $module_name_list, $long_index);
 			break;
 		case 3:
-			$chart_type = 'MSLine';
-			//TODO
+			$color = null;
+			return line_graph($config['flash_charts'], $graph_values, $width, $height,
+				$color, $module_name_list, $long_index);
 			break;
 	}	
 	

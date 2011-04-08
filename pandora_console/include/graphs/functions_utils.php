@@ -57,4 +57,15 @@ function delete_unserialize_in_temp($serial_id = null) {
 		
 	return unlink($file_path);
 }
+
+function reverse_data($array) {
+	$array2 = array();
+	foreach($array as $index => $values) {
+		foreach($values as $index2 => $value) {
+				$array2[$index2][$index] = $value;
+		}
+	}
+	
+	return $array2;
+}
 ?>

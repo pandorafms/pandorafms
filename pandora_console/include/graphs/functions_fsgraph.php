@@ -33,7 +33,6 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 	
 	$chart = new FusionCharts($graph_type, $width, $height);
 	
-	
 	$pixels_between_xdata = 25;
 	$max_xdata_display = round($width / $pixels_between_xdata);
 	$ndata = count($chart_data);
@@ -341,8 +340,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	$graph_type = "MSArea2D"; //MSLine is possible also
 	
 	$chart = new FusionCharts($graph_type, $width, $height);
-	
-	
+
 	$pixels_between_xdata = 25;
 	$max_xdata_display = round($width / $pixels_between_xdata);
 	$ndata = count($chart_data);
@@ -591,30 +589,72 @@ function fs_2d_column_chart ($data, $width, $height) {
 	// Generate the XML
 	$chart = new FusionCharts('Column2D', $width, $height);
 
+	$pixels_between_xdata = 25;
+	$max_xdata_display = round($width / $pixels_between_xdata);
+	$ndata = count($chart_data);
+	if($max_xdata_display > $ndata) {
+		$xdata_display = $ndata;
+	}
+	else {
+		$xdata_display = $max_xdata_display;
+	}
+	
+	$step = round($ndata/$xdata_display);
+	
+	
+	if(is_array(reset($data))) {
+	 	$data2 = array();
+	 	$count = 0;
+		foreach($data as $i =>$values) {
+			$count++;
+			$show_name = '0';
+			if (($count % $step) == 0) {
+				$show_name = '1';
+			}
+				debugPrint($i, '/tmp/logo');
 
+			$chart->addCategory($i."2", //'');
+					'hoverText=' . $i .  
+					';showName=' . $show_name);
+			
+			$c = 0;
+			foreach($values as $i2 => $value) {
+				$data2[$i2][$i] = $value;
+				$c++;
+			}
+		}
+		$data = $data2;
+	 }
+	 else {
+		$data = array($data);
+	 }
+	 
     $empty = 0;
     $num_vlines = 0;
     $count = 0;
     $step = 3;
 
-	foreach ($data as $name => $value) {
-        if ($count++ % $step == 0) {
-			$show_name = '1';
-			$num_vlines++;
-		} else {
-			$show_name = '0';
+	foreach ($data as $legend_value => $values) {
+
+		foreach($values as $name => $value) {
+			if ($count++ % $step == 0) {
+				$show_name = '1';
+				$num_vlines++;
+			} else {
+				$show_name = '0';
+			}
+			if ($value > 0) {
+				$empty = 0;
+			}
+			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 		}
-		if ($value > 0) {
-			$empty = 0;
-		}
-		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 	}
 
     $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
 }
 
 // Returns a 3D column chart
@@ -649,7 +689,7 @@ function fs_3d_column_chart ($data, $width, $height) {
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column3D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
 }
 
 // Prints a Gantt chart

@@ -1,3 +1,7 @@
+2011-04-09  Manuel Arostegui <manuel@todo-linux.com>
+
+	* pandoradb.sql: Added index to tagente_modulo. 
+
 2011-04-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php

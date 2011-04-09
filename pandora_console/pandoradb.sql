@@ -187,7 +187,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
   KEY `id_tipo_modulo` (`id_tipo_modulo`),
-  KEY `disabled` (`disabled`)
+  KEY `disabled` (`disabled`),
+  KEY `module` (`id_modulo`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- snmp_oid is also used for WMI query

@@ -66,11 +66,14 @@ sub db_connect ($$$$$$) {
 	if ($rdbms eq 'mysql') {
 		
 		# Connect to MySQL
-		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:3306", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1, mysql_enable_utf8 => 1 });
+		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:3306", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		# Enable auto reconnect
 		$dbh->{'mysql_auto_reconnect'} = 1;
+
+		# Enable character semantics
+		$dbh->{'mysql_enable_utf8'} = 1;
 
 		return $dbh;
 	}

@@ -1,3 +1,9 @@
+2011-04-10  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/DB.pm: Moved mysql_enable_utf8 to after database
+	connection. It is to avoid coding conversion against multibyte
+	characters by mysql.
+
 2011-04-04  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Tools.pm: Added UTF-8 flags deletion from multibyte

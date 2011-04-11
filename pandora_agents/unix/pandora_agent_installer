@@ -23,6 +23,7 @@ PANDORA_CFG=/etc/pandora
 PANDORA_LOG_DIR=/var/log/pandora
 PANDORA_LOG=pandora_agent.log
 TENTACLE=/usr/bin/tentacle_client
+TENTACLE_SERVER=/usr/bin/tentacle_server
 PANDORA_MAN=/usr/share/man
 
 MODE=$1
@@ -88,6 +89,7 @@ uninstall () {
 		PANDORA_EXEC_BIN=/usr/local/bin/pandora_agent_exec
 		PANDORA_CFG=/usr/local/etc/pandora
 		TENTACLE=/usr/local/bin/tentacle_client
+		TENTACLE_SERVER=/usr/local/bin/tentacle_server
 		PANDORA_MAN=/usr/local/man
 	fi
 
@@ -102,6 +104,7 @@ uninstall () {
 		rm -Rf $PANDORA_BASE$PANDORA_TEMP/data_out 2> /dev/null
 	else
 		rm -Rf $PANDORA_BASE$PANDORA_TEMP 2> /dev/null
+		rm -Rf $PANDORA_BASE$TENTACLE_SERVER 2> /dev/null
 	fi 
 	rm -Rf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf 2> /dev/null
 	
@@ -161,6 +164,7 @@ install () {
 		PANDORA_EXEC_BIN=/usr/local/bin/pandora_agent_exec
 		PANDORA_CFG=/usr/local/etc/pandora
 		TENTACLE=/usr/local/bin/tentacle_client
+		TENTACLE_SERVER=/usr/local/bin/tentacle_server
 		PANDORA_MAN=/usr/local/man
 	fi
 
@@ -317,7 +321,17 @@ install () {
 	cp -r collections $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
 	ln -s $PANDORA_BASE$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
-
+	
+	echo "Copying tentacle server to $PANDORA_BASE$TENTACLE_SERVER"
+	cp tentacle_server $PANDORA_BASE$TENTACLE_SERVER
+	chmod 755 $PANDORA_BASE$TENTACLE_SERVER	
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+		chown $PANDORA_USER:wheel $PANDORA_BASE$TENTACLE_SERVER	
+	else
+		chown $PANDORA_USER:0 $PANDORA_BASE$TENTACLE_SERVER
+	fi	
+	
 	echo "Copying tentacle client to $PANDORA_BASE$TENTACLE"
 	cp tentacle_client $PANDORA_BASE$TENTACLE
 	chmod 755 $PANDORA_BASE$TENTACLE

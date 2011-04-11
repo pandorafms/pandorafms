@@ -23,6 +23,7 @@
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
+DAEMON_TENTACLE=/usr/bin/tentacle_server
 LOGFILE=/var/log/pandora/pandora_agent.log
 PANDORA_USER=root
 
@@ -59,6 +60,19 @@ pidof_pandora () {
 	echo $PANDORA_PID
 }
 
+pidof_tentacle () {
+	COLUMNS=400
+	OS_NAME=`uname -s`
+	if [ $OS_NAME = "HP-UX" ]
+	then
+		TENTACLE_PID=`ps -ex | grep "$DAEMON_TENTACLE" | grep -v grep | head -1 | awk '{ print $1 }'`
+	else
+		TENTACLE_PID=`ps -Af | grep "$DAEMON_TENTACLE" | grep -v grep | head -1 | awk '{ print $2 }'`
+	fi
+	
+	echo $TENTACLE_PID
+}
+
 if [ ! -f $DAEMON ]
 then
 	echo "Pandora FMS Agent not found at $DAEMON, please check setup"
@@ -90,6 +104,13 @@ case "$1" in
 			echo "Stopping Pandora Agent."
 			su $PANDORA_USER -c "kill -9 $PANDORA_PID >/dev/null 2>&1"
 		fi
+		
+		TENTACLE_PID=`pidof_tentacle`
+		if [ ! -z "$TENTACLE_PID" ]
+		then
+			echo "Stopping Tentacle Server."
+			kill $TENTACLE_PID > /dev/null 2>&1
+		fi		
 	;;
 
 	status)

@@ -148,7 +148,9 @@ my %Conf = (
 	'agent_threads' => 1,
 	'udp_server_port' => 41122,
 	'udp_server_auth_address' => '0.0.0.0',
-	'udp_server' => 0
+	'udp_server' => 0,
+	'proxy_mode' => 0,
+	'proxy_user' => 'pandora'
 );
 
 # Modules
@@ -606,6 +608,28 @@ sub check_remote_config () {
 	#Set nice of the pandora_agent
 	my $PID = $$;
 	`renice "$Conf{'pandora_nice'}" "$PID"`;
+}
+
+################################################################################
+# SUB launch_tentacle_proxy
+# Launchs tentacle server in proxy mode.
+################################################################################
+sub launch_tentacle_proxy () {
+		
+	# Check if proxy mode is enable.
+	if ($Conf{'proxy_mode'}) {		
+			
+		my $auxPid = fork();	
+		
+		if (! $auxPid) {
+			
+			my $new_process = "sudo -u ".$Conf{'proxy_user'}." tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'};
+
+			log_message ('setup', 'Proxy mode enabled');	
+					
+			exec ($new_process);		
+		}
+	}
 }
 
 ################################################################################
@@ -1378,6 +1402,9 @@ sleep ($Conf{'delayed_startup'});
 #Set nice of the pandora_agent
 my $PID = $$;
 `renice "$Conf{'pandora_nice'}" "$PID"`;
+
+#Launch tentacle server in proxy mode if needed
+launch_tentacle_proxy();
 
 # Add the plugins directory to the PATH
 $ENV{'PATH'} .= ":$ConfDir/plugins";

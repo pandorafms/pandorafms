@@ -1,3 +1,15 @@
+2011-04-11 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/graph_builder.main.php: changed to use constants.
+	
+	* include/graphs/fgraph.php: dded the show image when none data
+	and added the function "stacked_line_graph".
+	
+	* include/graphs/functions_pchart.php: fixed when haven't the $xaxisname and
+	$yaxisname. Fixed typo mistake.
+
+	* include/graphs/functions_utils.php: added function "stack_data".
+
 2011-04-11 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/reporting/reporting_builder.item_editor.php: The SLA elements

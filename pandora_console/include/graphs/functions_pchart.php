@@ -54,9 +54,11 @@ $width = $graph['width'];
 $height = $graph['height'];
 $colors = $graph['color'];
 $legend = $graph['legend'];
+$xaxisname = '';
 if(isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
 }
+$yaxisname = '';
 if(isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }
@@ -122,7 +124,7 @@ switch($graph_type) {
 	case 'radar':
 	case 'progress':
 	case 'area':
-	case 'spline':
+	case 'line':
 	case 'threshold':
 	case 'scatter':
 			foreach($data as $i => $d) {

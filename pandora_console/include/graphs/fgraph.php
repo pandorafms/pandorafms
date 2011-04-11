@@ -42,7 +42,11 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	}
 }
 
-function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index) {
+function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
+	
 	if($flash_chart) {
 		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
@@ -62,7 +66,11 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}	
 }
 
-function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index) {
+function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+	
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
 	
 	if($flash_chart) {
 		return fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index);
@@ -70,42 +78,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 	else {
 		$id_graph = uniqid();
 		
-		$temp_data = array();
-		if (isset($legend)) {
-			$temp_legend = array();
-		}
-		if (isset($color)) {
-			$temp_color = array();
-		}
 		//Stack the data
-		foreach ($chart_data as $val_x => $graphs) {
-			$prev_val = 0;
-			$key = 1000;
-			foreach ($graphs as $graph => $val_y) {
-				$chart_data[$val_x][$graph] += $prev_val;
-				$prev_val = $chart_data[$val_x][$graph];
-				$temp_data[$val_x][$key] = $chart_data[$val_x][$graph];
-				if (isset($color)) {
-					$temp_color[$key] = $color[$graph];
-				}
-				if (isset($legend)) {
-					$temp_legend[$key] = $legend[$graph];
-				}
-				$key--;
-			}
-			ksort($temp_data[$val_x]);
-		}
-		
-		$chart_data = $temp_data;
-		if (isset($legend)) {
-			$legend = $temp_legend;
-			ksort($legend);
-		}
-		if (isset($color)) {
-			$color = $temp_color;
-			ksort($color);
-		}
-		
+		stack_data($chart_data, $legend, $color);
 		
 		$graph = array();
 		$graph['data'] = $chart_data;
@@ -117,12 +91,40 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 		serialize_in_temp($graph, $id_graph);
 		
 		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=stacked_area&id_graph=" . $id_graph . "' />";
-	}	
+	}
 }
 
+function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
+	
+	//Stack the data
+	stack_data($chart_data, $legend, $color);
+	
+	if($flash_chart) {
+		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
+	}
+	else {
+		$id_graph = uniqid();
+		
+		$graph = array();
+		$graph['data'] = $chart_data;
+		$graph['width'] = $width;
+		$graph['height'] = $height;
+		$graph['color'] = $color;
+		$graph['legend'] = $legend;
+		
+		serialize_in_temp($graph, $id_graph);
+		
+		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=line&id_graph=" . $id_graph . "' />";
+	}
+}
 
-function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index) {
-	$flash_chart = 1;
+function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
 	
 	if($flash_chart) {
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);

@@ -1,3 +1,8 @@
+2011-04-11 SAncho Lerena <slerena@artica.es>
+
+	* images/console/backgrounds: Removed old images (not
+	useful) and added a few new.
+
 2011-04-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_events.php

@@ -102,7 +102,7 @@ CREATE OR REPLACE TRIGGER tagente_datos_inc_inc BEFORE INSERT ON tagente_datos_i
 
 CREATE TABLE tagente_datos_string (
 	id_agente_modulo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	datos NCLOB NOT NULL,
+	datos CLOB NOT NULL,
 	utimestamp NUMBER(10, 0) default 0 NOT NULL 
 );
 CREATE INDEX tagente_datos_string_utsta_idx ON tagente_datos_string(utimestamp);
@@ -110,9 +110,9 @@ CREATE INDEX tagente_datos_string_utsta_idx ON tagente_datos_string(utimestamp);
 CREATE TABLE tagente_datos_log4x (
 	id_tagente_datos_log4x NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	severity NCLOB NOT NULL,
-	message NCLOB NOT NULL,
-	stacktrace NCLOB NOT NULL,
+	severity CLOB NOT NULL,
+	message CLOB NOT NULL,
+	stacktrace CLOB NOT NULL,
 	utimestamp NUMBER(10, 0) default 0 NOT NULL
 );
 CREATE INDEX tagente_datos_log4x_id_a_m_idx ON tagente_datos_log4x(id_agente_modulo);
@@ -124,7 +124,7 @@ CREATE OR REPLACE TRIGGER tagente_datos_log4x_inc BEFORE INSERT ON tagente_datos
 CREATE TABLE tagente_estado (
 	id_agente_estado NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	datos NCLOB default '' NOT NULL,
+	datos CLOB default '' NOT NULL,
 	timestamp TIMESTAMP default NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
 	id_agente NUMBER(10, 0) default 0 NOT NULL,
@@ -161,15 +161,15 @@ CREATE TABLE tagente_modulo (
 	id_agente_modulo NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente NUMBER(10, 0) default 0 NOT NULL,
 	id_tipo_modulo NUMBER(10, 0) default 0 NOT NULL,
-	descripcion NCLOB default '' NOT NULL,
-	nombre NCLOB default '' NOT NULL,
+	descripcion CLOB default '' NOT NULL,
+	nombre CLOB default '' NOT NULL,
 	id_policy_module NUMBER(10, 0) default 0 NOT NULL,
 	max NUMBER(19, 0) default 0 NOT NULL,
 	min NUMBER(19, 0) default 0 NOT NULL,
 	module_interval NUMBER(10, 0) default 0 NOT NULL,
 	tcp_port NUMBER(10, 0) default 0 NOT NULL,
-	tcp_send NCLOB default '',
-	tcp_rcv NCLOB default '',
+	tcp_send CLOB default '',
+	tcp_rcv CLOB default '',
 	snmp_community VARCHAR2(100) default '',
 	snmp_oid VARCHAR2(255) default '0',
 	ip_target VARCHAR2(100) default '',
@@ -178,9 +178,9 @@ CREATE TABLE tagente_modulo (
 	id_modulo NUMBER(10, 0) default 0 NOT NULL,
 	disabled NUMBER(5, 0) default 0 NOT NULL,
 	id_export NUMBER(10, 0) default 0 NOT NULL,
-	plugin_user NCLOB default '',
-	plugin_pass NCLOB default '',
-	plugin_parameter NCLOB,
+	plugin_user CLOB default '',
+	plugin_pass CLOB default '',
+	plugin_parameter CLOB,
 	id_plugin NUMBER(10, 0) default 0,
 	post_process BINARY_DOUBLE default NULL,
 	prediction_module NUMBER(19, 0) default 0,
@@ -195,9 +195,9 @@ CREATE TABLE tagente_modulo (
 	delete_pending NUMBER(5, 0) default 0 NOT NULL,
 	policy_linked NUMBER(5, 0) default 0 NOT NULL,
 	policy_adopted NUMBER(5, 0) default 0 NOT NULL,
-	custom_string_1 NCLOB default '',
-	custom_string_2 NCLOB default '',
-	custom_string_3 NCLOB default '',
+	custom_string_1 CLOB default '',
+	custom_string_2 CLOB default '',
+	custom_string_3 CLOB default '',
 	custom_integer_1 NUMBER(10, 0) default 0,
 	custom_integer_2 NUMBER(10, 0) default 0
 );
@@ -221,9 +221,9 @@ CREATE INDEX tagent_access_utimestamp_idx ON tagent_access(utimestamp);
 CREATE TABLE talert_snmp (
 	id_as NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_alert NUMBER(10, 0) default 0 NOT NULL,
-	al_field1 NCLOB default '' NOT NULL,
-	al_field2 NCLOB default '' NOT NULL,
-	al_field3 NCLOB default '' NOT NULL,
+	al_field1 CLOB default '' NOT NULL,
+	al_field2 CLOB default '' NOT NULL,
+	al_field3 CLOB default '' NOT NULL,
 	description VARCHAR2(255) default '',
 	alert_type NUMBER(5, 0) default 0 NOT NULL,
 	agent VARCHAR2(100) default '',
@@ -245,8 +245,8 @@ CREATE OR REPLACE TRIGGER talert_snmp_inc BEFORE INSERT ON talert_snmp REFERENCI
 CREATE TABLE talert_commands (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '' NOT NULL,
-	command NCLOB default '',
-	description NCLOB default '',
+	command CLOB default '',
+	description CLOB default '',
 	internal NUMBER(10, 0) default 0
 );
 
@@ -256,11 +256,11 @@ CREATE OR REPLACE TRIGGER talert_commands_inc BEFORE INSERT ON talert_commands R
 
 CREATE TABLE talert_actions (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name NCLOB default '',
+	name CLOB default '',
 	id_alert_command NUMBER(10, 0) NOT NULL REFERENCES talert_commands(id)  ON DELETE CASCADE,
-	field1 NCLOB default '' NOT NULL,
-	field2 NCLOB default '',
-	field3 NCLOB default '',
+	field1 CLOB default '' NOT NULL,
+	field2 CLOB default '',
+	field3 CLOB default '',
 	id_group NUMBER(19, 0) default 0 NOT NULL,
 	action_threshold NUMBER(19, 0) default 0 NOT NULL
 );
@@ -276,12 +276,12 @@ CREATE OR REPLACE TRIGGER talert_actions_update AFTER UPDATE OF ID ON talert_com
 -- use to_char(time_to,   'hh24:mi:ss') function to retrieve time_to field info
 CREATE TABLE talert_templates (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name NCLOB default '',
-	description NCLOB,
+	name CLOB default '',
+	description CLOB,
 	id_alert_action NUMBER(10, 0) REFERENCES talert_actions(id)  ON DELETE SET NULL,
-	field1 NCLOB default '',
-	field2 NCLOB default '',
-	field3 NCLOB NOT NULL,
+	field1 CLOB default '',
+	field2 CLOB default '',
+	field3 CLOB NOT NULL,
 	type VARCHAR2(50), 
 	value VARCHAR2(255) default '',
 	matches_value NUMBER(5, 0) default 0,
@@ -300,8 +300,8 @@ CREATE TABLE talert_templates (
 	saturday NUMBER(5, 0) default 1,
 	sunday NUMBER(5, 0) default 1,
 	recovery_notify NUMBER(5, 0) default 0,
-	field2_recovery NCLOB default '' NOT NULL,
-	field3_recovery NCLOB NOT NULL,
+	field2_recovery CLOB default '' NOT NULL,
+	field3_recovery CLOB NOT NULL,
 	priority NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL, 
 	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown'))
@@ -364,7 +364,7 @@ CREATE OR REPLACE TRIGGER talert_template_mod_ac_update1 AFTER UPDATE OF ID ON t
 CREATE TABLE talert_compound (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(255) default '',
-	description NCLOB,
+	description CLOB,
 	id_agent NUMBER(10, 0) NOT NULL REFERENCES tagente(id_agente) ON DELETE CASCADE, 
 	time_threshold NUMBER(10, 0) default 0 NOT NULL,
 	max_alerts NUMBER(10, 0) default 1 NOT NULL,
@@ -380,7 +380,7 @@ CREATE TABLE talert_compound (
 	sunday NUMBER(5, 0) default 1,
 	recovery_notify NUMBER(5, 0) default 0,
 	field2_recovery VARCHAR2(255) default '' NOT NULL,
-	field3_recovery NCLOB NOT NULL,
+	field3_recovery CLOB NOT NULL,
 	internal_counter NUMBER(10, 0) default 0,
 	last_fired NUMBER(19, 0) default 0 NOT NULL,
 	last_reference NUMBER(19, 0) default 0 NOT NULL,
@@ -472,13 +472,13 @@ CREATE TABLE tevento (
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
 	timestamp TIMESTAMP default NULL, 			
-	evento NCLOB default '' NOT NULL,
+	evento CLOB default '' NOT NULL,
 	utimestamp NUMBER(19, 0) default 0 NOT NULL,
 	event_type VARCHAR2(50) default 'unknown',
 	id_agentmodule NUMBER(10, 0) default 0 NOT NULL,
 	id_alert_am NUMBER(10, 0) default 0 NOT NULL,
 	criticity NUMBER(10, 0) default 0 NOT NULL,
-	user_comment NCLOB NOT NULL,
+	user_comment CLOB NOT NULL,
 	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal'))
 );
 CREATE INDEX tevento_id_1_idx ON tevento(id_agente, id_evento);
@@ -496,7 +496,7 @@ CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW A
 -- Criticity: 4 - Critical (red) (status 1)
 CREATE TABLE tgrupo (
 	id_grupo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre NCLOB default '' NOT NULL,
+	nombre CLOB default '' NOT NULL,
 	icon VARCHAR2(50) default 'world',
 	parent NUMBER(10, 0) default 0 NOT NULL,
 	propagate NUMBER(5, 0) default 0,
@@ -512,8 +512,8 @@ CREATE TABLE tincidencia (
 	id_incidencia NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	inicio TIMESTAMP default NULL,
 	cierre TIMESTAMP default NULL,
-	titulo NCLOB default '' NOT NULL,
-	descripcion NCLOB NOT NULL,
+	titulo CLOB default '' NOT NULL,
+	descripcion CLOB NOT NULL,
 	id_usuario VARCHAR2(60) default '' NOT NULL,
 	origen VARCHAR2(100) default '' NOT NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
@@ -554,7 +554,7 @@ CREATE TABLE tmensajes (
 	id_mensaje NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_usuario_origen VARCHAR2(60) default '' NOT NULL,
 	id_usuario_destino VARCHAR2(60) default '' NOT NULL,
-	mensaje NCLOB NOT NULL,
+	mensaje CLOB NOT NULL,
 	timestamp NUMBER(19, 0) default 0 NOT NULL,
 	subject VARCHAR2(255) default '' NOT NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL 
@@ -576,23 +576,23 @@ CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFER
 CREATE TABLE tnetwork_component (
 	id_nc NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(80) NOT NULL,
-	description VARCHAR2(250) default NULL,
+	description VARCHAR2(300) default NULL,
 	id_group NUMBER(10, 0) default 1 NOT NULL,
 	type NUMBER(10, 0) default 6 NOT NULL,
 	max NUMBER(10, 0) default 0 NOT NULL,
 	min NUMBER(19, 0) default 0 NOT NULL,
 	module_interval NUMBER(19, 0) default 0 NOT NULL,
 	tcp_port NUMBER(10, 0) default 0 NOT NULL,
-	tcp_send NCLOB NOT NULL,
-	tcp_rcv NCLOB NOT NULL,
+	tcp_send CLOB NOT NULL,
+	tcp_rcv CLOB NOT NULL,
 	snmp_community VARCHAR2(255) default 'NULL' NOT NULL,
 	snmp_oid VARCHAR2(400) NOT NULL,
 	id_module_group NUMBER(10, 0) default 0 NOT NULL,
 	id_modulo NUMBER(10, 0) default 0 NOT NULL,
 	id_plugin NUMBER(10, 0) default 0,
-	plugin_user NCLOB default '',
-	plugin_pass NCLOB default '',
-	plugin_parameter NCLOB,
+	plugin_user CLOB default '',
+	plugin_pass CLOB default '',
+	plugin_parameter CLOB,
 	max_timeout NUMBER(10, 0) default 0,
 	history_data NUMBER(5, 0) default 1,
 	min_warning BINARY_DOUBLE default 0,
@@ -600,9 +600,9 @@ CREATE TABLE tnetwork_component (
 	min_critical BINARY_DOUBLE default 0,
 	max_critical BINARY_DOUBLE default 0,
 	min_ff_event NUMBER(10, 0) default 0,
-	custom_string_1 NCLOB default '',
-	custom_string_2 NCLOB default '',
-	custom_string_3 NCLOB default '',
+	custom_string_1 CLOB default '',
+	custom_string_2 CLOB default '',
+	custom_string_3 CLOB default '',
 	custom_integer_1 INTEGER default 0,
 	custom_integer_2 INTEGER default 0,
 	post_process BINARY_DOUBLE default 0
@@ -640,7 +640,7 @@ CREATE TABLE tnota (
 	id_incident NUMBER(19, 0) NOT NULL,
 	id_usuario VARCHAR2(100) default '0' NOT NULL,
 	timestamp TIMESTAMP  default CURRENT_TIMESTAMP, 
-	nota NCLOB NOT NULL
+	nota CLOB NOT NULL
 );
 CREATE INDEX tnota_id_incident_idx ON tnota(id_incident);
 
@@ -670,7 +670,7 @@ CREATE OR REPLACE TRIGGER tperfil_inc BEFORE INSERT ON tperfil REFERENCING NEW A
 CREATE TABLE trecon_script (
 	id_recon_script NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '',
-	description NCLOB default NULL,
+	description CLOB default NULL,
 	script VARCHAR2(250) default ''
 );
 
@@ -759,7 +759,7 @@ CREATE TABLE tsesion (
 	ID_usuario VARCHAR2(60) default '0' NOT NULL,
 	IP_origen VARCHAR2(100) default '' NOT NULL,
 	accion VARCHAR2(100) default '' NOT NULL,
-	descripcion NCLOB default '' NOT NULL,
+	descripcion CLOB default '' NOT NULL,
 	fecha TIMESTAMP default NULL,
 	utimestamp NUMBER(19, 0) default 0 NOT NULL
 );
@@ -785,12 +785,12 @@ CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFEREN
 CREATE TABLE ttrap (
 	id_trap NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	source VARCHAR2(50) default '' NOT NULL,
-	oid NCLOB default '' NOT NULL,
-	oid_custom NCLOB default '',
+	oid CLOB default '' NOT NULL,
+	oid_custom CLOB default '',
 	type NUMBER(10, 0) default 0 NOT NULL,
 	type_custom VARCHAR2(100) default '',
-	value NCLOB default '',
-	value_custom NCLOB default '',
+	value CLOB default '',
+	value_custom CLOB default '',
 	alerted NUMBER(5, 0) default 0 NOT NULL,
 	status NUMBER(5, 0) default 0 NOT NULL,
 	id_usuario VARCHAR2(150) default '',
@@ -837,7 +837,7 @@ CREATE TABLE tnews (
 	id_news NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	author VARCHAR2(255) DEFAULT '' NOT NULL,
 	subject VARCHAR2(255) DEFAULT '' NOT NULL,
-	text NCLOB NOT NULL,
+	text CLOB NOT NULL,
 	timestamp TIMESTAMP default NULL
 );
 
@@ -849,7 +849,7 @@ CREATE TABLE tgraph (
 	id_graph NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_user VARCHAR2(100) default '' NOT NULL,
 	name VARCHAR2(150) default '' NOT NULL,
-	description NCLOB NOT NULL,
+	description CLOB NOT NULL,
 	period NUMBER(10, 0) default 0 NOT NULL,
 	width NUMBER(10, 0) default 0 NOT NULL,
 	height NUMBER(10, 0) default 0 NOT NULL,
@@ -878,13 +878,13 @@ CREATE TABLE treport (
 	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_user VARCHAR2(100) default '' NOT NULL,
 	name VARCHAR2(150) default '' NOT NULL,
-	description NCLOB NOT NULL,
+	description CLOB NOT NULL,
 	private NUMBER(5, 0) default 0 NOT NULL,
 	id_group NUMBER(19, 0) default 0 NOT NULL,
 	custom_logo VARCHAR2(200)  default NULL,
-	header NCLOB  default NULL,
-	first_page NCLOB default NULL,
-	footer NCLOB default NULL,
+	header CLOB  default NULL,
+	first_page CLOB default NULL,
+	footer CLOB default NULL,
 	custom_font VARCHAR2(200) default NULL
 );
 
@@ -905,14 +905,14 @@ CREATE TABLE treport_content (
 	type VARCHAR2(30) default 'simple_graph',
 	period NUMBER(19, 0) default 0 NOT NULL,
 	"order" NUMBER(19, 0) default 0 NOT NULL,
-	description NCLOB, 
+	description CLOB, 
 	id_agent NUMBER(19, 0) default 0 NOT NULL,
-	text NCLOB default NULL,
-	external_source NCLOB default NULL,
+	text CLOB default NULL,
+	external_source CLOB default NULL,
 	treport_custom_sql_id NUMBER(10, 0) default 0,
-	header_definition NCLOB default NULL,
-	column_separator NCLOB default NULL,
-	line_separator NCLOB default NULL,
+	header_definition CLOB default NULL,
+	column_separator CLOB default NULL,
+	line_separator CLOB default NULL,
 	time_from TIMESTAMP default to_date('00:00:00','hh24:mi:ss'), 
 	time_to TIMESTAMP default to_date('00:00:00','hh24:mi:ss'),   	
 	monday NUMBER(5, 0) default 1 NOT NULL,
@@ -931,7 +931,7 @@ CREATE TABLE treport_content (
 	order_uptodown NUMBER(10, 0) default 0 NOT NULL,
 	show_graph NUMBER(10, 0) default 0 NOT NULL,
 	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
-	style NCLOB default '' NOT NULL,
+	style CLOB default '' NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL,
 	id_module_group NUMBER(10, 0) default 0 NOT NULL
 );
@@ -976,7 +976,7 @@ CREATE OR REPLACE TRIGGER treport_content_item_inc BEFORE INSERT ON treport_cont
 CREATE TABLE treport_custom_sql (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(150) default '' NOT NULL,
-	sql NCLOB default NULL
+	sql CLOB default NULL
 );
 
 CREATE SEQUENCE treport_custom_sql_s INCREMENT BY 1 START WITH 1;
@@ -1023,7 +1023,7 @@ CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFEREN
 CREATE TABLE tplugin (
   	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
   	name VARCHAR2(200) NOT NULL,
-  	description NCLOB,
+  	description CLOB,
   	max_timeout NUMBER(10, 0) default 0 NOT NULL,
   	execute VARCHAR2(250) NOT NULL,
   	net_dst_opt VARCHAR2(50) default '',
@@ -1087,7 +1087,7 @@ CREATE OR REPLACE TRIGGER tserver_export_data_inc BEFORE INSERT ON tserver_expor
 CREATE TABLE tplanned_downtime (
 	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) NOT NULL,
-	description NCLOB NOT NULL,
+	description CLOB NOT NULL,
 	date_from NUMBER(19, 0) default 0 NOT NULL,
 	date_to NUMBER(19, 0) default 0 NOT NULL,
 	executed NUMBER(5, 0) default 0 NOT NULL,
@@ -1125,7 +1125,7 @@ CREATE TABLE tgis_data_history (
 	--timestamp on wich the agent was placed for last time on this position
 	end_timestamp  TIMESTAMP default NULL,
 	--description of the region correoponding to this placemnt
-	description NCLOB DEFAULT NULL,
+	description CLOB DEFAULT NULL,
 	-- 0 to show that the position cames from the agent, 1 to show that the position was established manualy
 	manual_placement NUMBER(5, 0) default 0 NOT NULL,
 	-- Number of data packages received with this position from the start_timestampa to the_end_timestamp
@@ -1167,7 +1167,7 @@ CREATE TABLE tgis_data_status (
 	--0 to show that the position cames from the agent, 1 to show that the position was established manualy
 	manual_placement NUMBER(5, 0) default 0 NOT NULL, 
 	--description of the region correoponding to this placemnt
-	description NCLOB NULL,
+	description CLOB NULL,
   PRIMARY KEY(tagente_id_agente)
 );
 CREATE INDEX tgis_data_status_start_t_idx ON tgis_data_status(start_timestamp);
@@ -1220,7 +1220,7 @@ CREATE TABLE tgis_map_connection (
 	--Type of map server to connect
 	connection_type VARCHAR2(45) DEFAULT NULL, 
 	--connection information (this can probably change to fit better the possible connection parameters)
-	conection_data NCLOB DEFAULT NULL, 
+	conection_data CLOB DEFAULT NULL, 
 	--Number of zoom levels available
 	num_zoom_levels NUMBER(5, 0) DEFAULT NULL, 
 	--Default Zoom Level for the connection
@@ -1345,7 +1345,7 @@ CREATE TABLE tnetwork_map (
 	zoom BINARY_DOUBLE default 1,
 	distance_nodes BINARY_DOUBLE default 2.5,
 	center NUMBER(10, 0) default 0 NOT NULL,
-	contracted_nodes NCLOB
+	contracted_nodes CLOB
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;
@@ -1384,7 +1384,7 @@ CREATE OR REPLACE TRIGGER tagent_custom_fields_inc BEFORE INSERT ON tagent_custo
 CREATE TABLE tagent_custom_data (
 	id_field NUMBER(10, 0) NOT NULL REFERENCES tagent_custom_fields(id_field) ON DELETE CASCADE,
 	id_agent NUMBER(10, 0) NOT NULL REFERENCES tagente(id_agente) ON DELETE CASCADE,
-	description NCLOB default '',
+	description CLOB default '',
   PRIMARY KEY  (id_field, id_agent)
 );
 

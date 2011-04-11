@@ -399,6 +399,10 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 			$sql_schema_file = '01_package_'.$num_package.'_schema.postgreSQL.sql';
 			$sql_data_file = '02_package_'.$num_package.'_data.postgreSQL.sql';
 			break;
+		case "oracle":
+			$sql_schema_file = '01_package_'.$num_package.'_schema.oracle.sql';
+			$sql_data_file = '02_package_'.$num_package.'_data.oracle.sql';
+			break;
 	}
 
 	foreach($file_paths as $file_name => $paths) {

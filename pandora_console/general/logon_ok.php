@@ -35,7 +35,16 @@ print_page_header (__('Welcome to Pandora FMS Web Console'));
 
 echo '<div style="width:350px; float:left; padding-right: 30px;" id="leftcolumn">';
 echo '<h2>' . __('Site news') . '</h2>';
-$sql = "SELECT subject,timestamp,text,author FROM tnews ORDER by timestamp DESC LIMIT 3";
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql = "SELECT subject,timestamp,text,author FROM tnews ORDER by timestamp DESC LIMIT 3";
+		break;
+	case "oracle":
+		$sql = "SELECT subject,timestamp,text,author FROM tnews where rownum <= 3 ORDER by timestamp DESC";
+		break;
+}
+
 $news = get_db_all_rows_sql ($sql);
 if ($news !== false) {
 	echo '<table cellpadding="4" cellspacing="4" class="databox">';
@@ -167,6 +176,12 @@ switch ($config["dbtype"]) {
 			WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 604800) 
 				AND \"ID_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
 		break;
+	case "oracle":
+		$sql = sprintf ("SELECT ID_usuario, accion, fecha, IP_origen, descripcion
+			FROM tsesion
+			WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 604800) 
+				AND ID_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
+		break;
 }
 
 $sessions = get_db_all_rows_sql ($sql);
@@ -179,6 +194,7 @@ foreach ($sessions as $session) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
+		case "oracle":
 			$session_id_usuario = $session['id_usuario'];
 			$session_ip_origen = $session['ip_origen'];
 			break;

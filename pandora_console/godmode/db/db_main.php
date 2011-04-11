@@ -49,8 +49,21 @@ switch ($config["dbtype"]) {
 			FROM tagente
 			WHERE ceil(date_part('epoch', ultimo_contacto)) < ceil(date_part('epoch', NOW())) - (intervalo * 2)");
 		break;
+	case "oracle":
+		$stat_uknown = get_db_sql ("SELECT COUNT(*)
+			FROM tagente
+			WHERE CAST(ultimo_contacto AS DATE) < SYSDATE - (intervalo * 2)");
+		break;
 }
-$stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0;");
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0;");
+		break;
+	case "oracle":
+		$stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0");
+		break;
+}
 
 // Todo: Recalculate this data dinamically using the capacity and total agents
 

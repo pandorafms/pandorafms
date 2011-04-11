@@ -123,8 +123,21 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d OFFSET %d", $pagination, $offset);
 		break;
+	case "oracle":
+		$set = array();
+		$set['limit'] = $pagination;
+		$set['offset'] = $offset;
+		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC");
+		$sql = oracle_recode_query ($sql, $set);		
+		break;
 }
 $traps = get_db_all_rows_sql ($sql);
+
+if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
+	for ($i=0; $i < count($traps); $i++) {
+		unset($traps[$i]['rnum']);		
+	}
+}
 
 // No traps 
 if (empty ($traps)) {
@@ -164,6 +177,9 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d OFFSET %d";
 		break;
+	case "oracle":
+		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC"; 
+		break;
 }
 $whereSubquery = 'WHERE 1=1';
 
@@ -173,6 +189,7 @@ if ($filter_agent != '') {
 			$whereSubquery .= ' AND source LIKE "' . $filter_agent . '"';
 			break;
 		case "postgresql":
+		case "oracle":
 			$whereSubquery .= ' AND source LIKE \'' . $filter_agent . '\'';
 			break;
 	}
@@ -186,6 +203,7 @@ if ($filter_oid != '') {
 				$whereSubquery .= ' AND (text LIKE "' . $filter_oid . '" OR oid LIKE "' . $filter_oid . '")';
 				break;
 			case "postgresql":
+			case "oracle":
 				$whereSubquery .= ' AND (text LIKE \'' . $filter_oid . '\' OR oid LIKE \'' . $filter_oid . '\')';
 				break;
 		}
@@ -196,6 +214,7 @@ if ($filter_oid != '') {
 				$whereSubquery .= ' AND oid LIKE "' . $filter_oid . '"';
 				break;
 			case "postgresql":
+			case "oracle":
 				$whereSubquery .= ' AND oid LIKE \'' . $filter_oid . '\'';
 				break;
 		}
@@ -209,6 +228,7 @@ if ($search_string != '') {
 			$whereSubquery .= ' AND value LIKE "%' . $search_string . '%"';
 			break;
 		case "postgresql":
+		case "oracle":
 			$whereSubquery .= ' AND value LIKE \'%' . $search_string . '%\'';
 			break;
 	}
@@ -235,9 +255,21 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$sql = sprintf($sql, $whereSubquery, $pagination, $offset);
 		break;
+	case "oracle":
+		$set = array();
+		$set['limit'] = $pagination;
+		$set['offset'] = $offset;
+		$sql = oracle_recode_query ($sql, $set);		
+		break;
 }
 
 $traps = get_db_all_rows_sql($sql);
+
+if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
+	for ($i=0; $i < count($traps); $i++) {
+		unset($traps[$i]['rnum']);		
+	}
+}
 
 if ($config["pure"] == 1) {
 	echo '<div id="filters" style="display:none;">';

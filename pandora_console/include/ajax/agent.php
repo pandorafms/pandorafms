@@ -40,7 +40,16 @@ if ($search_agents) {
     }
 
     $filter = array ();
-    $filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+	    		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+			break;
+		case "oracle":
+	    		$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+			break;
+	}			
+		
     $filter['id_grupo'] = $id_group;
 
     $agents = get_agents ($filter, array ('id_agente','nombre', 'direccion'));

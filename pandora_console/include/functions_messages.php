@@ -107,7 +107,7 @@ function delete_message ($id_message) {
 	$where = array(
 		'id_usuario_destino' => $config["id_user"],
 		'id_mensaje' => $id_message);
-	return (bool)process_sql_delete($tmensajes, $where);
+	return (bool)process_sql_delete('tmensajes', $where);
 }
 
 /** 

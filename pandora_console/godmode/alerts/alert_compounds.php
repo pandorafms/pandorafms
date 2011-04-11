@@ -134,9 +134,19 @@ echo '</form>';
 unset ($table);
 
 $where = '';
-if ($search != '')
-	$where = sprintf (' AND (description LIKE "%%%s%%" OR name LIKE "%%%s%%")',
-		$search, $search);
+if ($search != '') {
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$where = sprintf (' AND (description LIKE "%%%s%%" OR name LIKE "%%%s%%")',
+				$search, $search);
+			break;
+		case "oracle":
+			$where = sprintf (' AND (description LIKE \'%%%s%%\' OR name LIKE \'%%%s%%\')',
+				$search, $search);
+			break;
+	}
+}
 if ($id_agent)
 	$agents = array ($id_agent => $id_agent);
 
@@ -168,11 +178,31 @@ $table->head[3] = __('Delete');
 
 $id_alerts = false;
 if (count($agents)) {
-	$sql = sprintf ('SELECT id FROM talert_compound
-		WHERE id_agent in (%s)%s LIMIT %d OFFSET %d',
-		implode (',', array_keys ($agents)), $where,
-		$config['block_size'], get_parameter ('offset'));
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT id FROM talert_compound
+				WHERE id_agent in (%s)%s LIMIT %d OFFSET %d',
+				implode (',', array_keys ($agents)), $where,
+				$config['block_size'], get_parameter ('offset'));
+			break;
+		case "oracle":
+			$set = array();
+			$set['offset'] = get_parameter ('offset');
+			$set['limit'] = $config['block_size'];			
+			$sql = sprintf ('SELECT id FROM talert_compound
+				WHERE id_agent in (%s)%s',
+				implode (',', array_keys ($agents)), $where);
+			$sql = oracle_recode_query($sql, $set);
+			break;
+	}
 	$id_alerts = get_db_all_rows_sql ($sql);
+
+	if (($config["dbtype"] == 'oracle') && ($id_alerts !== false)) {
+		for ($i=0; $i < count($id_alerts); $i++) {
+			unset($id_alerts[$i]['rnum']);		
+		}
+	}		
 }
 
 if ($id_alerts === false)

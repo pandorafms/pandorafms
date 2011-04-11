@@ -300,7 +300,7 @@ END;;
 --
 BEGIN
 LOCK TABLE tnews IN EXCLUSIVE MODE;
-INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (1,'admin','Welcome to Pandora FMS 3.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',current_timestamp);
+INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (1,'admin','Welcome to Pandora FMS 3.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.<br><br>The Pandora FMS Team.',current_timestamp);
 INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (2,'admin','New GIS Feature','Try our new GIS representation, activate GIS in Setup to see new available options.',current_timestamp);
 COMMIT;
 END;;
@@ -509,7 +509,7 @@ COMMIT;
 END;;
 
 -- procedure to insert more than 4000 chars into a string 
-CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER) AS g_nclob NCLOB; BEGIN if FLAG = 0 then insert into treport_custom_sql values (IDX, NAME, empty_clob()) returning SQL into g_nclob; dbms_lob.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); else select SQL into g_nclob from treport_custom_sql where ID = IDX for update; dbms_lob.writeappend( g_nclob, length(SQL_TXT), SQL_TXT); end if; END;;
+CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER) AS g_nclob CLOB; BEGIN if FLAG = 0 then insert into treport_custom_sql values (IDX, NAME, empty_clob()) returning SQL into g_nclob; dbms_lob.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); else select SQL into g_nclob from treport_custom_sql where ID = IDX for update; dbms_lob.writeappend( g_nclob, length(SQL_TXT), SQL_TXT); end if; END;;
 
 BEGIN
 treport_custom_sql_insert(4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=',0);

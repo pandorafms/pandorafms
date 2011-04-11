@@ -606,7 +606,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
 					break;
 				case "oracle":
-					$search_sql .= ' AND (nombre  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
+					$search_sql .= ' AND (UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
 					break;
 			}
 				
@@ -638,8 +638,15 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 		$search_sql .= ' AND disabled = 0';
 	}
 
-
-	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
+			break;
+		case "oracle":
+			$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY dbms_lob.substr(nombre,4000,1)", $search_sql);
+			break;
+	}
 
 	$result = get_db_all_rows_sql ($sql);
 
@@ -802,7 +809,18 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
 				else {
-					array_push ($fields, $field.' = "'.$value.'"');
+					switch ($config["dbtype"]) {
+						case "mysql":
+						case "postgresql":
+							array_push ($fields, $field.' = "'.$value.'"');
+							break;
+						case "oracle":					
+							if (is_int ($value) ||is_float ($value)||is_double ($value))
+								array_push ($fields, $field.' = '.$value.'');
+							else
+								array_push ($fields, $field.' = "'.$value.'"');
+							break;
+					}
 				}
 			}
 			$where .= implode (' AND ', $fields);
@@ -819,13 +837,27 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 		$details = safe_input ($details);
 	}
 
-	$sql = sprintf ('SELECT %s%s
-		FROM tagente_modulo
-		%s
-		ORDER BY nombre',
-		($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-		safe_output(implode (",", (array) $details)),
-		$where);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT %s%s
+				FROM tagente_modulo
+				%s
+				ORDER BY nombre',
+				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+				safe_output(implode (",", (array) $details)),
+				$where);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT %s%s
+				FROM tagente_modulo
+				%s
+				ORDER BY dbms_lob.substr(nombre, 4000, 1)',
+				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+				safe_output(implode (",", (array) $details)),
+				$where);
+			break;
+	}
 
 	$result = get_db_all_rows_sql ($sql);
 
@@ -1731,6 +1763,8 @@ function give_agentmodule_flag ($id_agent_module) {
  * Get all groups in array with index as id_group
  */
 function get_all_groups($groupWithAgents = false) {
+	global $config;
+
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
 
 	global $config;
@@ -1738,7 +1772,15 @@ function get_all_groups($groupWithAgents = false) {
 	if ($groupWithAgents)
 	$sql .= ' WHERE id_grupo IN (SELECT id_grupo FROM tagente GROUP BY id_grupo)';
 
-	$sql .= ' ORDER BY nombre DESC';
+	switch ($config['dbtype']) {
+		case "mysql":
+		case "postgresql":
+			$sql .= ' ORDER BY nombre DESC';
+			break;
+		case "oracle":
+			$sql .= ' ORDER BY dbms_lob.substr(nombre,4000,1) DESC';
+			break;
+	}
 
 	$rows = get_db_all_rows_sql ($sql);
 
@@ -3244,6 +3286,7 @@ function server_status ($id_server) {
  */
 function temp_sql_delete ($table, $row, $value) {
 	global $error; //Globalize the errors variable
+	global $config;
 
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -3251,7 +3294,12 @@ function temp_sql_delete ($table, $row, $value) {
 			$result = process_sql_delete ($table, $row.' = '.$value);
 			break;
 		case "oracle":
-			$result = oracle_process_sql_delete_temp ($table, $row.' = '.$value);
+			if (is_int ($value) || is_bool ($value) || is_float ($value) || is_double ($value)) {
+				$result = oracle_process_sql_delete_temp ($table, $row . ' = ' . $value);
+			}	
+			else {
+				$result = oracle_process_sql_delete_temp ($table, $row . " = '" . $value . "'");
+			}
 			break;			
 	}
 
@@ -3529,10 +3577,11 @@ function process_sql_insert($table, $values) {
  * @param string When a $where parameter is given, this will work as the glue
  * between the fields. "AND" operator will be use by default. Other values might
  * be "OR", "AND NOT", "XOR"
+ * @param bool Transaction automatically commited or not 
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function process_sql_update($table, $values, $where = false, $where_join = 'AND') {
+function process_sql_update($table, $values, $where = false, $where_join = 'AND', $autocommit = true) {
 	global $config;
 
 	switch ($config["dbtype"]) {
@@ -3543,7 +3592,7 @@ function process_sql_update($table, $values, $where = false, $where_join = 'AND'
 			return postgresql_process_sql_update($table, $values, $where, $where_join);
 			break;
 		case "oracle":
-			return oracle_process_sql_update($table, $values, $where, $where_join);
+			return oracle_process_sql_update($table, $values, $where, $where_join, $autocommit);
 			break;
 	}
 }

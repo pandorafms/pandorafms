@@ -975,6 +975,7 @@ function get_agents_with_alert_template ($id_alert_template, $id_group, $filter 
 				$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
 				break;
 			case "postgresql":
+			case "oracle":
 				$filter['tagente.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
 				break;
 		}
@@ -985,6 +986,7 @@ function get_agents_with_alert_template ($id_alert_template, $id_group, $filter 
 				$filter['`tagente`.id_agente'] = $id_agents;
 				break;
 			case "postgresql":
+			case "oracle":
 				$filter['tagente.id_agente'] = $id_agents;
 				break;
 		}

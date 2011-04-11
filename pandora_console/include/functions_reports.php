@@ -204,6 +204,7 @@ function create_report_content ($id_report, $values) {
 			$values['`order`'] = $order + 1;
 			break;
 		case "postgresql":
+		case "oracle":
 			unset ($values['"order"']);
 			
 			$order = (int) get_db_value ('MAX("order")', 'treport_content', 'id_report', $id_report);
@@ -273,6 +274,7 @@ function move_report_content_up ($id_report_content) {
 				array ('id_rc' => $id_report_content))) !== false;
 			break;
 		case "postgresql":
+		case "oracle":
 			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
 			/* Set the previous element order to the current of the content we want to change */
 			process_sql_update ('treport_content', 
@@ -317,6 +319,7 @@ function move_report_content_down ($id_report_content) {
 				array ('id_rc' => $id_report_content))) !== false;
 			break;
 		case "postgresql":
+		case "oracle":
 			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
 			/* Set the previous element order to the current of the content we want to change */
 			process_sql_update ('treport_content', 
@@ -354,6 +357,7 @@ function delete_report_content ($id_report_content) {
 					'`order` > '.$order));
 			break;
 		case "postgresql":
+		case "oracle":
 			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
 			process_sql_update ('treport_content',
 				array ('"order" = "order" - 1'),

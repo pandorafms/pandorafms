@@ -141,6 +141,45 @@ switch ($config["dbtype"]) {
 			)
 		)';
 		break;
+	case "oracle":
+		$names = oracle_get_db_all_rows_filter ('user_tab_columns',array ('table_name' => 'TAGENTE_MODULO', 'column_name' => '<>NOMBRE'), 'column_name');
+		$column_names = '';
+		foreach ($names as $column_name => $value) {
+				$column_names .= $value['column_name'] . ',';
+		}	
+		
+		$column_names = substr($column_names,0,-1);		
+		$sql = '
+		select nombre 
+		from (select distinct dbms_lob.substr(nombre,4000,1) as nombre, ' . $column_names .' from tagente_modulo) 
+		where nombre <> \'delete_pending\' and id_agente in 
+		(
+			select id_agente 
+			from tagente where id_grupo IN (
+				select id_grupo 
+				from tusuario_perfil 
+				where id_usuario = \'' . $config['id_user'] . '\' 
+				and id_perfil IN (
+					select id_perfil 
+					from tperfil where agent_view = 1
+				)
+			)
+			OR
+			(1 = (
+		                 SELECT is_admin FROM tusuario WHERE id_user = \'' . $config['id_user'] . '\'
+		             )
+		        )
+			OR 0 IN (
+				select id_grupo
+				from tusuario_perfil
+				where id_usuario = \'' . $config['id_user'] . '\'
+				and id_perfil IN (
+					select id_perfil
+					from tperfil where agent_view = 1
+				)
+			)
+		)';
+		break;
 }
 
 $modules = get_db_all_rows_sql($sql);
@@ -249,6 +288,25 @@ switch ($config["dbtype"]) {
 			tagente_estado.estado,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT " . $config["block_size"] . " OFFSET " . $offset;
 		break;
+	case "oracle":
+		$set = array();
+		$set['limit'] = $config["block_size"];
+		$set['offset'] = $offset;
+		$sql = "SELECT tagente_modulo.id_agente_modulo,
+			tagente.intervalo AS agent_interval,
+			tagente.nombre AS agent_name, 
+			tagente_modulo.nombre AS module_name,
+			tagente_modulo.history_data,
+			tagente_modulo.flag AS flag,
+			tagente.id_grupo AS id_group, 
+			tagente.id_agente AS id_agent, 
+			tagente_modulo.id_tipo_modulo AS module_type,
+			tagente_modulo.module_interval, 
+			tagente_estado.datos, 
+			tagente_estado.estado,
+			tagente_estado.utimestamp AS utimestamp".$sql;
+		$sql = oracle_recode_query ($sql, $set);
+		break;
 }
 $result = get_db_all_rows_sql ($sql);
 
@@ -258,6 +316,12 @@ if ($count > $config["block_size"]) {
 
 if ($result === false) {
 	$result = array ();
+}
+
+if (($config['dbtype'] == 'oracle') && ($result !== false)) {
+	for ($i=0; $i < count($result); $i++) {
+		unset($result[$i]['rnum']);		
+	}
 }
 
 $table->cellpadding = 4;

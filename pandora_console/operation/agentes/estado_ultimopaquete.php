@@ -33,12 +33,25 @@ $timestamp_lof = $agent["ultimo_contacto"];
 $intervalo_agente = $agent["intervalo"];
 
 // Get last packet
-$sql3 = 'SELECT * FROM tagente_modulo, tagente_estado
-	WHERE tagente_modulo.disabled = 0
-		AND tagente_modulo.id_agente = ' . $id_agente.
-		' AND tagente_estado.utimestamp != 0
-		AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-	ORDER BY id_module_group, nombre';
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql3 = 'SELECT * FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.disabled = 0
+				AND tagente_modulo.id_agente = ' . $id_agente.
+				' AND tagente_estado.utimestamp != 0
+				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			ORDER BY id_module_group, nombre';
+		break;
+	case "oracle":
+		$sql3 = 'SELECT * FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.disabled = 0
+				AND tagente_modulo.id_agente = ' . $id_agente.
+				' AND tagente_estado.utimestamp != 0
+				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			ORDER BY id_module_group, dbms_lob.substr(nombre,4000,1)';
+		break;
+}
 $label_group = 0;
 $last_label = "";
 
@@ -69,11 +82,27 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				switch ($config["dbtype"]) {
+					case "mysql":
+					case "postgresql":
+						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+						break;
+					case "oracle":
+						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'ASC');
+						break;
+				}
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				switch ($config["dbtype"]) {
+					case "mysql":
+					case "postgresql":
+						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+						break;
+					case "oracle":
+						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
+						break;
+				}
 				break;
 		}
 		break;
@@ -135,7 +164,15 @@ switch ($sortField) {
 		$selectIntervalDown = '';
 		$selectTimestampUp = '';
 		$selectTimestampDown = '';
-		$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				break;
+			case "oracle":
+				$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'ASC');
+				break;
+		}
 		break;
 }
 

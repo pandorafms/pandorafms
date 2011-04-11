@@ -128,6 +128,7 @@ switch ($config["dbtype"]) {
 		$contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
 		break;
 	case "postgresql":
+	case "oracle":
 		$contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
 		break;
 }

@@ -179,6 +179,7 @@ function update_agent_module ($id, $values, $onlyNoDeletePending = false) {
  * @return New module id if the module was created. False if not.
  */
 function create_agent_module ($id_agent, $name, $values = false, $disableACL = false) {
+	global $config;
 
 	if (!$disableACL) {
 		if (empty ($id_agent) || ! user_access_to_agent ($id_agent, 'AW'))
@@ -191,22 +192,39 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 		$values = array ();
 	$values['nombre'] = $name;
 	$values['id_agente'] = (int) $id_agent;
-	
+
 	$id_agent_module = process_sql_insert ('tagente_modulo', $values);
 	
 	if ($id_agent_module === false)
 		return false;
-	
-	$result = process_sql_insert ('tagente_estado',
-			array ('id_agente_modulo' => $id_agent_module,
-				'datos' => 0,
-				'timestamp' => '0000-00-00 00:00:00',
-				'estado' => 0,
-				'id_agente' => (int) $id_agent,
-				'utimestamp' => 0,
-				'status_changes' => 0,
-				'last_status' => 0
-			));
+
+	switch ($config["dbtype"]) {
+		case "mysql":	
+		case "postgresql":	
+			$result = process_sql_insert ('tagente_estado',
+					array ('id_agente_modulo' => $id_agent_module,
+						'datos' => 0,
+						'timestamp' => '0000-00-00 00:00:00',
+						'estado' => 0,
+						'id_agente' => (int) $id_agent,
+						'utimestamp' => 0,
+						'status_changes' => 0,
+						'last_status' => 0
+					));
+			break;
+		case "oracle":
+			$result = process_sql_insert ('tagente_estado',
+					array ('id_agente_modulo' => $id_agent_module,
+						'datos' => 0,
+						'timestamp' => 'to_date(0000-00-00 00:00:00, \'YYYY-MM-DD HH24:MI:SS\')',
+						'estado' => 0,
+						'id_agente' => (int) $id_agent,
+						'utimestamp' => 0,
+						'status_changes' => 0,
+						'last_status' => 0
+					));
+			break;
+	}
 	
 	if ($result === false) {
 		process_sql_delete ('tagente_modulo',

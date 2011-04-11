@@ -104,6 +104,7 @@ if ($free_search != '') {
 				')';
 			break;
 		case "postgresql":
+		case "oracle":
 			$whereAlertSimple = 'AND (' .
 				'id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE \'%' . $free_search . '%\') OR ' .
 				'id_alert_template IN (SELECT id FROM talert_templates WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE \'%' . $free_search . '%\')) OR ' .

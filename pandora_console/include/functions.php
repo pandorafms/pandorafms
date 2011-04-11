@@ -322,6 +322,9 @@ function get_system_time () {
 		case "postgresql":
 			return postgresql_get_system_time();
 			break;
+		case "oracle":
+			return oracle_get_system_time();
+			break;
 	}
 }
 
@@ -1006,6 +1009,9 @@ function safe_sql_string($string) {
 			break;
 		case "postgresql":
 			return postgresql_safe_sql_string($string);
+			break;
+		case "oracle":
+			return oracle_safe_sql_string($string);
 			break;
 	}
 }

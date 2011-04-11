@@ -151,10 +151,21 @@ class MonitorStatus {
 			case "postgresql":
 				$rows = get_db_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->system->getPageSize() . ' OFFSET ' . $this->offset);
 				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $this->system->getPageSize();
+				$set['offset'] = $this->offset;
+				$rows = oracle_recode_query ($selectSQL . $sql, $set, 'AND', true);
+				break;	
 		}
 		
 		if ($rows === false) $rows = array();
-		
+	
+		if ($config["dbtype"] == 'oracle') {
+			for ($i=0; $i < count($rows); $i++) {
+				unset($rows[$i]['rnum']);		
+			}
+		} 	
 		
 		$table = null;
 		$table->width = '100%';

@@ -13,6 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 // Load global vars
 if (!isset ($id_agente)) {
 	die ("Not Authorized");
@@ -135,7 +137,15 @@ echo '</div></form>';
 // ==========================
 echo "<h3>".__('Assigned modules')."</h3>";
 
-$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = false ORDER BY id_module_group, nombre", $id_agente);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = false ORDER BY id_module_group, nombre", $id_agente);
+			break;
+		case "oracle":
+			$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND (delete_pending <> 1 AND delete_pending IS NOT NULL) ORDER BY id_module_group, dbms_lob.substr(nombre,4000,1)", $id_agente);
+			break;
+	}
 $result = get_db_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();

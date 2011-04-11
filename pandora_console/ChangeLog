@@ -1,3 +1,89 @@
+2011-04-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_events.php
+	include/functions_messages.php
+	include/db/oracle.php
+	include/functions_modules.php
+	include/functions_reporting.php
+	include/functions_groups.php
+	include/functions_gis.php
+	include/auth/mysql.php
+	include/functions_networkmap.php
+	include/functions_servers.php
+	include/functions_network_components.php
+	include/ajax/reporting.ajax.php
+	include/ajax/agent.php
+	include/functions_config.php
+	include/functions_api.php
+	include/help/en/help_timesource.php
+	include/help/es/help_timesource.php
+	include/help/ja/help_timesource.php
+	include/fgraph.php
+	include/functions.php
+	include/functions_agents.php
+	include/functions_db.php
+	include/functions_fsgraph.php
+	include/functions_alerts.php
+	include/functions_reports.php
+	pandoradb.oracle.sql
+	install.php
+	extensions/system_info.php
+	extensions/update_manager.php
+	extensions/dbmanager.php
+	extensions/users_connected.php
+	extensions/module_groups.php
+	extensions/update_manager/sql/update_manager.oracle.sql
+	extensions/update_manager/load_updatemanager.php
+	extensions/update_manager/lib/libupdate_manager_client.php
+	extensions/update_manager/lib/libupdate_manager.php
+	extensions/update_manager/lib/libupdate_manager_components.php
+	extensions/update_manager/lib/libupdate_manager_updates.php
+	operation/search_modules.php
+	operation/agentes/status_monitor.php
+	operation/agentes/alerts_status.php
+	operation/agentes/datos_agente.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/exportdata.php
+	operation/agentes/gis_view.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/ver_agente.php
+	operation/snmpconsole/snmp_view.php
+	operation/users/user_edit.php
+	operation/gis_maps/render_view.php
+	operation/gis_maps/ajax.php
+	operation/events/events_rss.php
+	operation/events/events_list.php
+	operation/events/events_marquee.php
+	operation/search_alerts.php
+	operation/reporting/reporting_xml.php
+	operation/reporting/reporting_viewer.php
+	pandoradb.data.oracle.sql
+	extras/pandora_diag.php
+	mobile/operation/agents/monitor_status.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/events/events.php
+	general/logon_ok.php
+	godmode/groups/group_list.php
+	godmode/admin_access_logs.php
+	godmode/db/db_main.php
+	godmode/agentes/agent_template.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php
+	godmode/agentes/planned_downtime.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_list.php
+	godmode/setup/setup.php
+	godmode/modules/manage_network_templates.php
+	godmode/modules/manage_network_templates_form.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.preview.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Support for Oracle DBMS
+	over Console code.
+
 2011-04-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/graph_builder.main.php: changed to use constants.

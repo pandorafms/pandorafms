@@ -57,7 +57,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);	
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
 	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
-	
+
 	if ( !empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
 			$return = update_user_password ($id, $password_new);

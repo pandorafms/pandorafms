@@ -29,6 +29,9 @@ function um_update_get_last_from_filename ($component_name, $filename) {
 		case "postgresql":
 			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
 			break;
+		case "oracle":
+			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE (component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\') AND rownum < 2 ORDER BY id DESC');
+			break;
 	}
 
 	if ($result === false) {
@@ -45,6 +48,12 @@ function um_update_get_last_from_filename ($component_name, $filename) {
 				FROM '.DB_PREFIX.'tupdate
 				WHERE component = \''.$component_name.'\'
 					AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
+			break;
+		case "oracle":
+			$result = process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate
+				WHERE (component = \''.$component_name.'\'
+					AND filename = \''.$component->relative_path.$filename.'\') AND rownum < 2 ORDER BY id DESC');
 			break;
 	}
 
@@ -170,6 +179,9 @@ function um_db_create_update ($type, $component_name, $id_package, $update, $db_
 				break;
 			case "postgresql":
 				$values['data'] = um_data_encode('INSERT INTO "'.$component_db->table_name.'" ("'.implode('", "', array_keys (get_object_vars ($db_data))).'") VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
+				break;
+			case "oracle":
+				$values['data'] = um_data_encode('INSERT INTO '.$component_db->table_name.' ('.implode(', ', array_keys (get_object_vars ($db_data))).') VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
 				break;
 		}
 		break;

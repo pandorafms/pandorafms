@@ -158,6 +158,7 @@ function get_agent_module_name_last_value($agentName, $moduleName, $other = ';',
 				WHERE id_agente = %d AND nombre LIKE "%s"', $idAgent, $moduleName);
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql = sprintf('SELECT id_agente_modulo
 				FROM tagente_modulo
 				WHERE id_agente = %d AND nombre LIKE \'%s\'', $idAgent, $moduleName);
@@ -639,6 +640,7 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 			$sql1 = 'SELECT name FROM tserver WHERE name LIKE "' . $nameServer . '"';
 			break;
 		case "postgresql":
+		case "oracle":
 			$sql1 = 'SELECT name FROM tserver WHERE name LIKE \'' . $nameServer . '\'';
 			break;
 	}

@@ -49,6 +49,7 @@ function dbmanager_query ($sql, &$error) {
 			return "Empty";
 			break;
 		case "postgresql":
+		case "oracle":
 			$retval = array();
 		
 			if ($sql == '')

@@ -13,6 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
 	
@@ -34,7 +36,15 @@ if (is_ajax ()) {
 		}
 		
 		$filter = array ();
-		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":	
+				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+				break;
+			case "oracle":
+				$filter[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+				break;
+		}
 		$filter['id_grupo'] = $id_group; 
 		
 		switch ($all) {
@@ -79,7 +89,15 @@ print_page_header (__("Export data"), "images/bricks.png");
 $group = get_parameter_post ('group', 0);
 //$agent = get_parameter_post ('agent', 0);
 $agentName = get_parameter_post ('agent', 0);
-$agents = get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$agents = get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+			break;
+		case "oracle":
+			$agents = get_agents (array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
+			break;
+	}
 $agent = $agents[0]['id_agente'];
 
 $module = (array) get_parameter_post ('module_arr', array ());

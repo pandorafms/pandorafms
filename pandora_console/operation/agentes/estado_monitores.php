@@ -117,6 +117,15 @@ switch ($sortField) {
 		break;
 }
 
+switch ($config["dbtype"]) {
+	case "oracle":
+		if (isset($order['field']) && $order['field'] == 'tagente_modulo.nombre') {
+			$order['field'] = 'dbms_lob.substr(tagente_modulo.nombre,4000,1)';
+		}
+		break;
+}
+
+
 // Get all module from agent
 $sql = sprintf ("
 	SELECT *

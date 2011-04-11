@@ -105,11 +105,23 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$sql .= " LIMIT " . $block_size . " OFFSET " . $offset;
 		break;
+	case "oracle":
+		$set = array();
+		$set['limit'] = $block_size;
+		$set['offset'] = $offset;
+		$sql = oracle_recode_query ($sql, $set);
+		break;		 
 }
 
 $result = get_db_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();
+}
+
+if (($config['dbtype'] == 'oracle') && ($result !== false)) {
+	for ($i=0; $i < count($result); $i++) {
+		unset($result[$i]['rnum']);		
+	}
 }
 
 $header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id); 

@@ -47,6 +47,9 @@ function pandora_update_manager_install () {
 		case 'postgresql':
 			$sentences = file (EXTENSIONS_DIR.'/update_manager/sql/update_manager.postgreSQL.sql');
 			break;
+		case 'oracle':
+			$sentences = file (EXTENSIONS_DIR.'/update_manager/sql/update_manager.oracle.sql');
+			break;
 	}
 	foreach ($sentences as $sentence) {
 		$success = process_sql ($sentence);
@@ -81,6 +84,13 @@ function pandora_update_manager_uninstall () {
 			process_sql ('DROP TABLE "tupdate_journal"');
 			process_sql ('DROP TABLE "tupdate"');
 			process_sql ('DROP TABLE "tupdate_package"');
+			break;
+		case "oracle":
+			process_sql ('DELETE FROM tconfig WHERE token = \'update_manager_installed\'');
+			process_sql ('DROP TABLE tupdate_settings');
+			process_sql ('DROP TABLE tupdate_journal');
+			process_sql ('DROP TABLE tupdate');
+			process_sql ('DROP TABLE tupdate_package');
 			break;
 	}
 }

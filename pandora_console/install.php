@@ -31,6 +31,37 @@
 <link rel="stylesheet" href="include/styles/pandora_minimal.css" type="text/css">
 <link rel="stylesheet" href="include/styles/install.css" type="text/css">
 </head>
+
+<script type="text/javascript">
+options_text = new Array('An existing Database','A new Database');
+options_values = new Array('db_exist','db_new');
+function ChangeDBDrop(causer) {
+	if (causer.value == 'db_exist') {
+		window.document.step2_form.drop.checked=0;		
+		window.document.step2_form.drop.disabled=1;
+	}
+	else {
+		window.document.step2_form.drop.disabled=0;
+	}
+}
+function ChangeDBAction(causer) {
+	var i = 0;
+	if (causer.value == 'oracle') {
+		window.document.step2_form.db_action.length=1;
+	}
+	else {
+		window.document.step2_form.db_action.length=2;
+	}
+	while (i < window.document.step2_form.db_action.length){
+		window.document.step2_form.db_action.options[i].value =options_values[i];
+		window.document.step2_form.db_action.options[i].text =options_text[i];
+		i++;
+	}
+	window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
+	ChangeDBDrop(window.document.step2_form.db_action);
+}
+</script>
+
 <body bgcolor="#555555">
 
 <?php
@@ -221,6 +252,70 @@ function parse_postgresql_dump($connection, $url, $debug = false) {
 	}
 }
 
+function parse_oracle_dump($connection, $url, $debug = false) {
+	if (file_exists($url)) {
+		$file_content = file($url);
+		
+		$query = "";
+		$plsql_block = false;
+		
+		foreach($file_content as $sql_line){
+			$clean_line = trim($sql_line);
+			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
+			if ($comment) {
+				continue;
+			}
+			
+			if (empty($clean_line)) {
+				continue;
+			}
+			
+			//Support for PL/SQL blocks
+			if (preg_match("/^BEGIN$/", $clean_line)){
+				$query .= $clean_line . ' ';
+				$plsql_block = true;
+			}			
+			else{
+				$query .= $clean_line;
+			}			
+			
+			//Check query's end with a back slash and any returns in the end of line or if it's a PL/SQL block 'END;;' string
+			if ((preg_match("/;[\040]*\$/", $clean_line) && !$plsql_block) || 
+			    (preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
+				$plsql_block = false;
+				//Execute and clean buffer
+				
+				//Delete the last semicolon from current query
+				$query = substr($query, 0, strlen($query) - 1);
+				$sql = oci_parse($connection, $query);
+				$result = oci_execute($sql);				
+				
+				if ($debug) {
+					var_dump($query);
+				}
+				
+				if (!$result) {
+					$e = oci_error($sql);
+					echo "<tr><td><div class='warn'>Errors creating schema:</div><div style=\"overflow:auto; height:50px;\" >";
+					echo htmlentities($e['message'], ENT_QUOTES);
+					echo "<i><br>$query<br></i>";
+					echo "</div></td></tr>";
+					
+					return 0;
+				}
+				
+				$query = "";
+				oci_free_statement($sql);
+			}
+		}
+		
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
 function random_name ($size){
 	$temp = "";
 	for ($a=0;$a< $size;$a++)
@@ -369,6 +464,7 @@ function install_step2() {
 			echo "</td></tr>";
 			check_extension("mysql", "PHP MySQL extension");
 			check_extension("pgsql", "PHP PostgreSQL extension");
+			check_extension("oci8", "PHP Oracle extension");
 			echo "</table>";
 		echo "</div>";
 		print_logo_status (3,5);
@@ -406,16 +502,19 @@ function install_step3() {
 	if (extension_loaded("pgsql")) {
 		$options .= "<option value='pgsql'>PostgreSQL</option>";
 	}
+	if (extension_loaded("oci8")) {
+		$options .= "<option value='oracle'>Oracle</option>";
+	}
 	
 	$error = false;
 	if (empty($options)) {
 		$error = true;
 	}
-	
+
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS console installation wizard. Step #4 of 5 </h1>
-	<div id='wizard' style='height: 640px;'>
+	<div id='wizard' style='height: 750px;'>
 		<div id='install_box'>
 			<h2>Environment and database setup</h2>
 			<p>
@@ -424,7 +523,11 @@ function install_step3() {
 			</p>
 			<p>
 			You need a privileged user to create database schema, this is usually <b>root</b> user.
-			Information about <b>root</b> user will not be used or stored anymore.
+			Information about <b>root</b> user will not be used or stored anymore.	
+			</p>
+			<p>		
+			You can also deploy the scheme into an existing Database. 
+			In this case you need a privileged Database user and password of that instance. 
 			</p>
 			<p>
 			Now, please, complete all details to configure your database and environment setup.
@@ -435,8 +538,12 @@ function install_step3() {
 			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
 			</div>";
+
+			if (extension_loaded("oci8")) {
+				echo  " <div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
+			}
 	if (!$error) {
-		echo "<form method='post' action='install.php?step=4'>";
+		echo "<form method='post' name='step2_form' action='install.php?step=4'>";
 	}
 	echo "<div>DB ENGINE</div>";
 
@@ -448,9 +555,15 @@ function install_step3() {
 			</div>";
 	}
 	else {
-		echo "<select name='engine'>";
+		echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
 		echo $options;
 		echo "</select>";
+		echo "<div style=\"height:40px;\">Instalation in <br>";
+		echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
+		echo 	"<option value='db_new'>A new Database</option>";
+		echo 	"<option value='db_exist'>An existing Database</option>";
+		echo "</select>";
+		echo "</div>";	
 	}
 	echo "		<div>DB User with privileges on DB</div>
 				<input class='login' type='text' name='user' value='root'>
@@ -505,18 +618,20 @@ function install_step4() {
 	$pandora_config = "include/config.php";
 
 	if ( (! isset($_POST["user"])) || (! isset($_POST["dbname"])) || (! isset($_POST["host"])) || 
-	(! isset($_POST["pass"])) || (!isset($_POST['engine'])) ) {
+	(! isset($_POST["pass"])) || (!isset($_POST['engine'])) || (! isset($_POST["db_action"])) ) {
 		$dbpassword = "";
 		$dbuser = "";
 		$dbhost = "";
 		$dbname = "";
 		$engine = "";
+		$dbaction = "";
 	}
 	else {
 		$engine = $_POST['engine'];
 		$dbpassword = $_POST["pass"];
 		$dbuser = $_POST["user"];
 		$dbhost = $_POST["host"];
+		$dbaction = $_POST["db_action"];
 		if (isset($_POST["drop"]))
 			$dbdrop = $_POST["drop"];
 		else
@@ -553,14 +668,19 @@ function install_step4() {
 					else {
 						check_generic ( 1, "Connection with Database");
 						
-						// Drop database if needed
-						if ($dbdrop == 1) {
+						// Drop database if needed and don't want to install over an existing DB
+						if ($dbdrop == 1 && $dbaction != 'db_exist') {
 							mysql_query ("DROP DATABASE IF EXISTS $dbname");
 						}
 						
 						// Create schema
-						$step1 = mysql_query ("CREATE DATABASE $dbname");
-						check_generic ($step1, "Creating database '$dbname'");
+						if ($dbaction != 'db_exist'){
+							$step1 = mysql_query ("CREATE DATABASE $dbname");
+							check_generic ($step1, "Creating database '$dbname'");
+						}
+						else{
+							$step = 1;
+						}
 						if ($step1 == 1) {
 							$step2 = mysql_select_db($dbname);
 							check_generic ($step2, "Opening database '$dbname'");
@@ -613,6 +733,65 @@ function install_step4() {
 						$everything_ok = 1;
 					}
 					break;
+				case 'oracle':
+					$connection = oci_connect($dbuser, $dbpassword, '//' . $dbhost . '/' . $dbname);
+					if (!$connection){
+						check_generic(0, "Connection with Database");
+					}
+					else {
+						check_generic(1, "Connection with Database");					
+
+					 	$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
+						
+						check_generic($step1, "Creating schema");
+						
+						if ($step1) {
+							$step2 = parse_oracle_dump($connection, "pandoradb.data.oracle.sql");
+						}
+
+						check_generic ($step2, "Populating database");	
+
+						echo "<tr><td><div class='warn'>Please, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file and set database password.</div></tr></td>";
+						
+						if ($step2) {
+							$step3 = is_writable("include");
+						}
+
+						check_generic ($step3, "Write permissions to save config file in './include'");
+						
+						if ($step3) {
+							$cfgin = fopen ("include/config.inc.php","r");
+							$cfgout = fopen ($pandora_config,"w");
+							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
+							$dbtype = 'oracle';
+							$config_new = '<?php
+							// Begin of automatic config file
+							$config["dbtype"] = "' . $dbtype . '"; 	//DB type (mysql, postgresql, oracle)
+							$config["dbname"]="' . $dbname . '";		// Oracle DataBase name
+							$config["dbuser"]="' . $dbuser . '";		// DB User
+							$config["dbpass"]="' . $dbpassword . '";	// DB Password
+							$config["dbhost"]="' . $dbhost . '";		// DB Host
+							$config["homedir"]="' . $path . '";		// Config homedir
+							$config["homeurl"]="' . $url . '";		// Base URL
+							// End of automatic config file
+							?>';
+							$step4 = fputs ($cfgout, $config_new);
+							$step4 = $step4 + fputs ($cfgout, $config_contents);
+							if ($step4 > 0)
+								$step4 = 1;
+							fclose ($cfgin);
+							fclose ($cfgout);
+							chmod ($pandora_config, 0600);
+						}
+						
+						check_generic ($step4, "Created new config file at '" . $pandora_config . "'");
+						
+						if (($step4 + $step3 + $step2 + $step1) == 4) {
+							$everything_ok = 1;
+						}
+
+					}
+					break;			
 				case 'pgsql':
 					$step1 = $step2 = $step3 = $step4 = $step5 = $step6 = $step7 = 0;
 					
@@ -623,14 +802,21 @@ function install_step4() {
 					else {
 						check_generic(1, "Connection with Database");
 						
-						// Drop database if needed
-						if ($dbdrop == 1) {
+						// Drop database if needed and don't want to install over an existing DB
+						if ($dbdrop == 1 && $dbaction != 'db_exist') {
 							$result = pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
 						}
 						
-						pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
-						$result = pg_get_result($connection);
-						if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
+						if ($dbaction != 'db_exist'){
+							pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
+							$result = pg_get_result($connection);
+							if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
+								$step1 = 1;
+							}
+						
+							check_generic ($step1, "Creating database '$dbname'");
+						}
+						else{
 							$step1 = 1;
 						}
 						
@@ -795,12 +981,19 @@ function install_step4() {
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			}
 			else {
-				echo "<div class='warn'><b>There were some problems.
+				$info = "<div class='warn'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
-				All database schemes created in this step have been dropped. </p>
+				All database "; 
+				if ($engine == 'oracle')
+					$info .= "objects ";
+				else
+					$info .= "schemes ";
+ 
+				$info .= "created in this step have been dropped. </p>
 				</div>";
-
+				echo $info;
+				
 				switch ($engine) {
 					case 'mysql':
 						if (mysql_error() != "") {
@@ -812,6 +1005,29 @@ function install_step4() {
 						}
 						break;
 					case 'pgsql':
+						break;
+					case 'oracle':
+						//Drop all objects of the current instalation
+						$stmt = oci_parse($connection,
+						"BEGIN " .
+  						"FOR cur_rec IN (SELECT object_name, object_type " . 
+                  				"FROM   user_objects " .
+                  				"WHERE  object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'SNAPSHOT', 'MATERIALIZED VIEW')) LOOP " .
+    						"BEGIN " . 
+      							"IF cur_rec.object_type = 'TABLE' THEN " .
+        							"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; " .
+      							"ELSE " .
+        							"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; " .
+      							"END IF; " .
+    						"EXCEPTION " .
+      							"WHEN OTHERS THEN " .
+        							"DBMS_OUTPUT.put_line('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'); " .
+    						"END; " .
+  						"END LOOP; " .
+						"END; ");
+
+						$result = oci_execute($stmt);
+						oci_free_statement($stmt);
 						break;
 				}
 			}		

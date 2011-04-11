@@ -135,7 +135,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0) {
 	global $config;
 	global $graphic_type;
-	
+
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -405,7 +405,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	$periodtime = floor ($period / $interval);
 	$time = array ();
 	$data = array ();
-	
+
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
@@ -415,11 +415,23 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 		}
 
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$data[$name] = (int) get_db_value_filter ('COUNT(*)',
-			'tagent_access',
-			array ('id_agent' => $id_agent,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top));
+		switch ($config["dbtype"]) {
+			case "mysql":	
+			case "postgresql":	
+				$data[$name] = (int) get_db_value_filter ('COUNT(*)',
+					'tagent_access',
+					array ('id_agent' => $id_agent,
+						'utimestamp > '.$bottom,
+						'utimestamp < '.$top));
+				break;
+			case "oracle":	
+				$data[$name] = (int) get_db_value_filter ('count(*)',
+					'tagent_access',
+					array ('id_agent' => $id_agent,
+						'utimestamp > '.$bottom,
+						'utimestamp < '.$top));
+				break;	
+		}
 	}
 
 	if (! $graphic_type) {
@@ -653,10 +665,22 @@ function graphic_user_activity ($width = 350, $height = 230) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
-		FROM tsesion
-		GROUP BY id_usuario
-		ORDER BY 1 DESC LIMIT %d', $max_items);
+	switch ($config['dbtype']) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
+				FROM tsesion
+				GROUP BY id_usuario
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
+				FROM tsesion 
+				WHERE rownum <= %d
+				GROUP BY id_usuario
+				ORDER BY 1 DESC', $max_items);
+			break;
+	}
 	$logins = get_db_all_rows_sql ($sql);
 	
 	if($logins == false) {
@@ -697,6 +721,11 @@ function graphic_incident_source ($width = 320, $height = 200) {
 				FROM tincidencia GROUP BY "origen"
 				ORDER BY 1 DESC LIMIT %d', $max_items);
 			break;
+		case "oracle":
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
+				FROM tincidencia WHERE rownum <= %d GROUP BY origen
+				ORDER BY 1 DESC', $max_items);
+			break;
 	}
 	$origins = get_db_all_rows_sql ($sql);
 	
@@ -726,16 +755,36 @@ function graph_db_agentes_modulos ($width, $height) {
 
 	$data = array ();
 	
-	$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
-		FROM tagente_modulo
-		GROUP BY id_agente
-		ORDER BY 1 DESC LIMIT 10');
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+				FROM tagente_modulo
+				GROUP BY id_agente
+				ORDER BY 1 DESC LIMIT 10');
+			break;
+		case "oracle":
+			$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+				FROM tagente_modulo
+				WHERE rownum <= 10
+				GROUP BY id_agente
+				ORDER BY 1 DESC');
+			break;
+	}
 	if ($modules === false)
 		$modules = array ();
 	
 	foreach ($modules as $module) {
 		$agent_name = get_agent_name ($module['id_agente'], "none");
-		$data[$agent_name] = $module['COUNT(id_agente_modulo)'];
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":
+				$data[$agent_name] = $module['COUNT(id_agente_modulo)'];
+				break;
+			case "oracle":
+				$data[$agent_name] = $module['count(id_agente_modulo)'];
+				break;
+		}
 	}
 
 	if (! $graphic_type) {
@@ -757,11 +806,26 @@ function grafico_eventos_usuario ($width, $height) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_evento) events, id_usuario
-		FROM tevento
-		GROUP BY id_usuario
-		ORDER BY 1 DESC LIMIT %d', $max_items);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_evento) events, id_usuario
+				FROM tevento
+				GROUP BY id_usuario
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT * FROM (SELECT COUNT(id_evento) events, id_usuario
+				FROM tevento
+				GROUP BY id_usuario
+				ORDER BY 1 DESC) WHERE rownum <= %d', $max_items);
+			break;
+	}
 	$events = get_db_all_rows_sql ($sql);
+
+	if ($events === false) {
+		$events = array();
+	}
 
 	foreach ($events as $event) {
 		$data['id_usuario'] = $event['events'];
@@ -825,11 +889,24 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 	$data = array ();
 	$max_items = 6;
-	$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
-		FROM tevento, tagente_modulo
-		WHERE id_agentmodule = id_agente_modulo
-			AND disabled = 0 AND tevento.id_agente = %d
-		GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
+				FROM tevento, tagente_modulo
+				WHERE id_agentmodule = id_agente_modulo
+					AND disabled = 0 AND tevento.id_agente = %d
+				GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT count_number, nombre FROM (SELECT COUNT(id_evento) as count_number, dbms_lob.substr(nombre,4000,1) as nombre, id_agentmodule
+				FROM tevento, tagente_modulo
+				WHERE (id_agentmodule = id_agente_modulo
+					AND disabled = 0 AND tevento.id_agente = %d) AND rownum <= %d
+				GROUP BY dbms_lob.substr(nombre,4000,1),id_agentmodule)', $id_agent, $max_items);
+			break;
+	}
 	$events = get_db_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {
@@ -889,9 +966,19 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
-	$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
-		FROM tevento WHERE 1=1 %s
-		GROUP BY id_agente ORDER BY count DESC', $url); 
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+				FROM tevento WHERE 1=1 %s
+				GROUP BY id_agente ORDER BY count DESC', $url); 
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+				FROM tevento WHERE 1=1 %s
+				GROUP BY id_agente, id_grupo ORDER BY count DESC', $url); 
+			break;
+	}
 	
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {

@@ -129,6 +129,7 @@ if($searchAlerts) {
 			)';
 			break;
 		case "postgresql":
+		case "oracle":
 			$whereAlerts = 'AND (
 				id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE \'%' . $stringSearchSQL . '%\') OR
 				id_alert_template IN (

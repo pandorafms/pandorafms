@@ -690,6 +690,14 @@ if ($create_module) {
 	
 	$id_module = (int) get_parameter ('id_module');
 	
+	switch ($config["dbtype"]) {
+		case "oracle":
+			if (empty($description) || !isset($description)) {
+				$description=' ';			
+			}	
+			break;
+	}
+
 	$values = array ('id_tipo_modulo' => $id_module_type,
 			'descripcion' => $description, 
 			'max' => $max,

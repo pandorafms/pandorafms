@@ -290,6 +290,7 @@ switch ($action) {
 										FROM treport_content WHERE id_report = ' . $idReport . ';');
 									break;
 								case "postgresql":
+								case "oracle":
 									$max = get_db_all_rows_sql('SELECT max("order") AS max 
 										FROM treport_content WHERE id_report = ' . $idReport . ';');
 									break;
@@ -305,6 +306,7 @@ switch ($action) {
 									process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
 									break;
 								case "postgresql":
+								case "oracle":
 									process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
 									break;
 							}
@@ -420,6 +422,7 @@ switch ($action) {
 						$oldOrder = get_db_value_sql('SELECT `order` FROM treport_content WHERE id_rc = ' . $idItem);
 						break;
 					case "postgresql":
+					case "oracle":
 						$oldOrder = get_db_value_sql('SELECT "order" FROM treport_content WHERE id_rc = ' . $idItem);
 						break;
 				}
@@ -445,6 +448,10 @@ switch ($action) {
 						$resultOperationDB = process_sql_update('treport_content',
 							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport));
 						break;
+					case "oracle":
+						$resultOperationDB = process_sql_update('treport_content',
+							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
+						break;
 				}
 				if ($resultOperationDB !== false) {
 					switch ($config["dbtype"]) {
@@ -453,6 +460,9 @@ switch ($action) {
 							break;
 						case "postgresql":
 							$resultOperationDB = process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem));
+							break;
+						case "oracle":
+							$resultOperationDB = process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem), 'AND', false);
 							break;
 					}
 					if ($resultOperationDB !== false) {

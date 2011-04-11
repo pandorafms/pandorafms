@@ -386,6 +386,7 @@ print_input_hidden('id_item', $idItem);
 						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")';
 						break;
 					case "postgresql":
+					case "oracle":
 						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
 						break;
 				}

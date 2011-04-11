@@ -1,3 +1,20 @@
+2011-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_installer: Added code to install tentacle_server with
+	pandora agent.
+	* AIX/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+	* tentacle_server: Added tentacle server with proxy support.
+	* pandora_agent_daemon: Add feature to stop tentacle_server when
+	pandora agent stops.
+	* Linux/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+	* HP-UX/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+	* pandora_agent: Added support to tentacle_server and proxy_mode.
+	* SunOS/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+
 2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandora_agent_installer: Fixed an error with chown in AIX OS.

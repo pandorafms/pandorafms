@@ -553,9 +553,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
 								<td>' . printTruncateText($nameAgent, 20) . '</td>
 								<td>' . printTruncateText($nameModule, 20) . '</td>
-								<td>' . print_input_text('input_min', $item['sla_min'], '', 15, 255, true) . '</td>
-								<td>' . print_input_text('input_max', $item['sla_max'], '', 15, 255, true) . '</td>
-								<td>' . print_input_text('input_limit', $item['sla_limit'], '', 10, 255, true) . '</td>
+								<td>' . $item['sla_min'] . '</td>
+								<td>' . $item['sla_max'] . '</td>
+								<td>' . $item['sla_limit'] . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
 								</td>

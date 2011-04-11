@@ -1,3 +1,10 @@
+2011-04-11 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_reporting.php: Fixed a typo error
+	* operation/agentes/exportdata.php: Added a couple of safe_outputs
+	* operation/reporting/custom_reporting.php: Added CSV column and its
+	icon, changed table width
+
 2011-04-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php

@@ -33,7 +33,7 @@ if (sizeof ($reports) == 0) {
 	return;
 }
 
-$table->width = '580px';
+$table->width = '90%';
 $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
@@ -46,6 +46,7 @@ $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';
 $table->align[4] = 'center';
+$table->align[5] = 'center';
 $table->data = array ();
 
 foreach ($reports as $report) {
@@ -64,6 +65,5 @@ foreach ($reports as $report) {
 	enterprise_hook ('load_custom_reporting_2');
 	array_push ($table->data, $data);
 }
-
 print_table ($table);
 ?>

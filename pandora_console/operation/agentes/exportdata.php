@@ -218,9 +218,9 @@ if (!empty ($export_btn) && !empty ($module)) {
 */
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
-						$output .= $module['agent_name'];
+						$output .= safe_output($module['agent_name']);
 						$output .= $divider;
-						$output .= $module['module_name'];
+						$output .= safe_output($module['module_name']);
 						$output .= $divider;
 						$output .= $module['data'];
 						$output .= $divider;

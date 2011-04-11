@@ -3055,7 +3055,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data[0] .= ' - '.__('Modules at normal status');
 					break;
 				case 4:
-					$data[0] .= ' - '.__('Modules at critial or warning status');
+					$data[0] .= ' - '.__('Modules at critical or warning status');
 					break;
 			}
 			$data[0].=$sizhfin;

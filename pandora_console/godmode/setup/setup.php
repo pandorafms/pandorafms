@@ -64,6 +64,9 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$current_system_lang = get_db_sql ('SELECT "value" FROM tconfig WHERE "token" = \'language\'');
 		break;
+	case "oracle":
+		$current_system_lang = get_db_sql ('SELECT value FROM tconfig WHERE token = \'language\'');
+		break;
 }
 
 if ($current_system_lang == ""){

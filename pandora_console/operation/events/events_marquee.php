@@ -64,6 +64,9 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT $MAX_MARQUEE_EVENTS OFFSET 0";
 		break;
+	case "oracle":
+		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE (1=1 $sql_group_filter ) AND rownum <= $MAX_MARQUEE_EVENTS ORDER BY utimestamp DESC";
+		break;
 }
 
 $result = get_db_all_rows_sql ($sql);

@@ -147,6 +147,7 @@ switch ($config["dbtype"]) {
 		$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
 		break;
 	case "postgresql":
+	case "oracle":
 		$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '"order"');
 		break;
 }
@@ -364,6 +365,9 @@ foreach ($contents as $content) {
 						break;
 					case "postgresql":
 						$sql = get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+						break;
+					case "oracle":
+						$sql = get_db_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
 						break;
 				}
 			}

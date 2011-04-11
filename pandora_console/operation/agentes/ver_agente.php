@@ -190,7 +190,7 @@ if (is_ajax ()) {
 			
 		//Hack to translate text "any" in PHP to javascript
 		//$agent_modules['any_text'] = __('Any');
-		
+
 		echo json_encode ($agent_modules);
 		return;
 	}

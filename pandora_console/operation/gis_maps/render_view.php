@@ -179,6 +179,9 @@ if ($layers != false) {
 		case "postgresql":
 			$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
 			break;
+		case "oracle":
+			$timestampLastOperation = get_db_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
+			break;
 	}
 	
 	activateSelectControl();

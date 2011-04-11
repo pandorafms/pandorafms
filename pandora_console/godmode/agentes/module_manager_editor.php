@@ -72,6 +72,7 @@ if (is_ajax ()) {
 						$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
 				break;
 			case "postgresql":
+			case "oracle":
 						$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE \'' . $typeName . '\'');
 				break;
 		}
@@ -253,7 +254,6 @@ switch ($moduletype) {
 	case "networkserver":
 	case 2:
 		$moduletype = 2;
-		
 		$categories = array (3, 4, 5);
 		require ('module_manager_editor_common.php');
 		require ('module_manager_editor_network.php');

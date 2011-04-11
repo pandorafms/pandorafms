@@ -111,7 +111,8 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  */
 function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', 
 	$allModules = false, $orderby = false, $idGroup = false, $count = false) {
-	
+	global $config;
+
 	if (is_array($filter)) {
 		$disabled = $filter['disabled'];
 		if (isset($filter['standby'])) {
@@ -187,18 +188,32 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
-		
-	$sql = sprintf ("SELECT %s
-	FROM talert_template_modules
-		INNER JOIN tagente_modulo AS t2
-			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-		INNER JOIN tagente AS t3
-			ON t2.id_agente = t3.id_agente
-		INNER JOIN talert_templates AS t4
-			ON talert_template_modules.id_alert_template = t4.id
-	WHERE id_agent_module in (%s) %s %s %s",
-	$selectText, $subQuery, $where, $filter, $orderbyText);
 
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ("SELECT %s
+			FROM talert_template_modules
+				INNER JOIN tagente_modulo AS t2
+					ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+				INNER JOIN tagente AS t3
+					ON t2.id_agente = t3.id_agente
+				INNER JOIN talert_templates AS t4
+					ON talert_template_modules.id_alert_template = t4.id
+			WHERE id_agent_module in (%s) %s %s %s",
+			$selectText, $subQuery, $where, $filter, $orderbyText);
+		case "oracle":
+			$sql = sprintf ("SELECT %s
+			FROM talert_template_modules
+				INNER JOIN tagente_modulo t2
+					ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+				INNER JOIN tagente t3
+					ON t2.id_agente = t3.id_agente
+				INNER JOIN talert_templates t4
+					ON talert_template_modules.id_alert_template = t4.id
+			WHERE id_agent_module in (%s) %s %s %s",
+			$selectText, $subQuery, $where, $filter, $orderbyText);
+	}
 	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)

@@ -23,83 +23,190 @@
  * @return bool Return false if the group is unused in the Pandora, else true.
  */
 function checkUsedGroup($idGroup) {
+	global $config;
+
 	$return = array();
 	$return['return'] = false;
 	$return['tables'] = array();
 	
-	$numRows = get_db_num_rows('SELECT * FROM tagente WHERE id_grupo = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM tagente WHERE id_grupo = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tagente WHERE id_grupo = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Agents'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup);
+			break;
+	}
+
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Alert Actions'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM talert_templates WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM talert_templates WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM talert_templates WHERE id_group = ' . $idGroup);
+			break;
+	}
+
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Alert Templates'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM trecon_task WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM trecon_task WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM trecon_task WHERE id_group = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Recon task'); 
 	}
-	
-	$numRows = get_db_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup . ';');
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+			$numRows = get_db_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Graphs'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM treport WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+			$numRows = get_db_num_rows('SELECT * FROM treport WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM treport WHERE id_group = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Reports'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM tlayout WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+			$numRows = get_db_num_rows('SELECT * FROM tlayout WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tlayout WHERE id_group = ' . $idGroup);
+			break;
+	}
+
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Layout visual console'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM tplanned_downtime WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM tplanned_downtime WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tplanned_downtime WHERE id_group = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Plannet down time'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Graphs'); 
 	}
-	
-	$numRows = get_db_num_rows('SELECT * FROM tgis_map WHERE group_id = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+			$numRows = get_db_num_rows('SELECT * FROM tgis_map WHERE group_id = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tgis_map WHERE group_id = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('GIS maps'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM tgis_map_connection WHERE group_id = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM tgis_map_connection WHERE group_id = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tgis_map_connection WHERE group_id = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('GIS connections'); 
 	}
 	
-	$numRows = get_db_num_rows('SELECT * FROM tgis_map_layer WHERE tgrupo_id_grupo = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$numRows = get_db_num_rows('SELECT * FROM tgis_map_layer WHERE tgrupo_id_grupo = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tgis_map_layer WHERE tgrupo_id_grupo = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('GIS map layers'); 
 	}
-	
-	$numRows = get_db_num_rows('SELECT * FROM tnetwork_map WHERE id_group = ' . $idGroup . ';');
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+			$numRows = get_db_num_rows('SELECT * FROM tnetwork_map WHERE id_group = ' . $idGroup . ';');
+			break;
+		case "oracle":
+			$numRows = get_db_num_rows('SELECT * FROM tnetwork_map WHERE id_group = ' . $idGroup);
+			break;
+	}
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Network maps'); 

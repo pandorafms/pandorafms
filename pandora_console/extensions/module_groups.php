@@ -90,15 +90,31 @@ function mainModuleGroups() {
 	require_once ('include/functions_reporting.php');
 
 	//The big query
-	$sql = "SELECT COUNT(id_agente) AS count, estado
-		FROM tagente_estado
-		WHERE utimestamp != 0 AND id_agente IN
-			(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
-			AND id_agente_modulo IN
-			(SELECT id_agente_modulo 
-				FROM tagente_modulo 
-				WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
-		GROUP BY estado";
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = "SELECT COUNT(id_agente) AS count, estado
+				FROM tagente_estado
+				WHERE utimestamp != 0 AND id_agente IN
+					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
+					AND id_agente_modulo IN
+					(SELECT id_agente_modulo 
+						FROM tagente_modulo 
+						WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
+				GROUP BY estado";
+			break;
+		case "oracle":	
+			$sql = "SELECT COUNT(id_agente) AS count, estado
+				FROM tagente_estado
+				WHERE utimestamp != 0 AND id_agente IN
+					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND (disabled IS NOT NULL AND disabled <> 0))
+					AND id_agente_modulo IN
+					(SELECT id_agente_modulo 
+						FROM tagente_modulo 
+						WHERE id_module_group = %d AND (disabled IS NOT NULL AND disabled <> 0) AND (delete_pending IS NOT NULL AND delete_pending <> 0))
+				GROUP BY estado";
+			break;
+	}
 	
 	print_page_header (__("Combined table of agent group and module group"));
 	
@@ -134,9 +150,10 @@ function mainModuleGroups() {
 		$row = array();
 		
 		array_push($row, printTruncateText($name, 20));
-		
+	
 		foreach ($modelGroups as $idModelGroup => $modelGroup) {
 			$query = sprintf($sql,$idAgentGroup, $idModelGroup);
+
 			$rowsDB = get_db_all_rows_sql ($query);
 			
 			

@@ -265,7 +265,7 @@ else {
 	}
 	
 	echo $messageAction;
-	
+
 	switch ($tab) {
 		case 'list':
 			if ($group == 0) {

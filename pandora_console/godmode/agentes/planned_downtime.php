@@ -144,6 +144,11 @@ if ($create_downtime || $update_downtime) {
 						FROM \"tplanned_downtime\" WHERE \"id\" = %d",
 						$id_downtime);
 					break;
+				case "oracle":
+					$sql = sprintf ("SELECT id, name, description, date_from, date_to, id_group
+						FROM tplanned_downtime WHERE id = %d",
+						$id_downtime);
+					break;
 			}
 			
 			$result = get_db_row_sql ($sql);

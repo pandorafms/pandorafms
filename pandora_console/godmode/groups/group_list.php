@@ -136,10 +136,21 @@ if ($update_group) {
 
 	/*Check if name field is empty*/
 	if( $name != "") {	
-		$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-				icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
-				WHERE id_grupo = %d',
-				$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
+						icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
+						WHERE id_grupo = %d',
+						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+				break;
+			case "postgresql":
+			case "oracle":
+				$sql = sprintf ('UPDATE tgrupo  SET nombre = \'%s\',
+						icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d
+						WHERE id_grupo = %d',
+						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+				break;
+		}		
 		$result = process_sql ($sql);
 	} else {
 		$result = false;

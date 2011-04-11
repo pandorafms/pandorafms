@@ -30,10 +30,10 @@ echo "<tr><td class='datos'>";
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
-$network_available = get_db_sql ("SELECT count(*) from tserver where server_type = 1"); //POSTGRESQL COMPATIBLE
-$wmi_available = get_db_sql ("SELECT count(*) from tserver where server_type = 6"); //POSTGRESQL COMPATIBLE
-$plugin_available = get_db_sql ("SELECT count(*) from tserver where server_type = 4"); //POSTGRESQL COMPATIBLE
-$prediction_available = get_db_sql ("SELECT count(*) from tserver where server_type = 5"); //POSTGRESQL COMPATIBLE
+$network_available = get_db_sql ("SELECT count(*) from tserver where server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
+$wmi_available = get_db_sql ("SELECT count(*) from tserver where server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
+$plugin_available = get_db_sql ("SELECT count(*) from tserver where server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
+$prediction_available = get_db_sql ("SELECT count(*) from tserver where server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
 
 // Development mode to use all servers
 if ($develop_bypass) {
@@ -107,20 +107,32 @@ if ($multiple_delete) {
 		// First delete from tagente_modulo -> if not successful, increment
 		// error. NOTICE that we don't delete all data here, just marking for deletion
 		// and delete some simple data.
-		
+		$status = '';
 		if (process_sql("UPDATE tagente_modulo
-			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del) === false)
+			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false)
 			$error++;
-		
-		$result = process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
-		if ($result === false)
-			$error++;
-		
-		$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
-		if ($result === false)
-			$error++;
-		
 	
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":		
+				$result = process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
+				if ($result === false)
+					$error++;
+		
+				$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
+				if ($result === false)
+					$error++;
+				break;
+			case "oracle":
+				$result = temp_sql_delete('tagente_estado', 'id_agente_modulo', $id_agent_module_del);
+				if ($result === false)
+					$error++;
+				$result = temp_sql_delete('tagente_datos_inc', 'id_agente_modulo', $id_agent_module_del);		
+				if ($result === false)
+					$error++;
+				break;
+				
+		}	
 		//Check for errors
 		if ($error != 0) {
 			process_sql_rollback ();
@@ -160,11 +172,27 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				switch ($config["dbtype"]) {
+					case "mysql":
+					case "postgresql":				
+						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+						break;
+					case "oracle":
+						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'ASC');
+						break;
+				}
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				switch ($config["dbtype"]) {
+					case "mysql":
+					case "postgresql":
+						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
+						break;
+					case "oracle":	
+						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
+						break;
+				}		
 				break;
 		}
 		break;
@@ -213,7 +241,15 @@ switch ($sortField) {
 		$selectTypeDown = '';
 		$selectIntervalUp = '';
 		$selectIntervalDown = '';
-		$order[] = array('field' => 'nombre', 'order' => 'ASC');
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$order[] = array('field' => 'dbms_lob.substr(nombre,4000,1)', 'order' => 'ASC');
+				break;
+			case "oracle":
+				$order[] = array('field' => 'dbms_lob.substr(nombre,4000,1)', 'order' => 'ASC');
+				break;
+		}
 		break;
 }
 

@@ -655,6 +655,11 @@ function get_group_stats ($id_group = 0) {
 						FROM tagente
 						WHERE id_grupo = $group AND disabled = 0 AND ceil(date_part('epoch', ultimo_contacto)) < ceil(date_part('epoch', NOW())) - (intervalo * 2)");
 					break;
+				case "oracle":
+					$data["agents_unknown"] += get_db_sql ("SELECT COUNT(*)
+						FROM tagente
+						WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < CURRENT_TIMESTAMP - (intervalo * 2)");
+					break;
 			}
 
 			$data["total_agents"] += get_db_sql ("SELECT COUNT(*)
@@ -697,6 +702,17 @@ function get_group_stats ($id_group = 0) {
 							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
 							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
 					break;
+				case "oracle":
+					$data["monitor_ok"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+							AND tagente_estado.id_agente = tagente.id_agente
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+							AND tagente_modulo.disabled = 0 AND estado = 0
+							AND ((ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
+							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
+					break;
 			}
 
 			switch ($config["dbtype"]) {
@@ -715,6 +731,13 @@ function get_group_stats ($id_group = 0) {
 						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
 							AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 							AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+					break;
+				case "oracle":
+					$data["monitor_critical"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0
+							AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+							AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
 					break;
 			}
 			
@@ -735,6 +758,14 @@ function get_group_stats ($id_group = 0) {
 							AND estado = 2 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
 							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
 					break;
+				case "oracle":
+					$data["monitor_warning"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+							AND estado = 2 AND ((ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
+							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
+					break;
 			}
 
 			switch ($config["dbtype"]) {
@@ -753,6 +784,14 @@ function get_group_stats ($id_group = 0) {
 							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
 							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
 							AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+					break;
+				case "oracle":
+					$data["monitor_unknown"] += get_db_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
+							AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
 					break;
 			}
 
@@ -1974,7 +2013,6 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
-				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
@@ -2280,6 +2318,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 						break;
 					case "postgresql":
 						$sql = safe_output_html (get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						break;
+					case "oracle":
+						$sql = safe_output_html (get_db_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 				}
 			}

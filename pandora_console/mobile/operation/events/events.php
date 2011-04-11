@@ -127,6 +127,12 @@ class EventsView {
 			case "postgresql":
 				$sql = $sql . sprintf(' LIMIT %d OFFSET %d', $this->system->getPageSize(), $offset);
 				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $this->system->getPageSize();
+				$set['offset'] = $offset;
+				$sql = oracle_recode_query ($sql, $set);
+				break;
 		}
 		
 		$count = get_db_value_sql($sql_count);

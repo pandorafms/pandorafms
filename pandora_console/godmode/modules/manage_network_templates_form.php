@@ -151,6 +151,11 @@ if ($id_np > 0) {
 				FROM tnetwork_profile_component AS npc, tnetwork_component AS nc 
 				WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d", $id_np);
 			break;
+		case "oracle":
+			$sql = sprintf ("SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_group AS \"group\"
+				FROM tnetwork_profile_component npc, tnetwork_component nc 
+				WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d", $id_np);
+			break;
 	}
 	
 	$result = get_db_all_rows_sql ($sql);

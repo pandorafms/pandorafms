@@ -107,6 +107,29 @@ if ($searchModules) {
 					t1.nombre COLLATE utf8_general_ci LIKE \'%' . $stringSearchSQL . '%\' OR
 					t3.nombre LIKE \'%' . $stringSearchSQL . '%\'';
 			break;
+		case "oracle":
+			$chunk_sql = '
+				FROM tagente_modulo AS t1
+					INNER JOIN tagente AS t2
+						ON t2.id_agente = t1.id_agente
+					INNER JOIN tgrupo AS t3
+						ON t3.id_grupo = t2.id_grupo
+					INNER JOIN tagente_estado AS t4
+						ON t4.id_agente_modulo = t1.id_agente_modulo
+				WHERE (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+						OR 0 IN (
+							SELECT id_grupo
+							FROM tusuario_perfil
+							WHERE id_usuario = \'' . $config['id_user'] . '\'
+							AND id_perfil IN (
+								SELECT id_perfil
+								FROM tperfil WHERE agent_view = 1
+							) 
+						)
+					) AND
+					UPPER(t1.nombre) LIKE UPPER(\'%' . $stringSearchSQL . '%\') OR
+					t3.nombre LIKE \'%' . $stringSearchSQL . '%\'';
+			break;
 	}
 	
 	$select = "SELECT *, t1.nombre AS module_name, t2.nombre AS agent_name ";

@@ -40,13 +40,38 @@ $components = get_network_components ($id_module, 'id_module_group = 10'));
  * if none matches.
  */
 function get_network_components ($id_module, $filter = false, $fields = false) {
+	global $config;
+
 	if (! is_array ($filter))
 		$filter = array ();
 	if (! empty ($id_module))
 		$filter['id_modulo'] = (int) $id_module;
 	
-	$components = get_db_all_rows_filter ('tnetwork_component',
-		$filter, $fields);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$components = get_db_all_rows_filter ('tnetwork_component',
+				$filter, $fields);
+			break;
+		case "oracle":	
+			if (count ($fields) > 1) {
+				$fields = implode(',',$fields);
+			}		
+			if (isset($filter['offset'])) {
+				$components = oracle_recode_query ('SELECT ' . $fields . ' FROM tnetwork_component', $filter, 'AND', false);		
+				if ($components != false) {
+					
+					for ($i=0; $i < count($components); $i++) {
+						unset($components[$i]['rnum']);		
+					}
+				}			
+			}
+			else {
+				$components = get_db_all_rows_filter ('tnetwork_component',
+					$filter, $fields);
+			}
+			break;
+	}
 	if ($components === false)
 		return array ();
 	return $components;
@@ -188,6 +213,15 @@ function get_network_component ($id_network_component, $filter = false, $fields 
  * @return int New component id. False on error.
  */
 function create_network_component ($name, $type, $id_group, $values = false) {
+	global $config;
+
+	switch ($config['dbtype']) {
+		case "oracle":
+			if (empty($values['tcp_rcv']))
+				$values['tcp_rcv'] = " ";
+		return;
+	}
+
 	if (empty ($name))
 		return false;
 	if (empty ($type))

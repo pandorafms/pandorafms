@@ -53,6 +53,7 @@ function update_config_value ($token, $value) {
 						WHERE token LIKE "%list_ACL_IPs_for_API_%"');
 					break;
 				case "postgresql":
+				case "oracle":
 					$rows = get_db_all_rows_sql("SELECT id_config
 						FROM tconfig 
 						WHERE token LIKE '%list_ACL_IPs_for_API_%'");

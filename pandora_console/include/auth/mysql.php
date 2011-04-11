@@ -76,7 +76,6 @@ function process_user_login ($login, $pass) {
 	
 	// Always authenticate admins against the local database
 	if (strtolower ($config["auth"]) == 'mysql' || is_user_admin ($login)) {
-	
 		// Connect to Database
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -84,6 +83,9 @@ function process_user_login ($login, $pass) {
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT "id_user", "password" FROM "tusuario" WHERE "id_user" = \'%s\'', $login);
+				break;
+			case "oracle":
+				$sql = sprintf ('SELECT id_user, password FROM tusuario WHERE id_user = \'%s\'', $login);
 				break;
 		}
 		$row = get_db_row_sql ($sql);

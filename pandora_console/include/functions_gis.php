@@ -523,6 +523,9 @@ function addPath($layerName, $idAgent, $lastPosition = null, $history_time = nul
 			case "postgresql":
 				$where = 'start_timestamp >= to_timestamp(ceil(date_part("epoch", CURRENT_TIMESTAMP)) - ' . $history_time . ')';
 				break;
+			case "oracle":
+				$where = 'start_timestamp >= to_timestamp(\'01-01-1970 00:00:00\', \'DD-MM-YYYY HH24:MI:SS\') + NUMTODSINTERVAL((ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)) - ' . $history_time . '),\'SECOND\')';
+				break;
 		}
 	}
 	
@@ -1053,6 +1056,7 @@ function getMapData($idMap) {
 				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
 			break;
 		case "postgresql":
+		case "oracle":
 			$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
 					t1.default_map_connection AS "default", (
 						SELECT t2.num_zoom_levels

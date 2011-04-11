@@ -36,9 +36,9 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null)
 	}
 
 	// Set date and timestamp formats for this session
-	$datetime_tz_format = oci_parse($config['dbconnection'] , 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'DD/MM/YYYY HH24:MI:SS\'');
-	$datetime_format = oci_parse($config['dbconnection'] , 'alter session set NLS_TIMESTAMP_FORMAT =\'DD/MM/YYYY HH24:MI:SS\'');
-	$date_format = oci_parse($config['dbconnection'] , 'alter session set NLS_DATE_FORMAT =\'DD/MM/YYYY HH24:MI:SS\'');
+	$datetime_tz_format = oci_parse($config['dbconnection'] , 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+	$datetime_format = oci_parse($config['dbconnection'] , 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+	$date_format = oci_parse($config['dbconnection'] , 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 
 	oci_execute($datetime_tz_format);
 	oci_execute($datetime_format);
@@ -200,7 +200,7 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 	global $sql_cache;
 	
 	$retval = array();
-	
+
 	if ($sql == '')
 		return false;
 		
@@ -220,6 +220,10 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 			if ($type[0] == 'INSERT'){
 				$query = oci_parse($dbconnection, 'begin insert_id(:table_name, :sql, :out); end;');
 			}
+			// Prevent execution of insert_id stored procedure
+			else if ($type[0] == '/INSERT'){
+				$query = oci_parse($dbconnection, substr($sql,1));			
+			}
 			else{
 				$query = oci_parse($dbconnection, $sql);
 			}	
@@ -228,14 +232,20 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 			if ($type[0] == 'INSERT'){
 				$query = oci_parse($config['dbconnection'], 'begin insert_id(:table_name, :sql, :out); end;');
 			}
+			// Prevent execution of insert_id stored procedure
+			else if ($type[0] == '/INSERT'){
+				$query = oci_parse($dbconnection, substr($sql,1));			
+			}
 			else{
 				$query = oci_parse($config['dbconnection'], $sql);
 			}
 		}
 		//If query is an insert retrieve Id field
-		oci_bind_by_name($query,":table_name", $table_name ,32);
-		oci_bind_by_name($query,":sql", $sql, 1000);
-		oci_bind_by_name($query,":out", $id, 32);
+		if ($type[0] == 'INSERT'){
+			oci_bind_by_name($query,":table_name", $table_name ,32);
+			oci_bind_by_name($query,":sql", $sql, 1000);
+			oci_bind_by_name($query,":out", $id, 32);
+		}
 
 		if (!$autocommit){
 			$result = oci_execute($query, OCI_NO_AUTO_COMMIT);
@@ -244,7 +254,7 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 			$result = oci_execute($query);
 		}
 		$time = microtime (true) - $start;
-		
+
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$e = oci_error($query);
@@ -280,7 +290,29 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 			else { //The query IS a select.
 				add_database_debug_trace ($sql, 0, $rows, array ('time' => $time));
 				while ($row = oci_fetch_assoc($query)) {
-					array_push($retval, $row);
+					$i = 1;
+					$result_temp = array();
+					foreach ($row as $key => $value) {					
+						$column_type = oci_field_type($query, $key);
+						// Support for Clob fields larger than 4000bytes
+						//if ($sql == 'SELECT * FROM tgrupo ORDER BY dbms_lob.substr(nombre,4000,1) ASC') echo $i .' '.$column_type.' '.$key.'<br>';
+						if ($column_type == 'CLOB') {
+							$column_name = oci_field_name($query, $i);
+							// Protect against a NULL CLOB
+							if (is_object($row[$column_name])) {   	
+								$clob_data = $row[$column_name]->load();
+								$row[$column_name]->free();
+								$value = $clob_data;
+							}
+							else {
+								$value = '';
+							}
+						}					
+						$result_temp[strtolower($key)] = $value;
+						$i++;
+					}
+					array_push($retval, $result_temp);
+					//array_push($retval, $row);
 				}
 				
 				if ($cache === true)
@@ -309,7 +341,15 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
  */
 function oracle_get_db_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return get_db_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY ' . $order_field . ' ' . $order);
+ 		
+		// Clob fields are not allowed in ORDER BY statements, they need cast to varchar2 datatype
+		$type = get_db_value_filter ('data_type', 'user_tab_columns', array ('table_name' => strtoupper($table), 'column_name' => strtoupper($order_field)), 'AND');
+		if ($type == 'CLOB') {
+			return get_db_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY dbms_lob.substr(' . $order_field . ',4000,1) ' . $order);
+		}
+		else {
+			return get_db_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY ' . $order_field . ' ' . $order);
+		}
 	}
 	else {	
 		return get_db_all_rows_sql ('SELECT * FROM ' . $table);
@@ -365,7 +405,7 @@ function oracle_process_sql_insert($table, $values) {
 	$query .= '(' . implode(', ', $fields) . ')';
 	
 	$query .= ' VALUES (' . $values_str . ')';
-	
+
 	return process_sql($query, 'insert_id');
 }
 
@@ -426,7 +466,7 @@ function oracle_get_db_value_filter ($field, $table, $filter, $where_join = 'AND
 	if ($result === false)
 		return false;
 
-	$fieldClean = strtoupper(str_replace('`', '', $field));
+	$fieldClean = str_replace('`', '', $field);
 
 	return $result[0][$fieldClean];
 }
@@ -534,6 +574,9 @@ function oracle_format_array_to_where_clause_sql ($values, $join = 'AND', $prefi
 			if ($i < $max) {
 				$query .= ' '.$join.' ';
 			}
+			if ($i == $max) {
+				$query .= ' ) ';
+			}			
 			$i++;
 			continue;
 		}
@@ -756,7 +799,6 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 	}
 
 	$result = $pre_query.$sql.$query.$limit.$group.$order.$post_query;
-
 	if ($return){
 		return $result;
 	}
@@ -796,7 +838,7 @@ function oracle_get_db_value_sql($sql) {
  * @return mixed The first row of the result or false
  */
 function oracle_get_db_row_sql ($sql, $search_history_db = false) {
-	$sql .= "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
+	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
 	$result = get_db_all_rows_sql($sql, $search_history_db);
 
 	if($result === false)
@@ -924,7 +966,7 @@ function oracle_get_db_num_rows ($sql) {
 	oci_execute($query);
 	if ($type[0] == 'SELECT'){
 		$row = oci_fetch_assoc($query);
-		$rows = $row[NUM];
+		$rows = $row['NUM'];
 	}
 	else{
 		$rows = oci_num_rows($query);
@@ -1065,7 +1107,7 @@ function oracle_format_array_to_update_sql ($values) {
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function oracle_process_sql_update($table, $values, $where = false, $where_join = 'AND') {
+function oracle_process_sql_update($table, $values, $where = false, $where_join = 'AND', $autocommit = true) {
 	$query = sprintf ("UPDATE %s SET %s",
 	$table,
 	format_array_to_update_sql ($values));
@@ -1079,8 +1121,8 @@ function oracle_process_sql_update($table, $values, $where = false, $where_join 
 			$query .= format_array_to_where_clause_sql ($where, $where_join, ' WHERE ');
 		}
 	}
-
-	return process_sql ($query);
+	$status = '';
+	return process_sql ($query, "affected_rows", '', true, $status, $autocommit);
 }
 
 /**
@@ -1174,11 +1216,34 @@ function oracle_get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) 
 	}
 	$row = oci_fetch_assoc($result);
 
+	$result_temp = array();
+	if ($row) {
+		foreach ($row as $key => $value){
+			$column_type = oci_field_type($result, $key);
+			// Support for Clob field larger than 4000bytes
+			if ($column_type == 'CLOB') {	
+				$column_name = oci_field_name($result, $key);
+				$column_name = oci_field_name($result, $key);
+				// protect against a NULL CLOB 
+				if (is_object($row[$column_name])) {  	
+					$clob_data = $row[$column_name]->load();
+					$row[$column_name]->free();
+					$value = $clob_data;
+				}
+				else {
+					$value = '';
+				}	
+			}			
+			$result_temp[strtolower($key)] = $value;
+		}
+	}
+
 	if (!$row){
 		oci_free_statement($result);	
 	}
 
-	return $row;
+//	return $row;
+	return $result_temp;
 }
 
 /**
@@ -1272,7 +1337,7 @@ function oracle_get_db_type_field_table($table, $field) {
 	$query = oci_parse($config['dbconnection'], "SELECT * FROM " . $table . " WHERE rownum < 2");
 	oci_execute($query);	
 
-	$type = oci_field_type($query, $field);
+	$type = oci_field_type($query, $field+1);
 	oci_free_statement($query);	
 
 	return $type;

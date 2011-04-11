@@ -48,7 +48,7 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 	$filter['disabled'] = 0;
 	if ($group >= 1)
 		$filter['id_grupo'] = $group;
-	
+
 	// Get agent data
 	$agents = get_agents ($filter,
 		array ('id_grupo, nombre, id_os, id_parent, id_agente'));
@@ -587,7 +587,7 @@ function get_networkmap ($id_networkmap, $filter = false, $fields = false) {
 		
 	$filter['id_networkmap'] = $id_networkmap;
 	$filter['id_user'] = $config['id_user'];
-	
+
 	$networkmap = get_db_row_filter ('tnetwork_map', $filter, $fields);
 		
 	return $networkmap;
@@ -611,10 +611,26 @@ function get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
 	
 	$type_cond = '';
 	if($type != '') {
-		$type_cond = ' AND type = "'.$type.'"';
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$type_cond = ' AND type = "'.$type.'"';
+				break;
+			case "postgresql":
+			case "oracle":
+				$type_cond = ' AND type = \''.$type.'\'';
+				break;
+		}
 	}
 	
-	$networkmaps_raw =  get_db_all_rows_filter ('tnetwork_map', 'id_user = "'.$id_user.'"'.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$networkmaps_raw =  get_db_all_rows_filter ('tnetwork_map', 'id_user = "'.$id_user.'"'.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+			break;
+		case "postgresql":
+		case "oracle":
+			$networkmaps_raw =  get_db_all_rows_filter ('tnetwork_map', 'id_user = \''.$id_user.'\' '.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+			break;
+	}
 	
 	if($networkmaps_raw === false){
 		return false;

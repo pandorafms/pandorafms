@@ -197,7 +197,8 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 			'estado' => $new_status,
 			'id_usuario' => $config['id_user'],
 			'user_comment' => $comment);
-		$ret = process_sql_update('tevento', $values, array('id_evento' => $event));
+		
+		$ret = process_sql_update('tevento', $values, array('id_evento' => $event), 'AND', false);
 		
 		if (check_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
 			//Check ACL
@@ -282,6 +283,14 @@ function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "",
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
 				$priority, $id_agent_module, $id_aam);
 			break;
+		case "oracle":
+			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+				estado, utimestamp, id_usuario, event_type, criticity,
+				id_agentmodule, id_alert_am) 
+				VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)), "%s", "%s", %d, %d, %d)',
+				$id_agent, $id_group, $event, $status, $id_user, $event_type,
+				$priority, $id_agent_module, $id_aam);
+			break;
 	}
 	
 	return (int) process_sql ($sql, "insert_id");
@@ -300,7 +309,20 @@ function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "",
 function print_events_table ($filter = "", $limit = 10, $width = 440, $return = false) {
 	global $config;
 	
-	$sql = sprintf ("SELECT * FROM tevento %s ORDER BY timestamp DESC LIMIT %d", $filter, $limit);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ("SELECT * FROM tevento %s ORDER BY timestamp DESC LIMIT %d", $filter, $limit);
+			break;
+		case "oracle":
+			if ($filter == "") {
+				$sql = sprintf ("SELECT * FROM tevento WHERE rownum <= %d ORDER BY timestamp DESC", $limit);
+			}	
+			else {
+				$sql = sprintf ("SELECT * FROM tevento %s AND rownum <= %d ORDER BY timestamp DESC", $filter, $limit);
+			}		
+			break;
+	}
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false) {

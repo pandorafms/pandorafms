@@ -39,6 +39,10 @@ function users_extension_main_god ($god = true) {
 			$sql = "SELECT id_usuario, ip_origen, fecha, accion
 				FROM tsesion
 				WHERE descripcion = 'Logged in' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, accion";
+		case "oracle":
+			$sql = "SELECT id_usuario, ip_origen, fecha, accion
+				FROM tsesion
+				WHERE to_char(descripcion) = 'Logged in' AND utimestamp > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 3600) GROUP BY id_usuario, ip_origen,fecha, accion";
 		break;
 	}
 	

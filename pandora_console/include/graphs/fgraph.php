@@ -13,20 +13,20 @@
 include_once('functions_fsgraph.php');
 include_once('functions_utils.php');
 
-function vbar_graph($flash_chart, $chart_data, $width, $height, $color, $legend) {
+function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "") {
 	if($flash_chart) {
 		echo fs_2d_column_chart ($chart_data, $width, $height);
 	}
 	else {
-		$id_graph = uniqid();
-		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
 		$graph['height'] = $height;
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
-		
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
+
 		$id_graph = serialize_in_temp($graph);
 	
 		echo "<img src='include/graphs/functions_pchart.php?graph_type=vbar&id_graph=".$id_graph."'>";
@@ -42,13 +42,12 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	}
 }
 
-function area_graph($flash_chart, $chart_data, $width, $height, $color,$legend, $long_index) {
+function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index) {
 	if($flash_chart) {
 		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
 		$id_graph = uniqid();
-		
 		
 		$graph = array();
 		$graph['data'] = $chart_data;
@@ -58,8 +57,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,$legend, 
 		$graph['legend'] = $legend;
 		
 		serialize_in_temp($graph, $id_graph);
-		
-		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "' />";
+
+		return "<img src='include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
 	}	
 }
 
@@ -145,12 +144,23 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}	
 }
 
-function hbar_graph($flash_chart, $chart_data, $width, $height) {
+function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "") {
 	if($flash_chart) {
 		echo fs_hbar_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
 	}
 	else {
-		echo "<img src='include/graphs/functions_pchart.php?graph_type=hbar&data=".json_encode($chart_data)."&width=".$width."&height=".$height."'>";
+		$graph = array();
+		$graph['data'] = $chart_data;
+		$graph['width'] = $width;
+		$graph['height'] = $height;
+		$graph['color'] = $color;
+		$graph['legend'] = $legend;
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
+
+		$id_graph = serialize_in_temp($graph);
+	
+		echo "<img src='include/graphs/functions_pchart.php?graph_type=hbar&id_graph=".$id_graph."'>";
 	}
 }
 
@@ -181,23 +191,34 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height, $oth
 		$chart_data = $chart_data_trunc;
 	}
 	
-	switch($graph_type) {
-		case "2d":
-				if($flash_chart) {
+	if($flash_chart) {
+		switch($graph_type) {
+			case "2d":
 					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
-				}
-				else {
-					return "<img src='include/graphs/functions_pchart.php?graph_type=pie2d&data=".json_encode($chart_data)."&width=".$width."&height=".$height."&other_str=".$other_str."'>";
-				}
 				break;
-		case "3d":
-				if($flash_chart) {
+			case "3d":				
 					return fs_3d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
-				}
-				else {
-					return "<img src='include/graphs/functions_pchart.php?graph_type=pie3d&data=".json_encode($chart_data)."&width=".$width."&height=".$height."&other_str=".$other_str."'>";
-				}
 				break;
+		}
+	}
+	else {
+		$graph = array();
+		$graph['data'] = $chart_data;
+		$graph['width'] = $width;
+		$graph['height'] = $height;
+		$graph['color'] = $color;
+		$graph['legend'] = $legend;
+
+		$id_graph = serialize_in_temp($graph);
+	
+		switch($graph_type) {
+			case "2d":
+					return "<img src='include/graphs/functions_pchart.php?graph_type=pie2d&id_graph=".$id_graph."'>";
+				break;
+			case "3d":				
+					return "<img src='include/graphs/functions_pchart.php?graph_type=pie3d&id_graph=".$id_graph."'>";
+				break;
+		}
 	}
 }
 

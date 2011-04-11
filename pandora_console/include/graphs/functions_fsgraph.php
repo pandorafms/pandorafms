@@ -159,15 +159,13 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 	
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
-	
-	$pre_url = ($config["homeurl"] == "/") ? '' : $config["homeurl"];
-	
+		
 	$output = '<div id="' . $div_id. '" style="z-index:1;"></div>';
-	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
+	$output .= '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
 	$output .= '<script type="text/javascript">
 			<!--
 			function pie_' . $chart_id . ' () {
-				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+				var myChart = new FusionCharts("include/graphs/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
 				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 				myChart.addParam("WMode", "Transparent");
 				myChart.render("' . $div_id . '");
@@ -314,14 +312,13 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
 	
-	$pre_url = ($config["homeurl"] == "/") ? '' : $config["homeurl"];
 	
 	$output = '<div id="' . $div_id. '" style="z-index:1;"></div>';
-	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
+	$output .= '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
 	$output .= '<script type="text/javascript">
 			<!--
 			function pie_' . $chart_id . ' () {
-				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+				var myChart = new FusionCharts("include/graphs/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
 				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 				myChart.addParam("WMode", "Transparent");
 				myChart.render("' . $div_id . '");
@@ -468,14 +465,13 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
 	
-	$pre_url = ($config["homeurl"] == "/") ? '' : $config["homeurl"];
 	
 	$output = '<div id="' . $div_id. '" style="z-index:1;"></div>';
-	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
+	$output .= '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
 	$output .= '<script type="text/javascript">
 			<!--
 			function pie_' . $chart_id . ' () {
-				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+				var myChart = new FusionCharts("include/graphs/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
 				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 				myChart.addParam("WMode", "Transparent");
 				myChart.render("' . $div_id . '");
@@ -528,7 +524,7 @@ function fs_3d_pie_chart2 ($data, $names, $width, $height, $background = "EEEEEE
 
 	// Generate the XML
 	$chart = new FusionCharts("Pie3D", $width, $height);
-	$chart->setSWFPath("FusionCharts/");
+	$chart->setSWFPath("include/graphs/FusionCharts/");
   	$params="showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;bgColor=$background;bgAlpha=100;canvasBgAlpha=100;";
   	$chart->setChartParams($params);
 
@@ -548,7 +544,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 
 	// Generate the XML
 	$chart = new FusionCharts("Pie3D", $width, $height);
-	$chart->setSWFPath("FusionCharts/");
+	$chart->setSWFPath("include/graphs/FusionCharts/");
   	$params="showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;bgColor=$background;bgAlpha=100;canvasBgAlpha=100;";
   	$chart->setChartParams($params);
 
@@ -568,7 +564,7 @@ function fs_hbar_chart ($data, $names, $width, $height) {
 
 	// Generate the XML
 	$chart = new FusionCharts("Bar2D", $width, $height);
-	$chart->setSWFPath("FusionCharts/");
+	$chart->setSWFPath("include/graphs/FusionCharts/");
   	$params="showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;rotateNames=1;chartLeftMargin=0;chartRightMargin=0;chartBottomMargin=0;chartTopMargin=0;showBarShadow=1;showLimits=1";
   	$chart->setChartParams($params);
 
@@ -591,7 +587,7 @@ function fs_2d_column_chart ($data, $width, $height) {
 
 	$pixels_between_xdata = 25;
 	$max_xdata_display = round($width / $pixels_between_xdata);
-	$ndata = count($chart_data);
+	$ndata = count($data);
 	if($max_xdata_display > $ndata) {
 		$xdata_display = $ndata;
 	}
@@ -611,9 +607,8 @@ function fs_2d_column_chart ($data, $width, $height) {
 			if (($count % $step) == 0) {
 				$show_name = '1';
 			}
-				debugPrint($i, '/tmp/logo');
 
-			$chart->addCategory($i."2", //'');
+			$chart->addCategory($i, //'');
 					'hoverText=' . $i .  
 					';showName=' . $show_name);
 			
@@ -632,12 +627,11 @@ function fs_2d_column_chart ($data, $width, $height) {
     $empty = 0;
     $num_vlines = 0;
     $count = 0;
-    $step = 3;
 
 	foreach ($data as $legend_value => $values) {
 
 		foreach($values as $name => $value) {
-			if ($count++ % $step == 0) {
+			if (($count++ % $step) == 0) {
 				$show_name = '1';
 				$num_vlines++;
 			} else {
@@ -697,7 +691,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 	
 	// Generate the XML
 	$chart = new FusionCharts("Gantt", $width, $height, "1", "0");
-	$chart->setSWFPath("FusionCharts/");
+	$chart->setSWFPath("include/graphs/FusionCharts/");
 	$chart->setChartParams('dateFormat=dd/mm/yyyy;hoverCapBorderColor=2222ff;hoverCapBgColor=e1f5ff;ganttLineAlpha=80;canvasBorderColor=024455;canvasBorderThickness=0;gridBorderColor=2179b1;gridBorderAlpha=20;ganttWidthPercent=80');
 	$chart->setGanttProcessesParams('headerText=' . __('Task') . ';fontColor=ffffff;fontSize=9;isBold=1;isAnimated=1;bgColor=2179b1;headerbgColor=2179b1;headerFontColor=ffffff;headerFontSize=12;align=left');
 	$chart->setGanttTasksParams('');

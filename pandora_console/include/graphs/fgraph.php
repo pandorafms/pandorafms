@@ -269,4 +269,9 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height, $oth
 function gantt_graph($project_name, $from, $to, $tasks, $milestones, $width, $height) {
 	return fs_gantt_chart ($project_name, $from, $to, $tasks, $milestones, $width, $height);
 }
+
+function include_flash_chart_script() {
+	echo '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
+}
+
 ?>

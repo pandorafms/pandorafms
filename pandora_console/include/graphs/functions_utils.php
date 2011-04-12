@@ -69,7 +69,6 @@ function reverse_data($array) {
 	return $array2;
 }
 
-
 function stack_data(&$chart_data, &$legend = null, &$color = null) {
 	foreach ($chart_data as $val_x => $graphs) {
 		$prev_val = 0;

@@ -1,6 +1,14 @@
 2011-04-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_fsgraph.php
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php: Created a function to 
+	include flash charts javascript file into abstraction.
+	Clean code
+
+2011-04-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_fsgraph.php
 	include/graphs/functions_gd.php
 	include/graphs/images_graphs
 	include/graphs/images_graphs/outlimits.png

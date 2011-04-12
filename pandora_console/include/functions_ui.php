@@ -68,6 +68,35 @@ function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $r
 	}
 }
 
+/**
+ * Print a string with a smaller font depending on its size.
+ * 
+ * @param string $string String to be display with a smaller font.
+ * @param boolean $return Flag to return as string or not.
+ */
+function printSmallFont ($string, $return = true) {
+	$str = str_replace ('&#x20;', ' ', $string);
+	$length = strlen($str);
+	if ($length >= 30) {
+		$size = 0.7;
+	} elseif ($length >= 20) {
+		$size = 0.8;
+	} elseif ($length >= 10) {
+		$size = 0.9;
+	} elseif ($length < 10) {
+		$size = 1;
+	}
+	
+	$s = '<span style="font-size: '.$size.'em;">';
+	$s .= $string;
+	$s .= '</span>';
+	if ($return) {
+		return $s;
+	} else {
+		echo $s;
+	}
+}
+
 /** 
  * Prints a generic message between tags.
  * 

@@ -1,3 +1,14 @@
+2011-04-12 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_reporting.php: Fixed the functionality for the sla
+	horitontal bar graph. Truncated some agent and module names. Cleaned the
+	 code style
+	* include/ajax/reporting.ajax.php: Added functionality to add & delete
+	elements from the global reports
+	* include/functions_ui.php: Added function printSmallFont
+	* godmode/reporting/reporting_builder.item_editor.php: Fixed a wee
+	problem with the module combo size
+
 2011-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/users_connected.php

@@ -27,13 +27,27 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 }
 
 $delete_sla_item = get_parameter('delete_sla_item', 0);
+$delete_general_item = get_parameter('delete_general_item', 0);
 $get_custom_sql = get_parameter('get_custom_sql', 0);
 $add_sla = get_parameter('add_sla', 0);
+$add_general = get_parameter('add_general', 0);
 $id = get_parameter('id', 0);
 $truncate_text = get_parameter ('truncate_text', 0);
 
 if ($delete_sla_item) {
 	$result = process_sql_delete('treport_content_sla_combined', array('id' => (int)$id));
+	
+	$data['correct'] = 1;
+	if ($result === false) {
+		$data['correct'] = 0;
+	}
+	
+	echo json_encode($data);
+	return;
+}
+
+if ($delete_general_item) {
+	$result = process_sql_delete('treport_content_item', array('id' => (int)$id));
 	
 	$data['correct'] = 1;
 	if ($result === false) {
@@ -56,6 +70,25 @@ if ($add_sla) {
 		'sla_max' => $sla_max,
 		'sla_min' => $sla_min,
 		'sla_limit' => $sla_limit));
+	
+	if ($result === false) {
+		$data['correct'] = 0;
+	}
+	else {
+		$data['correct'] = 1;
+		$data['id'] = $result;
+	}
+	
+	echo json_encode($data);
+	return;
+}
+
+if ($add_general) {
+	$id_module = get_parameter('id_module', 0);
+	
+	$result = process_sql_insert('treport_content_item', array(
+		'id_report_content' => $id,
+		'id_agent_module' => $id_module));
 	
 	if ($result === false) {
 		$data['correct'] = 0;

@@ -389,9 +389,15 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	global $config;
 	
 	// Initialize variables
-	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
-	if ($daysWeek === null) $daysWeek = array();
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if ((empty ($period)) OR ($period == 0)) {
+		$period = $config["sla_period"];
+	}
+	if ($daysWeek === null) {
+		$daysWeek = array();
+	}
 	// Limit date to start searching data
 	$datelimit = $date - $period;
 	
@@ -405,7 +411,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	$days = array();
 	//Translate to mysql week days
 
-	if ($daysWeek)
+	if ($daysWeek) {
 		foreach ($daysWeek as $key => $value) {
 			if (!$value) {
 				if ($key == 'monday') {
@@ -431,6 +437,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 				}
 			}
 		}
+	}
 
 	if (count($days) > 0) {
 		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
@@ -445,7 +452,9 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	}
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = get_db_all_rows_sql ($sql, true);
-	if ($interval_data === false) $interval_data = array ();
+	if ($interval_data === false) {
+		$interval_data = array ();
+	}
 	
 	// Get previous data
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);
@@ -528,9 +537,23 @@ function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 
 	$time = (string) get_parameter ('time', date ('h:iA'));
 	$datetime = strtotime ($date.' '.$time);
 	
-	$k=20;
+	//Get the module_interval
+	$interval = get_module_interval ($id_agent_module);
+	
+	if ($period < 3600) {
+		$k = 6;
+	} elseif ($period < 86400) {
+		$k = 24;
+	} elseif ($period < 172800) {
+		$k = 48;
+	} else {
+		$k = 100;
+	}
 	$slices = $config["graph_res"] * $k;
 	$sub_period = $period / $slices;
+	if ($sub_period < $interval) {
+		$sub_period = $interval;
+	}
 	$final_time = $datetime - $period + $sub_period;
 
 	$data = array();
@@ -538,13 +561,13 @@ function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 
 	while ($final_time <= $datetime) {
 		$sla_value = get_agentmodule_sla ($id_agent_module, $sub_period, $min_value, $max_value, $final_time,
 			$days, $timeFrom, $timeTo);
-		if ($sla_value == false) {// 4 for the Unknown value
+		if ($sla_value === false || $sla_value < 0) {// 4 for the Unknown value
 			$data[$i] = 4;
 		} elseif (($sla_value >= ($sla_limit - 10)) && ($sla_value <= ($sla_limit + 10))) {//2 when value is within the edges
 			$data[$i] = 2;
 		} elseif ($sla_value > ($sla_limit + 10)) { //1 when value is OK
 			$data[$i] = 1; 
-		} elseif ($sla_value < ($sla_value - 10)) { //3 when value is Wrong
+		} elseif ($sla_value < ($sla_limit - 10)) { //3 when value is Wrong
 			$data[$i] = 3;
 		}
 		$final_time += $sub_period;
@@ -1861,7 +1884,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[1][0] = 4;
 			$data = array ();
 			$data[0] = $sizh.__('Simple graph').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -1884,7 +1907,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[1][0] = 4;
 			$data = array ();
 			$data[0] = $sizh.__('Simple baseline graph').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 65, false).' <br> '.printTruncateText($module_name, 65, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -1908,7 +1931,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 			$data = array ();
 			$data[0] = $sizh.__('Custom graph').$sizhfin;
-			$data[1] = $sizh.$graph['name'].$sizhfin;
+			$data[1] = $sizh.printTruncateText($graph['name'], 25, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2013,6 +2036,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
@@ -2032,9 +2056,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				
 				if ($show_graph == 0 || $show_graph == 1) {
 					$data = array ();
-					$data[0] = printTruncateText(get_agentmodule_agent_name ($sla['id_agent_module']));
-					$data[1] = printTruncateText(get_agentmodule_name ($sla['id_agent_module']));
-					$data[2] = $sla['sla_max'].' / ';
+					$data[0] = printSmallFont(get_agentmodule_agent_name ($sla['id_agent_module']));
+					$data[1] = printSmallFont(get_agentmodule_name ($sla['id_agent_module']));
+					$data[2] = $sla['sla_max'].'/';
 					$data[2] .= $sla['sla_min'];
 					$data[3] = $sla['sla_limit'];
 									
@@ -2051,7 +2075,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
 							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 						}
-						$data[4] .= format_numeric ($sla_value). " %";
+						$data[4] .= format_numeric ($sla_value). "%";
 					}
 					$data[4] .= "</span>";
 					
@@ -2086,16 +2110,17 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$daysWeek = json_encode ($days);
 				
 				$table2->width = '99%';
+				$table2->style[0] = 'text-align: right';
 				$table2->data = array ();
 				foreach ($slas as $sla) {
 					$data = array();
-					$data[0] = get_agentmodule_agent_name ($sla['id_agent_module']);
-					$data[0] .= '/';
-					$data[0] .= get_agentmodule_name ($sla['id_agent_module']);
+					$data[0] = printSmallFont(get_agentmodule_agent_name ($sla['id_agent_module']));
+					$data[0] .= "<br>";
+					$data[0] .= printSmallFont(get_agentmodule_name ($sla['id_agent_module']));
 					$data[1] = "<img src='include/fgraph.php?tipo=sla_horizontal_graph&id=".$sla['id_agent_module'].
 					"&period=".$content['period']."&value1=".$sla['sla_min']."&value2=".$sla['sla_max'].
 					"&value3=".$content['time_from']."&value4=".$content['time_to']."&percent=".$sla['sla_limit'].
-					"&daysWeek=".$daysWeek."&height=15&width=550'>";
+					"&daysWeek=".$daysWeek."&height=25&width=550'>";
 					array_push ($table2->data, $data);
 				}
 				$table->colspan[4][0] = 3;
@@ -2109,13 +2134,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Monitor report').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2143,7 +2168,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Avg. Value').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name).' - '.printTruncateText($module_name).$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2172,7 +2197,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Max. Value').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2196,7 +2221,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Min. Value').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2225,7 +2250,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Summatory').$sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2255,7 +2280,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Agent detailed event').$sizhfin;
-			$data[1] = $sizh.get_agent_name($content['id_agent']).$sizhfin;
+			$data[1] = $sizh.printTruncateText(get_agent_name($content['id_agent']), 75, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2394,7 +2419,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'event_report_group':
 			$data = array ();
 			$data[0] = $sizh . __('Group detailed event') . $sizhfin;
-			$data[1] = $sizh . get_group_name($content['id_agent']) . $sizhfin;
+			$data[1] = $sizh . printTruncateText(get_group_name($content['id_group']), 60, false) . $sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2407,14 +2432,14 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
-			$data[0] = get_group_detailed_event_reporting($content['id_agent'], $content['period'], $report["datetime"], true);
+			$data[0] = get_group_detailed_event_reporting($content['id_group'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
 
 		case 'event_report_module':
 			$data = array ();
 			$data[0] = $sizh. __('Module detailed event') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2433,7 +2458,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'alert_report_module':
 			$data = array ();
 			$data[0] = $sizh. __('Alert report module') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2452,7 +2477,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'alert_report_agent':
 			$data = array ();
 			$data[0] = $sizh. __('Alert report agent') . $sizhfin;
-			$data[1] = $sizh.$agent_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2495,7 +2520,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'database_serialized':
 			$data = array ();
 			$data[0] = $sizh. __('Serialize data') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2546,7 +2571,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'TTRT':
 			$data = array ();
 			$data[0] = $sizh. __('TTRT') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2574,7 +2599,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'TTO':
 			$data = array ();
 			$data[0] = $sizh. __('TTO') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2602,7 +2627,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'MTBF':
 			$data = array ();
 			$data[0] = $sizh. __('MTBF') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2630,7 +2655,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'MTTR':
 			$data = array ();
 			$data[0] = $sizh. __('MTTR') . $sizhfin;
-			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2722,8 +2747,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 						$i=0;
 						foreach ($data_avg as $d) {
 							$data = array();
-							$data[0] = printTruncateText($agent_name[$i], 30);
-							$data[1] = printTruncateText($module_name[$i], 30);
+							$data[0] = printSmallFont($agent_name[$i]);
+							$data[1] = printSmallFont($module_name[$i]);
 							$d === false ? $data[2] = '--':$data[2] = $d;
 							array_push ($table1->data, $data);
 							$i++;
@@ -2734,8 +2759,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 						$i=0;
 						foreach ($agent_name as $a) {
 							$data = array();
-							$data[0] = printTruncateText($agent_name[$i], 30);
-							$data[1] = printTruncateText($module_name[$i], 30);
+							$data[0] = printSmallFont($agent_name[$i]);
+							$data[1] = printSmallFont($module_name[$i]);
 							$data_avg[$i] === false ? $data[2] = '--':$data[2] = $data_avg[$i];
 							array_push ($table1->data, $data);
 							$i++;
@@ -2785,14 +2810,14 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$table2->style[0] = 'text-align: center';
 					$i = 1;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = printTruncateText($m['nombre'], 20);
+						$table2->head[$i] = printTruncateText($m['nombre'], 20, false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
 					}
 
 					foreach ($agent_list as $a) {
 						$data = array();
-						$data[0] = printTruncateText($a['nombre'], 20);
+						$data[0] = printSmallFont($a['nombre']);
 						$i = 1;
 						foreach ($modules_list as $m) {
 							foreach ($generals as $g) {
@@ -2990,8 +3015,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data_pie_graph[$agent_name[$i]] = $dt;
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
-						$data[0] = printTruncateText($agent_name[$i], 30);
-						$data[1] = printTruncateText($module_name[$i], 30);
+						$data[0] = printSmallFont($agent_name[$i]);
+						$data[1] = printSmallFont($module_name[$i]);
 						$data[2] = $dt;
 						array_push ($table1->data, $data);
 					}
@@ -3006,8 +3031,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data_pie_graph[$an] = $data_top[$i];
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
-						$data[0] = printTruncateText($an, 30);
-						$data[1] = printTruncateText($module_name[$i], 30);
+						$data[0] = printSmallFont($an);
+						$data[1] = printSmallFont($module_name[$i]);
 						$data[2] = $data_top[$i];
 						array_push ($table1->data, $data);
 					}
@@ -3245,8 +3270,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 						$data_pie_graph[$agent_name[$j]] = $dex;
 						if  ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
-							$data[0] = printTruncateText($agent_name[$j], 30);
-							$data[1] = printTruncateText($module_name[$j], 30);
+							$data[0] = printSmallFont($agent_name[$j]);
+							$data[1] = printSmallFont($module_name[$j]);
 							$data[2] = $dex;
 							array_push ($table1->data, $data);
 						}
@@ -3260,8 +3285,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 						$data_pie_graph[$an] = $data_exceptions[$j];
 						if  ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
-							$data[0] = printTruncateText($an, 30);
-							$data[1] = printTruncateText($module_name[$j], 30);
+							$data[0] = printSmallFont($an);
+							$data[1] = printSmallFont($module_name[$j]);
 							$data[2] = $data_exceptions[$j];
 							array_push ($table1->data, $data);
 						}

@@ -1,3 +1,18 @@
+2011-04-12 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_daemon: Deleted code that kill tentacle server and
+	replaced kill -9 to kill of agent stop command.
+	* Linux/pandora_agent.conf, AIX/pandora_agent.conf, 
+	HP-UX/pandora_agent.conf,SunOS/pandora_agent.conf : Added parameters 
+	proxy_max_connection and proxy_timeout 1.
+	* pandora_agent: Fixed problems launching tentacle_server and also 
+	added code to handle kill signal.
+
+2011-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent: Fixed an error with command that launch tentacle server
+	when proxy mode is enable.
+
 2011-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandora_agent_installer: Added code to install tentacle_server with

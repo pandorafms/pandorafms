@@ -150,7 +150,9 @@ my %Conf = (
 	'udp_server_auth_address' => '0.0.0.0',
 	'udp_server' => 0,
 	'proxy_mode' => 0,
-	'proxy_user' => 'pandora'
+	'proxy_user' => 'pandora',
+	'proxy_max_connection' => 10,
+	'proxy_timeout' => 1,
 );
 
 # Modules
@@ -189,6 +191,9 @@ my $DevNull = '/dev/null';
 
 # Shell command separator
 my $CmdSep = ';';
+
+# PID of tentacle proxy, used in proxy mode
+my $tentacle_pid = undef;
 
 ################################################################################
 # Print usage information and exit.
@@ -615,20 +620,26 @@ sub check_remote_config () {
 # Launchs tentacle server in proxy mode.
 ################################################################################
 sub launch_tentacle_proxy () {
+	# Check if proxy server ip is right.
+	if ($Conf{'server_ip'} ne "localhost") {	
 		
-	# Check if proxy mode is enable.
-	if ($Conf{'proxy_mode'}) {		
-			
-		my $auxPid = fork();	
-		
-		if (! $auxPid) {
-			
-			my $new_process = "sudo -u ".$Conf{'proxy_user'}." tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'};
+		#Create a new process and launch tentacle.
+		$tentacle_pid = fork();	
 
-			log_message ('setup', 'Proxy mode enabled');	
-					
+		if ($tentacle_pid == 0) {
+			# Change the UID
+			my $proxy_user_id = getpwnam($Conf{'proxy_user'});
+			$< = $proxy_user_id;
+			$> = $proxy_user_id;
+
+			#Execute tentacle server as a daemon
+			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
+
+			log_message ('setup', 'Proxy mode enabled');
 			exec ($new_process);		
-		}
+		} 
+	} else {
+		log_message ('error', 'You can not proxy to localhost');
 	}
 }
 
@@ -1354,8 +1365,25 @@ sub exec_plugin ($) {
 }
 
 ################################################################################
+# TERM Handler
+################################################################################
+sub kill_signal_handler (){
+	# Kill tentacle server if it was launched
+
+	if (defined ($tentacle_pid)) {
+			print "kill -9 $tentacle_pid\n";
+			`kill -9 $tentacle_pid`;
+	}
+	exit (0);
+}
+
+################################################################################
 # Main.
 ################################################################################
+
+#Handler TERM signal.
+$SIG{'TERM'} = \&kill_signal_handler;
+
 
 # Check command line arguments
 print_usage unless ($#ARGV == 0);
@@ -1403,8 +1431,10 @@ sleep ($Conf{'delayed_startup'});
 my $PID = $$;
 `renice "$Conf{'pandora_nice'}" "$PID"`;
 
-#Launch tentacle server in proxy mode if needed
-launch_tentacle_proxy();
+#Launch tentacle server in proxy mode if configured
+if ($Conf{'proxy_mode'}) {	
+	launch_tentacle_proxy();
+}
 
 # Add the plugins directory to the PATH
 $ENV{'PATH'} .= ":$ConfDir/plugins";
@@ -1423,8 +1453,8 @@ if ($Conf{'udp_server'} == 1){
 # Loop
 while (1) {
 
-	# Ignore signals from UDP server while processing execution
-	if ($Conf{'udp_server'} == 1){
+	# Ignore signals from UDP and Tentacle server while processing execution
+	if ($Conf{'udp_server'} == 1 || $Conf{'proxy_mode'}){
 		$SIG{'INT'} = 'DEFAULT';
 	}
 

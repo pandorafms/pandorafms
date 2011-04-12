@@ -1,3 +1,10 @@
+2011-04-12  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/uses/configure_profile.php: Fixed $name twice encoding.
+	It is already encoded.
+
+	* godmode/admin_access_logs.php: Fixed encoding characters are shown.
+
 2011-04-11 SAncho Lerena <slerena@artica.es>
 
 	* images/console/backgrounds: Removed old images (not

@@ -246,7 +246,7 @@ foreach ($result as $row) {
 			$data[3] = $row["ip_origen"];
 			break;
 	}
-	$data[4] = $row["descripcion"];
+	$data[4] = safe_output($row["descripcion"]);
 	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
 		switch ($config['dbtype']) {
 			case "mysql":

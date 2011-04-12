@@ -44,7 +44,7 @@ switch ($action) {
 		$line = null;
 		$description = null;
 		$sql = null;
-		$group = null;
+		$group = 0;
 		$only_display_wrong = 0;
 		$monday = true;
 		$tuesday = true;
@@ -226,7 +226,7 @@ switch ($action) {
 			case 'event_report_group':
 				$description = $item['description'];
 				$period = $item['period'];
-				$group = $item['id_agent'];
+				$group = $item['id_group'];
 				break;
 			case 'event_report_module':
 				$description = $item['description'];
@@ -361,7 +361,7 @@ print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_module" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Module'); ?></td>
-			<td style="">
+			<td style="max-width: 180px">
 				<?php
 				if($idAgent) {
 					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent;
@@ -369,7 +369,7 @@ print_input_hidden('id_item', $idItem);
 				}
 				else {	
 					?>
-					<select id="id_agent_module" name="id_agent_module" disabled="disabled">
+					<select style="max-width: 180px" id="id_agent_module" name="id_agent_module" disabled="disabled">
 						<option value="0"><?php echo __('Select an Agent first'); ?></option>
 					</select>
 					<?php
@@ -552,8 +552,8 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$nameModule = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
-								<td>' . printTruncateText($nameAgent, 20) . '</td>
-								<td>' . printTruncateText($nameModule, 20) . '</td>
+								<td>' . printSmallFont($nameAgent) . '</td>
+								<td>' . printSmallFont($nameModule) . '</td>
 								<td>' . $item['sla_min'] . '</td>
 								<td>' . $item['sla_max'] . '</td>
 								<td>' . $item['sla_limit'] . '</td>
@@ -630,8 +630,8 @@ function print_General_list($width, $action, $idItem = null) {
 						$nameModule = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
-								<td>' . printTruncateText($nameAgent, 35) . '</td>
-								<td>' . printTruncateText($nameModule, 35) . '</td>
+								<td>' . printSmallFont($nameAgent) . '</td>
+								<td>' . printSmallFont($nameModule) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
 								</td>

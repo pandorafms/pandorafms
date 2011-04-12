@@ -20,6 +20,8 @@ global $config;
 
 require_once ("include/functions_agents.php");
 
+require_once ($config["homedir"] . '/include/functions_graph.php');
+
 if ($config['flash_charts']) {
 	require_once ("include/fgraph.php");
 }
@@ -49,16 +51,17 @@ echo '<div style="height: 10px">&nbsp;</div>';
 //Floating div
 echo '<div style="float:right; width:320px; padding-top:11px;">';
 echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-if ($config['flash_charts']) {
-	echo graphic_agentaccess ($id_agente, 280, 110, 86400);
-} else {
-	echo '<img border="1" src="include/fgraph.php?id='.$id_agente.'&tipo=agentaccess&height=90&width=290" />';
-}
+
+graphic_agentaccess2($id_agente, 280, 110, 86400);
+
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
 if ($config['flash_charts']) {
+	///////
 	echo graphic_agentevents ($id_agente, 290, 60, 86400);
-	echo graph_event_module (290, 120, $id_agente);
+	///////
+	echo graph_event_module2 (290, 120, $id_agente);
+
 } else {
 	echo '<img border="1" src="include/fgraph.php?tipo=event_module&width=290&height=180&id_agent='.$id_agente.'" />';
 }

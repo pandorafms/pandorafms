@@ -17,6 +17,11 @@
 include_once($config["homedir"] . "/include/graphs/fgraph.php");
 include_once($config["homedir"] . "/include/functions_reporting.php");
 
+define("GRAPH_AREA", 0);
+define("GRAPH_STACKED_AREA", 1);
+define("GRAPH_LINE", 2);
+define("GRAPH_STACKED_LINE", 3);
+
 function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 				$width, $height , $title, $unit_name,
 				$show_alerts, $avg_only = 0, $pure = false,
@@ -600,56 +605,115 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
 	}
-	////////////////////////////////////////////////////////////////////////////
+	
 	switch ($stacked) {
-		case 0:
+		case GRAPH_AREA:
 			$color = null;
 			return area_graph($config['flash_charts'], $graph_values, $width, $height,
-				$color, $module_name_list, $long_index);
-			return;
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
 		default:
-		case 1:
+		case GRAPH_STACKED_AREA:
 			$color = null;
 			return stacked_area_graph($config['flash_charts'], $graph_values, $width, $height,
-				$color, $module_name_list, $long_index);
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
-		case 2:
+		case GRAPH_LINE:
 			$color = null;
 			return line_graph($config['flash_charts'], $graph_values, $width, $height,
-				$color, $module_name_list, $long_index);
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
-		case 3:
+		case GRAPH_STACKED_LINE:
 			$color = null;
-			return line_graph($config['flash_charts'], $graph_values, $width, $height,
-				$color, $module_name_list, $long_index);
+			return stacked_line_graph($config['flash_charts'], $graph_values, $width, $height,
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
-	}	
+	}
+}
+
+/**
+ * Print a graph with access data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
+function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+
+	$resolution = $config["graph_res"] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
 	
-	////////////////////////////////////////////////////////////////////////////
-	if (! $graphic_type) {
-		return fs_combined_chart ($graph_values, $graph, $module_name_list, $width, $height, $stacked, $resolution / 10, $time_format);
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			$name = date('G:i', $bottom);
+		} else {
+			$name = $bottom;
+		}
+
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$data[$name]['data'] = (int) get_db_value_filter ('COUNT(*)',
+			'tagent_access',
+			array ('id_agent' => $id_agent,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top));
+	}
+	
+	echo area_graph($config['flash_charts'], $data, $width, $height,
+		null, null, null, "images/image_problem.opaque.png");
+}
+
+/**
+ * Print a pie graph with events data of agent
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer id_agent Agent ID
+ */
+function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$max_items = 6;
+	$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
+		FROM tevento, tagente_modulo
+		WHERE id_agentmodule = id_agente_modulo
+			AND disabled = 0 AND tevento.id_agente = %d
+		GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
+	$events = get_db_all_rows_sql ($sql);
+	if ($events === false) {
+		if (! $graphic_type) {
+			return fs_error_image ();
+		}
+		graphic_error ();
+		return;
 	}
 
-	$engine = get_graph_engine ($period);
-	
-	$engine->width = $width;
-	$engine->height = $height;
-	$engine->data = &$graph_values;
-	$engine->legend = $module_name_list;
-	$engine->fontpath = $config['fontpath'];
-	$engine->title = "";
-	$engine->subtitle = "";
-	$engine->show_title = !$pure;
-	$engine->stacked = $stacked;
-	$engine->xaxis_interval = $resolution;
-	$events = false;
-	$alerts = false;
-	if (!isset($max_value)) {
-		$max_value = 0;
+
+	foreach ($events as $event) {
+		$data[$event['nombre'].' ('.$event['count_number'].')'] = $event["count_number"];
 	}
 	
-	$engine->combined_graph ($graph, $events, $alerts, $unit_name, $max_value, $stacked);
+	/* System events */
+	$sql = "SELECT COUNT(*) FROM tevento WHERE id_agentmodule = 0 AND id_agente = $id_agent";
+	$value = get_db_sql ($sql);
+	if ($value > 0) {
+		$data[__('System').' ('.$value.')'] = $value;
+	}
+	asort ($data);
+	
+	return pie3d_graph(0, $data, $width, $height, __("other"));
 }
 ?>

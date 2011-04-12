@@ -133,7 +133,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 		serialize_in_temp($graph, $id_graph);
 		
 		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=stacked_area&id_graph=" . $id_graph . "' />";
-	}	
+	}
 }
 
 function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
@@ -241,7 +241,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height, $oth
 					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
 				break;
 			case "3d":				
-					return fs_3d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
+					return fs_3d_pie_chart2(array_values($chart_data), array_keys($chart_data), $width, $height);
 				break;
 		}
 	}
@@ -250,8 +250,6 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height, $oth
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
 		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
 
 		$id_graph = serialize_in_temp($graph);
 	

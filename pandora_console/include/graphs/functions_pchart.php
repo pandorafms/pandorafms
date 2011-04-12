@@ -52,8 +52,12 @@ if (!isset($graph)) {
 $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
-$colors = $graph['color'];
-$legend = $graph['legend'];
+$colors = null;
+if (isset($graph['color']))
+	$colors = $graph['color'];
+$legend = null;
+if (isset($graph['legend']))
+	$legend = $graph['legend'];
 $xaxisname = '';
 if(isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
@@ -124,6 +128,8 @@ switch($graph_type) {
 	case 'radar':
 	case 'progress':
 	case 'area':
+	case 'stacked_area':
+	case 'stacked_line':
 	case 'line':
 	case 'threshold':
 	case 'scatter':
@@ -147,11 +153,12 @@ switch($graph_type) {
 			break;
 }
 
-
-if(!is_array(reset($data_values))) {
-	$data_values = array($data_values);
-	if(is_array($colors) && !empty($colors)) {
-		$colors = array($colors);
+if (($graph_type != 'pie3d') && ($graph_type != 'pie2d')) {
+	if(!is_array(reset($data_values))) {
+		$data_values = array($data_values);
+		if(is_array($colors) && !empty($colors)) {
+			$colors = array($colors);
+		}
 	}
 }
 
@@ -240,7 +247,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 
 	 /* Set the default font properties */ 
 	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>10,"R"=>80,"G"=>80,"B"=>80));
-
+	 
 	 /* Create the pPie object */ 
 	 $PieChart = new pPie($myPicture,$MyData);
 
@@ -489,13 +496,28 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 		$myPicture->drawLegend($width-$size['Width'], 8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL));
 	 }
 	 
+	 //Calculate the bottom margin from the size of string in each index
+	 $max_chars = 0;
+	 foreach ($index as $string_index) {
+	 	if (empty($string_index)) continue;
+	 	
+	 	$len = strlen($string_index);
+	 	if ($len > $max_chars) {
+	 		$max_chars = $len; 
+	 	}
+	 }
+	 $margin_bottom = 10 * $max_chars;
+	 //$margin_bottom = 90;
+	 
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
+	 	//$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
+	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - $margin_bottom);
 	 }
 	 else {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40, 5,$width,$height - 90);
+	 	//$myPicture->setGraphArea(40, 5,$width,$height - 90);
+	 	$myPicture->setGraphArea(40, 5,$width,$height - $margin_bottom);
 	 }
 
 	 /* Draw the scale */

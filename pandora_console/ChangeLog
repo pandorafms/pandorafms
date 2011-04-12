@@ -1,3 +1,10 @@
+2011-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/users_connected.php
+	operation/incidents/incident.list.php
+	godmode/agentes/module_manager.php: Fixed some mistakes of my last 
+	commit. 
+
 2011-04-12 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php: added constants for some graphs. Added

@@ -1,3 +1,13 @@
+2011-04-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_fsgraph.php
+	include/graphs/functions_gd.php
+	include/graphs/images_graphs
+	include/graphs/images_graphs/outlimits.png
+	include/graphs/fgraph.php: Added new file with sd functions
+	of two graphs, histogram and progress bar. Added folder with
+	graph abstraction default images. Clean code
+
 2011-04-12  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/uses/configure_profile.php: Fixed $name twice encoding.

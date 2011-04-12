@@ -1,9 +1,5 @@
 <?PHP
 
-
-// INTEGRIA IMS v2.0
-// http://www.integriaims.com
-// ===========================================================
 // Copyright (c) 2007-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2008 Esteban Sanchez, estebans@artica.es
 // Copyright (c) 2007-2011 Artica, info@artica.es
@@ -333,7 +329,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 
 function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index) {
 	global $config;
-	
+
 	$graph_type = "MSArea2D"; //MSLine is possible also
 	
 	$chart = new FusionCharts($graph_type, $width, $height);
@@ -349,7 +345,6 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	}
 	
 	$step = round($ndata/$xdata_display);
-	
 	
 	if(is_array(reset($chart_data))) {
 	 	$data2 = array();
@@ -392,10 +387,9 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	 }
 	
 	 $a = 0;
-	 
+	 	
 	$empty = 1;
 	foreach ($data as $i => $value) {	
-		
 		$legend_text = '';
 		if (isset($legend[$i])) {
 			$legend_text = $legend[$i];

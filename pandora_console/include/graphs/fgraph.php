@@ -10,8 +10,48 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-include_once('functions_fsgraph.php');
-include_once('functions_utils.php');
+
+// If is called from index
+if(file_exists('include/functions.php')) {
+	include_once('include/functions.php');
+	include_once('include/graphs/functions_fsgraph.php');
+	include_once('include/graphs/functions_utils.php');
+} // If is called through url
+else if(file_exists('../functions.php')) {
+	include_once('../functions.php');
+	include_once('../functions_html.php');
+	include_once('functions_fsgraph.php');
+	include_once('functions_gd.php');
+	include_once('functions_utils.php');
+}
+
+$graph_type = get_parameter('graph_type', '');
+
+switch($graph_type) {
+	case 'histogram': 
+				$width = get_parameter('width');
+				$height = get_parameter('height');
+				$font = get_parameter('font');
+				$data = json_decode(safe_output(get_parameter('data')), true);
+
+				$max = get_parameter('max');
+				$title = get_parameter('title');
+				$mode = get_parameter ('mode', 1);
+				gd_histogram ($width, $height, $mode, $data, $max, $font, $title);
+				break;
+	case 'progressbar':
+				$width = get_parameter('width');
+				$height = get_parameter('height');
+				$progress = get_parameter('progress');
+				
+				$out_of_lim_str = get_parameter('out_of_lim_str', false);
+				$out_of_lim_image = get_parameter('out_of_lim_image', false);
+
+				$font = get_parameter('font');
+				$title = get_parameter('title');
+				gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image);
+				break;
+}
 
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "") {
 	if($flash_chart) {
@@ -42,7 +82,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	}
 }
 
-function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "") {
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -59,7 +99,9 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['height'] = $height;
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
-		
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
+				
 		serialize_in_temp($graph, $id_graph);
 
 		return "<img src='include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
@@ -91,7 +133,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 		serialize_in_temp($graph, $id_graph);
 		
 		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=stacked_area&id_graph=" . $id_graph . "' />";
-	}
+	}	
 }
 
 function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {

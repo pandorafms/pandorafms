@@ -45,7 +45,7 @@ if ($delete_profile) {
 	}
 	else {		
 		pandora_audit("Profile management",
-			"Delete profile ".safe_input($profile['name']));
+			"Delete profile ". $profile['name']);
 		
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
@@ -90,7 +90,7 @@ if ($update_profile) {
 			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
 			' Pandora Management: ' . $pandora_management;
 		pandora_audit("User management",
-			"Update profile ".safe_input($name), false, false, $info);
+			"Update profile ". $name, false, false, $info);
 		
 		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
@@ -140,7 +140,7 @@ if ($create_profile) {
 			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
 			' Pandora Management: ' . $pandora_management;
 		pandora_audit("User management",
-			"Created profile ".safe_input($name), false, false, $info);
+			"Created profile ". $name, false, false, $info);
 	}
 	else {
 		echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
@@ -188,7 +188,7 @@ if ($id_profile || $new_profile) {
 		$pandora_management = (bool) $profile["pandora_management"];
 		
 		$id_audit = pandora_audit("User management",
-			"Edit profile ".safe_input($name));
+			"Edit profile ". $name);
 		enterprise_include_once('include/functions_audit.php');
 		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
 			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .

@@ -187,7 +187,7 @@ switch ($sortField) {
 				switch ($config["dbtype"]) {
 					case "mysql":
 					case "postgresql":
-						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
+						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 						break;
 					case "oracle":	
 						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
@@ -244,7 +244,7 @@ switch ($sortField) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
-				$order[] = array('field' => 'dbms_lob.substr(nombre,4000,1)', 'order' => 'ASC');
+				$order[] = array('field' => 'nombre', 'order' => 'ASC');
 				break;
 			case "oracle":
 				$order[] = array('field' => 'dbms_lob.substr(nombre,4000,1)', 'order' => 'ASC');

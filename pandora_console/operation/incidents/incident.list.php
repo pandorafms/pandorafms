@@ -22,21 +22,27 @@ global $result_status;
 global $result_groups;
 global $result_resolutions;
 
-foreach($result_status['status'] as $st) {
-	$status[$st['id']] = $st['name'];
+if (!empty($result_status)) {
+	foreach($result_status['status'] as $st) {
+		$status[$st['id']] = $st['name'];
+	}
 }
-
 // Add special status cases
 $status[0] = __('Any');
 $status[-10] = __('Not closed');
-
-foreach($result_groups['group'] as $gr) {
-	$groups[$gr['id']] = $gr['name'];
+if (!empty($result_groups)) {
+	foreach($result_groups['group'] as $gr) {
+		$groups[$gr['id']] = $gr['name'];
+	}
 }
-
+else {
+	$groups = array();
+}
 $resolutions[0] = __('None');
-foreach($result_resolutions['resolution'] as $res) {
-	$resolutions[$res['id']] = $res['name'];
+if (!empty($result_resolutions)) {
+	foreach($result_resolutions['resolution'] as $res) {
+		$resolutions[$res['id']] = $res['name'];
+	}
 }
 
 echo '<form method="post">';

@@ -1,5 +1,7 @@
 2011-04-13  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Fixed bug #3273910. HPUX detection.
+
 	* lib/PandoraFMS/ReconServer.pm: Fixed bug #3286027. Fix also 
 	the "non finished" status for the Script Recon tasks, and as 
 	new feature implements the "manual" recon task, works only when

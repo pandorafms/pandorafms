@@ -3,7 +3,7 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -231,7 +231,7 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/AIX/i){
 			return 3;
 		}
-		elsif ($command =~ m/HP-UX/i){
+		elsif ($command =~ m/HP\-UX/i){
 			return 5;
 		}
 		elsif ($command =~ m/Apple/i){

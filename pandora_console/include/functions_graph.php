@@ -23,9 +23,9 @@ define("GRAPH_LINE", 2);
 define("GRAPH_STACKED_LINE", 3);
 
 function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
-				$width, $height , $title, $unit_name,
-				$show_alerts, $avg_only = 0, $pure = false,
-				$date = 0, $baseline = 0, $return_data = 0, $show_title = true) {
+				$width, $height , $title = '', $unit_name = null,
+				$show_alerts = false, $avg_only = 0, $pure = false,
+				$date = 0, $baseline = 0, $return_data = 0, $show_title = true, $only_image = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -290,7 +290,12 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$legend['min'] = __('Min') . ' (' . $min_value . ')';
 	$legend['baseline'] = __('Baseline');
 	
-	return area_graph($config['flash_charts'], $chart, $width, $height, $color,$legend, $long_index, "images/image_problem.opaque.png");
+	$flash_chart = $config['flash_charts'];
+	if ($only_image) {
+		$flash_chart = false;
+	}
+	
+	return area_graph($flash_chart, $chart, $width, $height, $color,$legend, $long_index, "images/image_problem.opaque.png");
 }
 
 /**
@@ -311,7 +316,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
  * @return Mixed 
  */
 function graphic_combined_module2 ($module_list, $weight_list, $period, $width, $height,
-				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0) {
+				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0, $only_image = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -606,26 +611,32 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		$time_format = 'M j';
 	}
 	
+	$flash_charts = $config['flash_charts'];
+	
+	if ($only_image) {
+		$flash_charts = false;
+	}
+	
 	switch ($stacked) {
 		case GRAPH_AREA:
 			$color = null;
-			return area_graph($config['flash_charts'], $graph_values, $width, $height,
+			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
 		default:
 		case GRAPH_STACKED_AREA:
 			$color = null;
-			return stacked_area_graph($config['flash_charts'], $graph_values, $width, $height,
+			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
 		case GRAPH_LINE:
 			$color = null;
-			return line_graph($config['flash_charts'], $graph_values, $width, $height,
+			return line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
-			return stacked_line_graph($config['flash_charts'], $graph_values, $width, $height,
+			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
 			break;
 	}

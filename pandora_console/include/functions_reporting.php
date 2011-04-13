@@ -26,7 +26,7 @@ require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
 include_once ($config["homedir"]."/include/fgraph.php");
-include_once ($config["homedir"]."/include/functions_graph.php");
+require_once ('functions_graph.php');
 
 
 /** 
@@ -1898,7 +1898,11 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&pure=1" border="0" alt="">';
+			
+			$data[0] = grafico_modulo_sparse2($layout_data['id_agente_modulo'], $content['period'],
+				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
+				$report["datetime"], 0, 0, true, true);
+			
 			array_push ($table->data, $data);
 			
 			break;
@@ -1921,7 +1925,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.($report["datetime"] + $content['period']).'&avg_only=1&baseline=1&pure=1" border="0" alt="">';
+			$data[0] = grafico_modulo_sparse2($layout_data['id_agente_modulo'], $content['period'],
+				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
+				$report["datetime"], true, 0, true, true);
 			array_push ($table->data, $data);
 			
 			break;
@@ -2118,7 +2124,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data[0] = printSmallFont(get_agentmodule_agent_name ($sla['id_agent_module']));
 					$data[0] .= "<br>";
 					$data[0] .= printSmallFont(get_agentmodule_name ($sla['id_agent_module']));
-					$data[1] = graph_sla_slicebar($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $daysWeek, $content['time_from'], $content['time_to'], $sla['sla_limit'], 550, 25);
+					$data[1] = "<img src='include/fgraph.php?tipo=sla_horizontal_graph&id=".$sla['id_agent_module'].
+					"&period=".$content['period']."&value1=".$sla['sla_min']."&value2=".$sla['sla_max'].
+					"&value3=".$content['time_from']."&value4=".$content['time_to']."&percent=".$sla['sla_limit'].
+					"&daysWeek=".$daysWeek."&height=25&width=550'>";
 					array_push ($table2->data, $data);
 				}
 				$table->colspan[4][0] = 3;

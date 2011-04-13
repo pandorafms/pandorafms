@@ -1,3 +1,16 @@
+2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php,
+	include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php,
+	include/functions_reporting.php,
+	include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php, include/functions_api.php,
+	operation/reporting/reporting_xml.php,
+	mobile/operation/agents/view_agents.php,
+	godmode/reporting/visual_console_builder.editor.js: changed the old sparse
+	for the new engine graph sparse paint method.
+
 2011-04-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php: Forgotted 

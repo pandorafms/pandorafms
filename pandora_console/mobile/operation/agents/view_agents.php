@@ -404,16 +404,13 @@ class viewGraph {
 			return;
 		}
 		
-		$image = "../include/fgraph.php?tipo=sparse_mobile&draw_alerts=1&draw_events=1" . 
-			'&id=' . $this->idAgentModule . "&zoom=1&label=".safe_output($this->agentModule['nombre']) .
-			"&height=120&width=240&period=" . $this->period . "&avg_only=0";
-
-		$image .= "&date=" . get_system_time ();
-		
 		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . get_agentmodule_agent_name($this->idAgentModule)."</a> / ".safe_output($this->agentModule['nombre']) . "</h3>";
 		
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
-		print_image ($image, false, array ("border" => 0));		
+
+		echo grafico_modulo_sparse2($this->idAgentModule, $this->period, 0, 240,
+			120, safe_output($this->agentModule['nombre']), null, true,
+			0, true, 0, true, true, true, true);
 		
 		echo "<h3 class='title_h3'>" . __('Data') . "</h3>";
 		

@@ -607,8 +607,27 @@ function getModuleGraph(id_data) {
 			period = data['period'];
 		}
 	});
-	// Base64.encode function is in /include/javascript/encode_decode_base64.js 
-	var img = 'include/fgraph.php?tipo=sparse&id=' + id_agente_modulo + '&label=' + Base64.encode(label) + '&height=' + height + '&pure=1&width=' + width + '&period=' + period;
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_image_sparse"});
+	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
+	parameter.push ({name: "height", value: height});
+	parameter.push ({name: "width", value: width});
+	parameter.push ({name: "period", value: period});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			img = data;
+		}
+	});
+	
+//	var img = 'include/fgraph.php?tipo=sparse&id=' + id_agente_modulo + 
+//		'&label=' + Base64.encode(label) + '&height=' + height + '&pure=1&width=' + width + '&period=' + period;
 	
 	return img;
 }

@@ -51,11 +51,22 @@ $width_percentile = get_parameter('width_percentile', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
+$id_agent_module = get_parameter('id_agent_module', 0);
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
 
 switch ($action) {
+	case 'get_image_sparse':
+		$img = grafico_modulo_sparse2($id_agent_module,
+			$period, false, $width, $height, '', null, false, 0, false, 0, 0, 0,
+			true, true);
+		
+		preg_match("/src='(.*)'/", $img, $matches);
+		$url = $matches[1];
+		
+		echo $url;	
+		break;
 	case 'get_layout_data':
 		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
 		

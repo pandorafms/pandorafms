@@ -218,8 +218,11 @@ if ($result !== false) {
 		} else {
 			$data[5] = "-";
 		}
-		// INTEVAL
-		$data[6] =human_time_description_raw($row["interval_sweep"]);
+		// INTERVAL
+		if ($row["interval_sweep"]==0)
+			$data[6] = __("Manual");
+		else
+			$data[6] =human_time_description_raw($row["interval_sweep"]);
 		
 		// PORTS
 		if ($row["id_recon_script"] == 0){

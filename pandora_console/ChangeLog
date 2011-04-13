@@ -1,5 +1,9 @@
 2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: deleted a repeat function.
+
+2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_graph.php, include/functions_reporting.php,
 	operation/incidents/incident_statistics.php,
 	operation/agentes/custom_fields.php, operation/agentes/agent_fields.php,

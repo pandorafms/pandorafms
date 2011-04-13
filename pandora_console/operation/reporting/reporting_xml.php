@@ -228,8 +228,25 @@ foreach ($contents as $content) {
 				array_push ($modules, $content2['id_agent_module']);
 				array_push ($weights, $content2["weight"]);
 			}
-	
-			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
+			
+			$img = $data[0] = 	graphic_combined_module2(
+				$modules,
+				$weights,
+				$content['period'],
+				$sizgraph_w, $sizgraph_h,
+				'Combined%20Sample%20Graph',
+				'',
+				0,
+				0,
+				0,
+				$graph["stacked"],
+				$datetime);
+			
+			preg_match("/src='(.*)'/", $img, $matches);
+			$url = $matches[1];
+				
+			$data["objdata"]["img"] = $url;
+			
 			break;
 		case 3:
 		case 'SLA':

@@ -803,14 +803,6 @@ function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
 
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height);
-	
-	////////////////////////
-	
-	if (! $graphic_type) {
-		return fs_3d_pie_chart ($data, $width, $height);
-	}
-	
-	generic_pie_graph ($width, $height, $data);
 }
 
 /**
@@ -837,14 +829,6 @@ function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
 	}
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(), $legend);
-	
-	/////////////////////////////////////
-
-	if (! $graphic_type) {
-		return fs_3d_bar_chart ($data, $width, $height);
-	}
-	
-	generic_horizontal_bar_graph ($width, $height, $data, $legend);
 }
 
 /**
@@ -892,15 +876,420 @@ function graph_db_agentes_modulos2($width, $height) {
 	}
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height);
-	
-		/////////////////////////////////////
+}
 
-	if (! $graphic_type) {
-		return fs_3d_bar_chart ($data, $width, $height);
+/**
+ * Print a pie graph with users activity in a period of time
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
+function graphic_user_activity2 ($width = 350, $height = 230) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$max_items = 5;
+	switch ($config['dbtype']) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
+				FROM tsesion
+				GROUP BY id_usuario
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
+				FROM tsesion 
+				WHERE rownum <= %d
+				GROUP BY id_usuario
+				ORDER BY 1 DESC', $max_items);
+			break;
+	}
+	$logins = get_db_all_rows_sql ($sql);
+	
+	if($logins == false) {
+		$logins = array();
+	}
+	foreach ($logins as $login) {
+		$data[$login['id_usuario']] = $login['n_incidents'];
 	}
 	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+}
 
+/**
+ * Print a pie graph with priodity incident
+ */
+function grafico_incidente_prioridad2 () {
+	global $config;
+	global $graphic_type;
+
+	$data_tmp = array (0, 0, 0, 0, 0, 0);
+	$sql = 'SELECT COUNT(id_incidencia) n_incidents, prioridad
+		FROM tincidencia
+		GROUP BY prioridad
+		ORDER BY 2 DESC';
+	$incidents = get_db_all_rows_sql ($sql);
 	
-	generic_horizontal_bar_graph ($width, $height, $data);
+	if($incidents == false) {
+		$incidents = array();
+	}
+	foreach ($incidents as $incident) {
+		if ($incident['prioridad'] < 5)
+			$data_tmp[$incident['prioridad']] = $incident['n_incidents'];
+		else
+			$data_tmp[5] += $incident['n_incidents'];
+	}
+	$data = array (__('Informative') => $data_tmp[0],
+			__('Low') => $data_tmp[1],
+			__('Medium') => $data_tmp[2],
+			__('Serious') => $data_tmp[3],
+			__('Very serious') => $data_tmp[4],
+			__('Maintenance') => $data_tmp[5]);
+	
+	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+}
+
+/**
+ * Print a pie graph with incidents data
+ */
+function graph_incidents_status2 () {
+	global $config;
+	global $graphic_type;
+	$data = array (0, 0, 0, 0);
+	
+	$data = array ();
+	$data[__('Open incident')] = 0;
+	$data[__('Closed incident')] = 0;
+	$data[__('Outdated')] = 0;
+	$data[__('Invalid')] = 0;
+	
+	$incidents = get_db_all_rows_filter ('tincidencia',
+		array ('estado' => array (0, 2, 3, 13)),
+		array ('estado'));
+	if ($incidents === false)
+		$incidents = array ();
+	foreach ($incidents as $incident) {
+		if ($incident["estado"] == 0)
+			$data[__("Open incident")]++;
+		if ($incident["estado"] == 2)
+			$data[__("Closed incident")]++;
+		if ($incident["estado"] == 3)
+			$data[__("Outdated")]++;
+		if ($incident["estado"] == 13)
+			$data[__("Invalid")]++;
+	}
+	
+	return pie3d_graph($config['flash_charts'], $data, 370, 180);
+}
+
+/**
+ * Print a pie graph with incident data by group
+ */
+function graphic_incident_group2 () {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$max_items = 5;
+	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
+		FROM tincidencia,tgrupo
+		WHERE tgrupo.id_grupo = tincidencia.id_grupo
+		GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
+		$max_items);
+	$incidents = get_db_all_rows_sql ($sql);
+	
+	if($incidents == false) {
+		$incidents = array();
+	}
+	foreach ($incidents as $incident) {		
+		$data[$incident['nombre']] = $incident['n_incidents'];
+	}
+	
+	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+}
+
+/**
+ * Print a graph with access data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
+function graphic_incident_user2 () {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$max_items = 5;
+	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
+		FROM tincidencia
+		GROUP BY id_usuario
+		ORDER BY 1 DESC LIMIT %d', $max_items);
+	$incidents = get_db_all_rows_sql ($sql);
+	
+	if($incidents == false) {
+		$incidents = array();
+	}
+	foreach ($incidents as $incident) {
+		if($incident['id_usuario'] == false) {
+			$name = __('System');
+		}
+		else {
+			$name = $incident['id_usuario'];
+		}
+
+		$data[$name] = $incident['n_incidents'];
+	}
+	
+	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+}
+
+/**
+ * Print a pie graph with access data of incidents source
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
+function graphic_incident_source2($width = 320, $height = 200) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$max_items = 5;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
+				FROM tincidencia GROUP BY `origen`
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
+				FROM tincidencia GROUP BY "origen"
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
+				FROM tincidencia WHERE rownum <= %d GROUP BY origen
+				ORDER BY 1 DESC', $max_items);
+			break;
+	}
+	$origins = get_db_all_rows_sql ($sql);
+	
+	if($origins == false) {
+		$origins = array();
+	}
+	foreach ($origins as $origin) {
+		$data[$origin['origen']] = $origin['n_incident'];
+	}
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+}
+
+/**
+ * Print a pie graph with events data of group
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param string url
+ */
+function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
+	global $config;
+	global $graphic_type;
+
+	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
+	$data = array ();
+	$loop = 0;
+	define ('NUM_PIECES_PIE', 6);	
+
+	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");	
+	//remove bad strings from the query so queries like ; DELETE FROM  don't pass
+	$url = str_ireplace ($badstrings, "", $url);
+		
+	//This will give the distinct id_agente, give the id_grupo that goes
+	//with it and then the number of times it occured. GROUP BY statement
+	//is required if both DISTINCT() and COUNT() are in the statement 
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+				FROM tevento WHERE 1=1 %s
+				GROUP BY id_agente ORDER BY count DESC', $url); 
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+				FROM tevento WHERE 1=1 %s
+				GROUP BY id_agente, id_grupo ORDER BY count DESC', $url); 
+			break;
+	}
+	
+	$result = get_db_all_rows_sql ($sql);
+	if ($result === false) {
+		$result = array();
+	}
+ 
+	foreach ($result as $row) {
+		if (!check_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
+			continue;
+		
+		if ($loop >= NUM_PIECES_PIE) {
+			if (!isset ($data[__('Other')]))
+				$data[__('Other')] = 0;
+			$data[__('Other')] += $row["count"];
+		} else {
+			if ($row["id_agente"] == 0) {
+				$name = __('SYSTEM')." (".$row["count"].")";
+			} else {
+				$name = mb_substr (get_agent_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+			}
+			$data[$name] = $row["count"];
+		}
+		$loop++;
+	}
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+}
+
+/**
+ * Print a pie graph with events data in 320x200 size
+ * 
+ * @param string filter Filter for query in DB
+ */
+function grafico_eventos_total2($filter = "") {
+	global $config;
+	global $graphic_type;
+
+	$filter = str_replace  ( "\\" , "", $filter);
+	$data = array ();
+	$legend = array ();
+	$total = 0;
+	
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 0 $filter";
+	$data[__('Maintenance')] = get_db_sql ($sql);
+	
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 1 $filter";
+	$data[__('Informational')] = get_db_sql ($sql);
+
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 2 $filter";
+	$data[__('Normal')] = get_db_sql ($sql);
+
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 3 $filter";
+	$data[__('Warning')] = get_db_sql ($sql);
+
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 4 $filter";
+	$data[__('Critical')] = get_db_sql ($sql);
+	
+	asort ($data);
+	
+	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+}
+
+/**
+ * Print a pie graph with events data of users
+ * 
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
+function grafico_eventos_usuario2 ($width, $height) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$max_items = 5;
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_evento) events, id_usuario
+				FROM tevento
+				GROUP BY id_usuario
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT * FROM (SELECT COUNT(id_evento) events, id_usuario
+				FROM tevento
+				GROUP BY id_usuario
+				ORDER BY 1 DESC) WHERE rownum <= %d', $max_items);
+			break;
+	}
+	$events = get_db_all_rows_sql ($sql);
+
+	if ($events === false) {
+		$events = array();
+	}
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+}
+
+/**
+ * Print a pie graph with events data of group
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param string url
+ */
+function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
+	global $config;
+	global $graphic_type;
+
+	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
+	$data = array ();
+	$loop = 0;
+	define ('NUM_PIECES_PIE', 6);	
+
+	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");	
+	//remove bad strings from the query so queries like ; DELETE FROM  don't pass
+	$url = str_ireplace ($badstrings, "", $url);
+		
+	//This will give the distinct id_agente, give the id_grupo that goes
+	//with it and then the number of times it occured. GROUP BY statement
+	//is required if both DISTINCT() and COUNT() are in the statement 
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+				FROM tevento WHERE 1=1 %s
+				GROUP BY id_agente ORDER BY count DESC', $url); 
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+				FROM tevento WHERE 1=1 %s
+				GROUP BY id_agente, id_grupo ORDER BY count DESC', $url); 
+			break;
+	}
+	
+	$result = get_db_all_rows_sql ($sql);
+	if ($result === false) {
+		$result = array();
+	}
+ 
+	foreach ($result as $row) {
+		if (!check_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
+			continue;
+		
+		if ($loop >= NUM_PIECES_PIE) {
+			if (!isset ($data[__('Other')]))
+				$data[__('Other')] = 0;
+			$data[__('Other')] += $row["count"];
+		} else {
+			if ($row["id_agente"] == 0) {
+				$name = __('SYSTEM')." (".$row["count"].")";
+			} else {
+				$name = mb_substr (get_agent_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+			}
+			$data[$name] = $row["count"];
+		}
+		$loop++;
+	}
+	
+	if (! $graphic_type) {
+		return fs_3d_pie_chart ($data, $width, $height);
+	}
+
+	error_reporting (0);
+	generic_pie_graph ($width, $height, $data, array ('show_legend' => false));
 }
 ?>

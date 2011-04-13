@@ -1184,6 +1184,8 @@ function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $retu
  * @return string
  */
 function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
+	global $config;
+	
 	$output = '';
 	$alerts = get_group_alerts ($id_group);
 	$alerts_fired = get_alerts_fired ($alerts, $period, $date);
@@ -1192,9 +1194,13 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	if (sizeof ($alerts) > 0)
 		$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
-	$output .= '<img src="include/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
-		$fired_percentage.'&not_fired='.$not_fired_percentage.'" style="float: right; border: 1px solid black">';
+		
+	$data = array ();
+	$data[__('Alerts fired')] = $fired_percentage;
+	$data[__('Alerts not fired')] = $not_fired_percentage;
 	
+	$output .= pie3d_graph($config['flash_charts'], $data, 280, 150);
+		
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
 	$output .= '<strong>'.__('Total alerts monitored').': '.sizeof ($alerts).'</strong><br />';
 
@@ -2043,6 +2049,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;

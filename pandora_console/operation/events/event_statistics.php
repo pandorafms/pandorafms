@@ -19,7 +19,7 @@
 // Load global vars
 global $config;
 
-require_once ("include/fgraph.php");
+require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 
@@ -33,26 +33,17 @@ ui_print_page_header (__('Statistics'), "images/lightning_go.png",false, false);
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
 echo "<h3>".__('Event graph')."</h3>";
-if ($config['flash_charts']) {
-	echo grafico_eventos_total ();
-} else {
-	echo '<img src="include/fgraph.php?tipo=total_events&width=300&height=200" border=0>';
-}
+echo grafico_eventos_total2();
+
 echo "</td><td valign='top'>";
 echo "<h3>".__('Event graph by user')."</h3>";
-if ($config['flash_charts']) {
-	echo grafico_eventos_usuario (300, 200);
-} else {
-	echo '<img src="include/fgraph.php?tipo=user_events&width=300&height=200" border=0>';
-}
+echo grafico_eventos_usuario2(300, 200);
+
 echo "</td></tr>";
 echo "<tr><td>";
 echo "<h3>".__('Event graph by group')."</h3>";
-if ($config['flash_charts']) {
-	echo grafico_eventos_grupo (300, 200);
-} else {
-	echo '<img src="include/fgraph.php?tipo=group_events&width=300&height=200" border=0>';
-}
+echo grafico_eventos_grupo2(300, 200);
+
 echo '</td></tr>';
 echo "</table>";
 ?>

@@ -20,10 +20,6 @@ global $config;
 
 require_once ($config["homedir"] . '/include/functions_graph.php'); 
 
-if ($config['flash_charts']) {
-	require('include/fgraph.php');
-}
-
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "DM")) {

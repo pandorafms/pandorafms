@@ -20,6 +20,8 @@ global $config;
 require_once ("include/functions_events.php"); //Event processing functions
 require_once ("include/functions_alerts.php"); //Alerts processing functions
 
+require_once ($config["homedir"] . '/include/functions_graph.php');
+
 check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IR")) {
@@ -234,11 +236,7 @@ print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
-if ($config['flash_charts']) {
-	echo grafico_eventos_grupo (220, 180, rawurlencode ($sql_post));
-} else {
-	print_image ("include/fgraph.php?tipo=group_events&width=220&height=180&url=".rawurlencode ($sql_post), false, array ("border" => 0));
-}
+echo grafico_eventos_grupo2(220, 180, rawurlencode ($sql_post));
 echo '</div>';
 echo '<div id="steps_clean">&nbsp;</div>';
 echo '</div>';

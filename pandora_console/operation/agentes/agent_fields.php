@@ -20,10 +20,6 @@ global $config;
 
 require_once ("include/functions_agents.php");
 
-if ($config['flash_charts']) {
-	require_once ("include/fgraph.php");
-}
-
 check_login ();
 
 $id_agente = get_parameter_get ("id_agente", -1);

@@ -109,23 +109,6 @@ function safe_url_extraclean ($string, $default_string = '') {
 }
 
 /** 
- * Add a help link to show help in a popup window.
- * 
- * TODO: Get this merged with the other help function(s)
- *
- * @param string $help_id Help id to be shown when clicking.
- * @param bool $return Whether to print this (false) or return (true)
- * 
- * @return string Link with the popup.
- */
-function popup_help ($help_id, $return = false) {
-	$output = "&nbsp;<a href='javascript:help_popup(".$help_id.")'>[H]</a>";
-	if ($return)
-		return $output;
-	echo $output;
-}
-
-/** 
  * DEPRECATED: This function is not used anywhere. Remove it?
  * (use general/noaccess.php followed by exit instead)
  */
@@ -263,16 +246,16 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
  * Rounds an integer to a multiple of 5.
  *
  * Example:
-<code>
-echo format_integer_round (18);
-// Will return 20
-
-echo format_integer_round (21);
-// Will return 25
-
-echo format_integer_round (25, 10);
-// Will return 30
-</code>
+ * <code>
+ * echo format_integer_round (18);
+ * // Will return 20
+ *
+ * echo format_integer_round (21);
+ * // Will return 25
+ *
+ * echo format_integer_round (25, 10);
+ * // Will return 30
+ * </code>
  *
  * @param int Number to be rounded.
  * @param int Rounder number, default value is 5.

@@ -1,3 +1,9 @@
+2011-04-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php
+	include/functions.php: Removed function popup_help from functions.php
+	and added in function_ui.php under ui_popup_help name.
+
 2011-04-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.postgreSQL.sql: Created the UNIX_TIMESTAMP function.

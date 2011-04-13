@@ -1688,5 +1688,21 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	return $buffer;
 }
 
+/** 
+ * Add a help link to show help in a popup window.
+ * 
+ *
+ * @param string $help_id Help id to be shown when clicking.
+ * @param bool $return Whether to print this (false) or return (true)
+ * 
+ * @return string Link with the popup.
+ */
+function ui_popup_help ($help_id, $return = false) {
+	$output = "&nbsp;<a href='javascript:help_popup(".$help_id.")'>[H]</a>";
+	if ($return)
+		return $output;
+	echo $output;
+}
+
 
 ?>

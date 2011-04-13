@@ -746,4 +746,161 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $daysWeek, $time_
 
 	return slicesbar_graph($data, $width, $height, $colors, $config['fontpath'], $config['round_corner']);
 }
+
+/**
+ * Print a pie graph with purge data of agent
+ * 
+ * @param integer id_agent ID of agent to show
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
+function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
+	global $config;
+	global $graphic_type;
+
+	if ($id_agent < 1) {
+		$id_agent = -1;
+		$query = "";
+	} else {
+		$modules = get_agent_modules ($id_agent);
+		$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
+	}
+	
+	// All data (now)
+	$time["all"] = get_system_time ();
+
+	// 1 day ago
+	$time["1day"] = $time["all"] - 86400;
+
+	// 1 week ago
+	$time["1week"] = $time["all"] - 604800;
+
+	// 1 month ago
+	$time["1month"] = $time["all"] - 2592000;
+
+	// Three months ago
+	$time["3month"] = $time["all"] - 7776000;
+	
+	$data[__("Today")]        = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")]    = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")]   = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")]  = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")]        = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
+	
+	$data[__("Today")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")]   += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")]  += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query), 0, true);
+
+	$data[__("Today")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")]   += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")]  += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query), 0, true);
+
+	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
+
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+	
+	////////////////////////
+	
+	if (! $graphic_type) {
+		return fs_3d_pie_chart ($data, $width, $height);
+	}
+	
+	generic_pie_graph ($width, $height, $data);
+}
+
+/**
+ * Print a horizontal bar graph with packets data of agents
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
+function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	$legend = array ();
+	
+	$agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
+	$count = get_agent_modules_data_count (array_keys ($agents));
+	unset ($count["total"]);
+	arsort ($count, SORT_NUMERIC);
+	$count = array_slice ($count, 0, 8, true);
+	
+	foreach ($count as $agent_id => $value) {
+		$data[$agents[$agent_id]]['g'] = $value;
+	}
+	
+	return hbar_graph($config['flash_charts'], $data, $width, $height, array(), $legend);
+	
+	/////////////////////////////////////
+
+	if (! $graphic_type) {
+		return fs_3d_bar_chart ($data, $width, $height);
+	}
+	
+	generic_horizontal_bar_graph ($width, $height, $data, $legend);
+}
+
+/**
+ * Print a horizontal bar graph with modules data of agents
+ * 
+ * @param integer height graph height
+ * @param integer width graph width
+ */
+function graph_db_agentes_modulos2($width, $height) {
+	global $config;
+	global $graphic_type;
+
+	$data = array ();
+	
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+				FROM tagente_modulo
+				GROUP BY id_agente
+				ORDER BY 1 DESC LIMIT 10');
+			break;
+		case "oracle":
+			$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+				FROM tagente_modulo
+				WHERE rownum <= 10
+				GROUP BY id_agente
+				ORDER BY 1 DESC');
+			break;
+	}
+	if ($modules === false)
+		$modules = array ();
+	
+	foreach ($modules as $module) {
+		$agent_name = get_agent_name ($module['id_agente'], "none");
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":
+				$data[$agent_name]['g'] = $module['COUNT(id_agente_modulo)'];
+				break;
+			case "oracle":
+				$data[$agent_name]['g'] = $module['count(id_agente_modulo)'];
+				break;
+		}
+	}
+	
+	return hbar_graph($config['flash_charts'], $data, $width, $height);
+	
+		/////////////////////////////////////
+
+	if (! $graphic_type) {
+		return fs_3d_bar_chart ($data, $width, $height);
+	}
+	
+
+	
+	generic_horizontal_bar_graph ($width, $height, $data);
+}
 ?>

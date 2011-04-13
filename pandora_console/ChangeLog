@@ -1,3 +1,13 @@
+2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, godmode/db/db_info.php,
+	godmode/db/db_purge.php: added functions "grafico_db_agentes_purge2",
+	"grafico_db_agentes_paquetes2", "graph_db_agentes_modulos2", and changed
+	in the code for this functions.
+	
+	* include/graphs/functions_pchart.php: in function "pch_bar_graph" fixed
+	when pass a empty array as color.
+
 2011-04-13 Sancho Lerena <slerena@artica.es>
 
 	* operation/servers/view_server_detail.php,

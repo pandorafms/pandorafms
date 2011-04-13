@@ -18,6 +18,8 @@
 // Load global vars
 global $config;
 
+require_once ($config["homedir"] . '/include/functions_graph.php'); 
+
 if ($config['flash_charts']) {
 	require('include/fgraph.php');
 }
@@ -36,11 +38,8 @@ $id_agent = (int) get_parameter_post ("agent", -1);
 
 print_page_header (__('Database maintenance').' &raquo; '.__('Database purge'), "images/god8.png", false, "", true);
 
-if ($config['flash_charts']) {
-	echo grafico_db_agentes_purge ($id_agent, $width, $height);
-} else {
-	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />';
-}
+echo grafico_db_agentes_purge2($id_agent);
+
 echo '<br /><br />';
 echo '<h3>'.__('Get data from agent').'</h3>';
 

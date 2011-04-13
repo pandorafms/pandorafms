@@ -398,7 +398,8 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $rgb_color 
 	 $overridePalette = array();
 	 foreach($data as $i => $values) {
 		$MyData->addPoints($values,$i);
-		if($rgb_color !== false) {
+		
+		if(!empty($rgb_color)) {
 			$MyData->setPalette($i, 
 					array("R" => $rgb_color[$i]['color']["R"], 
 						"G" => $rgb_color[$i]['color']["G"], 

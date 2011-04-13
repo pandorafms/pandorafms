@@ -103,7 +103,12 @@ foreach ($recon_tasks as $task) {
 	
 	$data[1] = '<b>'. $task["name"].'</b>';
 
-	$data[2] = human_time_description_raw ($task["interval_sweep"]);
+	if ($task["interval_sweep"] == 0){
+		$data[2] = __("Manual");
+	}
+	else {
+		$data[2] = human_time_description_raw ($task["interval_sweep"]);
+	}
 
 	if ($task["id_recon_script"] == 0){
 		$data[3] = $task["subnet"];

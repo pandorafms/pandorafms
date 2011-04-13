@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 // Load global vars
 global $config;
 
@@ -56,10 +55,10 @@ if (isset ($_GET["update"])) { // Edit mode
 	$network = "";
 	$description = "";
 	$id_recon_server = 0;
-	$interval = 43200;
+	$interval = 0;
 	$id_group = 0;
 	$create_incident = 1;
-    $snmp_community = "public";
+	$snmp_community = "public";
 	$id_network_profile = 1;
 	$id_os = -1; // Any
 	$recon_ports = ""; // Any
@@ -116,6 +115,7 @@ $table->data[3][1] = print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
 $values = array ();
+$values[0] = __('Manual');
 $values[3600] = __('%d hour', 1);
 $values[7200] = __('%d hours', 2);
 $values[21600] = __('%d hours', 6);

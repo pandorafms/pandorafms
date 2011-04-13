@@ -1,3 +1,11 @@
+2011-04-13 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* AIX/pandora_agent.conf, Linux/pandora_agent.conf, HP-UX/pandora_agent.conf
+	SunOS/pandora_agent.conf: Deleted proxy_user parameter because is not 
+	needed. Also fixed some comments.	
+	* pandora_agent: Resctricted Proxy Mode to non root users. The agent must
+	be launched by a non root user to use Proxy Mode.
+
 2011-04-12 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandora_agent_daemon: Deleted code that kill tentacle server and

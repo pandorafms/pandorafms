@@ -150,7 +150,6 @@ my %Conf = (
 	'udp_server_auth_address' => '0.0.0.0',
 	'udp_server' => 0,
 	'proxy_mode' => 0,
-	'proxy_user' => 'pandora',
 	'proxy_max_connection' => 10,
 	'proxy_timeout' => 1,
 );
@@ -627,10 +626,6 @@ sub launch_tentacle_proxy () {
 		$tentacle_pid = fork();	
 
 		if ($tentacle_pid == 0) {
-			# Change the UID
-			my $proxy_user_id = getpwnam($Conf{'proxy_user'});
-			$< = $proxy_user_id;
-			$> = $proxy_user_id;
 
 			#Execute tentacle server as a daemon
 			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
@@ -1432,8 +1427,14 @@ my $PID = $$;
 `renice "$Conf{'pandora_nice'}" "$PID"`;
 
 #Launch tentacle server in proxy mode if configured
-if ($Conf{'proxy_mode'}) {	
-	launch_tentacle_proxy();
+if ($Conf{'proxy_mode'}) {
+	
+	#Check if user is root
+	if ($< != 0) {		
+		launch_tentacle_proxy();
+	} else {
+		log_message ('error', 'Proxy mode can not be launched as root');
+	}
 }
 
 # Add the plugins directory to the PATH

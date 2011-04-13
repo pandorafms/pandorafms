@@ -707,7 +707,7 @@ sub pandora_access_update ($$$) {
 	if ($pa_config->{"agentaccess"} == 0){
 		return;
 	}
-	db_insert ($dbh, "INSERT INTO tagent_access (`id_agent`, `utimestamp`) VALUES (?, ?)", $agent_id, time ());
+	db_do ($dbh, "INSERT INTO tagent_access (id_agent, utimestamp) VALUES (?, ?)", $agent_id, time ());
 }
 
 ##########################################################################
@@ -793,8 +793,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 	}
 	
-	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'
-	$agent_status->{'last_try'} = '0000-00-00 00:00:00' unless defined ($agent_status->{'last_try'});
+	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
+	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
 
 	# Do we have to save module data?
 	if ($agent_status->{'last_try'} !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
@@ -912,7 +912,7 @@ sub pandora_update_server ($$$$$;$$) {
 
 	# Create an entry in tserver
 	if (! defined ($server)){ 
-		my $server_id = db_insert ($dbh, 'INSERT INTO tserver (`name`, `server_type`, `description`, `version`, `threads`, `queued_modules`)
+		my $server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules)
 						VALUES (?, ?, ?, ?, ?, ?)', $server_name, $server_type,
 						'Autocreated at startup', $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'}, $num_threads, $queue_size);
 		$server = get_db_single_row ($dbh, 'SELECT * FROM tserver
@@ -1103,9 +1103,8 @@ sub pandora_audit ($$$$$) {
 	my $utimestamp = time();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-	db_insert($dbh, 'INSERT INTO tsesion (`ID_usuario`, `IP_origen`, `accion`, `fecha`, `descripcion`, `utimestamp`) 
-			VALUES (?, ?, ?, ?, ?, ?)', 
-			'SYSTEM', $name, $action , $timestamp , $description , $utimestamp);
+	db_do($dbh, 'INSERT INTO tsesion (' . db_reserved_word ('ID_usuario') .', ' . db_reserved_word ('IP_origen') . ', accion, fecha, descripcion, utimestamp) 
+			VALUES (?, ?, ?, ?, ?, ?)', 'SYSTEM', $name, $action , $timestamp , $description , $utimestamp);
 
 	db_disconnect($dbh) if ($disconnect == 1);
 }
@@ -1128,9 +1127,9 @@ sub pandora_create_module ($$$$$$$$$$) {
 	$min = 0 if ($min eq '');
 	$post_process = 0 if ($post_process eq '');
 
-	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `post_process`, `descripcion`, `module_interval`, `id_modulo`)
+	my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $agent_id);
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id);
 	return $module_id;
 }
 
@@ -1163,9 +1162,9 @@ sub pandora_create_module_from_hash ($$$) {
 
  	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 
-	my $module_id = db_process_insert($dbh, 'tagente_modulo', $parameters);
+	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
 
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $parameters->{'id_agente'});
+	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'});
 
 	return $module_id;
 }
@@ -1206,12 +1205,12 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 	my $agent_id;
 	# Test if the optional positional parameters are defined or GIS is disabled
 	if (!defined ($timezone_offset) ) {
-		$agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
+		$agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, modo)
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
 	}
 	else {
-		 $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, 
-				`timezone_offset`, `modo` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, 
+		 $agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, 
+				timezone_offset, modo ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, 
 				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset);	
 	}
 	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
@@ -1283,8 +1282,8 @@ sub pandora_event ($$$$$$$$$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 
-	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
+	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, '');
 }
 
 ##########################################################################
@@ -1360,7 +1359,7 @@ sub pandora_module_keep_alive_nd {
 					AND tagente.disabled = 0 
 					AND tagente_modulo.id_tipo_modulo = 100 
 					AND tagente_modulo.disabled = 0 
-					AND (tagente_estado.datos = 1 OR tagente_estado.datos = \'\')
+					AND (tagente_estado.datos = \'1\' OR tagente_estado.datos = \'\')
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 					AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
@@ -1416,7 +1415,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		}
 		
 		# Check time threshold
-		$alert->{'last_fired'} = '0000-00-00 00:00:00' unless defined ($alert->{'last_fired'});
+		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
 		return unless ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
 		my $last_fired = ($1 > 0) ? timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
 
@@ -1575,7 +1574,7 @@ sub process_inc_data ($$$$) {
 
 	# No previous data
 	if (! defined ($data_inc)) {
-		db_insert ($dbh, 'INSERT INTO tagente_datos_inc
+		db_do ($dbh, 'INSERT INTO tagente_datos_inc
 				(`id_agente_modulo`, `datos`, `utimestamp`)
 				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
 		return undef;
@@ -1584,7 +1583,7 @@ sub process_inc_data ($$$$) {
 	# Negative increment, reset inc data
 	if ($data < $data_inc->{'datos'}) {
 		db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});		
-		db_insert ($dbh, 'INSERT INTO tagente_datos_inc
+		db_do ($dbh, 'INSERT INTO tagente_datos_inc
 				(`id_agente_modulo`, `datos`, `utimestamp`)
 				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
 		return undef;
@@ -1832,14 +1831,14 @@ sub save_agent_position($$$$$$;$$) {
 	
 	if (defined($start_timestamp)) {
 		# Upadate the timestamp of the received agent
-		db_insert ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
+		db_do ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
 					 stored_longitude , stored_latitude, stored_altitude, start_timestamp, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
 					$agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
 					$current_latitude, $current_altitude, $start_timestamp, $description);
 	}
 	else {
 		# Upadate the data of the received agent using the default timestamp
-		db_insert ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
+		db_do ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
 					 stored_longitude , stored_latitude, stored_altitude, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
 					$agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
 					$current_latitude, $current_altitude, , $description);
@@ -1891,7 +1890,7 @@ sub archive_agent_position($$$$$$$$$$) {
 
 	logger($pa_config, "Saving new agent position: start_timestamp=$start_timestamp longitude=$longitude latitude=$latitude altitude=$altitude", 10);
 
-	db_insert($dbh, 'INSERT INTO tgis_data_history (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`,
+	db_do($dbh, 'INSERT INTO tgis_data_history (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`,
 					`end_timestamp`, `description`, `number_of_packages`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
 					$longitude, $latitude, $altitude, $agent_id, $start_timestamp, $end_timestamp, $description, $number_packages);
 

@@ -1,3 +1,21 @@
+2011-04-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/WMIServer.pm,
+	  lib/PandoraFMS/PluginServer.pm,
+	  lib/PandoraFMS/DB.pm,
+	  lib/PandoraFMS/ProducerConsumerServer.pm,
+	  lib/PandoraFMS/PredictionServer.pm,
+	  lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/ReconServer.pm,
+	  bin/pandora_server,
+	  util/pandora_db.pl,
+	  util/pandora_manage.pl,
+	  util/recon_scripts/snmpdevices.pl: Adding support for PostgreSQL and
+	  Oracle (not complete).
+
 2011-04-13  Sancho Lerena <slerena@artica.es>
 
         * lib/PandoraFMS/ReconServer.pm: Fixed bug #3286027. Fix also

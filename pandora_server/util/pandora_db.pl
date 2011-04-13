@@ -479,7 +479,7 @@ sub pandora_checkdb_consistency {
 		my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
 		next if (defined ($count) && $count > 0);
 
-		db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '0000-00-00 00:00:00', 1, $id_agente, '0000-00-00 00:00:00', 0, 0, 0, 0);
+		db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
 		print "[CHECKDB] Inserting module $id_agente_modulo in state table \n";
 	}
 

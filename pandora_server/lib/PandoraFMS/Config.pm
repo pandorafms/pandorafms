@@ -174,6 +174,7 @@ sub pandora_load_config {
 	# Default values
 	$pa_config->{'version'} = $pandora_version;
 	$pa_config->{'build'} = $pandora_build;
+	$pa_config->{"dbengine"} = "mysql";
 	$pa_config->{"dbuser"} = "pandora";
 	$pa_config->{"dbpass"} = "pandora";
 	$pa_config->{"dbhost"} = "localhost";
@@ -382,6 +383,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
 			$pa_config->{'snmp_logfile'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^dbengine\s(.*)/i) { 
+			$pa_config->{'dbengine'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^dbname\s(.*)/i) { 
 			$pa_config->{'dbname'}= clean_blank($1); 

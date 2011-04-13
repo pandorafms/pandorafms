@@ -28,6 +28,8 @@ if ($config['flash_charts']) {
 	require_once ('include/fgraph.php');
 }
 
+require_once ($config["homedir"] . '/include/functions_graph.php');
+
 /**
  * Get all the custom graphs a user can see.
  *
@@ -89,11 +91,10 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGr
  * @param $return Whether to return an output string or echo now (optional, echo by default).
  * @param $date Date to start printing the graph
  */
+
 function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
 	global $config;
-	
-	require_once ($config["homedir"] . '/include/functions_graph.php');
-	
+
 	$sources = get_db_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
 	$modules = array ();
 	$weights = array ();

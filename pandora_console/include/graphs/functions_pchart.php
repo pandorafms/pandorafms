@@ -566,9 +566,16 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>10));
 
  	if(isset($legend)) {
+		/* Set horizontal legend if is posible */
+		$legend_mode = LEGEND_HORIZONTAL;
+		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
+		if($size['Width'] > ($width - 5)) {
+			$legend_mode = LEGEND_VERTICAL;
+			$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
+		}
+
 		/* Write the chart legend */
-		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL));
-		$myPicture->drawLegend($width-$size['Width'], 8,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL));
+		$myPicture->drawLegend($width-$size['Width'], 8,array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
 	 }
 	 
 	 //Calculate the bottom margin from the size of string in each index

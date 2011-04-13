@@ -66,6 +66,12 @@ $yaxisname = '';
 if(isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }
+if(isset($graph['font'])) { 
+	$font = $graph['font'];
+}
+if(isset($graph['round_corner'])) { 
+	$round_corner = $graph['round_corner'];
+}
 
 /*
 $colors = array();
@@ -146,6 +152,7 @@ switch($graph_type) {
 			}
 			
 			break;
+	case 'slicebar':
 	case 'polar':
 	case 'radar':
 	case 'pie3d':
@@ -153,13 +160,21 @@ switch($graph_type) {
 			break;
 }
 
-if (($graph_type != 'pie3d') && ($graph_type != 'pie2d')) {
-	if(!is_array(reset($data_values))) {
-		$data_values = array($data_values);
-		if(is_array($colors) && !empty($colors)) {
-			$colors = array($colors);
-		}
-	}
+switch($graph_type) {
+	case 'slicebar':
+	case 'polar':
+	case 'radar':
+	case 'pie3d':
+	case 'pie2d':
+			break;
+	case 'default':
+			if(!is_array(reset($data_values))) {
+				$data_values = array($data_values);
+				if(is_array($colors) && !empty($colors)) {
+					$colors = array($colors);
+				}
+			}
+			break;
 }
 
 $rgb_color = array();
@@ -206,6 +221,9 @@ switch($graph_type) {
 	case 'pie2d':
 			pch_pie_graph($graph_type, array_values($data), array_keys($data), $width, $height);
 			break;
+	case 'slicebar':
+			pch_slicebar_graph($graph_type, $data, $width, $height, $colors, $font, $round_corner);
+			break;
 	case 'polar':
 	case 'radar':
 			pch_kiviat_graph($graph_type, array_values($data), array_keys($data), $width, $height);
@@ -228,6 +246,63 @@ switch($graph_type) {
 	case 'scatter':
 			pch_scatter_graph($data_keys, $data_values, $width, $height, $xaxisname, $yaxisname);
 			break;
+}
+
+function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font, $round_corner) {
+	 /* CAT:Slicebar charts */
+
+	set_time_limit (0);
+	
+	// Dataset definition
+	$myPicture = new pImage($width,$height);
+	
+	$myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
+
+	// Round corners defined in global setup
+	if ($round_corner != 0)
+		$radius = ($height > 18) ? 8 : 0;
+	else
+		$radius = 0;
+
+	$ratio = $width / count($data);
+	
+	/* Color stuff */
+	$colorsrgb = array();
+	foreach($colors as $key => $col) {
+		$rgb = html2rgb($col);
+		$colorsrgb[$key]['R'] = $rgb[0];
+		$colorsrgb[$key]['G'] = $rgb[1];
+		$colorsrgb[$key]['B'] = $rgb[2];
+	}
+	
+	$i = 0;
+	foreach ($data as $d) {
+		$color = $colorsrgb[$d];
+		$myPicture->drawRoundedFilledRectangle ($i, 0, $ratio+$i, 
+				$height, $radius, array('R' => $color['R'], 'G' => $color['G'], 'B' => $color['B']));
+		$i+=$ratio;
+
+
+	}
+	
+	if ($round_corner) {
+		/* Under this value, the rounded rectangle is painted great */
+		if ($ratio <= 16) {
+			/* Clean a bit of pixels */
+			for ($i = 0; $i < 7; $i++) {
+				$myPicture->drawLine (0, $i, 6 - $i, $i, array('R' => 255, 'G' => 255, 'B' => 255));
+			}
+			$end = $height - 1;
+			for ($i = 0; $i < 7; $i++) {
+				$myPicture->drawLine (0, $end - $i, 5 - $i, $end - $i, array('R' => 255, 'G' => 255, 'B' => 255));
+			}
+		}
+	}
+			
+	$myPicture->drawRoundedRectangle (0, 0, $width,
+		$height - 1, $radius, array('R' => 157, 'G' => 157, 'B' => 157));
+	
+	$myPicture->Stroke ();
 }
 
 function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $height) {
@@ -511,13 +586,11 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
-	 	//$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
-	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
 	 }
 	 else {
 	 	/* Define the chart area */
-	 	//$myPicture->setGraphArea(40, 5,$width,$height - 90);
-	 	$myPicture->setGraphArea(40, 5,$width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea(40, 5,$width,$height - 90);
 	 }
 
 	 /* Draw the scale */

@@ -1,3 +1,10 @@
+2011-04-13  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed bug #3286027. Fix also 
+	the "non finished" status for the Script Recon tasks, and as 
+	new feature implements the "manual" recon task, works only when
+	you press the button.
+
 2011-03-15  Sancho Lerena <slerena@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Fixed a typo in interface

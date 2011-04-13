@@ -21,7 +21,7 @@ if (!isset ($id_agente)) {
 require_once ('include/functions_gis.php');
 require_once ('include/functions_html.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 echo "<div style='margin-bottom: 10px;'></div>";
 

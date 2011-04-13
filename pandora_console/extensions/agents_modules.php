@@ -49,7 +49,7 @@ function mainAgentsModules() {
 
 
 	if ($config["realtimestats"] == 0) {
-		$updated_info = __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+		$updated_info = __('Last update'). " : ". ui_print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	}
 	else {
 		$updated_info = __("Updated at realtime");
@@ -67,18 +67,18 @@ function mainAgentsModules() {
 
 	$groups = get_user_groups ();
 
-	$filter_module_groups = '<form method="post" action="'.get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
+	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$filter_module_groups .= '<b>'.__('Module group').'</b>';
 	$filter_module_groups .= print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 		'modulegroup', $modulegroup, 'this.form.submit()',__('All'), 0, true, false, true, false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$filter_module_groups .= '</form>';
 	
-	$filter_groups = '<form method="post" action="'.get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
+	$filter_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$filter_groups .= '<b>'.__('Group').'</b>';
 	$filter_groups .= print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: 100px; margin-right: 10px;; margin-top: 5px;');
 	$filter_groups .= '</form>';
 	
-	$comborefr = '<form method="post" action="'.get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
+	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$comborefr .= '<b>'.__('Refresh').'</b>';
 	$comborefr .= print_select (array('30' => '30 '.__('seconds'), '60' => '1 '.__('minute'), '120' => '2 '.__('minutes'), '300' => '5 '.__('minutes'), '600' => '10 '.__('minutes')) , 'refr', $config['refr'], $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$comborefr .= "</form>";
@@ -104,7 +104,7 @@ function mainAgentsModules() {
 	}
 
 	// Header
-	print_page_header (__("Agents/Modules"), "images/bricks.png", false, "", false, $onheader);
+	ui_print_page_header (__("Agents/Modules"), "images/bricks.png", false, "", false, $onheader);
 
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
@@ -174,7 +174,7 @@ function mainAgentsModules() {
 			continue;
 		}
 		
-		$file_name = string2image(printTruncateText($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
+		$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
 		echo '<th width="22px">'.print_image($file_name, true, array('title' => $module['name']))."</th>";
 	}
 	
@@ -188,7 +188,7 @@ function mainAgentsModules() {
 		$filter_agents = array('id_grupo' => $group_id);
 	}
 	// Prepare pagination
-	pagination ((int)count(get_agents ($filter_agents)));
+	ui_pagination ((int)count(get_agents ($filter_agents)));
 	echo "<br>";
 
 	foreach ($agents as $agent) {
@@ -222,7 +222,7 @@ function mainAgentsModules() {
 		
 		echo "<tr style='height: 35px;'>";
 		
-		$file_name = string2image(printTruncateText($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
+		$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
 		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".print_image($file_name, true, array('title' => $agent['nombre']))."</a></td>";
 		$agent_modules = get_agent_modules($agent['id_agente']);
 		
@@ -247,19 +247,19 @@ function mainAgentsModules() {
 					echo '<a href="javascript:'.$link.'">';
 					switch($status){
 						case 0:
-							print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 1:
-							print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 2:
-							print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 3:
-							print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 4:
-							print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 					}
 					echo '</a>';

@@ -224,18 +224,18 @@ foreach ($items as $item) {
 			$row[3] = '-';
 		}
 		else {
-			$row[2] = printTruncateText(get_agent_name(get_agent_module_id($item['id_agent_module'])), 20);
-			$row[3] = printTruncateText(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
+			$row[2] = ui_print_truncate_text(get_agent_name(get_agent_module_id($item['id_agent_module'])), 20);
+			$row[3] = ui_print_truncate_text(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
 		}
 	}
 	else {
-		$row[2] = printTruncateText(get_agent_name($item['id_agent']), 20);
+		$row[2] = ui_print_truncate_text(get_agent_name($item['id_agent']), 20);
 		
 		if ($item['id_agent_module'] == '') {
 			$row [3] = '-';
 		}
 		else {
-			$row[3] = printTruncateText(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),20);
+			$row[3] = ui_print_truncate_text(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),20);
 		}
 	}
 	
@@ -245,7 +245,7 @@ foreach ($items as $item) {
 		$row[5] = '-';
 	}
 	else {
-		$row[5] = printTruncateText($item['description'], 25, true, true);
+		$row[5] = ui_print_truncate_text($item['description'], 25, true, true);
 	}
 	
 	$row[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
@@ -255,9 +255,9 @@ foreach ($items as $item) {
 	$table->data[] = $row;
 	$count++;
 }
-pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 print_table($table);
-pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 ?>
 <script type="text/javascript">
 function toggleFormFilter() {

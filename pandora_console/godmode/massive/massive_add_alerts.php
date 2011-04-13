@@ -81,7 +81,7 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 		pandora_audit("Masive management", "Fail try to add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
 	}
 	
-	print_result_message ($contsuccess > 0,
+	ui_print_result_message ($contsuccess > 0,
 	__('Successfully added')."(".$contsuccess."/".$conttotal.")",
 	__('Could not be added'));
 
@@ -153,8 +153,8 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 //Hack to translate text "none" in PHP to javascript
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

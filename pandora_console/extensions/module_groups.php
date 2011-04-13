@@ -116,7 +116,7 @@ function mainModuleGroups() {
 			break;
 	}
 	
-	print_page_header (__("Combined table of agent group and module group"));
+	ui_print_page_header (__("Combined table of agent group and module group"));
 	
 	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
 	
@@ -126,7 +126,7 @@ function mainModuleGroups() {
 	array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 
 	foreach ($modelGroups as $i => $n) {
-		$modelGroups[$i] = printTruncateText($n, 20);
+		$modelGroups[$i] = ui_print_truncate_text($n, 20);
 	}
 
 	$head = $modelGroups;
@@ -149,7 +149,7 @@ function mainModuleGroups() {
 		
 		$row = array();
 		
-		array_push($row, printTruncateText($name, 20));
+		array_push($row, ui_print_truncate_text($name, 20));
 	
 		foreach ($modelGroups as $idModelGroup => $modelGroup) {
 			$query = sprintf($sql,$idAgentGroup, $idModelGroup);
@@ -257,8 +257,8 @@ function mainModuleGroups() {
 		"</ul>" .
 	"</p>";
 	
-	require_css_file('cluetip');
-	require_jquery_file('cluetip');
+	ui_require_css_file('cluetip');
+	ui_require_jquery_file('cluetip');
 	?>
 	<script>
 		$(document).ready (function () {

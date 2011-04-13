@@ -70,12 +70,12 @@ if ($create != ""){
 if (($create != "") OR ($view != "")){
 	
 	if ($create != "")
-		print_page_header (__('Plugin creation'), "", false, "", true);
+		ui_print_page_header (__('Plugin creation'), "", false, "", true);
 	else {
-		print_page_header (__('Plugin update'), "", false, "", true);
+		ui_print_page_header (__('Plugin update'), "", false, "", true);
 		$plugin_id = get_parameter ("view","");
 	}
-	print_help_icon("plugin_definition");
+	ui_print_help_icon("plugin_definition");
 
 	if ($create == "") 
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id'>";
@@ -137,7 +137,7 @@ if (($create != "") OR ($view != "")){
 }
 
 else {
-	print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
+	ui_print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
 
 	// Update plugin
 	if (isset($_GET["update_plugin"])){ // if modified any parameter

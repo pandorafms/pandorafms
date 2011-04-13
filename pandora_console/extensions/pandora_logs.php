@@ -47,7 +47,7 @@ function pandoralogs_extension_main () {
 	}
 
 
-	print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );
+	ui_print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );
 
 	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
 

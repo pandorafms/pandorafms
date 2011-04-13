@@ -23,7 +23,7 @@ if (is_ajax ()) {
 	
 	if ($get_os_icon) {
 		$id_os = (int) get_parameter ('id_os');
-		print_os_icon ($id_os, false);
+		ui_print_os_icon ($id_os, false);
 		return;
 	}
 	
@@ -49,7 +49,7 @@ enterprise_include ('godmode/setup/setup.php');
 */
 
 // Header
-print_page_header (__('General configuration'), "", false, "", true);
+ui_print_page_header (__('General configuration'), "", false, "", true);
 
 
 $table->width = '90%';
@@ -83,13 +83,13 @@ $table->data[1][1] = print_input_text ('remote_config', $config["remote_config"]
 $table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
 
-$table->data[8][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
+$table->data[8][0] = __('Timestamp or time comparation') . ui_print_help_icon ("time_stamp-comparation", true);
 $table->data[8][1] = __('Comparation in rollover').' ';
 $table->data[8][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 $table->data[8][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[8][1] .= print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
 
-$table->data[9][0] = __('Time source') . print_help_icon ("timesource", true);
+$table->data[9][0] = __('Time source') . ui_print_help_icon ("timesource", true);
 $sources["system"] = __('System');
 $sources["sql"] = __('Database');
 $table->data[9][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
@@ -106,12 +106,12 @@ $table->data[14][0] = __('Attachment store');
 $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
 
 $table->data[15][0] = __('IP list with API access') . 
-	print_help_tip (__("The list of IPs separate with carriage return."), true);
+	ui_print_help_tip (__("The list of IPs separate with carriage return."), true);
 $list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
 $table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
 $table->data[16][0] = __('API password') . 
-	print_help_tip (__("Please be careful if you put a password put https access."), true);
+	ui_print_help_tip (__("Please be careful if you put a password put https access."), true);
 $table->data[16][1] = print_input_text('api_password', $config['api_password'], '', 25, 255, true);
 
 $table->data[17][0] = __('Enable GIS features in Pandora Console');

@@ -27,7 +27,7 @@ var unixtime = parseInt(unixtime_ms / 1000);
 <?php
 $option = array ("prominent" => "timestamp");
 ?>
-<b>現在のシステムの時刻:</b> <?php print_timestamp (time (), false, $option); ?>
+<b>現在のシステムの時刻:</b> <?php ui_print_timestamp (time (), false, $option); ?>
 <br />
 <b>現在のデータベースの時刻:</b>
 <?php
@@ -44,7 +44,7 @@ switch ($config["dbtype"]) {
 		$timestamp = get_db_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
 		break;
 }
-print_timestamp ($timestamp, false, $option);
+ui_print_timestamp ($timestamp, false, $option);
 ?>
 <br />
 <b>あなたのブラウザの時刻:</b> <script type="text/javascript">document.write (date);</script>

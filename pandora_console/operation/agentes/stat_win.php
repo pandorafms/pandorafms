@@ -38,7 +38,7 @@ check_login ();
 // Parsing the refresh before sending any header
 $refresh = (int) get_parameter ("refresh", -1);
 if ($refresh > 0) {
-	$query = get_url_refresh (false);
+	$query = ui_get_url_refresh (false);
 	
 	echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
 }

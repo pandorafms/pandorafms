@@ -191,33 +191,33 @@ else {
 		$agentCell = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
 			$module['agent_name'] . '</a>';
 		
-		$typeCell = print_moduletype_icon($module["id_tipo_modulo"], true);
+		$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
 		
 		$intervalCell = ($module['module_interval'] == 0) ? $module['agent_interval'] : $module['intervalo'];
 		
 		if($module['utimestamp'] == 0 && (($module['module_type'] < 21 || $module['module_type'] > 23) && $module['module_type'] != 100)){
-			$statusCell = print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 		}
 		elseif ($module["estado"] == 0) {
-			$statusCell = print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$module["datos"], true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$module["datos"], true);
 		}
 		elseif ($module["estado"] == 1) {
-			$statusCell = print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$module["datos"], true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$module["datos"], true);
 		}
 		elseif ($module["estado"] == 2) {
-			$statusCell = print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$module["datos"], true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$module["datos"], true);
 		}
 		else {
 			$last_status = get_agentmodule_last_status($module['id_agente_modulo']);
 			switch($last_status) {
 				case 0:
-					$statusCell = print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$module["datos"], true);
+					$statusCell = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$module["datos"], true);
 					break;
 				case 1:
-					$statusCell = print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$module["datos"], true);
+					$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$module["datos"], true);
 					break;
 				case 2:
-					$statusCell = print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$module["datos"], true);
+					$statusCell = ui_print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$module["datos"], true);
 					break;
 			}
 		}
@@ -248,7 +248,7 @@ else {
 		} else {
 			$option = array ();
 		}
-		$timestampCell = print_timestamp ($module["utimestamp"], true, $option);
+		$timestampCell = ui_print_timestamp ($module["utimestamp"], true, $option);
 		
 		
 		array_push($table->data, array(
@@ -263,9 +263,9 @@ else {
 	}
 	
 	echo "<br />";
-	pagination ($totalModules);
+	ui_pagination ($totalModules);
 	print_table ($table);
 	unset($table);
-	pagination ($totalModules);
+	ui_pagination ($totalModules);
 }	
 ?>

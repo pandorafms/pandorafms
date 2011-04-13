@@ -41,11 +41,11 @@ switch ($action) {
 	case 'delete_report':
 	case 'list':
 		// Report LIST
-		print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting_edit.png", false, "", true);
+		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting_edit.png", false, "", true);
 		
 		if ($action == 'delete_report') {
 			$result = delete_report ($idReport);
-			print_result_message ($result,
+			ui_print_result_message ($result,
 				__('Successfully deleted'),
 				__('Could not be deleted'));
 		}
@@ -95,7 +95,7 @@ switch ($action) {
 				else
 					$data[2] = __('No');
 					
-				$data[3] = print_group_icon($report['id_group'], true);
+				$data[3] = ui_print_group_icon($report['id_group'], true);
 				$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 				$data[4] .= print_input_hidden ('id_report', $report['id_report'], true);
 				$data[4] .= print_input_hidden ('action','delete_report', true);
@@ -520,10 +520,10 @@ else {
 	$textReportName = '';
 }
 
-print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);
+ui_print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);
 
 if ($resultOperationDB !== null) {
-	print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));
+	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));
 }
 
 switch ($activeTab) {

@@ -161,7 +161,7 @@ switch ($activeTab) {
 				$message = '';
 				
 				if (empty($name_modules)) {
-					$statusProcessInDB = array('flag' => true, 'message' => print_error_message (__('No modules selected'), '', true));
+					$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
 				}
 				else {
 					if ($name_modules[0] == '0')
@@ -233,7 +233,7 @@ if ($action == 'new' || $idVisualConsole === false){
 	
 $buttons[$activeTab]['active'] = true;
 
-print_page_header(__('Visual console builder') . "&nbsp;" . $visualConsoleName, "", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
+ui_print_page_header(__('Visual console builder') . "&nbsp;" . $visualConsoleName, "", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
 
 //The source code for PAINT THE PAGE
 if ($statusProcessInDB !== null) {

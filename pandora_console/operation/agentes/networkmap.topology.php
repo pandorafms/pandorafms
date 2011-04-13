@@ -35,7 +35,7 @@ $filter = get_filter ($layout);
 $graph = generate_dot (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $id_networkmap);
 
 if ($graph === false) {
-	print_error_message (__('Map could not be generated'));
+	ui_print_error_message (__('Map could not be generated'));
 	echo '<div class="nf">' . __('No agents found') . '</div>';
 	return;
 }
@@ -76,7 +76,7 @@ if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > ge
 
 if ($result !== false) {
 	if (! file_exists ($filename_map)) {
-		print_error_message (__('Map could not be generated'));
+		ui_print_error_message (__('Map could not be generated'));
 		echo $result;
 		echo "<div class='warn'>Apparently something went wrong reading the output.</div>";
 		echo "<br />Is ".$config["attachment_store"]." readable by the webserver process?";
@@ -86,7 +86,7 @@ if ($result !== false) {
 	print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	require ($filename_map);
 } else {
-	print_error_message (__('Map could not be generated'));
+	ui_print_error_message (__('Map could not be generated'));
 	echo $result;
 	echo "<div class='warn'>Apparently something went wrong executing the command or writing the output.</div>";
 	echo "<br />Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";

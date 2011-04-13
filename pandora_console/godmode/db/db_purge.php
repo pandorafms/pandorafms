@@ -36,7 +36,7 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 //id_agent = -1: None selected; id_agent = 0: All
 $id_agent = (int) get_parameter_post ("agent", -1);
 
-print_page_header (__('Database maintenance').' &raquo; '.__('Database purge'), "images/god8.png", false, "", true);
+ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database purge'), "images/god8.png", false, "", true);
 
 echo grafico_db_agentes_purge2($id_agent);
 
@@ -160,10 +160,10 @@ $agents[0] = __('All agents');
 echo '<form action="index.php?sec=gdbman&sec2=godmode/db/db_purge" method="post">';
 echo '<div style="width:100%;">';
 print_select ($agents, "agent", $id_agent, "this.form.submit();", "", "", false, false, false);
-print_help_tip (__("Select the agent you want information about"));
+ui_print_help_tip (__("Select the agent you want information about"));
 echo '<noscript>';
 print_submit_button (__('Get data'), 'purgedb_ag', false, 'class="sub upd"');
-print_help_tip (__("Click here to get the data from the agent specified in the select box")); 
+ui_print_help_tip (__("Click here to get the data from the agent specified in the select box")); 
 echo '</noscript><br />';
 
 if ($id_agent > 0) {

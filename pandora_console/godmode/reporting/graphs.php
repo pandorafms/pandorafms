@@ -32,7 +32,7 @@ $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
 
 // Header
-print_page_header (__('Graphs management'), "", false, "", true);
+ui_print_page_header (__('Graphs management'), "", false, "", true);
 
 // Delete module SQL code
 if ($delete_graph) {
@@ -101,7 +101,7 @@ if (! empty ($graphs)) {
 		$data[2] = $graph["description"];
 		
 		$data[3] = $graph["graphs_count"];
-		$data[4] = print_group_icon($graph['id_group'],true);
+		$data[4] = ui_print_group_icon($graph['id_group'],true);
 		
 		if (check_acl ($config['id_user'], 0, "AW")) {
 			$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs&delete_graph=1&id='

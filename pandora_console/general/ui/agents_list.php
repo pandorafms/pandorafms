@@ -92,7 +92,7 @@ if ($show_filter_form) {
 	echo '</div>';
 	echo '</form>';
 	
-	require_jquery_file ('form');
+	ui_require_jquery_file ('form');
 }
 
 if (! isset ($filter) || ! is_array ($filter))
@@ -123,7 +123,7 @@ if (! is_ajax ()) {
 
 echo '<div id="agents_list"'.($agents === false ? ' class="invisible"' : '').'">';
 echo '<div id="no_agents"'.($agents === false ? '' : ' class="invisible"').'>';
-print_error_message (__('No agents found'));
+ui_print_error_message (__('No agents found'));
 echo '</div>';
 
 $table->width = '90%';
@@ -147,7 +147,7 @@ if ($agents !== false) {
 	}
 }
 echo '<div id="agents"'.($agents === false ? ' class="invisible"' : '').'>';
-pagination ($total_agents, '#');
+ui_pagination ($total_agents, '#');
 print_table ($table);
 echo '</div>';
 echo '</div>';

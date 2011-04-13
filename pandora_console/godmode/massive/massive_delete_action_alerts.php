@@ -65,7 +65,7 @@ $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
 	if(empty($id_agents))
-		print_result_message (false, '', __('Could not be deleted').". ".__('No agents selected'));
+		ui_print_result_message (false, '', __('Could not be deleted').". ".__('No agents selected'));
 	else {
 		$action = (int) get_parameter ('action');
 		
@@ -89,7 +89,7 @@ if ($delete) {
 			}
 
 			if (empty($alerts_agent_modules) && empty($alerts_compound)) {
-				print_result_message (false, '', __('Could not be deleted').". ".__('No alerts selected'));
+				ui_print_result_message (false, '', __('Could not be deleted').". ".__('No alerts selected'));
 			} else {
 				$results = true;
 				$agent_module_actions = array();
@@ -129,11 +129,11 @@ if ($delete) {
 						' Alert compound: ' . $id_alert_compounds . ' Action: ' . $action);
 				}
 			
-				print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
+				ui_print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
 			}
 		}
 		else {
-			print_result_message (false, '', __('Could not be deleted').". ".__('No action selected'));
+			ui_print_result_message (false, '', __('Could not be deleted').". ".__('No action selected'));
 		}
 	}
 
@@ -207,8 +207,8 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

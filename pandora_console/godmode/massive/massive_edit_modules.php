@@ -167,7 +167,7 @@ if ($update) {
 		}
 	}
 	
-	print_result_message ($success > 0,
+	ui_print_result_message ($success > 0,
 		__('Successfully updated')."(".$success."/".$count.")",
 		__('Could not be updated'));
 	
@@ -323,7 +323,7 @@ $table->data['edit6'][1] = print_select_from_sql ('SELECT id, name
 	'id_export', '', '',__('None'),'0', true, false, false);
 
 /* FF stands for Flip-flop */
-$table->data['edit7'][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
+$table->data['edit7'][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
 $table->data['edit7'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true);
 $table->data['edit7'][2] = __('Historical data');
 $table->data['edit7'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
@@ -340,7 +340,7 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 //Hack to translate text "none" in PHP to javascript
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('pandora.controls');
 
 if($selection_mode == 'modules'){
 	$modules_row = '';

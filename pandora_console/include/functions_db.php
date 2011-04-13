@@ -2002,8 +2002,8 @@ function get_user_first_group ($id_user = false, $privilege = "AR") {
 /**
  * Get module type icon.
  *
- * TODO: Create print_moduletype_icon and print the full tag including hover etc.
- * @deprecated Use print_moduletype_icon instead
+ * TODO: Create ui_print_moduletype_icon and print the full tag including hover etc.
+ * @deprecated Use ui_print_moduletype_icon instead
  *
  * @param int Module type id
  *

@@ -36,7 +36,7 @@ echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="
 switch ($action) {
 	case 'create_connection_map':
 		// Header
-		print_page_header (__('Create new map connection'), "", false, "gis_setup_map_connection", true);
+		ui_print_page_header (__('Create new map connection'), "", false, "gis_setup_map_connection", true);
 
 		$mapConnection_name = '';
 		$mapConnection_group = '';
@@ -55,7 +55,7 @@ switch ($action) {
 		break;
 	case 'edit_connection_map':
 		// Header
-		print_page_header (__('Edit map connection'), "", false, "gis_setup_map_connection", true);
+		ui_print_page_header (__('Edit map connection'), "", false, "gis_setup_map_connection", true);
 		
 		$idConnectionMap = get_parameter('id_connection_map');
 		$mapConnection = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnectionMap);
@@ -146,17 +146,17 @@ switch ($action) {
 $table->width = '90%';
 
 $table->data = array();
-$table->data[0][0] = __('Connection Name') .print_help_tip (__('Descriptive name for the connection'), true). ":";
+$table->data[0][0] = __('Connection Name') . ui_print_help_tip (__('Descriptive name for the connection'), true). ":";
 $table->data[0][1] = print_input_text ('name', $mapConnection_name, '', 30, 60, true);
 
-$table->data[1][0] = __("Group") .print_help_tip (__('Group that owns the connection'), true) . ":";
+$table->data[1][0] = __("Group") . ui_print_help_tip (__('Group that owns the connection'), true) . ":";
 $table->data[1][1] = print_select_groups(false, false, false, 'group', $mapConnection_group, '', __('All'), '0', true);
 
 $table->data[2][0] = __('Number of zoom levels') . ":";
 $table->data[2][1] = print_input_text ('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);
 
 
-$table->data[3][0] = __('Default zoom level') .print_help_tip (__('Zoom level used when the map is opened'), true). ":";
+$table->data[3][0] = __('Default zoom level') . ui_print_help_tip (__('Zoom level used when the map is opened'), true). ":";
 $table->data[3][1] = print_input_text ('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
 
 echo "<h3>" . __('Basic configuration') . "</h3>";
@@ -285,10 +285,10 @@ $table->data = array();
 
 //$table->colspan[0][3] = 3;
 $table->data[0][0] = '';
-$table->data[0][1] = __('Map Center').print_help_tip (__('Position to center the map when the map is opened'), true) ;
+$table->data[0][1] = __('Map Center') . ui_print_help_tip (__('Position to center the map when the map is opened'), true) ;
 $table->data[0][2] = __("Default position for agents without GIS data");
 
-$table->data[1][0] = __('Change in the map'). print_help_tip (__('This selects what to change by clicking on the map'), true);
+$table->data[1][0] = __('Change in the map'). ui_print_help_tip (__('This selects what to change by clicking on the map'), true);
 $table->data[1][1] = print_radio_button_extended('radio_button', 1, '', 1, false, "changeSetManualPosition(true, false)", '', true);
 $table->data[1][2] = print_radio_button_extended('radio_button', 2, '', 0, false, "changeSetManualPosition(false, true)", '', true);
 
@@ -310,8 +310,8 @@ print_submit_button (__('Save'), '', false, 'class="sub save wand"');
 echo '</div>';
 echo "</form>";
 
-require_javascript_file('OpenLayers/OpenLayers');
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('OpenLayers/OpenLayers');
+ui_require_javascript_file('openlayers.pandora');
 ?>
 <script type="text/javascript">
 var setCenter = true;

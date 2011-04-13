@@ -37,7 +37,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 	// ---------
 	if (isset($_POST["copy"])) {
 		// Header
-		print_page_header (__("Data Copy"), "images/god1.png", false, "", true, "");
+		ui_print_page_header (__("Data Copy"), "images/god1.png", false, "", true, "");
 
 		// Initial checkings
 
@@ -94,7 +94,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		
 		// title
 		// Header
-		print_page_header (__("Remote configuration management"), "images/god1.png", false, "", true, "");
+		ui_print_page_header (__("Remote configuration management"), "images/god1.png", false, "", true, "");
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
@@ -111,7 +111,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 		// Source agent
 		echo '<b>'. __('Source agent').'</b>';
-		print_help_icon ('duplicateconfig');
+		ui_print_help_icon ('duplicateconfig');
 		echo '<br><br>';
 
 		// Show combo with SOURCE agents

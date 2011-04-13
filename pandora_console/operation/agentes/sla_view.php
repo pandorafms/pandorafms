@@ -41,7 +41,7 @@ $offset = get_parameter ("offset", 0);
 
 // Get all module from agent
 echo "<h3>".__('Automatic SLA for monitors')."</h3>";
-pagination (count ($modules), "index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=".$id_agent, $offset);
+ui_pagination (count ($modules), "index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=".$id_agent, $offset);
 
 $table->width = '95%';
 $table->cellpadding = 4;
@@ -73,7 +73,7 @@ foreach ($modules as $module_id => $module) {
 		continue;
 	}
 	$data = array ();
-	$data[0] = print_moduletype_icon ($module["id_tipo_modulo"], true);
+	$data[0] = ui_print_moduletype_icon ($module["id_tipo_modulo"], true);
 	$data[1] = print_string_substr ($module["nombre"], 25, true);
 	if ($module["min_critical"] != 0){
 		$sla_min = $module["min_critical"];
@@ -123,7 +123,7 @@ if ($result !== false) {
 	
 	foreach ($result as $sla_data) {
 		$data = array ();
-		$data[0] = print_moduletype_icon ($modules[$sla_data["id_agent_module"]]["id_tipo_modulo"], true);
+		$data[0] = ui_print_moduletype_icon ($modules[$sla_data["id_agent_module"]]["id_tipo_modulo"], true);
 		$data[1] = print_string_substr ($modules[$sla_data["id_agent_module"]]["nombre"], 25, true);
 		$data[1] .= "(".$sla_data["sla_min"]." / ".$sla_data["sla_max"]." / ".$sla_data["sla_limit"].")";
 		$data[2] = format_numeric (get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';

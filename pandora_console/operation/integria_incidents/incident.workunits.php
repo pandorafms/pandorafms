@@ -39,7 +39,7 @@ $form .= print_input_hidden('id_incident', $id_incident, true);
 $form .= print_input_hidden('profile', '0', true);
 $form .= "</form>";
 
-toggle($form, __('Add workunit'));
+ui_toggle($form, __('Add workunit'));
 
 if(isset($result['workunit'][0]) && is_array($result['workunit'][0])){
 	$workunits = $result['workunit'];

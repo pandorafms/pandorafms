@@ -161,7 +161,7 @@ switch ($opt) {
 		if ($agent_ip_address || $agent_ip_address != '') {
 			$returnJSON['content'] .= __('IP Address').': '.get_agent_address ($id_agente).'<br />';
 		}
-		$returnJSON['content'] .= __('OS').': '.print_os_icon($row['id_os'], true, true);
+		$returnJSON['content'] .= __('OS').': ' . ui_print_os_icon($row['id_os'], true, true);
 
 		$osversion_offset = strlen($row["os_version"]);
 		if ($osversion_offset > 15) {
@@ -175,7 +175,7 @@ switch ($opt) {
 		if ($agent_description || $agent_description != '') {
 			$returnJSON['content'] .= __('Description').': '.$agent_description.'<br />';
 		}
-		$returnJSON['content'] .= __('Group').': '.print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.get_group_name ($row["id_grupo"]).'</strong>)<br />';
+		$returnJSON['content'] .= __('Group').': ' . ui_print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.get_group_name ($row["id_grupo"]).'</strong>)<br />';
 		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
 		$returnJSON['content'] .= __('Last contact') . ": ";
 		if ($row["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {

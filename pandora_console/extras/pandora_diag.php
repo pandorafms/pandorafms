@@ -87,7 +87,7 @@ else {
 	}
 
 	// Header
-	print_page_header (__('Pandora FMS Diagnostic tool'), "", false, "", true);
+	ui_print_page_header (__('Pandora FMS Diagnostic tool'), "", false, "", true);
 
 	echo "<table with='600px' cellpadding='4' cellspacing='4'>";
 	echo "<tr><th align=left>".__("Item")."</th>";

@@ -36,7 +36,7 @@ function insert_item_report($report_id, $values) {
 		$values['id_report'] = $id;
 		$result = (bool)process_sql_insert('treport_content', $values);
 
-		print_result_message($result,
+		ui_print_result_message($result,
 			sprintf(__("Success add '%s' item in report '%s'."), $values['type'], $name),
 			sprintf(__("Error create '%s' item in report '%s'."), $values['type'], $name));
 	}
@@ -63,14 +63,14 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			}
 			
 			if ($exist) {
-				print_error_message(
+				ui_print_error_message(
 					sprintf(
 						__("Error create '%s' report, the name exist and there aren't free name."),
 						$reportElement->name));
 				break;
 			}
 			else if ($loops != 30) {
-				print_error_message(
+				ui_print_error_message(
 					sprintf(
 						__("Warning create '%s' report, the name exist, the report have a name %s."),
 						$reportElement->name, $posible_name));
@@ -79,13 +79,13 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			$values['name'] = safe_input($posible_name);
 		}
 		else {
-			print_error_message(__("Error the report haven't name."));
+			ui_print_error_message(__("Error the report haven't name."));
 			break;
 		}
 		
 		$id_group = get_db_value('id_grupo', 'tgrupo', 'nombre', $reportElement->group);
 		if ($id_group === false) {
-			print_error_message(__("Error the report haven't group."));
+			ui_print_error_message(__("Error the report haven't group."));
 			break;
 		}
 		
@@ -94,7 +94,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			
 		$id_report = process_sql_insert ('treport', $values);
 		
-		print_result_message($id_report,
+		ui_print_result_message($id_report,
 			sprintf(__("Success create '%s' report."), $posible_name),
 			sprintf(__("Error create '%s' report."), $posible_name));
 		
@@ -319,7 +319,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			
 			if (empty($agents_item)) {
 				$id_content = process_sql_insert ('treport_content', $values);
-					print_result_message($id_content,
+					ui_print_result_message($id_content,
 						sprintf(__("Success add '%s' content."), $values['type']),
 						sprintf(__("Error add '%s' action."), $values['type']));
 				
@@ -327,7 +327,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					foreach ($slas as $sla) {
 						$sla['id_report_content'] = $id_content;
 						$result = process_sql_insert ('treport_content_sla_combined', $sla);
-						print_result_message($result,
+						ui_print_result_message($result,
 							sprintf(__("Success add '%s' SLA."), $sla['id_agent_module']),
 							sprintf(__("Error add '%s' SLA."), $sla['id_agent_module']));
 						
@@ -340,7 +340,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					if (empty($agent['modules'])) {
 						$values['id_agent'] = $id_agent;
 						$id_content = process_sql_insert ('treport_content', $values);
-						print_result_message($id_content,
+						ui_print_result_message($id_content,
 							sprintf(__("Success add '%s' content."), $values['type']),
 							sprintf(__("Error add '%s' action."), $values['type']));
 					}
@@ -350,7 +350,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 							$values['id_agent'] = $id_agent;
 							
 							$id_content = process_sql_insert ('treport_content', $values);
-							print_result_message($id_content,
+							ui_print_result_message($id_content,
 								sprintf(__("Success add '%s' content."), $values['type']),
 								sprintf(__("Error add '%s' action."), $values['type']));
 						}
@@ -369,7 +369,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 			$values['name'] = (string)$visual_map->name;
 		}
 		else {
-			print_error_message(
+			ui_print_error_message(
 				__("Error create '%s' visual map, lost tag name."));
 			break;
 		}
@@ -404,14 +404,14 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		}
 			
 		if ($exist) {
-			print_error_message(
+			ui_print_error_message(
 				sprintf(
 					__("Error create '%s' visual map, the name exist and there aren't free name."),
 					$values['name']));
 			continue;
 		}
 		else if ($loops != 30) {
-			print_error_message(
+			ui_print_error_message(
 				sprintf(
 					__("Warning create '%s' visual map, the name exist, the report have a name %s."),
 					$values['name'], $posible_name));
@@ -420,7 +420,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		$values['name'] = safe_input($posible_name);
 		$id_visual_map = process_sql_insert('tlayout', $values);
 			
-		print_result_message((bool)$id_visual_map,
+		ui_print_result_message((bool)$id_visual_map,
 			sprintf(__("Success create '%s' visual map."), $posible_name),
 			sprintf(__("Error create '%s' visual map."), $posible_name));
 			
@@ -529,7 +529,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 			if ($no_agents) {
 				$id_item = process_sql_insert('tlayout_data', $values);
 				
-				print_result_message((bool)$id_item,
+				ui_print_result_message((bool)$id_item,
 					sprintf(__("Success create item type '%d' visual map."), $values['type']),
 					sprintf(__("Error create item type '%d' visual map."), $values['type']));
 					
@@ -548,7 +548,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 							$relation_other_ids[(string)$item->other_id] = $id_item;
 						}
 						
-						print_result_message((bool)$id_item,
+						ui_print_result_message((bool)$id_item,
 							sprintf(__("Success create item for agent '%s' visual map."), $agent['name']),
 							sprintf(__("Error create item for agent '%s' visual map."), $agent['name']));
 							
@@ -563,7 +563,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 							
 							process_sql_insert('tlayout_data', $values);
 							
-							print_result_message((bool)$id_item,
+							ui_print_result_message((bool)$id_item,
 								sprintf(__("Success create item for agent '%s' visual map."), $agent['name']),
 								sprintf(__("Error create item for agent '%s' visual map."), $agent['name']));
 								
@@ -759,7 +759,7 @@ function process_upload_xml_component($xml) {
 				break;
 		}
 		
-		print_result_message((bool)$idComponent, sprintf(__("Success create '%s' component."), $name),
+		ui_print_result_message((bool)$idComponent, sprintf(__("Success create '%s' component."), $name),
 			sprintf(__("Error create '%s' component."), $name));
 	}
 	
@@ -816,10 +816,10 @@ function resource_registration_extension_main() {
 	require_once($config['homedir'] . '/include/functions_db.php');
 	enterprise_include_once('include/functions_local_components.php');
     
-	print_page_header (__('Resource registration'), "images/extensions.png", false, "", true, "" );
+	ui_print_page_header (__('Resource registration'), "images/extensions.png", false, "", true, "" );
 	
 	if (!extension_loaded("libxml")) {
-		print_error_message(_("Error, please install the PHP libXML in the system."));
+		ui_print_error_message(_("Error, please install the PHP libXML in the system."));
 		
 		return;
 	}

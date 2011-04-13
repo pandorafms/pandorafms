@@ -48,7 +48,7 @@ else {
 }
 
 // Header
-print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", false, $link);
+ui_print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", false, $link);
 
 // OPERATIONS
 
@@ -58,7 +58,7 @@ if (isset ($_GET["delete"])){
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		
 		$result = process_sql_delete('ttrap', array('id_trap' => $id_trap));
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
@@ -77,7 +77,7 @@ if (isset ($_GET["check"])) {
 			'id_usuario' => $config["id_user"]);
 		$result = process_sql_update('ttrap', $values, array('id_trap' => $id_trap));
 		
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Successfully updated'),
 			__('Could not be updated'));
 	}
@@ -431,14 +431,14 @@ if ($traps !== false) {
 		if (empty ($trap["value"])) {
 			$data[3] = __('N/A');
 		} else {
-			$data[3] = printTruncateText($trap["value"], 15, false);
+			$data[3] = ui_print_truncate_text($trap["value"], 15, false);
 		}
 		
 		//Custom		
 		if (empty ($trap["value_custom"])) {
 			$data[4] = __('N/A');
 		} else {
-			$data[4] = printTruncateText($trap["value_custom"], 15, false);
+			$data[4] = ui_print_truncate_text($trap["value_custom"], 15, false);
 		}
 	
 		//User
@@ -451,7 +451,7 @@ if ($traps !== false) {
 		
 		// Timestamp
 		$data[6] = '<span title="'.$trap["timestamp"].'">';
-		$data[6] .= print_timestamp ($trap["timestamp"], true);
+		$data[6] .= ui_print_timestamp ($trap["timestamp"], true);
 		$data[6] .= '</span>';
 		
 		// Use alert severity if fired

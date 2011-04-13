@@ -284,7 +284,7 @@ function format_integer_round ($number, $rounder = 5) {
 }
 
 /** 
- * INTERNAL: Use print_timestamp for output Get a human readable string of 
+ * INTERNAL: Use ui_print_timestamp for output Get a human readable string of 
  * the difference between current time and given timestamp.
  * 
  * TODO: Make sense out of all these time functions and stick with 2 or 3
@@ -329,7 +329,7 @@ function get_system_time () {
 }
 
 /** 
- * INTERNAL (use print_timestamp for output): Transform an amount of time in seconds into a human readable
+ * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.
  * 
  * @param int $seconds Seconds elapsed time
@@ -424,7 +424,7 @@ function human_date_relative ($seconds) {
 }
 
 /** 
- * @deprecated Use print_timestamp instead
+ * @deprecated Use ui_print_timestamp instead
  */
 function render_time ($lapse) {
 	$myhour = intval (($lapse*30) / 60);
@@ -821,7 +821,7 @@ function get_event_types () {
 	
 	if (isset($config['text_char_long'])) {
 		foreach ($types as $key => $type) {
-			$types[$key] = printTruncateText($type, $config['text_char_long'], false, true, false);
+			$types[$key] = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
 		}
 	}
 	
@@ -845,7 +845,7 @@ function get_priorities () {
 	
 	if (isset($config['text_char_long'])) {
 		foreach ($priorities as $key => $priority) {
-			$priorities[$key] = printTruncateText($priority, $config['text_char_long'], false, true, false);
+			$priorities[$key] = ui_print_truncate_text($priority, $config['text_char_long'], false, true, false);
 		}
 	}
 	

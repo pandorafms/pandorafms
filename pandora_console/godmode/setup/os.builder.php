@@ -37,7 +37,7 @@ $table->data[1][1] = print_textarea('description', 5, 10, $description, '', true
 $icons = get_list_os_icons_dir();
 $table->data[2][0] = __('Icon');
 $table->data[2][1] = print_select($icons, 'icon',  $icon, 'show_icon_OS();', __('None'), 0, true);
-$table->data[2][1] .= ' <span id="icon_image">' . print_os_icon($idOS, false, true) . '</span>';
+$table->data[2][1] .= ' <span id="icon_image">' . ui_print_os_icon($idOS, false, true) . '</span>';
 
 echo '<form action="post">';
 print_table($table);

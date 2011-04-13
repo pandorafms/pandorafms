@@ -82,7 +82,7 @@ echo '<form action="index.php?sec=gmassive&sec2=godmode/massive/massive_operatio
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');
-print_help_icon ('manageconfig');
+ui_print_help_icon ('manageconfig');
 echo '</span></legend>';
 print_table ($table);
 echo '</fieldset>';
@@ -171,8 +171,8 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message">&nbsp;</h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

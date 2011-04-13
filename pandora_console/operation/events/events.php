@@ -58,7 +58,7 @@ if (is_ajax ()) {
 		}
 		echo '<br />';
 		echo '<strong>'.__('Timestamp').': </strong><br />';
-		print_timestamp ($event['utimestamp']);
+		ui_print_timestamp ($event['utimestamp']);
 		
 		echo '<br />';
 		echo '<strong>'.__('Description').': </strong><br />';
@@ -206,7 +206,7 @@ if ($config["pure"] == 0) {
 			'text' => '<a href="javascript: openSoundEventWindow();">' . print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')
 		);
 	
-	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
+	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
 	
 	?>
 	<script type="text/javascript">
@@ -221,7 +221,7 @@ if ($config["pure"] == 0) {
 else {
 	// Fullscreen
 	echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
-	echo print_help_icon ("eventview", true);
+	echo ui_print_help_icon ("eventview", true);
 	echo "&nbsp;";
 
 	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
@@ -232,7 +232,7 @@ else {
 
 if (($section == 'validate') && ($ids[0] == -1)) {
 		$section = 'list';
-		print_error_message (__('No events selected'));
+		ui_print_error_message (__('No events selected'));
 }
 
 //Process validation (pass array or single value)
@@ -254,12 +254,12 @@ if ($validate) {
 	if(isset($ids[0]) && $ids[0] != -1){
 		$return = validate_event ($ids, ($group_rep == 1), $comment, $new_status);
 		if($new_status == 1) {
-			print_result_message ($return,
+			ui_print_result_message ($return,
 				__('Successfully validated'),
 				__('Could not be validated'));
 		}
 		else if($new_status == 2) {
-			print_result_message ($return,
+			ui_print_result_message ($return,
 				__('Successfully set in process'),
 				__('Could not be set in process'));
 		}
@@ -272,7 +272,7 @@ if ($delete) {
 		
 	if ($ids[0] != -1) {
 		$return = delete_event ($ids, ($group_rep == 1));
-		print_result_message ($return,
+		ui_print_result_message ($return,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
@@ -289,8 +289,8 @@ else {
 	}
 }
 
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 
 ?>
 <script language="javascript" type="text/javascript">

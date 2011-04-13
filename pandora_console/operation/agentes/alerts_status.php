@@ -80,7 +80,7 @@ else {
 	
 	$print_agent = true;
 	
-	print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
+	ui_print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
 }
 
 if ($alert_validate) {
@@ -222,7 +222,7 @@ if ($tab != null) {
 
 // Filter form
 if ($print_agent) {
-	toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, true),__('Alert control filter'), __('Toggle filter(s)'));
+	ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, true),__('Alert control filter'), __('Toggle filter(s)'));
 }
 
 $table->width = '95%';
@@ -370,7 +370,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 echo '<form method="post" action="'.$url.'">';
 
 if (!empty ($table->data)) {
-	pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
+	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
 	print_table ($table);
 } else {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';
@@ -400,7 +400,7 @@ foreach ($alerts['alerts_combined'] as $alert) {
 }	
 
 if (!empty ($table->data)) {
-	pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');
+	ui_pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');
 	print_table ($table);
 }
 
@@ -412,8 +412,8 @@ if (count($alerts['alerts_simple']) > 0 || count($alerts['alerts_combined']) > 0
 
 echo '</form>';
 
-require_css_file('cluetip');
-require_jquery_file('cluetip');
+ui_require_css_file('cluetip');
+ui_require_jquery_file('cluetip');
 ?>
 
 <script type="text/javascript">

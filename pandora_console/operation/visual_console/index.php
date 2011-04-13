@@ -19,7 +19,7 @@
 check_login ();
 
 // Header
-print_page_header (__("Visual console"), "images/monitor.png", false, "operation_visual_console");
+ui_print_page_header (__("Visual console"), "images/monitor.png", false, "operation_visual_console");
 
 require_once ('include/functions_visual_map.php');
 
@@ -52,7 +52,7 @@ foreach ($layouts as $layout) {
 	
 	$data[0] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.
 		$layout['id'].'">'.$layout['name'].'</a> ';
-	$data[1] = print_group_icon ($layout["id_group"], true);
+	$data[1] = ui_print_group_icon ($layout["id_group"], true);
 	$data[1] .= "&nbsp;".get_group_name ($layout["id_group"], true);
 	$data[2] = get_db_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
 		

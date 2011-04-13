@@ -65,14 +65,14 @@ switch ($action) {
 		$resultOrId = process_sql_insert('tconfig_os', $values);
 		
 		if ($resultOrId === false) {
-			$message = print_error_message(__('Fail to create OS'), '', true);
+			$message = ui_print_error_message(__('Fail to create OS'), '', true);
 			$tab = 'builder';
 			$actionHidden = 'save';
 			$textButton = __('Create');
 			$classButton = 'class="sub next"';
 		}
 		else {
-			$message = print_success_message(__('Success to create OS'), '', true);
+			$message = ui_print_success_message(__('Success to create OS'), '', true);
 			$tab = 'list';
 		}
 		break;
@@ -90,7 +90,7 @@ switch ($action) {
 		}
 		$result = process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
 		
-		$message = print_result_message($result, __('Success to update OS'), __('Error to update OS'), '', true);
+		$message = ui_print_result_message($result, __('Success to update OS'), __('Error to update OS'), '', true);
 		if ($result !== false) {
 			$tab = 'list';
 		}
@@ -105,12 +105,12 @@ switch ($action) {
 		$count = $count[0]['count'];
 		
 		if ($count > 0) {
-			$message = print_error_message(__('There are agents with this OS.'), '', true);
+			$message = ui_print_error_message(__('There are agents with this OS.'), '', true);
 		}
 		else {
 			$result = (bool)process_sql_delete('tconfig_os', array('id_os' => $idOS));
 			
-			$message = print_result_message($result, __('Success to delete'), __('Error to delete'), '', true);
+			$message = ui_print_result_message($result, __('Success to delete'), __('Error to delete'), '', true);
 		}
 		break;
 }
@@ -129,7 +129,7 @@ $buttons = array(
 $buttons[$tab]['active'] = true;
 
 // Header
-print_page_header(__('Edit OS'), "", false, "", true, $buttons);
+ui_print_page_header(__('Edit OS'), "", false, "", true, $buttons);
 
 echo $message;
 

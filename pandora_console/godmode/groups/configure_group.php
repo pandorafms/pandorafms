@@ -57,10 +57,10 @@ if ($id_group) {
 
 // Header
 if ($id_group) {
-	print_page_header (__("Update group"), "images/god1.png", false, "", true, "");
+	ui_print_page_header (__("Update group"), "images/god1.png", false, "", true, "");
 }
 else {
-	print_page_header (__("Create group"), "images/god1.png", false, "", true, "");
+	ui_print_page_header (__("Create group"), "images/god1.png", false, "", true, "");
 }
 
 $table->width = '450px';
@@ -96,7 +96,7 @@ $table->data[2][1] .= '</span>';
 $table->data[3][0] = __('Alerts');
 $table->data[3][1] = print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
 
-$table->data[4][0] = __('Propagate ACL') . print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
+$table->data[4][0] = __('Propagate ACL') . ui_print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
 $table->data[4][1] = print_checkbox('propagate', 1, $propagate, true);
 
 $table->data[5][0] = __('Custom ID');

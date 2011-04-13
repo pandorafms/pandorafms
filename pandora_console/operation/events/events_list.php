@@ -420,7 +420,7 @@ foreach ($result as $event) {
 	}
 	elseif ($event["id_agente"] > 0) {
 		// Agent name
-		$data[2] = print_agent_name ($event["id_agente"], true);
+		$data[2] = ui_print_agent_name ($event["id_agente"], true);
 	}
 	else {
 		$data[2] = __('Alert').__('SNMP');
@@ -428,10 +428,10 @@ foreach ($result as $event) {
 	
 	//Time
 	if ($group_rep == 1) {
-		$data[3] = print_timestamp ($event['timestamp_rep'], true);
+		$data[3] = ui_print_timestamp ($event['timestamp_rep'], true);
 	}
 	else {
-		$data[3] = print_timestamp ($event["timestamp"], true);
+		$data[3] = ui_print_timestamp ($event["timestamp"], true);
 	}
 	
 	//Actions
@@ -536,7 +536,7 @@ foreach ($result as $event) {
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Agent name') . ':</b></td><td align="left">';
-	$string .= print_agent_name ($event["id_agente"], true);
+	$string .= ui_print_agent_name ($event["id_agente"], true);
 	$string .= '</td></tr><tr>';
 	
 	
@@ -577,7 +577,7 @@ foreach ($result as $event) {
 	
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Group') . ':</b></td><td align="left">';
-	$string .= print_group_icon ($event["id_grupo"], true);
+	$string .= ui_print_group_icon ($event["id_grupo"], true);
 	$string .= ' '. get_group_name ($event["id_grupo"], true);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
@@ -628,7 +628,7 @@ foreach ($result as $event) {
 
 echo '<div id="events_list">';
 if (!empty ($table->data)) {
-	pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);
+	ui_pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);
 	
 	echo '<form method="post" id="form_events" action="'.$url.'&amp;section=validate">';
 	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";

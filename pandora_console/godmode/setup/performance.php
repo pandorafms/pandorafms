@@ -37,7 +37,7 @@ enterprise_include ('godmode/setup/setup.php');
 
 
 // Header
-print_page_header (__('Performance  configuration'), "", false, "", true);
+ui_print_page_header (__('Performance  configuration'), "", false, "", true);
 
 $table->width = '90%';
 $table->data = array ();
@@ -84,7 +84,7 @@ $table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('realtimestats', 0,
 $table->data[13][0] = __('Batch statistics period (secs)');
 $table->data[13][1] = print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
 
-$table->data[14][0] = __('Use agent access graph'). print_help_icon("agent_access", true);
+$table->data[14][0] = __('Use agent access graph') . ui_print_help_icon("agent_access", true);
 $table->data[14][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
 $table->data[14][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
 

@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Header
-print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", false, "" );
+ui_print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", false, "" );
 
 if (sizeof ($config['extensions']) == 0) {
 	echo '<h3>'.__('There are no extensions defined').'</h3>';

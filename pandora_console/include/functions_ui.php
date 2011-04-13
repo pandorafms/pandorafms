@@ -29,8 +29,10 @@
  * @param boolean $return Flag to return as string or not.
  * @param boolean $showTextInTitle Flag to show the text on title.
  * @param string $suffix String at the end of a strimmed string.
+ *
+ * @return string Truncated text.
  */
-function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]') {
+function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]') {
 	if ($numChars == 0) {
 		if ($return == true) {
 			return $text;
@@ -109,7 +111,7 @@ function printSmallFont ($string, $return = true) {
  *
  * @return string HTML code if return parameter is true.
  */
-function print_message ($message, $class = '', $attributes = '', $return = false, $tag = 'h3') {
+function ui_print_message ($message, $class = '', $attributes = '', $return = false, $tag = 'h3') {
 	$output = '<'.$tag.(empty ($class) ? '' : ' class="'.$class.'" ').$attributes.'>'.$message.'</'.$tag.'>';
 	
 	if ($return)
@@ -128,8 +130,8 @@ function print_message ($message, $class = '', $attributes = '', $return = false
  *
  * @return string HTML code if return parameter is true.
  */
-function print_error_message ($message, $attributes = '', $return = false, $tag = 'h3') {
-	return print_message ($message, 'error', $attributes, $return, $tag);
+function ui_print_error_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return ui_print_message ($message, 'error', $attributes, $return, $tag);
 }
 
 /** 
@@ -143,8 +145,8 @@ function print_error_message ($message, $attributes = '', $return = false, $tag 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_success_message ($message, $attributes = '', $return = false, $tag = 'h3') {
-	return print_message ($message, 'suc', $attributes, $return, $tag);
+function ui_print_success_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return ui_print_message ($message, 'suc', $attributes, $return, $tag);
 }
 
 /** 
@@ -161,7 +163,7 @@ function print_success_message ($message, $attributes = '', $return = false, $ta
  *
  * @return string HTML code if return parameter is true.
  */
-function print_result_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
+function ui_print_result_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
 	if ($good == '' || $good === false)
 		$good = __('Request successfully processed');
 	
@@ -169,9 +171,9 @@ function print_result_message ($result, $good = '', $bad = '', $attributes = '',
 		$bad = __('Error processing request');
 	
 	if (empty ($result)) {
-		return print_error_message ($bad, $attributes, $return, $tag);
+		return ui_print_error_message ($bad, $attributes, $return, $tag);
 	}
-	return print_success_message ($good, $attributes, $return, $tag);
+	return ui_print_success_message ($good, $attributes, $return, $tag);
 }
 
 /**
@@ -189,7 +191,7 @@ function print_result_message ($result, $good = '', $bad = '', $attributes = '',
  *
  * @return string HTML code if return parameter is true.
  */
-function print_timestamp ($unixtime, $return = false, $option = array ()) {
+function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 	global $config;
 	
 	//TODO: Add/use a javascript timer for the seconds so it automatically updates as time passes by
@@ -266,7 +268,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
  *
  * @return string HTML code if return parameter is true.
  */
-function print_username ($username, $return = false) {
+function ui_print_username ($username, $return = false) {
 	$string = '<a href="index.php?sec=usuario&amp;sec2=operation/users/user_edit&amp;id='.$username.'">'.get_user_fullname ($username).'</a>';
 	
 	if ($return)
@@ -284,7 +286,7 @@ function print_username ($username, $return = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true) {
+function ui_print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true) {
 	if($id_group > 0)
 		$icon = (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
@@ -320,7 +322,7 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small", $
  *
  * @return string HTML code if return parameter is true.
  */
-function print_group_icon_with_path ($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
+function ui_print_group_icon_path ($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
 	if($id_group > 0)
 		$icon = (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
@@ -356,7 +358,7 @@ function print_group_icon_with_path ($id_group, $return = false, $path = "images
  * 
  * @return string HTML with icon of the OS
  */
-function print_os_icon ($id_os, $name = true, $return = false) {
+function ui_print_os_icon ($id_os, $name = true, $return = false) {
 	$icon = (string) get_db_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
@@ -385,11 +387,11 @@ function print_os_icon ($id_os, $name = true, $return = false) {
  * 
  * @return string HTML with agent name and link
  */
-function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
+function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
 	$agent_name = (string) get_agent_name ($id_agent);
 	$agent_name_full = $agent_name;
 	if ($cutname) {
-		$agent_name = printTruncateText($agent_name, $cutoff);
+		$agent_name = ui_print_truncate_text($agent_name, $cutoff);
 	}
 	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b>'.$agent_name.'</b></a>';
 	
@@ -411,7 +413,7 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '',
  * 
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
-function format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
+function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
 
 	$actionText = "";
 	require_once ("include/functions_alerts.php");
@@ -509,13 +511,13 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	
 	$data[$index['agent_name']] = $disabledHtmlStart;
 	if ($compound) {
-		$data[$index['agent_name']] .= print_agent_name ($id_agent, true, 20, $styleDisabled);
+		$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled);
 	} 
 	elseif ($agent == 0) {
 		$data[$index['module_name']] .= mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	} 
 	else {
-		$data[$index['agent_name']] .= print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
+		$data[$index['agent_name']] .= ui_print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
 		$data[$index['module_name']] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
@@ -553,7 +555,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 
 	$data[$index['action']] = $actionText;
 	
-	$data[$index['last_fired']] = $disabledHtmlStart . print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;
+	$data[$index['last_fired']] = $disabledHtmlStart . ui_print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;
 	
 
 	$status = STATUS_ALERT_NOT_FIRED;
@@ -570,7 +572,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 		$title = __('Alert not fired');
 	}
 	
-	$data[$index['status']] = print_status_image($status, $title, true);
+	$data[$index['status']] = ui_print_status_image($status, $title, true);
 	
 	if ($compound) {
 		$data[$index['validate']] = print_checkbox ("validate_compound[]", $alert["id"], false, true);
@@ -591,7 +593,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
  *
  * @return An HTML string
  */
-function print_string_substr ($string, $cutoff = 16, $return = false) {
+function ui_print_string_substr ($string, $cutoff = 16, $return = false) {
 	if (empty ($string)) {
 		return "";
 	}
@@ -622,7 +624,7 @@ function print_string_substr ($string, $cutoff = 16, $return = false) {
  *
  * @return An HTML string if return was true.
  */
-function print_alert_template_example ($id_alert_template, $return = false, $print_values = true) {
+function ui_print_alert_template_example ($id_alert_template, $return = false, $print_values = true) {
 	$output = '';
 	
 	$output .= print_image("images/information.png", true);
@@ -697,7 +699,7 @@ function print_alert_template_example ($id_alert_template, $return = false, $pri
  * 
  * @return string The help tip
  */
-function print_help_icon ($help_id, $return = false) {
+function ui_print_help_icon ($help_id, $return = false) {
 	$output = '&nbsp;'.print_image ("images/help.png", true, 
 		array ("class" => "img_help",
 			"title" => __('Help'),
@@ -714,17 +716,17 @@ function print_help_icon ($help_id, $return = false) {
  * To make a CSS file available just put it in include/styles. The
  * file name should be like "name.css". The "name" would be the value
  * needed to pass to this function.
- 
+ * 
  * @param string Script name to add without the "jquery." prefix and the ".js"
  * suffix. Example:
-<code>
-require_css_file ('pandora');
-// Would include include/styles/pandora.js
-</code>
+ * <code>
+ * ui_require_css_file ('pandora');
+ * // Would include include/styles/pandora.js
+ * </code>
  *
  * @return bool True if the file was added. False if the file doesn't exist.
  */
-function require_css_file ($name, $path = 'include/styles/') {
+function ui_require_css_file ($name, $path = 'include/styles/') {
 	global $config;
 	
 	$filename = $path.$name.'.css';
@@ -745,17 +747,17 @@ function require_css_file ($name, $path = 'include/styles/') {
  * To make a javascript file available just put it in include/javascript. The
  * file name should be like "name.js". The "name" would be the value
  * needed to pass to this function.
- 
+ * 
  * @param string Script name to add without the "jquery." prefix and the ".js"
  * suffix. Example:
-<code>
-require_javascript_file ('pandora');
-// Would include include/javascript/pandora.js
-</code>
+ * <code>
+ * ui_require_javascript_file ('pandora');
+ * // Would include include/javascript/pandora.js
+ * </code>
  *
  * @return bool True if the file was added. False if the file doesn't exist.
  */
-function require_javascript_file ($name, $path = 'include/javascript/') {
+function ui_require_javascript_file ($name, $path = 'include/javascript/') {
 	global $config;
 	
 	$filename = $path.$name.'.js';
@@ -780,17 +782,17 @@ function require_javascript_file ($name, $path = 'include/javascript/') {
  * file name should be like "jquery.name.js". The "name" would be the value
  * needed to pass to this function. Notice that this function does not manage
  * jQuery denpendencies.
- 
+ * 
  * @param string Script name to add without the "jquery." prefix and the ".js"
  * suffix. Example:
-<code>
-require_jquery_file ('form');
-// Would include include/javascript/jquery.form.js
-</code>
+ * <code>
+ * ui_require_jquery_file ('form');
+ * // Would include include/javascript/jquery.form.js
+ * </code>
  *
  * @return bool True if the file was added. False if the file doesn't exist.
  */
-function require_jquery_file ($name, $path = 'include/javascript/') {
+function ui_require_jquery_file ($name, $path = 'include/javascript/') {
 	global $config;
 	
 	$filename = $path.'jquery.'.$name.'.js';
@@ -821,7 +823,7 @@ function require_jquery_file ($name, $path = 'include/javascript/') {
  * 
  * @return string String to return to the browser 
  */
-function process_page_head ($string, $bitfield) {
+function ui_process_page_head ($string, $bitfield) {
 	global $config;
 
 	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
@@ -831,7 +833,7 @@ function process_page_head ($string, $bitfield) {
 	$output = '';
 	
 	if ($config["refr"] > 0) {
-		$query = get_url_refresh (false);
+		$query = ui_get_url_refresh (false);
 		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query.'" />';
 	}
 	$output .= "\n\t";
@@ -850,9 +852,9 @@ function process_page_head ($string, $bitfield) {
 
 	if ($config["language"] != "en") {
 		//Load translated strings - load them last so they overload all the objects
-		require_javascript_file ("time_".$config["language"]);
-		require_javascript_file ("date".$config["language"]);
-		require_javascript_file ("countdown_".$config["language"]);
+		ui_require_javascript_file ("time_".$config["language"]);
+		ui_require_javascript_file ("date".$config["language"]);
+		ui_require_javascript_file ("countdown_".$config["language"]);
 	}
 	$output .= "\n\t";
 	
@@ -987,7 +989,7 @@ function process_page_head ($string, $bitfield) {
  * 
  * @return string String to return to the browser
  */
-function process_page_body ($string, $bitfield) {
+function ui_process_page_body ($string, $bitfield) {
 	global $config;
 	
 	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
@@ -1024,7 +1026,7 @@ function process_page_body ($string, $bitfield) {
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset') {
+function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset') {
 	global $config;
 	
 	if (empty ($pagination)) {
@@ -1041,7 +1043,7 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
 	}
 	
 	if (empty ($url)) {
-		$url = get_url_refresh (array ($offset_name => false));
+		$url = ui_get_url_refresh (array ($offset_name => false));
 	}
 	
 	/* 	URL passed render links with some parameter
@@ -1148,7 +1150,7 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
  *
  * @return string HTML code if return parameter is true.
  */
-function print_help_tip ($text, $return = false) {
+function ui_print_help_tip ($text, $return = false) {
 	$output = '<a href="#" class="tip">&nbsp;<span>'.$text.'</span></a>';
 	
 	if ($return)
@@ -1166,7 +1168,7 @@ function print_help_tip ($text, $return = false) {
  * 
  * @return bool Tru if the debug was actived. False if not.
  */
-function debug ($var, $backtrace = true) {
+function ui_debug ($var, $backtrace = true) {
 	global $config;
 	if (! isset ($config['debug']))
 		return false;
@@ -1235,7 +1237,7 @@ function debug ($var, $backtrace = true) {
  *
  * @return string An HTML string with the icon. Printed if return is false
  */
-function print_moduletype_icon ($id_moduletype, $return = false) {
+function ui_print_moduletype_icon ($id_moduletype, $return = false) {
 	global $config;
 	
 	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
@@ -1259,7 +1261,7 @@ function print_moduletype_icon ($id_moduletype, $return = false) {
 * @param int File size in bytes
 * @return string Bytes converted to a human readable meassure.
 */
-function format_filesize ($bytes) {
+function ui_format_filesize ($bytes) {
 	$bytes = (int) $bytes;
 	$strs = array ('B', 'kB', 'MB', 'GB', 'TB');
 	if ($bytes <= 0) {
@@ -1278,7 +1280,7 @@ function format_filesize ($bytes) {
  *
  * @return array An array with the image path, image width and image height.
  */
-function get_status_images_path () {
+function ui_get_status_images_path () {
 	global $config;
 
 	$imageset = $config["status_images_set"];
@@ -1323,8 +1325,8 @@ define ('STATUS_SERVER_DOWN', 'server_down.png');
  *
  * @return string HTML code if return parameter is true.
  */
-function print_status_image ($type, $title = "", $return = false, $options = false) {
-	list ($imagepath) = get_status_images_path ();
+function ui_print_status_image ($type, $title = "", $return = false, $options = false) {
+	list ($imagepath) = ui_get_status_images_path ();
 	
 	$imagepath .= "/".$type;
 	
@@ -1343,7 +1345,7 @@ function print_status_image ($type, $title = "", $return = false, $options = fal
  * @param array Extra options for the function. To be documented.
  * @param array Extra and hidden filter for the agent search.
  */
-function print_ui_agents_list ($options = false, $filter = false, $return = false) {
+function ui_print_ui_agents_list ($options = false, $filter = false, $return = false) {
 	global $config;
 	
 	$output = '';
@@ -1384,7 +1386,7 @@ function print_ui_agents_list ($options = false, $filter = false, $return = fals
 	}
 	
 	if ($return)
-		return get_include_contents ($config['homedir'].'/general/ui/agents_list.php',
+		return ui_get_include_contents ($config['homedir'].'/general/ui/agents_list.php',
 			get_defined_vars ());
 	
 	include ($config['homedir'].'/general/ui/agents_list.php');
@@ -1401,7 +1403,7 @@ function print_ui_agents_list ($options = false, $filter = false, $return = fals
  * @return string Content of the file after being processed. False if the file
  * could not be included.
  */
-function get_include_contents ($filename, $params = false) {
+function ui_get_include_contents ($filename, $params = false) {
 	global $config;
 
 	ob_start ();
@@ -1436,7 +1438,7 @@ function get_include_contents ($filename, $params = false) {
  * 
  */
 
-function toggle($code, $name, $title = '', $hidde_default = true) {
+function ui_toggle($code, $name, $title = '', $hidde_default = true) {
 // Generate unique Id
 $uniqid = uniqid('');
 
@@ -1488,7 +1490,7 @@ echo '</script>';
  * relative by default
  * @param bool Whether to add POST values to the URL.
  */	
-function get_url_refresh ($params = false, $relative = true, $add_post = true) {
+function ui_get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	// Agent selection filters and refresh
 	global $config;
 	$url = '';
@@ -1550,7 +1552,7 @@ function get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	
 	$url = htmlspecialchars ($url);
 	if (! $relative) {
-		return get_full_url ($url);
+		return ui_get_full_url ($url);
 	}
 	
 	return $url;
@@ -1565,7 +1567,7 @@ function get_url_refresh ($params = false, $relative = true, $add_post = true) {
  *
  * @return string A full URL in Pandora.
  */
-function get_full_url ($url = false) {
+function ui_get_full_url ($url = false) {
 	global $config;
 	
 	$was_empty = false;
@@ -1612,7 +1614,7 @@ function get_full_url ($url = false) {
  * @return string Header HTML
  */
 
-function print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
 	$title = safe_input_html($title);
 	if (($icon == "") && ($godmode == true)){
 		$icon = "images/setup.png";
@@ -1640,7 +1642,7 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= $title;
 	if ($help != "")
-		$buffer .= "&nbsp;&nbsp;" . print_help_icon ($help, true);
+		$buffer .= "&nbsp;&nbsp;" . ui_print_help_icon ($help, true);
 	$buffer .= '</li></ul></div>';
 
 	if (is_array($options)) {

@@ -84,12 +84,12 @@ if ($update_agents) {
 	
 	$id_agents = get_parameter('id_agents', false);
 	if (!$id_agents) {
-		print_error_message(__('No agents selected'));
+		ui_print_error_message(__('No agents selected'));
 		$id_agents = array();
 	}
 	else {
 		if (empty($values) && empty($fields)) {
-			print_error_message(__('No values changed'));
+			ui_print_error_message(__('No values changed'));
 			$id_agents = array();
 		}
 	}
@@ -115,7 +115,7 @@ if ($update_agents) {
 		}
 		
 		
-		print_result_message ($n_deleted > 0,
+		ui_print_result_message ($n_deleted > 0,
 			__('Configuration files deleted successfully').'('.$n_deleted.')',
 			__('Configuration files cannot be deleted'));
 	}
@@ -166,7 +166,7 @@ if ($update_agents) {
 	}
 	
 	
-	print_result_message ($result !== false,
+	ui_print_result_message ($result !== false,
 			__('Agents updated successfully').'('.$n_edited.')',
 			__('Agents cannot be updated'));
 	
@@ -232,7 +232,7 @@ $table->data[0][1] = print_input_text_extended ('id_parent', get_agent_name ($id
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
-$table->data[0][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
+$table->data[0][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
 
 $table->data[1][0] = __('Group');
 $table->data[1][1] = print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
@@ -254,7 +254,7 @@ $table->data[3][0] = __('OS');
 $table->data[3][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
 	'id_os', $id_os, '', __('No change'), -1, true, false, true, false, 'width: 105px;');
 $table->data[3][1] .= ' <span id="os_preview">';
-$table->data[3][1] .= print_os_icon ($id_os, false, true);
+$table->data[3][1] .= ui_print_os_icon ($id_os, false, true);
 $table->data[3][1] .= '</span>';
 
 // Network server
@@ -293,7 +293,7 @@ $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
-$table->data[1][0] = __('Module definition').print_help_icon("module_definition", true);
+$table->data[1][0] = __('Module definition') . ui_print_help_icon("module_definition", true);
 $table->data[1][1] = __('No change').' '.print_radio_button_extended ("mode", -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Learning mode').' '.print_radio_button_extended ("mode", 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode').' '.print_radio_button_extended ("mode", 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
@@ -335,7 +335,7 @@ if ($config['activate_gis']) {
 	$table->data[5][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-toggle(print_table ($table, true), __('Advanced options'));
+ui_toggle(print_table ($table, true), __('Advanced options'));
 unset($table);
 
 $table->width = '95%';
@@ -366,7 +366,7 @@ foreach ($fields as $field) {
 }
 
 if (!empty($fields)) {
-	toggle(print_table ($table, true), __('Custom fields'));
+	ui_toggle(print_table ($table, true), __('Custom fields'));
 }
 
 
@@ -382,14 +382,14 @@ echo "</div>"; // Shown and hide div
 
 echo '</div></form>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 
 
-require_jquery_file ('pandora.controls');
-require_jquery_file ('ajaxqueue');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('ajaxqueue');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

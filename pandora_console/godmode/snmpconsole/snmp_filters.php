@@ -32,14 +32,14 @@ $filter = (string) get_parameter ('filter', '');
 // Create/update header
 if ($edit_filter > -2) {
 	if ($edit_filter > -1) {
-		print_page_header (__('SNMP Console')." &raquo; ".__('Update filter'), "images/computer_error.png", false, "", true);
+		ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update filter'), "images/computer_error.png", false, "", true);
 	}
 	else {
-		print_page_header (__('SNMP Console')." &raquo; ".__('Create filter'), "images/computer_error.png", false, "", true);
+		ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create filter'), "images/computer_error.png", false, "", true);
 	}
 }
 else {// Overview header
-	print_page_header (__('SNMP Console')." &raquo; ".__('Filter overview'), "images/computer_error.png", false, "", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Filter overview'), "images/computer_error.png", false, "", true);
 }
 
 // Create/update filter
@@ -48,10 +48,10 @@ if ($update_filter > -2) {
 		$values = array('description' => $description, 'filter' => $filter);
 		$result = process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $update_filter));
 		if ($result === false) {
-			print_error_message (__('There was a problem updating the filter'));
+			ui_print_error_message (__('There was a problem updating the filter'));
 		}
 		else {
-			print_success_message (__('Successfully updated'));
+			ui_print_success_message (__('Successfully updated'));
 		}
 	}
 	else {
@@ -60,20 +60,20 @@ if ($update_filter > -2) {
 			'filter' => $filter);
 		$result = process_sql_insert('tsnmp_filter', $values);
 		if ($result === false) {
-			print_error_message (__('There was a problem creating the filter'));
+			ui_print_error_message (__('There was a problem creating the filter'));
 		}
 		else {
-			print_success_message (__('Successfully created'));
+			ui_print_success_message (__('Successfully created'));
 		}
 	}
 }
 else if ($delete_filter > -1) { // Delete
 	$result = process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $delete_filter));
 	if ($result === false) {
-		print_error_message (__('There was a problem deleting the filter'));
+		ui_print_error_message (__('There was a problem deleting the filter'));
 	}
 	else {
-		print_success_message (__('Successfully deleted'));
+		ui_print_success_message (__('Successfully deleted'));
 	}
 }
 

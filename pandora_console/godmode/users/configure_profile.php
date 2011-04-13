@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true);
+ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true);
 
 $new_profile = (bool) get_parameter ('new_profile');
 $create_profile = (bool) get_parameter ('create_profile');

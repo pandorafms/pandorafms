@@ -66,7 +66,7 @@ $add = (bool) get_parameter_post ('add');
 
 if ($add) {
 	if(empty($id_agents))
-		print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
+		ui_print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
 	else {
 		$action = (int) get_parameter ('action');
 		$fires_min = get_parameter ('fires_min');
@@ -100,7 +100,7 @@ if ($add) {
 				$options['fires_max'] = $fires_max;
 				
 			if (empty($agent_alerts_id) && empty($agent_alerts_id_compound)) {
-				print_result_message (false, '', __('Could not be added').". ".__('No alerts selected'));
+				ui_print_result_message (false, '', __('Could not be added').". ".__('No alerts selected'));
 			}
 			else {
 				$results = true;
@@ -120,11 +120,11 @@ if ($add) {
 					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
 					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Action: ' . $action);
 				
-				print_result_message ($results, __('Successfully added'), __('Could not be added'));
+				ui_print_result_message ($results, __('Successfully added'), __('Could not be added'));
 			}
 		}
 		else {
-			print_result_message (false, '', __('Could not be added').". ".__('No action selected'));
+			ui_print_result_message (false, '', __('Could not be added').". ".__('No action selected'));
 		}
 	}
 
@@ -194,7 +194,7 @@ $table->data[4][1] .= __('Number of alerts match from').' ';
 $table->data[4][1] .= print_input_text ('fires_min', 0, '', 4, 10, true);
 $table->data[4][1] .= ' '.__('to').' ';
 $table->data[4][1] .= print_input_text ('fires_max', 0, '', 4, 10, true);
-$table->data[4][1] .= print_help_icon ("alert-matches", true);
+$table->data[4][1] .= ui_print_help_icon ("alert-matches", true);
 $table->data[4][1] .= '</span>';
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
@@ -208,8 +208,8 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

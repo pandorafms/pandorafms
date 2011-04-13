@@ -521,7 +521,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= '<div id="upload_file" style="display: none;">';
 		$table->data[1][1] .= print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
-		$table->data[1][1] .= print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
+		$table->data[1][1] .= ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= print_input_file ('file', true, false);
 		$table->data[1][1] .= print_checkbox('decompress', 1, false, true);
 		$table->data[1][1] .= __('Decompress');
@@ -578,13 +578,13 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 			$hash = md5($fileinfo['url'] . $config['dbpass']);
 			$data[1] = '<a href="include/get_file.php?file='.$fileinfo['url'].'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
-		$data[2] = print_timestamp ($fileinfo['last_modified'], true,
+		$data[2] = ui_print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));
 		if ($fileinfo['is_dir']) {
 			$data[3] = '';
 		}
 		else {
-			$data[3] = format_filesize ($fileinfo['size']);
+			$data[3] = ui_format_filesize ($fileinfo['size']);
 		}
 		
 		//Actions buttons
@@ -653,7 +653,7 @@ function box_upload_file_complex($real_directory, $relative_directory, $url = ''
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
 	} else {
-		$table->data[1][0] = __('Upload') . print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
+		$table->data[1][0] = __('Upload') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = print_input_file ('file', true, false);
 		$table->data[1][2] = print_radio_button('zip_or_file', 'zip', __('Multiple files zipped'), false, true);
 		$table->data[1][3] = print_radio_button('zip_or_file', 'file', __('One'), true, true);
@@ -725,7 +725,7 @@ function box_upload_zip_explorer($real_directory, $relative_directory, $url = ''
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
 	} else {
-		$table->data[1][0] = __('Upload zip file: ') . print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
+		$table->data[1][0] = __('Upload zip file: ') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = print_input_file ('file', true, false);
 		$table->data[1][2] = print_submit_button (__('Go'), 'go', false,
 			'class="sub next"', true);

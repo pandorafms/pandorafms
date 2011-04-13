@@ -32,7 +32,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-print_page_header (__('Pandora audit')." &raquo; ".__('Review Logs'), "", false, "", true );
+ui_print_page_header (__('Pandora audit')." &raquo; ".__('Review Logs'), "", false, "", true );
 
 $offset = get_parameter ("offset", 0);
 $tipo_log = get_parameter ("tipo_log", 'all');
@@ -136,7 +136,7 @@ $sql = "SELECT COUNT(*) FROM tsesion " . $filter;
 $count = get_db_sql ($sql);
 $url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
 
-pagination ($count, $url);
+ui_pagination ($count, $url);
 
 switch ($config["dbtype"]) {
 	case "mysql":

@@ -80,11 +80,11 @@ if (!check_acl ($config['id_user'], 0, "AR")) {
 	return;
 }
 
-require_javascript_file ('calendar');
+ui_require_javascript_file ('calendar');
 
 
 // Header
-print_page_header (__("Export data"), "images/bricks.png");
+ui_print_page_header (__("Export data"), "images/bricks.png");
 
 $group = get_parameter_post ('group', 0);
 //$agent = get_parameter_post ('agent', 0);
@@ -123,7 +123,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 	
 	//If time is negative or zero, don't process - it's invalid
 	if ($start < 1 || $end < 1) {
-		print_error_message (__('Invalid time specified'));
+		ui_print_error_message (__('Invalid time specified'));
 		return;
 	}
 
@@ -268,7 +268,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			echo $dataend;
 			break;
 		default:
-			print_error_message (__('Invalid method supplied'));
+			ui_print_error_message (__('Invalid method supplied'));
 			return;
 		break;
 	}
@@ -284,7 +284,7 @@ switch ($export_type) {
 
 	
 } elseif (!empty ($export_btn) && empty ($module)) {
-	print_error_message (__('No modules specified'));
+	ui_print_error_message (__('No modules specified'));
 }
 
 echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/exportdata" name="export_form">';
@@ -371,10 +371,10 @@ echo '<div class="action-buttons" style="width:550px;">';
 	print_submit_button (__('Export'), 'export_btn', false, 'class="sub wand"');
 echo '</div></form>';
 
-require_jquery_file ('pandora.controls');
-require_jquery_file ('ajaxqueue');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('ajaxqueue');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

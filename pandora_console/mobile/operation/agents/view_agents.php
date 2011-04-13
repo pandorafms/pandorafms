@@ -107,9 +107,9 @@ class ViewAgents {
 			
 			$data = array();
 			
-			$truncName = printTruncateText($agent['nombre'], 25, true, true);
+			$truncName = ui_print_truncate_text($agent['nombre'], 25, true, true);
 			
-			$data[] = print_group_icon_with_path($agent["id_grupo"], true, "../images/groups_small", '', false);
+			$data[] = ui_print_group_icon_path($agent["id_grupo"], true, "../images/groups_small", '', false);
 			$data[] = '<a href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . $truncName . '</a>';
 			
 			$moduleInfo = '<b>';
@@ -137,7 +137,7 @@ class ViewAgents {
 		print_table($table);
 		
 		$pagination = pagination ($total_agents,
-			get_url_refresh (array ('filter_group' => $this->filterGroup, 'filter_group' => $this->filterGroup)),
+			ui_get_url_refresh (array ('filter_group' => $this->filterGroup, 'filter_group' => $this->filterGroup)),
 			0, 0, true);
 			
 		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
@@ -190,7 +190,7 @@ class ViewAgent {
 		$table->data[1][0] = __('IP:');
 		$table->data[1][1] = implode(',', $this->ips);
 		$table->data[2][0] = __('OS:');
-		$table->data[2][1] = str_replace('images/os_icons/', '../images/os_icons/', print_os_icon($this->agent['id_os'], true, true));
+		$table->data[2][1] = str_replace('images/os_icons/', '../images/os_icons/', ui_print_os_icon($this->agent['id_os'], true, true));
 		$table->data[3][0] = __('Last contact');
 		$table->data[3][1] = $this->agent['ultimo_contacto'];
 		
@@ -239,7 +239,7 @@ class ViewAgent {
 			$data = array();
 			
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $module['id_agente_modulo'] . '">' . 
-				printTruncateText($module["nombre"], 20, true, true) . '</a>';
+				ui_print_truncate_text($module["nombre"], 20, true, true) . '</a>';
 			$status = STATUS_MODULE_WARNING;
 			$title = "";
 		
@@ -281,7 +281,7 @@ class ViewAgent {
 			}
 		
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img height="15" width="15"') , print_status_image($status, $title, true));
+				array('../images/status_sets', '<img height="15" width="15"') , ui_print_status_image($status, $title, true));
 			
 			if ($module["id_tipo_modulo"] == 24) { // log4x
 				switch($module["datos"]) {
@@ -309,7 +309,7 @@ class ViewAgent {
 			else {
 				$lastTime = '<span>';
 			}
-			$lastTime .= print_timestamp ($module["utimestamp"], true, array('units' => 'tiny'));
+			$lastTime .= ui_print_timestamp ($module["utimestamp"], true, array('units' => 'tiny'));
 			$lastTime .= '</span>';
 			$data[] = $lastTime;
 			
@@ -346,12 +346,12 @@ class ViewAgent {
 			
 			$data = array();
 			
-			$data[] = printTruncateText(get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
+			$data[] = ui_print_truncate_text(get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
 			
 			$template = safe_output(get_alert_template ($alert['id_alert_template']));
-			$data[] = printTruncateText(safe_output($template['name']), 20, true, true);
+			$data[] = ui_print_truncate_text(safe_output($template['name']), 20, true, true);
 			
-			$data[] = print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
+			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
 			$status = STATUS_ALERT_NOT_FIRED;
 			$title = "";
@@ -370,7 +370,7 @@ class ViewAgent {
 			}
 			
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img width="15" height="15"'), print_status_image($status, $title, true));
+				array('../images/status_sets', '<img width="15" height="15"'), ui_print_status_image($status, $title, true));
 			
 			$table->data[] = $data;
 		}
@@ -525,8 +525,8 @@ class viewGraph {
 		
 		print_table($table);
 		
-		$pagination = pagination ($count,
-			get_url_refresh (array ('period' => $this->period)),
+		$pagination = ui_pagination ($count,
+			ui_get_url_refresh (array ('period' => $this->period)),
 			0, 0, true);
 			
 		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);

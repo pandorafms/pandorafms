@@ -17,14 +17,14 @@ global $config;
 
 check_login ();
 
-print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "configure_gis_map", true);
+ui_print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "configure_gis_map", true);
 
 
 require_once ('include/functions_gis.php');
 
 $magicQuotesFlag = (boolean)ini_get('magic_quotes_gpc');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 //Global vars for javascript and scripts.
 ?>
 <script type="text/javascript">
@@ -159,7 +159,7 @@ switch ($action) {
 		}
 		$layer_list = $arrayLayers;
 		
-		print_result_message ($mapCreatedOk, __('Map successfully created'),
+		ui_print_result_message ($mapCreatedOk, __('Map successfully created'),
 			__('Map could not be created'));
 		break;
 	case 'new_map':
@@ -289,7 +289,7 @@ switch ($action) {
 		}
 		$layer_list = $arrayLayers;
 		
-		print_result_message ($mapCreatedOk, __('Map successfully update'),
+		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
 			__('Map could not be update'));
 		
 		print_input_hidden('action', 'update_saved');
@@ -301,7 +301,7 @@ $table->width = '90%';
 $table->data = array ();
 $table->valign[0] = 'top';
 
-$table->data[0][0] = __('Map Name') . print_help_tip (__('Descriptive name for the map'), true). ':';
+$table->data[0][0] = __('Map Name') . ui_print_help_tip (__('Descriptive name for the map'), true). ':';
 $table->data[0][1] = print_input_text ('map_name', $map_name, '', 30, 60, true);
 $table->rowspan[0][2] = 9;
 
@@ -320,7 +320,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
 	}
 }
 
-$table->data[1][0] = __("Add Map connection") . print_help_tip (__('At least one map connection must be defined, it will be possible to change between the connections in the map'), true). ": " . $iconError;
+$table->data[1][0] = __("Add Map connection") . ui_print_help_tip (__('At least one map connection must be defined, it will be possible to change between the connections in the map'), true). ": " . $iconError;
 $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
 		<td>
@@ -338,10 +338,10 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
 else
 	$display_all_group = false;
-$table->data[2][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
+$table->data[2][0] = __('Group') . ui_print_help_tip (__('Group that owns the map'), true). ':';
 $table->data[2][1] = print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
 
-$table->data[3][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
+$table->data[3][0] = __('Default zoom') . ui_print_help_tip (__('Default zoom level when opening the map'), true). ':';
 $table->data[3][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
 
 $table->data[4][0] = __('Center Longitude') . ':';
@@ -364,14 +364,14 @@ $table->data[9][1] = print_input_text ('map_default_altitude', $map_default_alti
 
 print_table($table);
 
-echo "<h3>" . __('Layers') . print_help_tip (__('Each layer can show agents from one group or the agents added to that layer or both.'), true). "</h3>";
+echo "<h3>" . __('Layers') . ui_print_help_tip (__('Each layer can show agents from one group or the agents added to that layer or both.'), true). "</h3>";
 
 $table->width = '90%';
 $table->data = array ();
 $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 
-$table->data[0][0] = "<h4>" .__('List of layers') . print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true) . "</h4>";
+$table->data[0][0] = "<h4>" .__('List of layers') . ui_print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true) . "</h4>";
 $table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true) . '</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">' .
@@ -485,12 +485,12 @@ echo "</form>";
 <?php
 //-------------------------END CHUNKS---------------------------------------
 
-require_css_file ('cluetip');
-require_jquery_file ('cluetip');
-require_jquery_file ('pandora.controls');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
-require_jquery_file ('json');
+ui_require_css_file ('cluetip');
+ui_require_jquery_file ('cluetip');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
+ui_require_jquery_file ('json');
 ?>
 <script type="text/javascript">
 function refreshMapView() {

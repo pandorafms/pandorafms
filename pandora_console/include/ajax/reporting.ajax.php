@@ -129,7 +129,7 @@ if ($get_custom_sql) {
 
 if ($truncate_text) {
 	$text = get_parameter ('text', '');
-	return printTruncateText ($text, 20, true, false);
+	return ui_print_truncate_text ($text, 20, true, false);
 }
 
 ?>

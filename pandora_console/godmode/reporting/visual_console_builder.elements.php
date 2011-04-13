@@ -237,18 +237,18 @@ echo '</form>';
 //Trick for it have a traduct text for javascript.
 echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
 
-require_css_file ('color-picker');
+ui_require_css_file ('color-picker');
 
-require_jquery_file ('ui.core');
-require_jquery_file ('ui.draggable');
-require_jquery_file ('ui.droppable');
-require_jquery_file ('colorpicker');
-require_jquery_file ('pandora.controls');
-require_javascript_file ('wz_jsgraphics');
-require_javascript_file ('pandora_visual_console');
-require_jquery_file('ajaxqueue');
-require_jquery_file('bgiframe');
-require_jquery_file('autocomplete');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.draggable');
+ui_require_jquery_file ('ui.droppable');
+ui_require_jquery_file ('colorpicker');
+ui_require_jquery_file ('pandora.controls');
+ui_require_javascript_file ('wz_jsgraphics');
+ui_require_javascript_file ('pandora_visual_console');
+ui_require_jquery_file('ajaxqueue');
+ui_require_jquery_file('bgiframe');
+ui_require_jquery_file('autocomplete');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

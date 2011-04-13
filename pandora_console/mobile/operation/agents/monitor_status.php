@@ -51,7 +51,7 @@ class MonitorStatus {
 		$fields[4] = __('Not normal'); //default
 		$fields[5] = __('Not init');
 		foreach ($fields as $key => $field) {
-			$fields[$key] = printTruncateText($field, $config['text_char_long'], false, true, false);
+			$fields[$key] = ui_print_truncate_text($field, $config['text_char_long'], false, true, false);
 		}
 		$table->data[0][3] = print_select ($fields, "status", $status, '', '', -1, true);
 		$table->data[1][0] = '<span alt="' . __('Module group') . '" title="' . __('Module group') . '"><b>' . __('M') . '</b></span>';
@@ -184,43 +184,43 @@ class MonitorStatus {
 			$data = array();
 			
 			if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
-				$statusImg = print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
+				$statusImg = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 			}
 			elseif ($row["estado"] == 0) {
-				$statusImg = print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
+				$statusImg = ui_print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
 			}
 			elseif ($row["estado"] == 1) {
-				$statusImg = print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
+				$statusImg = ui_print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
 			}
 			elseif ($row["estado"] == 2) {
-				$statusImg = print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
+				$statusImg = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
 			}
 			else {
 				$last_status =  get_agentmodule_last_status($row['id_agente_modulo']);
 				switch($last_status) {
 					case 0:
-						$statusImg = print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
+						$statusImg = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
 						break;
 					case 1:
-						$statusImg = print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
+						$statusImg = ui_print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
 						break;
 					case 2:
-						$statusImg = print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
+						$statusImg = ui_print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
 						break;
 				}
 			}
 			
 			$data[] = str_replace('<img src="' , '<img width="15" height="15" src="../', $statusImg);
 			
-			$data[] = '<a href="index.php?page=agent&id=' . $row['id_agent'] . '">' . printTruncateText($row['agent_name'], 25, true, true) . '</a>';
+			$data[] = '<a href="index.php?page=agent&id=' . $row['id_agent'] . '">' . ui_print_truncate_text($row['agent_name'], 25, true, true) . '</a>';
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $row['id_agente_modulo'] . '">' . 
-				printTruncateText($row['module_name'], 25, true, true) . '</a>';
+				ui_print_truncate_text($row['module_name'], 25, true, true) . '</a>';
 			if (is_numeric($row["datos"]))
 				$data[] = format_numeric($row["datos"]);
 			else
 				$data[] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(safe_output($row["datos"]),0,12)."</span>";
 				
-			$data[] = print_timestamp ($row["utimestamp"], true, array('units' => 'tiny'));
+			$data[] = ui_print_timestamp ($row["utimestamp"], true, array('units' => 'tiny'));
 			
 			$table->data[] = $data;
 		}
@@ -228,7 +228,7 @@ class MonitorStatus {
 		print_table($table);
 		
 		$pagination = pagination ($total,
-			get_url_refresh (array ()),
+			ui_get_url_refresh (array ()),
 			0, 0, true);
 			
 		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);

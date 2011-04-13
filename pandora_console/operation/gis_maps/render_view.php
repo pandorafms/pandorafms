@@ -20,7 +20,7 @@ check_login ();
 
 require_once ('include/functions_gis.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 $idMap = (int) get_parameter ('map_id');
 $show_history = get_parameter ('show_history', 'n');
@@ -126,7 +126,7 @@ $buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\
 $buttons[] = __('Show agents by state: ');
 
 
-print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
+ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
 
 if ($config["pure"] == 0) {
 	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";

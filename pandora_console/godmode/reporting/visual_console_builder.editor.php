@@ -290,18 +290,18 @@ echo '<span style="display: none" id="message_alert_no_label_no_image">' . __('N
 echo '<span style="display: none" id="message_alert_no_label">' . __('No label defined.') .'</span>';
 echo '<span style="display: none" id="message_alert_no_image">' . __('No image defined.') .'</span>';
 
-require_css_file ('color-picker');
+ui_require_css_file ('color-picker');
 
-require_jquery_file('ui.core');
-require_jquery_file('ui.resizable');
-require_jquery_file('colorpicker');
-require_jquery_file('ui.draggable');
-require_javascript_file('wz_jsgraphics');
-require_javascript_file('pandora_visual_console');
-require_jquery_file ('autocomplete');
-require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
+ui_require_jquery_file('ui.core');
+ui_require_jquery_file('ui.resizable');
+ui_require_jquery_file('colorpicker');
+ui_require_jquery_file('ui.draggable');
+ui_require_javascript_file('wz_jsgraphics');
+ui_require_javascript_file('pandora_visual_console');
+ui_require_jquery_file ('autocomplete');
+ui_require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
 // Javascript file for base 64 encoding of label parameter 
-require_javascript_file ('encode_decode_base64');
+ui_require_javascript_file ('encode_decode_base64');
 ?>
 <style type="text/css">
 .ui-resizable-handle {

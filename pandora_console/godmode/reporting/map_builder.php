@@ -17,7 +17,7 @@ global $config;
 
 require_once ('include/functions_visual_map.php');
 
-print_page_header (__('Visual console builder'), "", false, "map_builder", true);
+ui_print_page_header (__('Visual console builder'), "", false, "map_builder", true);
 
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
@@ -130,7 +130,7 @@ if (!$maps) {
 			$data = array ();
 			$data[0] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&amp;action=edit&amp;id_visual_console='.$map['id'].'">'.$map['name'].'</a>';
 		
-			$data[1] = print_group_icon ($map['id_group'], true);
+			$data[1] = ui_print_group_icon ($map['id_group'], true);
 			$data[2] = get_db_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
 			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.print_image ("images/copy.png", true).'</a>';

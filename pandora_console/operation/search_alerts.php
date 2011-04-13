@@ -249,8 +249,8 @@ else {
 		));
 	}
 	
-	echo "<br />";pagination ($totalAlerts);
+	echo "<br />";ui_pagination ($totalAlerts);
 	print_table ($table); unset($table);
-	pagination ($totalAlerts);
+	ui_pagination ($totalAlerts);
 }
 ?>

@@ -66,7 +66,7 @@ if ($create_profiles) {
 			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
 	}
 	
-	print_result_message ($n_added > 0,
+	ui_print_result_message ($n_added > 0,
 		__('Profiles added successfully').'('.$n_added.')',
 		__('Profiles cannot be added'));
 }

@@ -228,13 +228,13 @@ else {
 			$userIDCell,
 			$user['fullname'],
 			"<a href='mailto:" . $user['email'] . "'>" . $user['email'] . "</a>",
-			print_timestamp ($user["last_connect"], true),
+			ui_print_timestamp ($user["last_connect"], true),
 			$profileCell,
 			$user['comments']));
 	}
 
-	echo "<br />";pagination ($totalUsers);
+	echo "<br />";ui_pagination ($totalUsers);
 	print_table ($table); unset($table);
-	pagination ($totalUsers);
+	ui_pagination ($totalUsers);
 }
 ?>

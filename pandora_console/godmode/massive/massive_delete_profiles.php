@@ -76,7 +76,7 @@ if ($delete_profiles) {
 			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Profiles deleted successfully'),
 		__('Profiles cannot be deleted'));
 }
@@ -130,8 +130,8 @@ unset ($table);
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

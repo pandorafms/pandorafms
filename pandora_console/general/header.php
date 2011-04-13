@@ -48,9 +48,9 @@ $msg_cnt = 0;
 				if ($msg_cnt > 0) {
 					echo '<div id="dialog_messages" style="display: none"></div>';
 
-					require_css_file ('dialog');
-					require_jquery_file ('ui.core');
-					require_jquery_file ('ui.dialog');
+					ui_require_css_file ('dialog');
+					ui_require_jquery_file ('ui.core');
+					ui_require_jquery_file ('ui.dialog');
 					echo '<a href="ajax.php?page=operation/messages/message" id="show_messages_dialog">';
 					print_image ("images/email.png", false,
 					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
@@ -98,13 +98,13 @@ $msg_cnt = 0;
 			$ignored_params = array ('agent_config' => false, 'code' => false);
 			if ($config["refr"]) {
 				$ignored_params['refr'] = 0;
-				echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh ($ignored_params).'">' . print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo '<a id="autorefresh" class="white_grey_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
 				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				echo '</a>';
 			}
 			else {	
 				$ignored_params['refr'] = '';
-				echo '<a id="autorefresh" class="white_bold" href="'.get_url_refresh ($ignored_params).'">' . print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
 				$values = array (
 					'5' => '5 '.__('seconds'),
 					'10' => '10 '.__('seconds'),
@@ -167,7 +167,7 @@ if ($config["metaconsole"] == 0){
 	</tr>
 </table>
 <?php
-	require_jquery_file ('countdown');
+	ui_require_jquery_file ('countdown');
 ?>
 
 <script language="javascript" type="text/javascript">

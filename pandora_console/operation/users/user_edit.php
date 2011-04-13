@@ -41,7 +41,7 @@ if (($config["id_user"] == $id || check_acl ($config["id_user"], get_user_groups
 }
 
 // Header
-print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
+ui_print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
 
 if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info = array ();
@@ -61,11 +61,11 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	if ( !empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
 			$return = update_user_password ($id, $password_new);
-			print_result_message ($return,
+			ui_print_result_message ($return,
 				__('Password successfully updated'),
 				__('Error updating passwords: %s', $config['auth_error']));
 		} elseif ($password_new !== "NON-INIT") {
-			print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
+			ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
 		}
 	}
 
@@ -75,7 +75,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 
 	$return = update_user ($id, $upd_info);
 	if ($return > 0) {
-		print_result_message ($return,
+		ui_print_result_message ($return,
 			__('User info successfully updated'),
 			__('Error updating user info'));
 	}
@@ -195,7 +195,7 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data[0] = '<b>'.get_profile_name ($profile["id_perfil"]).'</b>';
-	$data[1] = print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.get_group_name ($profile["id_grupo"], true).'</a>';
+	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.get_group_name ($profile["id_grupo"], true).'</a>';
 	array_push ($table->data, $data);
 }
 

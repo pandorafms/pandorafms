@@ -48,7 +48,7 @@ $enable_alert = (int) get_parameter ('enable_alert');
 $disable_alert = (int) get_parameter ('disable_alert');
 
 // Header
-print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/god2.png", false, "", true);
 
 if ($update_compound) {
 	$id = (int) get_parameter ('id');
@@ -62,7 +62,7 @@ if ($update_compound) {
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery));
 
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 }
@@ -70,7 +70,7 @@ if ($update_compound) {
 if ($delete_alert) {
 	$id = (int) get_parameter ('id');
 	$result = delete_alert_compound ($id);
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 	if (is_ajax ())
@@ -80,7 +80,7 @@ if ($delete_alert) {
 if ($enable_alert) {
 	$id = (int) get_parameter ('id');
 	$result = set_alerts_compound_disable ($id, false);
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully enabled'),
 		__('Could not be enabled'));
 	if (is_ajax ())
@@ -90,7 +90,7 @@ if ($enable_alert) {
 if ($disable_alert) {
 	$id = (int) get_parameter ('id');
 	$result = set_alerts_compound_disable ($id, true);
-	print_result_message ($result, 
+	ui_print_result_message ($result, 
 		__('Successfully disabled'),
 		__('Could not be disabled'));
 	if (is_ajax ())
@@ -157,7 +157,7 @@ if (count($agents) > 0) {
 		implode (',', array_keys ($agents)), $where);
 	$total = (int) get_db_sql ($sql);
 }
-pagination ($total, $url);
+ui_pagination ($total, $url);
 
 $table->id = 'alert_list';
 $table->class = 'alert_list databox';
@@ -251,7 +251,7 @@ print_input_hidden ('new_compound', 1);
 echo '</form>';
 echo '</div>';
 
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

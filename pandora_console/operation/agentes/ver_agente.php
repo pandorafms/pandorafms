@@ -20,7 +20,7 @@ global $config;
 
 require_once ("include/functions_gis.php");
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 enterprise_include ('operation/agentes/ver_agente.php');
 
@@ -231,7 +231,7 @@ if (is_ajax ()) {
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
 				echo '<li>';
-				echo printTruncateText($module['nombre']);
+				echo ui_print_truncate_text($module['nombre']);
 				echo '</li>';
 			}
 			echo '</ul>';
@@ -263,7 +263,7 @@ if (is_ajax ()) {
 			echo "<ul>";
 			foreach ($alerts as $alert_item) {
 				echo '<li>';
-				echo printTruncateText($alert_item['nombre']).' -> ';
+				echo ui_print_truncate_text($alert_item['nombre']).' -> ';
 				echo human_time_comparation($alert_item['last_fired']);
 				echo '</li>';
 			}
@@ -278,7 +278,7 @@ if (is_ajax ()) {
 		$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
 		echo print_image("images/brick.png", true) . '&nbsp;'; 
-		echo printTruncateText($module['nombre'],25,false,true,false).'</h3>';
+		echo ui_print_truncate_text($module['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Type').':</strong> ';
 		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
 		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
@@ -292,7 +292,7 @@ if (is_ajax ()) {
 			echo $modulegroup.'<br />';
 		}
 		echo '<strong>'.__('Agent').':</strong> ';
-		echo printTruncateText(get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
+		echo ui_print_truncate_text(get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
 		
 		return;
 	}
@@ -301,7 +301,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
 		echo '<h3>' . print_image("images/groups_small/" . get_group_icon ($group['id_grupo']) . ".png", true);
-		echo printTruncateText($group['nombre'],25,false,true,false).'</h3>';
+		echo ui_print_truncate_text($group['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
 		if($group['parent'] == 0) {
 			echo __('None').'<br />';
@@ -518,7 +518,7 @@ foreach($config['extensions'] as $extension) {
 	}
 }
 
-print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
+ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
 
 
 switch ($tab) {
@@ -577,7 +577,7 @@ switch ($tab) {
 			}
 		}
 		if (!$found) {
-			print_error_message ("Invalid tab specified in ".__FILE__.":".__LINE__);
+			ui_print_error_message ("Invalid tab specified in ".__FILE__.":".__LINE__);
 		}
 		break;
 }

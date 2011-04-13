@@ -39,14 +39,14 @@ function render_agent_field ($agent, $field, $field_value = false, $return = fal
 	case 'group_icon':
 		if (! isset ($agent['id_grupo']))
 			return '';
-		$output = print_group_icon ($agent['id_grupo'], true);
+		$output = ui_print_group_icon ($agent['id_grupo'], true);
 		
 		break;
 	case 'group':
 		if (! isset ($agent['id_grupo']))
 			return '';
 		
-		$output = print_group_icon ($agent['id_grupo'], true);
+		$output = ui_print_group_icon ($agent['id_grupo'], true);
 		$output .= ' ';
 		$output .= get_group_name ($agent['id_grupo']);
 		
@@ -71,7 +71,7 @@ function render_agent_field ($agent, $field, $field_value = false, $return = fal
 		break;
 	case 'status':
 		if (! isset ($agent['id_agente']))
-			return print_status_image (STATUS_AGENT_NO_DATA, '', $return);
+			return ui_print_status_image (STATUS_AGENT_NO_DATA, '', $return);
 		
 		require_once ('include/functions_reporting.php');
 		$info = get_agent_module_info ($agent['id_agente']);

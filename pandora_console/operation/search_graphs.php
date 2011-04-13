@@ -71,9 +71,9 @@ else {
 		));
 	}
 	
-	echo "<br />";pagination ($totalGraphs);
+	echo "<br />";ui_pagination ($totalGraphs);
 	print_table ($table); unset($table);
-	pagination ($totalGraphs);
+	ui_pagination ($totalGraphs);
 }
 
 switch ($searchTab) {

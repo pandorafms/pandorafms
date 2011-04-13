@@ -213,16 +213,16 @@ else {
 			$modulesCell .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
 		
 		if ($agent['disabled']) {
-			$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, "upper") .print_help_tip(__('Disabled'), true) . "</em>";
+			$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, "upper") . ui_print_help_tip(__('Disabled'), true) . "</em>";
 		}
 		else {
-			$cellName = print_agent_name ($agent["id_agente"], true, "upper");
+			$cellName = ui_print_agent_name ($agent["id_agente"], true, "upper");
 		}
 		
 		$last_time = strtotime ($agent["ultimo_contacto"]);
 		$now = time ();
 		$diferencia = $now - $last_time;
-		$time = print_timestamp ($last_time, true);
+		$time = ui_print_timestamp ($last_time, true);
 		$time_style = $time;
 		if ($diferencia > ($agent["intervalo"] * 2))
 			$time_style = '<b><span style="color: #ff0000">'.$time.'</span></b>';
@@ -235,9 +235,9 @@ else {
 	
 		array_push($table->data, array(
 			$cellName,
-			print_os_icon ($agent["id_os"], false, true),
+			ui_print_os_icon ($agent["id_os"], false, true),
 			$agent['intervalo'],
-			print_group_icon ($agent["id_grupo"], true),
+			ui_print_group_icon ($agent["id_grupo"], true),
 			$modulesCell,
 			$agent_info["status_img"],
 			$agent_info["alert_img"],
@@ -245,9 +245,9 @@ else {
 	}
 	
 	echo "<br />";
-	pagination ($totalAgents);
+	ui_pagination ($totalAgents);
 	print_table ($table);
 	unset($table);
-	pagination ($totalAgents);
+	ui_pagination ($totalAgents);
 }
 ?>

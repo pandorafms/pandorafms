@@ -32,7 +32,7 @@ $form .= print_input_hidden('attach_file', '1', true);
 $form .= print_input_hidden('id_incident', $id_incident, true);
 $form .= "</form>";
 
-toggle($form, __('Add a file'));
+ui_toggle($form, __('Add a file'));
 
 unset($table);
 

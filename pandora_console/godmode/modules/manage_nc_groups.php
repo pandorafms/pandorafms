@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('Module management').' &raquo; '. __('Component group management'), "", false, "", true);
+ui_print_page_header (__('Module management').' &raquo; '. __('Component group management'), "", false, "", true);
 
 
 require_once ('include/functions_network_components.php');
@@ -44,7 +44,7 @@ if ($create) {
 	$result = process_sql_insert ('tnetwork_component_group',
 		array ('name' => $name,
 			'parent' => $parent));
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully created'),
 		__('Could not be created'));
 }
@@ -57,7 +57,7 @@ if ($update) {
 		array ('name' => $name,
 			'parent' => $parent),
 		array ('id_sg' => $id));
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Not updated. Error updating data'));
 }
@@ -65,7 +65,7 @@ if ($update) {
 if ($delete) {
 	$result = process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
 }
@@ -76,7 +76,7 @@ if ($id || $new) {
 }
 
 
-$url = get_url_refresh (array ('offset' => false,
+$url = ui_get_url_refresh (array ('offset' => false,
 	'create' => false,
 	'update' => false,
 	'delete' => false,
@@ -111,7 +111,7 @@ $groups = get_db_all_rows_filter ('tnetwork_component_group', $filter);
 if ($groups === false)
 	$groups = array ();
 
-pagination ($total_groups, $url);
+ui_pagination ($total_groups, $url);
 
 foreach ($groups as $group) {
 	$data = array ();

@@ -58,10 +58,10 @@ class ViewAlerts {
 			
 			$idAgent = get_agentmodule_agent($alert["id_agent_module"]);
 
-			$data[] = '<a href="index.php?page=agent&id=' . $idAgent . '">' . printTruncateText(get_agentmodule_name($alert["id_agent_module"]), 20, true, true) . '</a>';
+			$data[] = '<a href="index.php?page=agent&id=' . $idAgent . '">' . ui_print_truncate_text(get_agentmodule_name($alert["id_agent_module"]), 20, true, true) . '</a>';
 			$template = safe_output(get_alert_template ($alert['id_alert_template']));
-			$data[] = printTruncateText(safe_output($template['name']), 20, true, true);
-			$data[] = print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
+			$data[] = ui_print_truncate_text(safe_output($template['name']), 20, true, true);
+			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
 			$status = STATUS_ALERT_NOT_FIRED;
 			$title = "";
@@ -80,7 +80,7 @@ class ViewAlerts {
 			}
 			
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img width="15" height="15"'), print_status_image($status, $title, true));
+				array('../images/status_sets', '<img width="15" height="15"'), ui_print_status_image($status, $title, true));
 			
 			$table->data[] = $data;
 		}

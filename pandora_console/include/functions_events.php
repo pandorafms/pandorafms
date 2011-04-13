@@ -423,11 +423,11 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 
 
 
-			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. print_string_substr ($event["evento"],45,true). '</span>';
+			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. ui_print_string_substr ($event["evento"],45,true). '</span>';
 
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$data[4] = print_agent_name ($event["id_agente"], true, 25, '', true);
+				$data[4] = ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 			// for System or SNMP generated alerts
 			}
 			elseif ($event["event_type"] == "system") {
@@ -439,14 +439,14 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			
 			// User who validated event
 			if ($event["estado"] != 0) {
-				$data[5] = print_username ($event["id_usuario"], true);
+				$data[5] = ui_print_username ($event["id_usuario"], true);
 			}
 			else {
 				$data[5] = '';
 			}
 			
 			// Timestamp
-			$data[6] = print_timestamp ($event["timestamp"], true);
+			$data[6] = ui_print_timestamp ($event["timestamp"], true);
 			
 			array_push ($table->rowclass, get_priority_class ($event["criticity"]));
 			array_push ($table->data, $data);

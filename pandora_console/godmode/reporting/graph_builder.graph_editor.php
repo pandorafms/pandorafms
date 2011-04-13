@@ -142,10 +142,10 @@ echo "</tr><tr>";
 echo "<td colspan='3' align='right'><input type=submit name='store' class='sub add' value='".__('Add')."'></td>";
 echo "</tr></table></form>";
 
-require_jquery_file ('pandora.controls');
-require_jquery_file ('ajaxqueue');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('ajaxqueue');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 
 ?>
 <script language="javascript" type="text/javascript">

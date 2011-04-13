@@ -19,7 +19,7 @@ check_login ();
 
 require_once ('include/functions_gis.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
 	pandora_audit("ACL Violation", "Trying to access map builder");
@@ -62,7 +62,7 @@ switch ($action) {
 		break;
 }
 
-print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "gis_map_builder", true);
+ui_print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "gis_map_builder", true);
 
 $table->width = '500px';
 $table->head[0] = __('Map name');
@@ -100,7 +100,7 @@ if (!$maps) {
 		}
 		
 		$table_info = array('<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
-			print_group_icon ($map['group_id'], true),
+			ui_print_group_icon ($map['group_id'], true),
 			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>');
 		if ($display_default_column) {
 			$default_button = print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true);

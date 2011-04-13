@@ -28,7 +28,7 @@ if (!check_acl($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__("Agents custom fields manager"), "images/note.png", false, "", true, "");
+ui_print_page_header (__("Agents custom fields manager"), "images/note.png", false, "", true, "");
 
 $create_field = (bool) get_parameter ('create_field');
 $update_field = (bool) get_parameter ('update_field');
@@ -91,7 +91,7 @@ $fields = get_db_all_fields_in_table('tagent_custom_fields');
 if ($fields) {
 	$table->head = array ();
 	$table->head[0] = __('Field');
-	$table->head[1] = __('Display on front').print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
+	$table->head[1] = __('Display on front').ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
 	$table->head[2] = __('Actions');
 	$table->align = array ();
 	$table->align[1] = 'center';

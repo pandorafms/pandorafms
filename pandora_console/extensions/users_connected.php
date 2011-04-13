@@ -28,7 +28,7 @@ function users_extension_main_god ($god = true) {
 	}
 	
 	// Header
-	print_page_header (__("Users connected"), "images/extensions.png", false, "", $god);
+	ui_print_page_header (__("Users connected"), "images/extensions.png", false, "", $god);
 
 	switch ($config["dbtype"]) {
 		case "mysql":

@@ -68,7 +68,7 @@ else {
 	
 $buttons[$tab]['active'] = true;
 
-print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, $buttons);
+ui_print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, $buttons);
 
 $update_incident = get_parameter('update_incident', 0);
 

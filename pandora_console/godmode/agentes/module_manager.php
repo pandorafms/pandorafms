@@ -136,11 +136,11 @@ if ($multiple_delete) {
 		//Check for errors
 		if ($error != 0) {
 			process_sql_rollback ();
-			print_error_message (__('There was a problem deleting the module'));
+			ui_print_error_message (__('There was a problem deleting the module'));
 		}
 		else {
 			process_sql_commit ();
-			print_success_message (__('Module deleted succesfully'));
+			ui_print_success_message (__('Module deleted succesfully'));
 		}
 	}
 }
@@ -335,9 +335,9 @@ foreach ($modules as $module) {
 
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
-		$data[0] .= '<em class="disabled_module">'.printTruncateText($module['nombre'], 25, false).'</em>';
+		$data[0] .= '<em class="disabled_module">' . ui_print_truncate_text($module['nombre'], 25, false).'</em>';
 	else
-		$data[0] .= printTruncateText($module['nombre'], 25, false);
+		$data[0] .= ui_print_truncate_text($module['nombre'], 25, false);
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -393,7 +393,7 @@ foreach ($modules as $module) {
 	// Module type (by data type)
 	$data[3] = '';
 	if ($type) {
-		$data[3] = print_moduletype_icon ($type, true);
+		$data[3] = ui_print_moduletype_icon ($type, true);
 	}
 
 	// Module interval
@@ -403,7 +403,7 @@ foreach ($modules as $module) {
 		$data[4] = $agent_interval;
 	}
 	
-	$data[5] = printTruncateText($module['descripcion'], 25, false);
+	$data[5] = ui_print_truncate_text($module['descripcion'], 25, false);
 	
 	// MAX / MIN values
 	$data[6] = $module["max"] ? $module["max"] : __('N/A');

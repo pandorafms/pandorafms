@@ -49,7 +49,7 @@ if ($a_template !== false){
 			exit;
 		}else
 			// Header
-			print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
 	// If user tries to duplicate/edit a template of others groups 
 	}else{
 		$own_info = get_user_info ($config['id_user']);
@@ -61,7 +61,7 @@ if ($a_template !== false){
 		// Then template group have to be in his own groups
 		if ($is_in_group)
 			// Header
-			print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
 		else{
 			pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
@@ -72,7 +72,7 @@ if ($a_template !== false){
 // This prevents to duplicate the header in case duplicate/edit_template action is performed
 }else
 	// Header
-	print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
 
 
 if ($duplicate_template) {
@@ -87,7 +87,7 @@ if ($duplicate_template) {
 		pandora_audit("Template alert management", "Fail try to duplicate alert template " . $source_id);
 	}
 	
-	print_result_message ($id,
+	ui_print_result_message ($id,
 		__('Successfully created from %s', get_alert_template_name ($source_id)),
 		__('Could not be created'));
 }
@@ -323,7 +323,7 @@ if ($create_template) {
 		pandora_audit("Command management", "Fail try to create alert command", false, false, json_encode($values));
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully created'),
 		__('Could not be created'));
 	/* Go to previous step in case of error */
@@ -336,7 +336,7 @@ if ($create_template) {
 if ($update_template) {
 	$result = update_template ($step - 1);
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 	/* Go to previous step in case of error */
@@ -445,13 +445,13 @@ if ($step == 2) {
 	$table->data[3][3] = print_input_text ('max_alerts', $max_alerts, '',
 		5, 7, true);
 	
-	$table->data['field1'][0] = __('Field 1') . print_help_icon ('alert_macros', true);
+	$table->data['field1'][0] = __('Field 1') . ui_print_help_icon ('alert_macros', true);
 	$table->data['field1'][1] = print_input_text ('field1', $field1, '', 70, 255, true);
 	
-	$table->data['field2'][0] = __('Field 2') . print_help_icon ('alert_macros', true);
+	$table->data['field2'][0] = __('Field 2') . ui_print_help_icon ('alert_macros', true);
 	$table->data['field2'][1] = print_input_text ('field2', $field2, '', 70, 255, true);
 	
-	$table->data['field3'][0] = __('Field 3') . print_help_icon ('alert_macros', true);
+	$table->data['field3'][0] = __('Field 3') . ui_print_help_icon ('alert_macros', true);
 	$table->data['field3'][1] = print_textarea ('field3', 10, 30, $field3, '', true);
 	
 	$table->data[4][0] = __('Default action');
@@ -459,7 +459,7 @@ if ($step == 2) {
 	$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
 	$table->data[4][1] = print_select_from_sql ($sql_query,
 		'default_action', $default_action, '', __('None'), 0,
-		true, false, false).print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
+		true, false, false).ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 } else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {
@@ -563,7 +563,7 @@ if ($step == 2) {
 	$table->data['max'][0] = __('Max.');
 	$table->data['max'][1] = print_input_text ('max', $max, '', 5, 255, true);
 	
-	$table->data['example'][1] = print_alert_template_example ($id, true, false);
+	$table->data['example'][1] = ui_print_alert_template_example ($id, true, false);
 	$table->colspan['example'][1] = 2;
 }
 
@@ -592,9 +592,9 @@ if ($step >= LAST_STEP) {
 echo '</div>';
 echo '</form>';
 
-require_jquery_file ('ui.core');
-require_jquery_file ('timeentry');
-require_javascript_file ('pandora_alerts');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('timeentry');
+ui_require_javascript_file ('pandora_alerts');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

@@ -50,7 +50,7 @@ $delete_downtime_agent = (int) get_parameter ("delete_downtime_agent", 0);
 $groups = get_user_groups ();
 
 // Header
-print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
+ui_print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent == 1){
@@ -188,7 +188,7 @@ if ($create_downtime || $update_downtime) {
 		}
 	
 		//Editor form
-		echo '<h3>'.__('Planned Downtime Form').' '.print_help_icon ('planned_downtime', true).'</h3>';
+		echo '<h3>'.__('Planned Downtime Form').' '.ui_print_help_icon ('planned_downtime', true).'</h3>';
 		print_table ($table);
 		
 		print_input_hidden ('id_agent', $id_agent);
@@ -283,7 +283,7 @@ if ($create_downtime || $update_downtime) {
 			$data[1] = get_db_sql ("SELECT nombre FROM tgrupo WHERE id_grupo = ". $downtime["id_grupo"]);
 	
 	
-			$data[2] = print_os_icon ($downtime["id_os"], true, true);
+			$data[2] = ui_print_os_icon ($downtime["id_os"], true, true);
 			
 			$data[3] = $downtime["ultimo_contacto"];
 	
@@ -331,7 +331,7 @@ else {
 
 				$data[0] = $downtime['name']. " ($total)";
 				$data[1] = $downtime['description'];
-				$data[2] = print_group_icon ($downtime['id_group'], true);
+				$data[2] = ui_print_group_icon ($downtime['id_group'], true);
 				$data[3] = date ("Y-m-d H:i", $downtime['date_from']);
 				$data[4] = date ("Y-m-d H:i", $downtime['date_to']);
 				if ($downtime["executed"] == 0){
@@ -364,10 +364,10 @@ else {
 	echo '</div>';
 }
 
-require_css_file ('datepicker');
-require_jquery_file ('ui.core');
-require_jquery_file ('ui.datepicker');
-require_jquery_file ('timeentry');
+ui_require_css_file ('datepicker');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.datepicker');
+ui_require_jquery_file ('timeentry');
 
 ?>
 <script language="javascript" type="text/javascript">

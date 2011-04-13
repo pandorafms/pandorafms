@@ -79,7 +79,7 @@ $data[3] = print_select(array('noAuthNoPriv' => __('Not auth and not privacy met
 push_table_row($data, 'field_snmpv3_row3');
 
 $data = array();
-$data[0] = __('Post process').' '.print_help_icon ('postprocess', true);
+$data[0] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true);
 $data[1] = print_input_text ('post_process', $post_process, '', 12, 25, true);
 $data[2] = $data[3] = '';
 push_table_row($data, 'field_process');
@@ -88,7 +88,7 @@ push_table_row($data, 'field_process');
 
 /* Advanced stuff */
 $data = array ();
-$data[0] = __('TCP send').' '.print_help_icon ("tcp_send", true);
+$data[0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
 $data[1] = print_textarea ('tcp_send', 2, 65, $tcp_send, '', true);
 $table->colspan['tcp_send'][1] = 3;
 

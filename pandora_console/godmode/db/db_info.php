@@ -24,7 +24,7 @@ if ($config['flash_charts']) {
 	require('include/fgraph.php');
 }
 
-print_page_header (__('Database maintenance').' &raquo; '.__('Database information'), "images/god8.png", false, "", true);
+ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database information'), "images/god8.png", false, "", true);
 
 check_login ();
 	

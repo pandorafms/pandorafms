@@ -253,7 +253,7 @@ function mainSystemInfo() {
 	$log_info = (bool) get_parameter('log_info', 0);
 	$log_num_lines = (int) get_parameter('log_num_lines', 2000);
 	
-	print_page_header (__("System Info"), "images/extensions.png", false, "", true, "" );
+	ui_print_page_header (__("System Info"), "images/extensions.png", false, "", true, "" );
 	
 	echo '<div class="notify">';
 	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");

@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 
 require_once ('include/functions_network_components.php');
 
-print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
+ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
 
 $id_np = get_parameter ("id_np", -1); //Network Profile
 $ncgroup = get_parameter ("ncgroup", -1); //Network component group
@@ -48,7 +48,7 @@ if (isset ($_GET["delete_module"])) {
 		}
 	}
 
-	print_result_message (($errors < 1),
+	ui_print_result_message (($errors < 1),
 		__('Successfully deleted module from profile'),
 		__('Error deleting module from profile'));
 }
@@ -64,7 +64,7 @@ elseif (isset ($_GET["add_module"])) {
 		}
 	}
 	
-	print_result_message (($errors < 1),
+	ui_print_result_message (($errors < 1),
 		__('Successfully added module to profile'),
 		__('Error adding module to profile'));
 } 
@@ -81,7 +81,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 			'description' => $description);
 		$result = process_sql_update('tnetwork_profile', $values, array('id_np' => $id_np));
 		
-		print_result_message ($result !== false,
+		ui_print_result_message ($result !== false,
 			__('Successfully updated network profile'),
 			__('Error updating network profile'));
 	}
@@ -90,7 +90,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 		$values = array('name' => $name, 'description' => $description);
 		$result = process_sql_insert('tnetwork_profile', $values);
 		
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Successfully added network profile'),
 			__('Error adding network profile'));
 		$id_np = (int) $result; //Will return either 0 (in case of error) or an int

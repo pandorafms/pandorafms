@@ -17,7 +17,7 @@
 function extension_uploader_extensions() {
 	global $config;
 	
-	print_page_header (__("Uploader extension"), "images/extensions.png", false, "", true, "");
+	ui_print_page_header (__("Uploader extension"), "images/extensions.png", false, "", true, "");
 
 	$upload = (bool)get_parameter('upload', 0);
 	
@@ -46,7 +46,7 @@ function extension_uploader_extensions() {
 			pandora_audit ("Extension manager", "Upload extension " . $_FILES['extension']['name']);
 		}
 		
-		print_result_message ($result, __('Success to upload extension'),
+		ui_print_result_message ($result, __('Success to upload extension'),
 			__('Fail to upload extension'));
 	}
 
@@ -56,7 +56,7 @@ function extension_uploader_extensions() {
 	$table->data = array();
 	$table->data[0][0] = __('Upload extension');
 	$table->data[0][1] = print_input_file('extension', true) .
-		print_help_tip (__("Upload the extension as a zip file."), true);
+		ui_print_help_tip (__("Upload the extension as a zip file."), true);
 	
 	echo "<form method='post' enctype='multipart/form-data'>";
 	print_table($table);

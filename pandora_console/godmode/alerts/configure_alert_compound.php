@@ -236,7 +236,7 @@ if ($id && ! $create_compound) {
 }
 
 // Header
-print_page_header (__('Alerts').' &raquo; '.__('Configure correlated alert'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts').' &raquo; '.__('Configure correlated alert'), "images/god2.png", false, "", true);
 
 if ($create_compound) {
 	$name = (string) get_parameter ('name');
@@ -245,7 +245,7 @@ if ($create_compound) {
 	$result = create_alert_compound ($name, $id_agent,
 		array ('description' => $description));
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully created'),
 		__('Could not be created'));
 	/* Go to previous step in case of error */
@@ -265,7 +265,7 @@ if ($create_compound) {
 if ($update_compound) {
 	$result = update_compound ($step - 1);
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 	/* Go to previous step in case of error */
@@ -366,7 +366,7 @@ if ($step == 2) {
 	$table->data[4][1] .=  ' '.__('to').' ';
 	$table->data[4][1] .= print_input_text ('fires_max', 0, '', 4, 10, true);
 	$table->data[4][1] .=  ' '.__('matches of the alert');
-	$table->data[4][1] .=  print_help_icon("alert-matches", true);
+	$table->data[4][1] .=  ui_print_help_icon("alert-matches", true);
 	$table->data[4][1] .=  '</span>';
 */	
 	$table->data['actions'][0] = __('Assigned actions');
@@ -602,12 +602,12 @@ if ($step == 1) {
 	echo '</div>';
 }
 
-require_css_file ('timeentry');
-require_jquery_file ('form');
-require_jquery_file ('tablesorter');
-require_jquery_file ('tablesorter.pager');
-require_jquery_file ('ui.core');
-require_jquery_file ('timeentry');
+ui_require_css_file ('timeentry');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('tablesorter');
+ui_require_jquery_file ('tablesorter.pager');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('timeentry');
 ?>
 
 <script type="text/javascript" src="include/javascript/pandora_alerts.js"></script>

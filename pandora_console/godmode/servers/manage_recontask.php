@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Headers
-print_page_header (__('Manage recontask'), "", false, "", true);
+ui_print_page_header (__('Manage recontask'), "", false, "", true);
 
 // --------------------------------
 // DELETE A RECON TASKs
@@ -204,7 +204,7 @@ if ($result !== false) {
 		
 		// GROUP
 		if ($row["id_recon_script"] == 0){
-			$data[3] = print_group_icon ($row["id_group"], true);
+			$data[3] = ui_print_group_icon ($row["id_group"], true);
 		}  else {
 			$data[3] = "-";
 		}
@@ -214,7 +214,7 @@ if ($result !== false) {
 		
 		// OS
 		if ($row["id_recon_script"] == 0){
-			$data[5] =(($row["id_os"] > 0) ? print_os_icon ($row["id_os"], false, true) : __('Any'));
+			$data[5] =(($row["id_os"] > 0) ? ui_print_os_icon ($row["id_os"], false, true) : __('Any'));
 		} else {
 			$data[5] = "-";
 		}

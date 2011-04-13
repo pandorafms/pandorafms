@@ -228,14 +228,14 @@ $unlink_policy = get_parameter('unlink_policy', 0);
 
 if($relink_policy) {
 	$result = relink_module_policy($id_agent_module);
-	print_result_message($result, 'Module relinked to the policy successful');
+	ui_print_result_message($result, 'Module relinked to the policy successful');
 	
 	pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 }
 
 if($unlink_policy) {
 	$result = unlink_module_policy($id_agent_module);
-	print_result_message($result, 'Module unlinked from the policy successful');
+	ui_print_result_message($result, 'Module unlinked from the policy successful');
 	
 	pandora_audit("Agent management", "Unlink module " . $id_agent_module);
 }
@@ -337,12 +337,12 @@ if ($id_agent_module) {
 echo '</div>';
 echo '</form>';
 
-require_jquery_file ('ui');
-require_jquery_file ('form');
-require_jquery_file ('pandora');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('ui');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora');
+ui_require_jquery_file ('pandora.controls');
 
-require_javascript_file ('pandora_modules');
+ui_require_javascript_file ('pandora_modules');
 ?>
 <script language="javascript">
 /* <![CDATA[ */

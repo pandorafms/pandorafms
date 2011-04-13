@@ -36,7 +36,7 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 }
 
 // Header
-print_page_header (__('User detail editor'), "images/god3.png", false, "", true);
+ui_print_page_header (__('User detail editor'), "images/god3.png", false, "", true);
 
 
 if ($config['user_can_update_info']) {
@@ -70,7 +70,7 @@ if ($new_user && $config['admin_can_add_user']) {
 
 if ($create_user) {
 	if (! $config['admin_can_add_user']) {
-		print_error_message (__('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
+		ui_print_error_message (__('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
 		return;
 	}
 	
@@ -91,21 +91,21 @@ if ($create_user) {
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 	
 	if ($id == '') {
-		print_error_message (__('User ID cannot be empty'));
+		ui_print_error_message (__('User ID cannot be empty'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
 		$new_user = true;
 	}
 	elseif ($password_new == '') {
-		print_error_message (__('Passwords cannot be empty'));
+		ui_print_error_message (__('Passwords cannot be empty'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
 		$new_user = true;
 	}
 	elseif ($password_new != $password_confirm) {
-		print_error_message (__('Passwords didn\'t match'));
+		ui_print_error_message (__('Passwords didn\'t match'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
@@ -124,7 +124,7 @@ if ($create_user) {
 		pandora_audit("User management",
 			"Created user ".safe_input($id), false, false, $info);
 
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Successfully created'),
 			__('Could not be created'));
 			
@@ -165,12 +165,12 @@ if ($update_user) {
 		if ($password_new != '') {
 			if ($password_confirm == $password_new) {
 				$res2 = update_user_password ($id, $password_new);
-				print_result_message ($res1 || $res2,
+				ui_print_result_message ($res1 || $res2,
 					__('User info successfully updated'),
 					__('Error updating user info (no change?)'));
 			}
 			else {
-				print_error_message (__('Passwords does not match'));
+				ui_print_error_message (__('Passwords does not match'));
 			}
 		}
 		else {
@@ -184,13 +184,13 @@ if ($update_user) {
 			pandora_audit("User management", "Updated user ".safe_input($id),
 				false, false, $info);
 		
-			print_result_message ($res1,
+			ui_print_result_message ($res1,
 				__('User info successfully updated'),
 				__('Error updating user info (no change?)'));
 		}
 	}
 	else {
-		print_result_message ($res1,
+		ui_print_result_message ($res1,
 			__('User info successfully updated'),
 			__('Error updating user info (no change?)'));
 	}
@@ -205,7 +205,7 @@ if ($add_profile) {
 	pandora_audit("User management",
 		"Added profile for user ".safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
 	$return = create_user_profile ($id2, $profile2, $group2);
-	print_result_message ($return,
+	ui_print_result_message ($return,
 		__('Profile added successfully'),
 		__('Profile cannot be added'));
 }
@@ -222,7 +222,7 @@ if ($delete_profile) {
 		"Deleted profile for user ".safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 
 	$return = delete_user_profile ($id2, $id_up);
-	print_result_message ($return,
+	ui_print_result_message ($return,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
@@ -264,12 +264,12 @@ if ($config['admin_can_make_admin']) {
 	if ($own_info['is_admin'] || $user_info['is_admin']){
 		$table->data[6][1] = print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
 		$table->data[6][1] .= __('Administrator');
-		$table->data[6][1] .= print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
+		$table->data[6][1] .= ui_print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
 		$table->data[6][1] .= '<br />';
 	}
 	$table->data[6][1] .= print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);
 	$table->data[6][1] .= __('Standard User');
-	$table->data[6][1] .= print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"), true);
+	$table->data[6][1] .= ui_print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"), true);
 }
 
 $table->data[7][0] = __('E-mail');
@@ -362,7 +362,7 @@ foreach ($result as $profile) {
 	$data = array ();
 
 	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
-	$data[1] = print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.printTruncateText(get_group_name ($profile['id_grupo'], True), 35).'</a>';
+	$data[1] = ui_print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' . ui_print_truncate_text(get_group_name ($profile['id_grupo'], True), 35).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= print_input_hidden ('id_user_profile', $profile['id_up'], true);

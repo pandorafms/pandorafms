@@ -39,7 +39,7 @@ if (is_ajax ()) {
 }
 
 // Header
-print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/god2.png", false, "", true);
 
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');
@@ -62,7 +62,7 @@ if ($create_command) {
 		pandora_audit("Command management", "Fail try to create alert command", false, false, $info);
 	}
 	
-	print_result_message ($result, 
+	ui_print_result_message ($result, 
 		__('Successfully created'),
 		__('Could not be created'));
 }
@@ -93,7 +93,7 @@ if ($update_command) {
 		pandora_audit("Command management", "Fail to create alert command " . $id, false, false, $info);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 }
@@ -118,7 +118,7 @@ if ($delete_command) {
 		pandora_audit("Command management", "Fail to delete alert command " . $id);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }

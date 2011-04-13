@@ -98,7 +98,7 @@ else
 
 $data[1] .= print_button (__('SNMP walk'), 'snmp_walk', $disableButton, '',
 	'class="sub next"', true);
-$data[1] .= print_help_icon ('snmpwalk', true);
+$data[1] .= ui_print_help_icon ('snmpwalk', true);
 $data[1] .= '</span>';
 $table_simple->colspan['snmp_2'][1] = 3;
 
@@ -106,7 +106,7 @@ push_table_simple ($data, 'snmp_2');
 
 /* Advanced stuff */
 $data = array ();
-$data[0] = __('TCP send').' '.print_help_icon ("tcp_send", true);
+$data[0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
 $data[1] = print_textarea ('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true);
 $table_advanced->colspan['tcp_send'][1] = 3;
 

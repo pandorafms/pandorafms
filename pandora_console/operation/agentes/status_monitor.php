@@ -30,7 +30,7 @@ if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user']
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-print_page_header ("Monitor detail", "images/bricks.png", false);
+ui_print_page_header ("Monitor detail", "images/bricks.png", false);
 
 
 $ag_freestring = get_parameter ('ag_freestring');
@@ -311,7 +311,7 @@ switch ($config["dbtype"]) {
 $result = get_db_all_rows_sql ($sql);
 
 if ($count > $config["block_size"]) {
-	pagination ($count, false, $offset);
+	ui_pagination ($count, false, $offset);
 }
 
 if ($result === false) {
@@ -421,28 +421,28 @@ foreach ($result as $row) {
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
 
 	if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
-		$data[5] = print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
+		$data[5] = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 	}
 	elseif ($row["estado"] == 0) {
-		$data[5] = print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
+		$data[5] = ui_print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
 	}
 	elseif ($row["estado"] == 1) {
-		$data[5] = print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
+		$data[5] = ui_print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
 	}
 	elseif ($row["estado"] == 2) {
-		$data[5] = print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
+		$data[5] = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
 	}
 	else {
 		$last_status =  get_agentmodule_last_status($row['id_agente_modulo']);
 		switch($last_status) {
 			case 0:
-				$data[5] = print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
+				$data[5] = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
 				break;
 			case 1:
-				$data[5] = print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
+				$data[5] = ui_print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
 				break;
 			case 2:
-				$data[5] = print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
+				$data[5] = ui_print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
 				break;
 		}
 	}
@@ -479,7 +479,7 @@ foreach ($result as $row) {
 	} else {
 		$option = array ();
 	}
-	$data[8] = print_timestamp ($row["utimestamp"], true, $option);
+	$data[8] = ui_print_timestamp ($row["utimestamp"], true, $option);
 	
 	array_push ($table->data, $data);
 }

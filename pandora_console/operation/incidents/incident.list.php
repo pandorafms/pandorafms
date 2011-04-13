@@ -126,7 +126,7 @@ foreach ($incidents as $row) {
 	$data[3] = $groups[$row["id_grupo"]];
 	$data[4] = $status[$row["estado"]]."<br/><i>".$resolutions[$row["resolution"]]."</i>";
 	$data[5] = print_incidents_priority_img ($row["prioridad"], true);
-	$data[6] = print_timestamp ($row["actualizacion"], true)."<br/><i>".print_timestamp ($row["inicio"], true)."</i>";
+	$data[6] = ui_print_timestamp ($row["actualizacion"], true)."<br/><i>" . ui_print_timestamp ($row["inicio"], true)."</i>";
 	$data[7] = $row["workunits_hours"]." ".__('Hours')."<br/>".$row["workunits_count"]." ".__('Workunits');
 	$data[8] = $row["id_creator"];
 	$data[9] = $row["id_usuario"];

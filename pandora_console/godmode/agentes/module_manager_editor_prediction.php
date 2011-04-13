@@ -48,7 +48,7 @@ $extra_title = __('Prediction server module');
 
 $data = array ();
 $data[0] = __('Source module');
-$data[0] .= print_help_icon ('prediction_source_module', true);
+$data[0] .= ui_print_help_icon ('prediction_source_module', true);
 $data[1] = '';
 // Services are an Enterprise feature.
 $module_service_selector = enterprise_hook('get_module_service_selector', array($is_service));  

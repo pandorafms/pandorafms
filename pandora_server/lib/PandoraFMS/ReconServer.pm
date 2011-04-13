@@ -86,9 +86,14 @@ sub data_producer ($) {
 	my $server_id = get_server_id ($dbh, $pa_config->{'servername'}, $self->getServerType ());
 	return @tasks unless defined ($server_id);
 
+	# Manual tasks have interval_sweep = 0
+	# Manual tasks are "forced" like the other, setting the utimestamp to 1
+	# By default, after create a tasks it takes the utimestamp to 0
+	# Status -1 means "done".
+
 	my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
                                    WHERE id_recon_server = ? 
-                                   AND (utimestamp = 0 OR (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
+                                   AND (utimestamp = 1) OR (status = -1 AND interval_sweep > 0 AND (utimestamp = 0 OR (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
 	foreach my $row (@rows) {
 
 		# Update task status
@@ -110,11 +115,13 @@ sub data_consumer ($$) {
 	# Get recon task data	
 	my $task = get_db_single_row ($dbh, 'SELECT * FROM trecon_task WHERE id_rt = ?', $task_id);	
 	return -1 unless defined ($task);
-	
+
 	# Is it a recon script?
 	if (defined ($task->{'id_recon_script'})) {
-		exec_recon_script ($pa_config, $dbh, $task);
-		return;
+		if ($task->{'id_recon_script'} > 0){
+			exec_recon_script ($pa_config, $dbh, $task);
+			return;
+		}
 	}
 
 	# Get a NetAddr::IP object for the target network
@@ -130,12 +137,13 @@ sub data_consumer ($$) {
 	for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
 
 		my $addr = (split(/\//, $net_addr))[0];
-		
+
 		# Update the recon task or break if it does not exist anymore
 		last if (update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100))) eq '0E0');
 
+
 		# Does the host already exist?
-        next if (get_agent_from_addr ($dbh, $addr) > 0);
+	        next if (get_agent_from_addr ($dbh, $addr) > 0);
        
 		my $alive = 0;
 		if (pandora_ping ($pa_config, $addr) == 1) {
@@ -183,6 +191,7 @@ sub data_consumer ($$) {
         # and store also it's position.
 
 		if($pa_config->{'activate_gis'} == 1 && $pa_config->{'recon_reverse_geolocation_mode'} !~ m/^disabled$/i) {
+
 			# Try to get aproximated positional information for the Agent.
 			my $region_info = undef;
 			if ($pa_config->{'recon_reverse_geolocation_mode'} =~ m/^sql$/i) {
@@ -461,6 +470,10 @@ sub exec_recon_script ($$$) {
 	my $field4 = safe_output($task->{'field4'});
 
 	`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $field1 $field2 $field3 $field4`;
+
+	# Notify this recon task is ended
+	update_recon_task ($dbh, $task->{'id_rt'}, -1);
+
 	return 0;
 }
 

@@ -226,7 +226,7 @@ sub pandora_delete_all_template_module_actions ($$) {
 sub pandora_create_user ($$$$$) {
 my ($dbh, $name, $password, $is_admin, $comments) = @_;
 
-return db_insert ($dbh, 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
+return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
                          VALUES (?, ?, ?, ?, ?)', $name, $name, $password, $comments, $is_admin);
 }
 
@@ -258,7 +258,7 @@ sub pandora_create_template_module_action ($$$) {
 			
  	logger($pa_config, "Creating module alert action to alert '$parameters->{'id_alert_template_module'}'.", 10);
 	
-	my $action_id = db_process_insert($dbh, 'talert_template_module_actions', $parameters);
+	my $action_id = db_process_insert($dbh, 'id', 'talert_template_module_actions', $parameters);
 	
 	return $action_id;
 }
@@ -269,7 +269,7 @@ sub pandora_create_template_module_action ($$$) {
 sub pandora_create_user_profile ($$$$) {
         my ($dbh, $user_id, $profile_id, $group_id) = @_;
         
-        return db_insert ($dbh, 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)', $user_id, $profile_id, $group_id);
+        return db_insert ($dbh, 'id_up', 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)', $user_id, $profile_id, $group_id);
 }
 
 ##########################################################################

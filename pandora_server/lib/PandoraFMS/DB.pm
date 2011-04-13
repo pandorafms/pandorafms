@@ -31,9 +31,11 @@ our @EXPORT = qw(
 		db_connect
 		db_disconnect
 		db_do
+		db_insert
 		db_process_insert
 		db_process_update
-		db_insert
+		db_reserved_word
+		db_string
 		db_update
 		get_action_id
 		get_agent_id
@@ -60,10 +62,12 @@ our @EXPORT = qw(
 ##########################################################################
 ## Connect to the DB.
 ##########################################################################
+my $RDBMS = '';
 sub db_connect ($$$$$$) {
 	my ($rdbms, $db_name, $db_host, $db_port, $db_user, $db_pass) = @_;
 
 	if ($rdbms eq 'mysql') {
+		$RDBMS = 'mysql';
 		
 		# Connect to MySQL
 		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:3306", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
@@ -75,6 +79,14 @@ sub db_connect ($$$$$$) {
 		# Enable character semantics
 		$dbh->{'mysql_enable_utf8'} = 1;
 
+		return $dbh;
+	} elsif ($rdbms eq 'postgresql') {
+		$RDBMS = 'postgresql';
+		
+		# Connect to PostgreSQL
+		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=5432", $db_user, $db_pass);
+		return undef unless defined ($dbh);
+		
 		return $dbh;
 	}
 	
@@ -331,11 +343,21 @@ sub get_db_rows ($$;@) {
 ##########################################################################
 ## SQL insert. Returns the ID of the inserted row.
 ##########################################################################
-sub db_insert ($$;@) {
-	my ($dbh, $query, @values) = @_;
+sub db_insert ($$$;@) {
+	my ($dbh, $index, $query, @values) = @_;
+	my $insert_id = undef;
 
-	$dbh->do($query, undef, @values);
-	return $dbh->{'mysql_insertid'};
+	# MySQL
+	if ($RDBMS eq 'mysql') {
+		$dbh->do($query, undef, @values);
+		$insert_id = $dbh->{'mysql_insertid'};
+	}
+	# PostgreSQL
+	elsif ($RDBMS eq 'postgresql') {
+		$insert_id = get_db_value ($dbh, $query . ' RETURNING ' . db_reserved_word ($index), undef, @values); 
+	}
+
+	return $insert_id;
 }
 
 ##########################################################################
@@ -352,8 +374,8 @@ sub db_update ($$;@) {
 ##########################################################################
 ## SQL insert. Returns the ID of the inserted row.
 ##########################################################################
-sub db_process_insert($$$;@) {
-	my ($dbh, $table, $parameters, @values) = @_;
+sub db_process_insert($$$$;@) {
+	my ($dbh, $index, $table, $parameters, @values) = @_;
 		
 	my @columns_array = keys %$parameters;
 	my @values_array = values %$parameters;
@@ -378,7 +400,7 @@ sub db_process_insert($$$;@) {
 			
 	my $columns_string = join(',',@columns_array);
 	
-	my $res = db_insert ($dbh, "INSERT INTO $table (".$columns_string.") VALUES ".$wildcards, @values_array);
+	my $res = db_insert ($dbh, $index, "INSERT INTO $table (".$columns_string.") VALUES ".$wildcards, @values_array);
 
 	return $res;
 }
@@ -424,6 +446,33 @@ sub db_do ($$;@) {
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
 
 	$dbh->do($query, undef, @values);
+}
+
+##########################################################################
+## Escape the given reserved word. 
+##########################################################################
+sub db_reserved_word ($) {
+	my $reserved_word = shift;
+	
+	# MySQL
+	return '`' . $reserved_word . '`' if ($RDBMS eq 'mysql');
+
+	# PostgreSQL
+	return '"' . $reserved_word . '"' if ($RDBMS eq 'postgresql');
+	
+	return $reserved_word;
+}
+
+##########################################################################
+## Quote the given string. 
+##########################################################################
+sub db_string ($) {
+	my $string = shift;
+	
+	# MySQL and PostgreSQL
+	return "'" . $string . "'" if ($RDBMS eq 'mysql' || $RDBMS eq 'postgresql');
+	
+	return $string;
 }
 
 # End of function declaration

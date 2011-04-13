@@ -244,7 +244,7 @@ sub data_consumer ($$) {
 		}
 
 		# Assign the new address to the agent
-		db_insert ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
 		                  VALUES (?, ?)', $addr_id, $agent_id);
 
 		# Create network profile modules for the agent
@@ -355,7 +355,7 @@ sub update_recon_task ($$$) {
 sub add_address ($$) {
 	my ($dbh, $ip_address) = @_;
 
-	return db_insert ($dbh, 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
+	return db_insert ($dbh, 'id_a', 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
 }
 
 ##########################################################################
@@ -384,13 +384,13 @@ sub create_network_profile_modules {
         $component->{'snmp_community'} = $snmp_community;
 
 		# Create the module
-		my $module_id = db_insert ($dbh, 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo )
+		my $module_id = db_insert ($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo )
 		                                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?, ?, ?, ?)',
 		                                             $agent_id, $component->{'type'}, $component->{'description'}, safe_input($component->{'name'}), $component->{'max'}, $component->{'min'}, $component->{'module_interval'}, $component->{'tcp_port'}, $component->{'tcp_send'}, $component->{'tcp_rcv'}, $component->{'snmp_community'},
 		                                             $component->{'snmp_oid'}, $addr, $component->{'id_module_group'}, $component->{'plugin_user'}, $component->{'plugin_pass'}, $component->{'plugin_parameter'}, $component->{'max_timeout'}, $component->{'id_modulo'});
 
 		# An entry in tagente_estado is necessary for the module to work
-        db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'0000-00-00 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
+        	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'1970-01-01 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
 
 		logger($pa_config, 'Creating module ' . $component->{'name'} . " for agent $addr from network component '" . $component->{'name'} . "'.", 10);
 	}

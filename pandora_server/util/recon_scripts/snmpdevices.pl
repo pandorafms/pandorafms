@@ -94,7 +94,7 @@ sub get_agent_from_addr ($$) {
 sub add_address ($$) {
 	my ($dbh, $ip_address) = @_;
 
-	return db_insert ($dbh, 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
+	return db_insert ($dbh, 'id_a', 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
 }
 
 ##########################################################################
@@ -234,7 +234,7 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 	$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, $host_name, $addr, $target_group,									  0, 11, '', 300, $dbh);
 	
 	# Assign the new address to the agent
-	db_insert ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`) VALUES (?, ?)', $addr_id, $agent_id);
+	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`) VALUES (?, ?)', $addr_id, $agent_id);
 					  
 	# Generate an event
 	pandora_event (\%conf, "[RECON] New SNMP host [$host_name] detected on network [" . $target_network . ']',                      $target_group, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);

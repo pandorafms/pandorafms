@@ -83,7 +83,7 @@ sub data_producer ($) {
 	my @rows;
 
 	if ($pa_config->{'pandora_master'} != 1) {
-		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag
+		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag, last_execution_try
 			FROM tagente, tagente_modulo, tagente_estado
 			WHERE server_name = ?
 			AND tagente_modulo.id_agente = tagente.id_agente
@@ -95,7 +95,7 @@ sub data_producer ($) {
 			  OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
 			ORDER BY last_execution_try ASC ', $pa_config->{'servername'});
     } else {
-		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, last_execution_try
                                 FROM tagente, tagente_modulo, tagente_estado
 								WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status = 0)))
                                 AND tagente_modulo.id_agente = tagente.id_agente

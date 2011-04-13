@@ -235,7 +235,7 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/AIX/i){
 			return 3;
 		}
-		elsif ($command =~ m/HP-UX/i){
+		elsif ($command =~ m/HP\-UX/i){
 			return 5;
 		}
 		elsif ($command =~ m/Apple/i){

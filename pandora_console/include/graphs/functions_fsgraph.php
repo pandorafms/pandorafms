@@ -46,18 +46,6 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 	 	$data2 = array();
 	 	$count = 0;
 		foreach($chart_data as $i =>$values) {
-//			$count = 0;
-//			$step = 10;
-//			$num_vlines = 0;
-//			
-//			if ($count++ % $step == 0) {
-//				$show_name = '1';
-//				$num_vlines++;
-//			}
-//			else {
-//				$show_name = '0';
-//			}
-
 			$count++;
 			$show_name = '0';
 			if (($count % $step) == 0) {
@@ -68,6 +56,9 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 				$chart->addCategory($i, //'');
 						'hoverText=' . $long_index[$i] .  
 						';showName=' . $show_name);
+			}
+			else {
+				$chart->addCategory($i, 'showName=' . $show_name);
 			}
 			
 			$c = 0;
@@ -198,18 +189,6 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	 	$data2 = array();
 	 	$count = 0;
 		foreach($chart_data as $i =>$values) {
-//			$count = 0;
-//			$step = 10;
-//			$num_vlines = 0;
-//			
-//			if ($count++ % $step == 0) {
-//				$show_name = '1';
-//				$num_vlines++;
-//			}
-//			else {
-//				$show_name = '0';
-//			}
-
 			$count++;
 			$show_name = '0';
 			if (($count % $step) == 0) {
@@ -220,6 +199,9 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 				$chart->addCategory($i, //'');
 						'hoverText=' . $long_index[$i] .  
 						';showName=' . $show_name);
+			}
+			else {
+				$chart->addCategory($i, 'showName=' . $show_name);
 			}
 			
 			$c = 0;
@@ -310,7 +292,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	
 	
 	$output = '<div id="' . $div_id. '" style="z-index:1;"></div>';
-	$output .= '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
+	//$output .= '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
 	$output .= '<script type="text/javascript">
 			<!--
 			function pie_' . $chart_id . ' () {
@@ -470,11 +452,6 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 ///////////////////////////////
 ///////////////////////////////
 ///////////////////////////////
-
-
-
-
-
 
 
 // Returns the number of seconds since the Epoch for a date in the format dd/mm/yyyy

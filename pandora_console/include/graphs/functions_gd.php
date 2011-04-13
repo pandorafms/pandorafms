@@ -158,6 +158,6 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		imagePng($imgPng); 
    	} else 
    		drawRating($progress, $width, $height, $font, $out_of_lim_str);
-}
+	}
 
 ?>

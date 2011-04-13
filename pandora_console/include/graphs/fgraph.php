@@ -91,8 +91,6 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
-		$id_graph = uniqid();
-		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -102,7 +100,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['xaxisname'] = $xaxisname;
 		$graph['yaxisname'] = $yaxisname;
 				
-		serialize_in_temp($graph, $id_graph);
+		$id_graph = serialize_in_temp($graph);
 
 		return "<img src='include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
 	}	
@@ -118,8 +116,6 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 		return fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
-		$id_graph = uniqid();
-		
 		//Stack the data
 		stack_data($chart_data, $legend, $color);
 		
@@ -130,10 +126,10 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
 		
-		serialize_in_temp($graph, $id_graph);
+		$id_graph = serialize_in_temp($graph);
 		
-		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=stacked_area&id_graph=" . $id_graph . "' />";
-	}
+		return "<img src='include/graphs/functions_pchart.php?graph_type=stacked_area&id_graph=" . $id_graph . "' />";
+	}	
 }
 
 function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
@@ -147,9 +143,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, 
 	if($flash_chart) {
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
-	else {
-		$id_graph = uniqid();
-		
+	else {		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -157,9 +151,9 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, 
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
 		
-		serialize_in_temp($graph, $id_graph);
+		$id_graph = serialize_in_temp($graph);
 		
-		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=line&id_graph=" . $id_graph . "' />";
+		return "<img src='include/graphs/functions_pchart.php?graph_type=line&id_graph=" . $id_graph . "' />";
 	}
 }
 
@@ -172,9 +166,6 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
-		$id_graph = uniqid();
-		
-		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -182,10 +173,33 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
 		
-		serialize_in_temp($graph, $id_graph);
+		$id_graph = serialize_in_temp($graph);
 		
-		return "<img src='http://127.0.0.1/pandora_console/include/graphs/functions_pchart.php?graph_type=line&id_graph=" . $id_graph . "' />";
+		return "<img src='include/graphs/functions_pchart.php?graph_type=line&id_graph=" . $id_graph . "' />";
 	}	
+}
+
+function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $no_data_image) {
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
+	
+	$graph = array();
+	$graph['data'] = $chart_data;
+	$graph['width'] = $width;
+	$graph['height'] = $height;
+		
+	$id_graph = serialize_in_temp($graph);
+		
+	return "<img src='include/graphs/functions_pchart.php?graph_type=".$graph_type."&id_graph=" . $id_graph . "' />";
+}
+
+function radar_graph($flash_chart, $chart_data, $width, $height, $no_data_image) {
+	return kiviat_graph('radar', $flash_chart, $chart_data, $width, $height, $no_data_image);
+}
+
+function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image) {
+	return kiviat_graph('polar', $flash_chart, $chart_data, $width, $height, $no_data_image);
 }
 
 function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "") {

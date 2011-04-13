@@ -25,6 +25,9 @@ else if(file_exists('../functions.php')) {
 	include_once('functions_utils.php');
 }
 
+include_once('functions_fsgraph.php');
+include_once('functions_utils.php');
+
 $graph_type = get_parameter('graph_type', '');
 
 switch($graph_type) {

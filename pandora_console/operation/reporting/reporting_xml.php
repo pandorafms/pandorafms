@@ -187,11 +187,28 @@ foreach ($contents as $content) {
 		case 1:
 		case 'simple_graph':	
 			$data["title"] = __('Simple graph');
-			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
+			
+			$img = grafico_modulo_sparse2($content['id_agent_module'],
+				$content['period'], 0, 720,
+				230, '', null, false, true, false, $datetime, 0, 0, true, true);
+			
+			preg_match("/src='(.*)'/", $img, $matches);
+			$url = $matches[1];
+			
+			$data["objdata"]["img"] = $url; 
+			
 			break;
 		case 'simple_baseline_graph':	
 			$data["title"] = __('Simple baseline graph');
-			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.($datetime + $content['period']).'&amp;avg_only=1&amp;baseline=1&amp;pure=1';
+			
+			$img = grafico_modulo_sparse2($content['id_agent_module'],
+				$content['period'], 0, 720,
+				230, '', null, false, true, false, ($datetime + $content['period']), true, 0, true, true);
+				
+			preg_match("/src='(.*)'/", $img, $matches);
+			$url = $matches[1];
+			
+			$data["objdata"]["img"] = $url; 
 			break;
 		case 2:
 		case 'custom_graph':

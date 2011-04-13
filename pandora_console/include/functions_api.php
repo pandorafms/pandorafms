@@ -785,42 +785,6 @@ function get_module_data($id, $thrash1, $other, $returnType) {
 }
 
 /**
- * Return a image file of sparse graph of module data in a period time.
- * 
- * @param integer $id id of a module data.
- * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <period>;<width>;<height>;<label>;<start_date>; in this order
- *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *  example:
- *  
- *  api.php?op=get&op2=graph_module_data&id=17&other=604800|555|245|pepito|2009-12-07&other_mode=url_encode_separator_|
- *  
- * @param $thrash2 Don't use.
- */
-function get_graph_module_data($id, $thrash1, $other, $thrash2) {
-	
-	$period = $other['data'][0];
-	$width = $other['data'][1];
-	$height = $other['data'][2];
-	$graph_type = 'sparse';
-	$draw_alerts = 0;
-	$draw_events = 0;
-	$zoom = 1;
-	$label = $other['data'][3];
-	$avg_only = 0;
-	$start_date = $other['data'][4];
-	$date = strtotime($start_date);
-	
-	$image = "fgraph.php?tipo=" . $graph_type .
-		"&draw_alerts=" . $draw_alerts . "&draw_events=" . $draw_events . 
-		"&id=" . $id . "&zoom=" . $zoom . "&label=" . $label .
-		"&height=" . $height . "&width=" . $width . "&period=" . $period .
-		"&avg_only=" . $avg_only . "&date=" . $date;
-
-	header('Location: ' . $image);
-}
-
-/**
  * Create new user.
  * 
  * @param string $id String username for user login in Pandora

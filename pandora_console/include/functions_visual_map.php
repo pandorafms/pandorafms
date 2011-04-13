@@ -19,6 +19,10 @@
  * @subpackage Reporting
  */
 
+global $config;
+	
+require_once ('functions_graph.php');
+
 function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
 	if ($float == 'left') {
 		$margin = 'margin-right';
@@ -49,6 +53,8 @@ function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabl
 }
 
 function printItemInVisualConsole($layoutData) {
+	global $config;
+	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
 	$width = $layoutData['width'];
@@ -109,7 +115,9 @@ function printItemInVisualConsole($layoutData) {
 			
 			break;
 		case MODULE_GRAPH:
-			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . base64_encode ($label) . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . ' " style="border:1px solid #808080;" />';
+			$img = grafico_modulo_sparse2($id_module, $period, 0, $width,
+				$height, '', null, false, 0, false, 0, 0, 0, true, true);
+			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
 			echo '<div id="' . $id . '" class="item module_graph" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />'; 
@@ -385,6 +393,7 @@ function getStatusElement($layoutData) {
  */
 function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
 	global $config;
+	
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
 	
 	$resizedMap = false;
@@ -771,14 +780,20 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}
-					if ($resizedMap)
+					if ($resizedMap) {
 
 					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
 					// resulting fault image links :(
 
-						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=". base64_encode ($layout_data['label'])."&height=".((integer)($proportion * $layout_data['height']))."&pure=1&width=".((integer)($proportion * $layout_data['width']))."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0, "style" => "border:1px solid #808080;"));
-					else
-						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=". base64_encode ($layout_data['label'])."&height=".$layout_data['height']."&pure=1&width=".$layout_data['width']."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0, "style" => "border:1px solid #808080;"));
+						echo grafico_modulo_sparse2 ($layout_data['id_agente_modulo'], $layout_data['period'],
+							false, ((integer)($proportion * $layout_data['width'])), ((integer)($proportion * $layout_data['height'])),
+							'', null, false, 0, false, 0, 0, 0, true, true);
+					}
+					else {
+						echo grafico_modulo_sparse2 ($layout_data['id_agente_modulo'], $layout_data['period'],
+							false, $layout_data['width'], $layout_data['height'],
+							'', null, false, 0, false, 0, 0, 0, true, true);
+					}
 					echo "</a>";
 					echo "</div>";
 					break;

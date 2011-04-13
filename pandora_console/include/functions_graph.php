@@ -725,4 +725,14 @@ function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
 	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
 }
+
+function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $daysWeek, $time_from, $time_to, $sla_limit, $width, $height) {
+	global $config;
+	
+	$days = json_decode ($daysWeek, true);
+	$data = get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $sla_limit, $days, $time_from, $time_to);
+	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
+
+	return slicesbar_graph($data, $width, $height, $colors, $config['fontpath'], $config['round_corner']);
+}
 ?>

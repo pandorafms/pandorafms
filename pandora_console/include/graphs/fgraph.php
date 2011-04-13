@@ -56,6 +56,20 @@ switch($graph_type) {
 				break;
 }
 
+function slicesbar_graph($chart_data, $width, $height, $colors, $font, $round_corner) {
+	$graph = array();
+	$graph['data'] = $chart_data;
+	$graph['width'] = $width;
+	$graph['height'] = $height;
+	$graph['font'] = $font;
+	$graph['round_corner'] = $round_corner;
+	$graph['color'] = $colors;
+
+	$id_graph = serialize_in_temp($graph);
+		
+	return "<img src='include/graphs/functions_pchart.php?graph_type=slicebar&id_graph=".$id_graph."'>";
+}
+
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "") {
 	if($flash_chart) {
 		echo fs_2d_column_chart ($chart_data, $width, $height);

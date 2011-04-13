@@ -2405,20 +2405,6 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 1) {
     }
 }
 
-function graph_sla_horizontal ($id, $period, $sla_min, $sla_max, $daysWeek, $time_from, $time_to, $sla_limit, $width, $height) {
-	global $config;
-
-	$engine = get_graph_engine ();
-	
-	$engine->width = $width;
-	$engine->height = $height;
-	$engine->fontpath = $config['fontpath'];
-	$days = json_decode ($daysWeek, true);
-	$data = get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $sla_limit, $days, $time_from, $time_to);
-	$engine->graph_sla_horizontal ($data);
-}
-
-
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
     switch ($errno) {

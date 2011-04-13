@@ -20,10 +20,6 @@ global $config;
 
 require_once ($config["homedir"] . '/include/functions_graph.php'); 
 
-if ($config['flash_charts']) {
-	require('include/fgraph.php');
-}
-
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database information'), "images/god8.png", false, "", true);
 
 check_login ();

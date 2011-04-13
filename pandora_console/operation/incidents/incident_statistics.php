@@ -16,7 +16,8 @@
 
 // Load global vars
 global $config;
-require_once ("include/fgraph.php");
+
+require_once ($config["homedir"] . '/include/functions_graph.php'); 
 
 check_login ();
 
@@ -29,39 +30,19 @@ ui_print_page_header (__('Statistics'), "images/book_edit.png", false, "", false
 
 echo '<table width="90%">
 	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';
-if ($config['flash_charts']) {
-	echo graph_incidents_status ();
-}
-else {
-	echo '<img src="include/fgraph.php?tipo=estado_incidente" border="0"></td>';
-}
+echo graph_incidents_status2 ();
+
 echo '<td valign="top"><h3>'.__('Incidents by priority').'</h3>';
-if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
-}
-else {
-	echo '<img src="include/fgraph.php?tipo=prioridad_incidente" border="0"></td></tr>';
-}
+echo grafico_incidente_prioridad2 ();
+
 echo '<tr><td><h3>'.__('Incidents by group').'</h3>';
-if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
-}
-else {
-	echo '<img src="include/fgraph.php?tipo=group_incident" border="0"></td>';
-}
+echo graphic_incident_group2();
+
 echo '<td><h3>'.__('Incidents by user').'</h3>';
-if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
-}
-else {
-	echo '<img src="include/fgraph.php?tipo=user_incident" border="0"></td></tr>';
-}
+echo graphic_incident_user2();
+
 echo '<tr><td><h3>'.__('Incidents by source').'</h3>';
-if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
-}
-else {
-	echo '<img src="include/fgraph.php?tipo=source_incident" border="0"></td></tr>';
-}
+echo graphic_incident_source2();
+
 echo '</table>';
 ?>

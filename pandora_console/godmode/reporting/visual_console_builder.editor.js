@@ -626,9 +626,6 @@ function getModuleGraph(id_data) {
 		}
 	});
 	
-//	var img = 'include/fgraph.php?tipo=sparse&id=' + id_agente_modulo + 
-//		'&label=' + Base64.encode(label) + '&height=' + height + '&pure=1&width=' + width + '&period=' + period;
-	
 	return img;
 }
 

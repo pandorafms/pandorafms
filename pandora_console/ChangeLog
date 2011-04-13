@@ -1,3 +1,20 @@
+2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/functions_reporting.php,
+	operation/incidents/incident_statistics.php,
+	operation/agentes/custom_fields.php, operation/agentes/agent_fields.php,
+	operation/servers/view_server_detail.php,
+	operation/integria_incidents/incident_statistics.php,
+	operation/events/event_statistics.php, operation/events/events_list.php,
+	operation/events/events.php, operation/reporting/reporting_xml.php,
+	godmode/admin_access_logs.php, godmode/db/db_main.php,
+	godmode/db/db_info.php, godmode/db/db_purge.php,
+	godmode/reporting/graph_builder.main.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/graph_builder.php,
+	godmode/reporting/graph_builder.graph_editor.php,
+	godmode/reporting/graph_builder.preview.php: changed for to use new engine.
+
 2011-04-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_ui.php

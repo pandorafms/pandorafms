@@ -149,10 +149,6 @@ if (is_ajax ()) {
 	return;
 }
 
-if ($config['flash_charts']) {
-	require_once ("include/fgraph.php");
-}
-
 $offset = (int) get_parameter ("offset", 0);
 $ev_group = (int) get_parameter ("ev_group", 0); //0 = all
 $event_type = get_parameter ("event_type", ''); // 0 all

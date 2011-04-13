@@ -44,10 +44,6 @@ if (is_ajax ()) {
  	return;
 }
 
-if ($config['flash_charts']) {
-	require_once ('include/fgraph.php');
-}
-
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {

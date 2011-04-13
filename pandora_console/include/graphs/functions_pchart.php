@@ -124,8 +124,6 @@ switch($graph_type) {
 			}
 			
 			break;
-	case 'polar':
-	case 'radar':
 	case 'progress':
 	case 'area':
 	case 'stacked_area':
@@ -148,6 +146,8 @@ switch($graph_type) {
 			}
 			
 			break;
+	case 'polar':
+	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
 			break;
@@ -208,7 +208,7 @@ switch($graph_type) {
 			break;
 	case 'polar':
 	case 'radar':
-			pch_radar_graph($graph_type, $data_values, $data_keys, $width, $height);
+			pch_kiviat_graph($graph_type, array_values($data), array_keys($data), $width, $height);
 			break;
 	case 'progress':
 			pch_progress_graph($graph_type, $data_keys, $data_values, $width, $height, $xaxisname, $yaxisname);
@@ -247,7 +247,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 
 	 /* Set the default font properties */ 
 	 $myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>10,"R"=>80,"G"=>80,"B"=>80));
-	 
+
 	 /* Create the pPie object */ 
 	 $PieChart = new pPie($myPicture,$MyData);
 
@@ -272,7 +272,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 	 $myPicture->stroke(); 
 }
 
-function pch_radar_graph ($graph_type, $data_values, $legend_values, $width, $height) {
+function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $height) {
 	 /* CAT:Radar/Polar charts */
 
 	 /* Create and populate the pData object */
@@ -511,13 +511,11 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
-	 	//$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
-	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
 	 }
 	 else {
 	 	/* Define the chart area */
-	 	//$myPicture->setGraphArea(40, 5,$width,$height - 90);
-	 	$myPicture->setGraphArea(40, 5,$width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea(40, 5,$width,$height - 90);
 	 }
 
 	 /* Draw the scale */

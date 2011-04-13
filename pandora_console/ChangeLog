@@ -1,3 +1,13 @@
+2011-04-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/functions_fsgraph.php
+	include/graphs/functions_gd.php
+	include/graphs/fgraph.php: Fixed long index bug into
+	stacked and line graphs.
+	Add entry for radar and polar charts (kiviat)
+	Clean code
+
 2011-04-12 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/graphs/functions_fsgraph.php: fixed the "fs_area_graph" when

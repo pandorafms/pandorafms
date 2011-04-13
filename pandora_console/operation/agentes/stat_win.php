@@ -28,7 +28,6 @@ require_once ($config["homedir"] . '/include/functions.php');
 require_once ($config["homedir"] . '/include/functions_db.php');
 require_once ($config["homedir"] . '/include/functions_reporting.php');
 require_once ($config["homedir"] . '/include/functions_graph.php');
-//require_once ($config["homedir"] . '/include/fgraph.php');
 
 check_login ();
 ?>

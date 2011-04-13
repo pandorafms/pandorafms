@@ -1,3 +1,14 @@
+2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/graphs/functions_gd.php,
+	include/graphs/fgraph.php, include/functions_visual_map.php,
+	include/fgraph.php, operation/agentes/estado_generalagente.php,
+	operation/agentes/tactical.php. operation/agentes/stat_win.php,
+	operation/servers/view_server.php, operation/servers/view_server_detail.php,
+	mobile/operation/agents/tactical.php, general/logon_ok.php,
+	godmode/reporting/graph_builder.preview.php: added function "progress_bar2"
+	and changed in source code of Pandora.
+
 2011-04-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php

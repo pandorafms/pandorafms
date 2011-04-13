@@ -142,20 +142,9 @@ echo "<tr><td>";
 
 if(!empty($modules)) {
 	require_once ($config["homedir"] . '/include/functions_graph.php');
-	
-	//if ($config['flash_charts']) {
-		//echo graphic_combined_module (explode (',', $modules), explode (',', $weights), $period, $width, $height,
-		//		'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked, $unixdate);
-	//}
-	//else {
-		//echo "<img src='include/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=" . base64_encode ("Combined%20Sample%20Graph") . "&height=$height&width=$width&stacked=$stacked&period=$period&date=$unixdate' border=1 alt=''>";
-	//}
-	
-	//////////////////////////////////////////////////////////////////////////////
+
 	echo graphic_combined_module2(explode (',', $modules), explode (',', $weights), $period, $width, $height,
 				'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked, $unixdate);
-	
-	///////////////////////////////////////////////////////
 }
 else {
 	echo "<div class='nf'>".__('Empty graph')."</div>";

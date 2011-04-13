@@ -20,6 +20,7 @@ global $config;
 require_once ("include/functions_events.php");
 require_once ("include/functions_servers.php");
 require_once ("include/functions_reporting.php");
+require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 
@@ -80,36 +81,33 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
-$img = "include/fgraph.php?tipo=progress&height=20&width=140&mode=0&percent=";
-
-
 $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Global health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
-$table->data[1][0] = print_image ($img.$data["global_health"], true,
-	array ("width" => '100%', "height" => 20, "title" => $data["global_health"].'% '.__('of monitors OK')));
+$table->data[1][0] =
+	progress_bar2($data["global_health"], 140, 20, $data["global_health"].'% '.__('of monitors OK'), 0);
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
 $table->data[2][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = print_image ($img.$data["monitor_health"], true,
-	array ("width" => '100%', "height" => 20, "title" => $data["monitor_health"].'% '.__('of monitors up')));
+$table->data[3][0] =
+	progress_bar2($data["monitor_health"], 140, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
 $table->data[4][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
-$table->data[5][0] = print_image ($img.$data["module_sanity"], true,
-	array ("width" => '100%', "height" => 20, "title" => $data["module_sanity"].'% '.__('of total modules inited')));
+$table->data[5][0] =
+	progress_bar2($data["module_sanity"], 140, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
 
 $table->style[6] = "padding-top:4px; padding-bottom:4px;";
 $table->data[6][0] = '<b>'.__('Alert level').'</b>';
 
 $table->style[7] = "padding-top:4px; padding-bottom:4px;";
-$table->data[7][0] = print_image ($img.$data["alert_level"], true,
-	array ("width" => '100%', "height" => 20, "title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
+$table->data[7][0] =
+	progress_bar2($data["alert_level"], 140, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
 	
 print_table ($table);
 unset ($table);
@@ -276,7 +274,8 @@ if($is_admin) {
 		}
 		
 		if ($server["type"] != "snmp") {
-			$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true, '');	
+			$data[3] =
+				progress_bar2($server["load"], 80, 20);	
 
 			if ($server["type"] != "recon"){
 				$data[4] = $server["lag_txt"];

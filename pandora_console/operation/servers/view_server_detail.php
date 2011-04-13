@@ -19,6 +19,8 @@ global $config;
 
 check_login ();
 
+require_once ($config["homedir"] . '/include/functions_graph.php');
+
 $id_server = (int) get_parameter ("server_id", -1);
 
 $options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>" . print_image("images/refresh.png", true) . "</a></li>";
@@ -132,7 +134,7 @@ foreach ($recon_tasks as $task) {
 		$data[6] = "-";
 	}
 	else {
-		$data[6] = print_image ("include/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
+		$data[6] = progress_bar2($task['status'], 100, 20, __('Progress').':'.$task["status"].'%', 0);
 	}
 	
 	$data[7] = print_timestamp ($task["utimestamp"], true);

@@ -22,7 +22,9 @@ class Tactical {
 	}
 	
 	function show() {
-		$img = "../include/fgraph.php?tipo=progress&height=8&width=70&mode=0&percent=";
+		global $config;
+		
+		require_once ($config["homedir"] . '/include/functions_graph.php');
 		
 		$data = get_group_stats();
 		
@@ -40,13 +42,17 @@ class Tactical {
 		
 		$table->data[0][0] = "<h3 class='title_h3_server'>" . __('Status') . "</h3>" ;
 		$table->data[1][0] = '<span title="' . __('Global health') . '" alt="' . __('Global health') . '">' . __('G') . '</span> ';
-		$table->data[1][1] = print_image ($img.$data["global_health"], true);
+		$table->data[1][1] =
+			progress_bar2($data["global_health"], 70, 8, '', 0);
 		$table->data[2][0] = '<span title="' . __('Monitor health') . '" alt="' . __('Monitor health') . '">' . __('M') . '</span> ';
-		$table->data[2][1] = print_image ($img.$data["monitor_health"], true);
+		$table->data[2][1] =
+			progress_bar2($data["monitor_health"], 70, 8, '', 0);
 		$table->data[3][0] = '<span title="' . __('Module sanity') . '" alt="' . __('Module sanity') . '">' . __('M') . '</span> ';
-		$table->data[3][1] = print_image ($img.$data["module_sanity"], true);
+		$table->data[3][1] =
+			progress_bar2($data["module_sanity"], 70, 8, '', 0);
 		$table->data[4][0] = '<span title="' . __('Alert level') . '" alt="' . __('Alert level') . '">' . __('A') . '</span> ';
-		$table->data[4][1] = print_image ($img.$data["alert_level"], true);
+		$table->data[4][1] =
+			progress_bar2($data["alert_level"], 70, 8, '', 0);
 		$table->data[5][0] = $table->data[5][1] = '';
 		$table->data[6][0] = $table->data[6][1] = '';
 		$table->data[7][0] = $table->data[7][1] = '';

@@ -49,6 +49,8 @@ function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabl
 }
 
 function printItemInVisualConsole($layoutData) {
+	require_once ($config["homedir"] . '/include/functions_graph.php');
+	
 	$width = $layoutData['width'];
 	$height = $max_percentile = $layoutData['height'];
 	$top = $layoutData['pos_y'];
@@ -99,10 +101,9 @@ function printItemInVisualConsole($layoutData) {
 			else
 				$percentile = 100;
 			
-			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=progress&height=15&width=' . $width . '&mode=1&percent=' . $percentile . '" />';
-			
 			echo '<div id="' . $id . '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
-			echo $text . '<br />'; 
+			echo $text . '<br />';
+			echo progress_bar2($percentile, $width, 15);
 			echo $img;
 			echo '</div>';
 			
@@ -744,10 +745,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					echo "<br>";
 
 					if ($resizedMap)
-						echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=".((integer)($proportion * $width))."&mode=1&percent=$percentile'>";
-					else	
-						echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
-	
+						echo progress_bar2($percentile, ((integer)($proportion * $width)), 15);
+					else
+						echo progress_bar2($percentile, $width, 15);	
 					echo '</div>';
 					break;
 				case 1;

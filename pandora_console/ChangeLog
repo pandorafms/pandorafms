@@ -1,5 +1,10 @@
 2011-04-13  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/functions_pchart.php: Forgotted 
+	restoring miguel modifications in the last commit
+
+2011-04-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/graphs/functions_pchart.php
 	include/functions_custom_graphs.php: Improved the 
 	vertical graph legend to use in horizontal when

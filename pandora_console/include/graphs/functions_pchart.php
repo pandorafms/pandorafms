@@ -589,15 +589,14 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 	}
 	 }
 	 $margin_bottom = 10 * $max_chars;
-	 //$margin_bottom = 90;
 	 
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - 90);
+	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - $margin_bottom);
 	 }
 	 else {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40, 5,$width,$height - 90);
+	 	$myPicture->setGraphArea(40, 5,$width,$height - $margin_bottom);
 	 }
 
 	 /* Draw the scale */

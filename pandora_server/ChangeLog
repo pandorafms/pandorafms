@@ -1,3 +1,11 @@
+2011-04-13  Sancho Lerena <slerena@artica.es>
+
+        * lib/PandoraFMS/ReconServer.pm: Fixed bug #3286027. Fix also
+        the "non finished" status for the Script Recon tasks, and as
+        new feature implements the "manual" recon task, works only when
+        you press the button.
+
+
 2011-04-10  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/DB.pm: Moved mysql_enable_utf8 to after database

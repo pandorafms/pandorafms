@@ -40,7 +40,7 @@ $hidden_options = get_parameter ('hidden_options', 1);
 
 if($delete_networkmap) {
 	$result = delete_networkmap($id_networkmap);
-	$message = print_result_message ($result,
+	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
 	
@@ -65,7 +65,7 @@ if($add_networkmap) {
 	$name = $activeTab;
 	
 	$id_networkmap = create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
-	$message = print_result_message ($id_networkmap,
+	$message = ui_print_result_message ($id_networkmap,
 		__('Network map created successfully'),
 		__('Could not create network map'), '', true);
 }
@@ -92,7 +92,7 @@ if($save_networkmap || $update_networkmap) {
 							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
 							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
 							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center));
-	$message = print_result_message ($result,
+	$message = ui_print_result_message ($result,
 		__('Network map saved successfully'),
 		__('Could not save network map'), '', true);
 	}
@@ -213,7 +213,7 @@ if(!empty($name)) {
 	$title .= " &raquo; ".$name;
 }
 
-print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "network_map", false, $buttons);
+ui_print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "network_map", false, $buttons);
 
 if($delete_networkmap || $add_networkmap || $save_networkmap) {
 	echo $message;
@@ -334,7 +334,7 @@ $options_form .= print_submit_button (__('Update'), "updbutton", false, 'class="
 $options_form .= '</td></tr>';
 $options_form .= '</table></table></form>';
 
-toggle($options_form, __('Map options'), '', $hidden_options);
+ui_toggle($options_form, __('Map options'), '', $hidden_options);
 
 if($id_networkmap != 0) {
 	switch ($activeTab) {

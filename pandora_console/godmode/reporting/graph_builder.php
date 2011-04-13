@@ -180,19 +180,19 @@ if (isset($name))
 	$head .= " - ".$name;
 
 // Header
-print_page_header ($head, "", false, "", true, $buttons);
+ui_print_page_header ($head, "", false, "", true, $buttons);
 
 if($add_graph)
-	print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));
+	ui_print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));
 
 if($add_module)
-	print_result_message($result, __('Module added successfully'), __('There was a problem adding Module'));
+	ui_print_result_message($result, __('Module added successfully'), __('There was a problem adding Module'));
 
 if ($update_graph) 
-	print_result_message($success, __("Update the graph"), __("Bad update the graph"));
+	ui_print_result_message($success, __("Update the graph"), __("Bad update the graph"));
 
 if ($delete_module) {
-		print_result_message($result, __('Graph deleted successfully'), __('There was a problem deleting Graph'));
+		ui_print_result_message($result, __('Graph deleted successfully'), __('There was a problem deleting Graph'));
 }
 
 // Parse CHUNK information into showable information

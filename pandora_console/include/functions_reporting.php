@@ -1396,7 +1396,7 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 			break;
 		}
 		$data[3] = $template['time_threshold'];
-		$data[4] = print_timestamp (get_alert_last_fire_timestamp_in_period ($alert['id'], $period, $date), true);
+		$data[4] = ui_print_timestamp (get_alert_last_fire_timestamp_in_period ($alert['id'], $period, $date), true);
 		$data[5] = $fires;
 		
 		array_push ($table->data, $data);
@@ -1752,10 +1752,10 @@ function get_agent_module_info ($id_agent, $filter = false) {
 	$return["monitor_alertsfired"] = 0; //Number of monitors with fired alerts
 	$return["last_contact"] = 0; //Last agent contact
 	$return["status"] = STATUS_AGENT_NO_DATA;
-	$return["status_img"] = print_status_image (STATUS_AGENT_NO_DATA, __('Agent without data'), true);
+	$return["status_img"] = ui_print_status_image (STATUS_AGENT_NO_DATA, __('Agent without data'), true);
 	$return["alert_status"] = "notfired";
 	$return["alert_value"] = STATUS_ALERT_NOT_FIRED;
-	$return["alert_img"] = print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
+	$return["alert_img"] = ui_print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
 	$return["agent_group"] = get_agent_group ($id_agent);
 	
 	if (!check_acl ($config["id_user"], $return["agent_group"], "AR")) {
@@ -1807,32 +1807,32 @@ function get_agent_module_info ($id_agent, $filter = false) {
 	if ($return["modules"] > 0) {
 		if ($return["monitor_critical"] > 0) {
 			$return["status"] = STATUS_AGENT_CRITICAL;
-			$return["status_img"] = print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
+			$return["status_img"] = ui_print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
 		}
 		else if ($return["monitor_warning"] > 0) {
 			$return["status"] = STATUS_AGENT_WARNING;
-			$return["status_img"] = print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
+			$return["status_img"] = ui_print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
 		}
 		else if ($return["monitor_unknown"] > 0) {
 			$return["status"] = STATUS_AGENT_DOWN;
-			$return["status_img"] = print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);	
+			$return["status_img"] = ui_print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);	
 		}
 		else {
 			$return["status"] = STATUS_AGENT_OK;
-			$return["status_img"] = print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
+			$return["status_img"] = ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
 		}
 	}
 	
 	//Alert not fired is by default
 	if ($return["monitor_alertsfired"] > 0) {
 		$return["alert_status"] = "fired";
-		$return["alert_img"] = print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
+		$return["alert_img"] = ui_print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
 		$return["alert_value"] = STATUS_ALERT_FIRED;
 	}
 	elseif (give_disabled_group ($return["agent_group"])) {
 		$return["alert_status"] = "disabled";
 		$return["alert_value"] = STATUS_ALERT_DISABLED;
-		$return["alert_img"] = print_status_image (STATUS_ALERT_DISABLED, __('Alert disabled'), true);
+		$return["alert_img"] = ui_print_status_image (STATUS_ALERT_DISABLED, __('Alert disabled'), true);
 	}
 	
 	return $return;
@@ -1885,7 +1885,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[1][0] = 4;
 			$data = array ();
 			$data[0] = $sizh.__('Simple graph').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -1912,7 +1912,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[1][0] = 4;
 			$data = array ();
 			$data[0] = $sizh.__('Simple baseline graph').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 65, false).' <br> '.printTruncateText($module_name, 65, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 65, false).' <br> ' . ui_print_truncate_text($module_name, 65, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -1938,7 +1938,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 			$data = array ();
 			$data[0] = $sizh.__('Custom graph').$sizhfin;
-			$data[1] = $sizh.printTruncateText($graph['name'], 25, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($graph['name'], 25, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2043,7 +2043,6 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
-				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
@@ -2141,7 +2140,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Monitor report').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2204,7 +2203,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Max. Value').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2228,7 +2227,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Min. Value').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2257,7 +2256,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Summatory').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2287,7 +2286,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Agent detailed event').$sizhfin;
-			$data[1] = $sizh.printTruncateText(get_agent_name($content['id_agent']), 75, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text(get_agent_name($content['id_agent']), 75, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2426,7 +2425,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'event_report_group':
 			$data = array ();
 			$data[0] = $sizh . __('Group detailed event') . $sizhfin;
-			$data[1] = $sizh . printTruncateText(get_group_name($content['id_group']), 60, false) . $sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text(get_group_name($content['id_group']), 60, false) . $sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2446,7 +2445,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'event_report_module':
 			$data = array ();
 			$data[0] = $sizh. __('Module detailed event') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 70, false).' <br> ' . ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2465,7 +2464,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'alert_report_module':
 			$data = array ();
 			$data[0] = $sizh. __('Alert report module') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2484,7 +2483,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'alert_report_agent':
 			$data = array ();
 			$data[0] = $sizh. __('Alert report agent') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2527,7 +2526,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'database_serialized':
 			$data = array ();
 			$data[0] = $sizh. __('Serialize data') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2578,7 +2577,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'TTRT':
 			$data = array ();
 			$data[0] = $sizh. __('TTRT') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2606,7 +2605,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'TTO':
 			$data = array ();
 			$data[0] = $sizh. __('TTO') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2634,7 +2633,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'MTBF':
 			$data = array ();
 			$data[0] = $sizh. __('MTBF') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2662,7 +2661,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'MTTR':
 			$data = array ();
 			$data[0] = $sizh. __('MTTR') . $sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2817,7 +2816,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$table2->style[0] = 'text-align: center';
 					$i = 1;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = printTruncateText($m['nombre'], 20, false);
+						$table2->head[$i] = ui_print_truncate_text($m['nombre'], 20, false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
 					}
@@ -3423,7 +3422,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					continue;
 				}
 				
-				$file_name = string2image(printTruncateText($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
+				$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
 				$table_data .= '<th width="22px">'.print_image($file_name, true, array('title' => $module['name']))."</th>";
 			}
 			
@@ -3436,7 +3435,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$filter_agents = array('id_grupo' => $id_group);
 			}
 			// Prepare pagination
-			pagination ((int)count(get_agents ($filter_agents)));
+			ui_pagination ((int)count(get_agents ($filter_agents)));
 			$table_data .= "<br>";
 	
 			foreach ($agents as $agent) {
@@ -3470,7 +3469,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				
 				$table_data .= "<tr style='height: 35px;'>";
 				
-				$file_name = string2image(printTruncateText($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
+				$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
 				$table_data .= "<td style='background-color: ".$rowcolor.";'>".print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
 				$agent_modules = get_agent_modules($agent['id_agente']);
 				
@@ -3493,19 +3492,19 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 
 							switch($status){
 								case 0:
-									$table_data .= print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), true, array('width' => '20px', 'height' => '20px'));
+									$table_data .= ui_print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), true, array('width' => '20px', 'height' => '20px'));
 									break;
 								case 1:
-									$table_data .= print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), true, array('width' => '20px', 'height' => '20px'));
+									$table_data .= ui_print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), true, array('width' => '20px', 'height' => '20px'));
 									break;
 								case 2:
-									$table_data .= print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), true, array('width' => '20px', 'height' => '20px'));
+									$table_data .= ui_print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), true, array('width' => '20px', 'height' => '20px'));
 									break;
 								case 3:
-									$table_data .= print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), true, array('width' => '20px', 'height' => '20px'));
+									$table_data .= ui_print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), true, array('width' => '20px', 'height' => '20px'));
 									break;
 								case 4:
-									$table_data .= print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), true, array('width' => '20px', 'height' => '20px'));
+									$table_data .= ui_print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), true, array('width' => '20px', 'height' => '20px'));
 									break;
 							}
 							$table_data .= "</td>";

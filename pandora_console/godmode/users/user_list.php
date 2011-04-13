@@ -86,7 +86,7 @@ switch ($sortField) {
 }
 
 // Header
-print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true);
+ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true);
 
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter ("delete_user", 0);
@@ -97,18 +97,18 @@ if (isset ($_GET["user_del"])) { //delete user
 		pandora_audit("User management",
 			"Deleted user ".safe_input($id_user));
 
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Successfully deleted'),
 			__('There was a problem deleting the user'));
 	}
 	else
-		print_error_message (__('There was a problem deleting the user'));
+		ui_print_error_message (__('There was a problem deleting the user'));
 	
 }
 elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
 	$result = delete_profile ($id_profile);
-	print_result_message ($result, 
+	ui_print_result_message ($result, 
 		__('Successfully deleted'),
 		__('There was a problem deleting the profile'));
 }
@@ -164,7 +164,7 @@ else
 	}
 
 // Prepare pagination
-pagination (count(get_users ()));
+ui_pagination (count(get_users ()));
 
 $rowPair = true;
 $iterator = 0;
@@ -183,7 +183,7 @@ foreach ($info as $user_id => $user_info) {
 	$data[1] .= __('Phone').': '.$user_info["phone"].'<br />';
 	$data[1] .= __('E-mail').': '.$user_info["email"].'<br />';
 	$data[1] .= '</span></a>';
-	$data[2] = print_timestamp ($user_info["last_connect"], true);
+	$data[2] = ui_print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
 		$data[3] = print_image ("images/user_suit.png", true,
@@ -209,7 +209,7 @@ foreach ($info as $user_id => $user_info) {
 	}
 	$data[3] .= "</span></a>";
 	
-	$data[4] = print_string_substr ($user_info["comments"], 24, true);
+	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
 
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[5] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
@@ -248,16 +248,16 @@ $table->align = array ();
 
 $table->head[0] = __('Profiles');
 
-$table->head[1] = "IR".print_help_tip (__('System incidents reading'), true);
-$table->head[2] = "IW".print_help_tip (__('System incidents writing'), true);
-$table->head[3] = "IM".print_help_tip (__('System incidents management'), true);
-$table->head[4] = "AR".print_help_tip (__('Agents reading'), true);
-$table->head[5] = "AW".print_help_tip (__('Agents management'), true);
-$table->head[6] = "LW".print_help_tip (__('Alerts editing'), true);
-$table->head[7] = "UM".print_help_tip (__('Users management'), true);
-$table->head[8] = "DM".print_help_tip (__('Database management'), true);
-$table->head[9] = "LM".print_help_tip (__('Alerts management'), true);
-$table->head[10] = "PM".print_help_tip (__('Systems management'), true);
+$table->head[1] = "IR" . ui_print_help_tip (__('System incidents reading'), true);
+$table->head[2] = "IW" . ui_print_help_tip (__('System incidents writing'), true);
+$table->head[3] = "IM" . ui_print_help_tip (__('System incidents management'), true);
+$table->head[4] = "AR" . ui_print_help_tip (__('Agents reading'), true);
+$table->head[5] = "AW" . ui_print_help_tip (__('Agents management'), true);
+$table->head[6] = "LW" . ui_print_help_tip (__('Alerts editing'), true);
+$table->head[7] = "UM" . ui_print_help_tip (__('Users management'), true);
+$table->head[8] = "DM" . ui_print_help_tip (__('Database management'), true);
+$table->head[9] = "LM" . ui_print_help_tip (__('Alerts management'), true);
+$table->head[10] = "PM" . ui_print_help_tip (__('Systems management'), true);
 $table->head[11] = __('Delete');
 
 $table->align = array_fill (1, 11, "center");

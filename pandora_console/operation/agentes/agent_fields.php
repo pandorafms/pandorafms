@@ -39,14 +39,14 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	require_once ("general/noaccess.php");
 	return;
 }
-print_page_header (__('Agent custom fields'), 'images/note.png', false, "", false);
+ui_print_page_header (__('Agent custom fields'), 'images/note.png', false, "", false);
 
 echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width: 450px">';
 // Custom fields
 $fields = get_db_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
 
 foreach($fields as $field) {
-	echo '<tr><td class="datos"><b>'.$field['name'].print_help_tip (__('Custom field'), true).'</b></td>';
+	echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
 	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	if($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>-'.__('empty').'-</i>';

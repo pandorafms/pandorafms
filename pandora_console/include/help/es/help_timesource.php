@@ -32,7 +32,7 @@ var unixtime = parseInt(unixtime_ms / 1000);
 <?php
 $option = array ("prominent" => "timestamp");
 ?>
-<b>Hora actual del sistema:</b> <?php print_timestamp (time (), false, $option); ?>
+<b>Hora actual del sistema:</b> <?php ui_print_timestamp (time (), false, $option); ?>
 <br />
 <b>Hora actual de la base de datos:</b>
 <?php
@@ -49,7 +49,7 @@ switch ($config["dbtype"]) {
 		$timestamp = get_db_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
 		break;
 }
-print_timestamp ($timestamp, false, $option);
+ui_print_timestamp ($timestamp, false, $option);
 ?>
 <br />
 <b>Hora de su navegador:</b> <script type="text/javascript">document.write (date);</script>

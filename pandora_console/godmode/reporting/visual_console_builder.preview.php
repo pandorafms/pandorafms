@@ -28,8 +28,8 @@ require_once ('include/functions_visual_map.php');
 
 print_pandora_visual_map ($visualConsole['id']);
 
-require_javascript_file ('wz_jsgraphics');
-require_javascript_file ('pandora_visual_console');
+ui_require_javascript_file ('wz_jsgraphics');
+ui_require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

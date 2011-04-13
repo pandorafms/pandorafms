@@ -98,7 +98,7 @@ $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= print_input_text ('fires_min', '', '', 4, 10, true);
 $table->data[2][1] .= ' '.__('to').' ';
 $table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
-$table->data[2][1] .= print_help_icon ("alert-matches", true);
+$table->data[2][1] .= ui_print_help_icon ("alert-matches", true);
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 if (check_acl ($config['id_user'], 0, "LM")) {
@@ -108,7 +108,7 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[2][1] .= '</a>';
 }
 $table->data[3][0] = __('Threshold');
-$table->data[3][1] = print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
+$table->data[3][1] = print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
 
 echo '<form class="add_alert_form" method="post">';
 
@@ -119,11 +119,11 @@ print_submit_button (__('Add alert'), 'add', false, 'class="sub wand"');
 print_input_hidden ('create_alert', 1);
 echo '</div></form>';
 
-require_css_file ('cluetip');
-require_jquery_file ('cluetip');
-require_jquery_file ('pandora.controls');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_css_file ('cluetip');
+ui_require_jquery_file ('cluetip');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

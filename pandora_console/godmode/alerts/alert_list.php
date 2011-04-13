@@ -70,7 +70,7 @@ if ($create_alert) {
 		FROM talert_template_modules
 		WHERE id_agent_module = " . $id_agent_module . "
 			AND id_alert_template = " . $id_alert_template) > 0) {
-		$messageAction = print_result_message (false, '', __('Already added'), '', true);
+		$messageAction = ui_print_result_message (false, '', __('Already added'), '', true);
 	}
 	else {
 		$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
@@ -89,7 +89,7 @@ if ($create_alert) {
 				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 		}
 
-		$messageAction =  print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
+		$messageAction = ui_print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');
 			
@@ -126,7 +126,7 @@ if ($delete_alert) {
 			"Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
 if ($add_action) {
@@ -150,7 +150,7 @@ if ($add_action) {
 		pandora_audit("Alert management", 'Fail to add action ' . $id_action . ' in alert ' . $id_alert_module);
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully added'), __('Could not be added'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully added'), __('Could not be added'), '', true);
 }
 
 if ($delete_action) {
@@ -166,7 +166,7 @@ if ($delete_action) {
 		pandora_audit("Alert management", 'Fail to delete action ' . $id_action . ' in alert ' . $id_alert);
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
 if ($enable_alert) {
@@ -181,7 +181,7 @@ if ($enable_alert) {
 		pandora_audit("Alert management", 'Fail to enable ' . $id_alert);
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'), '', true);
 }
 
 if ($disable_alert) {
@@ -196,7 +196,7 @@ if ($disable_alert) {
 		pandora_audit("Alert management", 'Fail to disable ' . $id_alert);
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'), '', true);
 }
 
 if ($standbyon_alert) {
@@ -211,7 +211,7 @@ if ($standbyon_alert) {
 		pandora_audit("Alert management", 'Fail to standby ' . $id_alert);
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'), '', true);
 }
 
 if ($standbyoff_alert) {
@@ -226,7 +226,7 @@ if ($standbyoff_alert) {
 		pandora_audit("Alert management", 'Fail to standbyoff ' . $id_alert);
 	}
 	
-	$messageAction = print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'), '', true);
+	$messageAction = ui_print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'), '', true);
 }
 
 if ($id_agente) {
@@ -259,9 +259,9 @@ else {
 	$buttons[$tab]['active'] = true;
 
 	if ($tab == 'list') {
-		print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
 	} else {
-		print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
 	}
 	
 	echo $messageAction;

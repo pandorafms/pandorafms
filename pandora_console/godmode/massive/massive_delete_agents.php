@@ -115,8 +115,8 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

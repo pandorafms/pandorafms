@@ -35,17 +35,17 @@ function createXMLData($agent, $agentModule, $time, $data) {
 		safe_output($agentModule['nombre']), safe_output($agentModule['descripcion']), get_module_type_name($agentModule['id_tipo_modulo']), $data);
 		
 	if (false === @file_put_contents($config['remote_config'] . '/' . safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
-		print_error_message(sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
+		ui_print_error_message(sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
 	}
 	else {
-		print_success_message(sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
+		ui_print_success_message(sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
 	}
 }
 
 function mainInsertData() {
 	global $config;
 	
-	print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
+	ui_print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
 
 	if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
 		pandora_audit("ACL Violation", "Trying to access Setup Management");
@@ -74,7 +74,7 @@ function mainInsertData() {
 	
 	if ($save) {
 		if (!check_acl($config['id_user'], get_agent_group(get_agent_id($id_agent)), "AW")) {
-			print_error_message(__('You haven\'t privileges for insert data in the agent.'));
+			ui_print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
 		else {
 			$agent = get_db_row_filter('tagente', array('nombre' => $id_agent));
@@ -138,11 +138,11 @@ function mainInsertData() {
 	
 	echo "</form>";
 	
-	require_css_file ('datepicker');
-	require_jquery_file ('ui.core');
-	require_jquery_file ('ui.datepicker');
-	require_jquery_file ('timeentry');
-	require_jquery_file ('autocomplete');
+	ui_require_css_file ('datepicker');
+	ui_require_jquery_file ('ui.core');
+	ui_require_jquery_file ('ui.datepicker');
+	ui_require_jquery_file ('timeentry');
+	ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 	/* <![CDATA[ */

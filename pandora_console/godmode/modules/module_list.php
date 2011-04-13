@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('Module management')." &raquo; ". __('Defined modules'), "", false, "", true);
+ui_print_page_header (__('Module management')." &raquo; ". __('Defined modules'), "", false, "", true);
 
 $update_module = (bool) get_parameter_post ('update_module');
 

@@ -333,7 +333,7 @@ function resource_exportation_extension_main() {
 	
 	$hook_enterprise = enterprise_include ('extensions/resource_exportation/functions.php');
 	
-	print_page_header (__('Resource exportation'), "images/extensions.png", false, "", true, "" );
+	ui_print_page_header (__('Resource exportation'), "images/extensions.png", false, "", true, "" );
 	
 	echo "<div class=notify>";
 	echo __("This extension makes exportation of resource template more easy. " .

@@ -31,7 +31,7 @@ function validateAlert() {
 		$result2 = validate_alert_compound ($compound_ids);
 		$result = $result1 || $result2;
 		
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Alert(s) validated'),
 			__('Error processing alert(s)'));
 	}

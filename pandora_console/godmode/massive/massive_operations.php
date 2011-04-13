@@ -128,7 +128,7 @@ $onheader = array('massive_agents' => $agentstab, 'massive_modules' => $modulest
 				'user_agents' => $userstab, 'massive_alerts' => $alertstab, 
 				'policies' => $policiestab);
 
-print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
+ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
 
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
 echo '<table border="0"><tr><td>';

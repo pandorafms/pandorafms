@@ -184,7 +184,7 @@ function print_select_groups($id_user = false, $privilege = "AR", $returnAllGrou
 	$fields = array();
 	foreach ($user_groups_tree as $group) {
 		if (isset($config['text_char_long'])) {
-			$groupName = printTruncateText($group['nombre'], $config['text_char_long'], false, true, false);
+			$groupName = ui_print_truncate_text($group['nombre'], $config['text_char_long'], false, true, false);
 		}
 		else {
 			$groupName = $group['nombre'];
@@ -357,7 +357,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$id = array_shift($row);
 		$value = array_shift($row);
 		if (isset($config['text_char_long'])) {
-			$fields[$id] = printTruncateText($value, $config['text_char_long'], false, true, false);
+			$fields[$id] = ui_print_truncate_text($value, $config['text_char_long'], false, true, false);
 		}
 		else {
 			$fields[$id] = $value;
@@ -1352,7 +1352,7 @@ function print_autocomplete_modules($name = 'module', $default = '', $id_agents 
 	
 	ob_start();
 	
-	require_jquery_file ('autocomplete');
+	ui_require_jquery_file ('autocomplete');
 	
 	?>
 	<script type="text/javascript">

@@ -39,12 +39,12 @@ enterprise_include ('godmode/setup/setup_visuals.php');
 require_once ('include/functions_themes.php');
 
 // Header
-print_page_header (__('Visual configuration'), "", false, "", true);
+ui_print_page_header (__('Visual configuration'), "", false, "", true);
 
 $table->width = '90%';
 $table->data = array ();
 
-$table->data[1][0] = __('Date format string') . print_help_icon("date_format", true);
+$table->data[1][0] = __('Date format string') . ui_print_help_icon("date_format", true);
 $table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
 $table->data[1][1] .= print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
 
@@ -85,7 +85,7 @@ $table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, 
 $table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $config["flash_charts"], true);
 
 if (!defined ('PANDORA_ENTERPRISE')){
-	$table->data[12][0] = __('Custom logo') . print_help_icon("custom_logo", true);
+	$table->data[12][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
 	$table->data[12][1] = print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
 }
 
@@ -97,8 +97,8 @@ print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
 
-require_css_file ("color-picker");
-require_jquery_file ("colorpicker");
+ui_require_css_file ("color-picker");
+ui_require_jquery_file ("colorpicker");
 ?>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {

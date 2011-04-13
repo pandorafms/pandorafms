@@ -42,7 +42,7 @@ if ($al_action !== false){
 			exit;
 		}else
 			// Header
-			print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
 	// If user tries to edit an action of others groups
 	}else{
 		$own_info = get_user_info ($config['id_user']);
@@ -54,7 +54,7 @@ if ($al_action !== false){
 		// Then action group have to be in his own groups
 		if ($is_in_group)
 			// Header
-			print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
 		else{
 			pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
@@ -64,7 +64,7 @@ if ($al_action !== false){
 	}
 }else
 	// Header
-	print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	
 
 $name = '';
 $id_command = '';
@@ -117,9 +117,9 @@ if (check_acl ($config['id_user'], 0, "PM")){
 }
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds') . print_help_icon ('action_threshold', true);
+$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true);
 $table->data[4][0] = __('Field 1');
-$table->data[4][1] = print_input_text ('field1', $field1, '', 35, 255, true) . print_help_icon ('alert_macros', true);
+$table->data[4][1] = print_input_text ('field1', $field1, '', 35, 255, true) . ui_print_help_icon ('alert_macros', true);
 
 $table->data[5][0] = __('Field 2');
 $table->data[5][1] = print_input_text ('field2', $field2, '', 80, 255, true);
@@ -145,7 +145,7 @@ if ($id) {
 echo '</div>';
 echo '</form>';
 
-require_javascript_file ('pandora_alerts');
+ui_require_javascript_file ('pandora_alerts');
 ?>
 
 <script type="text/javascript">

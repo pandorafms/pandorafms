@@ -193,7 +193,7 @@ if ($create_agent) {
 // Show tabs
 $img_style = array ("class" => "top", "width" => 16);
 
-// TODO: Change to use print_page_header
+// TODO: Change to use ui_print_page_header
 if ($id_agente) {
 	
 	/* View tab */
@@ -309,13 +309,13 @@ if ($id_agente) {
 		}
 	}
 
-	print_page_header (__('Agent configuration').' -&nbsp;'.printTruncateText(get_agent_name ($id_agente), 25, false), "images/setup.png", false, "", true, $onheader);
+	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' . ui_print_truncate_text(get_agent_name ($id_agente), 25, false), "images/setup.png", false, "", true, $onheader);
 	
 }
 // Create agent 
 else {
 
-	print_page_header (__('Agent manager'), "images/bricks.png", false, "create_agent", true);
+	ui_print_page_header (__('Agent manager'), "images/bricks.png", false, "create_agent", true);
 
 }
 
@@ -337,7 +337,7 @@ if ($delete_conf_file) {
 		}
 	}
 	
-	print_result_message ($correct,
+	ui_print_result_message ($correct,
 		__('Conf file deleted successfully'),
 		__('Could not delete conf file'));
 }
@@ -345,7 +345,7 @@ if ($delete_conf_file) {
 
 // Show agent creation results
 if ($create_agent) {
-	print_result_message ($agent_created_ok,
+	ui_print_result_message ($agent_created_ok,
 		__('Successfully created'),
 		__('Could not be created'));
 }
@@ -369,7 +369,7 @@ if (isset( $_GET["fix_module"])) {
 		$error = " - ".__('No data to normalize');
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Deleted data above %d', $media),
 		__('Error normalizing module %s', $error));
 }
@@ -467,7 +467,7 @@ if ($update_agent) { // if modified some agent paramenter
 			array ('id_agente' => $id_agente));
 			
 		if ($result === false) {
-			print_error_message (__('There was a problem updating the agent'));
+			ui_print_error_message (__('There was a problem updating the agent'));
 		}
 		else {
 			$info = 'Group: ' . $grupo . ' Interval: ' . $intervalo .
@@ -478,7 +478,7 @@ if ($update_agent) { // if modified some agent paramenter
 				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data;
 			
 			enterprise_hook ('update_agent', array ($id_agente));
-			print_success_message (__('Successfully updated'));
+			ui_print_success_message (__('Successfully updated'));
 			pandora_audit("Agent management",
 				"Updated agent $nombre_agente", false, false, $info);
 
@@ -500,7 +500,7 @@ if ($id_agente) {
 	$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 	if (empty ($agent)) {
 		//Close out the page
-		print_error_message (__('There was a problem loading the agent'));
+		ui_print_error_message (__('There was a problem loading the agent'));
 		return;
 	}
 	
@@ -811,11 +811,11 @@ if ($delete_module) { // DELETE agent module !
 	//Check for errors
 	if ($error != 0) {
 		process_sql_rollback ();
-		print_error_message (__('There was a problem deleting the module'));
+		ui_print_error_message (__('There was a problem deleting the module'));
 	}
 	else {
 		process_sql_commit ();
-		print_success_message (__('Module deleted succesfully'));
+		ui_print_success_message (__('Module deleted succesfully'));
 
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 		pandora_audit("Agent management",
@@ -943,13 +943,13 @@ switch ($tab) {
 			}
 		}
 		if (!$found) {
-			print_error_message ("Invalid tab specified");
+			ui_print_error_message ("Invalid tab specified");
 		}
 		break;
 	default:
 		if (enterprise_hook ('switch_agent_tab', array ($tab)))
 			//This will make sure that blank pages will have at least some
 			//debug info in them - do not translate debug
-			print_error_message ("Invalid tab specified");
+			ui_print_error_message ("Invalid tab specified");
 }
 ?>

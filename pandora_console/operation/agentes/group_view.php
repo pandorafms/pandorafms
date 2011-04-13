@@ -47,13 +47,13 @@ $groups = get_user_groups ($config['id_user']);
 
 
 if ($config["realtimestats"] == 0){
-	$updated_time = __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+	$updated_time = __('Last update'). " : ". ui_print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 } else {
 	$updated_time = __("Updated at realtime");
 }
 
 // Header
-print_page_header (__("Group view"), "images/bricks.png", false, "", false, $updated_time );
+ui_print_page_header (__("Group view"), "images/bricks.png", false, "", false, $updated_time );
 
 
 // Init vars
@@ -112,11 +112,11 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Group name
 	echo "<td>";
-	echo print_group_icon ($id_group, true);
+	echo ui_print_group_icon ($id_group, true);
 	echo "</td>";
 	echo "<td style='font-weight: bold; font-size: 12px;'>";
 	echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
-	echo printTruncateText($group_name, 35);
+	echo ui_print_truncate_text($group_name, 35);
 	echo "</a>";
 	echo "</td>";
 	echo "<td style='text-align: center; vertica-align: middle;'>";

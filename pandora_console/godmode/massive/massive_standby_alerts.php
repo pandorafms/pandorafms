@@ -73,7 +73,7 @@ switch($action) {
 			$result = set_alerts_agent_module_standby ($id_alert, false);
 		}
 		
-		print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
+		ui_print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
 		
 		$info = 'Alert: ' . json_encode($id_standby_alerts);	
 		if ($result) {
@@ -91,7 +91,7 @@ switch($action) {
 			$result = set_alerts_agent_module_standby ($id_alert, true);
 		}
 		
-		print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
+		ui_print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
 		
 		$info = 'Alert: ' . json_encode($id_not_standby_alerts);	
 		if ($result) {
@@ -140,7 +140,7 @@ $table->data[2][0] .= print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = print_select ('',  'id_alert_templates[]', '', '', '', '', true, true, true, '', true);
 	
-$table->data[3][0] = __('Not standby alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
+$table->data[3][0] = __('Not standby alerts').ui_print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
 $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
 $table->data[3][0] .= print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
@@ -157,7 +157,7 @@ $table->data[4][1] .= '<form method="post" action="index.php?sec=gmassive&sec2=g
 $table->data[4][1] .= print_input_hidden('id_alert_template_standby', $id_alert_templates, true);
 $table->data[4][1] .= print_input_image ('set_off_standby_alerts', 'images/darrowup.png', 1, 'margin-left: 200px;', true, array ('title' => __('Set standby selected alerts')))."</td></tr></table>";
 
-$table->data[5][0] = __('Standby alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
+$table->data[5][0] = __('Standby alerts').ui_print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
 $table->data[5][0] .= '<span id="alerts_loading2" class="invisible">';
 $table->data[5][0] .= print_image('images/spinner.png', true);
 $table->data[5][0] .= '</span>';
@@ -169,8 +169,8 @@ print_table ($table);
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

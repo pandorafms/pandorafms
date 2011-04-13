@@ -79,7 +79,7 @@ function footer() {
 	<div id="footer" style="background: url('../images/pandora.ico.gif') no-repeat left #000;">
 		<?php
 		echo sprintf(__('Pandora FMS %s - Build %s', $pandora_version, $build_version)) . '<br />';
-		echo __('Generated at') . ' '. print_timestamp ($time, true, array ("prominent" => "timestamp"));
+		echo __('Generated at') . ' '. ui_print_timestamp ($time, true, array ("prominent" => "timestamp"));
 		?>
 	</div>
 	<?php

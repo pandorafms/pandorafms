@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
+ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
 
 
 require_once ('include/functions_network_profiles.php');
@@ -39,7 +39,7 @@ if ($delete_profile) { // if delete
 	$id = (int) get_parameter ('delete_profile');
 	
 	$result = delete_network_profile ($id);
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Template successfully deleted'),
 		__('Error deleting template'));
 }
@@ -49,7 +49,7 @@ if ($export_profile) {
 	$profile_info = get_network_profile ($id);
 	
 	if (empty ($profile_info)) {
-		print_error_message (__('This template does not exist'));
+		ui_print_error_message (__('This template does not exist'));
 		return;
 	}
 	
@@ -153,7 +153,7 @@ $table->data = array ();
 foreach ($result as $row) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. safe_output($row["name"]).'</a>';
-	$data[1] = printTruncateText(safe_output($row["description"]), 70, true, true, true, true);
+	$data[1] = ui_print_truncate_text(safe_output($row["description"]), 70, true, true, true, true);
 	$data[2] = print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));

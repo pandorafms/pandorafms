@@ -51,7 +51,7 @@ if (is_ajax ()) {
 }
 
 // Header
-print_page_header (__("Module groups defined in Pandora"), "images/god1.png", false, "", true, "");
+ui_print_page_header (__("Module groups defined in Pandora"), "images/god1.png", false, "", true, "");
 
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');
@@ -121,7 +121,7 @@ $groups = get_db_all_rows_sql ($sql, true);
 foreach ($groups as $id_group ) {
 	$data = array ();
 	
-	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">'.printTruncateText($id_group["name"], 50).'</a></strong>';
+	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' . ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
 	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	
 	array_push ($table->data, $data);

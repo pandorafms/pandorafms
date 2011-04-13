@@ -23,7 +23,7 @@ um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 $settings = um_db_load_settings ();
 $error = '';
 
-print_page_header (__('Update manager'), "images/extensions.png", false, "", false, "" );
+ui_print_page_header (__('Update manager'), "images/extensions.png", false, "", false, "" );
 
 if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';

@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 	exit;
 }
 
-print_page_header (__('Database maintenance').' &raquo; '.__('Database debug'), "images/god8.png", false, "", true);
+ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database debug'), "images/god8.png", false, "", true);
 
 
 if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {

@@ -28,7 +28,7 @@ require ("godmode/menu.php");
 
 require ("links_menu.php");
 
-require_jquery_file ('cookie');
+ui_require_jquery_file ('cookie');
 ?>
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */

@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
+ui_print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
 
 if (sizeof ($config['extensions']) == 0) {
 	$extensions = getExtensionInfo();

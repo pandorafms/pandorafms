@@ -1000,11 +1000,11 @@ function createInternalNameItem($label = null, $type, $image, $agent = null, $id
 		}
 		
 		if (!empty($agent)) {
-			$text .= " (" . printTruncateText($agent, 10, false);
+			$text .= " (" . ui_print_truncate_text($agent, 10, false);
 			
 			$moduleName = safe_output(get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
 			if (!empty($moduleName)) {
-				$text .= " - " . printTruncateText($moduleName, 10, false);
+				$text .= " - " . ui_print_truncate_text($moduleName, 10, false);
 			}
 
 			$text .= ")"; 

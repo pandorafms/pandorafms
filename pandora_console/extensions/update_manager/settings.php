@@ -27,7 +27,7 @@ um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 
 $update_settings = (bool) get_parameter_post ('update_settings');
 
-print_page_header (__('Update manager').' - '. __('Settings'), "images/extensions.png", false, "", true, "" );
+ui_print_page_header (__('Update manager').' - '. __('Settings'), "images/extensions.png", false, "", true, "" );
 
 if ($update_settings) {
 	foreach ($_POST['keys'] as $key => $value) {

@@ -64,7 +64,7 @@ if (isset ($_GET["id"])) {
 		if ($id_nota !== false) {
 			process_incidents_touch ($id_inc);
 		}
-		print_result_message ($id_nota,
+		ui_print_result_message ($id_nota,
 			__('Successfully added'),
 			__('Could not be added'));
 	}
@@ -82,7 +82,7 @@ if (isset ($_GET["id"])) {
 			if (!empty ($result)) {
 				process_incidents_touch ($id_inc);
 			}
-			print_result_message ($id_nota,
+			ui_print_result_message ($id_nota,
 				__('Successfully deleted'),
 				__('Could not be deleted'));
 		}
@@ -100,7 +100,7 @@ if (isset ($_GET["id"])) {
 			process_incidents_touch ($id_inc);
 		}
 		
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
@@ -151,7 +151,7 @@ if (isset ($_GET["id"])) {
 			process_sql_delete('tattachment', array('id_attachment' => $id_attachment));
 		}
 		
-		print_result_message ($result,
+		ui_print_result_message ($result,
 			__('File uploaded'),
 			__('File could not be uploaded'));
 	}
@@ -208,11 +208,11 @@ echo "<script type=\"text/javascript\">
 	});</script>";
 
 if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["insert_form"]
-	print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
+	ui_print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=update">';
 	echo '<input type="hidden" name="id_inc" value="'.$id_inc.'">';
 } else {
-	print_page_header (__('Create incident'), "images/book_edit.png", false, "", false, "");
+	ui_print_page_header (__('Create incident'), "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=insert">';
 }
 
@@ -340,7 +340,7 @@ if (isset ($id_inc)) {
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = print_image("images/page_white_text.png", true, array("border" => '0')); 
-		$data[1] = __('Author').': '.print_username ($row["id_usuario"], true).' ('.print_timestamp ($row["timestamp"], true).')';
+		$data[1] = __('Author').': ' . ui_print_username ($row["id_usuario"], true).' (' . ui_print_timestamp ($row["timestamp"], true).')';
 		array_push ($table->data, $data);
 		
 		$data = array ();

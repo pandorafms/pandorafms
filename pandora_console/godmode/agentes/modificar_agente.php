@@ -61,7 +61,7 @@ if (!empty($agent_to_delete)) {
 }
 
 // Header
-print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true);
+ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true);
 
 // Show group selector
 if (isset($_POST["ag_group"])) {
@@ -297,7 +297,7 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 }
 
 // Prepare pagination
-pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
+ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
 echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
@@ -350,9 +350,9 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>".printTruncateText($agent["nombre"], 30, true)."</a></strong>";
+		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 30, true)."</a></strong>";
 		if ($agent["disabled"]) {
-			print_help_tip(__('Disabled'));
+			ui_print_help_tip(__('Disabled'));
 			echo "</em>";
 		}
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
@@ -388,10 +388,10 @@ if ($agents !== false) {
 
 		// Operating System icon
 		echo "<td class='$tdcolor' align='center' valign='middle'>";
-		print_os_icon ($agent["id_os"], false);
+		ui_print_os_icon ($agent["id_os"], false);
 		echo "</td>";
 		// Group icon and name
-		echo "<td class='$tdcolor' align='center' valign='middle'>".print_group_icon ($id_grupo, true)."</td>";
+		echo "<td class='$tdcolor' align='center' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
 		// Description
 		echo "<td class='".$tdcolor."f9'>".$agent["comentarios"]."</td>";
 		// Action
@@ -407,7 +407,7 @@ if ($agents !== false) {
 		echo print_image('images/cross.png', true, array("border" => '0')) . "</a></td>";
 	}
 	echo "</table>";
-	pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
+	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
 	echo "<table width='95%'><tr><td align='right'>";
 }
 else {

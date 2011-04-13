@@ -58,7 +58,7 @@ function print_cells_temp ($cells) {
 
 if ($config["realtimestats"] == 0){
 	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
-	$updated_time .= __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+	$updated_time .= __('Last update'). " : ". ui_print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	$updated_time .= "</a>"; 
 }
 else {
@@ -66,7 +66,7 @@ else {
 }
 
 // Header
-print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
+ui_print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
 $data = get_group_stats();
 
 echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
@@ -253,7 +253,7 @@ if($is_admin) {
 	$table->head[1] = __('Type');
 	$table->head[2] = __('Status');
 	$table->head[3] = __('Load');
-	$table->head[4] = __('Lag').' '.print_help_icon ("serverlag", true);
+	$table->head[4] = __('Lag').' ' . ui_print_help_icon ("serverlag", true);
 	$table->align[2] = 'center';
 	$table->align[3] = 'center';
 	$table->align[4] = 'right';
@@ -265,12 +265,12 @@ if($is_admin) {
 		$data[0] = $server["name"];
 		$data[1] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
 		if ($server["master"] == 1)
-			$data[1] .= print_help_tip (__("This is a master server"), true);
+			$data[1] .= ui_print_help_tip (__("This is a master server"), true);
 		
 		if ($server["status"] == 0){
-			$data[2] = print_status_image (STATUS_SERVER_DOWN, '', true);
+			$data[2] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
 		} else {
-			$data[2] = print_status_image (STATUS_SERVER_OK, '', true);
+			$data[2] = ui_print_status_image (STATUS_SERVER_OK, '', true);
 		}
 		
 		if ($server["type"] != "snmp") {

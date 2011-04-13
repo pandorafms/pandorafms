@@ -265,7 +265,7 @@ function get_agents_with_module_name ($module_name, $id_group, $filter = false, 
 
 function format_time($ts)
 {
-	return print_timestamp ($ts, true, array("prominent" => "comparation"));
+	return ui_print_timestamp ($ts, true, array("prominent" => "comparation"));
 }
 
 function format_data($data)

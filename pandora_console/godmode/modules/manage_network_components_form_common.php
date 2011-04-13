@@ -47,7 +47,7 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = print_input_text ('name', $name, '', 55, 255, true);
 
-$table->data[1][0] = __('Type').' '.print_help_icon ('module_type', true);
+$table->data[1][0] = __('Type') . ' ' . ui_print_help_icon ('module_type', true);
 $sql = sprintf ('SELECT id_tipo, descripcion
 	FROM ttipo_modulo
 	WHERE categoria IN (%s)
@@ -83,7 +83,7 @@ $table->data[3][3] .= '<br /><em>'.__('Max.').'</em>';
 $table->data[3][3] .= print_input_text ('max_critical', $max_critical,
 	'', 5, 15, true);
 
-$table->data[4][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
+$table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
 $table->data[4][1] = print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true);
 $table->data[4][2] = __('Historical data');

@@ -262,8 +262,8 @@ foreach ($modules as $module) {
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
-	$data[3] = print_string_substr ($module["nombre"], 25, true);
-	$data[4] = print_string_substr ($module["descripcion"], 30, true);
+	$data[3] = ui_print_string_substr ($module["nombre"], 25, true);
+	$data[4] = ui_print_string_substr ($module["descripcion"], 30, true);
 
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
@@ -305,7 +305,7 @@ foreach ($modules as $module) {
 		$title .= ": " . substr(safe_output($module["datos"]),0,42);
 	}
 
-	$data[5] = print_status_image($status, $title, true);
+	$data[5] = ui_print_status_image($status, $title, true);
 
 	if ($module["id_tipo_modulo"] == 24) { // log4x
 		switch($module["datos"]) {
@@ -350,7 +350,7 @@ foreach ($modules as $module) {
 	else {
 		$data[8] = '<span>';
 	}
-	$data[8] .= print_timestamp ($module["utimestamp"], true);
+	$data[8] .= ui_print_timestamp ($module["utimestamp"], true);
 	$data[8] .= '</span>';
 	
 	array_push ($table->data, $data);

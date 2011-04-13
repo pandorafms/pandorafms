@@ -21,9 +21,9 @@ check_login ();
 
 require_once ('include/functions_gis.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
-print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_web.png", false, "");
+ui_print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_web.png", false, "");
 
 $maps = getMaps();
 
@@ -54,7 +54,7 @@ if ($maps !== false) {
 		
 		$data[0] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.
 		$map['id_tgis_map'] . '">' . $map['map_name'].'</a> ';
-		$data[1] = print_group_icon ($map["group_id"], true);
+		$data[1] = ui_print_group_icon ($map["group_id"], true);
 		
 		array_push ($table->data, $data);
 	}

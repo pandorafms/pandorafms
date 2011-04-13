@@ -202,10 +202,10 @@ echo "</form>";
 /* We must add javascript here. Otherwise, the date picker won't 
 work if the date is not correct because php is returning. */
 
-require_css_file ('datepicker');
-require_jquery_file ('ui.core');
-require_jquery_file ('ui.datepicker');
-require_jquery_file ('timeentry');
+ui_require_css_file ('datepicker');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.datepicker');
+ui_require_jquery_file ('timeentry');
 ?>
 <script language="javascript" type="text/javascript">
 

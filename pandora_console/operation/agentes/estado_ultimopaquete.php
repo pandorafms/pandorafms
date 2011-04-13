@@ -313,10 +313,10 @@ foreach ($modules as $module) {
 	}
 	$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
 	echo "<td class='".$tdcolor."_id' title='".safe_output($module["nombre"])."'>";
-	print_string_substr ($module["nombre"]);
+	ui_print_string_substr ($module["nombre"]);
 	echo "</td><td class='".$tdcolor."'> ";
 	
-	print_moduletype_icon ($module["id_tipo_modulo"]);
+	ui_print_moduletype_icon ($module["id_tipo_modulo"]);
 	echo "</td><td class='".$tdcolor."'>";
 		
 	if ($module["module_interval"] != 0){
@@ -418,7 +418,7 @@ foreach ($modules as $module) {
 			echo '<span>';
 		}
 	}
-	print_timestamp ($module["utimestamp"], false);
+	ui_print_timestamp ($module["utimestamp"], false);
 	echo '</span>';
 	echo "</td></tr>";
 }

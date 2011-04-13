@@ -41,7 +41,7 @@ $data = array ();
 $data[0] = __('Target IP');
 $data[1] = print_input_text ('ip_target', $ip_target, '', 15, 60, true);
 $data[2] = __('Namespace');
-$data[2] .= print_help_icon ('wminamespace', true);
+$data[2] .= ui_print_help_icon ('wminamespace', true);
 $data[3] = print_input_text ('tcp_send', $tcp_send, '', 5, 20, true, $disabledBecauseInPolicy);
 
 push_table_simple ($data, 'target_ip');
@@ -56,7 +56,7 @@ push_table_simple ($data, 'user_pass');
 
 $data = array ();
 $data[0] = __('WMI query');
-$data[0] .= print_help_icon ('wmiquery', true);
+$data[0] .= ui_print_help_icon ('wmiquery', true);
 $data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 35, 255, true, $disabledBecauseInPolicy);
 $table_simple->colspan['wmi_query'][1] = 3;
 
@@ -64,10 +64,10 @@ push_table_simple ($data, 'wmi_query');
 
 $data = array ();
 $data[0] = __('Key string');
-$data[0] .= print_help_icon ('wmikey', true);
+$data[0] .= ui_print_help_icon ('wmikey', true);
 $data[1] = print_input_text ('snmp_community', $snmp_community, '', 20, 60, true, $disabledBecauseInPolicy);
 $data[2] = __('Field number');
-$data[2] .= print_help_icon ('wmifield', true);
+$data[2] .= ui_print_help_icon ('wmifield', true);
 $data[3] = print_input_text ('tcp_port', $tcp_port, '', 5, 15, true, $disabledBecauseInPolicy);
 
 push_table_simple ($data, 'key_field');

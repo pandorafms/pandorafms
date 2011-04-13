@@ -77,7 +77,7 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 		$conttotal ++;
 	}
 	
-	print_result_message ($contsuccess > 0,
+	ui_print_result_message ($contsuccess > 0,
 	__('Successfully deleted')."(".$contsuccess."/".$conttotal.")",
 	__('Could not be deleted'));
 
@@ -159,8 +159,8 @@ echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-require_jquery_file ('form');
-require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('form');
+ui_require_jquery_file ('pandora.controls');
 	
 ?>
 

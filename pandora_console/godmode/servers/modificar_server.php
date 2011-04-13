@@ -30,7 +30,7 @@ if (! check_acl ($config["id_user"], 0, "PM")) {
 if (isset($_GET["server"])) {
 	$id_server= get_parameter_get ("server");
 	// Headers
-	print_page_header (__('Update Server'), "", false, "", true);
+	ui_print_page_header (__('Update Server'), "", false, "", true);
 	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
 	$row = get_db_row_sql ($sql);
 	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
@@ -53,7 +53,7 @@ if (isset($_GET["server"])) {
 
 }
 else {
-	print_page_header (__('Manage servers'), "", false, "", true);
+	ui_print_page_header (__('Manage servers'), "", false, "", true);
 
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
@@ -109,9 +109,9 @@ else {
 		
 		foreach ($servers as $server) {
 			if ($server['status'] == 0) {
-				$server_status = print_status_image (STATUS_SERVER_DOWN, '', true);
+				$server_status = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
 			} else {
-				$server_status = print_status_image (STATUS_SERVER_OK, '', true);
+				$server_status = ui_print_status_image (STATUS_SERVER_OK, '', true);
 			}
 			
 			$data = array ();

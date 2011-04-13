@@ -24,7 +24,7 @@ require_once ('include/functions_reports.php');
 enterprise_include ('operation/reporting/custom_reporting.php');
 
 // Header
-print_page_header (__('Reporting'). " &raquo;  ".__('Custom reporting'), "images/reporting.png", false, "", false, "" );
+ui_print_page_header (__('Reporting'). " &raquo;  ".__('Custom reporting'), "images/reporting.png", false, "", false, "" );
 
 $reports = get_reports ();
 

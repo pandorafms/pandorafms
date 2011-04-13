@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('Site news management'), "", false, "", true);
+ui_print_page_header (__('Site news management'), "", false, "", true);
 
 
 
@@ -40,7 +40,7 @@ if (isset ($_POST["create"])) { // If create
 		'timestamp' => NOW());
 	$id_link = process_sql_insert('tnews', $values);
 	
-	print_result_message ($id_link,
+	ui_print_result_message ($id_link,
 		__('Successfully created'),
 		__('Could not be created'));
 }
@@ -53,7 +53,7 @@ if (isset ($_POST["update"])) { // if update
 	$values = array('subject' => $subject, 'text' => $text, 'timestamp' => 'NOW()');
 	$result = process_sql_update('tnews', $values, array('id_news' => $id_news));
 
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Not updated. Error updating data'));
 }
@@ -63,7 +63,7 @@ if (isset ($_GET["borrar"])) { // if delete
 	
 	$result = process_sql_delete ('tnews', array ('id_news' => $id_news));
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }

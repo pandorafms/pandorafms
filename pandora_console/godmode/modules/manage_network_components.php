@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "", true);
+ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "", true);
 
 require_once ('include/functions_network_components.php');
 
@@ -77,7 +77,7 @@ if ($duplicate_network_component) {
 	$source_id = (int) get_parameter ('source_id');
 	
 	$id = duplicate_network_component ($source_id);
-	print_result_message ($id,
+	ui_print_result_message ($id,
 		__('Successfully created from %s', get_network_component_name ($source_id)),
 		__('Could not be created'));
 	
@@ -132,11 +132,11 @@ if ($create_component) {
 			'custom_string_3' => $custom_string_3,
 			'post_process' => $post_process));
 	if ($id === false) {
-		print_error_message (__('Could not be created'));
+		ui_print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
-	print_success_message (__('Created successfully'));
+	ui_print_success_message (__('Created successfully'));
 	$id = 0;
 }
 
@@ -188,11 +188,11 @@ if ($update_component) {
 			'custom_string_3' => $custom_string_3,
 			'post_process' => $post_process));
 	if ($result === false) {
-		print_error_message (__('Could not be updated'));
+		ui_print_error_message (__('Could not be updated'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
-	print_success_message (__('Updated successfully'));
+	ui_print_success_message (__('Updated successfully'));
 	
 	$id = 0;
 }
@@ -202,7 +202,7 @@ if ($delete_component) {
 	
 	$result = delete_network_component ($id);
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 	$id = 0;
@@ -213,7 +213,7 @@ if ($id || $new_component) {
 	return;
 }
 
-$url = get_url_refresh (array ('offset' => false,
+$url = ui_get_url_refresh (array ('offset' => false,
 	'id' => false,
 	'create_component' => false,
 	'update_component' => false,
@@ -281,7 +281,7 @@ if ($search_string != '')
 
 $total_components = get_network_components (false, $filter, 'COUNT(*) AS total');
 $total_components = $total_components[0]['total'];
-pagination ($total_components, $url);
+ui_pagination ($total_components, $url);
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = get_network_components (false, $filter,
@@ -315,7 +315,7 @@ foreach ($components as $component) {
 	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'">';
 	$data[0] .= $component['name'];
 	$data[0] .= '</a>';
-	$data[1] = print_moduletype_icon ($component['type'], true);
+	$data[1] = ui_print_moduletype_icon ($component['type'], true);
 	$data[2] = $component['module_interval'] ? $component['module_interval'] : __('N/A	');
 	$data[3] = mb_strimwidth ($component['description'], 0, 30, "...");
 	$data[4] = get_network_component_group_name ($component['id_group']);

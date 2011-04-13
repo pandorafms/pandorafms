@@ -66,7 +66,7 @@ function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
  * @return None
  */
 function printMap($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $controls = null) {
-	require_javascript_file('OpenLayers/OpenLayers');
+	ui_require_javascript_file('OpenLayers/OpenLayers');
 	
 	echo "<script type='text/javascript'>";
 	echo "var controlsList = [];";
@@ -242,7 +242,7 @@ function activateSelectControl($layers=null) {
 function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	if ($lastTimeOfData === null) $lastTimeOfData = time();
 	
-	require_jquery_file ('json');
+	ui_require_jquery_file ('json');
 	?>
 	<script type="text/javascript">
 		var last_time_of_data = <?php echo $lastTimeOfData; ?>; //This time use in the ajax query to next recent points.

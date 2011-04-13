@@ -85,7 +85,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 }
 
 // Header
-print_page_header (__("Groups defined in Pandora"), "images/god1.png", false, "", true, "");
+ui_print_page_header (__("Groups defined in Pandora"), "images/god1.png", false, "", true, "");
 
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');
@@ -276,12 +276,12 @@ foreach ($groups as $id_group => $group) {
 	
 	if ($group['hash_branch']) {
 		$data[0] = '<strong>'.$tabulation . ' ' . 
-			'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. printTruncateText($group['nombre']).'</a></strong>';
+			'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
 	}
 	else {
-		$data[0] = '<strong>'.$tabulation . ' '. printTruncateText($group['nombre']).'</strong>';
+		$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre']).'</strong>';
 	}
-	$data[1] = print_group_icon($group['id_grupo'], true);
+	$data[1] = ui_print_group_icon($group['id_grupo'], true);
 	$data[2] = $group['disabled'] ? __('Disabled') : __('Enabled');
 	if ($group['id_grupo'] == 0) {
 		$data[3] = '';

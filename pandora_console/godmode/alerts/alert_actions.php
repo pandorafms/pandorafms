@@ -46,7 +46,7 @@ $copy_action = (bool) get_parameter ('copy_action');
 
 if ((!$copy_action) && (!$delete_action))
 	// Header
-	print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 if ($copy_action) {
 	$id = get_parameter ('id');
@@ -64,7 +64,7 @@ if ($copy_action) {
 				exit;
 			}else
 				// Header
-				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 		// If user tries to copy an action of others groups
 		}else{
 			$own_info = get_user_info ($config['id_user']);
@@ -76,7 +76,7 @@ if ($copy_action) {
 			// Then action group have to be in his own groups
 			if ($is_in_group)
 				// Header
-				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 			else{
 				pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -86,7 +86,7 @@ if ($copy_action) {
 		}		
 	}else
 		// Header
-		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 	
 	$result = clone_alert_action ($id);
@@ -98,7 +98,7 @@ if ($copy_action) {
 		pandora_audit("Command management", "Fail try to duplicate alert action " . $id);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully copied'),
 		__('Could not be copied'));
 }
@@ -130,7 +130,7 @@ if ($create_action) {
 		pandora_audit("Command management", "Fail try to create alert action", false, false, $info);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully created'),
 		__('Could not be created'));
 }
@@ -149,11 +149,11 @@ if ($update_action) {
 				exit;
 			}else
 				// Header
-				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 		}
 	}else
 		// Header
-		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 
 	$name = (string) get_parameter ('name');
@@ -186,7 +186,7 @@ if ($update_action) {
 		pandora_audit("Command management", "Fail try to update alert action " . $id, false, false, json_encode($values));
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 }
@@ -207,7 +207,7 @@ if ($delete_action) {
 				exit;
 			}else
 				// Header
-				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 		// If user tries to delete an action of others groups
 		}
 		else{
@@ -220,7 +220,7 @@ if ($delete_action) {
 			// Then action group have to be in his own groups
 			if ($is_in_group)
 				// Header
-				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 			else{
 				pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -231,7 +231,7 @@ if ($delete_action) {
 	}
 	else
 		// Header
-		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 
 	$result = delete_alert_action ($id);
@@ -243,7 +243,7 @@ if ($delete_action) {
 		pandora_audit("Command management", "Fail try to delete alert action " . $id);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
@@ -282,7 +282,7 @@ foreach ($actions as $action) {
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
 		$action['name'].'</a>';
-	$data[1] = print_group_icon ($action["id_group"], true) .'&nbsp;'. printTruncateText(get_group_name ($action["id_group"], true));
+	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;'. ui_print_truncate_text(get_group_name ($action["id_group"], true));
 	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&copy_action=1&id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 		print_image("images/copy.png", true) . '</a>';

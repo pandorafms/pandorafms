@@ -25,7 +25,7 @@ $id_server = (int) get_parameter ("server_id", -1);
 
 $options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>" . print_image("images/refresh.png", true) . "</a></li>";
 
-print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
+ui_print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
 
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
@@ -142,7 +142,7 @@ foreach ($recon_tasks as $task) {
 		$data[6] = progress_bar2($task['status'], 100, 20, __('Progress').':'.$task["status"].'%', 0);
 	}
 	
-	$data[7] = print_timestamp ($task["utimestamp"], true);
+	$data[7] = ui_print_timestamp ($task["utimestamp"], true);
 
 	if (check_acl ($config["id_user"], $task["id_group"], "PM")) {
 		$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';

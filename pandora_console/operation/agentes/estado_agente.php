@@ -92,13 +92,13 @@ $search = safe_output(get_parameter ("search", ""));
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 
-print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
+ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
 
 if ($group_id > 1) {
-	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id, 'offset' => 0)).'">';
+	echo '<form method="post" action="' . ui_get_url_refresh (array ('group_id' => $group_id, 'offset' => 0)).'">';
 }
 else {
-	echo '<form method="post" action="'.get_url_refresh (array('offset' => 0)).'">';
+	echo '<form method="post" action="' . ui_get_url_refresh (array('offset' => 0)).'">';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
@@ -259,7 +259,7 @@ if (empty ($agents)) {
 }
 
 // Prepare pagination
-pagination ($total_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
+ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
 
 // Show data.
 $table->cellpadding = 4;
@@ -319,9 +319,9 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}
 		
-	$data[0] .= print_agent_name($agent["id_agente"], true, 25, 'none', true);
+	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 25, 'none', true);
 	
-	$data[1] = print_os_icon ($agent["id_os"], false, true);
+	$data[1] = ui_print_os_icon ($agent["id_os"], false, true);
 
 	//The interval we are thinking that it must be the agent interval in this
 	//cell and it'snt the interval of modules.
@@ -332,7 +332,7 @@ foreach ($agents as $agent) {
 //	}
 	$data[2] = $agent["intervalo"];
 	
-	$data[3] = print_group_icon ($agent["id_grupo"], true);
+	$data[3] = ui_print_group_icon ($agent["id_grupo"], true);
 	
 	$data[4] = '<b>';
 	$data[4] .= $agent_info["modules"];
@@ -357,7 +357,7 @@ foreach ($agents as $agent) {
 	$last_time = strtotime ($agent["ultimo_contacto"]);
 	$now = time ();
 	$diferencia = $now - $last_time;
-	$time = print_timestamp ($last_time, true);
+	$time = ui_print_timestamp ($last_time, true);
 	$style = '';
 	if ($diferencia > ($agent["intervalo"] * 2))
 		$data[7] = '<b><span style="color: #ff0000">'.$time.'</span></b>';
@@ -366,14 +366,14 @@ foreach ($agents as $agent) {
 
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!
-	// $data[7] = print_timestamp ($agent_info["last_contact"], true);
+	// $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
 
 	array_push ($table->data, $data);
 }
 
 if (!empty ($table->data)) {
 	print_table ($table);
-	pagination ($total_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
+	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
 	unset ($table);
 } else {
 	echo '<div class="nf">'.__('There are no agents included in this group').'</div>';

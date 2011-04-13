@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_us
 require_once ('include/functions_gis.php');
 require_once ('include/functions_html.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 /* Get the parameters */
 $period = get_parameter ("period", 86400);
@@ -112,7 +112,7 @@ if ($result === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any GIS data')."</div>";
 }
 else {
-	pagination ($countData, false) ;
+	ui_pagination ($countData, false) ;
 	$table->data = array();
 	foreach ($result as $row) {
 		$rowdata = array($row['longitude'], $row['latitude'], $row['altitude'], $row['start_timestamp'], $row['end_timestamp'], $row['description'], $row['number_of_packages'], $row['manual_placement']);
@@ -125,7 +125,7 @@ else {
 	$table->titlestyle = "background-color:#799E48;";
 	print_table($table); unset($table);
 
-	pagination ($countData, false) ;
+	ui_pagination ($countData, false) ;
 	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";
 }
 

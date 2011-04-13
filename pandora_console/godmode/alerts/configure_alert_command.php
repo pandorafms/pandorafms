@@ -39,7 +39,7 @@ if ($id) {
 }
 
 // Header
-print_page_header (__('Alerts').' &raquo; '.__('Configure alert command'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert command'), "images/god2.png", false, "", true);
 
 $table->width = '90%';
 $table->style = array ();
@@ -50,7 +50,7 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
 $table->data[1][0] = __('Command');
-$table->data[1][0] .= print_help_icon ('alert_macros', true);
+$table->data[1][0] .= ui_print_help_icon ('alert_macros', true);
 $table->data[1][1] = print_input_text ('command', $command, '', 80, 255, true);
 
 $table->data[2][0] = __('Description');

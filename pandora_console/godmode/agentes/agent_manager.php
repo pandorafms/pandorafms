@@ -45,7 +45,7 @@ enterprise_include ('godmode/agentes/agent_manager.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 $new_agent = (bool) get_parameter ('new_agent');
 
@@ -96,7 +96,7 @@ $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
 $table->data[0][0] = __('Agent name') . 
-	print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
+	ui_print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
 $table->data[0][1] = print_input_text ('agente', $nombre_agente, '', 30, 100,true); 
 
 if ($id_agente) {
@@ -110,7 +110,7 @@ if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
 		$table->data[0][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
 		$table->data[0][1] .= print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
-		$table->data[0][1] .= '</a>'.print_help_tip (__('You can remotely edit this agent configuration'), true);
+		$table->data[0][1] .= '</a>'.ui_print_help_tip (__('You can remotely edit this agent configuration'), true);
 	}
 }
 
@@ -134,7 +134,7 @@ $table->data[2][1] = print_input_text_extended ('id_parent', get_agent_name ($id
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
-$table->data[2][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
+$table->data[2][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
 
 $table->data[3][0] = __('Group');
 $table->data[3][1] = print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
@@ -157,7 +157,7 @@ $table->data[5][0] = __('OS');
 $table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
 	'id_os', $id_os, '', '', '0', true);
 $table->data[5][1] .= ' <span id="os_preview">';
-$table->data[5][1] .= print_os_icon ($id_os, false, true);
+$table->data[5][1] .= ui_print_os_icon ($id_os, false, true);
 $table->data[5][1] .= '</span>';
 
 // Network server
@@ -188,7 +188,7 @@ $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
-$table->data[1][0] = __('Module definition').print_help_icon("module_definition", true);
+$table->data[1][0] = __('Module definition').ui_print_help_icon("module_definition", true);
 $table->data[1][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
@@ -206,7 +206,7 @@ if (!$new_agent) {
 		// Delete remote configuration
 		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
 		$table->data[3][1] .= print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
-		$table->data[3][1] .= '</a>'.print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
+		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
 		$table->data[3][1] = '<em>'.__('Not available').'</em>';		
@@ -237,7 +237,7 @@ if ($config['activate_gis']) {
 	$table->data[5][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-toggle(print_table ($table, true), __('Advanced options'));
+ui_toggle(print_table ($table, true), __('Advanced options'));
 unset($table);
 
 $table->width = '95%';
@@ -268,7 +268,7 @@ foreach ($fields as $field) {
 }
 
 if(!empty($fields)) {
-	toggle(print_table ($table, true), __('Custom fields'));
+	ui_toggle(print_table ($table, true), __('Custom fields'));
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -282,10 +282,10 @@ if ($id_agente) {
 }
 echo '</div></form>';
 
-require_jquery_file ('pandora.controls');
-require_jquery_file ('ajaxqueue');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('ajaxqueue');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

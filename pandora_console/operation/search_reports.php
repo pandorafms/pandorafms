@@ -97,8 +97,8 @@ else {
 		array_push($table->data, $data);
 	}
 		
-	echo "<br />";pagination ($totalReports);
+	echo "<br />";ui_pagination ($totalReports);
 	print_table ($table); unset($table);
-	pagination ($totalReports);
+	ui_pagination ($totalReports);
 }
 ?>

@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 }
 
 // Header
-print_page_header (__('Link management'), "images/extensions.png", false, "", false, "" );
+ui_print_page_header (__('Link management'), "images/extensions.png", false, "", false, "" );
 
 
 if (isset($_POST["create"])){ // If create

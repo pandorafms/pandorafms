@@ -50,7 +50,7 @@ if($fields === false) {
 	$table->width = '65%';
 	$table->head = array ();
 	$table->head[0] = __('Field');
-	$table->head[1] = __('Display on front').print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
+	$table->head[1] = __('Display on front') . ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
 	$table->head[2] = __('Description');
 	$table->align = array ();
 	$table->align[1] = 'center';

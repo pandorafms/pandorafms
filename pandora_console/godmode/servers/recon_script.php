@@ -58,12 +58,12 @@ if ($create != ""){
 if (($create != "") OR ($view != "")){
 	
 	if ($create != "")
-		print_page_header (__('Recon script creation'), "", false, "", true);
+		ui_print_page_header (__('Recon script creation'), "", false, "", true);
 	else {
-		print_page_header (__('Recon script update'), "", false, "", true);
+		ui_print_page_header (__('Recon script update'), "", false, "", true);
 		$id_recon_script = get_parameter ("view","");
 	}
-	print_help_icon("reconscript_definition");
+	ui_print_help_icon("reconscript_definition");
 
 	if ($create == "") 
 		echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&update_reconscript=$id_recon_script'>";
@@ -98,7 +98,7 @@ if (($create != "") OR ($view != "")){
 	echo '</form></table>';
 }
 else {
-	print_page_header (__('Recon scripts registered in Pandora FMS'), "", false, "", true);
+	ui_print_page_header (__('Recon scripts registered in Pandora FMS'), "", false, "", true);
 
 	// Update reconscript
 	if (isset($_GET["update_reconscript"])) { // if modified any parameter

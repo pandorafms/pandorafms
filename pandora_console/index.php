@@ -109,16 +109,16 @@ echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
 
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
-ob_start ('process_page_head');
+ob_start ('ui_process_page_head');
 
 // Enterprise main 
 enterprise_include ('index.php');
 
-// This tag is included in the buffer passed to process_page_head so 
+// This tag is included in the buffer passed to ui_process_page_head so 
 // technically it can be stripped
 echo '</head>'."\n";
 require_once ("include/functions_themes.php");
-ob_start ('process_page_body');
+ob_start ('ui_process_page_body');
 
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 

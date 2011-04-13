@@ -168,7 +168,7 @@ if (empty ($table->data)) {
 	echo '<h3 class="error">'.__('There was a problem locating the source of the graph').'</h3>';
 }
 else {
-	pagination($count);
+	ui_pagination($count);
 	print_table ($table);
 	unset ($table);
 }

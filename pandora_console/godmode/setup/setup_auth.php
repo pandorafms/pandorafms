@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 enterprise_include ('godmode/setup/setup_auth.php');
 
 // Header
-print_page_header (__('Authentication configuration'), "", false, "", true);
+ui_print_page_header (__('Authentication configuration'), "", false, "", true);
 
 $table->data = array ();
 $table->width = '90%';
@@ -51,7 +51,7 @@ if ($profile_list === false) {
 $table->data[2][1] = print_select ($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data[3][0] = __('Autocreate profile group');
 $table->data[3][1] = print_select_groups ($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
-$table->data[4][0] = __('Autocreate blacklist') . print_help_icon ('autocreate_blacklist', true);
+$table->data[4][0] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
 $table->data[4][1] = print_input_text ('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
 for ($i = 1; $i <= 4; $i++) {
 	$table->rowstyle[$i] = $config['auth'] != 'mysql' ? '' : 'display: none;';

@@ -34,7 +34,7 @@ if (is_ajax ()) {
 		echo get_alert_templates_type_name ($template['type']);
 		
 		echo '<br />';
-		echo print_alert_template_example ($template['id'], true);
+		echo ui_print_alert_template_example ($template['id'], true);
 		
 		echo '<br />';
 		
@@ -112,7 +112,7 @@ $delete_template = (bool) get_parameter ('delete_template');
 // This prevents to duplicate the header in case delete_templete action is performed
 if (!$delete_template) 
 // Header
-print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 
 if ($update_template) {
 	$id = (int) get_parameter ('id');
@@ -126,7 +126,7 @@ if ($update_template) {
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery));
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 }
@@ -146,7 +146,7 @@ if ($delete_template) {
 				exit;
 			}else
 				// Header
-				print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 		// If user tries to delete a template of others groups
 		}else{
 			$own_info = get_user_info ($config['id_user']);
@@ -158,7 +158,7 @@ if ($delete_template) {
 			// Then template group have to be is his own groups
 			if ($is_in_group)
 				// Header
-				print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 			else{
 				pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -168,7 +168,7 @@ if ($delete_template) {
 		}	
 	}else
 		// Header
-		print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 
 	$result = delete_alert_template ($id);
 	
@@ -179,12 +179,12 @@ if ($delete_template) {
 		pandora_audit("Template alert management", "Fail try to delete alert template " . $id);
 	}
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 
-$url = get_url_refresh (array ('offset' => false));
+$url = ui_get_url_refresh (array ('offset' => false));
 
 $search_string = (string) get_parameter ('search_string');
 $search_type = (string) get_parameter ('search_type');
@@ -257,7 +257,7 @@ foreach ($templates as $template) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
 
-	$data[1] = print_group_icon ($template["id_group"], true) .'&nbsp;'. printTruncateText(get_group_name ($template['id_group'], true));
+	$data[1] = ui_print_group_icon ($template["id_group"], true) .'&nbsp;'. ui_print_truncate_text(get_group_name ($template['id_group'], true));
 	$data[3] = get_alert_templates_type_name ($template['type']);
 
 	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
@@ -275,7 +275,7 @@ foreach ($templates as $template) {
 	array_push ($table->data, $data);
 }
 
-pagination ($total_templates, $url);
+ui_pagination ($total_templates, $url);
 if (isset($data)){
 	print_table ($table);
 } else {

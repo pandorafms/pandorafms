@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 if (file_exists("images/noaccess.png")){
-	print_page_header (__('You don\'t have access to this page'), "", false, "", true);
+	ui_print_page_header (__('You don\'t have access to this page'), "", false, "", true);
 } else {
 	echo "<br><br><center><h3>".__('You don\'t have access to this page')."</h3></center>";
 }

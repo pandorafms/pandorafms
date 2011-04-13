@@ -26,10 +26,10 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 require_once ('include/functions_gis.php');
 
-require_javascript_file('openlayers.pandora');
+ui_require_javascript_file('openlayers.pandora');
 
 // Header
-print_page_header (__('Map conections GIS'), "", false, "setup_gis_index", true);
+ui_print_page_header (__('Map conections GIS'), "", false, "setup_gis_index", true);
 
 $action = get_parameter('action');
 
@@ -76,7 +76,7 @@ if ($mapsConnections !== false) {
 	$table->data[] = array('<a href="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2&amp;action=edit_connection_map&amp;id_connection_map=' . 
 				$mapsConnection['id_tmap_connection'] .'">'
 				. $mapsConnection['conection_name'] . '</a>',
-			print_group_icon ($mapsConnection['group_id'], true),
+			ui_print_group_icon ($mapsConnection['group_id'], true),
 			'<a href="index.php?sec=gsetup&sec2=godmode/setup/gis&amp;id_connection_map=' . 
 				$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
 				onClick="javascript: if (!confirm(\'' . __('Do you wan delete this connection?') . '\')) return false;">' . print_image ("images/cross.png", true).'</a>'); 

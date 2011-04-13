@@ -31,15 +31,15 @@ echo "<h3>".__('WMI component management').'</h3>';
 $data = array ();
 $data[0] = __('WMI query');
 $data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 25, 255, true);
-$data[2] = __('Key string').' '.print_help_icon ('wmikey', true);
+$data[2] = __('Key string') . ' ' . ui_print_help_icon ('wmikey', true);
 $data[3] = print_input_text ('snmp_community', $snmp_community, '', 25, 255, true);
 
 push_table_row ($data, 'wmi_1');
 
 $data = array ();
-$data[0] = __('Field number').' '.print_help_icon ('wmifield', true);
+$data[0] = __('Field number') . ' ' . ui_print_help_icon ('wmifield', true);
 $data[1] = print_input_text ('tcp_port', $tcp_port, '', 5, 25, true);
-$data[2] = __('Namespace').' '.print_help_icon ('wminamespace', true);
+$data[2] = __('Namespace') . ' ' . ui_print_help_icon ('wminamespace', true);
 $data[3] = print_input_text ('tcp_send', $tcp_send, '', 25, 255, true);
 
 push_table_row ($data, 'wmi_2');
@@ -53,7 +53,7 @@ $data[3] = print_input_password ('plugin_pass', $plugin_pass, '', 25, 255, true)
 push_table_row ($data, 'wmi_3');
 
 $data = array();
-$data[0] = __('Post process').' '.print_help_icon ('postprocess', true);
+$data[0] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true);
 $data[1] = print_input_text ('post_process', $post_process, '', 12, 25, true);
 $data[2] = $data[3] = '';
 push_table_row($data, 'field_process');
@@ -141,7 +141,7 @@ echo '</td></tr>';
 
 // WMI Query
 echo '<tr><td class="datos">' . __('WMI query') ;
-print_help_icon("wmiquery");
+ui_print_help_icon("wmiquery");
 echo '</td>';
 echo '<td class="datos">';
 echo 	'<input type="text" name="snmp_oid" size="25" value="' . $snmp_oid . '">';
@@ -149,7 +149,7 @@ echo '</td>';
 
 // Key string
 echo '<td class="datos">' . __('Key string');
-print_help_icon("wmikey");
+ui_print_help_icon("wmikey");
 echo '</td>';
 echo '<td class="datos">';
 echo 	'<input type="text" name="snmp_community" size="25" value="' . $snmp_community . '">';
@@ -157,7 +157,7 @@ echo '</td></tr>';
 
 // Field
 echo '<td class="datos2">' . __('Field number');
-print_help_icon("wmifield");
+ui_print_help_icon("wmifield");
 echo '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="tcp_port" size="5" value="' . $tcp_port . '">';
@@ -165,7 +165,7 @@ echo '</td>';
 
 // Namespace
 echo '<td class="datos2">' . __('Namespace');
-print_help_icon("wminamespace");
+ui_print_help_icon("wminamespace");
 echo '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="tcp_send" size="25" value="' . $tcp_send . '">';

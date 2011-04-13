@@ -26,18 +26,18 @@ $subject = get_parameter ("subject");
 $message = get_parameter ("mensaje");
 
 if (isset ($_GET["new_msg"])) 
-	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
+	ui_print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
 elseif (isset ($_GET["read_message"]))
-	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
+	ui_print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
 else
 	if (empty ($config["pure"]) && !is_ajax ())
-		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
+		ui_print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
 	
 if (isset ($_POST["delete_message"])) {
 	$id = (int) get_parameter_post ("delete_message");
 	$result = delete_message ($id); //Delete message function will actually check the credentials
 	
-	print_result_message ($result,
+	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
@@ -45,7 +45,7 @@ if (isset ($_POST["delete_message"])) {
 if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 	// Create message
 	$return = create_message ($config["id_user"], $dest_user, $subject, $message);
-	print_result_message ($return,
+	ui_print_result_message ($return,
 		__('Message successfully sent to user %s', get_user_fullname ($dest_user)),
 		__('Error sending message to user %s', get_user_fullname ($dest_user)));
 }
@@ -53,7 +53,7 @@ if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 	// Create message to groups
 	$return = create_message_group ($config["id_user"], $dest_group, $subject, $message);
-	print_result_message ($return,
+	ui_print_result_message ($return,
 		__('Message successfully sent'),
 		__('Error sending message to group %s', get_group_name ($dest_group)));
 }
@@ -73,13 +73,13 @@ if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
 if (isset ($_GET["new_msg"])) { //create message
 
 // Header
-//	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
+//	ui_print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
 
 	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
 	<table width="85%" class="databox_color" cellpadding="4" cellspacing="4">
 	<tr>
 		<td class="datos">'.__('Message from').':</td>
-		<td class="datos"><b>'.print_username ($config["id_user"], true).'</b></td>
+		<td class="datos"><b>' . ui_print_username ($config["id_user"], true).'</b></td>
 	</tr><tr>
 		<td class="datos2">'.__('Message to').':</td>
 		<td class="datos2">';
@@ -112,7 +112,7 @@ if (isset ($_GET["new_msg"])) { //create message
 
 } elseif (isset ($_GET["read_message"])) {
 
-//	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
+//	ui_print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
 
 	$message_id = (int) get_parameter ("read_message");
 	$message = get_message ($message_id);
@@ -127,7 +127,7 @@ if (isset ($_GET["new_msg"])) { //create message
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">
 			<table class="databox_color" width="650" cellpadding="4" cellspacing="4">
 			<tr><td class="datos">'.__('Message from').':</td>
-			<td class="datos"><b>'.print_username ($message["sender"], true).' '.__('at').' '.print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp")).'</b></td></tr>';
+			<td class="datos"><b>' . ui_print_username ($message["sender"], true).' '.__('at').' ' . ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp")).'</b></td></tr>';
 	
 	// Subject
 	echo '<tr><td class="datos2">'.__('Subject').':</td>
@@ -165,7 +165,7 @@ if (isset ($_GET["new_msg"])) { //create message
 
 if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {	
 //	if (empty ($config["pure"]) && !is_ajax ()) {
-//		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
+//		ui_print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
 //	}
 
 	//Get number of messages
@@ -222,7 +222,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 				$data[0] .= '</a>';
 			}
 			
-			$data[1] = print_username ($message["sender"], true);
+			$data[1] = ui_print_username ($message["sender"], true);
 			
 			$data[2] = '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&amp;read_message='.$message_id.'">';
 			if ($message["subject"] == "") {
@@ -232,7 +232,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 			}
 			$data[2] .= '</a>';
 			
-			$data[3] = print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
+			$data[3] = ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
 			
 			$data[4] = print_input_image ("delete_message", "images/cross.png", $message_id, 'border:0px;', true);
 			array_push ($table->data, $data);

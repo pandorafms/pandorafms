@@ -113,7 +113,7 @@ $onheader = array('agents' => $agents_tab, 'users' => $users_tab,
 				'reports' => $reports_tab, 'maps' => $maps_tab,
 				'modules' => $modules_tab);
 		
-print_page_header (__("Search").": \"".$config['search_keywords']."\"", "images/zoom.png", false, "", false, $onheader);
+ui_print_page_header (__("Search").": \"".$config['search_keywords']."\"", "images/zoom.png", false, "", false, $onheader);
 
 switch ($searchTab) {
 	case 'agents':

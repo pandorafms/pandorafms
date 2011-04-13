@@ -31,7 +31,7 @@ require_once ("include/functions_filemanager.php");
 //$create_dir = (bool) get_parameter ('create_dir');
 
 // Header
-print_page_header (__('File manager'), "", false, "", true);
+ui_print_page_header (__('File manager'), "", false, "", true);
 
 if (isset($config['filemanager']['message'])) {
 	echo $config['filemanager']['message'];

@@ -116,7 +116,7 @@ if ($view_graph) {
 	}
 
 	// Header
-	print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, $options);
+	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, $options);
 
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0'>";
 	echo "<tr><td>";
@@ -172,10 +172,10 @@ if ($view_graph) {
 	/* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
 
-	require_css_file ('datepicker');
-	require_jquery_file ('ui.core');
-	require_jquery_file ('ui.datepicker');
-	require_jquery_file ('timeentry');
+	ui_require_css_file ('datepicker');
+	ui_require_jquery_file ('ui.core');
+	ui_require_jquery_file ('ui.datepicker');
+	ui_require_jquery_file ('timeentry');
 	?>
 	<script language="javascript" type="text/javascript">
 
@@ -199,7 +199,7 @@ if ($view_graph) {
 }
 
 // Header
-print_page_header (__('Reporting'). " &raquo;  ".__('Custom graph viewer'), "images/reporting.png", false, "", false, "" );
+ui_print_page_header (__('Reporting'). " &raquo;  ".__('Custom graph viewer'), "images/reporting.png", false, "", false, "" );
 
 
 $graphs = get_user_custom_graphs ();

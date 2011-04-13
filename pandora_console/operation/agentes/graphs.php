@@ -111,7 +111,7 @@ $htmlForm .= print_submit_button (__('Filter'), 'filter_button', false, 'class="
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 
-toggle($htmlForm,__('Filter graphs'), __('Toggle filter(s)'));
+ui_toggle($htmlForm,__('Filter graphs'), __('Toggle filter(s)'));
 
 $utime = get_system_time ();
 $current = date("Y-m-d", $utime);

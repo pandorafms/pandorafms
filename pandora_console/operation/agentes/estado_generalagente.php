@@ -63,10 +63,10 @@ echo '<table cellspacing="4" cellpadding="4" border="0" class="databox">';
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 if ($agent['disabled']) {
-	$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, 35, "upper", true) .print_help_tip(__('Disabled'), true) . "</em>";
+	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 35, "upper", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
 }
 else {
-	$cellName = print_agent_name ($agent["id_agente"], true, 35, "upper", true);
+	$cellName = ui_print_agent_name ($agent["id_agente"], true, 35, "upper", true);
 }
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
@@ -94,7 +94,7 @@ echo '</td></tr>';
 
 //OS
 echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
-echo '<td class="datos" colspan="2">'.print_os_icon ($agent["id_os"], true, true);
+echo '<td class="datos" colspan="2">' . ui_print_os_icon ($agent["id_os"], true, true);
 
 // Want to print last 15 characters of OS version, or start from 0 if smaller
 $osversion_offset = strlen($agent["os_version"]);
@@ -121,9 +121,9 @@ echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
 // Group
 echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
-echo print_group_icon ($agent["id_grupo"], true);
+echo ui_print_group_icon ($agent["id_grupo"], true);
 echo '&nbsp;(<b>';
-echo printTruncateText(get_group_name ($agent["id_grupo"]));
+echo ui_print_truncate_text(get_group_name ($agent["id_grupo"]));
 echo '</b>)</td></tr>';
 
 // Agent version
@@ -153,7 +153,7 @@ if ($config['activate_gis']) {
 }
 // Last contact
 echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
-print_timestamp ($agent["ultimo_contacto"]);
+ui_print_timestamp ($agent["ultimo_contacto"]);
 
 echo " / ";
 
@@ -182,7 +182,7 @@ if ($fields === false) {
 }
 if ($fields)
 foreach($fields as $field) {
-	echo '<tr><td class="datos"><b>'.$field['name'].print_help_tip (__('Custom field'), true).'</b></td>';
+	echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
 	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	if($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>-'.__('empty').'-</i>';

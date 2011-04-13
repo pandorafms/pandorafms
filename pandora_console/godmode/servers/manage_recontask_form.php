@@ -71,7 +71,7 @@ if (isset ($_GET["update"])) { // Edit mode
 }
 
 // Headers
-print_page_header (__('Manage recontask')." ".print_help_icon ("recontask", true), "", false, "", true);
+ui_print_page_header (__('Manage recontask') . " " . ui_print_help_icon ("recontask", true), "", false, "", true);
 
 
 $table->width='90%';
@@ -158,7 +158,7 @@ $table->data[9][1] = print_select_groups(false, "AR", false, 'id_group', $id_gro
 $values = array (0 => __('No'), 1 => __('Yes'));
 $table->data[10][0] = "<b>".__('Incident');
 $table->data[10][1] = print_select ($values, "create_incident", $create_incident,
-	'','','',true).' '.print_help_tip (__('Choose if the discovery of a new system creates an incident or not.'), true);
+	'','','',true) . ' ' . ui_print_help_tip (__('Choose if the discovery of a new system creates an incident or not.'), true);
 
 // SNMP default community
 $table->data[11][0] = "<b>".__('SNMP Default community');

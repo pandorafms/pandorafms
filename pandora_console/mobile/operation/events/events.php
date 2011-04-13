@@ -176,19 +176,19 @@ class EventsView {
 			$table->rowclass[$iterator] = get_priority_class($row["criticity"]);
 			$iterator++;
 				
-			$data[] = print_timestamp($row["timestamp"], true, array('units' => 'tiny'));
+			$data[] = ui_print_timestamp($row["timestamp"], true, array('units' => 'tiny'));
 						
 			$data[] = $row["evento"];
 			
 			if ($row["event_type"] == "system") {
-				$data[] = printTruncateText(__('System'), 20, true, true);
+				$data[] = ui_print_truncate_text(__('System'), 20, true, true);
 			}
 			elseif ($row["id_agente"] > 0) {
 				// Agent name
-				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' . printTruncateText(get_agent_name($row["id_agente"]), 20, true, true) . '</a>';
+				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' . ui_print_truncate_text(get_agent_name($row["id_agente"]), 20, true, true) . '</a>';
 			}
 			else {
-				$data[] = printTruncateText(__('Alert SNMP'), 20, true, true);
+				$data[] = ui_print_truncate_text(__('Alert SNMP'), 20, true, true);
 			}
 			
 			$table->data[] = $data;
@@ -196,8 +196,8 @@ class EventsView {
 		
 		print_table($table);
 		
-		$pagination = pagination ($count,
-			get_url_refresh(array("offset" => $offset, "ev_group" => $ev_group,
+		$pagination = ui_pagination ($count,
+			ui_get_url_refresh(array("offset" => $offset, "ev_group" => $ev_group,
 			"event_type" => $event_type, "severity" => $severity,
 			"search" => $search)), 0, 0, true);
 			

@@ -29,7 +29,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	return;
 }
 //header
-print_page_header (__('Statistics'), "images/lightning_go.png",false, false);
+ui_print_page_header (__('Statistics'), "images/lightning_go.png",false, false);
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
 echo "<h3>".__('Event graph')."</h3>";

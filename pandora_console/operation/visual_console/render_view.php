@@ -72,7 +72,7 @@ else {
 $options['pure']['active'] = false;
 
 
-print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/monitor.png", false, '', false, $options);
+ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/monitor.png", false, '', false, $options);
 
 print_pandora_visual_map ($id_layout);
 
@@ -106,11 +106,11 @@ print_table ($table);
 echo '</form>';
 
 if ($config["pure"] && $config["refr"] != 0) {
-	require_jquery_file ('countdown');
-	require_css_file ('countdown');
+	ui_require_jquery_file ('countdown');
+	ui_require_css_file ('countdown');
 }
-require_javascript_file ('wz_jsgraphics');
-require_javascript_file ('pandora_visual_console');
+ui_require_javascript_file ('wz_jsgraphics');
+ui_require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

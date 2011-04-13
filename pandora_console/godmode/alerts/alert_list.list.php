@@ -113,7 +113,7 @@ $form_filter .= "</tr>\n";
 $form_filter .= "</table>\n";
 $form_filter .= "</form>\n";
 
-toggle($form_filter,__('Alert control filter'), __('Toggle filter(s)'));
+ui_toggle($form_filter,__('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
 
@@ -272,10 +272,10 @@ switch ($sortField) {
 }
 
 if ($id_agente) {
-	pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
+	ui_pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
 }
 else {
-	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+	ui_pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
 }
 $simple_alerts = get_agent_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),
@@ -417,13 +417,13 @@ foreach ($simple_alerts as $alert) {
 			$data[2] .= '</span>';
 		$data[2] .= '</a>';
 	}
-	$data[3] = printTruncateText(get_agentmodule_name ($alert['id_agent_module']), 25, false);
+	$data[3] = ui_print_truncate_text(get_agentmodule_name ($alert['id_agent_module']), 25, false);
 	$data[4] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
 		print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
 
 	$data[4] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
-	$data[4] .= printTruncateText(get_alert_template_name ($alert['id_alert_template']), 15, false);
+	$data[4] .= ui_print_truncate_text(get_alert_template_name ($alert['id_alert_template']), 15, false);
 	$data[4] .= "</a>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -458,7 +458,7 @@ foreach ($simple_alerts as $alert) {
 				$data[6] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
 			else
 				$data[6] .= '<font class="action_name">';
-			$data[6] .= printTruncateText($action['name'], 15, false);
+			$data[6] .= ui_print_truncate_text($action['name'], 15, false);
 			$data[6] .= ' <em>(';
 			if ($action['fires_min'] == $action['fires_max']) {
 				if ($action['fires_min'] == 0)
@@ -513,9 +513,9 @@ foreach ($simple_alerts as $alert) {
 	$data[6] .= print_input_text ('fires_min', -1, '', 4, 10, true);
 	$data[6] .= ' '.__('to').' ';
 	$data[6] .= print_input_text ('fires_max', -1, '', 4, 10, true);
-	$data[6] .= print_help_icon ("alert-matches", true);
+	$data[6] .= ui_print_help_icon ("alert-matches", true);
 	$data[6] .= '<br />' . __('Threshold');
-	$data[6] .= print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
+	$data[6] .= print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
 	$data[6] .= '</span>';
 	$data[6] .= '<div class="right">';
 	$data[6] .= print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
@@ -538,7 +538,7 @@ foreach ($simple_alerts as $alert) {
 		$title = __('Alert not fired');
 	}
 	
-	$data[7] = print_status_image($status, $title, true);
+	$data[7] = ui_print_status_image($status, $title, true);
 	
 	$data[8] = '<form class="delete_alert_form" method="post" style="display: inline;">';
 	
@@ -563,11 +563,11 @@ print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
 
-require_css_file ('cluetip');
-require_jquery_file ('cluetip');
-require_jquery_file ('pandora.controls');
-require_jquery_file ('bgiframe');
-require_jquery_file ('autocomplete');
+ui_require_css_file ('cluetip');
+ui_require_jquery_file ('cluetip');
+ui_require_jquery_file ('pandora.controls');
+ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

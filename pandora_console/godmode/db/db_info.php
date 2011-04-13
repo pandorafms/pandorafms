@@ -18,6 +18,8 @@
 // Load global vars
 global $config;
 
+require_once ($config["homedir"] . '/include/functions_graph.php'); 
+
 if ($config['flash_charts']) {
 	require('include/fgraph.php');
 }
@@ -42,34 +44,21 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
  */
 
-
-if ($config['flash_charts']) {
-	$id_agente=0;
-	$width=600;
-	$height=400;
-	echo grafico_db_agentes_purge ($id_agente, $width, $height);
-} else {
-	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id=-1&height=400&width=600">';
-}
-
+echo grafico_db_agentes_purge2(0, 600, 400);
 
 echo '<div id="db_info_graph">';
 echo '<table border=0>';
 echo '<tr><td>';
 echo '<h3>'.__('Modules per agent').'</h3>';
-if ($config['flash_charts']) {
-	echo graph_db_agentes_modulos ($width, $height);
-} else {
-	echo '<img src="include/fgraph.php?tipo=db_agente_modulo&width=600&height=200"><br />';
-}
+
+echo graph_db_agentes_modulos2(600, 250);
+
 echo '</td></tr><tr><td><br /></tr></td>';
 echo '<tr><td>';
 echo '<h3>'.__('Packets per agent').'</h3>';
-if ($config['flash_charts']) {
-	echo grafico_db_agentes_paquetes ($width, $height);
-} else {
-	echo '<img src="include/fgraph.php?tipo=db_agente_paquetes&width=600&height=200"><br />';
-}
+
+echo grafico_db_agentes_paquetes2(700, 300);
+
 echo '</table>';
 echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;"><b>'.__('Press here to get database information as text').'</b>&nbsp;' . print_image("images/down.png", true, array("alt" => "down", "title" => "down")) . '</a></div>';
 echo '<div id="db_info_data" style="display:none">';

@@ -1,3 +1,10 @@
+2011-04-13 Sancho Lerena <slerena@artica.es>
+
+	* operation/servers/view_server_detail.php,
+	godmode/servers/manage_recontask.php,
+	godmode/servers/manage_recontask_form.php: Fixes bug #3286027. Also implement
+	the new "manual" mode for recon tasks.
+
 2011-04-04 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

@@ -43,7 +43,7 @@ $total_modules_data = 0;
 if (give_acl ($config['id_user'], 0, "PM")) {
 	if (isset ($_GET["force"])) {
 		$id = (int) get_parameter_get ("force", 0);
-		$sql = sprintf ("UPDATE trecon_task SET utimestamp = 0, status = 1 WHERE id_rt = %d", $id);
+		$sql = sprintf ("UPDATE trecon_task SET utimestamp = 1, status = 1 WHERE id_rt = %d", $id);
 		
 		process_sql ($sql);
 	}
@@ -101,28 +101,34 @@ foreach ($recon_tasks as $task) {
 	
 	$data[1] = '<b>'. $task["name"].'</b>';
 
-	$data[2] = human_time_description ($task["interval_sweep"]);
+	if ($task["interval_sweep"] == 0){
+		$data[2] = __("Manual");
+	}
+	else {
+		$data[2] = human_time_description ($task["interval_sweep"]);
+	}
 
-if ($task["id_recon_script"] == 0){
-	$data[3] = $task["subnet"];
-} else {
-	$data[3] = __("N/A");
-}
+	if ($task["id_recon_script"] == 0){
+		$data[3] = $task["subnet"];
+	} else {
+		$data[3] = __("N/A");
+	}
+
 	if ($task["status"] <= 0) {
 		$data[4] = __('Done');
 	} else {
 		$data[4] = __('Pending');
 	}
 
-if ($task["id_recon_script"] == 0){
-	// Network recon task
-	$data[5] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
-	$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
-} else {
-	// APP recon task
-	$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
-	$data[5] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
-}	
+	if ($task["id_recon_script"] == 0){
+		// Network recon task
+		$data[5] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
+		$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
+	} else {
+		// APP recon task
+		$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
+		$data[5] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
+	}	
 		
 	if ($task["status"] <= 0 || $task["status"] > 100) {
 		$data[6] = "-";

@@ -26,6 +26,7 @@ check_login ();
 extensions_call_login_function ();
 
 require_once ("include/functions_reporting.php");
+require_once ($config["homedir"] . '/include/functions_graph.php');
 
 print_page_header (__('Welcome to Pandora FMS Web Console'));
 
@@ -75,16 +76,15 @@ $table->head = array ();
 $table->data = array ();
 $table->width = "100%";
 
-$img = "include/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent=";
-
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
-$table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("title" => $data["monitor_health"].'% '.__('of monitors up')));
-
+$table->data[1][0] = 
+	progress_bar2($data["monitor_health"], 280, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
 $table->data[2][0] = '<b>'.__('Module sanity').'</b>';
-$table->data[3][0] = print_image ($img.$data["module_sanity"], true, array ("title" => $data["module_sanity"].'% '.__('of total modules inited')));
-
+$table->data[3][0] =
+	progress_bar2($data["module_sanity"], 280, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
 $table->data[4][0] = '<b>'.__('Alert level').'</b>';
-$table->data[5][0] = print_image ($img.$data["alert_level"], true, array ("title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
+$table->data[5][0] =
+	progress_bar2($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
 
 print_table ($table);
 unset ($table);

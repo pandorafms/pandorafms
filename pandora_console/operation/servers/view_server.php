@@ -17,7 +17,9 @@
 
 // Load global vars
 global $config;
+
 require_once ("include/functions_servers.php");
+require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 
@@ -76,7 +78,8 @@ foreach ($servers as $server) {
 		$data[2] .= print_help_tip (__("This is a master server"), true);
 
 	// Load
-	$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=60", true, array ("title" => $server["lag_txt"]));
+	$data[3] =
+		progress_bar2($server["load"], 60, 20, $server["lag_txt"], 0);
 	$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 	$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
 	$data[6] = $server['threads'].' : '.$server['queued_modules'];

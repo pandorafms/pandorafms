@@ -89,7 +89,7 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title)
 // Draw a dynamic progress bar using GDlib directly
 // ***************************************************************************
 
-function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image) {
+function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1) {
 	if($out_of_lim_str === false) {
 		$out_of_lim_str = "Out of limits";
 	}
@@ -102,7 +102,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	// http://us3.php.net/manual/en/function.imagefilledrectangle.php
 	// With some adds from sdonie at lgc dot com
 	// Get from official documentation PHP.net website. Thanks guys :-)
-	function drawRating($rating, $width, $height, $font, $out_of_lim_str) {
+	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode) {
 		global $config;
 		global $REMOTE_ADDR;
 		
@@ -126,38 +126,90 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$text = ImageColorAllocate($image,74,74,74);
 		$red = ImageColorAllocate($image,255,60,75);
 		$green = ImageColorAllocate($image,50,205,50);
-		$fill = ImageColorAllocate($image,44,81,120);
+		$blue = ImageColorAllocate($image,44,81,120);
+		
+		$soft_green = ImageColorAllocate($image,176, 255, 84);
+		$soft_yellow = ImageColorAllocate($image,255, 230, 84);
+		$soft_red = ImageColorAllocate($image,255, 154, 84);
+		$other_red = ImageColorAllocate($image,238, 0, 0);
 
 		ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-		if ($rating > 100)
-			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
-		elseif ($rating == 100)
-			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$green);
-		else
-			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
-			
-		ImageRectangle($image,0,0,$width-1,$height-1,$border);
-		if ($rating > 50)
-			if ($rating > 100)
-				ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $font, $out_of_lim_str);
-			else
-				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $font, $rating."%");
-		else
-			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $text, $font, $rating."%");
+		switch ($mode)
+		{
+			case 0:
+				if ($rating > 70)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_green);
+				elseif ($rating > 50)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_yellow);
+				elseif ($rating > 30)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_red);
+				else
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $other_red);
+					
+				ImageRectangle($image,0,0,$width-1,$height-1,$border);
+				break;
+			case 1:
+				if ($rating > 100)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
+				elseif ($rating == 100)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$green);
+				else
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$blue);
+					
+				ImageRectangle($image,0,0,$width-1,$height-1,$border);
+				
+				if ($rating > 50)
+					if ($rating > 100)
+						ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $font, $out_of_lim_str);
+					else
+						ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $font, $rating."%");
+				else
+					ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $text, $font, $rating."%");
+				break;
+		}
 		imagePNG($image);
 		imagedestroy($image);
    	}
 
    	Header("Content-type: image/png");
-	if ($progress > 100 || $progress < 0) {
-		// HACK: This report a static image... will increase render in about 200% :-) useful for
-		// high number of realtime statusbar images creation (in main all agents view, for example
-		$imgPng = imageCreateFromPng($out_of_lim_image);
-		imageAlphaBlending($imgPng, true);
-		imageSaveAlpha($imgPng, true);
-		imagePng($imgPng); 
-   	} else 
-   		drawRating($progress, $width, $height, $font, $out_of_lim_str);
+   	
+   	switch ($mode)
+   	{
+   		case 0:
+   			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode);
+   			/*
+if ($mode == 0) {
+		$engine->background_color = '#E6E6D2';
+		$engine->show_title = false;
+		if ($progress > 70) 
+			$color = '#B0FF54';
+		elseif ($progress > 50)
+			$color = '#FFE654';
+		elseif ($progress > 30)
+			$color = '#FF9A54';
+		else
+			$color = '#EE0000';
+	} else {
+		$engine->background_color = '#FFFFFF';
+		$engine->show_title = true;
+		$engine->title = format_numeric ($progress).' %';
+		$color = '#2C5196';
 	}
+   		*/
+   			break;
+   		case 1:
+			if ($progress > 100 || $progress < 0) {
+				// HACK: This report a static image... will increase render in about 200% :-) useful for
+				// high number of realtime statusbar images creation (in main all agents view, for example
+				$imgPng = imageCreateFromPng($out_of_lim_image);
+				imageAlphaBlending($imgPng, true);
+				imageSaveAlpha($imgPng, true);
+				imagePng($imgPng); 
+		   	}
+		   	else 
+		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode);
+   			break;
+   	}
+}
 
 ?>

@@ -290,7 +290,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$legend['min'] = __('Min') . ' (' . $min_value . ')';
 	$legend['baseline'] = __('Baseline');
 	
-	return area_graph($config['flash_charts'], $chart, $width, $height, $color,$legend, $long_index);
+	return area_graph($config['flash_charts'], $chart, $width, $height, $color,$legend, $long_index, "images/image_problem.opaque.png");
 }
 
 /**
@@ -715,5 +715,14 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 	asort ($data);
 	
 	return pie3d_graph(0, $data, $width, $height, __("other"));
+}
+
+function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
+	global $config;
+	
+	$out_of_lim_str = __("Out of limits");
+	$title = "";
+	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
+		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
 }
 ?>

@@ -2287,12 +2287,6 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
         $Graph->done();
 
         grafico_modulo_log4x_trace(__LINE__);
-
-
-	//$image = "../../include/fgraph.php?tipo=graphic_error";
-        //grafico_modulo_log4x_trace(__LINE__);
-	//print_image ($image, false, array ("border" => 0));
-        //grafico_modulo_log4x_trace(__LINE__);
 }
 
 function grafico_modulo_log4x_index($x, $interval)

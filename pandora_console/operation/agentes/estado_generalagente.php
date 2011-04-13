@@ -22,10 +22,6 @@ require_once ("include/functions_agents.php");
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
-if ($config['flash_charts']) {
-	require_once ("include/fgraph.php");
-}
-
 check_login ();
 
 $id_agente = get_parameter_get ("id_agente", -1);
@@ -56,14 +52,9 @@ graphic_agentaccess2($id_agente, 280, 110, 86400);
 
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
+echo graph_event_module2 (290, 120, $id_agente);
 if ($config['flash_charts']) {
-	///////
 	echo graphic_agentevents ($id_agente, 290, 60, 86400);
-	///////
-	echo graph_event_module2 (290, 120, $id_agente);
-
-} else {
-	echo '<img border="1" src="include/fgraph.php?tipo=event_module&width=290&height=180&id_agent='.$id_agente.'" />';
 }
 echo '</div>';
 	
@@ -182,7 +173,7 @@ if ($agent['timezone_offset'] != 0) {
 $progress = getNextAgentContact($id_agente);
 
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progress&amp;percent='.$progress.'&amp;height=20&amp;width=200"></td></tr>';
+echo '<td class="datos f9" colspan="2">' . progress_bar2($progress, 200, 20) . '</td></tr>';
 
 // Custom fields
 $fields = get_db_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));

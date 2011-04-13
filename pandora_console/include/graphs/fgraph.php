@@ -49,7 +49,10 @@ switch($graph_type) {
 
 				$font = get_parameter('font');
 				$title = get_parameter('title');
-				gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image);
+				
+				$mode = get_parameter('mode', 1);
+				
+				gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode);
 				break;
 }
 

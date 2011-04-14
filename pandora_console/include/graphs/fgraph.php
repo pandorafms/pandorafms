@@ -10,7 +10,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 // If is called from index
 if(file_exists('include/functions.php')) {
 	include_once('include/functions.php');
@@ -54,10 +53,43 @@ switch($graph_type) {
 				$title = get_parameter('title');
 				
 				$mode = get_parameter('mode', 1);
-				
+
 				gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode);
 				break;
 }
+
+function histogram($chart_data, $width, $height, $font, $max, $title, $mode) {
+	$graph = array();
+	$graph['data'] = $chart_data;
+	$graph['width'] = $width;
+	$graph['height'] = $height;
+	$graph['font'] = $font;
+	$graph['max'] = $max;
+	$graph['title'] = $title;
+	$graph['mode'] = $mode;
+
+	$id_graph = serialize_in_temp($graph);
+		
+	return "<img src='include/graphs/functions_gd.php?graph_type=histogram&id_graph=".$id_graph."'>";
+}
+
+function progressbar($progress, $width, $height, $title, $font, $mode = 1, $out_of_lim_str = false, $out_of_lim_image = false) {
+	$graph = array();
+
+	$graph['progress'] = $progress;
+	$graph['width'] = $width;
+	$graph['height'] = $height;
+	$graph['out_of_lim_str'] = $out_of_lim_str;
+	$graph['out_of_lim_image'] = $out_of_lim_image;
+	$graph['title'] = $title;
+	$graph['font'] = $font;
+	$graph['mode'] = $mode;
+
+	$id_graph = serialize_in_temp($graph);
+		
+	return "<img src='include/graphs/functions_gd.php?graph_type=progressbar&id_graph=".$id_graph."'>";
+}
+
 
 function slicesbar_graph($chart_data, $width, $height, $colors, $font, $round_corner) {
 	$graph = array();
@@ -126,7 +158,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}	
 }
 
-function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "") {
 	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
@@ -145,6 +177,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 		$graph['height'] = $height;
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
 		
 		$id_graph = serialize_in_temp($graph);
 		
@@ -152,7 +186,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color, 
 	}	
 }
 
-function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "") {
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -170,6 +204,8 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, 
 		$graph['height'] = $height;
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
 		
 		$id_graph = serialize_in_temp($graph);
 		
@@ -177,7 +213,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color, 
 	}
 }
 
-function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image) {
+function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "") {
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -192,6 +228,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['height'] = $height;
 		$graph['color'] = $color;
 		$graph['legend'] = $legend;
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
 		
 		$id_graph = serialize_in_temp($graph);
 		

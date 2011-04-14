@@ -12,6 +12,60 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 
+// If is called from index
+if(file_exists('include/functions.php')) {
+	include_once('include/functions.php');
+	include_once('include/functions_html.php');
+	include_once('include/graphs/functions_utils.php');
+} // If is called through url
+else if(file_exists('../functions.php')) {
+	include_once('../functions.php');
+	include_once('../functions_html.php');
+	include_once('../functions_html.php');
+	include_once('functions_utils.php');
+}
+	
+$id_graph = get_parameter('id_graph', false);
+
+if($id_graph) {
+
+
+	if (!$id_graph) {
+		exit;
+	}
+
+	$graph = unserialize_in_temp($id_graph);
+
+	if (!isset($graph)) {
+		exit;
+	}
+	
+	$graph_type = get_parameter('graph_type', '');
+
+	switch($graph_type) {
+		case 'histogram': 
+					gd_histogram ($graph['width'], 
+						$graph['height'], 
+						$graph['mode'], 
+						json_decode($graph['data'], true), 
+						$graph['max'], 
+						$graph['font'], 
+						$graph['title']);				
+					break;
+		case 'progressbar':	
+					gd_progress_bar ($graph['width'], 
+						$graph['height'], 
+						$graph['progress'], 
+						$graph['title'], 
+						$graph['font'], 
+						$graph['out_of_lim_str'],
+						$graph['out_of_lim_image'], 
+						$graph['mode']);	
+					break;
+	}
+}
+
+
 function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title) {	
 	// $title is for future use
 	$nvalues = count($data);
@@ -93,7 +147,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	if($out_of_lim_str === false) {
 		$out_of_lim_str = "Out of limits";
 	}
-
+	
 	if($out_of_lim_image === false) {
 		$out_of_lim_image = "images_graphs/outlimits.png";
 	}

@@ -605,6 +605,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 		
 			$MyData->setPalette($point_id, $palette_color);*/
 		}
+		
+		$MyData->setSerieWeight($point_id, 1);
 	 }
 
 	 //$MyData->addPoints($data,"Yaxis");

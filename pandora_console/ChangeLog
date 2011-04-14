@@ -1,3 +1,11 @@
+2011-04-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/functions_fsgraph.php
+	include/graphs/fgraph.php: Increased the weight of the lines
+	in line graphs.
+	Clean code
+
 2011-04-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php: added function "graph_custom_sql_graph2".

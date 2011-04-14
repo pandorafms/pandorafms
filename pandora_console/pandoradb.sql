@@ -574,7 +574,7 @@ CREATE TABLE IF NOT EXISTS `torigen` (
 
 CREATE TABLE IF NOT EXISTS `tperfil` (
   `id_perfil` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(60) NOT NULL default '',
+  `name` TEXT NOT NULL default '',
   `incident_edit` tinyint(3) NOT NULL default '0',
   `incident_view` tinyint(3) NOT NULL default '0',
   `incident_management` tinyint(3) NOT NULL default '0',

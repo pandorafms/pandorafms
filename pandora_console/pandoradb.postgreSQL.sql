@@ -521,7 +521,7 @@ CREATE TABLE "torigen" (
 
 CREATE TABLE "tperfil" (
 	"id_perfil" SERIAL NOT NULL PRIMARY KEY,
-	"name" varchar(60) NOT NULL default '',
+	"name" TEXT NOT NULL default '',
 	"incident_edit" SMALLINT NOT NULL default 0,
 	"incident_view" SMALLINT NOT NULL default 0,
 	"incident_management" SMALLINT NOT NULL default 0,

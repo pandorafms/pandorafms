@@ -74,3 +74,8 @@ ALTER TABLE `talert_template_module_actions` ADD COLUMN `last_execution` bigint(
 -- Table `treport_content`
 -- -----------------------------------------------------
 ALTER TABLE `treport_content` ADD COLUMN `style` TEXT NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `tperfil`
+-- -----------------------------------------------------
+ALTER TABLE `tperfil` MODIFY `name` TEXT NOT NULL DEFAULT '';

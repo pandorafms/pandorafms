@@ -2423,8 +2423,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$data = array ();
-
-			$data[0] = '<img src="include/fgraph.php?tipo='.$content["type"].'&report_id='.$content["id_rc"].'&width='.$sizgraph_w.'&pure=1" border="0" alt="">';
+			
+			$data[0] = graph_custom_sql_graph2($content["id_rc"], $sizgraph_w, 200, $content["type"], true);
 
 			array_push($table->data, $data);
 			break;

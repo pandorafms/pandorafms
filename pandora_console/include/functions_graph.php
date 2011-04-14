@@ -1223,4 +1223,66 @@ function grafico_eventos_usuario2 ($width, $height) {
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height);
 }
+
+/**
+ * Print a custom SQL-defined graph 
+ * 
+ * @param integer ID of report content, used to get SQL code to get information for graph
+ * @param integer height graph height
+ * @param integer width graph width
+ * @param integer Graph type 1 vbar, 2 hbar, 3 pie
+ */
+function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homedir) {
+	global $config;
+
+    $report_content = get_db_row ('treport_content', 'id_rc', $id);
+    if ($report_content["external_source"] != ""){
+        $sql = safe_output ($report_content["external_source"]);
+    }
+    else {
+    	$sql = get_db_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
+    	$sql = safe_output($sql['sql']);
+    }
+    
+	$data_result = get_db_all_rows_sql ($sql);
+
+	if ($data_result === false)
+		$data_result = array ();
+
+	$data = array ();
+	
+	$count = 0;
+	foreach ($data_result as $data_item) {
+		$count++;
+	    switch ($type) {
+	        case 'sql_graph_vbar': // vertical bar
+	            $data[$data_item["label"]]['g'] = $data_item["value"];
+	            break;
+	        case 'sql_graph_hbar': // horizontal bar
+	        	$data[$data_item["label"]]['g'] = $data_item["value"];
+	            break;
+	        case 'sql_graph_pie': // Pie
+	            $data[$data_item["label"]] = $data_item["value"];
+	            break;
+	    }
+	}
+	
+	$flash_charts = $config['flash_charts'];
+	
+	if ($only_image) {
+		$flash_charts = false;
+	}
+	
+    switch ($type) {
+        case 'sql_graph_vbar': // vertical bar
+        	return hbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", false, $homedir);
+            break;
+        case 'sql_graph_hbar': // horizontal bar
+        	return vbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", $homedir);
+            break;
+        case 'sql_graph_pie': // Pie
+            return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homedir);
+            break;
+    }
+}
 ?>

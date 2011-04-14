@@ -2573,7 +2573,7 @@ function sql_error_handler ($errno, $errstr) {
 	global $config;
 
 	/* If debug is activated, this will also show the backtrace */
-	if (debug ($errstr))
+	if (ui_debug ($errstr))
 		return false;
 
 	if (error_reporting () <= $errno)

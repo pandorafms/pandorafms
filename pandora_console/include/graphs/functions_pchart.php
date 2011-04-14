@@ -605,7 +605,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 		 "GridG"=>200,
 		 "GridB"=>200,
 		 "DrawSubTicks"=>TRUE,
-		 "CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
+		 "CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60, "XMargin" => 0);
 	 $myPicture->drawScale($scaleSettings);
 	 
 	 /* Turn on shadow computing */ 

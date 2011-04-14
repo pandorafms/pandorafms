@@ -1,5 +1,15 @@
 2011-04-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/graphs/functions_pchart.php: added method to force height or not,
+	changed to show all columns name in the hgraph and vgraph, fixed the colors
+	when passed the parameter "fine" to color. And in the function
+	"pch_bar_graph" change to calculate left margin instead to fixed value.
+	
+	* include/graphs/fgraph.php: added new parameter in the function
+	"hbar_graph" to force or unforce the graph height.
+
+2011-04-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/functions_pchart.php: setted the xmargin to 0.
 	
 	* include/graphs/fgraph.php: in function "pie_graph" reduce to 8 the

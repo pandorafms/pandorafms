@@ -42,7 +42,7 @@ function get_pid {
 	# in a "strech" term, ps aux don't report more than COLUMNS
 	# characters and this will not work. 
 	COLUMNS=300
-	TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep "$TENTACLE_PORT" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $TENTACLE_PID
 }
 

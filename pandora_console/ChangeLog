@@ -1,3 +1,11 @@
+2011-04-14  Junichi Satoh  <junichi@rworks.jp>
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	pandoradb.sql,
+	pandoradb.postgreSQL.sql,
+	pandoradb.oracle.sql: Changed tperfil.name type to fix field length
+	shortage.
+
 2011-04-13 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php: deleted a repeat function.

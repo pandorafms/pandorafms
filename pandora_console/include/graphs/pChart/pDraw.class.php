@@ -2343,7 +2343,18 @@
                 $this->drawLine($XPos+$SubTicksSize,$YPos-$OuterSubTickWidth,$XPos+$SubTicksSize,$YPos+$InnerSubTickWidth,array("R"=>$SubTickR,"G"=>$SubTickG,"B"=>$SubTickB,"Alpha"=>$SubTickAlpha));
 
                $this->drawLine($XPos,$YPos-$OuterTickWidth,$XPos,$YPos+$InnerTickWidth,array("R"=>$TickR,"G"=>$TickG,"B"=>$TickB,"Alpha"=>$TickAlpha));
-               $Bounds    = $this->drawText($XPos,$YPos-$OuterTickWidth-2,$Value,array("Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
+
+               if($LabelValuesRotation != 0) {
+					$_xpos = $XPos+6;
+					$_ypos = $YPos-$OuterTickWidth-7;
+			   }
+			   else {
+					$_xpos = $XPos;
+					$_ypos = $YPos-$OuterTickWidth-2;
+			   }
+			   
+			   $Bounds    = $this->drawText($_xpos,$_ypos,$Value,array("Align"=>TEXT_ALIGN_BOTTOMMIDDLE, "Angle" => $LabelValuesRotation));
+
                $TxtHeight = $YPos-$OuterTickWidth-2-($Bounds[1]["Y"]-$Bounds[2]["Y"]);
                $MinTop    = min($MinTop,$TxtHeight);
 

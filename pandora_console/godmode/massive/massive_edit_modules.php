@@ -32,8 +32,8 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	}
 	
 	/* List of fields which can be updated */
-	$fields = array ('min_warning', 'max_warning', 'min_critical', 'max_critical', 'min_ff_event','module_interval',
-		'disabled','post_process','snmp_community','min','max','id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
+	$fields = array ('min_warning', 'max_warning', 'min_critical', 'max_critical', 'min_ff_event', 'module_interval',
+		'disabled', 'post_process', 'snmp_community', 'tcp_send', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
 	$values = array ();
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
@@ -194,6 +194,7 @@ if (! $module_type) {
 	$table->rowstyle['edit1'] = 'display: none';
 	$table->rowstyle['edit2'] = 'display: none';
 	$table->rowstyle['edit3'] = 'display: none';
+	$table->rowstyle['edit35'] = 'display: none';
 	$table->rowstyle['edit4'] = 'display: none';
 	$table->rowstyle['edit5'] = 'display: none';
 	$table->rowstyle['edit6'] = 'display: none';
@@ -215,6 +216,11 @@ $types = '';
 foreach ($module_types as $type) {
 	$types[$type['id_tipo']] = $type['description'];
 }
+
+$snmp_versions['1'] = 'v. 1';
+$snmp_versions['2'] = 'v. 2';
+$snmp_versions['2c'] = 'v. 2c';
+$snmp_versions['3'] = 'v. 3';
 
 $table->data = array ();
 	
@@ -300,6 +306,10 @@ $table->data['edit3'][0] = __('Post process');
 $table->data['edit3'][1] = print_input_text ('post_process', '', '', 10, 15, true);
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = print_input_text ('snmp_community', '', '', 10, 15, true);
+$table->data['edit35'][0] = '';
+$table->data['edit35'][1] = '';
+$table->data['edit35'][2] = __('SNMP version');
+$table->data['edit35'][3] = print_select ($snmp_versions, 'tcp_send', '', '', __('Select'), '', true, false, false, '');
 
 $table->data['edit4'][0] = __('Value');
 $table->data['edit4'][1] = '<em>'.__('Min.').'</em>';
@@ -374,7 +384,7 @@ $(document).ready (function () {
 			$(".select_modules_row_2").css('display', '');
 		}
 		
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
 		
 		if (this.value == '0') {
 			filter = '';
@@ -409,7 +419,7 @@ $(document).ready (function () {
 		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "35%");
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").removeAttr ("checked");
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
 	}
 	
 	function clean_lists() {
@@ -417,7 +427,7 @@ $(document).ready (function () {
 		$("#module_name").html('<?php echo __('None'); ?>');
 		$("#agents").html('<?php echo __('None'); ?>');
 		$("#module").html('<?php echo __('None'); ?>');
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
 		$('#module_type').val(-1);
@@ -429,24 +439,24 @@ $(document).ready (function () {
 			if(this.id == "checkbox-force_type"){
 				if(this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
-					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
 				}
 				else {
 					$(".select_modules_row_2").css('display', '');
 					if($('#module_name option:selected').val() == undefined) {
-						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
 					}
 				}
 			}
 			else {
 				if(this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
-					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
 					if($('#id_agents option:selected').val() == undefined) {
-						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
 					}				
 				}
 			}
@@ -484,7 +494,7 @@ $(document).ready (function () {
 				$(".select_agents_row_2").css('display', '');
 			}
 			
-			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
 
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",

@@ -282,7 +282,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	
 	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
-		'lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
+		'lineThickness=3;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 	
 	$random_number = uniqid();

@@ -10,6 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
 // If is called from index
 if(file_exists('include/functions.php')) {
 	include_once('include/functions.php');
@@ -260,7 +261,7 @@ function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image)
 	return kiviat_graph('polar', $flash_chart, $chart_data, $width, $height, $no_data_image);
 }
 
-function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "") {
+function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(), $legend = array(), $xaxisname = "", $yaxisname = "", $force_height = true) {
 	if($flash_chart) {
 		echo fs_hbar_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
 	}
@@ -273,6 +274,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		$graph['legend'] = $legend;
 		$graph['xaxisname'] = $xaxisname;
 		$graph['yaxisname'] = $yaxisname;
+		$graph['force_height'] = $force_height;
 
 		$id_graph = serialize_in_temp($graph);
 	

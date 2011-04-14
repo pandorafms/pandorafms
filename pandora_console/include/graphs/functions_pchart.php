@@ -72,6 +72,17 @@ if(isset($graph['font'])) {
 if(isset($graph['round_corner'])) { 
 	$round_corner = $graph['round_corner'];
 }
+$force_height = true;
+if(isset($graph['force_height'])) { 
+	$force_height = $graph['force_height'];
+}
+
+if (!$force_height) {
+	if ($height < (count($graph['data']) * 14)) {
+		$height = (count($graph['data']) * 14);
+	}
+}
+
 
 /*
 $colors = array();
@@ -92,6 +103,11 @@ else {
 }
 
 $step = round($ndata/$xdata_display);
+
+if(($graph_type == 'hbar') || ($graph_type == 'vbar')) {
+	$step = 1;
+}
+
 $c = 0;
 
 switch($graph_type) {
@@ -127,6 +143,7 @@ switch($graph_type) {
 					$fine_colors[$i]['B'] = $rgb_fine[2];
 					$fine_colors[$i]['Alpha'] = 100;
 				}
+				$colors = array();
 			}
 			
 			break;
@@ -456,7 +473,20 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $rgb_color 
 				break;
 		case "hbar":
 				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM);
-				$leftmargin = 100;
+				//$leftmargin = 100;
+				
+				//Calculate the bottom margin from the size of string in each index
+				 $max_chars = 0;
+				 foreach ($index as $string_index) {
+				 	if (empty($string_index)) continue;
+				 	
+				 	$len = strlen($string_index);
+				 	if ($len > $max_chars) {
+				 		$max_chars = $len; 
+				 	}
+				 }
+				 $leftmargin = 5 * $max_chars;
+				
 				break;
 	 }
 	 

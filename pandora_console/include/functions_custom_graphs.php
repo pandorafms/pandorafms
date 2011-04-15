@@ -41,7 +41,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
  *
  * @return Custom graphs of a an user. Empty array if none.
  */
-function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'IR') {
+function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'IR') {
 	global $config;
 	
 	if (!$id_user) {
@@ -92,7 +92,7 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGr
  * @param $date Date to start printing the graph
  */
 
-function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
+function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
 	global $config;
 
 	$sources = get_db_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
@@ -133,7 +133,7 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
  *
  * @return The possible periods in a custom graph in an associative array.
  */
-function get_custom_graph_periods () {
+function custom_graphs_get_periods () {
 	$periods = array ();
 	
 	$periods[1] = __('1 hour');

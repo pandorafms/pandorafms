@@ -165,7 +165,7 @@ echo "<b>".__('Period')."</b>";
 echo "</td>";
 echo "<td class='datos'>";
 
-print_select (get_custom_graph_periods (), 'period', intval ($period / 3600),
+print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
 	'', '', 0, false, false, false);
 
 echo "</td>";

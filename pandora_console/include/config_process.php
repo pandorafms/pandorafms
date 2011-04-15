@@ -76,7 +76,7 @@ if (! defined ('ENTERPRISE_DIR'))
 
 require_once ($ownDir. 'functions_config.php');
 
-process_config();
+config_process_config();
 
 require_once ($ownDir . 'streams.php');
 require_once ($ownDir . 'gettext.php');

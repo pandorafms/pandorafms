@@ -65,7 +65,7 @@ $config["admin_can_make_admin"] = false;
 $req_keys = array ("ldap_server", "ldap_base_dn", "ldap_login_attr", "ldap_admin_group_name", "ldap_admin_group_attr", "ldap_admin_group_type", "ldap_user_filter", "ldap_user_attr");
 $opt_keys = array ("ldap_port", "ldap_start_tls", "ldap_version", "ldap_admin_dn", "ldap_admin_pwd");
 
-global $ldap_cache; //Needs to be globalized because process_config () function calls this file first and the variable would be local and subsequently lost
+global $ldap_cache; //Needs to be globalized because config_process_config () function calls this file first and the variable would be local and subsequently lost
 $ldap_cache = array ();
 $ldap_cache["error"] = "";
 $ldap_cache["ds"] = "";

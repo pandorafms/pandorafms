@@ -1,3 +1,20 @@
+2011-04-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php: added the parameter $homeurl in some
+	functions and in others rename from $homedir.
+	
+	* include/graphs/functions_pchart.php: setted the default values in some
+	vars. And replaced the calls to new engine graph.
+	
+	* include/graphs/fgraph.php: added the parameter $homeurl.
+	
+	* include/functions_reporting.php: fixed in 'simple_graph' the
+	$content['id_agent_module'].  
+	
+	* include/functions_custom_graphs.php,
+	operation/reporting/reporting_xml.php,
+	godmode/admin_access_logs.php: cleaned source code style.
+	
 2011-04-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/auth/ldap.php

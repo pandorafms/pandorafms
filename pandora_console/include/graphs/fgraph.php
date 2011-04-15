@@ -10,6 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
 // If is called from index
 if(file_exists('include/functions.php')) {
 	include_once('include/functions.php');
@@ -135,7 +136,8 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	}
 }
 
-function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "") {
+function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
+	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homedir="") {
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -155,7 +157,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 				
 		$id_graph = serialize_in_temp($graph);
 
-		return "<img src='include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
+		return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
 	}	
 }
 

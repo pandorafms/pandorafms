@@ -25,7 +25,8 @@ define("GRAPH_STACKED_LINE", 3);
 function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
-				$date = 0, $baseline = 0, $return_data = 0, $show_title = true, $only_image = false) {
+				$date = 0, $baseline = 0, $return_data = 0, $show_title = true,
+				$only_image = false, $homeurl = '') {
 	global $config;
 	global $graphic_type;
 	
@@ -295,7 +296,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 		$flash_chart = false;
 	}
 	
-	return area_graph($flash_chart, $chart, $width, $height, $color,$legend, $long_index, "images/image_problem.opaque.png");
+	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl);
 }
 
 /**
@@ -316,7 +318,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
  * @return Mixed 
  */
 function graphic_combined_module2 ($module_list, $weight_list, $period, $width, $height,
-				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0, $only_image = false) {
+		$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
+		$stacked = 0, $date = 0, $only_image = false, $homeurl = '') {
 	global $config;
 	global $graphic_type;
 	
@@ -621,7 +624,8 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		case GRAPH_AREA:
 			$color = null;
 			return area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				"", "", $homeurl);
 			break;
 		default:
 		case GRAPH_STACKED_AREA:
@@ -1232,7 +1236,7 @@ function grafico_eventos_usuario2 ($width, $height) {
  * @param integer width graph width
  * @param integer Graph type 1 vbar, 2 hbar, 3 pie
  */
-function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homedir) {
+function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homeurl = '') {
 	global $config;
 
     $report_content = get_db_row ('treport_content', 'id_rc', $id);
@@ -1275,13 +1279,13 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
 	
     switch ($type) {
         case 'sql_graph_vbar': // vertical bar
-        	return hbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", false, $homedir);
+        	return hbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", false, $homeurl);
             break;
         case 'sql_graph_hbar': // horizontal bar
-        	return vbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", $homedir);
+        	return vbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", $homeurl);
             break;
         case 'sql_graph_pie': // Pie
-            return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homedir);
+            return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl);
             break;
     }
 }

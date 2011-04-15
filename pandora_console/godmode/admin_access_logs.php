@@ -17,10 +17,6 @@
 
 global $config;
 
-if ($config['flash_charts']) {
-	require_once ("include/fgraph.php");
-}
-
 require_once ($config["homedir"] . '/include/functions_graph.php'); 
 
 check_login ();
@@ -79,13 +75,7 @@ echo '</div>';
 echo '<div style="float: right; width: 250px;">';
 
 echo graphic_user_activity2(300, 140);
-/*
-if ($config['flash_charts']) {
-	echo graphic_user_activity (300, 140);
-}
-else {
-	echo '<img src="include/fgraph.php?tipo=user_activity&width=300&height=140" />';
-}*/
+
 echo '</div>';
 echo '<div style="clear:both;">&nbsp;</div>';
 echo '</td></tr></table>';

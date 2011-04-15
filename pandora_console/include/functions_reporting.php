@@ -1883,7 +1883,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 	else {
 		$agent_name = get_agent_name($content['id_agent']);
 	}
-
+	
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':
@@ -1905,7 +1905,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$data = array ();
 			
-			$data[0] = grafico_modulo_sparse2($layout_data['id_agente_modulo'], $content['period'],
+			$data[0] = grafico_modulo_sparse2($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], 0, 0, true, true);
 			
@@ -1973,7 +1973,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$table->colspan[1][0] = 3;
 			$data = array ();
-			//$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module2(
 				$modules,
@@ -2106,14 +2106,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array();
 			$data_pie_graph = json_encode ($data_graph);
 			if (($show_graph == 1 || $show_graph == 2) && !empty($slas)) {
-				if($config['flash_charts']) {
-					$data[0] = fs_3d_pie_chart ($data_graph, 370, 180);
-				}
-				else {
-					//Display pie graph
-					$data[0] = "<img src='include/fgraph.php?tipo=generic_pie_graph&array=".$data_pie_graph.
-					"&height=150&width=500'>";
-				}
+				$data[0] = pie3d_graph($config['flash_charts'], $data_graph,
+					500, 150, __("other"));
 				array_push ($table->data, $data);
 				
 				//Display horizontal bar graphs
@@ -2130,10 +2124,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data[0] = printSmallFont(get_agentmodule_agent_name ($sla['id_agent_module']));
 					$data[0] .= "<br>";
 					$data[0] .= printSmallFont(get_agentmodule_name ($sla['id_agent_module']));
+					
 					$data[1] = "<img src='include/fgraph.php?tipo=sla_horizontal_graph&id=".$sla['id_agent_module'].
 					"&period=".$content['period']."&value1=".$sla['sla_min']."&value2=".$sla['sla_max'].
 					"&value3=".$content['time_from']."&value4=".$content['time_to']."&percent=".$sla['sla_limit'].
 					"&daysWeek=".$daysWeek."&height=25&width=550'>";
+					
 					array_push ($table2->data, $data);
 				}
 				$table->colspan[4][0] = 3;
@@ -3064,21 +3060,15 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[3][0] = 3;
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
-				if($config['flash_charts']) {
-					$data[0] = fs_3d_pie_chart ($data_pie_graph, 370, 180);
-				}
-				else {
-					$data_graph = json_encode ($data_pie_graph);
-					//Display pie graph
-					$data[0] = "<img src='include/fgraph.php?tipo=generic_pie_graph&array=".$data_graph.
-					"&height=150&width=600'>";
-				}
+				$data[0] = pie3d_graph($config['flash_charts'], $data_pie_graph,
+					600, 150, __("other"));
+				
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_graph.
+				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_pie_graph.
 				"&height=".$height."&width=600'>";
 				array_push ($table->data, $data);
 			}
@@ -3318,15 +3308,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[3][0] = 3;
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
-				if($config['flash_charts']) {
-					$data[0] = fs_3d_pie_chart ($data_pie_graph, 370, 180);
-				}
-				else {
-					$data_graph = json_encode ($data_pie_graph);
-					//Display pie graph
-					$data[0] = "<img src='include/fgraph.php?tipo=generic_pie_graph&array=".$data_graph.
-					"&height=150&width=600'>";
-				}
+				$data[0] = pie3d_graph($config['flash_charts'], $data_graph,
+					600, 150, __("other"));
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;

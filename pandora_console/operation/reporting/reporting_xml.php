@@ -334,27 +334,6 @@ foreach ($contents as $content) {
 				$data["objdata"] = format_numeric ($data["objdata"]);
 			}
 			break;
-//		case 11:
-//		case 'general_group_report':
-//			$data["title"] = __('Group');
-//			$data["objdata"] = "<![CDATA[";
-//			$data["objdata"] .= print_group_reporting ($report['id_group'], true);
-//			$data["objdata"] .= "]]>";
-//			break;
-//		case 12:
-//		case 'monitor_health':
-//			$data["title"] = __('Monitor health');
-//			$data["objdata"] = "<![CDATA[";
-//			$data["objdata"] .= monitor_health_reporting ($report['id_group'], $content['period'], $datetime, true);
-//			$data["objdata"] .= "]]>";
-//			break;
-//		case 13:
-//		case 'agents_detailed':
-//			$data["title"] = __('Agents detailed view');
-//			$data["objdata"] = "<![CDATA[";
-//			$data["objdata"] .= get_group_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
-//			$data["objdata"] .= "]]>";
-//			break;
 		case 'agent_detailed_event':
 		case 'event_report_agent':
 			$data["title"] = __('Agent detailed event');

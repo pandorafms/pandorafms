@@ -24,7 +24,7 @@ $graphs = false;
 
 if ($searchGraphs) {
 	//Check ACL
-	$usergraphs = get_user_custom_graphs($config['id_user'], true);
+	$usergraphs = custom_graphs_get_user($config['id_user'], true);
 
 	$usergraphs_id = array_keys($usergraphs);
 	

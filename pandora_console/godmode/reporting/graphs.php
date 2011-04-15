@@ -66,7 +66,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$return_all_group = false;
 	
-$graphs = get_user_custom_graphs ($config['id_user'], false, $return_all_group, "IW");
+$graphs = custom_graphs_get_user ($config['id_user'], false, $return_all_group, "IW");
 
 if (! empty ($graphs)) {
 	$table->width = '720px';

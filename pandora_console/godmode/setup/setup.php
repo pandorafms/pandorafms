@@ -44,7 +44,7 @@ enterprise_include ('godmode/setup/setup.php');
  
  Update operation is done in config_process.php
  This is done in that way so the user can see the changes inmediatly.
- If you added a new token, please check update_config() in functions_config.php
+ If you added a new token, please check config_update_config() in functions_config.php
  to add it there.
 */
 

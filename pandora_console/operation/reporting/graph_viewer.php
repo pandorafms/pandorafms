@@ -120,7 +120,7 @@ if ($view_graph) {
 
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0'>";
 	echo "<tr><td>";
-	print_custom_graph ($id_graph, $height, $width, $period, $stacked, false, $unixdate);
+	custom_graphs_print ($id_graph, $height, $width, $period, $stacked, false, $unixdate);
 	echo "</td></tr></table>";
 	$period_label = human_time_description_raw ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
@@ -140,7 +140,7 @@ if ($view_graph) {
 	echo "</td>";
 	echo "<td class='datos'>";
 	
-	print_select (get_custom_graph_periods (), 'period', intval ($period / 3600),
+	print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
 		'', '', 0, false, false, false);
 
 	echo "</td>";
@@ -202,7 +202,7 @@ if ($view_graph) {
 ui_print_page_header (__('Reporting'). " &raquo;  ".__('Custom graph viewer'), "images/reporting.png", false, "", false, "" );
 
 
-$graphs = get_user_custom_graphs ();
+$graphs = custom_graphs_get_user ();
 if (! empty ($graphs)) {
 	$table->width = '500px';
 	$tale->class = 'databox_frame';

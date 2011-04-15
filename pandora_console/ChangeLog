@@ -1,5 +1,21 @@
 2011-04-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/auth/ldap.php
+	include/functions_config.php
+	include/config_process.php
+	include/functions_custom_graphs.php
+	operation/search_graphs.php
+	operation/reporting/graph_viewer.php
+	godmode/setup/setup.php
+	godmode/setup/performance.php
+	godmode/setup/setup_visuals.php
+	godmode/reporting/graphs.php
+	godmode/reporting/graph_builder.preview.php: Functions of functions_config.php
+	and function_custom_graphs.php have the "config_" and "custom_graphs_" prefix 
+	respectively.
+
+2011-04-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/db/oracle.php
 	include/functions_modules.php
 	include/functions_reporting.php

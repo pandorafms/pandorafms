@@ -33,9 +33,9 @@ $id = (int) get_parameter ('id');
 // If user tries to duplicate/edit a template with group=ALL then must have "PM" access privileges 
 if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
-	$a_template = get_alert_template($source_id);
+	$a_template = alerts_get_alert_template($source_id);
 }else{
-	$a_template = get_alert_template($id);
+	$a_template = alerts_get_alert_template($id);
 }
 
 if ($a_template !== false){
@@ -78,7 +78,7 @@ if ($a_template !== false){
 if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
 	
-	$id = duplicate_alert_template ($source_id);
+	$id = alerts_duplicate_alert_template ($source_id);
 	
 	if ($id) {
 		pandora_audit("Template alert management", "Duplicate alert template " . $source_id . " clone to " . $id);
@@ -88,7 +88,7 @@ if ($duplicate_template) {
 	}
 	
 	ui_print_result_message ($id,
-		__('Successfully created from %s', get_alert_template_name ($source_id)),
+		__('Successfully created from %s', alerts_get_alert_template_name ($source_id)),
 		__('Could not be created'));
 }
 
@@ -186,7 +186,7 @@ function update_template ($step) {
 				'matches_value' => $matches,
 				'priority' => $priority);
 		
-		$result = update_alert_template ($id,$values);
+		$result = alerts_update_alert_template ($id,$values);
 	}
 	elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
@@ -231,7 +231,7 @@ function update_template ($step) {
 			'min_alerts' => $min_alerts
 			);
 		
-		$result = update_alert_template ($id, $values);
+		$result = alerts_update_alert_template ($id, $values);
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
@@ -242,7 +242,7 @@ function update_template ($step) {
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery);
 		
-		$result = update_alert_template ($id, $values);
+		$result = alerts_update_alert_template ($id, $values);
 	}
 	else {
 		return false;
@@ -314,7 +314,7 @@ if ($create_template) {
 			'matches_value' => $matches,
 			'priority' => $priority);
 	
-	$result = create_alert_template ($name, $type, $values);
+	$result = alerts_create_alert_template ($name, $type, $values);
 		
 	if ($result) {
 		pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
@@ -346,7 +346,7 @@ if ($update_template) {
 }
 
 if ($id && ! $create_template) {
-	$template = get_alert_template ($id);
+	$template = alerts_get_alert_template ($id);
 	$name = $template['name'];
 	$description = $template['description'];
 	$type = $template['type'];
@@ -390,7 +390,7 @@ $table->size[2] = '20%';
 
 if ($step == 2) {
 	/* Firing conditions and events */
-	$threshold_values = get_alert_template_threshold_values ();
+	$threshold_values = alerts_get_alert_template_threshold_values ();
 	if (in_array ($threshold, array_keys ($threshold_values))) {
 		$table->style['other_label'] = 'display:none; font-weight: bold';
 		$table->style['other_input'] = 'display:none';
@@ -534,7 +534,7 @@ if ($step == 2) {
 		$priority, '', 0, 0, true, false, false);
 	
 	$table->data[3][0] = __('Condition type');
-	$table->data[3][1] = print_select (get_alert_templates_types (), 'type',
+	$table->data[3][1] = print_select (alerts_get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
 	$table->data[3][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
 	$table->data[3][1] .= '&nbsp;'.print_checkbox ('matches_value', 1, $matches, true);

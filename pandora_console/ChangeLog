@@ -1,3 +1,54 @@
+2011-04-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/db/oracle.php
+	include/functions_modules.php
+	include/functions_reporting.php
+	include/functions_networkmap.php
+	include/ajax/agent.php
+	include/ajax/alert_list.ajax.php
+	include/functions_ui.php
+	include/functions_agents.php
+	include/functions_db.php
+	include/functions_alerts.php
+	extensions/agents_modules.php
+	extensions/resource_registration.php
+	extensions/module_groups.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_agente.php
+	operation/agentes/alerts_status.functions.php
+	operation/agentes/exportdata.php
+	operation/events/events.php
+	operation/search_alerts.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/agents/view_alerts.php
+	general/ui/agents_list.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/agent_manager.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/configure_alert_compound.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_list.php
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/configure_alert_action.php
+	godmode/alerts/configure_alert_command.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_list.builder.php
+	godmode/alerts/alert_commands.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_copy_modules.php
+	godmode/massive/massive_enable_disable_alerts.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_standby_alerts.php
+	godmode/massive/massive_add_action_alerts.php
+	godmode/reporting/graph_builder.main.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/graph_builder.preview.php: Functions of functions_agents.php
+	and function_alerts.php have the "agent_" and "alert_" prefix respectively.
+
 2011-04-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php

@@ -42,7 +42,7 @@ $form_filter .= "<tr>\n";
 $form_filter .= "<td>".__('Template name')."</td><td>";
 $form_filter .= print_input_text ('template_name', $templateName, '', 12, 255, true);
 $form_filter .= "</td>\n";
-$temp = get_agents();
+$temp = agents_get_agents();
 $arrayAgents = array();
 
 # Avoid empty arrays, warning messages are UGLY !
@@ -159,7 +159,7 @@ if ($searchFlag) {
 		$where .= " AND talert_template_modules.standby = " . $standby;
 }
 
-$total = get_agent_alerts_simple (array_keys ($agents), false,
+$total = agents_get_alerts_simple (array_keys ($agents), false,
 	false, $where, false, false, false, true);
 
 if(empty($total)) $total = 0;
@@ -277,7 +277,7 @@ if ($id_agente) {
 else {
 	ui_pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
 }
-$simple_alerts = get_agent_alerts_simple (array_keys ($agents), false,
+$simple_alerts = agents_get_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),
 		'limit' => $config['block_size'], 'order' => $order), $where, false);
 
@@ -423,7 +423,7 @@ foreach ($simple_alerts as $alert) {
 		print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
 
 	$data[4] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
-	$data[4] .= ui_print_truncate_text(get_alert_template_name ($alert['id_alert_template']), 15, false);
+	$data[4] .= ui_print_truncate_text(alerts_get_alert_template_name ($alert['id_alert_template']), 15, false);
 	$data[4] .= "</a>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -439,7 +439,7 @@ foreach ($simple_alerts as $alert) {
 		}
 	}
 	
-	$actions = get_alert_agent_module_actions ($alert['id']);
+	$actions = alerts_get_alert_agent_module_actions ($alert['id']);
 
 	$data[6] = '';
 	if (empty($actions)){
@@ -504,7 +504,7 @@ foreach ($simple_alerts as $alert) {
 	$own_groups = get_user_groups($config['id_user'], 'LW', $own_info['is_admin']);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($own_groups));
-	$actions = get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
+	$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
 	$data[6] .= print_select ($actions, 'action', '', '', __('None'), 0, true);
 	$data[6] .= '<br />';
 	$data[6] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';

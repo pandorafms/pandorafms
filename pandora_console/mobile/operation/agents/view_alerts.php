@@ -42,7 +42,7 @@ class ViewAlerts {
 		$idGroups = array_keys($groups);
 		$agents = get_group_agents($idGroups); 
 		
-		$alertsSimple = get_agent_alerts_simple($agents);
+		$alertsSimple = agents_get_alerts_simple($agents);
 		
 		$rowPair = false;
 		$iterator = 0;
@@ -59,7 +59,7 @@ class ViewAlerts {
 			$idAgent = get_agentmodule_agent($alert["id_agent_module"]);
 
 			$data[] = '<a href="index.php?page=agent&id=' . $idAgent . '">' . ui_print_truncate_text(get_agentmodule_name($alert["id_agent_module"]), 20, true, true) . '</a>';
-			$template = safe_output(get_alert_template ($alert['id_alert_template']));
+			$template = safe_output(alerts_get_alert_template ($alert['id_alert_template']));
 			$data[] = ui_print_truncate_text(safe_output($template['name']), 20, true, true);
 			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			

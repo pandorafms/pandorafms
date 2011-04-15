@@ -29,7 +29,7 @@
  *
  * @return int New agent id if created. False if it could not be created.
  */
-function create_agent ($name, $id_group, $interval, $ip_address, $values = false) {
+function agents_create_agent ($name, $id_group, $interval, $ip_address, $values = false) {
 	if (empty ($name))
 		return false;
 	if (empty ($id_group))
@@ -109,7 +109,7 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', 
+function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', 
 	$allModules = false, $orderby = false, $idGroup = false, $count = false) {
 	global $config;
 
@@ -237,7 +237,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
  *
  * @return array An array with all combined alerts defined for an agent.
  */
-function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $count = false, $where = '') {
+function agents_get_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $count = false, $where = '') {
 	switch ($filter) {
 		case "notfired":
 			$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -313,7 +313,7 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
  * 
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
-function get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
+function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
     global $config;
 
 	if (! is_array ($filter)) {
@@ -371,9 +371,9 @@ function get_agents ($filter = false, $fields = false, $access = 'AR', $order = 
  *
  * @return array An array with all alerts defined for an agent.
  */
-function get_agent_alerts ($id_agent = false, $filter = false, $options = false) {
-	$combined_alerts = get_agent_alerts_compound ($id_agent, $filter, $options);
-	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter, $options);
+function agents_get_alerts ($id_agent = false, $filter = false, $options = false) {
+	$combined_alerts = agents_get_alerts_compound ($id_agent, $filter, $options);
+	$simple_alerts = agents_get_alerts_simple ($id_agent, $filter, $options);
 	
 	return array ('simple' => $simple_alerts, 'compounds' => $combined_alerts);
 }
@@ -390,7 +390,9 @@ function get_agent_alerts ($id_agent = false, $filter = false, $options = false)
  *
  * @return bool True in case of good, false in case of bad
  */
-function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modules = false, $copy_alerts = false, $target_modules = false, $target_alerts = false) {
+function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modules = false, $copy_alerts = false, $target_modules = false, $target_alerts = false) {
+	global $config;
+
 	if (empty ($source_id_agent)) {
 		echo '<h3 class="error">'.__('No source agent to copy').'</h3>';
 		return false;
@@ -428,7 +430,7 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 		$target_modules = array ();
 		
 		foreach ($target_alerts as $id_alert) {
-			$alert = get_alert_agent_module ($id_alert);
+			$alert = alerts_get_alert_agent_module ($id_alert);
 			if ($alert === false)
 				continue;
 			/* Check if some alerts which doesn't belong to the agent was given */
@@ -438,8 +440,16 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 		}
 	}
 	
-	process_sql ('SET AUTOCOMMIT = 0');
-	process_sql ('START TRANSACTION');
+	switch ($config['dbtype']) {
+		case "mysql":
+		case "postgresql":
+			process_sql ('SET AUTOCOMMIT = 0');
+			process_sql ('START TRANSACTION');
+			break;
+		case "oracle":
+			process_sql_begin();
+			break;
+	}
 	$error = false;
 	
 	foreach ($destiny_id_agents as $id_destiny_agent) {
@@ -461,12 +471,12 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 			alerts for the module will be copied */
 			if (! empty ($target_alerts)) {
 				foreach ($target_alerts as $id_alert) {
-					$alert = get_alert_agent_module ($id_alert);
+					$alert = alerts_get_alert_agent_module ($id_alert);
 					if ($alert === false)
 						continue;
 					if ($alert['id_agent_module'] != $id_agent_module)
 						continue;
-					$result = copy_alert_agent_module_to_agent_module ($alert['id'],
+					$result = alerts_copy_alert_module_to_module ($alert['id'],
 						$id_destiny_module);
 					if ($result === false) {
 						$error = true;
@@ -476,13 +486,13 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 				continue;
 			}
 			
-			$alerts = get_alerts_agent_module ($id_agent_module, true);
+			$alerts = alerts_get_alerts_agent_module ($id_agent_module, true);
 			
 			if ($alerts === false)
 				continue;
 			
 			foreach ($alerts as $alert) {
-				$result = copy_alert_agent_module_to_agent_module ($alert['id'],
+				$result = alerts_copy_alert_module_to_module ($alert['id'],
 					$id_destiny_module);
 				if ($result === false) {
 					$error = true;
@@ -496,15 +506,36 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 	
 	if ($error) {
 		echo '<h3 class="error">'.__('There was an error copying the agent configuration, the copy has been cancelled').'</h3>';
-		process_sql ('ROLLBACK');
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":
+				process_sql ('ROLLBACK');
+				break;
+			case "oracle":
+				process_sql_rollback();
+				break;
+		}
 	} else {
 		echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
-		process_sql ('COMMIT');
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":		
+				process_sql ('COMMIT');
+				break;
+			case "oracle":
+				process_sql_commit();
+				break;
+		}
 	}
-	process_sql ('SET AUTOCOMMIT = 1');
+	switch ($config['dbtype']) {
+		case "mysql":
+		case "postgresql":
+			process_sql ('SET AUTOCOMMIT = 1');
+			break;
+	}
 }
 
-function getNextAgentContact($idAgent, $maxModules = false) {
+function agents_get_next_contact($idAgent, $maxModules = false) {
 	
 	$agent = get_db_row_sql("SELECT * FROM tagente WHERE id_agente = " . $idAgent);
 	
@@ -553,7 +584,7 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
+function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
 
 	$where = '';
@@ -629,7 +660,7 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agents_common_modules ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
+function agents_common_modules ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
 
 	$where = '';

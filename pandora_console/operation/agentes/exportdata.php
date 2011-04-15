@@ -53,7 +53,7 @@ if (is_ajax ()) {
 				break;
 		}
 		
-		$agents = get_agents ($filter, array ('nombre', 'direccion'));
+		$agents = agents_get_agents ($filter, array ('nombre', 'direccion'));
 		if ($agents === false)
 			return;
 			
@@ -92,10 +92,10 @@ $agentName = get_parameter_post ('agent', 0);
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$agents = get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+			$agents = agents_get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
 			break;
 		case "oracle":
-			$agents = get_agents (array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
+			$agents = agents_get_agents (array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
 			break;
 	}
 $agent = $agents[0]['id_agente'];
@@ -314,7 +314,7 @@ if ($group > 0) {
 }
 
 $agents = array ();
-$rows = get_agents ($filter, false, 'AR');
+$rows = agents_get_agents ($filter, false, 'AR');
 if ($rows == null) $rows = array();
 foreach ($rows as $row) {
 	$agents[$row['id_agente']] = $row['nombre'];

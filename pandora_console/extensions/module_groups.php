@@ -29,7 +29,7 @@ if (is_ajax ()) {
 	if ($get_info_alert_module_group) {
 		$agents = get_group_agents($id_agent_group);
 		if (!empty($agents)) {
-			$alerts = get_agent_alerts_simple($agents);
+			$alerts = agents_get_alerts_simple($agents);
 			
 			foreach ($alerts as $alert) {
 				$module = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
@@ -159,7 +159,7 @@ function mainModuleGroups() {
 			
 			$agents = get_group_agents($idAgentGroup);
 			if (!empty($agents)) {
-				$alerts = get_agent_alerts_simple($agents);
+				$alerts = agents_get_alerts_simple($agents);
 				
 				foreach ($alerts as $alert) {
 					$module = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));

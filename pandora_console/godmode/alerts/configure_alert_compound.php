@@ -103,22 +103,22 @@ function update_compound ($step) {
 		$name = (string) get_parameter ('name');
 		$description = (string) get_parameter ('description');
 		
-		$result = update_alert_compound ($id,
+		$result = alerts_update_alert_compound ($id,
 			array ('name' => $name,
 				'description' => $description,
 				'id_agent' => $id_agent));
 		/* Temporary disable the alert for update all elements */
-		set_alerts_compound_disable ($id, true);
+		alerts_set_alerts_compound_disable ($id, true);
 		/* Delete all elements of the alert and create them again */
-		delete_alert_compound_elements ($id);
+		alerts_delete_alert_compound_elements ($id);
 		$alerts = (array) get_parameter ('conditions');
 		$operations = (array) get_parameter ('operations');
 		
 		foreach ($alerts as $id_alert) {
-			add_alert_compound_element ($id, (int) $id_alert, $operations[$id_alert]);
+			alerts_add_alert_compound_element ($id, (int) $id_alert, $operations[$id_alert]);
 		}
 		
-		set_alerts_compound_disable ($id, false);
+		alerts_set_alerts_compound_disable ($id, false);
 	} elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
@@ -151,21 +151,21 @@ function update_compound ($step) {
 			'min_alerts' => $min_alerts
 			);
 		
-		$result = update_alert_compound ($id, $values);
+		$result = alerts_update_alert_compound ($id, $values);
 		
 		/* Update actions */
 		$actions = (array) get_parameter ('actions');
 		
 		foreach ($actions as $id_action) {
 			/* TODO: fires_min and fires_max missing */
-			add_alert_compound_action ($id, (int) $id_action);
+			alerts_add_alert_compound_action ($id, (int) $id_action);
 		}
 	} elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
 		$field2_recovery = (bool) get_parameter ('field2_recovery');
 		$field3_recovery = (bool) get_parameter ('field3_recovery');
 	
-		$result = update_alert_compound ($id,
+		$result = alerts_update_alert_compound ($id,
 			array ('recovery_notify' => $recovery_notify,
 				'field2_recovery' => $field2_recovery,
 				'field3_recovery' => $field3_recovery));
@@ -207,7 +207,7 @@ $field2_recovery = '';
 $field3_recovery = '';
 
 if ($id && ! $create_compound) {
-	$compound = get_alert_compound ($id);
+	$compound = alerts_get_alert_compound ($id);
 	$name = $compound['name'];
 	$description = $compound['description'];
 	$time_from = $compound['time_from'];
@@ -242,7 +242,7 @@ if ($create_compound) {
 	$name = (string) get_parameter ('name');
 	$description = (string) get_parameter ('description');
 	
-	$result = create_alert_compound ($name, $id_agent,
+	$result = alerts_create_alert_compound ($name, $id_agent,
 		array ('description' => $description));
 	
 	ui_print_result_message ($result,
@@ -257,7 +257,7 @@ if ($create_compound) {
 		$operations = (array) get_parameter ('operations');
 		
 		foreach ($alerts as $id_alert) {
-			add_alert_compound_element ($id, (int) $id_alert, $operations[$id_alert]);
+			alerts_add_alert_compound_element ($id, (int) $id_alert, $operations[$id_alert]);
 		}
 	}
 }
@@ -288,7 +288,7 @@ $table->size[0] = '20%';
 $table->size[2] = '20%';
 if ($step == 2) {
 	/* Firing conditions and events */
-	$threshold_values = get_alert_compound_threshold_values ();
+	$threshold_values = alerts_compound_threshold_values ();
 	if (in_array ($threshold, array_keys ($threshold_values))) {
 		$table->style['other_label'] = 'display:none; font-weight: bold';
 		$table->style['other_input'] = 'display:none';
@@ -372,7 +372,7 @@ if ($step == 2) {
 	$table->data['actions'][0] = __('Assigned actions');
 	$table->data['actions'][1] = '<ul id="alert_actions">';
 	if ($id) {
-		$actions = get_alert_compound_actions ($id);
+		$actions = alerts_get_alert_compound_actions ($id);
 		if (empty ($actions))
 			$table->rowstyle['actions'] = 'display: none';
 		foreach ($actions as $action) {
@@ -463,25 +463,25 @@ if ($step == 2) {
 	$table_alerts->size[4] = '10%';
 	
 	if ($id) {
-		$conditions = get_alert_compound_elements ($id);
+		$conditions = alerts_get_alert_compound_elements ($id);
 		if ($conditions === false)
 			$conditions = array ();
 		foreach ($conditions as $condition) {
 			$data = array ();
 			
-			$alert = get_alert_agent_module ($condition['id_alert_template_module']);
+			$alert = alerts_get_alert_agent_module ($condition['id_alert_template_module']);
 			$data[0] = '<a href="#" class="remove_alert" id="alert-'.$alert['id'].'" />';
 			$data[0] .= print_image("images/delete.png", true);
 			$data[0] .= '</a>';
 			$idAgent = get_agent_module_id($alert['id_agent_module']);
 			$nameAgent = get_agent_name($idAgent);
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $idAgent . '">' . $nameAgent . '</a>';
-			$data[2] = get_alert_template_name ($alert['id_alert_template']);
+			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
 			$data[3] = get_agentmodule_name ($alert['id_agent_module']);
 			if ($condition['operation'] == 'NOP') {
 				$data[4] = print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
 			} else {
-				$data[4] = print_select (get_alert_compound_operations (),
+				$data[4] = print_select (alerts_compound_operations (),
 					'operations['.$alert['id'].']', $condition['operation'], '', '', '', true);
 			}
 			$data[4] .= print_input_hidden ("conditions[]", $alert['id'], true);
@@ -560,7 +560,7 @@ if ($step == 1) {
 	if (! $id_agent) {
 		$table_alerts->class = 'invisible';
 	} else {
-		$alerts = get_agent_alerts_simple ($id_agent);
+		$alerts = agents_get_alerts_simple ($id_agent);
 		
 		if (empty ($alerts)) {
 			$table_alerts->data[0][0] = "<div class='nf'>".__('No alerts found')."</div>";
@@ -575,7 +575,7 @@ if ($step == 1) {
 			$data[0] .= print_image('images/add.png', true);
 			$data[0] .= '</a>';
 			$data[1] = get_agentmodule_name ($alert['id_agent_module']);
-			$data[2] = get_alert_template_name ($alert['id_alert_template']);
+			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
 			
 			array_push ($table_alerts->data, $data);
 		}
@@ -598,7 +598,7 @@ if ($step == 1) {
 	echo '</div>';
 	
 	echo '<div class="invisible">';
-	print_select (get_alert_compound_operations (), 'operations');
+	print_select (alerts_compound_operations (), 'operations');
 	echo '</div>';
 }
 

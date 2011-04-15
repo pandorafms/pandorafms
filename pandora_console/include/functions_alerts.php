@@ -27,7 +27,7 @@
  * 
  * @return mixed Return id if the group have any alert is fired or false is not.
  */
-function get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1') {
+function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1') {
 	global $config;
 	
 	$return = false;
@@ -67,11 +67,11 @@ function get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1
  *
  * @param string name command name to save in DB.
  * @param string command String of command.
- * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
+ * @param mixed A single value or array of values to insert (can be a multiple amount of rows).
  * 
- * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise.
  */
-function create_alert_command ($name, $command, $values = false) {
+function alerts_create_alert_command ($name, $command, $values = false) {
 	if (empty ($name))
 		return false;
 	if (empty ($command))
@@ -84,7 +84,15 @@ function create_alert_command ($name, $command, $values = false) {
 	return @process_sql_insert ('talert_commands', $values);
 }
 
-function update_alert_command ($id_alert_command, $values) {
+/**
+ * Update a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * @param mixed Array of values to update.
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function alerts_update_alert_command ($id_alert_command, $values) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -96,7 +104,14 @@ function update_alert_command ($id_alert_command, $values) {
 		array ('id' => $id_alert_command))) !== false;
 }
 
-function delete_alert_command ($id_alert_command) {
+/**
+ * Delete a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function alerts_delete_alert_command ($id_alert_command) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -105,7 +120,14 @@ function delete_alert_command ($id_alert_command) {
 		array ('id' => $id_alert_command))) !== false;
 }
 
-function get_alert_command ($id_alert_command) {
+/**
+ * Get a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. All row of the selected command otherwise
+ */
+function alerts_get_alert_command ($id_alert_command) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -113,7 +135,14 @@ function get_alert_command ($id_alert_command) {
 	return get_db_row ('talert_commands', 'id', $id_alert_command);
 }
 
-function get_alert_command_name ($id_alert_command) {
+/**
+ * Get name of a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. Command name otherwise
+ */
+function alert_get_alert_command_name ($id_alert_command) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -121,7 +150,14 @@ function get_alert_command_name ($id_alert_command) {
 	return get_db_value ('name', 'talert_commands', 'id', $id_alert_command);
 }
 
-function get_alert_command_command ($id_alert_command) {
+/**
+ * Get command field of a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. Command field otherwise
+ */
+function alerts_get_alert_command_command ($id_alert_command) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -129,7 +165,14 @@ function get_alert_command_command ($id_alert_command) {
 	return get_db_value ('command', 'talert_commands', 'id', $id_alert_command);
 }
 
-function get_alert_command_internal ($id_alert_command) {
+/**
+ * Get internal field of a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. Internal field otherwise
+ */
+function alerts_get_alert_command_internal ($id_alert_command) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -137,7 +180,14 @@ function get_alert_command_internal ($id_alert_command) {
 	return (bool) get_db_value ('internal', 'talert_commands', 'id', $id_alert_command);
 }
 
-function get_alert_command_description ($id_alert_command) {
+/**
+ * Get description field of a command in talert_commands.
+ *
+ * @param int Alert command Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. Description field otherwise
+ */
+function alerts_get_alert_command_description ($id_alert_command) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -146,14 +196,15 @@ function get_alert_command_description ($id_alert_command) {
 }
 
 /**
- * 
- * @param $name
- * @param $id_alert_command
- * @param $values
+ * Creates a new alert action. 
+ *
+ * @param string Name of the alert action 
+ * @param int Id of the alert command associated
+ * @param mixed Other fields of the new alert or false. 
  * 
  * @return mixed Returns the id if success or false in case of fail. 
  */
-function create_alert_action ($name, $id_alert_command, $values = false) {
+function alerts_create_alert_action ($name, $id_alert_command, $values = false) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -168,7 +219,15 @@ function create_alert_action ($name, $id_alert_command, $values = false) {
 	return @process_sql_insert ('talert_actions', $values);
 }
 
-function update_alert_action ($id_alert_action, $values) {
+/**
+ * Updates an alert action. 
+ *
+ * @param int Id of the alert action
+ * @param array Values to update. 
+ * 
+ * @return mixed Returns affected rows or false in case of fail. 
+ */
+function alerts_update_alert_action ($id_alert_action, $values) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))
 		return false;
@@ -180,7 +239,14 @@ function update_alert_action ($id_alert_action, $values) {
 		array ('id' => $id_alert_action))) !== false;
 }
 
-function delete_alert_action ($id_alert_action) {
+/**
+ * Delete an alert action. 
+ *
+ * @param int Id of the alert action
+ * 
+ * @return mixed Returns affected rows or false in case of fail. 
+ */
+function alerts_delete_alert_action ($id_alert_action) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))
 		return false;
@@ -189,19 +255,25 @@ function delete_alert_action ($id_alert_action) {
 		array ('id' => $id_alert_action))) !== false;
 }
 
-
-function clone_alert_action ($id_alert_action) {
+/**
+ * Clone an alert action. 
+ *
+ * @param int Id of the original alert action
+ * 
+ * @return mixed Id of the cloned action or false in case of fail. 
+ */
+function alerts_clone_alert_action ($id_alert_action) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))
 		return false;
 		
-	$action = get_alert_action($id_alert_action);
+	$action = alerts_get_alert_action($id_alert_action);
 	
 	if (empty ($action))
 		return false;
 		
 	unset($action['id']);
-	return create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
+	return alerts_create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
 	
 }
 
@@ -213,7 +285,7 @@ function clone_alert_action ($id_alert_action) {
  * 
  * @return array The list of actions.
  */
-function get_alert_actions ($only_names = true, $acl = false) {
+function alerts_get_alert_actions ($only_names = true, $acl = false) {
 	$groups = get_user_groups(false, "AR", true);
 	
 	if ($groups === false) {
@@ -246,7 +318,7 @@ function get_alert_actions ($only_names = true, $acl = false) {
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function get_alert_actions_filter ($only_names = true, $filter = false) {
+function alerts_get_alert_actions_filter ($only_names = true, $filter = false) {
 
 	if (!$filter)
 		$all_actions = get_db_all_rows_in_table ('talert_actions');
@@ -269,7 +341,15 @@ function get_alert_actions_filter ($only_names = true, $filter = false) {
 	return $actions;
 }
 
-function get_alert_action ($id_alert_action) {
+/**
+ * Get action alert.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed An array with the result set of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action ($id_alert_action) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))
 		return false;
@@ -277,32 +357,85 @@ function get_alert_action ($id_alert_action) {
 	return get_db_row ('talert_actions', 'id', $id_alert_action);
 }
 
-function get_alert_action_alert_command_id ($id_alert_action) {
+/**
+ * Get Id of the alert command associated with an alert action.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed Id of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action_alert_command_id ($id_alert_action) {
 	return get_db_value ('id_alert_command', 'talert_actions', 'id', $id_alert_action);
 }
 
-function get_alert_action_alert_command ($id_alert_action) {
-	$id_command = get_alert_action_alert_command_id ($id_alert_action);
-	return get_alert_command ($id_command);
+/**
+ * Get alert command associated with an alert action.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed Result set of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action_alert_command ($id_alert_action) {
+	$id_command = alerts_get_alert_action_alert_command_id ($id_alert_action);
+	return alerts_get_alert_command ($id_command);
 }
 
-function get_alert_action_field1 ($id_alert_action) {
+/**
+ * Get field1 of an alert action.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed Field1 of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action_field1 ($id_alert_action) {
 	return get_db_value ('field1', 'talert_actions', 'id', $id_alert_action);
 }
 
-function get_alert_action_field2 ($id_alert_action) {
+/**
+ * Get field2 of an alert action.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed Field2 of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action_field2 ($id_alert_action) {
 	return get_db_value ('field2', 'talert_actions', 'id', $id_alert_action);
 }
 
-function get_alert_action_field3 ($id_alert_action) {
+/**
+ * Get field3 of an alert action.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed Field3 of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action_field3 ($id_alert_action) {
 	return get_db_value ('field3', 'talert_actions', 'id', $id_alert_action);
 }
 
-function get_alert_action_name ($id_alert_action) {
+/**
+ * Get name of an alert action.
+ * 
+ * @param int Id of the action alert.
+ *
+ * @return mixed Name of the action alert or
+ * false in case of empty result
+ */
+function alerts_get_alert_action_name ($id_alert_action) {
 	return get_db_value ('name', 'talert_actions', 'id', $id_alert_action);
 }
 
-function get_alert_templates_types () {
+/**
+ * Get types of alert templates.
+ * 
+ * @return array Types of alert templates.
+ */
+function alerts_get_alert_templates_types () {
 	$types = array ();
 	
 	$types['regex'] = __('Regular expression');
@@ -319,14 +452,30 @@ function get_alert_templates_types () {
 	return $types;
 }
 
-function get_alert_templates_type_name ($type) {
-	$types = get_alert_templates_types ();
+/**
+ * Get type name of an alert template.
+ * 
+ * @param string alert template type.
+ *
+ * @return string name of the alert template.
+ */
+function alerts_get_alert_templates_type_name ($type) {
+	$types = alerts_get_alert_templates_types ();
 	if (! isset ($type[$type]))
 		return __('Unknown');
 	return $types[$type];
 }
 
-function create_alert_template ($name, $type, $values = false) {
+/**
+ * Creates an alert template.
+ * 
+ * @param string Name of the alert template.
+ * @param string Type of the alert template.
+ * @param mixed Array of alert template values or false.
+ *
+ * @return string name of the alert template.
+ */
+function alerts_create_alert_template ($name, $type, $values = false) {
 	if (empty ($name))
 		return false;
 	if (empty ($type))
@@ -344,7 +493,15 @@ function create_alert_template ($name, $type, $values = false) {
 	return @process_sql_insert ('talert_templates', $values);
 }
 
-function update_alert_template ($id_alert_template, $values) {
+/**
+ * Updates an alert template.
+ * 
+ * @param int Id of the alert template.
+ * @param array Array of alert template values.
+ *
+ * @return mixed Number of rows affected or false if something goes wrong.
+ */
+function alerts_update_alert_template ($id_alert_template, $values) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
 	if (empty ($id_alert_template))
 		return false;
@@ -356,7 +513,14 @@ function update_alert_template ($id_alert_template, $values) {
 		array ('id' => $id_alert_template))) !== false;
 }
 
-function delete_alert_template ($id_alert_template) {
+/**
+ * Deletes an alert template.
+ * 
+ * @param int Id of the alert template.
+ *
+ * @return mixed Number of rows affected or false if something goes wrong.
+ */
+function alerts_delete_alert_template ($id_alert_template) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
 	if (empty ($id_alert_template))
 		return false;
@@ -364,11 +528,26 @@ function delete_alert_template ($id_alert_template) {
 	return @process_sql_delete ('talert_templates', array ('id' => $id_alert_template));
 }
 
-function get_alert_templates ($filter = false, $fields = false) {
+/**
+ * Get a set of alert templates.
+ * 
+ * @param mixed Array with filter conditions or false.
+ * @param mixed Array with a set of fields to retrieve or false.
+ *
+ * @return mixed Array with selected alert templates or false if something goes wrong.
+ */
+function alerts_get_alert_templates ($filter = false, $fields = false) {
 	return @get_db_all_rows_filter ('talert_templates', $filter, $fields);
 }
 
-function get_alert_template ($id_alert_template) {
+/**
+ * Get one alert template.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Selected alert template or false if something goes wrong.
+ */
+function alerts_get_alert_template ($id_alert_template) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
 	if (empty ($id_alert_template))
 		return false;
@@ -376,61 +555,159 @@ function get_alert_template ($id_alert_template) {
 	return get_db_row ('talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_field1 ($id_alert_template) {
+/**
+ * Get field1 of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Field1 field or false if something goes wrong.
+ */
+function alerts_get_alert_template_field1 ($id_alert_template) {
 	return get_db_value ('field1', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_field2 ($id_alert_template) {
+/**
+ * Get field2 of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Field2 field or false if something goes wrong.
+ */
+function alerts_get_alert_template_field2 ($id_alert_template) {
 	return get_db_value ('field2', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_field3 ($id_alert_template) {
+/**
+ * Get field3 of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Field3 field or false if something goes wrong.
+ */
+function alerts_get_alert_template_field3 ($id_alert_template) {
 	return get_db_value ('field3', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_name ($id_alert_template) {
+/**
+ * Get name of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Name field or false if something goes wrong.
+ */
+function alerts_get_alert_template_name ($id_alert_template) {
 	return get_db_value ('name', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_description ($id_alert_template) {
+/**
+ * Get description of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Description field or false if something goes wrong.
+ */
+function alerts_get_alert_template_description ($id_alert_template) {
 	return get_db_value ('description', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_type ($id_alert_template) {
+/**
+ * Get type of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Type field or false if something goes wrong.
+ */
+function alerts_get_alert_template_type ($id_alert_template) {
 	return get_db_value ('type', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_type_name ($id_alert_template) {
-	$type = get_alert_template_type ($id_alert_template);
-	return get_alert_templates_type_name ($type);
+/**
+ * Get type's name of alert template.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Type's name of an alert template or false if something goes wrong.
+ */
+function alerts_get_alert_template_type_name ($id_alert_template) {
+	$type = alerts_get_alert_template_type ($id_alert_template);
+	return alerts_get_alert_templates_type_name ($type);
 }
 
-function get_alert_template_value ($id_alert_template) {
+/**
+ * Get value of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Value field or false if something goes wrong.
+ */
+function alerts_get_alert_template_value ($id_alert_template) {
 	return get_db_value ('value', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_max_value ($id_alert_template) {
+/**
+ * Get max_value of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Max_value field or false if something goes wrong.
+ */
+function alerts_get_alert_template_max_value ($id_alert_template) {
 	return get_db_value ('max_value', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_min_value ($id_alert_template) {
+/**
+ * Get min_value of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Min_value field or false if something goes wrong.
+ */
+function alerts_get_alert_template_min_value ($id_alert_template) {
 	return get_db_value ('min_value', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_alert_text ($id_alert_template) {
+/**
+ * Get alert_text of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Alert_text field or false if something goes wrong.
+ */
+function alerts_get_alert_template_alert_text ($id_alert_template) {
 	return get_db_value ('alert_text', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_time_from ($id_alert_template) {
+/**
+ * Get time_from of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Time_from field or false if something goes wrong.
+ */
+function alerts_get_alert_template_time_from ($id_alert_template) {
 	return get_db_value ('time_from', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_time_to ($id_alert_template) {
-	return get_db_value ('time_from', 'talert_templates', 'id', $id_alert_template);
+/**
+ * Get time_to of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Time_to field or false if something goes wrong.
+ */
+function alerts_get_alert_template_time_to ($id_alert_template) {
+	return get_db_value ('time_to', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_weekdays ($id_alert_template) {
-	$alert = get_alert_template ($id_alert_template);
+/**
+ * Get alert template in weekday format.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Alert template in weekday format or false if something goes wrong.
+ */
+function alerts_get_alert_template_weekdays ($id_alert_template) {
+	$alert = alerts_get_alert_template ($id_alert_template);
 	if ($alert === false)
 		return false;
 	$retval = array ();
@@ -441,19 +718,47 @@ function get_alert_template_weekdays ($id_alert_template) {
 	return $retval;
 }
 
-function get_alert_template_recovery_notify ($id_alert_template) {
+/**
+ * Get recovery_notify of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Recovery_notify field or false if something goes wrong.
+ */
+function alerts_get_alert_template_recovery_notify ($id_alert_template) {
 	return get_db_value ('recovery_notify', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_field2_recovery ($id_alert_template) {
+/**
+ * Get field2_recovery of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Field2_recovery field or false if something goes wrong.
+ */
+function alerts_get_alert_template_field2_recovery ($id_alert_template) {
 	return get_db_value ('field2_recovery', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_field3_recovery ($id_alert_template) {
+/**
+ * Get field3_recovery of talert_templates table.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Field3_recovery field or false if something goes wrong.
+ */
+function alerts_get_alert_template_field3_recovery ($id_alert_template) {
 	return get_db_value ('field3_recovery', 'talert_templates', 'id', $id_alert_template);
 }
 
-function get_alert_template_threshold_values () {
+/**
+ * Get threshold values of alert template.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Threshold values or false if something goes wrong.
+ */
+function alerts_get_alert_template_threshold_values () {
 	$times = array ();
 	
 	$times['300'] = '5 '.__('minutes');
@@ -474,8 +779,15 @@ function get_alert_template_threshold_values () {
 	return $times;
 }
 
-function duplicate_alert_template ($id_alert_template) {
-	$template = get_alert_template ($id_alert_template);
+/**
+ * Duplicates an alert template.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Duplicates an alert template or false if something goes wrong.
+ */
+function alerts_duplicate_alert_template ($id_alert_template) {
+	$template = alerts_get_alert_template ($id_alert_template);
 	if ($template === false)
 		return false;
 	$name = __('Copy of').' '.$template['name'];
@@ -490,10 +802,17 @@ function duplicate_alert_template ($id_alert_template) {
 	unset ($template['type']);
 	$template['value'] = safe_sql_string ($template['value']);
 	
-	return create_alert_template ($name, $type, $template);
+	return alerts_create_alert_template ($name, $type, $template);
 }
 
-function create_alert_agent_module ($id_agent_module, $id_alert_template, $values = false) {
+/**
+ * Creates an alert associated to a module.
+ * 
+ * @param int Id of an alert template.
+ *
+ * @return mixed Alert associated to a module or false if something goes wrong.
+ */
+function alerts_create_alert_agent_module ($id_agent_module, $id_alert_template, $values = false) {
 	if (empty ($id_agent_module))
 		return false;
 	if (empty ($id_alert_template))
@@ -507,7 +826,15 @@ function create_alert_agent_module ($id_agent_module, $id_alert_template, $value
 	return @process_sql_insert ('talert_template_modules', $values);
 }
 
-function update_alert_agent_module ($id_alert_agent_module, $values) {
+/**
+ * Updates an alert associated to a module.
+ * 
+ * @param int Id of an alert template.
+ * @param array Values of the update.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_update_alert_agent_module ($id_alert_agent_module, $values) {
 	if (empty ($id_agent_module))
 		return false;
 	if (! is_array ($values))
@@ -518,7 +845,15 @@ function update_alert_agent_module ($id_alert_agent_module, $values) {
 		array ('id' => $id_alert_template))) !== false;
 }
 
-function delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
+/**
+ * Deletes an alert associated to a module.
+ * 
+ * @param int Id of an alert template.
+ * @param mixed Array with filter conditions to delete.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
 	if (empty ($id_alert_agent_module) && ! is_array ($filter))
 		return false;
 	if (! is_array ($filter))
@@ -533,7 +868,7 @@ function delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
 		
 		if ($idAlertCompunds !== false) {
 			foreach($idAlertCompunds as $id)
-				delete_alert_compound($id);
+				alerts_delete_alert_compound($id);
 		}
 	}
 	
@@ -541,7 +876,15 @@ function delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
 		$filter)) !== false;
 }
 
-function get_alert_agent_module ($id_alert_agent_module) {
+/**
+ * Get alert associated to a module.
+ * 
+ * @param int Id of an alert template.
+ * @param mixed Array with filter conditions to delete.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_get_alert_agent_module ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	if (empty ($id_alert_agent_module))
 		return false;
@@ -549,7 +892,17 @@ function get_alert_agent_module ($id_alert_agent_module) {
 	return get_db_row ('talert_template_modules', 'id', $id_alert_agent_module);
 }
 
-function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter = false, $fields = false) {
+/**
+ * Get alert associated to a module.
+ * 
+ * @param int Id of an alert template.
+ * @param bool Disabled or not.
+ * @param mixed Filter conditions or false.
+ * @param mixed Array with fields to retrieve or false.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_get_alerts_agent_module ($id_agent_module, $disabled = false, $filter = false, $fields = false) {
 	$id_alert_agent_module = safe_int ($id_agent_module, 0);
 	
 	if (! is_array ($filter))
@@ -562,40 +915,88 @@ function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter =
 		$filter, $fields);
 }
 
-function get_alert_agent_module_disabled ($id_alert_agent_module) {
+/**
+ * Get disabled field of talert_template_modules table.
+ * 
+ * @param int Id of an alert associated to a module.
+ *
+ * @return mixed Disabled field or false if something goes wrong.
+ */
+function alerts_get_alert_agent_module_disabled ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	return get_db_value ('disabled', 'talert_template_modules', 'id',
 		$id_alert_agent_module);
 }
 
-function set_alerts_agent_module_force_execution ($id_alert_agent_module) {
+/**
+ * Force execution of an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_agent_module_force_execution ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	return (@process_sql_update ('talert_template_modules',
 		array ('force_execution' => 1),
 		array ('id' => $id_alert_agent_module))) !== false;
 }
 
-function set_alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
+/**
+ * Disable/Enable an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ * @param bool Whether to enable or disable an alert.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	return (@process_sql_update ('talert_template_modules',
 		array ('disabled' => (bool) $disabled),
 		array ('id' => $id_alert_agent_module))) !== false;
 }
 
-function set_alerts_agent_module_standby ($id_alert_agent_module, $standby) {
+/**
+ * Disable/Enable stanby of an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ * @param bool Whether to enable or disable stanby of an alert.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_agent_module_standby ($id_alert_agent_module, $standby) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	return (@process_sql_update ('talert_template_modules',
 		array ('standby' => (bool) $standby),
 		array ('id' => $id_alert_agent_module))) !== false;
 }
 
-function get_alerts_agent_module_last_fired ($id_alert_agent_module) {
+/**
+ * Get last fired of an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_get_alerts_agent_module_last_fired ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
 	return get_db_value ('last_fired', 'talert_template_modules', 'id',
 		$id_alert_agent_module);
 }
 
-function add_alert_agent_module_action ($id_alert_template_module, $id_alert_action, $options = false) {
+/**
+ * Add an action to an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ * @param int Id of an alert.
+ * @param mixed Options of the action.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_add_alert_agent_module_action ($id_alert_template_module, $id_alert_action, $options = false) {
+	global $config;
+
 	if (empty ($id_alert_template_module))
 		return false;
 	if (empty ($id_alert_action))
@@ -620,11 +1021,25 @@ function add_alert_agent_module_action ($id_alert_template_module, $id_alert_act
 		$values['fires_max'] = max ($max, $min);
 		$values['fires_min'] = min ($max, $min);
 	}
-	
-	return (@process_sql_insert ('talert_template_module_actions', $values)) !== false;
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":	
+			return (@process_sql_insert ('talert_template_module_actions', $values)) !== false;
+			break;
+		case "oracle":
+			return (@process_sql_insert ('talert_template_module_actions', $values, false)) !== false;
+			break;
+	}
 }
 
-function delete_alert_agent_module_action ($id_alert_agent_module_action) {
+/**
+ * Delete an action to an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_delete_alert_agent_module_action ($id_alert_agent_module_action) {
 	if (empty ($id_alert_agent_module_action))
 		return false;
 	
@@ -632,7 +1047,16 @@ function delete_alert_agent_module_action ($id_alert_agent_module_action) {
 		array ('id' => $id_alert_agent_module_action))) !== false;
 }
 
-function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false, $compound = false) {
+/**
+ * Get actions of an alert associated to a module.
+ * 
+ * @param int Id of an alert associated to a module.
+ * @param mixed Array with fields to retrieve or false.
+ * @param bool Whether to retrieve compound alert or not.
+ *
+ * @return mixed Actions associated or false if something goes wrong.
+ */
+function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false, $compound = false) {
 	if (empty ($id_alert_agent_module))
 		return false;
 	
@@ -653,7 +1077,7 @@ function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false
 	
 	$retval = array ();
 	foreach ($actions as $element) {
-		$action = get_alert_action ($element['id_alert_action']);
+		$action = alerts_get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
 		if (isset($element['id']))
@@ -664,13 +1088,13 @@ function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false
 }
 
 /**
- *  Validates an alert id or an array of alert id's
+ *  Validates an alert id or an array of alert id's.
  *
- * @param mixed Array of alerts ids or single id
+ * @param mixed Array of alerts ids or single id.
  *
  * @return bool True if it was successful, false otherwise.
  */
-function validate_alert_agent_module ($id_alert_agent_module) {
+function alerts_validate_alert_agent_module ($id_alert_agent_module) {
 	global $config;
 	require_once ("include/functions_events.php");
 	
@@ -683,7 +1107,7 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 	$alerts = (array) $alerts;
 	
 	foreach ($alerts as $id) {
-		$alert = get_alert_agent_module ($id);
+		$alert = alerts_get_alert_agent_module ($id);
 		$agent_id = get_agentmodule_agent ($alert["id_agent_module"]);
 		$group_id = get_agentmodule_group ($agent_id);
 		
@@ -697,7 +1121,7 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 		
 		if ($result > 0) {
 			create_event ("Manual validation of alert for ".
-				get_alert_template_description ($alert["id_alert_template"]),
+				alerts_get_alert_template_description ($alert["id_alert_template"]),
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id_agent_module"],
 				$id);
@@ -720,12 +1144,14 @@ function validate_alert_agent_module ($id_alert_agent_module) {
  * @return New alert id on success. Existing alert id if it already exists.
  * False on error.
  */
-function copy_alert_agent_module_to_agent_module ($id_agent_alert, $id_destiny_module) {
-	$alert = get_alert_agent_module ($id_agent_alert);
+function alerts_copy_alert_module_to_module ($id_agent_alert, $id_destiny_module) {
+	global $config;
+
+	$alert = alerts_get_alert_agent_module ($id_agent_alert);
 	if ($alert === false)
 		return false;
 	
-	$alerts = get_alerts_agent_module ($id_destiny_module, false,
+	$alerts = alerts_get_alerts_agent_module ($id_destiny_module, false,
 		array ('id_alert_template' => $alert['id_alert_template']));
 	if (! empty ($alerts)) {
 		return $alerts[0]['id'];
@@ -736,16 +1162,24 @@ function copy_alert_agent_module_to_agent_module ($id_agent_alert, $id_destiny_m
 	$new_alert['id_agent_module'] = (int) $id_destiny_module;
 	$new_alert['id_alert_template'] = $alert['id_alert_template'];
 	
-	$id_new_alert = @process_sql_insert ('talert_template_modules', $new_alert);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$id_new_alert = @process_sql_insert ('talert_template_modules', $new_alert);
+			break;
+		case "oracle":
+			$id_new_alert = @process_sql_insert ('talert_template_modules', $new_alert, false);
+			break;
+	}
 	if ($id_new_alert === false) {
 		return false;
 	}
-	$actions = get_alert_agent_module_actions ($id_agent_alert);
+	$actions = alerts_get_alert_agent_module_actions ($id_agent_alert);
 	if (empty ($actions))
 		return $id_new_alert;
 	
 	foreach ($actions as $action) {
-		$result = add_alert_agent_module_action ($id_new_alert, $action['id'],
+		$result = alerts_add_alert_agent_module_action ($id_new_alert, $action['id'],
 			array ('fires_min' => $action['fires_min'],
 				'fires_max' => $action['fires_max']));
 		if ($result === false)
@@ -757,12 +1191,22 @@ function copy_alert_agent_module_to_agent_module ($id_agent_alert, $id_destiny_m
 
 /* Compound alerts */
 
-function get_alert_compound_threshold_values () {
+/**
+ * Get Threshold values of an alert.
+ * 
+ * @return Result threshold values.
+ */
+function alerts_compound_threshold_values () {
 	/* At this moment we don't need different threshold values */
-	return get_alert_template_threshold_values ();
+	return alerts_get_alert_template_threshold_values ();
 }
 
-function get_alert_compound_operations () {
+/**
+ * Get an array of compound operations.
+ * 
+ * @return Result array with operations.
+ */
+function alerts_compound_operations () {
 	$operations = array ();
 
 	$operations['OR'] = 'OR';
@@ -775,7 +1219,16 @@ function get_alert_compound_operations () {
 	return $operations;
 }
 
-function create_alert_compound ($name, $id_agent, $values = false) {
+/**
+ * Creates an alert compound.
+ * 
+ * @param string Name of the alert compound.
+ * @param int Id of the associated agent.
+ * @param mixed Array of values of the alert compound.
+ *
+ * @return Id of the alert compound of false is something goes wrong.
+ */
+function alerts_create_alert_compound ($name, $id_agent, $values = false) {
 	if (empty ($name))
 		return false;
 	if (! is_array ($values))
@@ -786,7 +1239,15 @@ function create_alert_compound ($name, $id_agent, $values = false) {
 	return @process_sql_insert ('talert_compound', $values);
 }
 
-function update_alert_compound ($id_alert_compound, $values) {
+/**
+ * Updates an alert compound.
+ * 
+ * @param int Id of the associated agent.
+ * @param mixed Array of values of the alert compound.
+ *
+ * @return Affected values or false is something goes wrong.
+ */
+function alerts_update_alert_compound ($id_alert_compound, $values) {
 	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
@@ -797,7 +1258,14 @@ function update_alert_compound ($id_alert_compound, $values) {
 		array ('id' => $id_alert_compound))) !== false;
 }
 
-function delete_alert_compound_elements ($id_alert_compound) {
+/**
+ * Deletes an alert compound.
+ * 
+ * @param int Id of the associated agent.
+ *
+ * @return Affected values or false is something goes wrong.
+ */
+function alerts_delete_alert_compound_elements ($id_alert_compound) {
 	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
@@ -806,7 +1274,16 @@ function delete_alert_compound_elements ($id_alert_compound) {
 		array ('id_alert_compound' => $id_alert_compound))) !== false;
 }
 
-function add_alert_compound_element ($id_alert_compound, $id_alert_template_module, $operation) {
+/**
+ * Add an alert compound element.
+ * 
+ * @param int Id alert compound.
+ * @param int Id alert associated to a module.
+ * @param string Operation content.
+ *
+ * @return Affected values or false is something goes wrong.
+ */
+function alerts_add_alert_compound_element ($id_alert_compound, $id_alert_template_module, $operation) {
 	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
@@ -823,15 +1300,38 @@ function add_alert_compound_element ($id_alert_compound, $id_alert_template_modu
 	return @process_sql_insert ('talert_compound_elements', $values);
 }
 
-function get_alert_compounds ($filter = false, $fields = false) {
+/**
+ * Get all alert compounds.
+ * 
+ * @param mixed Filter conditions or false.
+ * @param mixed Array with a fields to retrieve.
+ *
+ * @return Result set of alert compounds or false is something goes wrong.
+ */
+function alerts_get_alert_compounds ($filter = false, $fields = false) {
 	return @get_db_all_rows_filter ('talert_compound', $filter, $fields);
 }
 
-function get_alert_compound ($id_alert_compound) {
+/**
+ * Get one alert compound.
+ * 
+ * @param int Id of the alert compound.
+ *
+ * @return Result set of the selected alert compound or false is something goes wrong.
+ */
+function alerts_get_alert_compound ($id_alert_compound) {
 	return get_db_row ('talert_compound', 'id', $id_alert_compound);
 }
 
-function get_alert_compound_actions ($id_alert_compound, $fields = false) {
+/**
+ * Get actions of an alert compound.
+ * 
+ * @param int Id of the alert compound.
+ * @param mixed Array of fields to retrieve or false.
+ *
+ * @return Result set of actions or false is something goes wrong.
+ */
+function alerts_get_alert_compound_actions ($id_alert_compound, $fields = false) {
 	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
@@ -846,7 +1346,7 @@ function get_alert_compound_actions ($id_alert_compound, $fields = false) {
 	
 	$retval = array ();
 	foreach ($actions as $element) {
-		$action = get_alert_action ($element['id_alert_action']);
+		$action = alerts_get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
 		$retval[$element['id']] = $action;
@@ -855,16 +1355,38 @@ function get_alert_compound_actions ($id_alert_compound, $fields = false) {
 	return $retval;
 }
 
-function get_alert_compound_name ($id_alert_compound) {
+/**
+ * Get name field of talert_compound.
+ * 
+ * @param int Id of the alert compound.
+ *
+ * @return Name of the alert compound or false is something goes wrong.
+ */
+function alerts_get_alert_compound_name ($id_alert_compound) {
 	return (string) get_db_value ('name', 'talert_compound', 'id', $id_alert_compound);
 }
 
-function get_alert_compound_elements ($id_alert_compound) {
+/**
+ * Get elements of an alert compound.
+ * 
+ * @param int Id of the alert compound.
+ *
+ * @return Result set of the elements selected or false is something goes wrong.
+ */
+function alerts_get_alert_compound_elements ($id_alert_compound) {
 	return get_db_all_rows_field_filter ('talert_compound_elements',
 		'id_alert_compound', $id_alert_compound);
 }
 
-function add_alert_compound_action ($id_alert_compound, $id_alert_action, $options = false) {
+/**
+ * Gets action of an alert compound.
+ * 
+ * @param int Id of the alert compound.
+ * @param int Id of the alert compound action.
+ *
+ * @return Result set of the action selected or false is something goes wrong.
+ */
+function alerts_add_alert_compound_action ($id_alert_compound, $id_alert_action, $options = false) {
 	if (empty ($id_alert_compound))
 		return false;
 	if (empty ($id_alert_action))
@@ -890,7 +1412,14 @@ function add_alert_compound_action ($id_alert_compound, $id_alert_action, $optio
 	return (@process_sql_insert ('talert_compound_actions', $values)) !== false;
 }
 
-function delete_alert_compound_action ($id_alert_compound_action) {
+/**
+ * Delete action of an alert compound.
+ * 
+ * @param int Id of the alert compound action.
+ *
+ * @return Affected rows or false is something goes wrong.
+ */
+function alerts_delete_alert_compound_action ($id_alert_compound_action) {
 	if (empty ($id_alert_compound_action))
 		return false;
 
@@ -898,7 +1427,15 @@ function delete_alert_compound_action ($id_alert_compound_action) {
 		array ('id' => $id_alert_compound_action))) !== false;
 }
 
-function set_alerts_compound_disable ($id_alert_compound, $disabled) {
+/**
+ * Disable/Enable an alert compound.
+ * 
+ * @param int Id of the alert compound.
+ * @param bool Whether to enable or disable an alert compound.
+ *
+ * @return Affected rows or false is something goes wrong.
+ */
+function alerts_set_alerts_compound_disable ($id_alert_compound, $disabled) {
 	$id_alert_agent_module = safe_int ($id_alert_compound, 0);
 	return (@process_sql_update ('talert_compound',
 		array ('disabled' => (bool) $disabled),
@@ -906,13 +1443,13 @@ function set_alerts_compound_disable ($id_alert_compound, $disabled) {
 }
 
 /**
- *  Validates a compound alert id or an array of alert id's
+ *  Validates a compound alert id or an array of alert id's.
  *
- * @param mixed Array of compound alert ids or single id
+ * @param mixed Array of compound alert ids or single id.
  *
  * @return bool True if it was successful, false otherwise.
  */
-function validate_alert_compound ($id_alert_compound) {
+function alerts_validate_alert_compound ($id_alert_compound) {
 	global $config;
 	require_once ("include/functions_events.php");
 	
@@ -925,7 +1462,7 @@ function validate_alert_compound ($id_alert_compound) {
 	$alerts = (array) $alerts;
 	
 	foreach ($alerts as $id) {
-		$alert = get_alert_compound ($id);
+		$alert = alerts_get_alert_compound ($id);
 		
 		$agent_id = $alert["id_agent"];
 		$group_id = get_agent_group ($agent_id);
@@ -951,7 +1488,14 @@ function validate_alert_compound ($id_alert_compound) {
 	return true;
 }
 
-function delete_alert_compound ($id_alert_compound) {
+/**
+ * Deletes an alert compound.
+ *
+ * @param int Id of the alert compound.
+ *
+ * @return mixed Affected rows or false is something goes wrong.
+ */
+function alerts_delete_alert_compound ($id_alert_compound) {
 	$id_alert_compound = safe_int ($id_alert_compound, 1);
 	if (empty ($id_alert_compound))
 		return false;
@@ -959,7 +1503,17 @@ function delete_alert_compound ($id_alert_compound) {
 		array ('id' => $id_alert_compound))) !== false;
 }
 
-function get_agents_with_alert_template ($id_alert_template, $id_group, $filter = false, $fields = false, $id_agents = false) {
+/**
+ * Get agents with an specific alert template.
+ *
+ * @param int Id of the alert template.
+ * @param int Id of the group of agents.
+ * @param mixed Array with filter conditions or false.
+ * @param mixed Array with fields to retrieve or false.
+ *
+ * @return mixed Affected rows or false is something goes wrong.
+ */
+function alerts_get_agents_with_alert_template ($id_alert_template, $id_group, $filter = false, $fields = false, $id_agents = false) {
 	global $config;
 	
 	if (empty ($id_alert_template))

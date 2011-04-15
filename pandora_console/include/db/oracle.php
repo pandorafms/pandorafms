@@ -365,10 +365,11 @@ function oracle_get_db_all_rows_in_table($table, $order_field = "", $order = 'AS
  *
  * @param string Table to insert into
  * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
+ * @param bool Whether to do autocommit or not
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function oracle_process_sql_insert($table, $values) {
+function oracle_process_sql_insert($table, $values, $autocommit = true) {
 	//Empty rows or values not processed
 	if (empty ($values))
 		return false;
@@ -405,8 +406,9 @@ function oracle_process_sql_insert($table, $values) {
 	$query .= '(' . implode(', ', $fields) . ')';
 	
 	$query .= ' VALUES (' . $values_str . ')';
+	$status = '';
 
-	return process_sql($query, 'insert_id');
+	return process_sql($query, 'insert_id', '', true, $status, $autocommit);
 }
 
 /**

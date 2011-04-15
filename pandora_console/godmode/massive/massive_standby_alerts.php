@@ -39,7 +39,7 @@ if (is_ajax ()) {
 				echo json_encode ('');
 				return;
 			}
-			$alert_templates = get_agent_alerts_simple ($id_agents);
+			$alert_templates = agents_get_alerts_simple ($id_agents);
 			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
 			return;
 		}
@@ -47,7 +47,7 @@ if (is_ajax ()) {
 			$id_alert_templates = (array) get_parameter ('id_alert_templates');
 			$standby = (int) get_parameter ('standby');
 
-			$agents_alerts = get_agents_with_alert_template ($id_alert_templates, false,
+			$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_templates, false,
 				array('order' => 'tagente.nombre, talert_template_modules.standby', 'talert_template_modules.standby' => $standby), 
 				array ('LEFT(CONCAT(LEFT(tagente.nombre,40), " - ", tagente_modulo.nombre), 85) as agent_agentmodule_name', 
 				'talert_template_modules.id as template_module_id'), $id_agents);
@@ -70,7 +70,7 @@ switch($action) {
 		$id_alert_templates = (int) get_parameter ('id_alert_template_standby', 0);
 		$id_standby_alerts = get_parameter_post ('id_standby_alerts', array());
 		foreach($id_standby_alerts as $id_alert) {
-			$result = set_alerts_agent_module_standby ($id_alert, false);
+			$result = alerts_agent_module_standby ($id_alert, false);
 		}
 		
 		ui_print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
@@ -88,7 +88,7 @@ switch($action) {
 		$id_not_standby_alerts = get_parameter_post ('id_not_standby_alerts', array());
 		
 		foreach($id_not_standby_alerts as $id_alert) {
-			$result = set_alerts_agent_module_standby ($id_alert, true);
+			$result = alerts_agent_module_standby ($id_alert, true);
 		}
 		
 		ui_print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
@@ -120,7 +120,7 @@ $table->size[1] = '85%';
 
 $table->data = array ();
 
-$templates = get_alert_templates (false, array ('id', 'name'));
+$templates = alerts_get_alert_templates (false, array ('id', 'name'));
 $table->data[0][0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=standby_alerts&action=set_standby_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 $table->data[0][0] .= print_input_hidden('id_alert_template_not_standby', $id_alert_templates, true);
 $table->data[0][0] .= __('Group');
@@ -144,7 +144,7 @@ $table->data[3][0] = __('Not standby alerts').ui_print_help_tip(__('Format').":<
 $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
 $table->data[3][0] .= print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
-$agents_alerts = get_agents_with_alert_template ($id_alert_templates, $id_group,
+$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_templates, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 $table->data[3][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
 	'id_not_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);

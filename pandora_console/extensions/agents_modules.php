@@ -150,7 +150,7 @@ function mainAgentsModules() {
 		$filter_groups['id_grupo'] = $group_id;
 	}
 	
-	$agents = get_agents ($filter_groups);
+	$agents = agents_get_agents ($filter_groups);
 	$nagents = count($agents);
 	
 	if($all_modules == false || $agents == false) {
@@ -188,7 +188,7 @@ function mainAgentsModules() {
 		$filter_agents = array('id_grupo' => $group_id);
 	}
 	// Prepare pagination
-	ui_pagination ((int)count(get_agents ($filter_agents)));
+	ui_pagination ((int)count(agents_get_agents ($filter_agents)));
 	echo "<br>";
 
 	foreach ($agents as $agent) {

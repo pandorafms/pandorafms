@@ -103,14 +103,14 @@ if ($search_string != '') {
 	$filter[] = '(nombre LIKE "%'.$search_string.'%" OR comentarios LIKE "%'.$search_string.'%" OR direccion LIKE "%'.$search_string.'%")';
 }
 
-$total_agents = get_agents ($filter, array ('COUNT(*) AS total'), $access);
+$total_agents = agents_get_agents ($filter, array ('COUNT(*) AS total'), $access);
 if ($total_agents !== false)
 	$total_agents = $total_agents[0]['total'];
 else
 	$total_agents = 0;
 $filter['limit'] = $config['block_size'];
 $filter['offset'] = (int) get_parameter ('offset');
-$agents = get_agents ($filter, $fields, $access);
+$agents = agents_get_agents ($filter, $fields, $access);
 unset ($filter['limit']);
 unset ($filter['offset']);
 

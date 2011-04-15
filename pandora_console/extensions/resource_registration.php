@@ -120,7 +120,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			
 			$agents_item= array();
 			if (isset($item['agent'])) {
-				$agents = get_agents(array('id_grupo' => $group_filter), array('id_agente', 'nombre'));
+				$agents = agents_get_agents(array('id_grupo' => $group_filter), array('id_agente', 'nombre'));
 				
 				$agent_clean = str_replace(array('[', ']'), '', $item['agent']);
 				$regular_expresion = ($agent_clean != $item['agent']);
@@ -205,7 +205,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					}
 					foreach ($item['sla'] as $sla_xml) {
 						if (isset($sla_xml->agent)) {
-							$agents = get_agents(array('id_grupo' => $group_filter), array('id_agente', 'nombre'));
+							$agents = agents_get_agents(array('id_grupo' => $group_filter), array('id_agente', 'nombre'));
 							
 							$agent_clean = str_replace(array('[', ']'), '', $sla_xml->agent);
 							$regular_expresion = ($agent_clean != $sla_xml->agent);
@@ -440,7 +440,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$agent_clean = str_replace(array('[', ']'), '', $item->agent);
 				$regular_expresion = ($agent_clean != $item->agent);
 				
-				$agents = get_agents(array('id_grupo' => $filter_group), array('id_agente', 'nombre'));
+				$agents = agents_get_agents(array('id_grupo' => $filter_group), array('id_agente', 'nombre'));
 				if ($agents === false) $agents = array(); 
 				$temp = array();
 				foreach ($agents as $agent) {

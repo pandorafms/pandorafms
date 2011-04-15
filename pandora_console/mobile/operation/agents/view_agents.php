@@ -59,14 +59,14 @@ class ViewAgents {
 			$agent_names = get_group_agents (array_keys ($user_group), array('string' => $this->filterText), "upper");
 		}
 		
-		$total_agents = get_agents (array('id_agente' => array_keys ($agent_names),
+		$total_agents = agents_get_agents (array('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'disabled' => 0,
 			'id_grupo' => $groups),
 			array ('COUNT(*) as total'));
 		$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
 		
-		$agents = get_agents(array('id_agente' => array_keys ($agent_names),
+		$agents = agents_get_agents(array('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'id_grupo' => $groups,
 			'offset' => (int) get_parameter ('offset'),
@@ -333,7 +333,7 @@ class ViewAgent {
 		$table->rowclass = array();
 		
 		echo "<h3 class='title_h3'>" . __('Alerts') . "</h3>";
-		$alertsSimple = get_agent_alerts_simple (array($this->idAgent));
+		$alertsSimple = agents_get_alerts_simple (array($this->idAgent));
 		$rowPair = false;
 		$iterator = 0;
 		foreach ($alertsSimple as $alert) {
@@ -348,7 +348,7 @@ class ViewAgent {
 			
 			$data[] = ui_print_truncate_text(get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
 			
-			$template = safe_output(get_alert_template ($alert['id_alert_template']));
+			$template = safe_output(alerts_get_alert_template ($alert['id_alert_template']));
 			$data[] = ui_print_truncate_text(safe_output($template['name']), 20, true, true);
 			
 			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));

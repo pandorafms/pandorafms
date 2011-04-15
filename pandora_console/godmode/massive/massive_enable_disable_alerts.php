@@ -39,14 +39,14 @@ if (is_ajax ()) {
 				echo json_encode ('');
 				return;
 			}
-			$alert_templates = get_agent_alerts_simple ($id_agents);
+			$alert_templates = agents_get_alerts_simple ($id_agents);
 			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
 			return;
 		} else {
 			$id_alert_templates = (array) get_parameter ('id_alert_templates');
 			$disabled = (int) get_parameter ('disabled');
 
-			$agents_alerts = get_agents_with_alert_template ($id_alert_templates, false,
+			$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_templates, false,
 				array('order' => 'tagente.nombre, talert_template_modules.disabled', 'talert_template_modules.disabled' => $disabled), 
 				array ('LEFT(CONCAT(LEFT(tagente.nombre,40), " - ", tagente_modulo.nombre), 85) as agent_agentmodule_name', 
 				'talert_template_modules.id as template_module_id'), $id_agents);
@@ -69,7 +69,7 @@ switch($action) {
 		$id_alert_templates = (int) get_parameter ('id_alert_template_disabled', 0);
 		$id_disabled_alerts = get_parameter_post ('id_disabled_alerts', array());
 		foreach($id_disabled_alerts as $id_alert) {
-			$result = set_alerts_agent_module_disable ($id_alert, false);
+			$result = alerts_agent_module_disable ($id_alert, false);
 		}
 		
 		ui_print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'));
@@ -87,7 +87,7 @@ switch($action) {
 		$id_enabled_alerts = get_parameter_post ('id_enabled_alerts', array());
 		
 		foreach($id_enabled_alerts as $id_alert) {
-			$result = set_alerts_agent_module_disable ($id_alert, true);
+			$result = alerts_agent_module_disable ($id_alert, true);
 		}
 		
 		ui_print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'));
@@ -142,7 +142,7 @@ $table->data[3][0] = __('Enabled alerts').ui_print_help_tip(__('Format').":<br> 
 $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
 $table->data[3][0] .= print_image("images/spinner.png", true);
 $table->data[3][0] .= '</span>';
-$agents_alerts = get_agents_with_alert_template ($id_alert_templates, $id_group,
+$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_templates, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 $table->data[3][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
 	'id_enabled_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);

@@ -32,7 +32,7 @@ if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
 	if ($get_alert_command) {
 		$id = (int) get_parameter ('id');
-		$command = get_alert_command ($id);
+		$command = alerts_get_alert_command ($id);
 		echo json_encode ($command);
 	}
 	return;
@@ -50,7 +50,7 @@ if ($create_command) {
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
 	
-	$result = create_alert_command ($name, $command,
+	$result = alerts_create_alert_command ($name, $command,
 		array ('description' => $description));
 	
 	$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
@@ -69,7 +69,7 @@ if ($create_command) {
 
 if ($update_command) {
 	$id = (int) get_parameter ('id');
-	$alert = get_alert_command ($id);
+	$alert = alerts_get_alert_command ($id);
 	if ($alert['internal']) {
 		pandora_audit("ACL Violation", "Trying to access Alert Management");
 		require ("general/noaccess.php");
@@ -83,7 +83,7 @@ if ($update_command) {
 	$values['name'] = $name;
 	$values['command'] = $command;
 	$values['description'] = $description;
-	$result = update_alert_command ($id, $values);
+	$result = alerts_update_alert_command ($id, $values);
 	
 	$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
 	if ($result) {
@@ -102,14 +102,14 @@ if ($delete_command) {
 	$id = (int) get_parameter ('id');
 	
 	// Internal commands cannot be deleted
-	if (get_alert_command_internal ($id)) {
+	if (alerts_get_alert_command_internal ($id)) {
 		pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		require ("general/noaccess.php");
 		return;
 	}
 	
-	$result = delete_alert_command ($id);
+	$result = alerts_delete_alert_command ($id);
 	
 	if ($result) {
 		pandora_audit("Command management", "Delete alert command " . $id);

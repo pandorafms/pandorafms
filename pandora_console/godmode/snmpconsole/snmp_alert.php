@@ -292,7 +292,7 @@ if (isset ($_GET["update_alert"])) {
 
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = get_alert_action_name ($row["id_alert"]);
+		$data[0] = alerts_get_alert_action_name ($row["id_alert"]);
 
 		$data[1] = __('SNMP Agent');
 		$data[1] = $row["agent"];					

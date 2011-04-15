@@ -25,13 +25,13 @@ if (is_ajax ()) {
 	
 	if ($get_template_tooltip) {
 		$id_template = (int) get_parameter ('id_template');
-		$template = get_alert_template ($id_template);
+		$template = alerts_get_alert_template ($id_template);
 		if ($template === false)
 			return;
 		
 		echo '<h3>'.$template['name'].'</h3>';
 		echo '<strong>'.__('Type').': </strong>';
-		echo get_alert_templates_type_name ($template['type']);
+		echo alerts_get_alert_templates_type_name ($template['type']);
 		
 		echo '<br />';
 		echo ui_print_alert_template_example ($template['id'], true);
@@ -121,7 +121,7 @@ if ($update_template) {
 	$field2_recovery = (string) get_parameter ('field2_recovery');
 	$field3_recovery = (string) get_parameter ('field3_recovery');
 	
-	$result = update_alert_template ($id,
+	$result = alerts_update_alert_template ($id,
 		array ('recovery_notify' => $recovery_notify,
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery));
@@ -134,7 +134,7 @@ if ($update_template) {
 // If user tries to delete a template with group=ALL then must have "PM" access privileges
 if ($delete_template) {
 	$id = get_parameter ('id');
-	$al_template = get_alert_template($id);
+	$al_template = alerts_get_alert_template($id);
 
 	if ($al_template !== false){
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
@@ -170,7 +170,7 @@ if ($delete_template) {
 		// Header
 		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 
-	$result = delete_alert_template ($id);
+	$result = alerts_delete_alert_template ($id);
 	
 	if ($result) {
 		pandora_audit("Template alert management", "Delete alert template " . $id);
@@ -197,7 +197,7 @@ $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
 $table->data[0][0] = __('Type');
-$table->data[0][1] = print_select (get_alert_templates_types (), 'search_type',
+$table->data[0][1] = print_select (alerts_get_alert_templates_types (), 'search_type',
 	$search_type, '', __('All'), '', true, false, false);
 $table->data[0][2] = __('Search');
 $table->data[0][3] = print_input_text ('search_string', $search_string, '', 25,
@@ -218,11 +218,11 @@ if ($search_type != '')
 	$filter['type'] = $search_type;
 if ($search_string)
 	$filter[] = '(name LIKE "%'.$search_string.'%" OR description LIKE "%'.$search_string.'%" OR value LIKE "%'.$search_string.'%")';
-$total_templates = get_alert_templates ($filter, array ('COUNT(*) AS total'));
+$total_templates = alerts_get_alert_templates ($filter, array ('COUNT(*) AS total'));
 $total_templates = $total_templates[0]['total'];
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
-$templates = get_alert_templates ($filter,
+$templates = alerts_get_alert_templates ($filter,
 	array ('id', 'name', 'description', 'type', 'id_group'));
 if ($templates === false)
 	$templates = array ();
@@ -258,7 +258,7 @@ foreach ($templates as $template) {
 		$template['name'].'</a>';
 
 	$data[1] = ui_print_group_icon ($template["id_group"], true) .'&nbsp;'. ui_print_truncate_text(get_group_name ($template['id_group'], true));
-	$data[3] = get_alert_templates_type_name ($template['type']);
+	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
 
 	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
 	$data[4] .= print_input_hidden ('duplicate_template', 1, true);

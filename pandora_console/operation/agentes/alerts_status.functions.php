@@ -18,7 +18,7 @@ function forceExecution($id_group) {
 	
 	require_once ("include/functions_alerts.php");
 	$id_alert = (int) get_parameter ('id_alert');
-	set_alerts_agent_module_force_execution ($id_alert);
+	alerts_agent_module_force_execution ($id_alert);
 }
 
 function validateAlert() {
@@ -27,8 +27,8 @@ function validateAlert() {
 	
 	if (! empty ($ids) || ! empty ($compound_ids)) {
 		require_once ("include/functions_alerts.php");
-		$result1 = validate_alert_agent_module ($ids);
-		$result2 = validate_alert_compound ($compound_ids);
+		$result1 = alerts_validate_alert_agent_module ($ids);
+		$result2 = alerts_validate_alert_compound ($compound_ids);
 		$result = $result1 || $result2;
 		
 		ui_print_result_message ($result,

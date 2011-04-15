@@ -73,7 +73,7 @@ if (is_ajax ()) {
 		if ($event === false)
 			return;
 
-		set_alerts_agent_module_standby ($event['id_alert_am'], 1);
+		alerts_agent_module_standby ($event['id_alert_am'], 1);
 		return;
 	}
 	
@@ -86,7 +86,7 @@ if (is_ajax ()) {
 		// Set off the standby mode when close an event
 		if($new_status == 1) {
 			$event = get_event ($id);
-			set_alerts_agent_module_standby ($event['id_alert_am'], 0);
+			alerts_agent_module_standby ($event['id_alert_am'], 0);
 		}
 				
 		$return = validate_event ($id, $similars, $comment, $new_status);
@@ -119,15 +119,15 @@ if (is_ajax ()) {
 		$type = array();
 		$alert = get_parameter('alert_fired');
 		if ($alert == 'true') {
-			$resultAlert = get_event_status_group($idGroup, 'alert_fired', $query);
+			$resultAlert = alerts_get_event_status_group($idGroup, 'alert_fired', $query);
 		}
 		$critical = get_parameter('critical');
 		if ($critical == 'true') {
-			$resultCritical = get_event_status_group($idGroup, 'going_up_critical', $query);
+			$resultCritical = alerts_get_event_status_group($idGroup, 'going_up_critical', $query);
 		}
 		$warning = get_parameter('warning');
 		if ($warning == 'true') {
-			$resultWarning = get_event_status_group($idGroup, 'going_up_warning', $query);
+			$resultWarning = alerts_get_event_status_group($idGroup, 'going_up_warning', $query);
 		}
 		
 		if ($resultAlert) {

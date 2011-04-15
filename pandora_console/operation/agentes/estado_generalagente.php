@@ -170,7 +170,7 @@ if ($agent['timezone_offset'] != 0) {
 	echo '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
 }
 // Next contact (agent)
-$progress = getNextAgentContact($id_agente);
+$progress = agents_get_next_contact($id_agente);
 
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
 echo '<td class="datos f9" colspan="2">' . progress_bar2($progress, 200, 20) . '</td></tr>';

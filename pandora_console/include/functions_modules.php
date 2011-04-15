@@ -32,6 +32,8 @@
  * False on error.
  */
 function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $forced_name = false) {
+	global $config;
+
 	$module = get_agentmodule ($id_agent_module);
 	if ($module === false)
 		return false;
@@ -52,8 +54,17 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 		//the foreach have only one loop but extract the array index, and it's id_agente_modulo
 		foreach ($modulesDisabled as $id => $garbage) {
 			$id_module = $id;
-			process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
+			switch ($config['dbtype']) {
+				case "mysql":
+				case "postgresql":
+					process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
 				array('id_agente_modulo' => $id_module, 'disabled' => true));
+					break;
+				case "oracle":
+					process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
+				array('id_agente_modulo' => $id_module, 'disabled' => true), 'AND', false);
+					break;
+			}					
 		}
 		
 		$values = array ();
@@ -89,8 +100,16 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 			unset ($new_module[$i]);
 		/* Unset original agent module id */
 		unset ($new_module['id_agente_modulo']);
-		
-		$id_new_module = process_sql_insert ('tagente_modulo', $new_module);
+
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":		
+				$id_new_module = process_sql_insert ('tagente_modulo', $new_module);
+				break;
+			case "oracle":
+				$id_new_module = process_sql_insert ('tagente_modulo', $new_module, false);
+				break;				
+		}
 		if ($id_new_module === false) {
 			return false;
 		}
@@ -104,8 +123,16 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 	if (! in_array ($new_module['id_tipo_modulo'], array (2, 6, 9, 18, 21, 100))) //TODO delete magic numbers
 		/* Not proc modules uses a special estado (status) value */
 		$values['estado'] = 100;
-	
-	$result = process_sql_insert ('tagente_estado', $values);
+
+	switch ($config['dbtype']) {
+		case "mysql":
+		case "postgresql":	
+			$result = process_sql_insert ('tagente_estado', $values);
+			break;
+		case "oracle":
+			$result = process_sql_insert ('tagente_estado', $values, false);
+			break;
+	}
 	if ($result === false)
 		return false;
 	

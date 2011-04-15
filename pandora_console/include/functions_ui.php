@@ -470,7 +470,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	} 
 	else {
 		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
-		$template = get_alert_template ($alert['id_alert_template']);
+		$template = alerts_get_alert_template ($alert['id_alert_template']);
 		$description = safe_output($template['name']);
 	}
 	$data = array ();
@@ -535,7 +535,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	}
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
-	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
+	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $compound);
 
 	if (!empty($actions)) {
 		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
@@ -629,7 +629,7 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
 	
 	$output .= print_image("images/information.png", true);
 	$output .= '<span id="example">';
-	$template = get_alert_template ($id_alert_template);
+	$template = alerts_get_alert_template ($id_alert_template);
 	
 	switch ($template['type']) {
 	case 'equal':

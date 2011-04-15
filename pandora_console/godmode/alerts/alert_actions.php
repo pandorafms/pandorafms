@@ -31,8 +31,8 @@ if (is_ajax ()) {
 	$get_alert_action = (bool) get_parameter ('get_alert_action');
 	if ($get_alert_action) {
 		$id = (int) get_parameter ('id');
-		$action = get_alert_action ($id);
-		$action['command'] = get_alert_action_alert_command ($action['id']);
+		$action = alerts_get_alert_action ($id);
+		$action['command'] = alerts_get_alert_action_alert_command ($action['id']);
 		
 		echo json_encode ($action);
 	}
@@ -51,7 +51,7 @@ if ((!$copy_action) && (!$delete_action))
 if ($copy_action) {
 	$id = get_parameter ('id');
 
-	$al_action = get_alert_action ($id);
+	$al_action = alerts_get_alert_action ($id);
 
 	if ($al_action !== false){
 		// If user tries to copy an action with group=ALL
@@ -89,7 +89,7 @@ if ($copy_action) {
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 	
-	$result = clone_alert_action ($id);
+	$result = alerts_clone_alert_action ($id);
 	
 	if ($result) {
 		pandora_audit("Command management", "Duplicate alert action " . $id . " clone to " . $result);
@@ -112,7 +112,7 @@ if ($create_action) {
 	$group = (string) get_parameter ('group');
 	$action_threshold = (int) get_parameter ('action_threshold');
 
-	$result = create_alert_action ($name, $id_alert_command,
+	$result = alerts_create_alert_action ($name, $id_alert_command,
 		array ('field1' => $field1,
 			'field2' => $field2,
 			'field3' => $field3,
@@ -138,7 +138,7 @@ if ($create_action) {
 if ($update_action) {
 	$id = (string) get_parameter ('id');
 
-	$al_action = get_alert_action ($id);
+	$al_action = alerts_get_alert_action ($id);
 
 	if ($al_action !== false){
 		if ($al_action['id_group'] == 0){
@@ -173,7 +173,7 @@ if ($update_action) {
 	$values['id_group'] = $group;
 	$values['action_threshold'] = $action_threshold;
 
-	$result = update_alert_action ($id, $values);
+	$result = alerts_update_alert_action ($id, $values);
 	
 	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
 		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
@@ -194,7 +194,7 @@ if ($update_action) {
 if ($delete_action) {
 	$id = get_parameter ('id');
 
-	$al_action = get_alert_action ($id);
+	$al_action = alerts_get_alert_action ($id);
 
 	if ($al_action !== false){
 		// If user tries to delete an action with group=ALL
@@ -234,7 +234,7 @@ if ($delete_action) {
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 
-	$result = delete_alert_action ($id);
+	$result = alerts_delete_alert_action ($id);
 	
 	if ($result) {
 		pandora_audit("Command management", "Delete alert action " . $id);

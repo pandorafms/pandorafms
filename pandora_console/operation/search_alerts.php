@@ -161,7 +161,7 @@ if($searchAlerts) {
 			break;
 	}
 		
-	$alertsraw = get_agent_alerts_simple ($agents, "all_enabled", array('offset' => get_parameter ('offset',0), 'limit' => $config['block_size'], 'order' => $order['field'] . " " . $order['order']), $whereAlerts);
+	$alertsraw = agents_get_alerts_simple ($agents, "all_enabled", array('offset' => get_parameter ('offset',0), 'limit' => $config['block_size'], 'order' => $order['field'] . " " . $order['order']), $whereAlerts);
 
 	$stringSearchPHP = substr($stringSearchSQL,1,strlen($stringSearchSQL)-2);
 
@@ -173,7 +173,7 @@ if($searchAlerts) {
 		$alerts[$key]['agent_name'] = $alert['agent_name'];
 		$alerts[$key]['module_name'] = $alert['agent_module_name'];
 		$alerts[$key]['template_name'] = $alert['template_name'];
-		$actions = get_alert_agent_module_actions($alert['id']);
+		$actions = alerts_get_alert_agent_module_actions($alert['id']);
 		
 		$actions_name = array();
 		foreach($actions as $action) {

@@ -953,8 +953,8 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 	require_once ($config["homedir"].'/include/functions_alerts.php');
 	
 	foreach (array_keys ($alerts_fired) as $id_alert) {
-		$alert_module = get_alert_agent_module ($id_alert);
-		$template = get_alert_template ($id_alert);
+		$alert_module = alerts_get_alert_agent_module ($id_alert);
+		$template = alerts_get_alert_template ($id_alert);
 		
 		/* Add alerts fired to $agents_fired_alerts indexed by id_agent */
 		$id_agent = get_db_value ('id_agente', 'tagente_modulo',
@@ -1024,7 +1024,7 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
 	$table->head[2] = __('Actions');
 	$table->head[3] = __('Fired');
 	
-	$alerts = get_agent_alerts ($id_agent);
+	$alerts = agents_get_alerts ($id_agent);
 	
 	if (isset($alerts['simple'])) {
 		$i = 0;
@@ -1362,7 +1362,7 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	
 	require_once ($config["homedir"].'/include/functions_alerts.php');
 	
-	$alerts = get_agent_alerts ($id_agent);
+	$alerts = agents_get_alerts ($id_agent);
 	/* FIXME: Add compound alerts to the report. Some extra code is needed here */
 	foreach ($alerts['simple'] as $alert) {
 		$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
@@ -1370,9 +1370,9 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 			continue;
 		}
 		
-		$template = get_alert_template ($alert['id_alert_template']);
+		$template = alerts_get_alert_template ($alert['id_alert_template']);
 		$data = array ();
-		$data[0] = get_alert_templates_type_name ($template['type']);
+		$data[0] = alerts_get_alert_templates_type_name ($template['type']);
 		$data[1] = $template['name'];
 		
 		switch ($template['type']) {
@@ -3407,7 +3407,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$filter_groups['id_grupo'] = $id_group;
 			}
 			
-			$agents = get_agents ($filter_groups);
+			$agents = agents_get_agents ($filter_groups);
 			$nagents = count($agents);
 			
 			if($all_modules == false || $agents == false) {
@@ -3442,7 +3442,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$filter_agents = array('id_grupo' => $id_group);
 			}
 			// Prepare pagination
-			ui_pagination ((int)count(get_agents ($filter_agents)));
+			ui_pagination ((int)count(agents_get_agents ($filter_agents)));
 			$table_data .= "<br>";
 	
 			foreach ($agents as $agent) {

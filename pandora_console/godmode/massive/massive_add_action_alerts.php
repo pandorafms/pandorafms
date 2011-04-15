@@ -37,7 +37,7 @@ if (is_ajax ()) {
 		}
 		$get_compounds = get_parameter ('get_compounds');
 		if (!$get_compounds) {
-			$alert_templates = get_agent_alerts_simple ($id_agents);
+			$alert_templates = agents_get_alerts_simple ($id_agents);
 			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
 			return;
 		}
@@ -49,7 +49,7 @@ if (is_ajax ()) {
                 	}
                 	$filter .= 'id_agent=' . $id_agent;
         	};
-			$alert_compounds = get_alert_compounds ($filter, array('id', 'name'));
+			$alert_compounds = alerts_get_alert_compounds ($filter, array('id', 'name'));
 			echo json_encode (index_array ($alert_compounds, 'id', 'name'));
 			return;
 		}
@@ -73,7 +73,7 @@ if ($add) {
 		$fires_max = get_parameter ('fires_max');
 		
 		if ($action > 0) {
-			$agent_alerts = get_agent_alerts($id_agents);
+			$agent_alerts = agents_get_alerts($id_agents);
 			$cont = 0;
 			$agent_alerts_id = array();
 			foreach($agent_alerts['simple'] as $agent_alert){
@@ -105,13 +105,13 @@ if ($add) {
 			else {
 				$results = true;
 				foreach ($agent_alerts_id as $agent_alert_id) {
-					$result = add_alert_agent_module_action($agent_alert_id, $action, $options);
+					$result = alerts_add_alert_agent_module_action($agent_alert_id, $action, $options);
 					if($result === false)
 						$results = false;
 				}
 
 				foreach ($agent_alerts_id_compound as $agent_alert_id_compound) {
-					$result = add_alert_compound_action ($agent_alert_id_compound, $action, $options);
+					$result = alerts_add_alert_compound_action ($agent_alert_id_compound, $action, $options);
 					if($result === false)
 						$results = false;
 				}
@@ -158,7 +158,7 @@ if (empty($id_agents)) {
 	$alert_templates = '';
 }
 else {
-	$alert_templates = get_agent_alerts_simple ($id_agents);
+	$alert_templates = agents_get_alerts_simple ($id_agents);
 }
 $table->data[2][0] = __('Alert templates');
 $table->data[2][0] .= '<span id="template_loading" class="invisible">';
@@ -177,7 +177,7 @@ else {
                 }
                 $filter .= 'id_agent=' . $id_agent;
         };
-	$alert_compounds = get_alert_compounds ($filter, array('id', 'name'));
+	$alert_compounds = alerts_get_alert_compounds ($filter, array('id', 'name'));
 }
 $table->data[3][0] = __('Alert compounds');
 $table->data[3][0] .= '<span id="compound_loading" class="invisible">';
@@ -185,7 +185,7 @@ $table->data[3][0] .= print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
 $table->data[3][1] = print_select (index_array ($alert_compounds, 'id', 'name'), 'id_alert_compounds[]', '', false, '', '', true, true, true, '', $alert_compounds == 0);
 	
-$actions = get_alert_actions ();
+$actions = alerts_get_alert_actions ();
 $table->data[4][0] = __('Action');
 $table->data[4][1] = print_select ($actions, 'action', '', '', __('None'), 0, true);	
 $table->data[4][1] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';

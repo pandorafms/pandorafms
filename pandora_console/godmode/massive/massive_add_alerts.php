@@ -60,14 +60,14 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	}
 		
 	if(count($module_names) == 1 && $module_names[0] == '0'){
-		$modules_id = get_agents_common_modules ($id_agents, false, true);
+		$modules_id = agents_common_modules ($id_agents, false, true);
 	}
 	
 	
 	$conttotal = 0;
 	$contsuccess = 0;
 	foreach($modules_id as $module){
-		$success = create_alert_agent_module ($module, $id_alert_template);
+		$success = alerts_create_alert_agent_module ($module, $id_alert_template);
 
 		if($success)
 			$contsuccess ++;
@@ -124,15 +124,15 @@ $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
+$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
-$agents = get_agents();
+$agents = agents_get_agents();
 $table->data[1][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', false);
 $table->data[1][2] = __('Modules');
 $table->data[1][3] = print_select (array(), 'module[]',	'', false, '', '', true, true, false);
 
-$templates = get_alert_templates (false, array ('id', 'name'));
+$templates = alerts_get_alert_templates (false, array ('id', 'name'));
 $table->data[2][0] = __('Alert template');
 $table->data[2][1] = print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);

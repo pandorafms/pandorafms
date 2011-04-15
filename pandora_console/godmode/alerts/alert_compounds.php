@@ -57,7 +57,7 @@ if ($update_compound) {
 	$field2_recovery = (string) get_parameter ('field2_recovery');
 	$field3_recovery = (string) get_parameter ('field3_recovery');
 
-	$result = update_alert_compound ($id,
+	$result = alerts_update_alert_compound ($id,
 		array ('recovery_notify' => $recovery_notify,
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery));
@@ -69,7 +69,7 @@ if ($update_compound) {
 
 if ($delete_alert) {
 	$id = (int) get_parameter ('id');
-	$result = delete_alert_compound ($id);
+	$result = alerts_delete_alert_compound ($id);
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
@@ -79,7 +79,7 @@ if ($delete_alert) {
 
 if ($enable_alert) {
 	$id = (int) get_parameter ('id');
-	$result = set_alerts_compound_disable ($id, false);
+	$result = alerts_set_alerts_compound_disable ($id, false);
 	ui_print_result_message ($result,
 		__('Successfully enabled'),
 		__('Could not be enabled'));
@@ -89,7 +89,7 @@ if ($enable_alert) {
 
 if ($disable_alert) {
 	$id = (int) get_parameter ('id');
-	$result = set_alerts_compound_disable ($id, true);
+	$result = alerts_set_alerts_compound_disable ($id, true);
 	ui_print_result_message ($result, 
 		__('Successfully disabled'),
 		__('Could not be disabled'));
@@ -209,7 +209,7 @@ if ($id_alerts === false)
 	$id_alerts = array ();
 
 foreach ($id_alerts as $alert) {
-	$alert = get_alert_compound ($alert['id']);
+	$alert = alerts_get_alert_compound ($alert['id']);
 	if ($alert === false)
 		continue;
 	

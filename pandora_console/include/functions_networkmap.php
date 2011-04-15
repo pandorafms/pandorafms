@@ -50,7 +50,7 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 		$filter['id_grupo'] = $group;
 
 	// Get agent data
-	$agents = get_agents ($filter,
+	$agents = agents_get_agents ($filter,
 		array ('id_grupo, nombre, id_os, id_parent, id_agente'));
 	if ($agents === false)
 		return false;
@@ -177,7 +177,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	
 	if($depth != 'group') {
 		// Get agents data
-		$agents = get_agents ($filter,
+		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_agente'));
 			
 		if ($agents === false)

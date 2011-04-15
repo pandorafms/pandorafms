@@ -1475,7 +1475,7 @@ function get_group_alerts ($id_group) {
 	$agents = get_group_agents ($id_group, false, "none");
 
 	foreach ($agents as $agent_id => $agent_name) {
-		$agent_alerts = get_agent_alerts ($agent_id);
+		$agent_alerts = agents_get_alerts ($agent_id);
 		$alerts = array_merge ($alerts, $agent_alerts);
 	}
 
@@ -3537,10 +3537,11 @@ function get_modulegroup_name ($modulegroup_id) {
  *
  * @param string Table to insert into
  * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
+ * @param bool Whether to do autocommit or not (only Oracle)
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function process_sql_insert($table, $values) {
+function process_sql_insert($table, $values, $autocommit = true) {
 	global $config;
 
 	switch ($config["dbtype"]) {
@@ -3551,7 +3552,7 @@ function process_sql_insert($table, $values) {
 			return postgresql_process_sql_insert($table, $values);
 			break;
 		case "oracle":
-			return oracle_process_sql_insert($table, $values);
+			return oracle_process_sql_insert($table, $values, $autocommit);
 			break;
 	}
 }

@@ -50,7 +50,7 @@ if ($get_agent_alerts_simple) {
 	require_once ('include/functions_agents.php');
 	require_once ('include/functions_alerts.php');
 	
-	$alerts = get_agent_alerts_simple ($id_agent);
+	$alerts = agents_get_alerts_simple ($id_agent);
 	if (empty ($alerts)) {
 		echo json_encode (false);
 		return;
@@ -58,7 +58,7 @@ if ($get_agent_alerts_simple) {
 	
 	$retval = array ();
 	foreach ($alerts as $alert) {
-		$alert['template'] = get_alert_template ($alert['id_alert_template']);
+		$alert['template'] = alerts_get_alert_template ($alert['id_alert_template']);
 		$alert['module_name'] = get_agentmodule_name ($alert['id_agent_module']);
 		$alert['agent_name'] = get_agentmodule_agent_name ($alert['id_agent_module']);
 		$retval[$alert['id']] = $alert;
@@ -71,7 +71,7 @@ if ($get_agent_alerts_simple) {
 if ($enable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 
-	$result = set_alerts_agent_module_disable ($id_alert, false);
+	$result = alerts_agent_module_disable ($id_alert, false);
 	if ($result)
 		echo __('Successfully enabled');
 	else
@@ -82,7 +82,7 @@ if ($enable_alert) {
 if ($disable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 
-	$result = set_alerts_agent_module_disable ($id_alert, true);
+	$result = alerts_agent_module_disable ($id_alert, true);
 	if ($result)
 		echo __('Successfully disabled');
 	else

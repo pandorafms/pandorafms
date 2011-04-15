@@ -52,7 +52,7 @@ if ($search_agents) {
 		
     $filter['id_grupo'] = $id_group;
 
-    $agents = get_agents ($filter, array ('id_agente','nombre', 'direccion'));
+    $agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
     if ($agents === false)
         return;
 

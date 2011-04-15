@@ -73,7 +73,7 @@ if ($create_alert) {
 		$messageAction = ui_print_result_message (false, '', __('Already added'), '', true);
 	}
 	else {
-		$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
+		$id = alerts_create_alert_agent_module ($id_agent_module, $id_alert_template);
 
 		$alert_template_name = get_db_value ("name", "talert_templates","id", $id_alert_template);
 		$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
@@ -99,7 +99,7 @@ if ($create_alert) {
 				$values['fires_max'] = get_parameter ('fires_max');
 				$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold');
 				
-				add_alert_agent_module_action ($id, $action_select, $values);
+				alerts_add_alert_agent_module_action ($id, $action_select, $values);
 			}
 		}
 	}
@@ -115,7 +115,7 @@ if ($delete_alert) {
 	$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 	$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 
-	$result = delete_alert_agent_module ($id_alert_agent_module);
+	$result = alerts_delete_alert_agent_module ($id_alert_agent_module);
 	
 	if ($result) {
 		pandora_audit("Alert management",
@@ -141,7 +141,7 @@ if ($add_action) {
 		$values['fires_max'] = $fires_max;
 	$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold');
 	
-	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
+	$result = alerts_add_alert_agent_module_action ($id_alert_module, $id_action, $values);
 	
 	if ($result) {
 		pandora_audit("Alert management", 'Add action ' . $id_action . ' in  alert ' . $id_alert_module);
@@ -157,7 +157,7 @@ if ($delete_action) {
 	$id_action = (int) get_parameter ('id_action');
 	$id_alert = (int) get_parameter ('id_alert');
 	
-	$result = delete_alert_agent_module_action ($id_action);
+	$result = alerts_delete_alert_agent_module_action ($id_action);
 	
 	if ($result) {
 		pandora_audit("Alert management", 'Delete action ' . $id_action . ' in alert ' . $id_alert);
@@ -172,7 +172,7 @@ if ($delete_action) {
 if ($enable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
-	$result = set_alerts_agent_module_disable ($id_alert, false);
+	$result = alerts_agent_module_disable ($id_alert, false);
 	
 	if ($result) {
 		pandora_audit("Alert management", 'Enable  ' . $id_alert);
@@ -187,7 +187,7 @@ if ($enable_alert) {
 if ($disable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
-	$result = set_alerts_agent_module_disable ($id_alert, true);
+	$result = alerts_agent_module_disable ($id_alert, true);
 	
 	if ($result) {
 		pandora_audit("Alert management", 'Disable  ' . $id_alert);
@@ -202,7 +202,7 @@ if ($disable_alert) {
 if ($standbyon_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
-	$result = set_alerts_agent_module_standby ($id_alert, true);
+	$result = alerts_agent_module_standby ($id_alert, true);
 	
 	if ($result) {
 		pandora_audit("Alert management", 'Standby  ' . $id_alert);
@@ -217,7 +217,7 @@ if ($standbyon_alert) {
 if ($standbyoff_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
-	$result = set_alerts_agent_module_standby ($id_alert, false);
+	$result = alerts_agent_module_standby ($id_alert, false);
 	
 	if ($result) {
 		pandora_audit("Alert management", 'Standbyoff  ' . $id_alert);

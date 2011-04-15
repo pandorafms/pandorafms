@@ -29,7 +29,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 
 $id = (int) get_parameter ('id');
 
-$al_action = get_alert_action ($id);
+$al_action = alerts_get_alert_action ($id);
 
 if ($al_action !== false){
 	// If user tries to edit an action with group=ALL
@@ -75,7 +75,7 @@ $group = 0; //All group is 0
 $action_threshold = 0; //All group is 0
 
 if ($id) {
-	$action = get_alert_action ($id);
+	$action = alerts_get_alert_action ($id);
 	$name = $action['name'];
 	$id_command = $action['id_alert_command'];
 	$field1 = $action['field1'];
@@ -151,7 +151,7 @@ ui_require_javascript_file ('pandora_alerts');
 <script type="text/javascript">
 $(document).ready (function () {
 <?php if ($id_command) : ?>
-	original_command = "<?php echo get_alert_command_command ($id_command); ?>";
+	original_command = "<?php echo alerts_get_alert_command_command ($id_command); ?>";
 	render_command_preview ();
 <?php endif; ?>
 	$("#id_command").change (function () {

@@ -211,11 +211,11 @@ if($filter_standby == 'standby_on') {
 }else {
 	$filter_alert['disabled'] = $filter;
 }
-$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
-$countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
+$alerts['alerts_simple'] = agents_get_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+$countAlertsSimple = agents_get_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
 
-$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
-$countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
+$alerts['alerts_combined'] = agents_get_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
+$countAlertsCombined = agents_get_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
 }

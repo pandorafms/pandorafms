@@ -36,7 +36,7 @@ $destiny_id_agents = (array) get_parameter ('destiny_id_agent', array ());
 $do_operation = (bool) get_parameter ('do_operation');
 
 if ($do_operation) {
-	$result = process_manage_config ($source_id_agent, $destiny_id_agents);
+	$result = agents_process_manage_config ($source_id_agent, $destiny_id_agents);
 	
 	if ($result) {
 		pandora_audit("Masive management", "Copy modules", false, false,
@@ -119,10 +119,10 @@ $table->data[2][0] = __('Alerts');
 
 $agent_alerts = array ();
 if ($source_id_agent)
-	$agent_alerts = get_agent_alerts_simple ($source_id_agent);
+	$agent_alerts = agents_get_alerts_simple ($source_id_agent);
 $alerts = array ();
 foreach ($agent_alerts as $alert) {
-	$name = get_alert_template_name ($alert['id_alert_template']);
+	$name = alerts_get_alert_template_name ($alert['id_alert_template']);
 	$name .= ' (<em>'.$modules[$alert['id_agent_module']].'</em>)';
 	$alerts[$alert['id']] = $name;
 }

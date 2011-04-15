@@ -32,7 +32,7 @@ $name = '';
 $command = '';
 $description = '';
 if ($id) {
-	$alert = get_alert_command ($id);
+	$alert = alerts_get_alert_command ($id);
 	$name = $alert['name'];
 	$command = $alert['command'];
 	$description = $alert['description'];

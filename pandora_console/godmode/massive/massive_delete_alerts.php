@@ -34,7 +34,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		$id_alert_template = (int) get_parameter ('id_alert_template');
 		
-		$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
+		$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 			false, array ('tagente.nombre', 'tagente.id_agente'));
 		
 		echo json_encode (index_array ($agents_alerts, 'id_agente', 'nombre'));
@@ -62,13 +62,13 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	}
 	
 	if(count($module_names) == 1 && $module_names[0] == '0'){
-		$modules_id = get_agents_common_modules_with_alerts ($id_agents, false, true);
+		$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
 	}
 
 	$conttotal = 0;
 	$contsuccess = 0;
 	foreach($modules_id as $module){
-		$success = delete_alert_agent_module (false,
+		$success = alerts_delete_alert_agent_module (false,
 		array ('id_agent_module' => $module,
 			'id_alert_template' => $id_alert_template));		
 
@@ -121,7 +121,7 @@ $table->size[3] = '40%';
 
 $table->data = array ();
 
-$templates = get_alert_templates (false, array ('id', 'name'));
+$templates = alerts_get_alert_templates (false, array ('id', 'name'));
 $table->data[0][0] = __('Alert template');
 $table->data[0][1] = print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
@@ -138,7 +138,7 @@ $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
-$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
+$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 $table->data[2][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);

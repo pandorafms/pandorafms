@@ -1,3 +1,10 @@
+2011-04-18 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_filemanager.php: Fixed a problem with html entities
+	* include/get_file.php: Added base64_decode for getting a get parameter
+
+	Fixes: #3286063
+
 2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php, include/graphs/functions_pchart.php,

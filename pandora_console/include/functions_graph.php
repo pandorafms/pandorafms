@@ -30,6 +30,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	
+	//include_flash_chart_script();
+	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -74,7 +76,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 		$min_necessary = 1;
 	
 	// Compressed module data
-	} else {
+	}
+	else {
 		// Get previous data
 		$previous_data = get_previous_data ($agent_module_id, $datelimit);
 		if ($previous_data !== false) {
@@ -86,7 +89,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 		$nextData = get_next_data ($agent_module_id, $date);
 		if ($nextData !== false) {
 			array_push ($data, $nextData);
-		} else if (count ($data) > 0) {
+		}
+		else if (count ($data) > 0) {
 			// Propagate the last known data to the end of the interval
 			$nextData = array_pop ($data);
 			array_push ($data, $nextData);
@@ -657,6 +661,8 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
+	
+	include_flash_chart_script();
 
 	$data = array ();
 
@@ -729,7 +735,7 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 	}
 	asort ($data);
 	
-	return pie3d_graph(0, $data, $width, $height, __("other"));
+	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"));
 }
 
 function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
@@ -1288,5 +1294,124 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
             return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl);
             break;
     }
+}
+
+/**
+ * Print a graph with event data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
+function graphic_agentevents2 ($id_agent, $width, $height, $period = 0) {
+	global $config;
+	global $graphic_type;
+	
+	include_flash_chart_script();
+
+	$data = array ();
+
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			$name = date('H\h', $bottom);
+		} else {
+			$name = $bottom;
+		}
+
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$criticity = (int) get_db_value_filter ('criticity',
+			'tevento',
+			array ('id_agente' => $id_agent,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top));
+
+		switch ($criticity) {
+			case 3: $data[$name] = 'E5DF63';
+					break;
+			case 4: $data[$name] = 'FF3C4B';
+					break;
+			default: $data[$name] = '9ABD18';
+		}
+		
+	}
+
+	if (! $graphic_type) {
+		return fs_agent_event_chart2 ($data, $width, $height, $resolution / 750);
+	}
+}
+
+// Clean FLASH string strips non-valid characters for flashchart
+function clean_flash_string ($string) {
+	$string = html_entity_decode ($string, ENT_QUOTES, "UTF-8");
+	$string = str_replace('&', '', $string);
+	$string = str_replace(' ', '', $string);
+	$string = str_replace ('"', '', $string);
+	return substr ($string, 0, 20);
+}
+
+// Returns a Pandora FMS agent event chart
+function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
+	global $config;
+
+	if (sizeof ($data) == 0) {
+		return fs_error_image ();
+	}
+
+	// Generate the XML
+	$chart = new FusionCharts('Area2D', $width, $height);
+	
+	$count = 0;
+	$num_vlines = 0;
+	foreach ($data as $name => $value) {
+		if ($count++ % $step == 0) {
+			$show_name = '1';
+			$num_vlines++;
+		} else {
+			$show_name = '0';
+		}
+		$chart->addChartData(1, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=' . $value);
+	}
+
+	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
+
+	// Return the code
+	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
+}
+
+// Returns the code needed to display the chart
+function get_chart_code ($chart, $width, $height, $swf) {
+	$random_number = rand ();
+	$div_id = 'chart_div_' . $random_number;
+	$chart_id = 'chart_' . $random_number;
+	$output = '<div id="' . $div_id. '"></div>';
+	$output .= '<script type="text/javascript">
+			<!--
+				$(document).ready(function pie_' . $chart_id . ' () {
+					var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+					myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
+					myChart.addParam("WMode", "Transparent");
+					myChart.render("' . $div_id . '");
+				})
+			-->
+			</script>';
+	return $output;
+}
+
+// Prints an error image
+function fs_error_image () {
+	global $config;
+
+	return print_image("images/image_problem.png", true, array("border" => '0'));
 }
 ?>

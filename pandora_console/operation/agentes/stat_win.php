@@ -30,6 +30,9 @@ require_once ($config["homedir"] . '/include/functions_reporting.php');
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
+
+$id = get_parameter('id');
+$label = base64_decode(get_parameter('label', ''));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -134,14 +137,27 @@ if ($start_date != $current)
 else
 	$date = $utime;
 
+$urlImage = 'http://';
+if ($config['https']) {
+	$urlImage = 'https://';
+}
+$urlImage .= $config['dbhost'] . $config['homeurl'] . '/';
+	
 // log4x doesnt support flash yet
 //
+switch ($graph_type) {
+	case 'sparse':
+		echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
+			$label, null, $draw_alerts, $avg_only, false, $date, $baseline,
+			0, true, false, $urlImage);
+		break;
+	default:
+		echo fs_error_image ('../images');
+		break;
+}
+	
 if ($config['flash_charts'] && $graph_type != "log4x") {
 	switch ($graph_type) {
-		case 'sparse':
-			echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
-			break;
 		case 'boolean': 
 			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
 				$label, $unit_name, $draw_alerts, 1, $pure, $date);
@@ -153,18 +169,11 @@ if ($config['flash_charts'] && $graph_type != "log4x") {
 		case 'log4x':
 			echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
 				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-			break;
-		default:
-			echo fs_error_image ('../images');
 			break;
 	}
 }
 else {
 	switch ($graph_type) {
-		case 'sparse':
-			echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
-			break;
 		case 'boolean': 
 			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
 				$label, $unit_name, $draw_alerts, 1, $pure, $date);
@@ -176,9 +185,6 @@ else {
 		case 'log4x':
 			echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
 				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-			break;
-		default:
-			echo fs_error_image ('../images');
 			break;
 	}
 }

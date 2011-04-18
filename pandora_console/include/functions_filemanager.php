@@ -579,7 +579,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		}
 		else {
 			$hash = md5($fileinfo['url'] . $config['dbpass']);
-			$data[1] = '<a href="include/get_file.php?file='.$fileinfo['url'].'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
+			$data[1] = '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
 		$data[2] = ui_print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));

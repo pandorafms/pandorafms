@@ -309,7 +309,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 }
 
 
-function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '') {
+function fs_area_graph($chart_data, $width, $height, $colors, $legend, $long_index) {
 	global $config;
 
 	$graph_type = "MSArea2D"; //MSLine is possible also
@@ -372,21 +372,22 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 		$areaBorderColor = '';
 		$color = '';
 		$showAreaBorder = 1; //0 old default
-		if (isset($color[$i])) {
-			if (!isset($color[$i]['border'])) {
+		
+		if (isset($colors[$i])) {
+			if (!isset($colors[$i]['border'])) {
 				$showAreaBorder = 1;
 			}
 			
-			if (isset($color[$i]['alpha'])) {
-				$alpha = 'alpha=' . $color[$i]['alpha'] . ';';
+			if (isset($colors[$i]['alpha'])) {
+				$alpha = 'alpha=' . $colors[$i]['alpha'] . ';';
 			}
 			
-			if (isset($color[$i]['border'])) {
-				$areaBorderColor = 'areaBorderColor=' . $color[$i]['border'] . ';';
+			if (isset($colors[$i]['border'])) {
+				$areaBorderColor = 'areaBorderColor=' . $colors[$i]['border'] . ';';
 			}
 			
-			if (isset($color[$i]['color'])) {
-				$color = 'color=#' . $color[$i]['color'];
+			if (isset($colors[$i]['color'])) {
+				$color = 'color=#' . $colors[$i]['color'];
 			}
 		}
 		

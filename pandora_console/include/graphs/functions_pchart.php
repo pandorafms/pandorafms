@@ -60,17 +60,15 @@ if (!isset($graph)) {
 $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
-$colors = null;
-if (isset($graph['color']))
+if (isset($graph['color'])) {
 	$colors = $graph['color'];
-$legend = null;
-if (isset($graph['legend']))
+}
+if (isset($graph['legend'])) {
 	$legend = $graph['legend'];
-$xaxisname = '';
+}
 if(isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
 }
-$yaxisname = '';
 if(isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }
@@ -508,7 +506,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font, $ant
 				break;
 		case "hbar":
 				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, "LabelValuesRotation" => 60);
-				$margin_left = 5 * $max_chars;
+				$margin_left = 8 * $max_chars;
 				$margin_top = 40;
 				$margin_bottom = 10;
 				break;

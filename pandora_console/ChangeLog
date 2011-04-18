@@ -1,3 +1,11 @@
+2011-04-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/functions_fsgraph.php
+	include/graphs/fgraph.php: Fixed flash
+	area colors and lef margin in horizontal bar
+	graphs
+
 2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php: fixed the legend for to show with human

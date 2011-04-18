@@ -60,17 +60,15 @@ if (!isset($graph)) {
 $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
-$colors = null;
-if (isset($graph['color']))
+if (isset($graph['color'])) {
 	$colors = $graph['color'];
-$legend = null;
-if (isset($graph['legend']))
+}
+if (isset($graph['legend'])) {
 	$legend = $graph['legend'];
-$xaxisname = '';
+}
 if(isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
 }
-$yaxisname = '';
 if(isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }

@@ -99,7 +99,7 @@ sub data_producer ($) {
 		AND tagente_modulo.disabled = 0
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())) 
-		ORDER BY tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC ', $pa_config->{'servername'});
+		ORDER BY tagente_modulo.flag DESC, time_left DESC, tagente_estado.last_execution_try ASC ', $pa_config->{'servername'});
     } else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.last_execution_try, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left, last_execution_try
 		FROM tagente, tagente_modulo, tagente_estado
@@ -111,7 +111,7 @@ sub data_producer ($) {
 		AND tagente_modulo.id_tipo_modulo < 19
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()))
-		ORDER BY tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC', $pa_config->{'servername'});
+		ORDER BY tagente_modulo.flag DESC, time_left DESC, tagente_estado.last_execution_try ASC', $pa_config->{'servername'});
 	}
 
 	foreach my $row (@rows) {

@@ -1,3 +1,11 @@
+2011-04-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm,
+	  lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/DB.pm,
+	  lib/PandoraFMS/Core.pm: Adding support for Oracle. The main loop
+	  works now.
+
 2011-04-14 Dario Rodriguez <dario.rodriguez@artica.es>
 	
 	* util/tentacle_serverd: Changed get_pid function now also checks

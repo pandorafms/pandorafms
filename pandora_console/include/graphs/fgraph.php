@@ -10,6 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
 // If is called from index
 if(file_exists('include/functions.php')) {
 	include_once('include/functions.php');

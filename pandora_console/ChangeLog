@@ -1,5 +1,13 @@
 2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php, operation/agentes/estado_generalagente.php: some
+	fixes and changes in the new graph engine.
+	
+	* operation/agentes/stat_win.php: fixed the tittle of popup window.
+
+2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: changed to use new engine.
 
 2011-04-18  Sergio Martin <sergio.martin@artica.es>

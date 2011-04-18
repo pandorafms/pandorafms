@@ -54,7 +54,7 @@ echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
 echo graph_event_module2 (290, 120, $id_agente);
 if ($config['flash_charts']) {
-	echo graphic_agentevents ($id_agente, 290, 60, 86400);
+	echo graphic_agentevents2 ($id_agente, 290, 60, 86400);
 }
 echo '</div>';
 	

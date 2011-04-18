@@ -1,5 +1,10 @@
 2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: fixed the legend for to show with human
+	numeric format.
+
+2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/pChart/pDraw.class.php: changed for show the some dark
 	border with same color of area when the data config of graph haven't this
 	values.

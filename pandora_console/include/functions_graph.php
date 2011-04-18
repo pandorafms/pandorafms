@@ -291,8 +291,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	if($show_alerts) {
 		$legend['alert'] = __('Alerts');
 	}
-	$legend['max'] = __('Max') . ' (' . $max_value . ')';
-	$legend['min'] = __('Min') . ' (' . $min_value . ')';
+	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
+	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
 	$legend['baseline'] = __('Baseline');
 	
 	$flash_chart = $config['flash_charts'];
@@ -573,6 +573,11 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		
 		//Add the max, min and avg in the legend
 		$avg = round($avg / $countAvg, 1);
+		
+		$min = format_for_graph($min);
+		$max = format_for_graph($max);
+		$avg = format_for_graph($avg);
+		
 		$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg)";
 		
 		if ($weight_list[$i] != 1) {

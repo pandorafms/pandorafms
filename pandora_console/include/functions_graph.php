@@ -30,7 +30,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	
-	//include_flash_chart_script();
+	include_flash_chart_script($homeurl);
 	
 	// Set variables
 	if ($date == 0) $date = get_system_time();

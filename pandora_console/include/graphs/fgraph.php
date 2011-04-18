@@ -143,7 +143,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
-		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index);
+		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homedir);
 	}
 	else {
 		$graph = array();
@@ -348,8 +348,8 @@ function gantt_graph($project_name, $from, $to, $tasks, $milestones, $width, $he
 	return fs_gantt_chart ($project_name, $from, $to, $tasks, $milestones, $width, $height);
 }
 
-function include_flash_chart_script() {
-	echo '<script language="JavaScript" src="include/graphs/FusionCharts/FusionCharts.js"></script>';
+function include_flash_chart_script($homeurl = '') {
+	echo '<script language="JavaScript" src="' . $homeurl . 'include/graphs/FusionCharts/FusionCharts.js"></script>';
 }
 
 ?>

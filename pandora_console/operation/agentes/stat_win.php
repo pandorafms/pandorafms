@@ -211,7 +211,7 @@ print_checkbox ("avg_only", 1, (bool) $avg_only);
 echo '<tr><td>'.__('Begin date').'</td><td>';
 
 print_input_text ("start_date", substr ($start_date, 0, 10),'', 10);
-print_image ("../../images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+print_image ("images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
 
 echo '</td></tr><tr><td>'.__('Zoom factor').'</td>';
 echo '<td>';

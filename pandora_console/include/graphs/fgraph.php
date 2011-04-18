@@ -265,7 +265,7 @@ function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image)
 function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $force_height = true, $homedir="") {
 	if($flash_chart) {
-		echo fs_hbar_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
+		echo fs_2d_hcolumn_chart ($chart_data, $width, $height);
 	}
 	else {
 		$graph = array();

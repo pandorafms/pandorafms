@@ -484,43 +484,36 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font, $ant
 	 /* Draw the scale */
 	 // TODO: AvoidTickWhenEmpty = FALSE When the distance between two ticks will be less than 50 px
 	 // TODO: AvoidTickWhenEmpty = TRUE When the distance between two ticks will be greater than 50 px
-	 switch($graph_type) {
-		case "vbar":
-				$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, "GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
-				$leftmargin = 40;
-				break;
-		case "hbar":
-				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, "LabelValuesRotation" => 60);
-				
-				//Calculate the bottom margin from the size of string in each index
-				 $max_chars = 0;
-				 foreach ($index as $string_index) {
-				 	if (empty($string_index)) continue;
-				 	
-				 	$len = strlen($string_index);
-				 	if ($len > $max_chars) {
-				 		$max_chars = $len; 
-				 	}
-				 }
-				 $leftmargin = 5 * $max_chars;
-				
-				break;
-	 }
 	 
 	 //Calculate the top margin from the size of string in each index
 	 $max_chars = 0;
 	 foreach ($index as $string_index) {
-	 	if (empty($string_index)) continue;
-	 	
-	 	$len = strlen($string_index);
-	 	if ($len > $max_chars) {
-	 		$max_chars = $len; 
-	 	}
+		if (empty($string_index)) continue;
+		
+		$len = strlen($string_index);
+		if ($len > $max_chars) {
+			$max_chars = $len; 
+		}
 	 }
 	 $margin_top = 10 * $max_chars;
+				 
+	 switch($graph_type) {
+		case "vbar":
+				$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, "GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
+				$margin_left = 40;
+				$margin_top = 10;
+				$margin_bottom = 8 * $max_chars;
+				break;
+		case "hbar":
+				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, "LabelValuesRotation" => 60);
+				$margin_left = 5 * $max_chars;
+				$margin_top = 40;
+				$margin_bottom = 10;
+				break;
+	 }
 	 
 	 /* Define the chart area */
-	 $myPicture->setGraphArea($leftmargin,$margin_top,$width,$height-80);
+	 $myPicture->setGraphArea($margin_left,$margin_top,$width,$height-$margin_bottom);
 
 	 $myPicture->drawScale($scaleSettings);
 

@@ -518,26 +518,6 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie2D.swf');
 }
 
-// Prints a BAR Horizontalchart
-function fs_hbar_chart ($data, $names, $width, $height) {
-	if (sizeof ($data) != sizeof ($names)) {
-		return;
-	}
-
-	// Generate the XML
-	$chart = new FusionCharts("Bar2D", $width, $height);
-	$chart->setSWFPath("include/graphs/FusionCharts/");
-  	$params="showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;rotateNames=1;chartLeftMargin=0;chartRightMargin=0;chartBottomMargin=0;chartTopMargin=0;showBarShadow=1;showLimits=1";
-  	$chart->setChartParams($params);
-
-	for ($i = 0; $i < sizeof ($data); $i++) {
-		$chart->addChartData($data[$i], 'name=' . clean_flash_string($names[$i]));
-	}
-
-	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
-}
-
 // Returns a 2D column chart
 function fs_2d_column_chart ($data, $width, $height) {
 	if (sizeof ($data) == 0) {
@@ -611,6 +591,82 @@ function fs_2d_column_chart ($data, $width, $height) {
 
 	// Return the code
 	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
+}
+
+// Returns a BAR Horizontalchart
+function fs_2d_hcolumn_chart ($data, $width, $height) {
+	if (sizeof ($data) == 0) {
+		return;
+	}
+
+	// Generate the XML
+	$chart = new FusionCharts('Bar2D', $width, $height);
+
+	$pixels_between_xdata = 25;
+	$max_xdata_display = round($width / $pixels_between_xdata);
+	$ndata = count($data);
+	if($max_xdata_display > $ndata) {
+		$xdata_display = $ndata;
+	}
+	else {
+		$xdata_display = $max_xdata_display;
+	}
+	
+	$step = round($ndata/$xdata_display);
+	
+	
+	if(is_array(reset($data))) {
+	 	$data2 = array();
+	 	$count = 0;
+		foreach($data as $i =>$values) {
+			$count++;
+			$show_name = '0';
+			if (($count % $step) == 0) {
+				$show_name = '1';
+			}
+
+			$chart->addCategory($i, //'');
+					'hoverText=' . $i .  
+					';showName=' . $show_name);
+			
+			$c = 0;
+			foreach($values as $i2 => $value) {
+				$data2[$i2][$i] = $value;
+				$c++;
+			}
+		}
+		$data = $data2;
+	 }
+	 else {
+		$data = array($data);
+	 }
+	 
+    $empty = 0;
+    $num_vlines = 0;
+    $count = 0;
+
+	foreach ($data as $legend_value => $values) {
+
+		foreach($values as $name => $value) {
+			if (($count++ % $step) == 0) {
+				$show_name = '1';
+				$num_vlines++;
+			} else {
+				$show_name = '0';
+			}
+			if ($value > 0) {
+				$empty = 0;
+			}
+			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
+		}
+	}
+
+  	$params='showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;rotateNames=1;chartLeftMargin=0;chartRightMargin=0;chartBottomMargin=0;chartTopMargin=0;showBarShadow=1;showLimits=1';
+
+    $chart->setChartParams($params.';numVDivLines='.$num_vlines.($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
+
+	// Return the code
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
 }
 
 // Returns a 3D column chart

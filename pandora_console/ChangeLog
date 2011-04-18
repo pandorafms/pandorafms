@@ -1,6 +1,13 @@
 2011-04-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php
+	include/graphs/functions_fsgraph.php
+	include/graphs/fgraph.php: Fixed bar graphs margins
+	Fixed horizontal flash bar
+
+2011-04-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
 	include/graphs/fgraph.php: Clean code
 
 2011-04-16  Junichi Satoh  <junichi@rworks.jp>

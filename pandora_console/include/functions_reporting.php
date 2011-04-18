@@ -25,7 +25,6 @@
 require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
-include_once ($config["homedir"]."/include/fgraph.php");
 require_once ('functions_graph.php');
 
 
@@ -1267,11 +1266,15 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	
 	$output .= print_table ($table, true);
 	
-	//Floating it was ugly, moved it to the bottom
-	$output .= '<img src="include/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.$down_percentage.'&amp;not_down='.$not_down_percentage.'" style="border: 1px solid black" />';
+	$data = array();
+	$data[__('Monitors OK')] = $down_percentage;
+	$data[__('Monitors BAD')] = $not_down_percentage;
+	
+	$output .= pie3d_graph($config['flash_charts'], $data, 280, 150);
 	
 	if (!$return)
 		echo $output;
+	
 	return $output;
 }
 
@@ -2043,6 +2046,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data_graph[__('On the edge')] = 0;
 			$data_graph[__('Unknown')] = 0;
 			
+			$data_horin_graph = array ();
+			$data_horin_graph[__('Inside limits')]['g'] = 0;
+			$data_horin_graph[__('Out of limits')]['g'] = 0;
+			$data_horin_graph[__('On the edge')]['g'] = 0;
+			$data_horin_graph[__('Unknown')]['g'] = 0;
+			
 			$sla_failed = false;
 			foreach ($slas as $sla) {
 				//Get the sla_value in % and store it on $sla_value
@@ -2053,15 +2062,19 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
+					$data_horin_graph[__('Unknown')]['g']++;
 				}
 				else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
 					$data_graph[__('On the edge')]++;
+					$data_horin_graph[__('On the edge')]['g']++;
 				}
 				else if ($sla_value > ($sla['sla_limit']+10)) {
 					$data_graph[__('Inside limits')]++;
+					$data_horin_graph[__('Inside limits')]['g']++;
 				}
 				else if ($sla_value < ($sla['sla_limit']-10)) {
 					$data_graph[__('Out of limits')]++;
+					$data_horin_graph[__('Out of limits')]['g']++;
 				}
 
 				//Do not show right modules if 'only_display_wrong' is active
@@ -2125,10 +2138,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data[0] .= "<br>";
 					$data[0] .= printSmallFont(get_agentmodule_name ($sla['id_agent_module']));
 					
-					$data[1] = "<img src='include/fgraph.php?tipo=sla_horizontal_graph&id=".$sla['id_agent_module'].
-					"&period=".$content['period']."&value1=".$sla['sla_min']."&value2=".$sla['sla_max'].
-					"&value3=".$content['time_from']."&value4=".$content['time_to']."&percent=".$sla['sla_limit'].
-					"&daysWeek=".$daysWeek."&height=25&width=550'>";
+					$data[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
+						$sla['sla_min'], $sla['sla_max'], $daysWeek, $content['time_from'],
+						$content['time_to'], $sla['sla_limit'], 550, 25);
 					
 					array_push ($table2->data, $data);
 				}
@@ -3036,8 +3048,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			else if ($order_uptodown == 0 || $order_uptodown == 3) {
 				$i = 0;
 				$data_pie_graph = array();
+				$data_hbar = array();
 				foreach ($agent_name as $an) {
 					$data_pie_graph[$an] = $data_top[$i];
+					$data_hbar[$an]['g'] = $data_top[$i];
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
 						$data[0] = printSmallFont($an);
@@ -3068,8 +3082,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$table->colspan[4][0] = 3;
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_pie_graph.
-				"&height=".$height."&width=600'>";
+				$data[0] = hbar_graph($config['flash_charts'], $data_hbar, 600, $height);
+				
 				array_push ($table->data, $data);
 			}
 
@@ -3315,8 +3329,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$table->colspan[4][0] = 3;
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = "<img src='include/fgraph.php?tipo=generic_horizontal_bar_graph&array=".$data_graph.
-				"&height=".$height."&width=600'>";
+				
+				$data[0] = hbar_graph($config['flash_charts'], $data_horin_graph, 600, $height);
+				
 				array_push ($table->data, $data);
 			}
 

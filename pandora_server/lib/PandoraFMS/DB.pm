@@ -36,6 +36,7 @@ our @EXPORT = qw(
 		db_process_update
 		db_reserved_word
 		db_string
+		db_text
 		db_update
 		get_action_id
 		get_agent_id
@@ -84,8 +85,19 @@ sub db_connect ($$$$$$) {
 		$RDBMS = 'postgresql';
 		
 		# Connect to PostgreSQL
-		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=5432", $db_user, $db_pass);
+		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=5432", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
+		
+		return $dbh;
+	} elsif ($rdbms eq 'oracle') {
+		$RDBMS = 'oracle';
+		
+		# Connect to Oracle
+		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=1521;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		return undef unless defined ($dbh);
+		
+		# Set date format
+		$dbh->do("ALTER SESSION SET NLS_TIMESTAMP_FORMAT='YYYY-MM-DD HH24:MI:SS'");
 		
 		return $dbh;
 	}
@@ -302,21 +314,22 @@ sub get_db_value ($$;@) {
 ##########################################################################
 sub get_db_single_row ($$;@) {
 		my ($dbh, $query, @values) = @_;
+		my @rows;
 
 		# Cache statements
 		my $sth = $dbh->prepare_cached($query);
 
 		$sth->execute(@values);
 
-		# No results
-		if ($sth->rows == 0) {
+		# Save returned rows
+		while (my $row = $sth->fetchrow_hashref()) {
 			$sth->finish();
-			return undef;
+			return {map { lc ($_) => $row->{$_} } keys (%{$row})} if ($RDBMS eq 'oracle');
+			return $row;
 		}
-		
-		my $row = $sth->fetchrow_hashref();
+
 		$sth->finish();
-		return $row;
+		return undef;
 }
 
 ##########################################################################
@@ -333,7 +346,11 @@ sub get_db_rows ($$;@) {
 
 		# Save returned rows
 		while (my $row = $sth->fetchrow_hashref()) {
-			push (@rows, $row);
+			if ($RDBMS eq 'oracle') {
+				push (@rows, {map { lc ($_) => $row->{$_} } keys (%{$row})});
+			} else {
+				push (@rows, $row);
+			}
 		}
 
 		$sth->finish();
@@ -354,7 +371,16 @@ sub db_insert ($$$;@) {
 	}
 	# PostgreSQL
 	elsif ($RDBMS eq 'postgresql') {
-		$insert_id = get_db_value ($dbh, $query . ' RETURNING ' . db_reserved_word ($index), undef, @values); 
+		$insert_id = get_db_value ($dbh, $query . ' RETURNING ' . db_reserved_word ($index), @values); 
+	}
+	# Oracle
+	elsif ($RDBMS eq 'oracle') {
+		my $sth = $dbh->prepare($query . ' RETURNING ' . db_reserved_word (uc ($index)) . ' INTO ?');
+		for (my $i = 0; $i <= $#values; $i++) {
+			$sth->bind_param ($i+1, $values[$i]);
+		}
+		$sth->bind_param_inout($#values + 2, \$insert_id, 99);
+		$sth->execute ();
 	}
 
 	return $insert_id;
@@ -458,7 +484,7 @@ sub db_reserved_word ($) {
 	return '`' . $reserved_word . '`' if ($RDBMS eq 'mysql');
 
 	# PostgreSQL
-	return '"' . $reserved_word . '"' if ($RDBMS eq 'postgresql');
+	return '"' . $reserved_word . '"' if ($RDBMS eq 'postgresql' || $RDBMS eq 'oracle');
 	
 	return $reserved_word;
 }
@@ -470,7 +496,19 @@ sub db_string ($) {
 	my $string = shift;
 	
 	# MySQL and PostgreSQL
-	return "'" . $string . "'" if ($RDBMS eq 'mysql' || $RDBMS eq 'postgresql');
+	#return "'" . $string . "'" if ($RDBMS eq 'mysql' || $RDBMS eq 'postgresql' || $RDBMS eq 'oracle');
+	
+	return "'" . $string . "'";
+}
+
+##########################################################################
+## Convert TEXT to string when necessary
+##########################################################################
+sub db_text ($) {
+	my $string = shift;
+	
+	#return $string;
+	return " dbms_lob.substr(" . $string . ", 4000, 1)" if ($RDBMS eq 'oracle');
 	
 	return $string;
 }

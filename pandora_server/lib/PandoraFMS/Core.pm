@@ -915,9 +915,7 @@ sub pandora_update_server ($$$$$;$$) {
 		my $server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules)
 						VALUES (?, ?, ?, ?, ?, ?)', $server_name, $server_type,
 						'Autocreated at startup', $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'}, $num_threads, $queue_size);
-		$server = get_db_single_row ($dbh, 'SELECT * FROM tserver
-						WHERE id_server = ?',
-						$server_id);
+		$server = get_db_single_row ($dbh, 'SELECT * FROM tserver WHERE id_server = ?', $server_id);
 		if (! defined ($server)) {
 			logger($pa_config, "Server '" . $pa_config->{'servername'} . "' not found.", 3);
 			return;
@@ -1103,7 +1101,7 @@ sub pandora_audit ($$$$$) {
 	my $utimestamp = time();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-	db_do($dbh, 'INSERT INTO tsesion (' . db_reserved_word ('ID_usuario') .', ' . db_reserved_word ('IP_origen') . ', accion, fecha, descripcion, utimestamp) 
+	db_do($dbh, 'INSERT INTO tsesion (id_usuario, ip_origen, accion, fecha, descripcion, utimestamp) 
 			VALUES (?, ?, ?, ?, ?, ?)', 'SYSTEM', $name, $action , $timestamp , $description , $utimestamp);
 
 	db_disconnect($dbh) if ($disconnect == 1);
@@ -1359,7 +1357,7 @@ sub pandora_module_keep_alive_nd {
 					AND tagente.disabled = 0 
 					AND tagente_modulo.id_tipo_modulo = 100 
 					AND tagente_modulo.disabled = 0 
-					AND (tagente_estado.datos = \'1\' OR tagente_estado.datos = \'\')
+					AND (' . db_text ('tagente_estado.datos') . ' = \'1\' OR ' . db_text ('tagente_estado.datos') . '= \'\')
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 					AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
@@ -1916,7 +1914,7 @@ sub pandora_server_statistics ($$) {
 	my $lag_row;
 
 	# Get all servers with my name (each server only refresh it's own stats)
-	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE name = "'.$pa_config->{'servername'}.'"');
+	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE name = ?', $pa_config->{'servername'});
 
 	# For each server, update stats: Simple.
 	foreach my $server (@servers) {
@@ -2028,11 +2026,14 @@ sub pandora_group_statistics ($$) {
 		$group = $group_row->{'id_grupo'};
 
 		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo *2)");
+		$agents_unknown = 0 unless defined ($agents_unknown);
 
 		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
+		$agents = 0 unless defined ($agents);
 
 		$modules = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
-
+		$modules = 0 unless defined ($modules);
+		
 		# Following threelines gets critical/warning modules, skipping the unknown. By default
 		# we consider status (ok, warning, critical) as a separate status from unknown.
 
@@ -2043,24 +2044,31 @@ sub pandora_group_statistics ($$) {
 #		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND ((tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp > ( UNIX_TIMESTAMP() - (current_interval * 2))) OR (tagente_modulo.id_tipo_modulo IN (21,22,23,100)))");
 
 		$normal = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND (utimestamp != 0 OR tagente_modulo.id_tipo_modulo IN (21,22,23)) AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
-
+		$normal = 0 unless defined ($normal);
+		
 		$critical = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
-
+		$critical = 0 unless defined ($critical);
+		
 		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
-
+		$warning = 0 unless defined ($warning);
+		
 		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0");
-
+		$unknown = 0 unless defined ($unknown);
+		
 		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) AND utimestamp = 0");
-
+		$non_init = 0 unless defined ($non_init);
+		
 		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
-
+		$alerts = 0 unless defined ($alerts);
+		
 		$alerts_fired = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
-
+		$alerts_fired = 0 unless defined ($alerts_fired);
+		
 		# Update the record.
 
 		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
 
-		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, `non-init`, alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
+		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . db_reserved_word ('non-init') . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
 
 	}
 

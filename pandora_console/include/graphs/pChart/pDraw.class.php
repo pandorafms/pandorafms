@@ -3703,15 +3703,15 @@
          if (isset($Serie["Color"]["BorderR"]))
          	$BorderR = $Serie["Color"]["BorderR"];
          else
-         	 $BorderR = $R;
+         	 $BorderR = $R / 1.5; //Set the same color for border, some dark.
          if (isset($Serie["Color"]["BorderG"]))
          	$BorderG = $Serie["Color"]["BorderG"];
          else
-         	$BorderG = $G; 
+         	$BorderG = $G / 1.5; //Set the same color for border, some dark.
          if (isset($Serie["Color"]["BorderB"]))
          	$BorderB = $Serie["Color"]["BorderB"];
          else
-         	$BorderB = $B;
+         	$BorderB = $B / 1.5; //Set the same color for border, some dark.
          $Alpha = $Serie["Color"]["Alpha"]; 
          $Ticks = $Serie["Ticks"];
          if ( $DisplayColor == DISPLAY_AUTO ) { $DisplayR = $R; $DisplayG = $G; $DisplayB = $B; }

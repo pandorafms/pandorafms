@@ -1,5 +1,13 @@
 2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php, godmode/reporting/graph_builder.preview.php:
+	fixes for the new graph engine.
+	
+	* operation/agentes/estado_monitores.php: added a toggle button to show the
+	the entire value or sub string for value (by default).
+
+2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_graph.php, include/graphs/functions_fsgraph.php,
 	include/graphs/fgraph.php, operation/agentes/stat_win.php: fixed the
 	relative urls for absolute urls.

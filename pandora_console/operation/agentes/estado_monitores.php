@@ -323,7 +323,18 @@ foreach ($modules as $module) {
 			$salida = format_numeric($module["datos"]);
 		}
 		else {
-			$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
+			$module_value = safe_output($module["datos"]);
+			$sub_string = substr(safe_output($module["datos"]),0, 12);
+			
+			if ($module_value == $sub_string) {
+				$salida = $module_value;
+			}
+			else {
+				$salida = "<span id='value_module_" . $module["id_agente_modulo"] . "'
+					title='".$module_value."' style='white-space: nowrap;'>" . 
+					'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
+					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . print_image("images/rosette.png", true) . "" . "</span>";
+			}
 		}
 	}
 
@@ -356,6 +367,18 @@ foreach ($modules as $module) {
 	array_push ($table->data, $data);
 	$rowIndex++;
 }
+
+?>
+<script type="text/javascript">
+function toggle_full_value(id) {
+	value_title = $("#value_module_" + id).attr('title');
+	
+	$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
+
+	$("#value_module_text_" + id).html(value_title);
+}
+</script>
+<?php
 
 if (empty ($table->data)) {
 	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';

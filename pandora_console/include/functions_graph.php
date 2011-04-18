@@ -327,6 +327,8 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 	global $config;
 	global $graphic_type;
 	
+	include_flash_chart_script();
+	
 	// Set the title and time format
 	
 	if ($period <= 3600) {

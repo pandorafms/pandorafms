@@ -668,9 +668,6 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 -- 9 web
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
-alter table spacetime change  `id_sesion` bigint(20) unsigned NOT NULL auto_increment,
-  `id_usuario` varchar(60) NOT NULL default '0',
-  `ip_origen` varchar(100) NOT NULL default '',
 CREATE TABLE IF NOT EXISTS `tsesion` (
   `id_sesion` bigint(20) unsigned NOT NULL auto_increment,
   `id_usuario` varchar(60) NOT NULL default '0',

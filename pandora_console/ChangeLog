@@ -1,5 +1,10 @@
 2011-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/db/oracle.php: Changed oracle session parameter for 
+	decimal separator. 
+
+2011-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* install.php: Now it's possible to drop oracle db before installation. 
 
 2011-04-18  Sergio Martin <sergio.martin@artica.es>

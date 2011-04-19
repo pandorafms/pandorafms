@@ -1,3 +1,12 @@
+2011-04-19 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/fgraph.php,
+	operation/agentes/graphs.php, operation/agentes/stat_win.php: added the
+	new engine.
+
+	* include/graphs/functions_pchart.php: fixed the default value for some
+	graph data confs.
+
 2011-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/oracle.php: Changed oracle session parameter for 

@@ -36,7 +36,7 @@
 options_text = new Array('An existing Database','A new Database');
 options_values = new Array('db_exist','db_new');
 function ChangeDBDrop(causer) {
-	if (causer.value == 'db_exist') {
+	if (causer.value != 'db_exist' && window.document.step2_form.engine.value != 'mysql') {
 		window.document.step2_form.drop.checked=0;		
 		window.document.step2_form.drop.disabled=1;
 	}
@@ -314,6 +314,33 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 	else {
 		return 0;
 	}
+}
+
+function oracle_drop_all_objects ($connection) {
+
+	//Drop all objects of the current instalation
+	$stmt = oci_parse($connection,
+			"BEGIN " .
+  				"FOR cur_rec IN (SELECT object_name, object_type " . 
+                  		"FROM   user_objects " .
+                  		"WHERE  object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'SNAPSHOT', 'MATERIALIZED VIEW')) LOOP " .
+    				"BEGIN " . 
+      					"IF cur_rec.object_type = 'TABLE' THEN " .
+        					"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; " .
+      					"ELSE " .
+        					"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; " .
+      					"END IF; " .
+    				"EXCEPTION " .
+      					"WHEN OTHERS THEN " .
+        					"DBMS_OUTPUT.put_line('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'); " .
+    					"END; " .
+  				"END LOOP; " .
+			"END; ");
+
+	$result = oci_execute($stmt);
+	oci_free_statement($stmt);
+
+	return 0;
 }
 
 function random_name ($size){
@@ -669,7 +696,7 @@ function install_step4() {
 						check_generic ( 1, "Connection with Database");
 						
 						// Drop database if needed and don't want to install over an existing DB
-						if ($dbdrop == 1 && $dbaction != 'db_exist') {
+						if ($dbdrop == 1) {
 							mysql_query ("DROP DATABASE IF EXISTS $dbname");
 						}
 						
@@ -741,6 +768,11 @@ function install_step4() {
 					else {
 						check_generic(1, "Connection with Database");					
 
+						// Drop all objects if needed
+						if ($dbdrop == 1) {
+							oracle_drop_all_objects($connection);
+						}	
+
 					 	$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
 						
 						check_generic($step1, "Creating schema");
@@ -802,8 +834,8 @@ function install_step4() {
 					else {
 						check_generic(1, "Connection with Database");
 						
-						// Drop database if needed and don't want to install over an existing DB
-						if ($dbdrop == 1 && $dbaction != 'db_exist') {
+						// Drop database if needed
+						if ($dbdrop == 1 && $dbaction == 'db_exist') {
 							$result = pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
 						}
 						
@@ -1007,27 +1039,7 @@ function install_step4() {
 					case 'pgsql':
 						break;
 					case 'oracle':
-						//Drop all objects of the current instalation
-						$stmt = oci_parse($connection,
-						"BEGIN " .
-  						"FOR cur_rec IN (SELECT object_name, object_type " . 
-                  				"FROM   user_objects " .
-                  				"WHERE  object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'SNAPSHOT', 'MATERIALIZED VIEW')) LOOP " .
-    						"BEGIN " . 
-      							"IF cur_rec.object_type = 'TABLE' THEN " .
-        							"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; " .
-      							"ELSE " .
-        							"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; " .
-      							"END IF; " .
-    						"EXCEPTION " .
-      							"WHEN OTHERS THEN " .
-        							"DBMS_OUTPUT.put_line('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'); " .
-    						"END; " .
-  						"END LOOP; " .
-						"END; ");
-
-						$result = oci_execute($stmt);
-						oci_free_statement($stmt);
+						oracle_drop_all_objects($connection);
 						break;
 				}
 			}		

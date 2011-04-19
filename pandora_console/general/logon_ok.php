@@ -171,16 +171,16 @@ switch ($config["dbtype"]) {
 				AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
 		break;
 	case "postgresql":
-		$sql = sprintf ("SELECT \"ID_usuario\", accion, fecha, \"IP_origen\", descripcion
+		$sql = sprintf ("SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion
 			FROM tsesion
 			WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 604800) 
-				AND \"ID_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
+				AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
 		break;
 	case "oracle":
-		$sql = sprintf ("SELECT ID_usuario, accion, fecha, IP_origen, descripcion
+		$sql = sprintf ("SELECT id_usuario, accion, fecha, ip_origen, descripcion
 			FROM tsesion
 			WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 604800) 
-				AND ID_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
+				AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
 		break;
 }
 
@@ -199,8 +199,8 @@ foreach ($sessions as $session) {
 			$session_ip_origen = $session['ip_origen'];
 			break;
 		case "postgresql":
-			$session_id_usuario = $session['ID_usuario'];
-			$session_ip_origen = $session['IP_origen'];
+			$session_id_usuario = $session['id_usuario'];
+			$session_ip_origen = $session['ip_origen'];
 			break;
 	}
 	

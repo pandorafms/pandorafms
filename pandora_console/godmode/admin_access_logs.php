@@ -90,25 +90,25 @@ if ($tipo_log != 'all') {
 switch ($config['dbtype']) {
 	case "mysql":
 		if ($user_filter != 'all') {
-			$filter .= sprintf(' AND ID_usuario = "%s"', $user_filter);
+			$filter .= sprintf(' AND id_usuario = "%s"', $user_filter);
 		}
 
 		$filter .= ' AND (accion LIKE "%' . $filter_text . '%" OR descripcion LIKE "%' . $filter_text . '%")';
 
 		if ($filter_ip != '') {
-			$filter .= sprintf(' AND IP_origen LIKE "%s"', $filter_ip);
+			$filter .= sprintf(' AND ip_origen LIKE "%s"', $filter_ip);
 		}
 		break;
 	case "postgresql":
 	case "oracle":
 		if ($user_filter != 'all') {
-			$filter .= sprintf(' AND ID_usuario = \'%s\'', $user_filter);
+			$filter .= sprintf(' AND id_usuario = \'%s\'', $user_filter);
 		}
 
 		$filter .= ' AND (accion LIKE \'%' . $filter_text . '%\' OR descripcion LIKE \'%' . $filter_text . '%\')';
 
 		if ($filter_ip != '') {
-			$filter .= sprintf(' AND IP_origen LIKE \'%s\'', $filter_ip);
+			$filter .= sprintf(' AND ip_origen LIKE \'%s\'', $filter_ip);
 		}
 		break;
 }
@@ -224,7 +224,7 @@ foreach ($result as $row) {
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
-			$data[0] = $row["ID_usuario"];
+			$data[0] = $row["id_usuario"];
 			break;
 		case "oracle":
 			$data[0] = $row["id_usuario"];
@@ -235,7 +235,7 @@ foreach ($result as $row) {
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
-			$data[3] = $row["IP_origen"];
+			$data[3] = $row["ip_origen"];
 			break;
 		case "oracle":
 			$data[3] = $row["ip_origen"];
@@ -246,7 +246,7 @@ foreach ($result as $row) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				$data[5] = enterprise_hook('cell1EntepriseAudit', array($row['ID_sesion']));
+				$data[5] = enterprise_hook('cell1EntepriseAudit', array($row['id_sesion']));
 				break;
 			case "oracle":
 				$data[5] = enterprise_hook('cell1EntepriseAudit', array($row['id_sesion']));
@@ -257,7 +257,7 @@ foreach ($result as $row) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				$data[6] = enterprise_hook('cell2EntepriseAudit', array($row['ID_sesion']));
+				$data[6] = enterprise_hook('cell2EntepriseAudit', array($row['id_sesion']));
 				break;
 			case "oracle":
 				$data[6] = enterprise_hook('cell2EntepriseAudit', array($row['id_sesion']));
@@ -271,7 +271,7 @@ foreach ($result as $row) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				enterprise_hook('rowEnterpriseAudit', array($table, &$iterator, $row['ID_sesion']));
+				enterprise_hook('rowEnterpriseAudit', array($table, &$iterator, $row['id_sesion']));
 				break;
 			case "oracle":
 				enterprise_hook('rowEnterpriseAudit', array($table, &$iterator, $row['id_sesion']));

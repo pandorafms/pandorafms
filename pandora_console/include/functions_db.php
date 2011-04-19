@@ -378,9 +378,9 @@ function pandora_audit($accion, $descripcion, $user_id = false, $ip = false, $in
 	$accion = safe_input($accion);
 	$descripcion = safe_input($descripcion);
 
-	$values = array('ID_usuario' => $id,
+	$values = array('id_usuario' => $id,
 		'accion' => $accion,
-		'IP_origen' => $ip,
+		'ip_origen' => $ip,
 		'descripcion' => $descripcion,
 		'fecha' => date('Y-m-d H:i:s'),
 		'utimestamp' => time());

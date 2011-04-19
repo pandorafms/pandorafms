@@ -668,17 +668,20 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 -- 9 web
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
+alter table spacetime change  `id_sesion` bigint(20) unsigned NOT NULL auto_increment,
+  `id_usuario` varchar(60) NOT NULL default '0',
+  `ip_origen` varchar(100) NOT NULL default '',
 CREATE TABLE IF NOT EXISTS `tsesion` (
-  `ID_sesion` bigint(20) unsigned NOT NULL auto_increment,
-  `ID_usuario` varchar(60) NOT NULL default '0',
-  `IP_origen` varchar(100) NOT NULL default '',
+  `id_sesion` bigint(20) unsigned NOT NULL auto_increment,
+  `id_usuario` varchar(60) NOT NULL default '0',
+  `ip_origen` varchar(100) NOT NULL default '',
   `accion` varchar(100) NOT NULL default '',
   `descripcion` text NOT NULL default '',
   `fecha` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`ID_sesion`),
+  PRIMARY KEY  (`id_sesion`),
   KEY `idx_utimestamp` (`utimestamp`),
-  KEY `idx_user` (`ID_usuario`)
+  KEY `idx_user` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

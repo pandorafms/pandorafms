@@ -1,3 +1,10 @@
+2011-04-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm,
+	  lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/DataServer.pm: Fixed module data processing
+	  for PostgreSQL and Oracle.
+
 2011-04-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm,

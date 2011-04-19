@@ -98,7 +98,7 @@ sub db_connect ($$$$$$) {
 		
 		# Set date format
 		$dbh->do("ALTER SESSION SET NLS_TIMESTAMP_FORMAT='YYYY-MM-DD HH24:MI:SS'");
-		
+		$dbh->do("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'");
 		return $dbh;
 	}
 	
@@ -292,20 +292,21 @@ sub get_group_name ($$) {
 ##########################################################################
 sub get_db_value ($$;@) {
 		my ($dbh, $query, @values) = @_;
+		my @rows;
 
 		# Cache statements
 		my $sth = $dbh->prepare_cached($query);
+
 		$sth->execute(@values);
 
-		# No results
-		if ($sth->rows == 0) {
+		# Save returned rows
+		while (my $row = $sth->fetchrow_arrayref()) {
 			$sth->finish();
-			return undef;
+			return defined ($row->[0]) ? $row->[0] : undef;
 		}
-		
-		my $row = $sth->fetchrow_arrayref();
+
 		$sth->finish();
-		return $row->[0];
+		return undef;
 }
 
 ##########################################################################

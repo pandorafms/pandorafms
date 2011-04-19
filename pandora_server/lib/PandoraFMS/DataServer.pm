@@ -315,7 +315,7 @@ sub process_xml_data ($$$$$) {
 		# Get OS, group and description
 		my $os = pandora_get_os ($data->{'os_name'});
 		my $group_id = undef;
-		$group_id = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE nombre = ?', $data->{'group'}) if (defined ($data->{'group'}));
+		$group_id = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE ' . db_text ('nombre') . ' = ?', $data->{'group'}) if (defined ($data->{'group'}));
 		$group_id = $pa_config->{'autocreate_group'} unless defined ($group_id);
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
@@ -463,7 +463,7 @@ sub process_module_data ($$$$$$$$$) {
 
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();
-	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, safe_input($module_name));
+	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
 		# Do not auto create modules
 		if ($pa_config->{'autocreate'} ne '1') {
@@ -498,13 +498,16 @@ sub process_module_data ($$$$$$$$$) {
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
 			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
 			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh);
-		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, safe_input($module_name));
+		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
 			$ModuleSem->up ();
 			return;
 		}
 	} else {
+		
+		# Control NULL columns
+		$module->{'descripcion'} = '' unless defined ($module->{'descripcion'});
 		
 		# Set default values
 		$module_conf->{'max'} = $module->{'max'} unless defined ($module_conf->{'max'});

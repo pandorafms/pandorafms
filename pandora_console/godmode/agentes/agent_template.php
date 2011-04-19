@@ -64,13 +64,9 @@ if (isset ($_POST["template_id"])) {
 			$id_agente_modulo = process_sql ($sql, "insert_id");
 			
 			// Create with different estado if proc type or data type
-			if ($id_agente_modulo !== false && ($row2["type"] == 2) || ($row2["type"] == 6) || ($row2["type"] == 9) || ($row2["type"] == 12) || ($row2["type"] == 18)) {
+			if ($id_agente_modulo !== false){
 				$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,estado,id_agente, utimestamp) 
 								VALUES (%d, 0,'0000-00-00 00:00:00',0, %d, 0)", $id_agente_modulo, $id_agente);
-				process_sql ($sql);
-			} elseif ($id_agente_modulo !== false) { 
-				$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,estado,id_agente, utimestamp) 
-								VALUES (%d, 0,'0000-00-00 00:00:00',100, %d, 0)", $id_agente_modulo, $id_agente);
 				process_sql ($sql);
 			} else {
 				echo '<h3 class="error">'.__('Error adding module').'</h3>';

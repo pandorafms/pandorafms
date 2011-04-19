@@ -1,5 +1,13 @@
 2011-04-19 Javier Lanz <javier.lanz@artica.es>
 
+	* include/functions_modules.php: Fixed an error about the agent status
+	* godmode/agentes/agent_template.php: Fixed an error about the agent
+	status
+
+	Fix: #3251822
+
+2011-04-19 Javier Lanz <javier.lanz@artica.es>
+
 	* godmode/modules/manage_network_components_form.php: Enabled port field
 	on Network Components - Remote SNMP network agent
 	* godmode/modules/manage_network_components_form_plugin.php: Added port

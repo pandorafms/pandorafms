@@ -119,10 +119,6 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 	}
 	
 	$values['id_agente'] = $id_destiny_agent;
-	
-	if (! in_array ($new_module['id_tipo_modulo'], array (2, 6, 9, 18, 21, 100))) //TODO delete magic numbers
-		/* Not proc modules uses a special estado (status) value */
-		$values['estado'] = 100;
 
 	switch ($config['dbtype']) {
 		case "mysql":

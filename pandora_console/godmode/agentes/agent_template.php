@@ -78,22 +78,12 @@ if (isset ($_POST["template_id"])) {
 			$id_agente_modulo = process_sql_insert('tagente_modulo', $values);
 			
 			// Create with different estado if proc type or data type
-			if ($id_agente_modulo !== false && ($row2["type"] == 2) || ($row2["type"] == 6) || ($row2["type"] == 9) || ($row2["type"] == 12) || ($row2["type"] == 18)) {
+			if ($id_agente_modulo !== false) {
 				$values = array(
 					'id_agente_modulo' => $id_agente_modulo,
 					'datos' => 0,
 					'timestamp' => '0000-00-00 00:00:00',
 					'estado' => 0,
-					'id_agente' => $id_agente,
-					'utimestamp' => 0);
-				process_sql_insert('tagente_estado', $values);
-			}
-			elseif ($id_agente_modulo !== false) { 
-				$values = array(
-					'id_agente_modulo' =>$id_agente_modulo,
-					'datos' => 0,
-					'timestamp' => '0000-00-00 00:00:00',
-					'estado' => 100,
 					'id_agente' => $id_agente,
 					'utimestamp' => 0);
 				process_sql_insert('tagente_estado', $values);

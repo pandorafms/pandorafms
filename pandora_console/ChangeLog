@@ -1,3 +1,11 @@
+2011-04-19 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_modules.php: Fixed an error about the agent status
+	* godmode/agentes/agent_template.php: Fixed an error about the agent
+	status
+
+	Fix: #3251822
+
 2011-04-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Fixed an error in last commit.

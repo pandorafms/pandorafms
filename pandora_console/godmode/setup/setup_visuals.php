@@ -78,7 +78,12 @@ $table->data[9][1] = print_select ($iconsets, 'status_images_set', $config["stat
 
 
 $table->data[10][0] = __('Font path');
-$table->data[10][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
+
+$fonts = load_fonts();
+
+$table->data[10][1] = print_select($fonts, 'fontpath', $config["fontpath"], '', '', 0, true);
+
+//$table->data[10][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
 
 $table->data[11][0] = __('Flash charts');
 $table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $config["flash_charts"], true).'&nbsp;&nbsp;';
@@ -99,6 +104,22 @@ echo '</form>';
 
 ui_require_css_file ("color-picker");
 ui_require_jquery_file ("colorpicker");
+
+function load_fonts() {
+	global $config;
+	
+	$dir = scandir($config['homedir'] . '/include/fonts/');
+	
+	$fonts = array();
+	
+	foreach ($dir as $file) {
+		if (strstr($file, '.ttf') !== false) {
+			$fonts[$config['homedir'] . '/include/fonts/' . $file] = $file;
+		}
+	}
+	
+	return $fonts;
+}
 ?>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {

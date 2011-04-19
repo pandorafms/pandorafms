@@ -1,9 +1,25 @@
+2011-04-19 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/modules/manage_network_components_form.php: Enabled port field
+	on Network Components - Remote SNMP network agent
+	* godmode/modules/manage_network_components_form_plugin.php: Added port
+	field on Network Components - Plugin Components
+	* include/functions_filemanager.php: Added a 'base64_encode' to deal with
+	html entities in collection's files
+
 2011-04-18 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged change from trunk.
 	
 	* operation/agentes/estado_monitores.php: added a toggle button to show the
 	the entire value or sub string for value (by default).
+
+2011-04-18 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_filemanager.php: Added a 'base64_encode' to deal with
+	html entities in collection's files
+
+	Fix: #3286063
 
 2011-04-18 Javier Lanz <javier.lanz@artica.es>
 

@@ -440,7 +440,7 @@ sub pandora_evaluate_compound_alert ($$$$) {
 
 	# Get all the alerts associated with this compound alert
 	my @compound_alerts = get_db_rows ($dbh, 'SELECT id_alert_template_module, operation FROM talert_compound_elements
-						 WHERE id_alert_compound = ? ORDER BY `order`', $id);
+						 WHERE id_alert_compound = ? ORDER BY ' . db_reserved_word ('order'), $id);
 
 	foreach my $compound_alert (@compound_alerts) {
 
@@ -1080,7 +1080,7 @@ sub pandora_create_incident ($$$$$$$$;$) {
 	# Initialize default parameters
 	$owner = '' unless defined ($owner);
 	
-	db_do($dbh, 'INSERT INTO tincidencia (`inicio`, `titulo`, `descripcion`, `origen`, `estado`, `prioridad`, `id_grupo`, `id_usuario`)
+	db_do($dbh, 'INSERT INTO tincidencia (inicio, titulo, descripcion, origen, estado, prioridad, id_grupo, id_usuario)
 			VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)', $title, $text, $origin, $status, $priority, $id_group, $owner);
 }
 
@@ -1162,7 +1162,7 @@ sub pandora_create_module_from_hash ($$$) {
 
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
 
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'});
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'});
 
 	return $module_id;
 }
@@ -1573,7 +1573,7 @@ sub process_inc_data ($$$$) {
 	# No previous data
 	if (! defined ($data_inc)) {
 		db_do ($dbh, 'INSERT INTO tagente_datos_inc
-				(`id_agente_modulo`, `datos`, `utimestamp`)
+				(id_agente_modulo, datos, utimestamp)
 				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
 		return undef;
 	}
@@ -1582,7 +1582,7 @@ sub process_inc_data ($$$$) {
 	if ($data < $data_inc->{'datos'}) {
 		db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});		
 		db_do ($dbh, 'INSERT INTO tagente_datos_inc
-				(`id_agente_modulo`, `datos`, `utimestamp`)
+				(id_agente_modulo, datos, utimestamp)
 				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
 		return undef;
 	}
@@ -1758,7 +1758,7 @@ sub save_module_data ($$$$$) {
 	} else {
 		my $data = $data_object->{'data'};
 		my $table = ($module_type =~ m/_string/) ? 'tagente_datos_string' : 'tagente_datos';
-
+		
 		db_do($dbh, 'INSERT INTO ' . $table . ' (id_agente_modulo, datos, utimestamp)
 					 VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);	
 	}
@@ -1778,7 +1778,7 @@ sub export_module_data ($$$$$$$) {
 
 	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
 	db_do($dbh, 'INSERT INTO tserver_export_data 
-		(`id_export_server`, `agent_name` , `module_name`, `module_type`, `data`, `timestamp`) VALUES
+		(id_export_server, agent_name , module_name, module_type, data, timestamp) VALUES
 		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
 }
 
@@ -1888,8 +1888,8 @@ sub archive_agent_position($$$$$$$$$$) {
 
 	logger($pa_config, "Saving new agent position: start_timestamp=$start_timestamp longitude=$longitude latitude=$latitude altitude=$altitude", 10);
 
-	db_do($dbh, 'INSERT INTO tgis_data_history (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`,
-					`end_timestamp`, `description`, `number_of_packages`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+	db_do($dbh, 'INSERT INTO tgis_data_history (longitude, latitude, altitude, tagente_id_agente, start_timestamp,
+					end_timestamp, description, number_of_packages) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
 					$longitude, $latitude, $altitude, $agent_id, $start_timestamp, $end_timestamp, $description, $number_packages);
 
 }
@@ -2116,7 +2116,7 @@ my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserve
 		$queued_modules = 0;
 	}
 
-	my $dbmaintance = get_db_value ($dbh, "SELECT COUNT(*) FROM tconfig WHERE token = 'db_maintance' AND `value` > UNIX_TIMESTAMP() - 86400");
+	my $dbmaintance = get_db_value ($dbh, "SELECT COUNT(*) FROM tconfig WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
 
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";

@@ -1,3 +1,279 @@
+2011-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* Changelog: Forget to update the Changelog in my last commit.
+
+2011-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	include/functions_html.php
+	include/functions_messages.php
+	include/db/postgresql.php
+	include/db/mysql.php
+	include/db/oracle.php
+	include/functions_reporting.php
+	include/functions_filemanager.php
+	include/functions_gis.php
+	include/auth/ldap.php
+	include/auth/mysql.php
+	include/functions_networkmap.php
+	include/functions_network_components.php
+	include/ajax/skins.ajax.php
+	include/ajax/reporting.ajax.php
+	include/ajax/visual_console_builder.ajax.php
+	include/ajax/alert_list.ajax.php
+	include/ajax/module.php
+	include/functions_config.php
+	include/functions_api.php
+	include/help/en/help_timesource.php
+	include/help/es/help_timesource.php
+	include/help/ja/help_timesource.php
+	include/config_process.php
+	include/functions_ui.php
+	include/functions_custom_graphs.php
+	include/fgraph.php
+	include/functions_incidents.php
+	include/api.php
+	include/functions_reports.php
+	include/functions_ui_renders.php
+	extensions/insert_data.php
+	extensions/system_info.php
+	extensions/extension_uploader.php
+	extensions/pandora_logs.php
+	extensions/agents_modules.php
+	extensions/update_manager.php
+	extensions/ssh_console.php
+	extensions/dbmanager.php
+	extensions/vnc_view.php
+	extensions/resource_registration.php
+	extensions/resource_exportation.php
+	extensions/users_connected.php
+	extensions/module_groups.php
+	extensions/update_manager/load_updatemanager.php
+	extensions/update_manager/lib/libupdate_manager_client.php
+	extensions/update_manager/lib/libupdate_manager.php
+	extensions/update_manager/lib/libupdate_manager_components.php
+	extensions/update_manager/lib/libupdate_manager_updates.php
+	extensions/update_manager/settings.php
+	extensions/update_manager/main.php
+	extensions/plugin_registration.php
+	operation/incidents/incident.php
+	operation/incidents/incident_detail.php
+	operation/incidents/incident_statistics.php
+	operation/search_modules.php
+	operation/visual_console/render_view.php
+	operation/visual_console/index.php
+	operation/extensions.php
+	operation/agentes/status_monitor.php
+	operation/agentes/export_csv.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/datos_agente.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/custom_fields.php
+	operation/agentes/estado_agente.php
+	operation/agentes/networkmap.topology.php
+	operation/agentes/networkmap.groups.php
+	operation/agentes/sla_view.php
+	operation/agentes/exportdata.php
+	operation/agentes/gis_view.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/ver_agente.php
+	operation/agentes/graphs.php
+	operation/agentes/agent_fields.php
+	operation/agentes/tactical.php
+	operation/agentes/group_view.php
+	operation/agentes/networkmap.php
+	operation/agentes/stat_win.php
+	operation/servers/view_server.php
+	operation/servers/view_server_detail.php
+	operation/menu.php
+	operation/search_agents.php
+	operation/search_graphs.php
+	operation/snmpconsole/snmp_view.php
+	operation/users/user_edit.php
+	operation/gis_maps/render_view.php
+	operation/gis_maps/ajax.php
+	operation/integria_incidents/incident.php
+	operation/integria_incidents/incident_detail.php
+	operation/integria_incidents/incident_statistics.php
+	operation/events/event_statistics.php
+	operation/events/events_rss.php
+	operation/events/export_csv.php
+	operation/events/sound_events.php
+	operation/events/events_validate.php
+	operation/events/events_list.php
+	operation/events/events_marquee.php
+	operation/events/events.php
+	operation/search_alerts.php
+	operation/messages/message.php
+	operation/reporting/reporting_xml.php
+	operation/reporting/reporting_viewer.php
+	operation/reporting/graph_viewer.php
+	operation/search_reports.php
+	operation/search_maps.php
+	operation/search_users.php
+	extras/pandora_diag.php
+	mobile/operation/agents/monitor_status.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/agents/view_alerts.php
+	mobile/operation/agents/group_view.php
+	mobile/operation/events/events.php
+	mobile/index.php
+	general/error_authconfig.php
+	general/links_menu.php
+	general/logon_ok.php
+	general/error_dbconfig.php
+	general/ui/agents_list.php
+	general/header.php
+	godmode/groups/modu_group_list.php
+	godmode/groups/configure_group.php
+	godmode/groups/configure_modu_group.php
+	godmode/groups/group_list.php
+	godmode/admin_access_logs.php
+	godmode/db/db_main.php
+	godmode/db/db_audit.php
+	godmode/db/db_sanity.php
+	godmode/db/db_refine.php
+	godmode/db/db_info.php
+	godmode/db/db_event.php
+	godmode/db/db_purge.php
+	godmode/extensions.php
+	godmode/agentes/agent_template.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/fields_manager.php
+	godmode/agentes/agent_conf_gis.php
+	godmode/agentes/module_manager_editor_prediction.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/configure_field.php
+	godmode/agentes/module_manager_editor.php
+	godmode/agentes/planned_downtime.php
+	godmode/agentes/manage_config_remote.php
+	godmode/agentes/agent_manager.php
+	godmode/servers/recon_script.php
+	godmode/servers/plugin.php
+	godmode/servers/manage_recontask.php
+	godmode/servers/modificar_server.php
+	godmode/servers/manage_recontask_form.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/configure_alert_compound.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_list.php
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/configure_alert_action.php
+	godmode/alerts/configure_alert_command.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_list.builder.php
+	godmode/alerts/alert_commands.php
+	godmode/setup/file_manager.php
+	godmode/setup/os.list.php
+	godmode/setup/news.php
+	godmode/setup/gis_step_2.php
+	godmode/setup/links.php
+	godmode/setup/setup.php
+	godmode/setup/os.php
+	godmode/setup/performance.php
+	godmode/setup/setup_auth.php
+	godmode/setup/gis.php
+	godmode/setup/os.builder.php
+	godmode/setup/setup_visuals.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/snmpconsole/snmp_filters.php
+	godmode/users/user_list.php
+	godmode/users/configure_profile.php
+	godmode/gis_maps/configure_gis_map.php
+	godmode/gis_maps/index.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_copy_modules.php
+	godmode/massive/massive_delete_agents.php
+	godmode/massive/massive_enable_disable_alerts.php
+	godmode/massive/massive_operations.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_add_profiles.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/massive/massive_standby_alerts.php
+	godmode/massive/massive_add_action_alerts.php
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_nc_groups_form.php
+	godmode/modules/manage_network_templates.php
+	godmode/modules/module_list.php
+	godmode/modules/manage_network_components_form_common.php
+	godmode/modules/manage_network_components_form_network.php
+	godmode/modules/manage_network_templates_form.php
+	godmode/modules/manage_network_components_form_wmi.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_nc_groups.php
+	godmode/reporting/visual_console_builder.wizard.php
+	godmode/reporting/graph_builder.main.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/reporting_builder.preview.php
+	godmode/reporting/reporting_builder.main.php
+	godmode/reporting/visual_console_builder.data.php
+	godmode/reporting/visual_console_builder.elements.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/visual_console_builder.preview.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/visual_console_builder.editor.php
+	godmode/reporting/reporting_builder.item_editor.php
+	godmode/reporting/map_builder.php
+	godmode/reporting/graphs.php
+	godmode/reporting/graph_builder.preview.php
+	include/functions_db.php: Added some includes and functions of this code have "db_" prefix.
+	* include/functions.php: Moved function check_login(), check_acl(), 
+	dame_nombre_pluginid(), get_os_name() from functions_db.php to functions.php. 
+	* include/functions_groups.php: Moved functions get_childrens(), safe_acl_group()
+	 and get_parents(), give_disabled_group(), isAllGroups(), get_group_icon(), get_all_groups(), 	 
+	get_id_groups_recursive(), get_user_groups_tree_recursive(), get_group_status(), 
+	get_group_name(), get_group_users() from functions_db.php to this code. 
+	* include/functions_profile.php: New library with profile functions. Moved functions 
+	get_profile_name(), get_profiles(), create_user_profile(), delete_user_profile(), 
+	delete_profile() from functions_db.php to this code. Added new parameter in function 
+	get_profile() to retrieve profiles with filter conditions applied.
+	* include/functions_users.php: New library with users functions. Moved functions 
+	get_users_info(), get_all_model_groups(), get_user_groups(), get_user_groups_tree(), 
+	get_user_first_group(), user_access_to_agent() from funtions_db.php to this code.
+	* godmode/users/configure_user.php: Changed get_profile_filter() function to get_profile(). 
+	* include/functions_agents.php: Moved functions get_group_agents(), get_agent_modules(), 
+	get_agent_module_id(), get_agent_id(), get_agent_name(), get_agent_modules_data_count(), 
+	check_alert_fired(), get_agent_interval(), get_agent_os(), give_agentmodule_flag(), 
+	agent_add_address(), agent_delete_address(), get_agent_address(), get_agent_with_ip(), 
+	get_agent_addresses(), get_agent_status(), delete_agent(), get_agentmodule_group(), 
+	get_agent_group() from functions_db.php to this code.
+	* include/functions_modules.php: Moved functions get_agentmodule(), get_agentmodule_id(), 
+	get_agentmodule_is_init(), get_agent_modules_count(), get_module_type_name(), 
+	get_module_type_icon(), get_agentmodule_agent(), get_agentmodule_agent_name(), 
+	get_agentmodule_name(), get_agentmodule_type(), get_monitor_downs_in_period(), 		
+	get_monitor_last_down_timestamp_in_period(), get_monitors_in_group(), 
+	get_monitors_in_agent(), get_monitors_down(), get_moduletype_name(), 
+	get_moduletype_description(), get_moduletypes(), get_module_interval(), show_icon_type(), 		
+	give_modulecategory_name(),
+ 	give_agent_id_from_module_id(), get_module_status(), get_agent_module_last_value(), 
+	get_previous_data(), get_agentmodule_modulegroup(), get_modulegroups(), 
+	get_modulegroup_name() from functions_db.php to this code.
+	* include/functions_alerts.php: Moved functions get_alert_type(), get_agent_alert_fired(),
+	 get_module_alert_fired(), get_alert_fires_in_period(), get_group_alerts(), get_alerts_fired(), 
+	get_alert_last_fire_timestamp_in_period(), get_agentmodule_status(), 
+	get_agentmodule_last_status() from functions_db.php to this code.
+	* include/functions_exportserver.php: Moved function dame_nombre_servidorexportacion() 
+	from functions_db.php to this code.
+	* include/functions_events.php: Moved functions get_group_events(), get_agent_events(), 
+	get_module_events() from functions_db.php to this code.
+	* include/functions_servers.php: Moved functions get_server_name(), show_server_type(), 
+	check_server_status(), server_status() from functions_db.php to this code.
+	* include/functions_network_profiles.php: Moved function get_networkprofile_name() 
+	from functions_db.php to this code.
+	* include/functions_visual_map.php: Moved functions get_layoutdata_x(), get_layoutdata_y() 
+	from fucntions_db.php to this code.
+	* include/functions_io.php: Moved function __() from functions_db.php to this code.
+
 2011-04-19 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_modules.php: Fixed an error about the agent status

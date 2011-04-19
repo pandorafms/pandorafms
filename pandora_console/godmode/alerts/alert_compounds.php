@@ -13,16 +13,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
 }
 
 require_once ('include/functions_alerts.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 $id_group = (int) get_parameter ('id_group');
 $id_agent = (int) get_parameter ('id_agent');
@@ -155,7 +159,7 @@ if (count($agents) > 0) {
 	$sql = sprintf ('SELECT COUNT(*) FROM talert_compound
 		WHERE id_agent in (%s)%s',
 		implode (',', array_keys ($agents)), $where);
-	$total = (int) get_db_sql ($sql);
+	$total = (int) db_get_sql ($sql);
 }
 ui_pagination ($total, $url);
 
@@ -196,7 +200,7 @@ if (count($agents)) {
 			$sql = oracle_recode_query($sql, $set);
 			break;
 	}
-	$id_alerts = get_db_all_rows_sql ($sql);
+	$id_alerts = db_get_all_rows_sql ($sql);
 
 	if (($config["dbtype"] == 'oracle') && ($id_alerts !== false)) {
 		for ($i=0; $i < count($id_alerts); $i++) {

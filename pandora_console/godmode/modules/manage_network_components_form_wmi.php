@@ -20,11 +20,13 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
 	require ("general/noaccess.php");
 	return;
 }
+
+include_once($config['homedir'] . "/include/functions_modules.php");
 
 echo "<h3>".__('WMI component management').'</h3>';
 
@@ -90,7 +92,7 @@ echo '<td class="datos2">';
 echo '<select name="tipo">';
 echo '<option value="' . $type . '">' . get_moduletype_name ($type);
 
-$rows = get_db_all_rows_sql('SELECT id_tipo, nombre
+$rows = db_get_all_rows_sql('SELECT id_tipo, nombre
 	FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
 if ($rows === false) {
 	$rows = array();
@@ -117,7 +119,7 @@ if ($id) {
 	echo '<option value="' . $id_module_group . '">' . get_modulegroup_name($id_module_group);
 }
 
-$rows = get_db_all_rows_in_table('tmodule_group');
+$rows = db_get_all_rows_in_table('tmodule_group');
 if ($rows === false) {
 	$rows = array();
 }

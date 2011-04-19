@@ -13,6 +13,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+include_once("include/functions_modules.php");
+include_once("include/functions_events.php");
+include_once ('include/functions_groups.php');
+
 function xml_array ($array) {
 	foreach ($array as $name => $value) {
 		if (is_int ($name)) {
@@ -79,7 +83,7 @@ if (isset ($_GET["direct"])) {
 	if ($nick !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
-		logon_db ($nick, $_SERVER['REMOTE_ADDR']);
+		db_logon ($nick, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $nick;
 		$config['id_user'] = $nick;
 		//Remove everything that might have to do with people's passwords or logins
@@ -89,7 +93,7 @@ if (isset ($_GET["direct"])) {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
-		pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+		db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 		exit;
 	}
 }
@@ -106,18 +110,18 @@ check_login ();
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
-	pandora_audit("HACK Attempt",
+	db_pandora_audit("HACK Attempt",
 			  "Trying to access graph viewer without valid ID");
 	require ("general/noaccess.php");
 	exit;
 }
 
-$report = get_db_row ('treport', 'id_report', $id_report);
+$report = db_get_row ('treport', 'id_report', $id_report);
 
 $report["datetime"] = get_system_time();
 
 if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
-	pandora_audit("ACL Violation","Trying to access graph reader");
+	db_pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -144,11 +148,11 @@ if ($datetime === false || $datetime == -1) {
 $group_name = get_group_name ($report['id_group']);
 switch ($config["dbtype"]) {
 	case "mysql":
-		$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
+		$contents = db_get_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
 		break;
 	case "postgresql":
 	case "oracle":
-		$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ('treport_content', 'id_report', $id_report, '"order"');
 		break;
 }
 
@@ -175,7 +179,7 @@ $counter = 0;
 foreach ($contents as $content) {
 	echo '<object id="'.$counter.'">';
 	$data = array ();
-	$data["module"] = safe_output_xml (get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+	$data["module"] = safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 	$data["agent"] = safe_output_xml (get_agentmodule_agent_name ($content['id_agent_module']));
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
@@ -212,11 +216,11 @@ foreach ($contents as $content) {
 			break;
 		case 2:
 		case 'custom_graph':
-			$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
+			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			$data["title"] = __('Custom graph');
 			$data["objdata"]["img_name"] = $graph["name"];
 	
-			$result = get_db_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
+			$result = db_get_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 			$modules = array ();
 			$weights = array ();
 		
@@ -252,7 +256,7 @@ foreach ($contents as $content) {
 		case 'SLA':
 			$data["title"] = __('S.L.A.');
 	
-			$slas = get_db_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
+			$slas = db_get_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
 			if ($slas === false) {
 				$data["objdata"]["error"] = __('There are no SLAs defined');
 				$slas = array ();
@@ -374,13 +378,13 @@ foreach ($contents as $content) {
 			if ($content['treport_custom_sql_id'] != 0) {
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+						$sql = db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
 						break;
 					case "postgresql":
-						$sql = get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+						$sql = db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
 						break;
 					case "oracle":
-						$sql = get_db_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+						$sql = db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
 						break;
 				}
 			}
@@ -388,7 +392,7 @@ foreach ($contents as $content) {
 				$sql = $content['external_source'];
 			}
 			
-			$result = get_db_all_rows_sql($sql);
+			$result = db_get_all_rows_sql($sql);
 			if ($result === false) {
 				$result = array();
 			}
@@ -545,7 +549,7 @@ foreach ($contents as $content) {
 			
 			$datelimit = $report["datetime"] - $content['period'];
 			
-			$result = get_db_all_rows_sql('SELECT *
+			$result = db_get_all_rows_sql('SELECT *
 				FROM tagente_datos_string
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
 					AND utimestamp > ' . $datelimit . ' AND utimestamp <= ' . $report["datetime"]);

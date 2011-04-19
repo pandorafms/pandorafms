@@ -21,7 +21,7 @@ require_once ('include/functions_custom_graphs.php');
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Inventory Module Management");
 	require ("general/noaccess.php");
 	return;
@@ -37,14 +37,14 @@ ui_print_page_header (__('Graphs management'), "", false, "", true);
 // Delete module SQL code
 if ($delete_graph) {
 	if (check_acl ($config['id_user'], 0, "AW")) {
-		$result = process_sql_delete("tgraph_source", array('id_graph' =>$id));
+		$result = db_process_sql_delete("tgraph_source", array('id_graph' =>$id));
 		
 		if ($result)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 			
-		$result = process_sql_delete("tgraph", array('id_graph' =>$id));
+		$result = db_process_sql_delete("tgraph", array('id_graph' =>$id));
 		
 		if ($result)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
@@ -54,7 +54,7 @@ if ($delete_graph) {
 		echo $result;
 	}
 	else {
-		pandora_audit("ACL Violation","Trying to delete a graph from access graph builder");
+		db_pandora_audit("ACL Violation","Trying to delete a graph from access graph builder");
 		include ("general/noaccess.php");
 		exit;
 	}

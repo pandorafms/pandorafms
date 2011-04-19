@@ -18,11 +18,15 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
+
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . "/include/functions_groups.php");
 
 $editGraph = (bool) get_parameter('edit_graph', 0);
 
@@ -33,7 +37,7 @@ if (isset ($_GET["get_agent"])) {
 }
 
 if ($editGraph) {
-	$graphRows = get_db_all_rows_sql("SELECT t1.*,
+	$graphRows = db_get_all_rows_sql("SELECT t1.*,
 		(SELECT t3.nombre 
 			FROM tagente AS t3 
 			WHERE t3.id_agente = 
@@ -58,7 +62,7 @@ if ($editGraph) {
 		$agent_array[] = $graphRow['agent_name'];
 	}
 	
-	$graphInTgraph = get_db_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id);
+	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id);
 	$stacked = $graphInTgraph['stacked'];
 	$events = $graphInTgraph['events'];
 	$period = $graphInTgraph['period'];

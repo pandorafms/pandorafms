@@ -17,11 +17,12 @@
 global $config;
 
 require_once ('include/functions_alerts.php');
+require_once ('include/functions_users.php');
 
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -36,7 +37,7 @@ if ($al_action !== false){
 	if ($al_action['id_group'] == 0){
 		// then must have "PM" access privileges
 		if (! check_acl ($config['id_user'], 0, "PM")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;
@@ -56,7 +57,7 @@ if ($al_action !== false){
 			// Header
 			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
 		else{
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;

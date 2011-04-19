@@ -20,11 +20,13 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Recon Task Management");
 	require ("general/noaccess.php");
 	exit;
 }
+
+require_once($config['homedir'] . "/include/functions_network_profiles.php");
 
 // Headers
 ui_print_page_header (__('Manage recontask'), "", false, "", true);
@@ -35,7 +37,7 @@ ui_print_page_header (__('Manage recontask'), "", false, "", true);
 if (isset ($_GET["delete"])) {
 	$id = get_parameter_get ("delete");
 	
-	$result = process_sql_delete('trecon_task', array('id_rt' => $id));
+	$result = db_process_sql_delete('trecon_task', array('id_rt' => $id));
 	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully deleted recon task').'</h3>';
@@ -102,9 +104,9 @@ if (isset($_GET["update"])) {
 	
 	if ($name != "") {
 		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-			$result = process_sql_update('trecon_task', $values, $where);
+			$result = db_process_sql_update('trecon_task', $values, $where);
 		elseif ($id_recon_script != 0)
-			$result = process_sql_update('trecon_task', $values, $where);
+			$result = db_process_sql_update('trecon_task', $values, $where);
 		else 
 			$result = false;
 	}
@@ -144,10 +146,10 @@ if (isset($_GET["create"])) {
 	if ($name != "") {
 		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
-			$result = process_sql_insert('trecon_task', $values);
+			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		elseif ($id_recon_script != 0) {
-			$result = process_sql_insert('trecon_task', $values);
+			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		else 
 			$result = false;
@@ -169,7 +171,7 @@ if (isset($_GET["create"])) {
 // --------------------------------
 
 
-$result = get_db_all_rows_in_table ("trecon_task");
+$result = db_get_all_rows_in_table ("trecon_task");
 $color=1;
 if ($result !== false) {
 	$table->head = array  (__('Name'), __('Network'), __('Mode'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));
@@ -198,7 +200,7 @@ if ($result !== false) {
 		} else {
 			// APP recon task
 			$data[2] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
-			$data[2] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
+			$data[2] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
 		}	
 			
 		

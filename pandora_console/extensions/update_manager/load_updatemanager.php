@@ -63,18 +63,18 @@ function get_user_key ($settings) {
 
 	switch ($config['dbtype']) {
 		case 'mysql':
-			$n = (int) get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
-			$m = (int) get_db_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
+			$n = (int) db_get_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
+			$m = (int) db_get_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
 				'disabled', 0);
 			break;
 		case 'postgresql':
-			$n = (int) get_db_value ('COUNT("id_agente")', 'tagente', 'disabled', 0);
-			$m = (int) get_db_value ('COUNT("id_agente_modulo")', 'tagente_modulo',
+			$n = (int) db_get_value ('COUNT("id_agente")', 'tagente', 'disabled', 0);
+			$m = (int) db_get_value ('COUNT("id_agente_modulo")', 'tagente_modulo',
 				'disabled', 0);
 			break;
 		case 'oracle':
-			$n = (int) get_db_value ('COUNT(id_agente)', 'tagente', 'disabled', 0);
-			$m = (int) get_db_value ('COUNT(id_agente_modulo)', 'tagente_modulo',
+			$n = (int) db_get_value ('COUNT(id_agente)', 'tagente', 'disabled', 0);
+			$m = (int) db_get_value ('COUNT(id_agente_modulo)', 'tagente_modulo',
 				'disabled', 0);
 			break;
 	}

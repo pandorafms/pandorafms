@@ -19,6 +19,7 @@ require_once "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 require_once "../../include/functions_api.php";
+require_once("../../include/functions_agents.php");
 
 ini_set ('display_errors', 0); //Don't display other errors, messes up XML
 
@@ -199,7 +200,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$result= get_db_all_rows_sql ($sql);
+$result= db_get_all_rows_sql ($sql);
 
 $base = 'http'.(isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '').'://'.$_SERVER['HTTP_HOST'];
 $url = $base.$config["homeurl"];

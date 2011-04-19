@@ -79,7 +79,7 @@ function updateArrowLayers() {
 <?php
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation", "Trying to access map builder");
+	db_pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }
@@ -312,7 +312,7 @@ if (isset($invalidFields['map_connection_list'])) {
 	}
 }
 
-$listConnectionTemp = get_db_all_rows_sql("SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection");
+$listConnectionTemp = db_get_all_rows_sql("SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection");
 $listConnection = array();
 foreach ($listConnectionTemp as $connectionTemp) {
 	if (check_acl ($config["id_user"], $connectionTemp['group_id'], "IW")) {

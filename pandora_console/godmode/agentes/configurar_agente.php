@@ -18,6 +18,7 @@
 global $config;
 
 enterprise_include ('godmode/agentes/configurar_agente.php');
+include_once($config['homedir'] . "/include/functions_agents.php");
 
 check_login ();
 
@@ -28,7 +29,7 @@ if ($id_agente)
 	$group = get_agent_group ($id_agente);
 
 if (! check_acl ($config["id_user"], $group, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
 	return;
@@ -129,7 +130,7 @@ if ($create_agent) {
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 
-	$fields = get_db_all_fields_in_table('tagent_custom_fields');
+	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if($fields === false) $fields = array();
 	
@@ -149,7 +150,7 @@ if ($create_agent) {
 		$agent_created_ok = 0;
 	}
 	else {
-		$id_agente = process_sql_insert ('tagente', 
+		$id_agente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $nombre_agente,
 				'direccion' => $direccion_agente,
 				'id_grupo' => $grupo, 'intervalo' => $intervalo,
@@ -164,7 +165,7 @@ if ($create_agent) {
 		if ($id_agente !== false) {
 			// Create custom fields for this agent
 			foreach($field_values as $key => $value) {
-				process_sql_insert ('tagent_custom_data',
+				db_process_sql_insert ('tagent_custom_data',
 				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 			}
 			// Create address for this agent in taddress
@@ -180,7 +181,7 @@ if ($create_agent) {
 				' Custom ID: ' . $custom_id . ' Cascade protection: '  . $cascade_protection . 
 				' Icon path: ' . $icon_path . ' Update GIS data: ' . $update_gis_data;
 			
-			pandora_audit("Agent management",
+			db_pandora_audit("Agent management",
 				"Created agent $nombre_agente", false, false, $info);
 		}
 		else {
@@ -362,7 +363,7 @@ if (isset( $_GET["fix_module"])) {
 		$where = array(
 			'datos' => '>' . $media,
 			'id_agente_modulo' => $id_module);
-		process_sql_delete('tagente_datos', $where);
+		db_process_sql_delete('tagente_datos', $where);
 	}
 	else {
 		$result = false;
@@ -404,7 +405,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	
-	$fields = get_db_all_fields_in_table('tagent_custom_fields');
+	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if($fields === false) $fields = array();
 	
@@ -416,15 +417,15 @@ if ($update_agent) { // if modified some agent paramenter
 	
 	
 	foreach($field_values as $key => $value) {
-		$old_value = get_db_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agente, 'id_field' => $key));
+		$old_value = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agente, 'id_field' => $key));
 	
 		if($old_value === false) {
 			// Create custom field if not exist
-			process_sql_insert ('tagent_custom_data',
+			db_process_sql_insert ('tagent_custom_data',
 				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 		}
 		else {		
-			process_sql_update ('tagent_custom_data',
+			db_process_sql_update ('tagent_custom_data',
 				 array('description' => $value),
 				 array('id_field' => $key,'id_agent' => $id_agente));
 		}
@@ -449,7 +450,7 @@ if ($update_agent) { // if modified some agent paramenter
 			agent_delete_address ($id_agente, $delete_ip);
 		}
 	
-		$result = process_sql_update ('tagente', 
+		$result = db_process_sql_update ('tagente', 
 			array ('disabled' => $disabled,
 				'id_parent' => $id_parent,
 				'id_os' => $id_os,
@@ -479,7 +480,7 @@ if ($update_agent) { // if modified some agent paramenter
 			
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
-			pandora_audit("Agent management",
+			db_pandora_audit("Agent management",
 				"Updated agent $nombre_agente", false, false, $info);
 
 		}
@@ -492,12 +493,12 @@ if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = get_agent_group ($id_agente);
 	if (check_acl ($config["id_user"], $id_grupo, "AW") != 1) {
-		pandora_audit("ACL Violation","Trying to admin an agent without access");
+		db_pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
 	}
 	
-	$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	if (empty ($agent)) {
 		//Close out the page
 		ui_print_error_message (__('There was a problem loading the agent'));
@@ -532,7 +533,7 @@ if ($update_module || $create_module) {
 	$id_grupo = get_agent_group ($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
@@ -663,7 +664,7 @@ if ($update_module) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
 		$edit_module = true;
 		
-		pandora_audit("Agent management",
+		db_pandora_audit("Agent management",
 			"Fail to try update module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
@@ -671,9 +672,9 @@ if ($update_module) {
 		$id_agent_module = false;
 		$edit_module = false;
 
-		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 
-		pandora_audit("Agent management",
+		db_pandora_audit("Agent management",
 			"Updated module '$name' for agent ".$agent["nombre"], false, false, json_encode($values));
 	}
 }
@@ -740,7 +741,7 @@ if ($create_module) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
 		$edit_module = true;
 		$moduletype = $id_module;
-		pandora_audit("Agent management",
+		db_pandora_audit("Agent management",
 			"Fail to try added module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
@@ -750,8 +751,8 @@ if ($create_module) {
 		
 		$info = '';
 
-		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
-		pandora_audit("Agent management",
+		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
+		db_pandora_audit("Agent management",
 			"Added module '$name' for agent ".$agent["nombre"], false, false, json_encode($values));
 	}
 }
@@ -760,18 +761,18 @@ if ($create_module) {
 // =================
 if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
-	$module_data = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
+	$module_data = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
 	$id_grupo = (int) get_agent_group($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 		"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
 	}
 	
 	if ($id_borrar_modulo < 1) {
-		pandora_audit("HACK Attempt",
+		db_pandora_audit("HACK Attempt",
 		"Expected variable from form is not correct");
 		require ("general/noaccess.php");
 		exit;
@@ -782,7 +783,7 @@ if ($delete_module) { // DELETE agent module !
 	
 	//Init transaction
 	$error = 0;
-	process_sql_begin ();
+	db_process_sql_begin ();
 	
 	// First delete from tagente_modulo -> if not successful, increment
 	// error. NOTICE that we don't delete all data here, just marking for deletion
@@ -792,15 +793,15 @@ if ($delete_module) { // DELETE agent module !
 		'nombre' => 'pendingdelete',
 		'disabled' => 1,
 		'delete_pending' => 1);
-	$result = process_sql_update('tagente_modulo', $values, array('id_agente_modulo' => $id_borrar_modulo));
+	$result = db_process_sql_update('tagente_modulo', $values, array('id_agente_modulo' => $id_borrar_modulo));
 	if ($result === false)
 		$error++;
 	
-	$result = process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_borrar_modulo));
+	$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_borrar_modulo));
 	if ($result === false)
 		$error++;
 	
-	$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_borrar_modulo));	
+	$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_borrar_modulo));	
 	if ($result === false)
 		$error++;
 
@@ -810,15 +811,15 @@ if ($delete_module) { // DELETE agent module !
 
 	//Check for errors
 	if ($error != 0) {
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		ui_print_error_message (__('There was a problem deleting the module'));
 	}
 	else {
-		process_sql_commit ();
+		db_process_sql_commit ();
 		ui_print_success_message (__('Module deleted succesfully'));
 
-		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
-		pandora_audit("Agent management",
+		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
+		db_pandora_audit("Agent management",
 			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
 	}
 }
@@ -831,14 +832,14 @@ if ($duplicate_module) { // DUPLICATE agent module !
 				get_agentmodule_agent($id_duplicate_module),
 				__('copy of').' '.get_agentmodule_name($id_duplicate_module));
 	
-	$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	
 	if ($result) {
-		pandora_audit("Agent management",
+		db_pandora_audit("Agent management",
 			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"] . " with the new id for clon " . $result);
 	}
 	else {
-		pandora_audit("Agent management",
+		db_pandora_audit("Agent management",
 			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"]);
 	}
 }
@@ -853,16 +854,16 @@ if ($updateGIS) {
 	$lastAltitude = get_parameter("altitude");
 	$idAgente = get_parameter("id_agente");
 	
-	$previusAgentGISData = get_db_row_sql("SELECT *
+	$previusAgentGISData = db_get_row_sql("SELECT *
 		FROM tgis_data_status WHERE tagente_id_agente = " . $idAgente);
 	
-	process_sql_begin();
+	db_process_sql_begin();
 	
-	process_sql_update('tagente', array('update_gis_data' => $updateGisData),
+	db_process_sql_update('tagente', array('update_gis_data' => $updateGisData),
 		array('id_agente' => $idAgente));
 		
 	if ($previusAgentGISData !== false) {
-		process_sql_insert('tgis_data_history', array(
+		db_process_sql_insert('tgis_data_history', array(
 			"longitude" => $previusAgentGISData['stored_longitude'],
 			"latitude" => $previusAgentGISData['stored_latitude'],
 			"altitude" => $previusAgentGISData['stored_altitude'],
@@ -873,7 +874,7 @@ if ($updateGIS) {
 			"number_of_packages" => $previusAgentGISData['number_of_packages'],
 			"tagente_id_agente" => $previusAgentGISData['tagente_id_agente']
 		));
-		process_sql_update('tgis_data_status', array(
+		db_process_sql_update('tgis_data_status', array(
 			"tagente_id_agente" => $idAgente,
 			"current_longitude" => $lastLongitude,
 			"current_latitude" => $lastLatitude,
@@ -887,7 +888,7 @@ if ($updateGIS) {
 			array("tagente_id_agente" => $idAgente));
 	}
 	else {
-		process_sql_insert('tgis_data_status', array(
+		db_process_sql_insert('tgis_data_status', array(
 			"tagente_id_agente" => $idAgente,
 			"current_longitude" => $lastLongitude,
 			"current_latitude" => $lastLatitude,
@@ -899,7 +900,7 @@ if ($updateGIS) {
 			"description" => "Insert by Pandora Console"
 		));
 	}
-	process_sql_commit();
+	db_process_sql_commit();
 }
 
 // -----------------------------------

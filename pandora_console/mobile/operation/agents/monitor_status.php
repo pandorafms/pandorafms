@@ -28,6 +28,10 @@ class MonitorStatus {
 	
 	public function show() {
 		global $config;
+		require_once ($config['homedir'].'/include/functions_users.php');
+		require_once ($config['homedir'].'/include/functions_modules.php');
+
+
 		$config['text_char_long'] = 12;
 		
 		$group = $this->system->getRequest("group", 0); //0 = all
@@ -141,15 +145,15 @@ class MonitorStatus {
 				' . $sqlFreeSearch . '
 			ORDER BY tagente.id_grupo, tagente.nombre';
 		
-		$total = get_db_value_sql('SELECT COUNT(*) ' . $sql);
+		$total = db_get_value_sql('SELECT COUNT(*) ' . $sql);
 		
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$rows = get_db_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->offset . ', ' . $this->system->getPageSize());
+				$rows = db_get_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->offset . ', ' . $this->system->getPageSize());
 				break;
 			case "postgresql":
-				$rows = get_db_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->system->getPageSize() . ' OFFSET ' . $this->offset);
+				$rows = db_get_all_rows_sql($selectSQL . $sql . ' LIMIT ' . $this->system->getPageSize() . ' OFFSET ' . $this->offset);
 				break;
 			case "oracle":
 				$set = array();

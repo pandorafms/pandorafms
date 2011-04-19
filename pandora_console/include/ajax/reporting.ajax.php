@@ -20,7 +20,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -35,7 +35,7 @@ $id = get_parameter('id', 0);
 $truncate_text = get_parameter ('truncate_text', 0);
 
 if ($delete_sla_item) {
-	$result = process_sql_delete('treport_content_sla_combined', array('id' => (int)$id));
+	$result = db_process_sql_delete('treport_content_sla_combined', array('id' => (int)$id));
 	
 	$data['correct'] = 1;
 	if ($result === false) {
@@ -47,7 +47,7 @@ if ($delete_sla_item) {
 }
 
 if ($delete_general_item) {
-	$result = process_sql_delete('treport_content_item', array('id' => (int)$id));
+	$result = db_process_sql_delete('treport_content_item', array('id' => (int)$id));
 	
 	$data['correct'] = 1;
 	if ($result === false) {
@@ -64,7 +64,7 @@ if ($add_sla) {
 	$sla_max = get_parameter('sla_max', 0);
 	$sla_min = get_parameter('sla_min', 0);
 	
-	$result = process_sql_insert('treport_content_sla_combined', array(
+	$result = db_process_sql_insert('treport_content_sla_combined', array(
 		'id_report_content' => $id,
 		'id_agent_module' => $id_module,
 		'sla_max' => $sla_max,
@@ -86,7 +86,7 @@ if ($add_sla) {
 if ($add_general) {
 	$id_module = get_parameter('id_module', 0);
 	
-	$result = process_sql_insert('treport_content_item', array(
+	$result = db_process_sql_insert('treport_content_item', array(
 		'id_report_content' => $id,
 		'id_agent_module' => $id_module));
 	
@@ -105,13 +105,13 @@ if ($add_general) {
 if ($get_custom_sql) {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $id));
+			$sql = db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $id));
 			break;
 		case "postgresql":
-			$sql = get_db_value_filter('"sql"', 'treport_custom_sql', array('id' => $id));
+			$sql = db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $id));
 			break;
 		case "oracle":
-			$sql = get_db_value_filter('sql', 'treport_custom_sql', array('id' => $id));
+			$sql = db_get_value_filter('sql', 'treport_custom_sql', array('id' => $id));
 			break;
 	}
 	

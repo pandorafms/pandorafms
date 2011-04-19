@@ -42,7 +42,7 @@ if (isset($_GET['get_ptr'])) {
 				
 		
 		if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-			pandora_audit("ACL Violation", "Trying to access Setup Management");
+			db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 			require ("general/noaccess.php");
 			return;
 		}
@@ -83,16 +83,20 @@ function output_xml_resource($hook_enterprise) {
 }
 
 function output_xml_report($id) {
-	$report = get_db_row('treport', 'id_report', $id);
+	global $config;
+
+	require_once ($config['homedir'].'/include/functions_agents.php');
+
+	$report = db_get_row('treport', 'id_report', $id);
 	
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 
 	echo "<report>\n";
 	echo "<name><![CDATA[" . safe_output($report['name']) . "]]></name>\n";
 	if (isset($report['description']))
 		echo "<description><![CDATA[" . safe_output($report['description']) . "]]></description>\n";
-	$group = get_db_value('nombre', 'tgrupo', 'id_grupo', $report['id_group']);
+	$group = db_get_value('nombre', 'tgrupo', 'id_grupo', $report['id_group']);
 	echo "<group><![CDATA[" . safe_output($group) . "]]></group>\n";
-	$items = get_db_all_rows_field_filter('treport_content', 'id_report', $report['id_report']);
+	$items = db_get_all_rows_field_filter('treport_content', 'id_report', $report['id_report']);
 	foreach ($items as $item) {
 		echo "<item>\n";
 			echo "<type>" . safe_output($item['type']) . "</type>\n";
@@ -102,8 +106,8 @@ function output_xml_report($id) {
 				$agent = get_agent_name($item['id_agent']);			
 			}
 			if ($item['id_agent_module'] != 0) {
-				$module = get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
-				$id_agent = get_db_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
+				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
+				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
 				$agent = get_agent_name($item['id_agent']);
 				
 				echo "<module><![CDATA[" . safe_output($module) . "]]></module>\n";
@@ -119,7 +123,7 @@ function output_xml_report($id) {
 					break;
 				case 2:
 				case 'custom_graph':
-					$graph = get_db_value('name', 'tgraph', 'id_graph', $item['id_gs']);
+					$graph = db_get_value('name', 'tgraph', 'id_graph', $item['id_gs']);
 					echo "<graph><![CDATA[" . safe_output($graph) . "]]></graph>\n";
 					break;
 				case 3:
@@ -135,12 +139,12 @@ function output_xml_report($id) {
 					echo "<time_from>" . $item['time_from'] . "</time_from>\n";
 					echo "<time_to>" . $item['time_to'] . "</time_to>\n";
 					
-					$slas = get_db_all_rows_field_filter('treport_content_sla_combined', 'id_report_content', $item['id_rc']);
+					$slas = db_get_all_rows_field_filter('treport_content_sla_combined', 'id_report_content', $item['id_rc']);
 					if ($slas === false) $slas = array();
 					
 					foreach ($slas as $sla) {
-						$module = get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
-						$id_agent = get_db_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
+						$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
+						$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
 						$agent = get_agent_name($item['id_agent']);
 						echo "<sla>";
 							echo "<agent><![CDATA[" . $agent . "]]></agent>\n";
@@ -178,7 +182,7 @@ function output_xml_report($id) {
 						echo "<sql><![CDATA[" . safe_output($item['external_source']) . "]]></sql>\n";
 					}
 					else {
-						$sql = get_db_value('sql', 'treport_custom_sql', 'id', $item['treport_custom_sql_id']);
+						$sql = db_get_value('sql', 'treport_custom_sql', 'id', $item['treport_custom_sql_id']);
 						echo "<sql>" . safe_output($sql) . "</sql>\n";
 					}
 					break;
@@ -190,12 +194,12 @@ function output_xml_report($id) {
 						echo "<sql>" . safe_output($item['external_source']) . "</sql>\n";
 					}
 					else {
-						$sql = get_db_value('sql', 'treport_custom_sql', 'id', $item['treport_custom_sql_id']);
+						$sql = db_get_value('sql', 'treport_custom_sql', 'id', $item['treport_custom_sql_id']);
 						echo "<sql>" . safe_output($sql) . "</sql>\n";
 					}
 					break;
 				case 'event_report_group':
-					$group = get_db_value('nombre', 'tgrupo', 'id_grupo', $item['id_agent']);
+					$group = db_get_value('nombre', 'tgrupo', 'id_grupo', $item['id_agent']);
 					echo "<group><![CDATA[" . safe_output($group) . "]]></group>\n";
 					break;
 				case 'event_report_module':
@@ -227,19 +231,19 @@ function output_xml_report($id) {
 }
 
 function output_xml_visual_console($id) {
-	$visual_map = get_db_row('tlayout', 'id', $id);
+	$visual_map = db_get_row('tlayout', 'id', $id);
 	
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 
 	echo "<visual_map>\n";
 	echo "<name><![CDATA[" . safe_output($visual_map['name']) . "]]></name>\n";
 	if ($visual_map['id_group'] != 0) {
-		$group = get_db_value('nombre', 'tgrupo', 'id_grupo', $visual_map['id_group']);
+		$group = db_get_value('nombre', 'tgrupo', 'id_grupo', $visual_map['id_group']);
 		echo "<group><![CDATA[" . safe_output($group) . "]]></group>\n";
 	}
 	echo "<background><![CDATA[" . safe_output($visual_map['background']) . "]]></background>\n";
 	echo "<height>" . safe_output($visual_map['height']) . "</height>\n";
 	echo "<width>" . safe_output($visual_map['width']) . "</width>\n";
-	$items = get_db_all_rows_field_filter('tlayout_data', 'id_layout', $visual_map['id']);
+	$items = db_get_all_rows_field_filter('tlayout_data', 'id_layout', $visual_map['id']);
 	if ($items === false) $items = array();
 	foreach ($items as $item){
 		echo "<item>\n";
@@ -268,8 +272,8 @@ function output_xml_visual_console($id) {
 		}
 		if (isset($item['id_agente_modulo'])) {
 			if ($item['id_agente_modulo'] != 0) {
-				$module = get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
-				$id_agent = get_db_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
+				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
+				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
 				$agent = get_agent_name($id_agent);
 				
 				echo "<module><![CDATA[" . safe_output($module) . "]]></module>\n";
@@ -300,10 +304,10 @@ function get_name_xml_resource($hook_enterprise) {
 	
 	switch ($type) {
 		case 'report':
-			$name = get_db_value('name', 'treport', 'id_report', $id);
+			$name = db_get_value('name', 'treport', 'id_report', $id);
 			break;
 		case 'visual_console':
-			$name = get_db_value('name', 'tlayout', 'id', $id);
+			$name = db_get_value('name', 'tlayout', 'id', $id);
 			break;
 		default:
 			if ($hook_enterprise === true)
@@ -326,7 +330,7 @@ function resource_exportation_extension_main() {
 	global $config;
 	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}

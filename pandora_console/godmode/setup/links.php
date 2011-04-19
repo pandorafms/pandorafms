@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Link Management");
+	db_pandora_audit("ACL Violation", "Trying to access Link Management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -31,7 +31,7 @@ if (isset($_POST["create"])){ // If create
 	$name = get_parameter_post ("name");
 	$link = get_parameter_post ("link");
 	
-	$result = process_sql_insert("tlink", array('name' => $name, 'link' => $link));
+	$result = db_process_sql_insert("tlink", array('name' => $name, 'link' => $link));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem creating link')."</h3>";
@@ -46,7 +46,7 @@ if (isset($_POST["update"])){ // if update
 	$name = safe_input($_POST["name"]);
 	$link = safe_input($_POST["link"]);
 	
-	$result = process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
+	$result = db_process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem modifying link')."</h3>";
@@ -57,7 +57,7 @@ if (isset($_POST["update"])){ // if update
 if (isset($_GET["borrar"])){ // if delete
 	$id_link = safe_input($_GET["borrar"]);
 	
-	$result = process_sql_delete("tlink", array("id_link" => $id_link));
+	$result = db_process_sql_delete("tlink", array("id_link" => $id_link));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem deleting link')."</h3>";
@@ -72,7 +72,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 		$creation_mode = 0;
 			$id_link = safe_input($_GET["id_link"]);
 			
-			$row = get_db_row("tlink", "id_link", $id_link);
+			$row = db_get_row("tlink", "id_link", $id_link);
 			
 			if ($row !== false) {
 				$nombre = $row["name"];
@@ -120,7 +120,7 @@ else {  // Main list view for Links editor
 	echo "<th width='180px'>".__('Link name')."</th>";
 	echo "<th width='80px'>".__('Delete')."</th>";
 	
-	$rows = get_db_all_rows_in_table('tlink', 'name');
+	$rows = db_get_all_rows_in_table('tlink', 'name');
 	if ($rows === false) {
 		$rows = array();
 	}

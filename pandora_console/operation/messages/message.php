@@ -18,6 +18,8 @@
 // Load global vars
 global $config;
 require_once ("include/functions_messages.php");
+require_once ('include/functions_users.php');
+require_once ('include/functions_groups.php');
 
 //First Queries - also inits the variables so it can be passed along
 $dest_user = get_parameter ("dest_user");

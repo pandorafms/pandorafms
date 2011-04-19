@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive alert deletion");
 	require ("general/noaccess.php");
 	return;
@@ -26,6 +26,8 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
+require_once($config['homedir'] . "/include/functions_profile.php");
+require_once($config['homedir'] . "/include/functions_users.php");
 
 $create_profiles = (int) get_parameter ('create_profiles');
 
@@ -42,10 +44,10 @@ if ($create_profiles) {
 		foreach ($profiles_id as $profile) {
 			foreach ($groups_id as $group) {
 				foreach ($users_id as $user) {
-					$profile_data = get_db_row_filter ("tusuario_perfil", array("id_usuario" => $user, "id_perfil" => $profile, "id_grupo" => $group));
+					$profile_data = db_get_row_filter ("tusuario_perfil", array("id_usuario" => $user, "id_perfil" => $profile, "id_grupo" => $group));
 					// If the profile doesnt exist, we create it
 					if ($profile_data === false) {
-						pandora_audit("User management",
+						db_pandora_audit("User management",
 							"Added profile for user ".safe_input($user));
 						$return = create_user_profile ($user, $profile, $group);
 						if ($return !== false) {
@@ -58,11 +60,11 @@ if ($create_profiles) {
 	}
 	
 	if ($n_added > 0) {
-		pandora_audit("Masive management", "Add profiles", false, false,
+		db_pandora_audit("Masive management", "Add profiles", false, false,
 			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
 	}
 	else {
-		pandora_audit("Masive management", "Fail to try add profiles", false, false,
+		db_pandora_audit("Masive management", "Fail to try add profiles", false, false,
 			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
 	}
 	

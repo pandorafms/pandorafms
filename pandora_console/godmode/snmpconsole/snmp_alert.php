@@ -17,7 +17,7 @@
 // Load global vars
 
 if (! check_acl ($config['id_user'], 0, "LW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access SNMP Alert Management");
 	require ("general/noaccess.php");
 	return;
@@ -65,7 +65,7 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts,
 			'priority' => $priority);
-		$result = process_sql_insert('talert_snmp', $values);
+		$result = db_process_sql_insert('talert_snmp', $values);
 		
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
@@ -81,7 +81,7 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
 			$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
 		
-		$result = process_sql ($sql);
+		$result = db_process_sql ($sql);
 
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
@@ -98,7 +98,7 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 // ==================
 if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$id_as = (int) get_parameter_get ("update_alert", -1);
-	$alert = get_db_row ("talert_snmp", "id_as", $id_as);
+	$alert = db_get_row ("talert_snmp", "id_as", $id_as);
 	$id_as = $alert["id_as"];
 	$source_ip = $alert["agent"];
 	$alert_type = $alert["id_alert"];
@@ -136,7 +136,7 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 if (isset ($_GET["delete_alert"])) { // Delete alert
 	$alert_delete = (int) get_parameter_get ("delete_alert", 0);
 	
-	$result = process_sql_delete('talert_snmp', array('id_as' => $alert_delete));
+	$result = db_process_sql_delete('talert_snmp', array('id_as' => $alert_delete));
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
 	}
@@ -155,7 +155,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
 	
 	$fields = array ();
-	$result = get_db_all_rows_in_table ('talert_actions', "name");
+	$result = db_get_all_rows_in_table ('talert_actions', "name");
 	if ($result === false) {
 		$result = array ();
 	}
@@ -251,7 +251,7 @@ if (isset ($_GET["update_alert"])) {
 	require_once ('include/functions_alerts.php');
 	
 	//Overview
-	$result = get_db_all_rows_in_table ("talert_snmp");
+	$result = db_get_all_rows_in_table ("talert_snmp");
 	if ($result === false) {
 		$result = array ();
 		echo "<div class='nf'>".__('There are no SNMP alerts')."</div>";

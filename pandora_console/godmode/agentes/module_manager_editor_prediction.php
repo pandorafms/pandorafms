@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
+require_once ('include/functions_agents.php');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -22,7 +23,7 @@ $id_agente = get_parameter('id_agente', '');
 $agent_name = get_parameter('agent_name', get_agent_name($id_agente));
 $id_agente_modulo= get_parameter('id_agent_module',0);
 $sql = 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_agente_modulo;
-$row = get_db_row_sql($sql);
+$row = db_get_row_sql($sql);
 $is_service = false;
 if ($row !== false && is_array($row)) {
 	$prediction_module = $row['prediction_module'];

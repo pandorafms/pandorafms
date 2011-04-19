@@ -20,6 +20,8 @@ global $config;
 check_login ();
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
+require_once ($config["homedir"] . '/include/functions_servers.php');
+require_once ($config['homedir'] . "/include/functions_network_profiles.php");
 
 $id_server = (int) get_parameter ("server_id", -1);
 
@@ -29,7 +31,7 @@ ui_print_page_header (__('Pandora servers'), "images/server.png", false, "", fal
 
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access recon task viewer");
 	require ("general/noaccess.php");
 	return;
@@ -47,12 +49,12 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		$id = (int) get_parameter_get ("force", 0);
 		
 		$values = array('utimestamp' => 0, 'status' => 1);
-		process_sql_update('trecon_task', $values, array('id_rt' => $id));
+		db_process_sql_update('trecon_task', $values, array('id_rt' => $id));
 	}
 }
 
 $server_name = get_server_name ($id_server);
-$recon_tasks = get_db_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
+$recon_tasks = db_get_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
 
 // Show network tasks for Recon Server
 if ($recon_tasks === false) {
@@ -127,7 +129,7 @@ foreach ($recon_tasks as $task) {
 	else {
 		// APP recon task
 		$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
-		$data[5] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
+		$data[5] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
 	}
 		
 	if ($task["status"] <= 0 || $task["status"] > 100) {

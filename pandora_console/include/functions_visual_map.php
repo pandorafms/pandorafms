@@ -22,6 +22,9 @@
 global $config;
 	
 require_once ('functions_graph.php');
+require_once ($config['homedir'].'/include/functions_agents.php');
+require_once ($config['homedir'].'/include/functions_modules.php');
+require_once ($config['homedir'].'/include/functions_users.php');
 
 function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
 	if ($float == 'left') {
@@ -100,7 +103,7 @@ function printItemInVisualConsole($layoutData) {
 			echo "</div>";
 			break;
 		case PERCENTILE_BAR:
-			$module_value = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
+			$module_value = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
 			
 			if ( $max_percentile > 0)
 				$percentile = $module_value / $max_percentile * 100;
@@ -127,7 +130,7 @@ function printItemInVisualConsole($layoutData) {
 		case SIMPLE_VALUE:
 			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text; 
-			echo ' <strong>' . get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
+			echo ' <strong>' . db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
 			echo '</div>';
 			break;
 		case LABEL:
@@ -196,7 +199,7 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0,
 			$pos_y = $pos_y + $range;
 		}
 		
-		process_sql_insert ('tlayout_data',
+		db_process_sql_insert ('tlayout_data',
 			array ('id_layout' => $id_layout,
 			   'pos_x' => $pos_x,
 			   'pos_y' => $pos_y,
@@ -248,7 +251,7 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 		
 		$id_agent = get_agentmodule_agent ($id_module);
 		
-		process_sql_insert ('tlayout_data',
+		db_process_sql_insert ('tlayout_data',
 			array ('id_layout' => $id_layout,
 			   'pos_x' => $pos_x,
 			   'pos_y' => $pos_y,
@@ -394,7 +397,7 @@ function getStatusElement($layoutData) {
 function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
 	global $config;
 	
-	$layout = get_db_row ('tlayout', 'id', $id_layout);
+	$layout = db_get_row ('tlayout', 'id', $id_layout);
 	
 	$resizedMap = false;
 	$proportion = 1;
@@ -421,7 +424,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	echo '<div id="layout_map"
 		style="z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
 	echo "<img src='" . $backgroundImage . "' width='100%' height='100%' />";
-	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
+	$layout_datas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	
 	if ($layout_datas !== false) {
@@ -432,16 +435,16 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			// ****************************************************************
 			
 			// Pending delete and disable modules must be ignored
-			$delete_pending_module = get_db_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
-			$disabled_module = get_db_value ("disabled", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
+			$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
+			$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
 			
 			if($delete_pending_module == 1 || $disabled_module == 1)
 				continue;
 				
 			if ($layout_data["parent_item"] != 0){
-				$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
-				$id_agent_parent = get_db_value ("id_agent", "tlayout_data", "id", $layout_data["parent_item"]);
-				$id_layout_linked = get_db_value ("id_layout_linked", "tlayout_data", "id", $layout_data["parent_item"]); 
+				$id_agent_module_parent = db_get_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
+				$id_agent_parent = db_get_value ("id_agent", "tlayout_data", "id", $layout_data["parent_item"]);
+				$id_layout_linked = db_get_value ("id_layout_linked", "tlayout_data", "id", $layout_data["parent_item"]); 
 				
 				// Module
 				if ($id_agent_module_parent != 0) {
@@ -479,7 +482,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				// Status for a simple module
 				if ($layout_data['id_agente_modulo'] != 0) {
 					$status = get_agentmodule_status ($layout_data['id_agente_modulo']);
-					$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
+					$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
 
 				// Status for a whole agent, if agente_modulo was == 0
 				} elseif ($layout_data['id_agent'] != 0) {
@@ -525,7 +528,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
 
 						//Extract id service if it is a prediction module.
-						$id_service = get_db_value_filter('custom_integer_1',
+						$id_service = db_get_value_filter('custom_integer_1',
 							'tagente_modulo',
 							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
 								'prediction_module' => 1));
@@ -732,7 +735,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					else
 						echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					echo '<strong>'.$layout_data['label']. ' ';
-					echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+					echo db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
 					echo '</strong></div>';
 					break;	
 				case 3:
@@ -743,7 +746,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
 						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-					$valor = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
+					$valor = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
 					$width = $layout_data['width'];
 					if ( $layout_data['height'] > 0)
 						$percentile = $valor / $layout_data['height'] * 100;
@@ -873,7 +876,7 @@ function get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $
 	if (! is_array ($filter))
 		$filter = array ();
 	
-	$where = format_array_to_where_clause_sql ($filter);
+	$where = db_format_array_where_clause_sql ($filter);
 	if ($where != '') {
 		$where .= ' AND ';
 	}
@@ -883,7 +886,7 @@ function get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $
 		$groups = get_user_groups ($id_user, 'IR', false);
 	$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
 	
-	$layouts = get_db_all_rows_filter ('tlayout', $where);
+	$layouts = db_get_all_rows_filter ('tlayout', $where);
 	
 	if ($layouts == false)
 		return array ();
@@ -924,7 +927,7 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
 
 	$id_layout = (int) $id_layout;
 	
-	$result = get_db_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
+	$result = db_get_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
 		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent', 'type'));
 	if ($result === false)
 		return 0;
@@ -1002,7 +1005,7 @@ function createInternalNameItem($label = null, $type, $image, $agent = null, $id
 		if (!empty($agent)) {
 			$text .= " (" . ui_print_truncate_text($agent, 10, false);
 			
-			$moduleName = safe_output(get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
+			$moduleName = safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
 			if (!empty($moduleName)) {
 				$text .= " - " . ui_print_truncate_text($moduleName, 10, false);
 			}
@@ -1019,7 +1022,7 @@ function createInternalNameItem($label = null, $type, $image, $agent = null, $id
 }
 
 function get_items_parents($idVisual) {
-	$items = get_db_all_rows_filter('tlayout_data',array('id_layout' => $idVisual));
+	$items = db_get_all_rows_filter('tlayout_data',array('id_layout' => $idVisual));
 	if ($items == false) {
 		$items = array();
 	}
@@ -1038,4 +1041,27 @@ function get_items_parents($idVisual) {
 	
 	return $return;
 }
+
+/**
+ * Get the X axis coordinate of a layout item
+ *
+ * @param int Id of the layout to get.
+ *
+ * @return int The X axis coordinate value.
+ */
+function get_layoutdata_x ($id_layoutdata) {
+	return (float) db_get_value ('pos_x', 'tlayout_data', 'id', (int) $id_layoutdata);
+}
+
+/**
+ * Get the Y axis coordinate of a layout item
+ *
+ * @param int Id of the layout to get.
+ *
+ * @return int The Y axis coordinate value.
+ */
+function get_layoutdata_y ($id_layoutdata){
+	return (float) db_get_value ('pos_y', 'tlayout_data', 'id', (int) $id_layoutdata);
+}
+
 ?>

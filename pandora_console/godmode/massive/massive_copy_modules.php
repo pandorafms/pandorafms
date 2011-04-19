@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Config Management Admin section");
 	require ("general/noaccess.php");
 	return;
@@ -27,6 +27,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
+require_once ('include/functions_users.php');
 
 $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');
@@ -39,11 +40,11 @@ if ($do_operation) {
 	$result = agents_process_manage_config ($source_id_agent, $destiny_id_agents);
 	
 	if ($result) {
-		pandora_audit("Masive management", "Copy modules", false, false,
+		db_pandora_audit("Masive management", "Copy modules", false, false,
 			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
 	}
 	else {
-		pandora_audit("Masive management", "Fail to try copy modules", false, false,
+		db_pandora_audit("Masive management", "Fail to try copy modules", false, false,
 			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
 	}
 }

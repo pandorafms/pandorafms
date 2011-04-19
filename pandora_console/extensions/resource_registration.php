@@ -34,7 +34,7 @@ enterprise_include_once('include/functions_local_components.php');
 function insert_item_report($report_id, $values) {
 	foreach ($report_id as $id => $name) {
 		$values['id_report'] = $id;
-		$result = (bool)process_sql_insert('treport_content', $values);
+		$result = (bool)db_process_sql_insert('treport_content', $values);
 
 		ui_print_result_message($result,
 			sprintf(__("Success add '%s' item in report '%s'."), $values['type'], $name),
@@ -54,7 +54,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			$exist = true;
 			$loops = 30; //Loops to exit or tries
 			while ($exist && $loops > 0) {
-				$exist = (bool)get_db_row_filter('treport', array('name' => safe_input($posible_name)));
+				$exist = (bool)db_get_row_filter('treport', array('name' => safe_input($posible_name)));
 				
 				if ($exist) {
 					$loops--;
@@ -83,7 +83,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			break;
 		}
 		
-		$id_group = get_db_value('id_grupo', 'tgrupo', 'nombre', $reportElement->group);
+		$id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $reportElement->group);
 		if ($id_group === false) {
 			ui_print_error_message(__("Error the report haven't group."));
 			break;
@@ -92,17 +92,17 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 		if (isset($reportElement->description))
 			$values['description'] = $reportElement->description;
 			
-		$id_report = process_sql_insert ('treport', $values);
+		$id_report = db_process_sql_insert ('treport', $values);
 		
 		ui_print_result_message($id_report,
 			sprintf(__("Success create '%s' report."), $posible_name),
 			sprintf(__("Error create '%s' report."), $posible_name));
 		
 		if ($id_report) {
-			pandora_audit("Report management", "Create report " . $id_report, false, false);
+			db_pandora_audit("Report management", "Create report " . $id_report, false, false);
 		}
 		else {
-			pandora_audit("Report management", "Fail to create report", false, false);
+			db_pandora_audit("Report management", "Fail to create report", false, false);
 			break;
 		}
 		
@@ -143,7 +143,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				$regular_expresion = ($module_clean != $item['module']);
 				
 				foreach ($agents_item as $id => $agent) {
-					$modules = get_db_all_rows_filter('tagente_modulo',
+					$modules = db_get_all_rows_filter('tagente_modulo',
 						array('id_agente' => $id), array('id_agente_modulo', 'nombre'));
 					
 					$agents_item[$id]['modules'] = array();
@@ -173,7 +173,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					break;
 				case 2:
 				case 'custom_graph':
-					$group = get_db_value('id_grupo', 'tgrupo', 'nombre', safe_input($item['graph']));
+					$group = db_get_value('id_grupo', 'tgrupo', 'nombre', safe_input($item['graph']));
 					$values['id_gs'] = $group;
 					break;
 				case 3:
@@ -228,7 +228,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 										$module_clean = str_replace(array('[', ']'), '', $sla_xml->module);
 										$regular_expresion = ($module_clean != $sla_xml->module);
 										
-										$modules = get_db_all_rows_filter('tagente_modulo',
+										$modules = db_get_all_rows_filter('tagente_modulo',
 											array('id_agente' => $id_agent), array('id_agente_modulo', 'nombre'));
 											
 										foreach ($modules as $module) {
@@ -291,7 +291,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					$values['external_source'] = safe_input($item['sql']);
 					break;
 				case 'event_report_group':
-					$values['id_agent'] = get_db_value('id_grupo', 'tgrupo', 'nombre', safe_input($item->group));
+					$values['id_agent'] = db_get_value('id_grupo', 'tgrupo', 'nombre', safe_input($item->group));
 					break;
 				case 'event_report_module':
 					break;
@@ -318,7 +318,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			}
 			
 			if (empty($agents_item)) {
-				$id_content = process_sql_insert ('treport_content', $values);
+				$id_content = db_process_sql_insert ('treport_content', $values);
 					ui_print_result_message($id_content,
 						sprintf(__("Success add '%s' content."), $values['type']),
 						sprintf(__("Error add '%s' action."), $values['type']));
@@ -326,7 +326,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				if ($item['type'] == 'SLA') {
 					foreach ($slas as $sla) {
 						$sla['id_report_content'] = $id_content;
-						$result = process_sql_insert ('treport_content_sla_combined', $sla);
+						$result = db_process_sql_insert ('treport_content_sla_combined', $sla);
 						ui_print_result_message($result,
 							sprintf(__("Success add '%s' SLA."), $sla['id_agent_module']),
 							sprintf(__("Error add '%s' SLA."), $sla['id_agent_module']));
@@ -339,7 +339,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				foreach ($agents_item as $id_agent => $agent) {
 					if (empty($agent['modules'])) {
 						$values['id_agent'] = $id_agent;
-						$id_content = process_sql_insert ('treport_content', $values);
+						$id_content = db_process_sql_insert ('treport_content', $values);
 						ui_print_result_message($id_content,
 							sprintf(__("Success add '%s' content."), $values['type']),
 							sprintf(__("Error add '%s' action."), $values['type']));
@@ -349,7 +349,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 							$values['id_agent_module'] = $id_module;
 							$values['id_agent'] = $id_agent;
 							
-							$id_content = process_sql_insert ('treport_content', $values);
+							$id_content = db_process_sql_insert ('treport_content', $values);
 							ui_print_result_message($id_content,
 								sprintf(__("Success add '%s' content."), $values['type']),
 								sprintf(__("Error add '%s' action."), $values['type']));
@@ -376,7 +376,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		
 		$values['id_group'] = 0;
 		if (isset($visual_map->group)) {
-			$id_group = get_db_value('id_grupo', 'tgrupo', 'nombre', safe_input($visual_map->group));
+			$id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', safe_input($visual_map->group));
 			if ($id_group !== false) $values['id_group'] = $id_group;
 		}
 		
@@ -395,7 +395,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		$exist = true;
 		$loops = 30; //Loops to exit or tries
 		while ($exist && $loops > 0) {
-			$exist = (bool)get_db_row_filter('tlayout', array('name' => safe_input($posible_name)));
+			$exist = (bool)db_get_row_filter('tlayout', array('name' => safe_input($posible_name)));
 			
 			if ($exist) {
 				$loops--;
@@ -418,14 +418,14 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		}
 		
 		$values['name'] = safe_input($posible_name);
-		$id_visual_map = process_sql_insert('tlayout', $values);
+		$id_visual_map = db_process_sql_insert('tlayout', $values);
 			
 		ui_print_result_message((bool)$id_visual_map,
 			sprintf(__("Success create '%s' visual map."), $posible_name),
 			sprintf(__("Error create '%s' visual map."), $posible_name));
 			
 		if ($id_visual_map !== false) {
-			pandora_audit('CREATE VISUAL CONSOLE', $id_visual_map, $config['id_user']);
+			db_pandora_audit('CREATE VISUAL CONSOLE', $id_visual_map, $config['id_user']);
 		}
 		else {
 			break;
@@ -472,7 +472,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$regular_expresion = ($module_clean != $item->module);
 				
 				foreach ($agents_in_item as $id => $agent) {
-					$modules = get_db_all_rows_filter('tagente_modulo',
+					$modules = db_get_all_rows_filter('tagente_modulo',
 						array('id_agente' => $id), array('id_agente_modulo', 'nombre'));
 					
 					$modules_in_item = array();
@@ -527,14 +527,14 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$values['type'] = (string)$item->type;
 			
 			if ($no_agents) {
-				$id_item = process_sql_insert('tlayout_data', $values);
+				$id_item = db_process_sql_insert('tlayout_data', $values);
 				
 				ui_print_result_message((bool)$id_item,
 					sprintf(__("Success create item type '%d' visual map."), $values['type']),
 					sprintf(__("Error create item type '%d' visual map."), $values['type']));
 					
 				if ($id_item !== false) {
-					pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
+					db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
 				}
 			}
 			else {
@@ -542,7 +542,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 					if ($no_modules) {
 						$values['id_agent'] = $id;
 						
-						$id_item = process_sql_insert('tlayout_data', $values);
+						$id_item = db_process_sql_insert('tlayout_data', $values);
 						
 						if (isset($item->other_id)) {
 							$relation_other_ids[(string)$item->other_id] = $id_item;
@@ -553,7 +553,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 							sprintf(__("Error create item for agent '%s' visual map."), $agent['name']));
 							
 						if ($id_item !== false) {
-							pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
+							db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
 						}
 					}
 					else {
@@ -561,14 +561,14 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 							$values['id_agent'] = $id;
 							$values['id_agente_modulo'] = $id_module;
 							
-							process_sql_insert('tlayout_data', $values);
+							db_process_sql_insert('tlayout_data', $values);
 							
 							ui_print_result_message((bool)$id_item,
 								sprintf(__("Success create item for agent '%s' visual map."), $agent['name']),
 								sprintf(__("Error create item for agent '%s' visual map."), $agent['name']));
 								
 							if ($id_item !== false) {
-								pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
+								db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
 							}
 						}
 					}
@@ -771,12 +771,12 @@ function process_upload_xml_component($xml) {
 		$templateName = (string)$templateElement->name;
 		$templateDescription = (string)$templateElement->description;
 		
-		$idTemplate = process_sql_insert('tnetwork_profile', array('name' => $templateName, 'description' => $templateDescription));
+		$idTemplate = db_process_sql_insert('tnetwork_profile', array('name' => $templateName, 'description' => $templateDescription));
 		
 		$result = false;
 		if ((bool)$idTemplate) {
 			foreach ($components as $idComponent) {
-				process_sql_insert("tnetwork_profile_component", array('id_nc' => $idComponent, 'id_np' => $idTemplate));
+				db_process_sql_insert("tnetwork_profile_component", array('id_nc' => $idComponent, 'id_np' => $idTemplate));
 			}
 		}
 	}
@@ -807,7 +807,7 @@ function resource_registration_extension_main() {
 	global $config;
 	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}

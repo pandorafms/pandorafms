@@ -18,7 +18,7 @@ if (is_ajax ()) {
 	$get_plugin_description = get_parameter('get_plugin_description');
 	$id_plugin = get_parameter('id_plugin');
 	
-	$description = get_db_value_filter('description', 'tplugin', array('id' => $id_plugin));
+	$description = db_get_value_filter('description', 'tplugin', array('id' => $id_plugin));
 	
 	echo htmlentities (safe_output($description), ENT_QUOTES, "UTF-8", true);
 	return;
@@ -30,7 +30,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Plugin Management");
 	require ("general/noaccess.php");
 	return;
@@ -41,7 +41,7 @@ $create = get_parameter ("create", "");
 
 if ($view != ""){
 	$form_id = $view;
-	$plugin = get_db_row ("tplugin", "id", $form_id);
+	$plugin = db_get_row ("tplugin", "id", $form_id);
 	$form_name = $plugin["name"];
 	$form_description = $plugin["description"];
 	$form_max_timeout = $plugin ["max_timeout"];
@@ -163,7 +163,7 @@ else {
 			'plugin_type' => $plugin_plugin_type,
 			'pass_opt' => $plugin_pass_opt); 
 		
-		$result =process_sql_update('tplugin', $values, array('id' => $plugin_id));
+		$result =db_process_sql_update('tplugin', $values, array('id' => $plugin_id));
 		
 		if (! $result) {
 			echo "<h3 class='error'>".__('Problem updating plugin')."</h3>";
@@ -196,7 +196,7 @@ else {
 			'pass_opt' => $plugin_pass_opt,
 			'plugin_type' => $plugin_plugin_type);
 		
-		$result = process_sql_insert('tplugin', $values);
+		$result = db_process_sql_insert('tplugin', $values);
 		
 		if (! $result) {
 			echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
@@ -210,7 +210,7 @@ else {
 	if (isset($_GET["kill_plugin"])){ // if delete alert
 		$plugin_id = get_parameter ("kill_plugin", 0);
 		
-		$result = process_sql_delete('tplugin', array('id' => $plugin_id));
+		$result = db_process_sql_delete('tplugin', array('id' => $plugin_id));
 			
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem deleting plugin')."</h3>";
@@ -219,12 +219,12 @@ else {
 			echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
 		}
 		if ($plugin_id != 0){			
-			$result = process_sql_delete('tagente_modulo', array('id_plugin' => $plugin_id));
+			$result = db_process_sql_delete('tagente_modulo', array('id_plugin' => $plugin_id));
 		}
 	}
 
 	// If not edition or insert, then list available plugins
-	$rows = get_db_sql('SELECT * FROM tplugin ORDER BY name');
+	$rows = db_get_sql('SELECT * FROM tplugin ORDER BY name');
 	
 	if ($rows !== false) {
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';

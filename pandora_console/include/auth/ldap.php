@@ -54,6 +54,8 @@ if (!isset ($config)) {
 ');
 }
 
+include_once($config['homedir'] . "/include/functions_profile.php");
+
 $config["user_can_update_info"] = false;
 $config["user_can_update_password"] = false;
 $config["admin_can_add_user"] = false;
@@ -121,7 +123,7 @@ function process_user_login ($login, $pass) {
 	} 
 	global $config;
 		
-	$profile = get_db_value ("id_usuario", "tusuario_perfil", "id_usuario", $login);
+	$profile = db_get_value ("id_usuario", "tusuario_perfil", "id_usuario", $login);
 	
 	if ($profile === false && empty ($config["auth"]["create_user_undefined"])) {
 		$config["auth_error"] = "No profile"; //Error message, don't translate

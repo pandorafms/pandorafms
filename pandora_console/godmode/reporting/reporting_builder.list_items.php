@@ -17,14 +17,16 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
 
+include_once($config['homedir'] . "/include/functions_agents.php");
+
 //FORM FILTER
-$rows = get_db_all_rows_sql('
+$rows = db_get_all_rows_sql('
 	SELECT t5.nombre, t5.id_agente
 	FROM
 		(
@@ -46,7 +48,7 @@ foreach ($rows as $row) {
 	$agents[$row['id_agente']] = $row['nombre'];
 }
 
-$rows = get_db_all_rows_sql('
+$rows = db_get_all_rows_sql('
 	SELECT t1.id_agent_module, t2.nombre
 	FROM treport_content AS t1
 		INNER JOIN tagente_modulo AS t2
@@ -61,7 +63,7 @@ foreach ($rows as $row) {
 	$modules[$row['id_agent_module']] = $row['nombre'];
 }
 
-$rows = get_db_all_rows_sql('
+$rows = db_get_all_rows_sql('
 	SELECT DISTINCT(type)
 	FROM treport_content
 	WHERE id_report = ' . $idReport);
@@ -122,14 +124,14 @@ if($moduleFilter != 0) {
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$items = get_db_all_rows_sql('SELECT *
+		$items = db_get_all_rows_sql('SELECT *
 			FROM treport_content
 			WHERE ' . $where . ' AND id_report = ' . $idReport . '
 			ORDER BY `order`
 			LIMIT ' . $offset . ', ' . $config["block_size"]);
 		break;
 	case "postgresql":
-		$items = get_db_all_rows_sql('SELECT *
+		$items = db_get_all_rows_sql('SELECT *
 			FROM treport_content
 			WHERE ' . $where . ' AND id_report = ' . $idReport . '
 			ORDER BY "order"
@@ -146,7 +148,7 @@ switch ($config["dbtype"]) {
 		}
 		break;
 }
-$countItems = get_db_sql('SELECT COUNT(id_rc) FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport);
+$countItems = db_get_sql('SELECT COUNT(id_rc) FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport);
 $table = null;
 
 if ($items){
@@ -225,7 +227,7 @@ foreach ($items as $item) {
 		}
 		else {
 			$row[2] = ui_print_truncate_text(get_agent_name(get_agent_module_id($item['id_agent_module'])), 20);
-			$row[3] = ui_print_truncate_text(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
+			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
 		}
 	}
 	else {
@@ -235,7 +237,7 @@ foreach ($items as $item) {
 			$row [3] = '-';
 		}
 		else {
-			$row[3] = ui_print_truncate_text(get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),20);
+			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),20);
 		}
 	}
 	

@@ -47,14 +47,14 @@ if (is_ajax ()) {
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
 
 if ($edit_graph) {
-	$graphInTgraph = get_db_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
+	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
 	$stacked = $graphInTgraph['stacked'];
 	$events = $graphInTgraph['events'];
 	$period = $graphInTgraph['period'];

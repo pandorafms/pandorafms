@@ -20,12 +20,14 @@ if (!isset ($id_agente)) {
 	die ("Not Authorized");
 }
 
+require_once($config['homedir'] . "/include/functions_modules.php");
+
 // ==========================
 // TEMPLATE ASSIGMENT LOGIC
 // ==========================
 if (isset ($_POST["template_id"])) {
 	// Take agent data
-	$row = get_db_row ("tagente", "id_agente", $id_agente);
+	$row = db_get_row ("tagente", "id_agente", $id_agente);
 	if ($row !== false) {
 		$intervalo = $row["intervalo"]; 
 		$nombre_agente = $row["nombre"];
@@ -43,12 +45,12 @@ if (isset ($_POST["template_id"])) {
 	}
 
 	$id_np = get_parameter_post ("template_id");
-	$npc = get_db_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
+	$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
 	if ($npc === false) {
 		$npc = array ();
 	}
 	foreach ($npc as $row) {
-		$nc = get_db_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
+		$nc = db_get_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
 		if ($nc === false) {
 			$nc = array ();
 		}
@@ -75,7 +77,7 @@ if (isset ($_POST["template_id"])) {
 				'plugin_parameter' => $row2["plugin_parameter"],
 				'max_timeout' => $row2["max_timeout"],
 				'id_plugin' => $row2['id_plugin']);
-			$id_agente_modulo = process_sql_insert('tagente_modulo', $values);
+			$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
 			
 			// Create with different estado if proc type or data type
 			if ($id_agente_modulo !== false) {
@@ -107,7 +109,7 @@ echo "<h2>".__('Module templates')."</h2>";
 echo "<h3>".__('Available templates')."</h3>";
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
 
-$nps = get_db_all_fields_in_table ("tnetwork_profile", "name");
+$nps = db_get_all_fields_in_table ("tnetwork_profile", "name");
 if ($nps === false) {
 	$nps = array ();
 }
@@ -136,7 +138,7 @@ echo "<h3>".__('Assigned modules')."</h3>";
 			$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND (delete_pending <> 1 AND delete_pending IS NOT NULL) ORDER BY id_module_group, dbms_lob.substr(nombre,4000,1)", $id_agente);
 			break;
 	}
-$result = get_db_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();
 }

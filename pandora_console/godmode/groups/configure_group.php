@@ -19,10 +19,13 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation", "Trying to access Group Management2");
+	db_pandora_audit("ACL Violation", "Trying to access Group Management2");
 	require ("general/noaccess.php");
 	return;
 }
+
+include_once($config['homedir'] . "/include/functions_groups.php");
+include_once($config['homedir'] . '/include/functions_users.php');
 
 // Init vars
 $icon = "";
@@ -37,7 +40,7 @@ $create_group = (bool) get_parameter ('create_group');
 $id_group = (int) get_parameter ('id_group');
 
 if ($id_group) {
-	$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
+	$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
 	if ($group) {
 		$name = $group["nombre"];
 		$icon = $group["icon"].'.png';

@@ -17,7 +17,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -28,6 +28,7 @@ $show_graph_options[1] = __('Table & Graph');
 $show_graph_options[2] = __('Only graph');
 
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
+require_once ($config['homedir'].'/include/functions_agents.php');
 
 switch ($action) {
 	case 'new':
@@ -69,7 +70,7 @@ switch ($action) {
 		break;
 	default:
 		$actionParameter = 'update';
-		$item = get_db_row_filter('treport_content', array('id_rc' => $idItem));
+		$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
 		
 		$style = json_decode(safe_output($item['style']), true);
 		$show_in_two_columns = $style['show_in_two_columns'];
@@ -81,13 +82,13 @@ switch ($action) {
 				$period = $item['period'];
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				break;
 			case 'simple_baseline_graph':
 			case 'simple_graph':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'custom_graph':
@@ -113,35 +114,35 @@ switch ($action) {
 			case 'monitor_report':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
 			case 'avg_value':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
 			case 'max_value':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
 			case 'min_value':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
 			case 'sumatory':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
@@ -177,7 +178,7 @@ switch ($action) {
 			case 'database_serialized':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$header = $item['header_definition'];
 				$field = $item['column_separator'];
 				$line = $item['line_separator'];
@@ -186,31 +187,31 @@ switch ($action) {
 			case 'TTRT':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'TTO':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'MTBF':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'MTTR':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'alert_report_module':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'alert_report_agent':
@@ -231,7 +232,7 @@ switch ($action) {
 			case 'event_report_module':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
-				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
 			case 'general':
@@ -542,14 +543,14 @@ function print_SLA_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_sla">';
-					$itemsSLA = get_db_all_rows_filter('treport_content_sla_combined', array('id_report_content' => $idItem));
+					$itemsSLA = db_get_all_rows_filter('treport_content_sla_combined', array('id_report_content' => $idItem));
 					if ($itemsSLA === false) {
 						$itemsSLA = array();
 					}
 					foreach ($itemsSLA as $item) {
-						$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = get_agent_name ($idAgent);
-						$nameModule = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . '</td>
@@ -620,14 +621,14 @@ function print_General_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_general">';
-					$itemsGeneral = get_db_all_rows_filter('treport_content_item', array('id_report_content' => $idItem));
+					$itemsGeneral = db_get_all_rows_filter('treport_content_item', array('id_report_content' => $idItem));
 					if ($itemsGeneral === false) {
 						$itemsGeneral = array();
 					}
 					foreach ($itemsGeneral as $item) {
-						$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = get_agent_name ($idAgent);
-						$nameModule = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . '</td>

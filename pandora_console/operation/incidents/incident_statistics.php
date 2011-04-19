@@ -22,7 +22,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IR") == 1) {
-	pandora_audit("ACL Violation", "Trying to access Incident section");
+	db_pandora_audit("ACL Violation", "Trying to access Incident section");
 	require ("general/noaccess.php");
 	exit;
 }

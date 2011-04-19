@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Visual Setup Management");
+	db_pandora_audit("ACL Violation", "Trying to access Visual Setup Management");
 	require ("general/noaccess.php");
 	return;
 }
@@ -67,7 +67,7 @@ $table->align[1] = 'center';
 $table->align[2] = 'center';
 $table->align[3] = 'center';
 
-$mapsConnections = get_db_all_rows_in_table ('tgis_map_connection','conection_name');
+$mapsConnections = db_get_all_rows_in_table ('tgis_map_connection','conection_name');
 
 $table->data = array();
 

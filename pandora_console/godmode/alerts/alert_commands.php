@@ -22,7 +22,7 @@ require_once ("include/functions_alerts.php");
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -56,10 +56,10 @@ if ($create_command) {
 	$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
 		
 	if ($result) {
-		pandora_audit("Command management", "Create alert command " . $result, false, false, $info);
+		db_pandora_audit("Command management", "Create alert command " . $result, false, false, $info);
 	}
 	else {
-		pandora_audit("Command management", "Fail try to create alert command", false, false, $info);
+		db_pandora_audit("Command management", "Fail try to create alert command", false, false, $info);
 	}
 	
 	ui_print_result_message ($result, 
@@ -71,7 +71,7 @@ if ($update_command) {
 	$id = (int) get_parameter ('id');
 	$alert = alerts_get_alert_command ($id);
 	if ($alert['internal']) {
-		pandora_audit("ACL Violation", "Trying to access Alert Management");
+		db_pandora_audit("ACL Violation", "Trying to access Alert Management");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -87,10 +87,10 @@ if ($update_command) {
 	
 	$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
 	if ($result) {
-		pandora_audit("Command management", "Create alert command " . $id, false, false, $info);
+		db_pandora_audit("Command management", "Create alert command " . $id, false, false, $info);
 	}
 	else {
-		pandora_audit("Command management", "Fail to create alert command " . $id, false, false, $info);
+		db_pandora_audit("Command management", "Fail to create alert command " . $id, false, false, $info);
 	}
 	
 	ui_print_result_message ($result,
@@ -103,7 +103,7 @@ if ($delete_command) {
 	
 	// Internal commands cannot be deleted
 	if (alerts_get_alert_command_internal ($id)) {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		require ("general/noaccess.php");
 		return;
@@ -112,10 +112,10 @@ if ($delete_command) {
 	$result = alerts_delete_alert_command ($id);
 	
 	if ($result) {
-		pandora_audit("Command management", "Delete alert command " . $id);
+		db_pandora_audit("Command management", "Delete alert command " . $id);
 	}
 	else {
-		pandora_audit("Command management", "Fail to delete alert command " . $id);
+		db_pandora_audit("Command management", "Fail to delete alert command " . $id);
 	}
 	
 	ui_print_result_message ($result,
@@ -136,7 +136,7 @@ $table->size[2] = '40px';
 $table->align = array ();
 $table->align[2] = 'center';
 
-$commands = get_db_all_rows_in_table ('talert_commands');
+$commands = db_get_all_rows_in_table ('talert_commands');
 if ($commands === false)
 	$commands = array ();
 

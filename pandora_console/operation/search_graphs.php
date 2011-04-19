@@ -38,13 +38,13 @@ if ($searchGraphs) {
 		FROM tgraph
 		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$graphs_condition ."
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-	$graphs = process_sql($sql);
+	$graphs = db_process_sql($sql);
 	
 	if($graphs !== false) {
 		$sql = "SELECT COUNT(id_graph) AS count
 			FROM tgraph
 			WHERE name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%'";
-		$totalGraphs = get_db_row_sql($sql);
+		$totalGraphs = db_get_row_sql($sql);
 		$totalGraphs = $totalGraphs['count'];
 	}
 }

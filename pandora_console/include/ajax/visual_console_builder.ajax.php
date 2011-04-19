@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 
 require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once('include/functions_visual_map.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
 
 $action = get_parameter('action');
 $type = get_parameter('type');
@@ -68,13 +69,13 @@ switch ($action) {
 		echo $url;	
 		break;
 	case 'get_layout_data':
-		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
 		echo json_encode($layoutData);
 		break;
 	case 'get_module_value':
-		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
-		$returnValue = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 		
 		$return = array();
 		$return['value'] = $returnValue;
@@ -84,14 +85,14 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	case 'get_color_line':
-		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
 		$return = array();
 		$return['color_line'] = getColorLineStatus($layoutData);
 		echo json_encode($return);
 		break;
 	case 'get_image':
-		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
 		$return = array();
 		$return['image'] = getImageStatusElement($layoutData);
@@ -108,7 +109,7 @@ switch ($action) {
 					$values['width'] = $width;
 				if ($height !== null)
 					$values['height'] = $height;
-				process_sql_update('tlayout', $values, array('id' => $id_visual_console));
+				db_process_sql_update('tlayout', $values, array('id' => $id_visual_console));
 				break;
 			case 'simple_value':
 			case 'percentile_bar':
@@ -181,14 +182,14 @@ switch ($action) {
 					unset($values['label']);
 				}
 				
-				$result = process_sql_update('tlayout_data', $values, array('id' => $id_element));
+				$result = db_process_sql_update('tlayout_data', $values, array('id' => $id_element));
 				break;
 		}
 		break;
 	case 'load':
 		switch ($type) {
 			case 'background':
-				$backgroundFields = get_db_row_filter('tlayout', array('id' => $id_visual_console), array('background', 'height', 'width'));
+				$backgroundFields = db_get_row_filter('tlayout', array('id' => $id_visual_console), array('background', 'height', 'width'));
 				echo json_encode($backgroundFields);
 				break;
 			case 'percentile_bar':
@@ -197,7 +198,7 @@ switch ($action) {
 			case 'simple_value':
 			case 'label':
 			case 'icon':
-				$elementFields = get_db_row_filter('tlayout_data', array('id' => $id_element));
+				$elementFields = db_get_row_filter('tlayout_data', array('id' => $id_element));
 				$elementFields['agent_name'] = safe_output(get_agent_name($elementFields['id_agent']));
 				//Make the html of select box of modules about id_agent.
 				if ($elementFields['id_agent'] != 0) {
@@ -273,7 +274,7 @@ switch ($action) {
 				$values['height'] = $height;
 				break;
 		}
-		$idData = process_sql_insert('tlayout_data', $values);
+		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();
 		if ($idData === false) {
@@ -289,7 +290,7 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	case 'delete':
-		if (process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {
+		if (db_process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {
 			$return['correct'] = 0;
 		}
 		else {

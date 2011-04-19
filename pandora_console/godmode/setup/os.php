@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Setup Management");
+	db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 	return;
 }
@@ -29,7 +29,7 @@ $idOS = get_parameter('id_os', 0);
 $tab = get_parameter('tab', 'builder');
 
 if ($idOS) {
-	$os = get_db_row_filter('tconfig_os', array('id_os' => $idOS));
+	$os = db_get_row_filter('tconfig_os', array('id_os' => $idOS));
 	$name = $os['name'];
 	$description = $os['description'];
 	$icon = $os['icon_name'];
@@ -62,7 +62,7 @@ switch ($action) {
 		if (($icon !== 0) && ($icon != '')) {
 			$values['icon_name'] = $icon;
 		}
-		$resultOrId = process_sql_insert('tconfig_os', $values);
+		$resultOrId = db_process_sql_insert('tconfig_os', $values);
 		
 		if ($resultOrId === false) {
 			$message = ui_print_error_message(__('Fail to create OS'), '', true);
@@ -88,7 +88,7 @@ switch ($action) {
 		if (($icon !== 0) && ($icon != '')) {
 			$values['icon_name'] = $icon;
 		}
-		$result = process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
+		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
 		
 		$message = ui_print_result_message($result, __('Success to update OS'), __('Error to update OS'), '', true);
 		if ($result !== false) {
@@ -101,14 +101,14 @@ switch ($action) {
 		break;
 	case 'delete':
 		$sql = 'SELECT COUNT(id_os) AS count FROM tagente WHERE id_os = ' . $idOS;
-		$count = get_db_all_rows_sql($sql);
+		$count = db_get_all_rows_sql($sql);
 		$count = $count[0]['count'];
 		
 		if ($count > 0) {
 			$message = ui_print_error_message(__('There are agents with this OS.'), '', true);
 		}
 		else {
-			$result = (bool)process_sql_delete('tconfig_os', array('id_os' => $idOS));
+			$result = (bool)db_process_sql_delete('tconfig_os', array('id_os' => $idOS));
 			
 			$message = ui_print_result_message($result, __('Success to delete'), __('Error to delete'), '', true);
 		}

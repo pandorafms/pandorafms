@@ -49,7 +49,7 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function postgresql_get_db_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
+function postgresql_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
@@ -62,7 +62,7 @@ function postgresql_get_db_value ($field, $table, $field_search = 1, $condition 
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
 				$field, $table, $field_search, $condition);
 	}
-	$result = get_db_all_rows_sql ($sql, $search_history_db);
+	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
 	if ($result === false)
 		return false;
@@ -91,7 +91,7 @@ function postgresql_get_db_value ($field, $table, $field_search = 1, $condition 
  * 
  * @return mixed The first row of a database query or false.
  */
-function postgresql_get_db_row ($table, $field_search, $condition, $fields = false) {
+function postgresql_db_get_row ($table, $field_search, $condition, $fields = false) {
 	if (empty ($fields)) {
 		$fields = '*';
 	}
@@ -114,7 +114,7 @@ function postgresql_get_db_row ($table, $field_search, $condition, $fields = fal
 		$sql = sprintf ("SELECT %s FROM \"%s\" WHERE \"%s\" = '%s' LIMIT 1", 
 			$fields, $table, $field_search, $condition);
 	}
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 		
 	if ($result === false) 
 		return false;
@@ -122,7 +122,7 @@ function postgresql_get_db_row ($table, $field_search, $condition, $fields = fal
 	return $result[0];
 }
 
-function postgresql_get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
+function postgresql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
 	global $config;
 	
 	$history = array ();
@@ -138,14 +138,14 @@ function postgresql_get_db_all_rows_sql ($sql, $search_history_db = false, $cach
 		$history = false;
 		
 		if (isset($config['history_db_connection']))
-			$history = postgresql_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
+			$history = postgresql_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
 			
 		if ($history === false) {
 			$history = array ();
 		}
 	}
 	
-	$return = postgresql_process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
+	$return = postgresql_db_process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
 	if ($return === false) {
 		return false;
 	}
@@ -180,7 +180,7 @@ function postgresql_insert_id($dbconnection = '') {
 	return $result;
 }
 
-function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null) {
+function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null) {
 	global $config;
 	global $sql_cache;
 	
@@ -192,7 +192,7 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 	if ($cache && ! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
-		add_database_debug_trace ($sql);
+		db_add_database_debug_trace ($sql);
 	}
 	else {
 		$start = microtime (true);
@@ -212,8 +212,8 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 			$backtrace = debug_backtrace ();
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				pg_result_error($result), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			add_database_debug_trace ($sql, pg_result_error($result));
-			set_error_handler ('sql_error_handler');
+			db_add_database_debug_trace ($sql, pg_result_error($result));
+			set_error_handler ('db_sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();
 			
@@ -234,13 +234,13 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 					$rows = pg_affected_rows($result);
 					$result = $rows;
 				}
-				add_database_debug_trace ($sql, $result, $rows,
+				db_add_database_debug_trace ($sql, $result, $rows,
 						array ('time' => $time));
 						
 				return $result;	
 			}
 			else { //The query IS a select.
-				add_database_debug_trace ($sql, 0, $rows, array ('time' => $time));
+				db_add_database_debug_trace ($sql, 0, $rows, array ('time' => $time));
 				while ($row = pg_fetch_assoc($result)) {
 					array_push($retval, $row);
 				}
@@ -269,12 +269,12 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
  *
  * @return mixed A matrix with all the values in the table
  */
-function postgresql_get_db_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
+function postgresql_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return get_db_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY "'.$order_field . '" ' . $order);
+		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY "'.$order_field . '" ' . $order);
 	}
 	else {	
-		return get_db_all_rows_sql ('SELECT * FROM "'.$table.'"');
+		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'"');
 	}
 }
 
@@ -290,7 +290,7 @@ function postgresql_get_db_all_rows_in_table($table, $order_field = "", $order =
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function postgresql_process_sql_insert($table, $values) {
+function postgresql_db_process_sql_insert($table, $values) {
 	 //Empty rows or values not processed
 	if (empty ($values))
 		return false;
@@ -333,7 +333,7 @@ function postgresql_process_sql_insert($table, $values) {
 	
 	$query .= ' VALUES (' . $values_str . ')';
 	
-	return process_sql($query, 'insert_id');
+	return db_process_sql($query, 'insert_id');
 }
 
 /**
@@ -355,12 +355,12 @@ function postgresql_escape_string_sql($string) {
  *
  * Example:
  <code>
- get_db_value_filter ('name', 'talert_templates',
+ db_get_value_filter ('name', 'talert_templates',
  array ('value' => 2, 'type' => 'equal'));
  // Equivalent to:
  // SELECT name FROM talert_templates WHERE value = 2 AND type = 'equal' LIMIT 1
 
- get_db_value_filter ('description', 'talert_templates',
+ db_get_value_filter ('description', 'talert_templates',
  array ('name' => 'My alert', 'type' => 'regex'), 'OR');
  // Equivalent to:
  // SELECT description FROM talert_templates WHERE name = 'My alert' OR type = 'equal' LIMIT 1
@@ -368,13 +368,13 @@ function postgresql_escape_string_sql($string) {
  *
  * @param string Field name to get
  * @param string Table to retrieve the data
- * @param array Conditions to filter the element. See format_array_to_where_clause_sql()
+ * @param array Conditions to filter the element. See db_format_array_where_clause_sql()
  * for the format
  * @param string Join operator for the elements in the filter.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
+function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
 
@@ -384,9 +384,9 @@ function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 
 
 	$sql = sprintf ("SELECT \"%s\" FROM \"%s\" WHERE %s LIMIT 1",
 		$field, $table,
-		format_array_to_where_clause_sql ($filter, $where_join));
+		db_format_array_where_clause_sql ($filter, $where_join));
 	
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 
 	if ($result === false)
 		return false;
@@ -406,7 +406,7 @@ function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 
  $values['name'] = "Name";
  $values['description'] = "Long description";
  $values['limit'] = $config['block_size']; // Assume it's 20
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  echo $sql;
  </code>
  * Will return:
@@ -422,13 +422,13 @@ function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 
  <code>
  $values = array ();
  $values['value'] = 10;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  // SELECT * FROM table WHERE VALUE = 10
 
  $values = array ();
  $values['value'] = 10;
  $values['order'] = 'name DESC';
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  // SELECT * FROM table WHERE VALUE = 10 ORDER BY name DESC
 
  </code>
@@ -439,27 +439,27 @@ function postgresql_get_db_value_filter ($field, $table, $filter, $where_join = 
  $values = array ();
  $values['limit'] = 10;
  $values['offset'] = 20;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  // Wrong SQL: SELECT * FROM table WHERE LIMIT 10 OFFSET 20
 
  $values = array ();
  $values['limit'] = 10;
  $values['offset'] = 20;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values, 'AND', 'WHERE');
  // Good SQL: SELECT * FROM table LIMIT 10 OFFSET 20
 
  $values = array ();
  $values['value'] = 5;
  $values['limit'] = 10;
  $values['offset'] = 20;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values, 'AND', 'WHERE');
  // Good SQL: SELECT * FROM table WHERE value = 5 LIMIT 10 OFFSET 20
  </code>
  *
  * @return string Values joined into an SQL string that can fits into the WHERE
  * clause of an SQL sentence.
  */
-function postgresql_format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
+function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = false) {
 
 	$fields = array ();
 
@@ -576,9 +576,9 @@ function postgresql_format_array_to_where_clause_sql ($values, $join = 'AND', $p
  * @return the first value of the first row of a table result from query.
  *
  */
-function postgresql_get_db_value_sql($sql) {	
+function postgresql_db_get_value_sql($sql) {	
 	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 
 	if($result === false)
 		return false;
@@ -594,9 +594,9 @@ function postgresql_get_db_value_sql($sql) {
  *
  * @return mixed The first row of the result or false
  */
-function postgresql_get_db_row_sql ($sql, $search_history_db = false) {
+function postgresql_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql($sql, $search_history_db);
+	$result = db_get_all_rows_sql($sql, $search_history_db);
 
 	if($result === false)
 		return false;
@@ -614,13 +614,13 @@ function postgresql_get_db_row_sql ($sql, $search_history_db = false) {
  * the WHERE keyword). Example:
  <code>
  Both are similars:
- get_db_row_filter ('table', array ('disabled', 0));
- get_db_row_filter ('table', 'disabled = 0');
+ db_get_row_filter ('table', array ('disabled', 0));
+ db_get_row_filter ('table', 'disabled = 0');
 
  Both are similars:
- get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name, description', 'OR');
- get_db_row_filter ('table', 'disabled = 0 OR history_data = 0', 'name, description');
- get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), array ('name', 'description'), 'OR');
+ db_get_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name, description', 'OR');
+ db_get_row_filter ('table', 'disabled = 0 OR history_data = 0', 'name, description');
+ db_get_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), array ('name', 'description'), 'OR');
  </code>
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
@@ -628,7 +628,7 @@ function postgresql_get_db_row_sql ($sql, $search_history_db = false) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function postgresql_get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+function postgresql_db_get_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
 	if (empty ($fields)) {
 		$fields = '*';
 	}
@@ -640,7 +640,7 @@ function postgresql_get_db_row_filter ($table, $filter, $fields = false, $where_
 	}
 
 	if (is_array ($filter))
-		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	else if (is_string ($filter))
 		$filter = 'WHERE '.$filter;
 	else
@@ -648,7 +648,7 @@ function postgresql_get_db_row_filter ($table, $filter, $fields = false, $where_
 	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-	return get_db_row_sql ($sql);
+	return db_get_row_sql ($sql);
 }
 
 /**
@@ -661,12 +661,12 @@ function postgresql_get_db_row_filter ($table, $filter, $fields = false, $where_
  * the WHERE keyword). Example:
  * <code>
  * Both are similars:
- * get_db_all_rows_filter ('table', array ('disabled', 0));
- * get_db_all_rows_filter ('table', 'disabled = 0');
+ * db_get_all_rows_filter ('table', array ('disabled', 0));
+ * db_get_all_rows_filter ('table', 'disabled = 0');
  *
  * Both are similars:
- * get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
- * get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+ * db_get_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+ * db_get_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
  * </code>
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
@@ -675,7 +675,7 @@ function postgresql_get_db_row_filter ($table, $filter, $fields = false, $where_
  *
  * @return mixed Array of the row or false in case of error.
  */
-function postgresql_get_db_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
+function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
 	//TODO: Validate and clean fields
 	if (empty($fields)) {
 		$fields = '*';
@@ -689,7 +689,7 @@ function postgresql_get_db_all_rows_filter ($table, $filter = array(), $fields =
 
 	//TODO: Validate and clean filter options
 	if (is_array ($filter)) {
-		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	}
 	elseif (is_string ($filter)) {
 		$filter = 'WHERE '.$filter;
@@ -703,7 +703,7 @@ function postgresql_get_db_all_rows_filter ($table, $filter = array(), $fields =
 	if ($returnSQL)
 		return $sql;
 	else
-		return get_db_all_rows_sql ($sql, $search_history_db);
+		return db_get_all_rows_sql ($sql, $search_history_db);
 }
 
 /**
@@ -712,7 +712,7 @@ function postgresql_get_db_all_rows_filter ($table, $filter = array(), $fields =
  * @param $sql
  * @return integer The count of rows of query.
  */
-function postgresql_get_db_num_rows ($sql) {
+function postgresql_db_get_num_rows ($sql) {
 	$result = pg_query($sql);
 
 	return pg_num_rows($result);
@@ -728,7 +728,7 @@ function postgresql_get_db_num_rows ($sql) {
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field or false
  */
-function postgresql_get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
+function postgresql_db_get_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
 	if (is_int ($condition) || is_bool ($condition)) {
 		$sql = sprintf ("SELECT * FROM \"%s\" WHERE \"%s\" = %d", $table, $field, $condition);
 	}
@@ -742,7 +742,7 @@ function postgresql_get_db_all_rows_field_filter ($table, $field, $condition, $o
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
 
-	return get_db_all_rows_sql ($sql);
+	return db_get_all_rows_sql ($sql);
 }
 
 /**
@@ -753,7 +753,7 @@ function postgresql_get_db_all_rows_field_filter ($table, $field, $condition, $o
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field
  */
-function postgresql_get_db_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
+function postgresql_db_get_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
 	$sql = sprintf ("SELECT * FROM \"%s\"", $table);
 	
 	if ($condition != '') {
@@ -763,7 +763,7 @@ function postgresql_get_db_all_fields_in_table ($table, $field = '', $condition 
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY \"%s\"", $order_field);
 
-	return get_db_all_rows_sql ($sql);
+	return db_get_all_rows_sql ($sql);
 }
 
 /**
@@ -776,7 +776,7 @@ function postgresql_get_db_all_fields_in_table ($table, $field = '', $condition 
  * $values = array ();
  * $values['name'] = "Name";
  * $values['description'] = "Long description";
- * $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
+ * $sql = 'UPDATE table SET '.db_format_array_to_update_sql ($values).' WHERE id=1';
  * echo $sql;
  * </code>
  * Will return:
@@ -789,7 +789,7 @@ function postgresql_get_db_all_fields_in_table ($table, $field = '', $condition 
  * @return string Values joined into an SQL string that can fits into an UPDATE
  * sentence.
  */
-function postgresql_format_array_to_update_sql ($values) {
+function postgresql_db_format_array_to_update_sql ($values) {
 	$fields = array ();
 
 	foreach ($values as $field => $value) {
@@ -831,10 +831,10 @@ function postgresql_format_array_to_update_sql ($values) {
  * Examples:
  *
  * <code>
- * process_sql_update ('table', array ('field' => 1), array ('id' => $id));
- * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
- * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
- * process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
+ * db_process_sql_update ('table', array ('field' => 1), array ('id' => $id));
+ * db_process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
+ * db_process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
+ * db_process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
  * </code>
  *
  * @param string Table to insert into
@@ -848,10 +848,10 @@ function postgresql_format_array_to_update_sql ($values) {
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function postgresql_process_sql_update($table, $values, $where = false, $where_join = 'AND') {
+function postgresql_db_process_sql_update($table, $values, $where = false, $where_join = 'AND') {
 	$query = sprintf ("UPDATE \"%s\" SET %s",
 	$table,
-	format_array_to_update_sql ($values));
+	db_format_array_to_update_sql ($values));
 
 	if ($where) {
 		if (is_string ($where)) {
@@ -859,11 +859,11 @@ function postgresql_process_sql_update($table, $values, $where = false, $where_j
 			$query .= " WHERE " . $where;
 		}
 		else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where, $where_join, ' WHERE ');
+			$query .= db_format_array_where_clause_sql ($where, $where_join, ' WHERE ');
 		}
 	}
 
-	return process_sql ($query);
+	return db_process_sql ($query);
 }
 
 /**
@@ -873,13 +873,13 @@ function postgresql_process_sql_update($table, $values, $where = false, $where_j
  * Examples:
  *
  * <code>
- * process_sql_delete ('table', array ('id' => 1));
+ * db_process_sql_delete ('table', array ('id' => 1));
  * // DELETE FROM table WHERE id = 1
- * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
+ * db_process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
  * // DELETE FROM table WHERE id = 1 AND name = 'example'
- * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
+ * db_process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
  * // DELETE FROM table WHERE id = 1 OR name = 'example'
- * process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
+ * db_process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
  * // DELETE FROM table WHERE id in (1, 2, 3) OR id > 10
  * </code>
  *
@@ -894,7 +894,7 @@ function postgresql_process_sql_update($table, $values, $where = false, $where_j
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function postgresql_process_sql_delete($table, $where, $where_join = 'AND') {
+function postgresql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
@@ -908,11 +908,11 @@ function postgresql_process_sql_delete($table, $where, $where_join = 'AND') {
 			$query .= $where;
 		}
 		else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where, $where_join);
+			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
 
-	return process_sql ($query);
+	return db_process_sql ($query);
 }
 
 /**
@@ -925,7 +925,7 @@ function postgresql_process_sql_delete($table, $where, $where_join = 'AND') {
  * @param string $sql
  * @return mixed The row or false in error.
  */
-function postgresql_get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
+function postgresql_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	if ($new == true)
 		$result = pg_query($sql);
 
@@ -935,21 +935,21 @@ function postgresql_get_db_all_row_by_steps_sql($new = true, &$result, $sql = nu
 /**
  * Starts a database transaction.
  */
-function postgresql_process_sql_begin() {
+function postgresql_db_process_sql_begin() {
 	pg_query('BEGIN TRANSACTION');
 }
 
 /**
  * Commits a database transaction.
  */
-function postgresql_process_sql_commit() {
+function postgresql_db_process_sql_commit() {
 	pg_query('COMMIT TRANSACTION');
 }
 
 /**
  * Rollbacks a database transaction.
  */
-function postgresql_process_sql_rollback() {
+function postgresql_db_process_sql_rollback() {
 	pg_query('ROLLBACK TRANSACTION');
 }
 
@@ -971,7 +971,7 @@ function postgresql_safe_sql_string($string) {
  * 
  * @return string Return the string error.
  */
-function postgresql_get_db_last_error() {
+function postgresql_db_get_last_error() {
 	return pg_last_error();
 }
 
@@ -989,7 +989,7 @@ function postgresql_get_system_time() {
 		return $time;
 	
 	if ($config["timesource"] = "sql") {
-		$time = get_db_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+		$time = db_get_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
 		if (empty ($time)) {
 			return time ();
 		}
@@ -1008,7 +1008,7 @@ function postgresql_get_system_time() {
  * 
  * @return mixed Return the type name or False in error case.
  */
-function postgresql_get_db_type_field_table($table, $field) {
+function postgresql_db_get_type_field_table($table, $field) {
 	$result = pg_query('SELECT parameters FROM ' . $table);
 	
 	return pg_field_type($result, $field); 

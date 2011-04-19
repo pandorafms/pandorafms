@@ -20,6 +20,8 @@ check_login ();
 
 require_once ('include/functions_gis.php');
 require_once ('include/functions_ui.php');
+require_once ('include/functions_agents.php');
+require_once ('include/functions_groups.php');
 
 $opt = get_parameter('opt');
 
@@ -28,7 +30,7 @@ switch ($opt) {
 		$returnJSON['correct'] = 1;
 		$idConection = get_parameter('id_conection');
 		
-		$row = get_db_row_filter('tgis_map_connection', array('id_tmap_connection' => $idConection));
+		$row = db_get_row_filter('tgis_map_connection', array('id_tmap_connection' => $idConection));
 		
 		$returnJSON['content'] = $row;
 		
@@ -44,16 +46,16 @@ switch ($opt) {
 		$returnJSON['correct'] = 1;
 		
 		if ($agentView == 0) {
-			$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo
+			$flagGroupAll = db_get_all_rows_sql('SELECT tgrupo_id_grupo
 				FROM tgis_map_layer
 				WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 0;'); //group 0 = all groups
 			
-			$defaultCoords = get_db_row_sql('SELECT default_longitude, default_latitude
+			$defaultCoords = db_get_row_sql('SELECT default_longitude, default_latitude
 				FROM tgis_map
 				WHERE id_tgis_map IN (SELECT tgis_map_id_tgis_map FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')');
 			
 			if ($flagGroupAll === false) {
-				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT id_agente
+				$idAgentsWithGISTemp = db_get_all_rows_sql('SELECT id_agente
 					FROM tagente
 					WHERE id_grupo IN
 						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
@@ -62,7 +64,7 @@ switch ($opt) {
 			}
 			else {
 				//All groups, all agents
-				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT tagente_id_agente AS id_agente
+				$idAgentsWithGISTemp = db_get_all_rows_sql('SELECT tagente_id_agente AS id_agente
 					FROM tgis_data_status
 					WHERE tagente_id_agente');
 			}
@@ -78,7 +80,7 @@ switch ($opt) {
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+				$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 						IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 						IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 					FROM tagente AS t1
@@ -86,7 +88,7 @@ switch ($opt) {
 						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 				break;
 			case "postgresql":
-				$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+				$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 						COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 						COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 					FROM tagente AS t1
@@ -94,7 +96,7 @@ switch ($opt) {
 						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 				break;
 			case "oracle":
-				$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+				$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 						COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 						COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 					FROM tagente t1
@@ -126,7 +128,7 @@ switch ($opt) {
 		break;
 	case 'point_path_info':
 		$id = get_parameter('id');
-		$row = get_db_row_sql('SELECT * FROM tgis_data_history WHERE id_tgis_data = ' . $id);
+		$row = db_get_row_sql('SELECT * FROM tgis_data_history WHERE id_tgis_data = ' . $id);
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
@@ -142,7 +144,7 @@ switch ($opt) {
 		break;
 	case 'point_agent_info':
 		$id = get_parameter('id');
-		$row = get_db_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
+		$row = db_get_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
 		$agentDataGIS =  getDataLastPositionAgent($row['id_agente']);
 		
 		$returnJSON = array();
@@ -196,7 +198,7 @@ switch ($opt) {
 
 		$returnJSON['correct'] = 1;
 		
-		$returnJSON['content'] = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
+		$returnJSON['content'] = db_get_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
 		
 		echo json_encode($returnJSON);
 		break;

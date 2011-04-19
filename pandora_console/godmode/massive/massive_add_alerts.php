@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive alert deletion");
 	require ("general/noaccess.php");
 	return;
@@ -26,6 +26,8 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_agents = (bool) get_parameter ('get_agents');
@@ -75,10 +77,10 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	}
 	
 	if ($countSuccess > 0) {
-		pandora_audit("Masive management", "Add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
+		db_pandora_audit("Masive management", "Add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
 	}
 	else {
-		pandora_audit("Masive management", "Fail try to add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
+		db_pandora_audit("Masive management", "Fail try to add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
 	}
 	
 	ui_print_result_message ($contsuccess > 0,

@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	return;
@@ -29,6 +29,8 @@ $id_agent = (int) get_parameter ('id_agent');
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
+require_once ('include/functions_modules.php');
+require_once ('include/functions_users.php');
 
 function print_alert_compound_steps ($step, $id) {
 	echo '<ol class="steps">';
@@ -228,7 +230,7 @@ if ($id && ! $create_compound) {
 	$id_agent = $compound['id_agent'];
 	$id_group = get_agent_group ($id_agent);
 	if (! check_acl ($config['id_user'], $id_group, "AW")) {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		require ("general/noaccess.php");
 		return;

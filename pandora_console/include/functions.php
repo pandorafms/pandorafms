@@ -1188,4 +1188,186 @@ function check_sql ($sql) {
 	return $sql;
 }
 
+/**
+ * Check if login session variables are set.
+ *
+ * It will stop the execution if those variables were not set
+ *
+ * @return bool 0 on success exit() on no success
+ */
+
+function check_login () {
+	global $config;
+
+	if (!isset ($config["homedir"])) {
+		// No exists $config. Exit inmediatly
+		include("general/noaccess.php");
+		exit;
+	}
+
+	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
+		if (is_user ($_SESSION["id_usuario"])) {
+			return 0;
+		}
+	}
+	else {
+		require_once($config["homedir"].'/mobile/include/user.class.php');
+		session_start ();
+		session_write_close ();
+		if (isset($_SESSION['user'])) {
+			$user = $_SESSION['user'];
+			$id_user = $user->getIdUser();
+			if (is_user ($id_user)) {
+				return 0;
+			}
+		}
+	}
+
+	db_pandora_audit("No session", "Trying to access without a valid session", "N/A");
+	include ($config["homedir"]."/general/noaccess.php");
+	exit;
+}
+
+/**
+ * Check access privileges to resources
+ *
+ * Access can be:
+ * IR - Incident/report Read
+ * IW - Incident/report Write
+ * IM - Incident/report Management
+ * AR - Agent Read
+ * AW - Agent Write
+ * LW - Alert Write
+ * UM - User Management
+ * DM - DB Management
+ * LM - Alert Management
+ * PM - Pandora Management
+ *
+ * @param int $id_user User id
+ * @param int $id_group Agents group id to check from
+ * @param string $access Access privilege
+ *
+ * @return bool 1 if the user has privileges, 0 if not.
+ */
+function check_acl($id_user, $id_group, $access) {
+	if (empty ($id_user)) {
+		//User ID needs to be specified
+		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
+		return 0;
+	}
+	elseif (is_user_admin ($id_user)) {
+		return 1;
+	}
+	else {
+		$id_group = (int) $id_group;
+	}
+
+	$parents_id = array($id_group);
+	if ($id_group != 0) {
+		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
+		$parents = get_parents($group['parent'], true);
+
+		foreach ($parents as $parent) {
+			$parents_id[] = $parent['id_grupo'];
+		}
+	}
+	else {
+		$parents_id = array();
+	}
+
+	//Joined multiple queries into one. That saves on the query overhead and query cache.
+	if ($id_group == 0) {
+		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
+				tperfil.incident_management, tperfil.agent_view,
+				tperfil.agent_edit, tperfil.alert_edit,
+				tperfil.alert_management, tperfil.pandora_management,
+				tperfil.db_management, tperfil.user_management
+			FROM tusuario_perfil, tperfil
+			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
+				AND tusuario_perfil.id_usuario = '%s'", $id_user);
+		//GroupID = 0, group id doesnt matter (use with caution!)
+	}
+	else {
+		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
+				tperfil.incident_management, tperfil.agent_view,
+				tperfil.agent_edit, tperfil.alert_edit,
+				tperfil.alert_management, tperfil.pandora_management,
+				tperfil.db_management, tperfil.user_management
+			FROM tusuario_perfil, tperfil
+			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
+				AND tusuario_perfil.id_usuario = '%s'
+				AND (tusuario_perfil.id_grupo IN (%s)
+				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
+	}
+
+	$rowdup = db_get_all_rows_sql ($query);
+
+	if (empty ($rowdup))
+	return 0;
+
+	$result = 0;
+	foreach ($rowdup as $row) {
+		// For each profile for this pair of group and user do...
+		switch ($access) {
+			case "IR":
+				$result += $row["incident_view"];
+				break;
+			case "IW":
+				$result += $row["incident_edit"];
+				break;
+			case "IM":
+				$result += $row["incident_management"];
+				break;
+			case "AR":
+				$result += $row["agent_view"];
+				break;
+			case "AW":
+				$result += $row["agent_edit"];
+				break;
+			case "LW":
+				$result += $row["alert_edit"];
+				break;
+			case "LM":
+				$result += $row["alert_management"];
+				break;
+			case "PM":
+				$result += $row["pandora_management"];
+				break;
+			case "DM":
+				$result += $row["db_management"];
+				break;
+			case "UM":
+				$result += $row["user_management"];
+				break;
+		}
+	}
+
+	if ($result >= 1)
+	return 1;
+
+	return 0;
+}
+
+/**
+ * Get the name of a plugin
+ *
+ * @param int id_plugin Plugin id.
+ *
+ * @return string The name of the given plugin
+ */
+function dame_nombre_pluginid ($id_plugin) {
+	return (string) db_get_value ('name', 'tplugin', 'id', (int) $id_plugin);
+}
+
+/**
+ * Get the operating system name.
+ *
+ * @param int Operating system id.
+ *
+ * @return string Name of the given operating system.
+ */
+function get_os_name ($id_os) {
+	return (string) db_get_value ('name', 'tconfig_os', 'id_os', (int) $id_os);
+}
+
 ?>

@@ -24,7 +24,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Server view");
 	require ("general/noaccess.php");
 	return;

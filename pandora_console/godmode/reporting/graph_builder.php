@@ -47,7 +47,7 @@ if (is_ajax ()) {
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
@@ -79,7 +79,7 @@ if ($add_graph) {
 	'stacked' => $stacked);
 
 	if (trim($name) != "") {
-		$id_graph = process_sql_insert('tgraph', $values);
+		$id_graph = db_process_sql_insert('tgraph', $values);
 	} else {
 		$id_graph = false;
 	}
@@ -102,7 +102,7 @@ if ($update_graph) {
 
 	if (trim($name) != "") {
 
-	$success = process_sql_update('tgraph', 
+	$success = db_process_sql_update('tgraph', 
 		array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
 		array('id_graph' => $id_graph));
 	} else {
@@ -121,7 +121,7 @@ if ($add_module) {
 	$id_agents = get_parameter('id_agents');
 	$weight = get_parameter('weight');
 
-	$id_agent_modules = get_db_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
+	$id_agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
 		implode(',', $id_agents).
 		") AND nombre IN ('".
 		implode("','", $id_modules).
@@ -129,7 +129,7 @@ if ($add_module) {
 
 	if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
 		foreach($id_agent_modules as $id_agent_module)
-			$result = process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
+			$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
 		}
 	else
 		$result = false;
@@ -137,13 +137,13 @@ if ($add_module) {
 
 if ($delete_module) {
 	$deleteGraph = get_parameter('delete');
-	$result = process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
+	$result = db_process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
 }
 
 if($change_weight){
 	$weight = get_parameter ('weight');
 	$id_gs = get_parameter ('graph');
-	process_sql_update('tgraph_source', 
+	db_process_sql_update('tgraph_source', 
 		array('weight' => $weight), 
 		array('id_gs' => $id_gs));
 }
@@ -163,7 +163,7 @@ if($edit_graph) {
 		
 	$buttons[$active_tab]['active'] = true;
 
-	$graphInTgraph = get_db_row_sql("SELECT name FROM tgraph WHERE id_graph = " . $id_graph);
+	$graphInTgraph = db_get_row_sql("SELECT name FROM tgraph WHERE id_graph = " . $id_graph);
 	$name = $graphInTgraph['name'];
 }
 else {

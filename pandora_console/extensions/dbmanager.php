@@ -57,12 +57,12 @@ function dbmanager_query ($sql, &$error) {
 				
 			$sql = html_entity_decode($sql, ENT_QUOTES);
 			
-			$result = process_sql($sql, "affected_rows", '', false, $status);
+			$result = db_process_sql($sql, "affected_rows", '', false, $status);
 		
 			//$result = mysql_query ($sql);
 			if ($result === false) {
 				$backtrace = debug_backtrace();
-				$error = get_db_last_error();
+				$error = db_get_last_error();
 				
 				return false;
 			}
@@ -84,7 +84,7 @@ function dbmgr_extension_main () {
 	global $config;
 
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -124,7 +124,7 @@ function dbmgr_extension_main () {
 		echo '<strong>An error has occured when querying the database.</strong><br />';
 		echo $error;
 		
-		pandora_audit("Extension DB inface", "Error in SQL", false, false, $sql);
+		db_pandora_audit("Extension DB inface", "Error in SQL", false, false, $sql);
 		
 		return;
 	}
@@ -132,7 +132,7 @@ function dbmgr_extension_main () {
 	if (! is_array ($result)) {
 		echo "<strong>Output: <strong>".$result;
 		
-		pandora_audit("Extension DB inface", "SQL", false, false, $sql);
+		db_pandora_audit("Extension DB inface", "SQL", false, false, $sql);
 		
 		return;
 	}

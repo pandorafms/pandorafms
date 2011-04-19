@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation","Trying to access module management");
+	db_pandora_audit("ACL Violation","Trying to access module management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -44,7 +44,7 @@ if ($update_module) {
 		'icon' => $icon
 		);
 	
-	$result = process_sql_update('ttipo_modulo', $values, array('id_tipo' => $id_type));
+	$result = db_process_sql_update('ttipo_modulo', $values, array('id_tipo' => $id_type));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('Problem modifying module')."</h3>";
@@ -59,7 +59,7 @@ echo "<th>".__('ID')."</th>";
 echo "<th>".__('Name')."</th>";
 echo "<th>".__('Description')."</th>";
 
-$rows = get_db_all_rows_sql('SELECT * FROM ttipo_modulo ORDER BY nombre');
+$rows = db_get_all_rows_sql('SELECT * FROM ttipo_modulo ORDER BY nombre');
 if ($rows === false) {
 	$rows = array();
 }

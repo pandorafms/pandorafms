@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access SNMP Group Management");
 	require ("general/noaccess.php");
 	return;
@@ -41,7 +41,7 @@ if ($create) {
 	$name = (string) get_parameter ('name');
 	$parent = (int) get_parameter ('parent');
 	
-	$result = process_sql_insert ('tnetwork_component_group',
+	$result = db_process_sql_insert ('tnetwork_component_group',
 		array ('name' => $name,
 			'parent' => $parent));
 	ui_print_result_message ($result,
@@ -53,7 +53,7 @@ if ($update) {
 	$name = (string) get_parameter ('name');
 	$parent = (int) get_parameter ('parent');
 	
-	$result = process_sql_update ('tnetwork_component_group',
+	$result = db_process_sql_update ('tnetwork_component_group',
 		array ('name' => $name,
 			'parent' => $parent),
 		array ('id_sg' => $id));
@@ -63,7 +63,7 @@ if ($update) {
 }
 
 if ($delete) {
-	$result = process_sql_delete ('tnetwork_component_group',
+	$result = db_process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -100,14 +100,14 @@ $table->size[1] = '50%';
 $table->size[2] = '40px';
 $table->data = array ();
 
-$total_groups = get_db_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');
+$total_groups = db_get_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');
 $total_groups = $total_groups[0]['total'];
 
 $filter = array ();
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
 
-$groups = get_db_all_rows_filter ('tnetwork_component_group', $filter);
+$groups = db_get_all_rows_filter ('tnetwork_component_group', $filter);
 if ($groups === false)
 	$groups = array ();
 

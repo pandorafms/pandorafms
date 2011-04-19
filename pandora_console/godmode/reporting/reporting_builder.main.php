@@ -17,11 +17,13 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
+
+require_once ($config['homedir'].'/include/functions_users.php');
 
 $groups = get_user_groups ();
 

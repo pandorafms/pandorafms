@@ -16,6 +16,10 @@
 
 global $config;
 
+include_once($config['homedir'] . "/include/functions_profile.php");
+include_once($config['homedir'] . '/include/functions_users.php');
+include_once ($config['homedir'] . '/include/functions_groups.php');
+
 $searchUsers = check_acl($config['id_user'], 0, "UM");
 
 $selectUserIDUp = '';
@@ -129,7 +133,7 @@ if ($searchUsers) {
 			email LIKE '%" . $stringSearchSQL . "%'
 		ORDER BY " . $order['field'] . " " . $order['order'] . " 
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-	$users = process_sql($sql);
+	$users = db_process_sql($sql);
 	
 	if($users !== false) {
 		//Check ACLs
@@ -157,7 +161,7 @@ if ($searchUsers) {
 				lastname LIKE '%" . $stringSearchSQL . "%' OR
 				middlename LIKE '%" . $stringSearchSQL . "%' OR
 				email LIKE '%" . $stringSearchSQL . "%')".$user_condition;	
-		$totalUsers = get_db_row_sql($sql);
+		$totalUsers = db_get_row_sql($sql);
 
 		$totalUsers = $totalUsers['count'];
 	}
@@ -210,7 +214,7 @@ else {
 				"title" => __('Standard User'))).'&nbsp;';
 		}
 		$profileCell .= '<a href="#" class="tip"><span>';
-		$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user['id_user']);
+		$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user['id_user']);
 		if ($result !== false) {
 			foreach ($result as $row) {
 				$profileCell .= get_profile_name ($row["id_perfil"]);

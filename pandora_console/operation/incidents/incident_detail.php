@@ -18,12 +18,13 @@
 global $config;
 require_once ("include/functions_incidents.php");
 require_once ("include/functions_events.php"); //To get events group information
+require_once ($config['homedir'] . "/include/functions_users.php");
 
 check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IR")) {
  	// Doesn't have access to this page
-	pandora_audit("ACL Violation", "Trying to access incident details");
+	db_pandora_audit("ACL Violation", "Trying to access incident details");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -36,7 +37,7 @@ if (isset ($_GET["id"])) {
 	$id_inc = (int) get_parameter_get ("id", 0);
 	
 	// Obtain group of this incident
-	$row = get_db_row ("tincidencia","id_incidencia",$id_inc);
+	$row = db_get_row ("tincidencia","id_incidencia",$id_inc);
 	
 	// Get values
 	$titulo = $row["titulo"];
@@ -59,7 +60,7 @@ if (isset ($_GET["id"])) {
 			'id_usuario' => $config["id_user"],
 			'id_incident' => $id_inc,
 			'nota' => $nota);
-		$id_nota = process_sql_insert('tnota', $values);
+		$id_nota = db_process_sql_insert('tnota', $values);
 
 		if ($id_nota !== false) {
 			process_incidents_touch ($id_inc);
@@ -91,9 +92,9 @@ if (isset ($_GET["id"])) {
 	// Delete file
 	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
 		$file_id = (int) get_parameter_post ("delete_file", 0);
-		$filename = get_db_value ("filename", "tattachment", "id_attachment", $file_id);
+		$filename = db_get_value ("filename", "tattachment", "id_attachment", $file_id);
 		
-		$result = process_sql_delete('tattachment', array('id_attachment' => $file_id));
+		$result = db_process_sql_delete('tattachment', array('id_attachment' => $file_id));
 		
 		if (!empty ($result)) {
 			unlink ($config["attachment_store"]."/pand".$file_id."_".$filename);
@@ -131,7 +132,7 @@ if (isset ($_GET["id"])) {
 			'filename' => $filename,
 			'description' => $description,
 			'size' => $filesize);
-		$id_attachment = process_sql_insert('tattachment', $values);
+		$id_attachment = db_process_sql_insert('tattachment', $values);
 
 		// Copy file to directory and change name
 		if ($id_attachment !== false) {
@@ -148,7 +149,7 @@ if (isset ($_GET["id"])) {
 			process_incidents_touch ($id_inc);
 		}
 		else {
-			process_sql_delete('tattachment', array('id_attachment' => $id_attachment));
+			db_process_sql_delete('tattachment', array('id_attachment' => $id_attachment));
 		}
 		
 		ui_print_result_message ($result,
@@ -178,7 +179,7 @@ elseif (isset ($_GET["insert_form"])) {
 	$prioridad = 0;
 	$id_grupo = 0;
 } else {
-	pandora_audit("HACK","Trying to get to incident details in an unusual way");
+	db_pandora_audit("HACK","Trying to get to incident details in an unusual way");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -250,7 +251,7 @@ echo '</td></tr>';
 echo '<tr><td class="datos2"><b>'.__('Source').'</b></td><td class="datos2">';
 
 $fields = array ();
-$return = get_db_all_rows_sql ("SELECT origen FROM torigen ORDER BY origen");
+$return = db_get_all_rows_sql ("SELECT origen FROM torigen ORDER BY origen");
 if ($return === false)
 	$return[0] = $estado; //Something must be displayed
 

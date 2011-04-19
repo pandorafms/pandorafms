@@ -15,6 +15,8 @@
 // GNU General Public License for more details.
 
 require_once ("include/functions_messages.php");
+require_once ('include/functions_servers.php');
+
 
 $msg_cnt = 0;
 
@@ -68,7 +70,7 @@ $msg_cnt = 0;
 		if ($config["metaconsole"] == 0){
 			echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
 
-			$servers["all"] = (int) get_db_value ('COUNT(id_server)','tserver');
+			$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
 			$servers["up"] = (int) check_server_status ();
 			$servers["down"] = $servers["all"] - $servers["up"];
 			if ($servers["up"] == 0) {

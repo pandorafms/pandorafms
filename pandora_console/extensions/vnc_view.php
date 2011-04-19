@@ -16,7 +16,7 @@
 
 function vnc_view() {
 	$idAgent = (int)get_parameter('id_agente', 0);
-	$ipAgent = get_db_value('direccion', 'tagente', 'id_agente', $idAgent);
+	$ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 
 	echo '<applet code="VncViewer.class" archive="extensions/vnc/VncViewer.jar" width="750" height="800">';
 	echo '<param name="Host" value="'.$ipAgent.'">';

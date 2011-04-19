@@ -17,13 +17,16 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive module update");
 	require ("general/noaccess.php");
 	return;
 }
 
 require_once ('include/functions_modules.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_groups.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 function process_manage_edit ($module_name, $agents_select = null) {
 	if (is_int ($module_name) && $module_name <= 0) {
@@ -45,12 +48,12 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		$values['history_data'] = get_parameter('history_data');
 	}
 	
-	$modules = get_db_all_rows_filter ('tagente_modulo',
+	$modules = db_get_all_rows_filter ('tagente_modulo',
 		array ('id_agente' => $agents_select,
 			'nombre' => $module_name),
 		array ('id_agente_modulo'));
 	
-	process_sql_begin ();
+	db_process_sql_begin ();
 
 	if ($modules === false)
 		return false;
@@ -59,13 +62,13 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		$result = update_agent_module ($module['id_agente_modulo'], $values, true);
 		
 		if ($result === false) {
-			process_sql_rollback ();
+			db_process_sql_rollback ();
 			
 			return false;
 		}
 	}
 	
-	process_sql_commit ();
+	db_process_sql_commit ();
 	
 	return true;
 }
@@ -119,11 +122,11 @@ if ($update) {
 			if($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
 				
-			$agents_ = get_db_all_rows_sql('SELECT DISTINCT(t1.id_agente)
+			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente');
 			foreach($agents_ as $id_agent) {
-				$module_name = get_db_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
+				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
 
 				if($module_name == false) {
 					$module_name = array();
@@ -138,7 +141,7 @@ if ($update) {
 		else if($force == 'group') {
 			$agents_ = array_keys (get_group_agents ($group_select, false, "none"));
 			foreach($agents_ as $id_agent) {
-				$module_name = get_db_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
+				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
 				if($module_name == false) {
 					$module_name = array();
 				}
@@ -173,10 +176,10 @@ if ($update) {
 	
 	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);	
 	if ($success > 0) {
-		pandora_audit("Masive management", "Edit module", false, false, $info);
+		db_pandora_audit("Masive management", "Edit module", false, false, $info);
 	}
 	else {
-		pandora_audit("Masive management", "Fail try to edit module", false, false, $info);
+		db_pandora_audit("Masive management", "Fail try to edit module", false, false, $info);
 	}
 }
 
@@ -203,7 +206,7 @@ if (! $module_type) {
 	$table->rowstyle['edit7'] = 'display: none';
 }
 $agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
-$module_types = get_db_all_rows_filter ('tagente_modulo,ttipo_modulo',
+$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
 	array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
 		'id_agente' => array_keys ($agents),
 		'disabled' => 0,

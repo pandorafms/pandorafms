@@ -38,7 +38,7 @@ function get_network_profile ($id_network_profile, $filter = false, $fields = fa
 		$filter = array ();
 	$filter['id_np'] = $id_network_profile;
 	
-	return @get_db_row_filter ('tnetwork_profile', $filter, $fields);
+	return @db_get_row_filter ('tnetwork_profile', $filter, $fields);
 }
 
 /**
@@ -55,8 +55,19 @@ function delete_network_profile ($id_network_profile) {
 	$profile = get_network_profile ($id_network_profile);
 	if ($profile === false)
 		return false;
-	return @process_sql_delete ('tnetwork_profile',
+	return @db_process_sql_delete ('tnetwork_profile',
 		array ('id_np' => $id_network_profile));
+}
+
+/**
+ * Get a network profile name.
+ *
+ * @param int Id network profile
+ *
+ * @return string Name of the given network profile.
+ */
+function get_networkprofile_name ($id_network_profile) {
+	return (string) db_get_value ('name', 'tnetwork_profile', 'id_np', $id_network_profile);
 }
 
 ?>

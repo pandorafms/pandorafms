@@ -21,24 +21,25 @@ check_login();
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
-	pandora_audit("HACK Attempt",
+	db_pandora_audit("HACK Attempt",
 		"Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");
 	return;
 }
 
 // Get Report record (to get id_group)
-$report = get_db_row ('treport', 'id_report', $id_report);
+$report = db_get_row ('treport', 'id_report', $id_report);
 
 // Check ACL on the report to see if user has access to the report.
 if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
-	pandora_audit("ACL Violation","Trying to access graph reader");
+	db_pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }
 
 // Include with the functions to calculate each kind of report.
 require ("include/functions_reporting.php");
+require_once ('include/functions_groups.php');
 
 // Check if the report is a private report.
 if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin ($config['id_user']))) {
@@ -135,13 +136,13 @@ $report["group_name"] = get_group_name ($report['id_group']);
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
+		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
 		break;
 	case "postgresql":
-		$contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
 		break;
 	case "oracle":
-		$contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
 		break;
 }
 if ($contents === false) {

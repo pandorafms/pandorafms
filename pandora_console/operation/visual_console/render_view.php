@@ -23,15 +23,15 @@ $id_layout = (int) get_parameter ('id');
 
 // Get input parameter for layout id
 if (! $id_layout) {
-	pandora_audit("ACL Violation","Trying to access visual console without id layout");
+	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
 	include ("general/noaccess.php");
 	exit;
 }
 
-$layout = get_db_row ('tlayout', 'id', $id_layout);
+$layout = db_get_row ('tlayout', 'id', $id_layout);
 
 if (! $layout) {
-	pandora_audit("ACL Violation","Trying to access visual console without id layout");
+	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -46,7 +46,7 @@ $bheight = $layout["height"];
 $pure_url = "&pure=".$config["pure"];
 
 if (! check_acl ($config["id_user"], $id_group, "AR")) {
-	pandora_audit("ACL Violation", "Trying to access visual console without group access");
+	db_pandora_audit("ACL Violation", "Trying to access visual console without group access");
 	require ("general/noaccess.php");
 	exit;
 }

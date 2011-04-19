@@ -16,6 +16,8 @@
 
 global $config;
 
+require_once ($config['homedir'].'/include/functions_users.php');
+
 $searchAgents = check_acl($config['id_user'], 0, "AR");
 
 $selectNameUp = '';
@@ -144,10 +146,10 @@ if ($searchAgents) {
 	$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	
-	$agents = process_sql($select . $sql . $limit);
+	$agents = db_process_sql($select . $sql . $limit);
 	
 	if($agents !== false) {
-		$totalAgents = get_db_row_sql('SELECT COUNT(id_agente) AS agent_count ' . $sql);
+		$totalAgents = db_get_row_sql('SELECT COUNT(id_agente) AS agent_count ' . $sql);
 		
 		$totalAgents = $totalAgents['agent_count'];
 	}

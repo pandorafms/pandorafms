@@ -19,6 +19,8 @@
  * @subpackage UI
  */
 
+require_once ($config['homedir'] . '/include/functions_groups.php');
+
 /**
  */
 function render_agent_field ($agent, $field, $field_value = false, $return = false) {

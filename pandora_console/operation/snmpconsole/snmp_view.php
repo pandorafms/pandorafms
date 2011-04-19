@@ -18,11 +18,12 @@
 // Load global vars
 global $config;
 enterprise_include ("operation/snmpconsole/snmp_view.php");
+require_once("include/functions_agents.php");
 
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access SNMP Console");
 	require ("general/noaccess.php");
 	exit;
@@ -57,13 +58,13 @@ if (isset ($_GET["delete"])){
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		
-		$result = process_sql_delete('ttrap', array('id_trap' => $id_trap));
+		$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
 		ui_print_result_message ($result,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
 	else {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to delete SNMP event ID #".$id_trap);
 	}
 }
@@ -75,14 +76,14 @@ if (isset ($_GET["check"])) {
 		$values = array(
 			'status' => 1,
 			'id_usuario' => $config["id_user"]);
-		$result = process_sql_update('ttrap', $values, array('id_trap' => $id_trap));
+		$result = db_process_sql_update('ttrap', $values, array('id_trap' => $id_trap));
 		
 		ui_print_result_message ($result,
 			__('Successfully updated'),
 			__('Could not be updated'));
 	}
 	else {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to checkout SNMP Trap ID".$id_trap);
 	}
 }
@@ -92,11 +93,11 @@ if (isset ($_POST["deletebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
 		foreach ($trap_ids as $id_trap) {
-			process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
 		}
 	}
 	else {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
 	}
 }
@@ -107,11 +108,11 @@ if (isset ($_POST["updatebt"])) {
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
 		foreach ($trap_ids as $id_trap) {
 			$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
-			process_sql ($sql);
+			db_process_sql ($sql);
 		}
 	}
 	else {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
 	}
 }
@@ -131,7 +132,7 @@ switch ($config["dbtype"]) {
 		$sql = oracle_recode_query ($sql, $set);		
 		break;
 }
-$traps = get_db_all_rows_sql ($sql);
+$traps = db_get_all_rows_sql ($sql);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
@@ -263,7 +264,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$traps = get_db_all_rows_sql($sql);
+$traps = db_get_all_rows_sql($sql);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
@@ -323,7 +324,7 @@ echo '</div>';
 echo '<br />';
 
 // Prepare index for pagination
-$trapcount = get_db_sql ("SELECT COUNT(*) FROM ttrap " . $whereSubquery);
+$trapcount = db_get_sql ("SELECT COUNT(*) FROM ttrap " . $whereSubquery);
 
 $urlPagination = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=" . $filter_agent
 	. "&filter_oid=" . $filter_oid . "&filter_severity=" . $filter_severity

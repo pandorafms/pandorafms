@@ -26,7 +26,7 @@
  * @return bool Config id if success. False on failure.
  */
 function config_create_value ($token, $value) {
-	return process_sql_insert ('tconfig',
+	return db_process_sql_insert ('tconfig',
 		array ('value' => $value,
 			'token' => $token));
 }
@@ -48,13 +48,13 @@ function config_update_value ($token, $value) {
 		case 'list_ACL_IPs_for_API':
 			switch ($config["dbtype"]) {
 				case "mysql":
-					$rows = get_db_all_rows_sql('SELECT id_config
+					$rows = db_get_all_rows_sql('SELECT id_config
 						FROM tconfig 
 						WHERE token LIKE "%list_ACL_IPs_for_API_%"');
 					break;
 				case "postgresql":
 				case "oracle":
-					$rows = get_db_all_rows_sql("SELECT id_config
+					$rows = db_get_all_rows_sql("SELECT id_config
 						FROM tconfig 
 						WHERE token LIKE '%list_ACL_IPs_for_API_%'");
 					break;
@@ -64,7 +64,7 @@ function config_update_value ($token, $value) {
 				foreach ($rows as $row)
 					$idListACLofIP[] = $row['id_config'];
 				
-				process_sql_delete('tconfig', 'id_config IN (' . implode(',', $idListACLofIP) . ')' );
+				db_process_sql_delete('tconfig', 'id_config IN (' . implode(',', $idListACLofIP) . ')' );
 			}
 			
 			if (strpos($value, "\r\n") !== false)
@@ -90,7 +90,7 @@ function config_update_value ($token, $value) {
 					if (strlen($ip) > 100)
 						return false;
 						
-					process_sql_insert('tconfig',
+					db_process_sql_insert('tconfig',
 						array('token' => 'list_ACL_IPs_for_API_' . $count , 'value' => $valueDB));
 					$valueDB = $ip;
 					$count++;
@@ -98,7 +98,7 @@ function config_update_value ($token, $value) {
 				}
 			}
 			if (!$lastInsert)
-				process_sql_insert('tconfig',
+				db_process_sql_insert('tconfig',
 					array('token' => 'list_ACL_IPs_for_API_' . $count , 'value' => $valueDB));
 			
 			break;
@@ -114,7 +114,7 @@ function config_update_value ($token, $value) {
 			
 			$config[$token] = $value;
 			
-			return (bool) process_sql_update ('tconfig', 
+			return (bool) db_process_sql_update ('tconfig', 
 				array ('value' => $value),
 				array ('token' => $token));
 			break;
@@ -245,15 +245,15 @@ function config_update_config () {
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 		$locked = enterprise_hook('semaphore_policy_test_and_set');
 		if ($locked) {
-			pandora_audit("Policy management", "BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
+			db_pandora_audit("Policy management", "BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
 
 			config_update_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
 			
-			pandora_audit("Policy management", "UNBLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
+			db_pandora_audit("Policy management", "UNBLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
 			enterprise_hook('semaphore_policy_unlock');
 		}
 		else {
-			pandora_audit("Policy management", "Try to BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
+			db_pandora_audit("Policy management", "Try to BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
 		}
 	}
 	else {
@@ -272,7 +272,7 @@ function config_update_config () {
 function config_process_config () {
 	global $config;
 	
-	$configs = get_db_all_rows_in_table ('tconfig');
+	$configs = db_get_all_rows_in_table ('tconfig');
 	
 	if (empty ($configs)) {
 		include ($config["homedir"]."/general/error_emptyconfig.php");

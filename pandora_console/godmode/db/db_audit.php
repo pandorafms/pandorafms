@@ -21,7 +21,7 @@ ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database audit 
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "DM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Database Management Audit");
 	require ("general/noaccess.php");
 	return;
@@ -64,13 +64,13 @@ $time["3month"] = $time["all"]-(86400*90);
 if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 	$from_date = get_parameter_post("date_purge");
 	
-	$deleted = process_sql_delete('tsesion', array('utimestamp' => '< ' . $from_date));
+	$deleted = db_process_sql_delete('tsesion', array('utimestamp' => '< ' . $from_date));
 }
 # End of get parameters block
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<tr><td class='datos'>";
-$result = get_db_row_sql ("SELECT COUNT(*) AS total, MIN(fecha) AS first_date, MAX(fecha) AS latest_date FROM tsesion");
+$result = db_get_row_sql ("SELECT COUNT(*) AS total, MIN(fecha) AS first_date, MAX(fecha) AS latest_date FROM tsesion");
 
 echo "<b>".__('Total')."</b></td>";
 echo "<td class='datos'>".$result["total"]." ".__('Records')."</td>";

@@ -12,6 +12,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
+require_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
+
 class GroupView {
 	private $system;
 	

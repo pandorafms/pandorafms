@@ -52,13 +52,13 @@ function pandora_update_manager_install () {
 			break;
 	}
 	foreach ($sentences as $sentence) {
-		$success = process_sql ($sentence);
+		$success = db_process_sql ($sentence);
 		if ($success === false)
 			return;
 	}
 	
 	$values = array("token" => "update_manager_installed", "value" => 1);
-	process_sql_insert('tconfig', $values);
+	db_process_sql_insert('tconfig', $values);
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
@@ -72,25 +72,25 @@ function pandora_update_manager_uninstall () {
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
-			process_sql ('DROP TABLE `tupdate_settings`');
-			process_sql ('DROP TABLE `tupdate_journal`');
-			process_sql ('DROP TABLE `tupdate`');
-			process_sql ('DROP TABLE `tupdate_package`');
+			db_process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
+			db_process_sql ('DROP TABLE `tupdate_settings`');
+			db_process_sql ('DROP TABLE `tupdate_journal`');
+			db_process_sql ('DROP TABLE `tupdate`');
+			db_process_sql ('DROP TABLE `tupdate_package`');
 			break;
 		case "postgresql":
-			process_sql ('DELETE FROM "tconfig" WHERE "token" = \'update_manager_installed\'');
-			process_sql ('DROP TABLE "tupdate_settings"');
-			process_sql ('DROP TABLE "tupdate_journal"');
-			process_sql ('DROP TABLE "tupdate"');
-			process_sql ('DROP TABLE "tupdate_package"');
+			db_process_sql ('DELETE FROM "tconfig" WHERE "token" = \'update_manager_installed\'');
+			db_process_sql ('DROP TABLE "tupdate_settings"');
+			db_process_sql ('DROP TABLE "tupdate_journal"');
+			db_process_sql ('DROP TABLE "tupdate"');
+			db_process_sql ('DROP TABLE "tupdate_package"');
 			break;
 		case "oracle":
-			process_sql ('DELETE FROM tconfig WHERE token = \'update_manager_installed\'');
-			process_sql ('DROP TABLE tupdate_settings');
-			process_sql ('DROP TABLE tupdate_journal');
-			process_sql ('DROP TABLE tupdate');
-			process_sql ('DROP TABLE tupdate_package');
+			db_process_sql ('DELETE FROM tconfig WHERE token = \'update_manager_installed\'');
+			db_process_sql ('DROP TABLE tupdate_settings');
+			db_process_sql ('DROP TABLE tupdate_journal');
+			db_process_sql ('DROP TABLE tupdate');
+			db_process_sql ('DROP TABLE tupdate_package');
 			break;
 	}
 }
@@ -116,7 +116,7 @@ function pandora_update_manager_login () {
 	if (!isset($config["autoupdate"])){
 		$config["autoupdate"] = 1;
 		
-		process_sql_insert('tconfig', array('token' => 'autoupdate', 'value' => 0));
+		db_process_sql_insert('tconfig', array('token' => 'autoupdate', 'value' => 0));
 	}
 
 	if ($config["autoupdate"] == 0)

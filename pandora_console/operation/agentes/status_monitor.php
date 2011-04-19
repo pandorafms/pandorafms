@@ -22,11 +22,15 @@ global $config;
 check_login();
 
 if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
 	require ('general/noaccess.php');
 	return;
 }
+
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
@@ -74,7 +78,7 @@ echo '<td valign="middle">';
 $user_groups = implode (",", array_keys (get_user_groups ()));
 //$user_agents = array_keys (get_group_agents($user_groups));
 
-//$modules = get_db_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
+//$modules = db_get_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -142,7 +146,7 @@ switch ($config["dbtype"]) {
 		)';
 		break;
 	case "oracle":
-		$names = oracle_get_db_all_rows_filter ('user_tab_columns',array ('table_name' => 'TAGENTE_MODULO', 'column_name' => '<>NOMBRE'), 'column_name');
+		$names = oracle_db_get_all_rows_filter ('user_tab_columns',array ('table_name' => 'TAGENTE_MODULO', 'column_name' => '<>NOMBRE'), 'column_name');
 		$column_names = '';
 		foreach ($names as $column_name => $value) {
 				$column_names .= $value['column_name'] . ',';
@@ -182,7 +186,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$modules = get_db_all_rows_sql($sql);
+$modules = db_get_all_rows_sql($sql);
 
 print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
@@ -254,7 +258,7 @@ elseif ($status == 5) { //Not init
 $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";
 
 // Build final SQL sentences
-$count = get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)".$sql);
+$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)".$sql);
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT tagente_modulo.id_agente_modulo,
@@ -308,7 +312,7 @@ switch ($config["dbtype"]) {
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
-$result = get_db_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql);
 
 if ($count > $config["block_size"]) {
 	ui_pagination ($count, false, $offset);

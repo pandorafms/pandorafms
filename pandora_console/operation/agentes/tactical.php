@@ -25,7 +25,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR")) {
-	pandora_audit("ACL Violation", 
+	db_pandora_audit("ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
 	return;
@@ -35,7 +35,7 @@ $is_admin = check_acl ($config['id_user'], 0, "PM");
 
 $force_refresh = get_parameter ("force_refresh", "");
 if ($force_refresh == 1){
-	process_sql ("UPDATE tgroup_stat SET utimestamp = 0");
+	db_process_sql ("UPDATE tgroup_stat SET utimestamp = 0");
 }
 
 //This is an intermediary function to print out a set of cells
@@ -58,7 +58,7 @@ function print_cells_temp ($cells) {
 
 if ($config["realtimestats"] == 0){
 	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
-	$updated_time .= __('Last update'). " : ". ui_print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+	$updated_time .= __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	$updated_time .= "</a>"; 
 }
 else {

@@ -18,11 +18,13 @@ global $config;
 
 require_once ("include/functions_events.php"); //Event processing functions
 require_once ("include/functions_alerts.php"); //Alerts processing functions
+require_once ($config['homedir'].'/include/functions_agents.php'); //Agents functions
+require_once ($config['homedir'].'/include/functions_users.php'); //Users functions
 
 check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IR")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
 	return;

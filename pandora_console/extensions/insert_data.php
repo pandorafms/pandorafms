@@ -14,6 +14,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+global $config;
+
+include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . "/include/functions_modules.php");
+include_once($config['homedir'] . "/include/functions.php");
+
 function createXMLData($agent, $agentModule, $time, $data) {
 	global $config;
 	
@@ -48,7 +54,7 @@ function mainInsertData() {
 	ui_print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
 
 	if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
-		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -77,8 +83,8 @@ function mainInsertData() {
 			ui_print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
 		else {
-			$agent = get_db_row_filter('tagente', array('nombre' => $id_agent));
-			$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
+			$agent = db_get_row_filter('tagente', array('nombre' => $id_agent));
+			$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
 			
 			$date2 = str_replace('-', '/', $date);
 			$time2 = DATE("H:i", strtotime($time));

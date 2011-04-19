@@ -16,7 +16,7 @@
 global $config;
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
 	require ("general/noaccess.php");
 	return;

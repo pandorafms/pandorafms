@@ -46,7 +46,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$news = get_db_all_rows_sql ($sql);
+$news = db_get_all_rows_sql ($sql);
 if ($news !== false) {
 	echo '<table cellpadding="4" cellspacing="4" class="databox">';
 	foreach ($news as $article) {
@@ -184,7 +184,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$sessions = get_db_all_rows_sql ($sql);
+$sessions = db_get_all_rows_sql ($sql);
 
 if ($sessions === false)
 	$sessions = array (); 

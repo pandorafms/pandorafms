@@ -286,5 +286,58 @@ function unsafe_string ($string) {
 	return $string;
 }
 
+/**
+ * Get a translated string
+ *
+ * @param string String to translate. It can have special format characters like
+ * a printf
+ * @param mixed Optional parameters to be replaced in string. Example:
+ * <code>
+ * echo __('Hello!');
+ * echo __('Hello, %s!', $user);
+ * </code>
+ *
+ * @return string The translated string. If not defined, the same string will be returned
+ */
+function __ ($string /*, variable arguments */) {
+	global $l10n;
+
+	$extensions = get_extensions();
+	if (empty($extensions)) $extensions = array();
+
+	global $config;
+
+	if ($config['enterprise_installed']) {
+		if (isset($config['translate_string_extension_installed']) && $config['translate_string_extension_installed'] == 1) {
+			if (array_key_exists('translate_string.php', $extensions)) {
+				enterprise_include_once('extensions/translate_string/functions.php');
+
+				$tranlateString = get_defined_translation($string);
+
+				if ($tranlateString !== false) {
+					return $tranlateString;
+				}
+			}
+		}
+	}
+
+	if ($string == '') {
+		return $string;
+	}
+
+	if (func_num_args () == 1) {
+		if (is_null ($l10n))
+		return $string;
+		return $l10n->translate ($string);
+	}
+
+	$args = func_get_args ();
+	$string = array_shift ($args);
+
+	if (is_null ($l10n))
+	return vsprintf ($string, $args);
+
+	return vsprintf ($l10n->translate ($string), $args);
+}
 
 ?>

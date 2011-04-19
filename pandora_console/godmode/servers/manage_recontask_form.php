@@ -19,15 +19,17 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
 	require ("general/noaccess.php");
 	return;
 }
 
+require_once ($config['homedir'].'/include/functions_users.php');
+
 if (isset ($_GET["update"])) { // Edit mode
 	$id_rt = (int) get_parameter_get ("update");
-	$row = get_db_row ("trecon_task","id_rt",$id_rt);
+	$row = db_get_row ("trecon_task","id_rt",$id_rt);
 	$name = $row["name"];
 	$network = $row["subnet"];
 	$id_recon_server = $row["id_recon_server"];

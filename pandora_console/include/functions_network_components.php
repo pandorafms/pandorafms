@@ -22,6 +22,8 @@
  * Include modules functions
  */
 require_once ('include/functions_modules.php');
+require_once ('include/functions_agents.php');
+require_once ('include/functions_users.php');
 
 /**
  * Get a list of network components.
@@ -30,10 +32,10 @@ require_once ('include/functions_modules.php');
  * @param mixed Aditional filters to the components. It can be an indexed array
  * (keys would be the field name and value the expected value, and would be
  * joined with an AND operator). Examples:
-<code>
-$components = get_network_components ($id_module, array ('id_module_group', 10));
-$components = get_network_components ($id_module, 'id_module_group = 10'));
-</code>
+ * <code>
+ * $components = get_network_components ($id_module, array ('id_module_group', 10));
+ * $components = get_network_components ($id_module, 'id_module_group = 10'));
+ * </code>
  * @param mixed Fields to retrieve on each component.
  * 
  * @return array A list of network components matching. Empty array is returned
@@ -50,7 +52,7 @@ function get_network_components ($id_module, $filter = false, $fields = false) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$components = get_db_all_rows_filter ('tnetwork_component',
+			$components = db_get_all_rows_filter ('tnetwork_component',
 				$filter, $fields);
 			break;
 		case "oracle":	
@@ -67,7 +69,7 @@ function get_network_components ($id_module, $filter = false, $fields = false) {
 				}			
 			}
 			else {
-				$components = get_db_all_rows_filter ('tnetwork_component',
+				$components = db_get_all_rows_filter ('tnetwork_component',
 					$filter, $fields);
 			}
 			break;
@@ -89,7 +91,7 @@ function get_network_component_group_name ($id_network_component_group) {
 	if (empty ($id_network_component_group))
 		return false;
 	
-	return @get_db_value ('name', 'tnetwork_component_group', 'id_sg', $id_network_component_group);
+	return @db_get_value ('name', 'tnetwork_component_group', 'id_sg', $id_network_component_group);
 }
 
 /**
@@ -108,7 +110,7 @@ function get_network_component_group ($id_network_component_group, $filter = fal
 		$filter = array ();
 	$filter['id_sg'] = (int) $id_network_component_group;
 	
-	return get_db_row_filter ('tnetwork_component_group', $filter, $fields);
+	return db_get_row_filter ('tnetwork_component_group', $filter, $fields);
 }
 
 /**
@@ -130,7 +132,7 @@ function get_network_component_groups ($id_module_components = 0, $localComponen
 	static $level = 0;
 	static $id_parent = 0;
 	
-	$groups = get_db_all_rows_filter ('tnetwork_component_group',
+	$groups = db_get_all_rows_filter ('tnetwork_component_group',
 		array ('parent' => $id_parent),
 		array ('id_sg', 'name'));
 	if ($groups === false)
@@ -153,7 +155,7 @@ function get_network_component_groups ($id_module_components = 0, $localComponen
 				$retval = $retval + $childs;
 			}
 			else {
-				$count = get_db_value_filter ('COUNT(*)', 'tlocal_component',
+				$count = db_get_value_filter ('COUNT(*)', 'tlocal_component',
 					array ('id_network_component_group' => (int) $group['id_sg']));
 				
 				if ($count > 0)
@@ -170,7 +172,7 @@ function get_network_component_groups ($id_module_components = 0, $localComponen
 				/* If components id module is provided, only groups with components
 				that belongs to this id module are returned */
 				if ($id_module_components) {
-					$count = get_db_value_filter ('COUNT(*)', 'tnetwork_component',
+					$count = db_get_value_filter ('COUNT(*)', 'tnetwork_component',
 						array ('id_group' => (int) $group['id_sg'],
 							'id_modulo' => $id_module_components));
 					if ($count > 0)
@@ -199,7 +201,7 @@ function get_network_component ($id_network_component, $filter = false, $fields 
 		$filter = array ();
 	$filter['id_nc'] = (int) $id_network_component;
 	
-	return get_db_row_filter ('tnetwork_component', $filter, $fields);
+	return db_get_row_filter ('tnetwork_component', $filter, $fields);
 }
 
 /**
@@ -232,7 +234,7 @@ function create_network_component ($name, $type, $id_group, $values = false) {
 	$values['type'] = (int) $type;
 	$values['id_group'] = (int) $id_group;
 	
-	return @process_sql_insert ('tnetwork_component',
+	return @db_process_sql_insert ('tnetwork_component',
 		$values);
 }
 
@@ -253,7 +255,7 @@ function update_network_component ($id_network_component, $values = false) {
 	if (! is_array ($values))
 		return false;
 	
-	return (@process_sql_update ('tnetwork_component',
+	return (@db_process_sql_update ('tnetwork_component',
 		$values,
 		array ('id_nc' => (int) $id_network_component)) !== false);
 }
@@ -272,9 +274,9 @@ function delete_network_component ($id_network_component) {
 	$filter = array ();
 	$filter['id_nc'] = $id_network_component;
 	
-	@process_sql_delete ('tnetwork_profile_component', $filter);
+	@db_process_sql_delete ('tnetwork_profile_component', $filter);
 	
-	return (@process_sql_delete ('tnetwork_component', $filter) !== false);
+	return (@db_process_sql_delete ('tnetwork_component', $filter) !== false);
 }
 
 
@@ -337,7 +339,7 @@ function create_agent_module_from_network_component ($id_network_component, $id_
 function get_network_component_name ($id_network_component) {
 	if (empty ($id_network_component))
 		return false;
-	return @get_db_value ('name', 'tnetwork_component', 'id', $id_network_component);
+	return @db_get_value ('name', 'tnetwork_component', 'id', $id_network_component);
 }
 
 /**

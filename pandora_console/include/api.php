@@ -31,7 +31,7 @@ $password = get_parameter('pass', '');
 
 $other = parseOtherParameter($otherSerialize, $otherMode);
 
-$apiPassword = get_db_value_filter('value', 'tconfig', array('token' => 'api_password'));
+$apiPassword = db_get_value_filter('value', 'tconfig', array('token' => 'api_password'));
 
 $correctLogin = false;
 if (!empty($apiPassword)) {

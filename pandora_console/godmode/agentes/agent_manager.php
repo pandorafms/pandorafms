@@ -44,13 +44,15 @@ enterprise_include ('godmode/agentes/agent_manager.php');
 
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once ($config['homedir'].'/include/functions_users.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
 $new_agent = (bool) get_parameter ('new_agent');
 
 if (! isset ($id_agente) && ! $new_agent) {
-	pandora_audit("ACL Violation", "Trying to access agent manager witout an agent");
+	db_pandora_audit("ACL Violation", "Trying to access agent manager witout an agent");
 	require ("general/noaccess.php");
 	return;
 }
@@ -248,7 +250,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$fields = get_db_all_fields_in_table('tagent_custom_fields');
+$fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 if($fields === false) $fields = array();
 
@@ -256,7 +258,7 @@ foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
 		
-	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
 	if($custom_value === false) {
 		$custom_value = '';

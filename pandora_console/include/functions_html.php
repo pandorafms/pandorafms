@@ -19,6 +19,9 @@
  * @subpackage HTML
  */
 
+require_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'].'/include/functions_groups.php');
+
 /**
  * Prints the print_r with < pre > tags
  */
@@ -349,7 +352,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 	global $config;
 	
 	$fields = array ();
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 	if ($result === false)
 		$result = array ();
 	
@@ -1317,10 +1320,10 @@ function print_autocomplete_modules($name = 'module', $default = '', $id_agents 
 			$groups = get_user_groups($config['id_user'], "AW", false);
 			$groups = array_keys($groups);
 			
-			$agents = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
+			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
 		}
 		else {
-			$agents = get_db_all_rows_sql('SELECT id_agente FROM tagente');
+			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente');
 		}
 		
 		if ($agents === false) $agents = array();
@@ -1335,7 +1338,7 @@ function print_autocomplete_modules($name = 'module', $default = '', $id_agents 
 			$groups = get_user_groups($config['id_user'], "AW", false);
 			$groups = array_keys($groups);
 			
-			$agents = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
+			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
 			
 			if ($agents === false) $agents = array();
 		

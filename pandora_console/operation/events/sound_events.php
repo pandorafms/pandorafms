@@ -35,7 +35,7 @@ $config["id_user"] = $_SESSION["id_usuario"];
 
 
 if (! check_acl ($config['id_user'], 0, "AR")) {
-	pandora_audit("ACL Violation","Trying to access event viewer");
+	db_pandora_audit("ACL Violation","Trying to access event viewer");
 	require ("general/noaccess.php");
 	
 	return;

@@ -18,7 +18,7 @@ if (is_ajax ()) {
 	$get_reconscript_description = get_parameter('get_reconscript_description');
 	$id_reconscript = get_parameter('id_reconscript');
 	
-	$description = get_db_value_filter('description', 'trecon_script', array('id_recon_script' => $id_reconscript));
+	$description = db_get_value_filter('description', 'trecon_script', array('id_recon_script' => $id_reconscript));
 	
 	echo htmlentities (safe_output($description), ENT_QUOTES, "UTF-8", true);
 	return;
@@ -30,7 +30,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access recon script Management");
 	require ("general/noaccess.php");
 	return;
@@ -41,7 +41,7 @@ $create = get_parameter ("create", "");
 
 if ($view != ""){
 	$form_id = $view;
-	$reconscript = get_db_row ("trecon_script", "id_recon_script", $form_id);
+	$reconscript = db_get_row ("trecon_script", "id_recon_script", $form_id);
 	$form_name = $reconscript["name"];
 	$form_description = $reconscript["description"];
 	$form_script = $reconscript ["script"];
@@ -131,7 +131,7 @@ else {
 			'name' => $reconscript_name,
 			'description' => $reconscript_description,
 			'script' => $reconscript_script);
-		$result = process_sql_insert('trecon_script', $values);
+		$result = db_process_sql_insert('trecon_script', $values);
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem creating')."</h3>";
 			echo $sql_insert;
@@ -144,7 +144,7 @@ else {
 	if (isset($_GET["kill_reconscript"])){ // if delete alert
 		$reconscript_id = get_parameter ("kill_reconscript", 0);
 		
-		$result = process_sql_delete('trecon_script',
+		$result = db_process_sql_delete('trecon_script',
 			array('id_recon_script' => $reconscript_id));
 		
 		if (! $result){
@@ -154,14 +154,14 @@ else {
 			echo "<h3 class='suc'>".__('reconscript deleted successfully')."</h3>";
 		}
 		if ($reconscript_id != 0){
-			$result = process_sql_delete('trecon_task',
+			$result = db_process_sql_delete('trecon_task',
 				array('id_recon_script' => $reconscript_id));
 		}
 	}
 
 	// If not edition or insert, then list available reconscripts
 	
-	$rows = get_db_all_rows_in_table('trecon_script');
+	$rows = db_get_all_rows_in_table('trecon_script');
 	
 	if ($rows !== false) {
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';

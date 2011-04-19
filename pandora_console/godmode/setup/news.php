@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Link Management");
 	require ("general/noaccess.php");
 	exit;
@@ -38,7 +38,7 @@ if (isset ($_POST["create"])) { // If create
 		'text' => $text,
 		'author' => $config["id_user"],
 		'timestamp' => NOW());
-	$id_link = process_sql_insert('tnews', $values);
+	$id_link = db_process_sql_insert('tnews', $values);
 	
 	ui_print_result_message ($id_link,
 		__('Successfully created'),
@@ -51,7 +51,7 @@ if (isset ($_POST["update"])) { // if update
 	$text = get_parameter ("text");
 	
 	$values = array('subject' => $subject, 'text' => $text, 'timestamp' => 'NOW()');
-	$result = process_sql_update('tnews', $values, array('id_news' => $id_news));
+	$result = db_process_sql_update('tnews', $values, array('id_news' => $id_news));
 
 	ui_print_result_message ($result,
 		__('Successfully updated'),
@@ -61,7 +61,7 @@ if (isset ($_POST["update"])) { // if update
 if (isset ($_GET["borrar"])) { // if delete
 	$id_news = (int) get_parameter ("borrar", 0);
 	
-	$result = process_sql_delete ('tnews', array ('id_news' => $id_news));
+	$result = db_process_sql_delete ('tnews', array ('id_news' => $id_news));
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -74,7 +74,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 		$creation_mode = 0;
 		$id_news = (int) get_parameter ("id_news", 0);
 		
-		$result = get_db_row ("tnews", "id_news", $id_news);
+		$result = db_get_row ("tnews", "id_news", $id_news);
 		
 		if ($result !== false) {
 			$subject = $result["subject"];
@@ -134,7 +134,7 @@ else {
 	echo "<th>".__('Timestamp')."</th>";
 	echo "<th>".__('Delete')."</th>";
 	
-	$rows = get_db_all_rows_in_table("tnews", "timestamp");
+	$rows = db_get_all_rows_in_table("tnews", "timestamp");
 	if ($rows === false) {
 		$rows = array();
 	} 

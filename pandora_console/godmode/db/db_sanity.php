@@ -20,7 +20,7 @@ global $config;
 check_login();
 
 if (! check_acl ($config["id_user"], 0, "DM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Database cure section");
 	require ("general/noaccess.php");
 	return;
@@ -34,7 +34,7 @@ if ($sanity == 1) {
 	// Create tagente estado when missing
 	echo "<h2>".__('Checking tagente_estado table')."</h2>";
 	
-	$rows = get_db_all_rows_in_table('tagente_modulo');
+	$rows = db_get_all_rows_in_table('tagente_modulo');
 	if ($rows === false) {
 		$rows = array();
 	}
@@ -45,17 +45,17 @@ if ($sanity == 1) {
 		// check if exist in tagente_estado and create if not
 		$sql = "SELECT COUNT(*) FROM tagente_estado 
 			WHERE id_agente_modulo = $id_agente_modulo";
-		$total = get_db_sql ($sql);
+		$total = db_get_sql ($sql);
 		if ($total == 0) {
 			$sql = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUE ($id_agente_modulo, 0, '0000-00-00 00:00:00', 0, 100, $id_agente, '0000-00-00 00:00:00', 0, 0, 0)";
 			echo "Inserting module $id_agente_modulo in state table <br>";
-			process_sql ($sql);
+			db_process_sql ($sql);
 		}
 	}
 	
 	echo "<h3>".__('Checking database consistency')."</h2>";
 
-	$rows = get_db_all_rows_in_table('tagente_estado');
+	$rows = db_get_all_rows_in_table('tagente_estado');
 	if ($rows === false) {
 		$rows = array();
 	}
@@ -64,7 +64,7 @@ if ($sanity == 1) {
 		$id_agente_modulo = $row['id_agente_modulo'];
 		# check if exist in tagente_estado and create if not
 		
-		$rows = get_db_all_rows_sql("SELECT COUNT(*) AS count FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo");
+		$rows = db_get_all_rows_sql("SELECT COUNT(*) AS count FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo");
 		
 		if ($rows !== false) {
 			$row = reset($rows);
@@ -73,7 +73,7 @@ if ($sanity == 1) {
 			if ($count == 0) {
 				echo "Deleting non-existing module $id_agente_modulo in state table <br>";
 				
-				process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agente_modulo));
+				db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agente_modulo));
 			}
 		}
 	}
@@ -81,7 +81,7 @@ if ($sanity == 1) {
 elseif ($sanity == 2) {
 	echo "<h3>".__('Deleting non-init data')."</h2>";
 	
-	$rows = get_db_all_rows_filter("tagente_estado", array("utimestamp" => 0));
+	$rows = db_get_all_rows_filter("tagente_estado", array("utimestamp" => 0));
 	if ($rows === false) {
 		$rows = array();
 	}
@@ -89,11 +89,11 @@ elseif ($sanity == 2) {
 	foreach ($rows as $row) {
 		echo "Deleting non init module $id_agente_modulo <br>";
 		
-		process_sql_delete('tagente_estado', array('id_agente_modulo' => $row['id_agente_modulo']));
+		db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $row['id_agente_modulo']));
 	}
 	echo "Deleting bad module (id 0)<br>";
 	
-	process_sql_delete('tagente_modulo', array('id_modulo' => 0));
+	db_process_sql_delete('tagente_modulo', array('id_modulo' => 0));
 } 
 
 echo "<br>";

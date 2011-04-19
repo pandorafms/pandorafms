@@ -20,13 +20,14 @@ check_login ();
 
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Network Profile Management");
 	require ("general/noaccess.php");
 	exit;
 }
 
 require_once ('include/functions_network_components.php');
+require_once ("include/functions_modules.php");
 
 ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
 
@@ -41,7 +42,7 @@ if (isset ($_GET["delete_module"])) {
 		$where = array(
 			'id_np' => $id_np,
 			'id_nc' => $component);
-		$result = process_sql_delete('tnetwork_profile_component', $where);
+		$result = db_process_sql_delete('tnetwork_profile_component', $where);
 		
 		if ($result === false) {
 			$errors++;
@@ -57,7 +58,7 @@ elseif (isset ($_GET["add_module"])) {
 	$errors = 0;
 	foreach ($id_nc as $component) {
 		$values = array('id_np' => $id_np, 'id_nc' => $component);
-		$result = process_sql_insert('tnetwork_profile_component', $values);
+		$result = db_process_sql_insert('tnetwork_profile_component', $values);
 		
 		if ($result === false) {
 			$errors++;
@@ -79,7 +80,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 		$values = array(
 			'name' => $name,
 			'description' => $description);
-		$result = process_sql_update('tnetwork_profile', $values, array('id_np' => $id_np));
+		$result = db_process_sql_update('tnetwork_profile', $values, array('id_np' => $id_np));
 		
 		ui_print_result_message ($result !== false,
 			__('Successfully updated network profile'),
@@ -88,7 +89,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	else {
 		//Profile doesn't exist
 		$values = array('name' => $name, 'description' => $description);
-		$result = process_sql_insert('tnetwork_profile', $values);
+		$result = db_process_sql_insert('tnetwork_profile', $values);
 		
 		ui_print_result_message ($result,
 			__('Successfully added network profile'),
@@ -99,7 +100,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 }
 elseif ($id_np > 0) {
 	//Profile exists
-	$row = get_db_row ("tnetwork_profile", "id_np", $id_np);
+	$row = db_get_row ("tnetwork_profile", "id_np", $id_np);
 		
 	$description = $row["description"];
 	$name = $row["name"];
@@ -158,7 +159,7 @@ if ($id_np > 0) {
 			break;
 	}
 	
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 
 	if (empty ($result)) {
 		echo '<div style="width:550px;" class="error">' . __("No modules for this profile") . '</div>';
@@ -208,7 +209,7 @@ if ($id_np > 0) {
 	//The form to submit when adding a list of components
 	echo '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
 	echo '<div style="width:540px"><a name="filter"></a>';
-	$result = get_db_all_rows_in_table ("tnetwork_component_group","name");
+	$result = db_get_all_rows_in_table ("tnetwork_component_group","name");
 	
 	//2 arrays. 1 with the groups, 1 with the groups by parent
 	$groups = array ();
@@ -239,7 +240,7 @@ if ($id_np > 0) {
 		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component ORDER BY name"; 
 	}
 
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 	$components = array ();
 	if ($result === false)
 		$result = array ();

@@ -16,11 +16,12 @@
 // Load global vars
 global $config;
 require_once ('include/functions_alerts.php');
+require_once ('include/functions_users.php');
 
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -43,7 +44,7 @@ if ($a_template !== false){
 	if ($a_template['id_group'] == 0){
 		// then must have "PM" access privileges
 		if (! check_acl ($config['id_user'], 0, "PM")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;
@@ -63,7 +64,7 @@ if ($a_template !== false){
 			// Header
 			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
 		else{
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;
@@ -81,10 +82,10 @@ if ($duplicate_template) {
 	$id = alerts_duplicate_alert_template ($source_id);
 	
 	if ($id) {
-		pandora_audit("Template alert management", "Duplicate alert template " . $source_id . " clone to " . $id);
+		db_pandora_audit("Template alert management", "Duplicate alert template " . $source_id . " clone to " . $id);
 	}
 	else {
-		pandora_audit("Template alert management", "Fail try to duplicate alert template " . $source_id);
+		db_pandora_audit("Template alert management", "Fail try to duplicate alert template " . $source_id);
 	}
 	
 	ui_print_result_message ($id,
@@ -249,10 +250,10 @@ function update_template ($step) {
 	}
 	
 	if ($result) {
-		pandora_audit("Template alert management", "Update alert template " . $id, false, false, json_encode($values));
+		db_pandora_audit("Template alert management", "Update alert template " . $id, false, false, json_encode($values));
 	}
 	else {
-		pandora_audit("Template alert management", "Fail try to update alert template " . $id, false, false, json_encode($values));
+		db_pandora_audit("Template alert management", "Fail try to update alert template " . $id, false, false, json_encode($values));
 	}
 	
 	return $result;
@@ -317,10 +318,10 @@ if ($create_template) {
 	$result = alerts_create_alert_template ($name, $type, $values);
 		
 	if ($result) {
-		pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
+		db_pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
 	}
 	else {
-		pandora_audit("Command management", "Fail try to create alert command", false, false, json_encode($values));
+		db_pandora_audit("Command management", "Fail try to create alert command", false, false, json_encode($values));
 	}
 	
 	ui_print_result_message ($result,

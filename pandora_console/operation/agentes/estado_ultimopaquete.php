@@ -20,10 +20,12 @@ check_login();
 if (isset($_GET["id_agente"])){
 	$id_agente = $_GET["id_agente"];
 }
+
+include_once($config['homedir'] . "/include/functions_modules.php");
 	
 // View last data packet		
 // Get timestamp of last packet
-$agent = get_db_row ('tagente', 'id_agente', $id_agente,
+$agent = db_get_row ('tagente', 'id_agente', $id_agente,
 	array ('ultimo_contacto_remoto',
 		'ultimo_contacto',
 		'intervalo',
@@ -176,7 +178,7 @@ switch ($sortField) {
 		break;
 }
 
-$modules = get_db_all_rows_filter ('tagente_modulo, tagente_estado',
+$modules = db_get_all_rows_filter ('tagente_modulo, tagente_estado',
 	array ('tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo',
 		'disabled' => 0,
 		'tagente_estado.utimestamp != 0',
@@ -260,8 +262,8 @@ foreach ($modules as $module) {
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if($module["id_policy_module"] != 0) {
 			$linked = isModuleLinked($module['id_agente_modulo']);
-			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
-			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
+			$name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
 			$policyInfo = infoModulePolicy($module["id_policy_module"]);
 			
 			$adopt = false;

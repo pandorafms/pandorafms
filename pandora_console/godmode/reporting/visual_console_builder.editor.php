@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -80,7 +80,7 @@ $background = $visualConsole['background'];
 $widthBackground = $visualConsole['width'];
 $heightBackground = $visualConsole['height'];
 
-$layoutDatas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
+$layoutDatas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
 
@@ -263,8 +263,8 @@ echo "<img id='background_img' src='images/console/background/" . $background . 
 foreach ($layoutDatas as $layoutData) {
 			
 	// Pending delete and disable modules must be ignored
-	$delete_pending_module = get_db_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
-	$disabled_module = get_db_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 
 	if($delete_pending_module == 1 || $disabled_module == 1)
 		continue;

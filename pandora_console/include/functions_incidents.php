@@ -140,7 +140,7 @@ function process_incidents_touch ($id_incident) {
 		return false;
 	}
 	
-	return process_sql_update('tincidencia', array('id_lastupdate' => $config["id_user"]), array('id_incidencia' => $id_incident));
+	return db_process_sql_update('tincidencia', array('id_lastupdate' => $config["id_user"]), array('id_incidencia' => $id_incident));
 }
 
 /**
@@ -162,7 +162,7 @@ function process_incidents_chown ($id_incident, $owner = false) {
 	}
 	$id_incident = implode (",", $id_incident);
 	$sql = sprintf ("UPDATE tincidencia SET id_usuario = '%s' WHERE id_incidencia IN (%s)", $owner, $id_incident);
-	return process_sql ($sql);
+	return db_process_sql ($sql);
 }
 	
 
@@ -177,7 +177,7 @@ function get_incidents_author ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
-	return (string) get_db_value ('id_creator', 'tincidencia', 'id_incidencia', (int) $id_incident);
+	return (string) db_get_value ('id_creator', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
 /** 
@@ -191,7 +191,7 @@ function get_incidents_owner ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
-	return (string) get_db_value ('id_usuario', 'tincidencia', 'id_incidencia', (int) $id_incident);
+	return (string) db_get_value ('id_usuario', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
 /** 
@@ -205,7 +205,7 @@ function get_incidents_lastupdate ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
-	return (string) get_db_value ('id_lastupdate', 'tincidencia', 'id_incidencia', (int) $id_incident);
+	return (string) db_get_value ('id_lastupdate', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 	
 
@@ -220,7 +220,7 @@ function get_incidents_group ($id_incident) {
 	if ($id_incident < 1) {
 		return 0;
 	}
-	return (int) get_db_value ('id_grupo', 'tincidencia', 'id_incidencia', (int) $id_incident);
+	return (int) db_get_value ('id_grupo', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
 /** 
@@ -238,11 +238,11 @@ function delete_incidents ($id_incident) {
 	$errors = 0;
 	
 	//Start transaction
-	process_sql_begin ();
+	db_process_sql_begin ();
 		
 	foreach ($ids as $id_inc) {
 		//Delete incident
-		$ret = process_sql_delete('tincidencia', array('id_incidencia' => $id_inc));
+		$ret = db_process_sql_delete('tincidencia', array('id_incidencia' => $id_inc));
 		if ($ret === false) {
 			$errors++;
 		}
@@ -250,7 +250,7 @@ function delete_incidents ($id_incident) {
 		$notes = array_merge ($notes, array_keys (get_incidents_notes ($id_inc)));
 		$attachments = array_merge ($attachments, array_keys (get_incidents_attach ($id_inc)));
 		
-		pandora_audit("Incident deleted", $config['id_user']." deleted incident #".$id_inc);
+		db_pandora_audit("Incident deleted", $config['id_user']." deleted incident #".$id_inc);
 	}
 	
 	//Delete notes
@@ -263,10 +263,10 @@ function delete_incidents ($id_incident) {
 	
 	if ($errors > 0) {
 		//This will also rollback the audit log
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		return false;
 	}
-	process_sql_commit ();
+	db_process_sql_commit ();
 	
 	return true;
 }
@@ -285,23 +285,23 @@ function delete_incidents_note ($id_note, $transact = true) {
 	
 	//Start transaction
 	if ($transact == true){
-		process_sql_begin ();
-		process_sql_commit ();
+		db_process_sql_begin ();
+		db_process_sql_commit ();
 	}
 	
 	//Delete notes
 	foreach ($id_note as $id) {
-		$ret = process_sql_delete ('tnota', array ('id_nota' => $id));
+		$ret = db_process_sql_delete ('tnota', array ('id_nota' => $id));
 		if ($ret === false) {
 			$errors++;
 		}
 	}
 
 	if ($transact == true && $errors > 0) {
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		return false;
 	} elseif ($transact == true) {
-		process_sql_commit ();
+		db_process_sql_commit ();
 		return true;
 	} elseif ($errors > 0) {
 		return false;
@@ -326,14 +326,14 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 	
 	//Start transaction
 	if ($transact == true) {
-		process_sql_begin ();
+		db_process_sql_begin ();
 	}
 	
 	//Delete attachment
 	foreach ($id_attach as $id) {
-		$filename = get_db_value ("filename", "tattachment", "id_attachment", $id);
+		$filename = db_get_value ("filename", "tattachment", "id_attachment", $id);
 		
-		$ret = process_sql_delete('tattachment', array('id_attachment' => $id));
+		$ret = db_process_sql_delete('tattachment', array('id_attachment' => $id));
 		if ($ret === false) {
 			$errors++;
 		}
@@ -341,11 +341,11 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 	}
 		
 	if ($transact == true && $errors > 0) {
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		return false;
 	}
 	elseif ($transact == true) {
-		process_sql_commit ();
+		db_process_sql_commit ();
 		return true;
 	}
 	elseif ($errors > 0) {
@@ -364,7 +364,7 @@ function delete_incidents_attach ($id_attach, $transact = true) {
  * @return array An array of all the notes for that incident
  */
 function get_incidents_notes ($id_incident) {
-	$return = get_db_all_rows_field_filter ("tnota", "id_incident", (int) $id_incident);
+	$return = db_get_all_rows_field_filter ("tnota", "id_incident", (int) $id_incident);
 	
 	if ($return === false) {
 		$return = array ();
@@ -386,7 +386,7 @@ function get_incidents_notes ($id_incident) {
  * @return array An array of all the notes for that incident
  */
 function get_incidents_attach ($id_incident) {
-	$return = get_db_all_rows_field_filter ("tattachment", "id_incidencia", (int) $id_incident);
+	$return = db_get_all_rows_field_filter ("tattachment", "id_incidencia", (int) $id_incident);
 	
 	if ($return === false) {
 		$return = array ();
@@ -409,7 +409,7 @@ function get_incidents_attach ($id_incident) {
  * @return string User id of the given note.
  */
 function get_incidents_notes_author ($id_note) {
-	return (string) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
+	return (string) db_get_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
 
 function call_api($url, $postparameters = false) {

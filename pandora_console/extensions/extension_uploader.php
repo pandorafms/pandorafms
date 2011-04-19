@@ -43,7 +43,7 @@ function extension_uploader_extensions() {
 		}
 		
 		if ($result) {
-			pandora_audit ("Extension manager", "Upload extension " . $_FILES['extension']['name']);
+			db_pandora_audit ("Extension manager", "Upload extension " . $_FILES['extension']['name']);
 		}
 		
 		ui_print_result_message ($result, __('Success to upload extension'),

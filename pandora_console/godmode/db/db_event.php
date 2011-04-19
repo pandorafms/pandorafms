@@ -21,7 +21,7 @@ check_login ();
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Event database cleanup'), "images/god8.png", false, "", true);
 
 if (! check_acl ($config['id_user'], 0, "DM")) {
-	pandora_audit("ACL Violation", "Trying to access Database Management Event");
+	db_pandora_audit("ACL Violation", "Trying to access Database Management Event");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -32,7 +32,7 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 if (isset ($_POST["date_purge"])){
 	$from_date = (int) get_parameter_post ("date_purge");
 	
-	$deleted = process_sql_delete('tevento', array('utimestamp' => '< ' . $from_date));
+	$deleted = db_process_sql_delete('tevento', array('utimestamp' => '< ' . $from_date));
 	
 	if ($deleted !== false) {
 		echo '<h3 class="suc">'.__('Successfully deleted old events').'</h3>';
@@ -43,7 +43,7 @@ if (isset ($_POST["date_purge"])){
 }
 # End of get parameters block
 
-$row = get_db_row_sql ("SELECT COUNT(*) AS total, MIN(timestamp) AS first_date, MAX(timestamp) AS latest_date FROM tevento");
+$row = db_get_row_sql ("SELECT COUNT(*) AS total, MIN(timestamp) AS first_date, MAX(timestamp) AS latest_date FROM tevento");
 
 $table->data = array ();
 $table->cellpadding = 4;

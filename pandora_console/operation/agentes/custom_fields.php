@@ -30,14 +30,14 @@ if ($id_agente === -1) {
 }
 
 if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
-	pandora_audit("ACL Violation", 
+	db_pandora_audit("ACL Violation", 
 			  "Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
 	return;
 }
 
 
-$fields = get_db_all_fields_in_table('tagent_custom_fields');
+$fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 if($fields === false) {
 	$fields = array();
@@ -63,7 +63,7 @@ if($fields === false) {
 			$data[1] = print_image('images/delete.png', true);
 		}
 		
-		$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+		$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
 		if($custom_value === false || $custom_value == '') {
 			$custom_value = '<i>-'.__('empty').'-</i>';

@@ -1,3 +1,10 @@
+2011-04-19 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/modules/manage_network_components_form.php: Enabled port field
+	on Network Components - Remote SNMP network agent
+	* godmode/modules/manage_network_components_form_plugin.php: Added port
+	field on Network Components - Plugin Components
+
 2011-04-19 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/setup/setup_visuals.php: change the text field fonts to

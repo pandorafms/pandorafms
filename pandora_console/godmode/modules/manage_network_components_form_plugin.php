@@ -21,6 +21,13 @@ check_login ();
 echo "<h3>".__('Plugin component').'</h3>';
 
 $data = array ();
+$data[0] = __('Port');
+$data[1] = print_input_text ('tcp_port', $tcp_port, '', 5, 20, true);
+$table->colspan['plugin_0'][1] = 3;
+
+push_table_row ($data, 'plugin_0');
+
+$data = array ();
 $data[0] = __('Plugin');
 $data[1] = print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
 	'id_plugin', $id_plugin, '', __('None'), 0, true, false, false);

@@ -200,8 +200,8 @@ function type_change () {
 		document.component.tcp_send.disabled=true;
 		document.component.tcp_rcv.style.background="#ddd";
 		document.component.tcp_rcv.disabled=true;
-		document.component.tcp_port.style.background="#ddd";
-		document.component.tcp_port.disabled=true;
+		document.component.tcp_port.style.background="#fff";
+		document.component.tcp_port.disabled=false;
 
 		document.component.snmp_version.style.background="#fff";
 		document.component.snmp_version.disabled=false;

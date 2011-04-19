@@ -20,7 +20,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "DM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Database Management");
 	require ("general/noaccess.php");
 	return;
@@ -29,24 +29,24 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 // Get some general DB stats (not very heavy)
 // NOTE: this is not realtime monitoring stats, are more focused on DB sanity
 
-$stat_access = get_db_sql ("SELECT COUNT(*) FROM tagent_access WHERE id_agent != 0");
-$stat_data = get_db_sql ("SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo != 0");
-$stat_data_log4x = get_db_sql ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE id_agente_modulo != 0");
-$stat_data_string = get_db_sql ("SELECT COUNT(*) FROM tagente_datos_string WHERE id_agente_modulo != 0");
-$stat_modules = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE id_agente_modulo != 0");
-$stat_event = get_db_sql (" SELECT COUNT(*) FROM tevento");
-$stat_agente = get_db_sql (" SELECT COUNT(*) FROM tagente");
+$stat_access = db_get_sql ("SELECT COUNT(*) FROM tagent_access WHERE id_agent != 0");
+$stat_data = db_get_sql ("SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo != 0");
+$stat_data_log4x = db_get_sql ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE id_agente_modulo != 0");
+$stat_data_string = db_get_sql ("SELECT COUNT(*) FROM tagente_datos_string WHERE id_agente_modulo != 0");
+$stat_modules = db_get_sql ("SELECT COUNT(*) FROM tagente_estado WHERE id_agente_modulo != 0");
+$stat_event = db_get_sql (" SELECT COUNT(*) FROM tevento");
+$stat_agente = db_get_sql (" SELECT COUNT(*) FROM tagente");
 switch ($config["dbtype"]) {
 	case "mysql":
-		$stat_uknown = get_db_sql ("SELECT COUNT(*) FROM tagente WHERE ultimo_contacto < NOW() - (intervalo * 2)");
+		$stat_uknown = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE ultimo_contacto < NOW() - (intervalo * 2)");
 		break;
 	case "postgresql":
-		$stat_uknown = get_db_sql ("SELECT COUNT(*)
+		$stat_uknown = db_get_sql ("SELECT COUNT(*)
 			FROM tagente
 			WHERE ceil(date_part('epoch', ultimo_contacto)) < ceil(date_part('epoch', NOW())) - (intervalo * 2)");
 		break;
 	case "oracle":
-		$stat_uknown = get_db_sql ("SELECT COUNT(*)
+		$stat_uknown = db_get_sql ("SELECT COUNT(*)
 			FROM tagente
 			WHERE CAST(ultimo_contacto AS DATE) < SYSDATE - (intervalo * 2)");
 		break;
@@ -54,10 +54,10 @@ switch ($config["dbtype"]) {
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-		$stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0;");
+		$stat_noninit = db_get_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0;");
 		break;
 	case "oracle":
-		$stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0");
+		$stat_noninit = db_get_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestamp = 0");
 		break;
 }
 

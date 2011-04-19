@@ -17,7 +17,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive agent deletion section");
 	require ("general/noaccess.php");
 	return;
@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
+require_once ('include/functions_users.php');
 
 function process_manage_delete ($id_agents) {
 	if (empty ($id_agents)) {
@@ -38,7 +39,7 @@ function process_manage_delete ($id_agents) {
 	$copy_modules = (bool) get_parameter ('copy_modules');
 	$copy_alerts = (bool) get_parameter ('copy_alerts');
 	
-	process_sql_begin ();
+	db_process_sql_begin ();
 	
 	$error = false;
 	foreach ($id_agents as $id_agent) {
@@ -50,13 +51,13 @@ function process_manage_delete ($id_agents) {
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete agent').' '.get_agent_name ($id_agent).'</h4>';
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		
 		return false;
 	}
 	else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		process_sql_commit ();
+		db_process_sql_commit ();
 		
 		return true;
 	}
@@ -71,11 +72,11 @@ if ($delete) {
 	$result = process_manage_delete ($id_agents);
 	
 	if ($result) {
-		pandora_audit("Masive management", "Delete agent ", false, false,
+		db_pandora_audit("Masive management", "Delete agent ", false, false,
 			'Agent: ' . json_encode($id_agents));
 	}
 	else {
-		pandora_audit("Masive management", "Fail try to delete agent", false, false,
+		db_pandora_audit("Masive management", "Fail try to delete agent", false, false,
 			'Agent: ' . json_encode($id_agents));
 	}
 }

@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access agent massive deletion");
 	require ("general/noaccess.php");
 	return;
@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_modules.php');
+require_once ('include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_agents = (bool) get_parameter ('get_agents');
@@ -56,20 +57,20 @@ function process_manage_delete ($module_name, $id_agents) {
 		return false;
 	}
 	
-	process_sql_begin ();
+	db_process_sql_begin ();
 	$modules = get_agent_modules ($id_agents, 'id_agente_modulo',
 		array ('nombre' => $module_name), true);
 	$success = delete_agent_module ($modules);
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the modules, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete modules').'</h4>';
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		
 		return false;
 	}
 	else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		process_sql_commit ();
+		db_process_sql_commit ();
 		
 		return true;
 	}
@@ -84,11 +85,11 @@ $delete = (bool) get_parameter_post ('delete');
 if ($delete) {
 	$result = process_manage_delete ($module_name, $id_agents);
 	if ($result) {
-		pandora_audit("Massive management", "Delete module ", false, false,
+		db_pandora_audit("Massive management", "Delete module ", false, false,
 			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_name);
 	}
 	else {
-		pandora_audit("Massive management", "Fail try to delete module", false, false,
+		db_pandora_audit("Massive management", "Fail try to delete module", false, false,
 			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_name);
 	}
 }

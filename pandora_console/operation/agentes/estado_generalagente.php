@@ -21,12 +21,13 @@ global $config;
 require_once ("include/functions_agents.php");
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
 
 check_login ();
 
 $id_agente = get_parameter_get ("id_agente", -1);
 
-$agent = get_db_row ("tagente", "id_agente", $id_agente);
+$agent = db_get_row ("tagente", "id_agente", $id_agente);
 
 if ($agent === false) {
 	echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
@@ -34,7 +35,7 @@ if ($agent === false) {
 }
 
 if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
-	pandora_audit("ACL Violation", 
+	db_pandora_audit("ACL Violation", 
 			  "Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
 	return;
@@ -176,14 +177,14 @@ echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
 echo '<td class="datos f9" colspan="2">' . progress_bar2($progress, 200, 20) . '</td></tr>';
 
 // Custom fields
-$fields = get_db_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
+$fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
 if ($fields === false) {
 	$fields = array ();
 }
 if ($fields)
 foreach($fields as $field) {
 	echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
-	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	if($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>-'.__('empty').'-</i>';
 	}

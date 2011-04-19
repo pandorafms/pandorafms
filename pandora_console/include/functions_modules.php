@@ -19,6 +19,9 @@
  * @subpackage Modules
  */
 
+include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . '/include/functions_users.php');
+
 /**
  * Copy a module defined in an agent to other agent.
  * 
@@ -57,11 +60,11 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 			switch ($config['dbtype']) {
 				case "mysql":
 				case "postgresql":
-					process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
+					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
 				array('id_agente_modulo' => $id_module, 'disabled' => true));
 					break;
 				case "oracle":
-					process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
+					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
 				array('id_agente_modulo' => $id_module, 'disabled' => true), 'AND', false);
 					break;
 			}					
@@ -104,10 +107,10 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":		
-				$id_new_module = process_sql_insert ('tagente_modulo', $new_module);
+				$id_new_module = db_process_sql_insert ('tagente_modulo', $new_module);
 				break;
 			case "oracle":
-				$id_new_module = process_sql_insert ('tagente_modulo', $new_module, false);
+				$id_new_module = db_process_sql_insert ('tagente_modulo', $new_module, false);
 				break;				
 		}
 		if ($id_new_module === false) {
@@ -123,10 +126,10 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":	
-			$result = process_sql_insert ('tagente_estado', $values);
+			$result = db_process_sql_insert ('tagente_estado', $values);
 			break;
 		case "oracle":
-			$result = process_sql_insert ('tagente_estado', $values, false);
+			$result = db_process_sql_insert ('tagente_estado', $values, false);
 			break;
 	}
 	if ($result === false)
@@ -150,14 +153,14 @@ function delete_agent_module ($id_agent_module) {
 	
 	enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_agent_module), get_agentmodule_name($id_agent_module)));
 	
-	process_sql_delete ('talert_template_modules', $where);
-	process_sql_delete ('tgraph_source', $where);
-	process_sql_delete ('treport_content', $where);
-	process_sql_delete ('tevento', array ('id_agentmodule' => $id_agent_module));
+	db_process_sql_delete ('talert_template_modules', $where);
+	db_process_sql_delete ('tgraph_source', $where);
+	db_process_sql_delete ('treport_content', $where);
+	db_process_sql_delete ('tevento', array ('id_agentmodule' => $id_agent_module));
 	$where = array ('id_agente_modulo' => $id_agent_module);
-	process_sql_delete ('tlayout_data', $where);
-	process_sql_delete ('tagente_estado', $where);
-	process_sql_update ('tagente_modulo',
+	db_process_sql_delete ('tlayout_data', $where);
+	db_process_sql_delete ('tagente_estado', $where);
+	db_process_sql_update ('tagente_modulo',
 		array ('nombre' => 'delete_pending', 'delete_pending' => 1, 'disabled' => 1),
 		$where);
 	
@@ -182,11 +185,11 @@ function update_agent_module ($id, $values, $onlyNoDeletePending = false) {
 		
 		
 	if ($onlyNoDeletePending) {
-		return (@process_sql_update ('tagente_modulo', $values,
+		return (@db_process_sql_update ('tagente_modulo', $values,
 			array ('id_agente_modulo' => (int) $id, 'delete_pending' => 0)) !== false);
 	}
 	else {	
-		return (@process_sql_update ('tagente_modulo', $values,
+		return (@db_process_sql_update ('tagente_modulo', $values,
 			array ('id_agente_modulo' => (int) $id)) !== false);
 	}
 }
@@ -216,7 +219,7 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 	$values['nombre'] = $name;
 	$values['id_agente'] = (int) $id_agent;
 
-	$id_agent_module = process_sql_insert ('tagente_modulo', $values);
+	$id_agent_module = db_process_sql_insert ('tagente_modulo', $values);
 	
 	if ($id_agent_module === false)
 		return false;
@@ -224,7 +227,7 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 	switch ($config["dbtype"]) {
 		case "mysql":	
 		case "postgresql":	
-			$result = process_sql_insert ('tagente_estado',
+			$result = db_process_sql_insert ('tagente_estado',
 					array ('id_agente_modulo' => $id_agent_module,
 						'datos' => 0,
 						'timestamp' => '0000-00-00 00:00:00',
@@ -236,7 +239,7 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 					));
 			break;
 		case "oracle":
-			$result = process_sql_insert ('tagente_estado',
+			$result = db_process_sql_insert ('tagente_estado',
 					array ('id_agente_modulo' => $id_agent_module,
 						'datos' => 0,
 						'timestamp' => 'to_date(0000-00-00 00:00:00, \'YYYY-MM-DD HH24:MI:SS\')',
@@ -250,7 +253,7 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 	}
 	
 	if ($result === false) {
-		process_sql_delete ('tagente_modulo',
+		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
 		return false;
 	}
@@ -278,7 +281,7 @@ function get_agents_with_module_name ($module_name, $id_group, $filter = false, 
 	$filter['tagente_modulo.nombre'] = $module_name;
 	$filter['tagente.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
 	
-	return get_db_all_rows_filter ('tagente, tagente_modulo',
+	return db_get_all_rows_filter ('tagente, tagente_modulo',
 		$filter, $fields);
 }
 
@@ -353,4 +356,681 @@ function format_delete_log4x($id)
 	}
 	return $txt;
 }
+
+/**
+ * Get a single module information.
+ *
+ * @param int agentmodule id to get.
+ *
+ * @return array An array with module information
+ */
+function get_agentmodule ($id_agentmodule) {
+	return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+}
+
+/**
+ * Get a id of module from his name and the agent id
+ *
+ * @param string agentmodule name to get.
+ * @param int agent id.
+ *
+ * @return int the agentmodule id
+ */
+function get_agentmodule_id ($agentmodule_name, $agent_id) {
+	return db_get_row_filter ('tagente_modulo', array('nombre' => $agentmodule_name, 'id_agente' => $agent_id, 'delete_pending' => 0));
+}
+
+/**
+ * Get a if a module is init.
+ *
+ * @param int agentmodule id to get.
+ *
+ * @return bool true if is init and false if is not init
+ */
+function get_agentmodule_is_init ($id_agentmodule) {
+	$result = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $id_agentmodule), 'utimestamp');
+	return (bool)$result['utimestamp'];
+}
+
+/**
+ * Get the number of all agent modules in the database
+ *
+ * @param mixed Array of integers with agent(s) id or a single agent id. Default
+ * value will select all.
+ *
+ * @return int The number of agent modules
+ */
+function get_agent_modules_count ($id_agent = 0) {
+	//Make sure we're all int's and filter out bad stuff
+	$id_agent = safe_int ($id_agent, 1);
+
+	if (empty ($id_agent)) {
+		//If the array proved empty or the agent is less than 1 (eg. -1)
+		$filter = '';
+	}
+	else {
+		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
+	}
+
+	return (int) db_get_sql ("SELECT COUNT(*) FROM tagente_modulo" . $filter);
+}
+
+/**
+ * Get the name of a module type
+ *
+ * @param int $id_type Type id
+ *
+ * @return string The name of the given type.
+ */
+function get_module_type_name ($id_type) {
+	return (string) db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
+/**
+ * Get the icon of a module type
+ *
+ * @param int $id_type Type id
+ *
+ * @return string The name of the icon.
+ */
+function get_module_type_icon ($id_type) {
+	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
+/**
+ * Get agent id of an agent module.
+ *
+ * @param int $id_agentmodule Agent module id.
+ *
+ * @return int The id of the agent of given agent module
+ */
+function get_agentmodule_agent ($id_agentmodule) {
+	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+}
+
+/**
+ * Get agent name of an agent module.
+ *
+ * @param int $id_agente_modulo Agent module id.
+ *
+ * @return string The name of the given agent module.
+ */
+function get_agentmodule_agent_name ($id_agentmodule) {
+	// Since this is a helper function we don't need to do casting
+	return (string) get_agent_name (get_agentmodule_agent ($id_agentmodule));
+}
+
+/**
+ * Get the module name of an agent module.
+ *
+ * @param int $id_agente_modulo Agent module id.
+ *
+ * @return string Name of the given agent module.
+ */
+function get_agentmodule_name ($id_agente_modulo) {
+	return (string) db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+}
+
+/**
+ * Get the module type of an agent module.
+ *
+ * @param int $id_agentmodule Agent module id.
+ *
+ * @return string Module type of the given agent module.
+ */
+function get_agentmodule_type ($id_agentmodule) {
+	return (int) db_get_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+}
+
+/**
+ * Get all the times a monitor went down during a period.
+ *
+ * @param int $id_agent_module Agent module of the monitor.
+ * @param int $period Period timed to check from date
+ * @param int $date Date to check (now by default)
+ *
+ * @return int The number of times a monitor went down.
+ */
+function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
+	global $config;
+	
+	if ($date == 0) {
+		$date = get_system_time ();
+	}
+	$datelimit = $date - $period;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
+				`event_type` = 'monitor_down' 
+				AND `id_agentmodule` = %d 
+				AND `utimestamp` > %d 
+				AND `utimestamp` <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT COUNT(\"id_agentmodule\") FROM \"tevento\" WHERE
+				\"event_type\" = 'monitor_down' 
+				AND \"id_agentmodule\" = %d 
+				AND \"utimestamp\" > %d 
+				AND \"utimestamp\" <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+		case "oracle":
+			$sql = sprintf ("SELECT COUNT(id_agentmodule) FROM tevento WHERE
+				event_type = 'monitor_down' 
+				AND id_agentmodule = %d 
+				AND utimestamp > %d 
+				AND utimestamp <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+	}
+
+	return db_get_sql ($sql);
+}
+
+/**
+ * Get the last time a monitor went down during a period.
+ *
+ * @param int $id_agent_module Agent module of the monitor.
+ * @param int $period Period timed to check from date
+ * @param int $date Date to check (now by default)
+ *
+ * @return int The last time a monitor went down.
+ */
+function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
+	global $config;	
+
+	if ($date == 0) {
+		$date = get_system_time ();
+	}
+	$datelimit = $date - $period;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
+				event_type = 'monitor_down' 
+				AND `id_agentmodule` = %d 
+				AND `utimestamp` > %d 
+				AND `utimestamp` <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT MAX(\"timestamp\") FROM \"tevento\" WHERE
+				event_type = 'monitor_down' 
+				AND \"id_agentmodule\" = %d 
+				AND \"utimestamp\" > %d 
+				AND \"utimestamp\" <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+		case "oracle":
+			$sql = sprintf ("SELECT MAX(timestamp) FROM tevento WHERE
+				event_type = 'monitor_down' 
+				AND id_agentmodule = %d 
+				AND utimestamp > %d 
+				AND utimestamp <= %d",
+				$id_agent_module, $datelimit, $date);
+			break;
+	}
+
+	return db_get_sql ($sql);
+}
+
+/**
+ * Get all the monitors defined in an group.
+ *
+ * @param int $id_group Group id to get all the monitors.
+ *
+ * @return array An array with all the monitors defined in the group (tagente_modulo).
+ */
+function get_monitors_in_group ($id_group) {
+	global $config;
+	
+	if ($id_group <= 0) {
+		//We select all groups the user has access to if it's 0 or -1
+		global $config;
+		$id_group = array_keys (get_user_groups ($config['id_user']));
+	}
+
+	if (is_array ($id_group)) {
+		$id_group = implode (",",$id_group);
+	}
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT `tagente_modulo`.* FROM `tagente_modulo`, `ttipo_modulo`, `tagente` WHERE
+					`id_tipo_modulo` = `id_tipo` 
+					AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
+					AND `ttipo_modulo`.`nombre` LIKE '%%_proc' 
+					AND `tagente`.`id_grupo` IN (%s) ORDER BY `tagente`.`nombre`", $id_group);
+			break;
+		case "postgresql":
+		case "oracle":
+			$sql = sprintf ("SELECT tagente_modulo.* FROM tagente_modulo, ttipo_modulo, tagente WHERE
+					id_tipo_modulo = id_tipo 
+					AND tagente.id_agente = tagente_modulo.id_agente 
+					AND ttipo_modulo.nombre LIKE '%%_proc' 
+					AND tagente.id_grupo IN (%s) ORDER BY tagente.nombre", $id_group);
+			break;
+	}
+				
+	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the monitors defined in an agent.
+ *
+ * @param int $id_agent Agent id to get all the monitors.
+ *
+ * @return array An array with all the monitors defined (tagente_modulo).
+ */
+function get_monitors_in_agent ($id_agent) {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT `tagente_modulo`.*
+				FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
+				WHERE `id_tipo_modulo` = `id_tipo`
+					AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente`
+					AND `ttipo_modulo`.`nombre` LIKE '%%_proc'
+					AND `tagente`.`id_agente` = %d", $id_agent);
+			break;
+		case "postgresql":
+		case "oracle":
+			$sql = sprintf ("SELECT tagente_modulo.*
+				FROM tagente_modulo, ttipo_modulo, tagente
+				WHERE id_tipo_modulo = id_tipo
+					AND tagente.id_agente = tagente_modulo.id_agente
+					AND ttipo_modulo.nombre LIKE '%%_proc'
+					AND tagente.id_agente = %d", $id_agent);
+			break;
+	}	
+		
+	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the monitors down during a period of time.
+ *
+ * @param array $monitors An array with all the monitors to check. Each
+ * element of the array must be a dictionary.
+ * @param int $period Period of time to check the monitors.
+ * @param int $date Beginning date to check the monitors.
+ *
+ * @return array An array with all the monitors that went down in that
+ * period of time.
+ */
+function get_monitors_down ($monitors, $period = 0, $date = 0) {
+	$monitors_down = array ();
+	if (empty ($monitors))
+	return $monitors_down;
+
+	foreach ($monitors as $monitor) {
+		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
+		if ($down > 0)
+		array_push ($monitors_down, $monitor);
+	}
+	return $monitors_down;
+}
+
+/**
+ * Get the module type name (type = generic_data, remote_snmp, ...)
+ *
+ * @param int $id_type Type id
+ *
+ * @return string Name of the given type.
+ */
+function get_moduletype_name ($id_type) {
+	return (string) db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
+/**
+ * Get the module type description
+ *
+ * @param int $id_type Type id
+ *
+ * @return string Description of the given type.
+ */
+function get_moduletype_description ($id_type) {
+	return (string) db_get_value ('descripcion', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
+/**
+ * Returns an array with all module types (default) or if "remote" or "agent"
+ * is passed it will return only remote (ICMP, SNMP, TCP...) module types
+ * otherwise the full list + the column you specify
+ *
+ * @param string Specifies which type to return (will return an array with id's)
+ * @param string Which rows to select (defaults to nombre)
+ *
+ * @return array Either the full table or if a type is specified, an array with id's
+ */
+function get_moduletypes ($type = "all", $rows = "nombre") {
+	$return = array ();
+	$rows = (array) $rows; //Cast as array
+	$row_cnt = count ($rows);
+	if ($type == "remote") {
+		return array_merge (range (6,18), (array) 100);
+	}
+	elseif ($type == "agent") {
+		return array_merge (range (1,4), range (19,24));
+	}
+
+	$sql = sprintf ("SELECT id_tipo, %s FROM ttipo_modulo", implode (",", $rows));
+	$result = db_get_all_rows_sql ($sql);
+	if ($result === false) {
+		return $return;
+	}
+
+	foreach ($result as $type) {
+		if ($row_cnt > 1) {
+			$return[$type["id_tipo"]] = $type;
+		}
+		else {
+			$return[$type["id_tipo"]] = $type[reset ($rows)];
+		}
+	}
+	return $return;
+}
+
+/**
+ * Get the interval value of an agent module.
+ *
+ * If the module interval is not set, the agent interval is returned
+ *
+ * @param int Id agent module to get the interval value.
+ *
+ * @return int Module interval or agent interval if no module interval
+ */
+function get_module_interval ($id_agent_module) {
+	$interval = (int) db_get_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
+	if ($interval > 0)
+	return $interval;
+
+	$id_agent = give_agent_id_from_module_id ($id_agent_module);
+	return (int) get_agent_interval ($id_agent);
+}
+
+/**
+ * Get module type icon.
+ *
+ * TODO: Create ui_print_moduletype_icon and print the full tag including hover etc.
+ * @deprecated Use ui_print_moduletype_icon instead
+ *
+ * @param int Module type id
+ *
+ * @return string Icon filename of the given group
+ */
+function show_icon_type ($id_type) {
+	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo', $id_type);
+}
+
+/**
+ * Get a module category name
+ *
+ * @param int Id category
+ *
+ * @return Name of the given category
+ */
+function give_modulecategory_name ($id_category) {
+	switch ($id_category) {
+		case 0:
+			return __('Software agent data');
+			break;
+		case 1:
+			return __('Software agent monitor');
+			break;
+		case 2:
+			return __('Network agent data');
+			break;
+		case 3:
+			return __('Network agent monitor');
+			break;
+	}
+
+	return __('Unknown');
+}
+
+/**
+ * Get agent id from an agent module.
+ *
+ * @param int Id of the agent module.
+ *
+ * @return int The agent id of the given module.
+ */
+function give_agent_id_from_module_id ($id_agent_module) {
+	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+}
+
+/**
+ * Get the status of an agent module.
+ *
+ * @param int Id agent module to check.
+ * @param bool $without_alerts The flag to check only the module, by default false.
+ *
+ * @return int Module status. Value 4 means that some alerts assigned to the
+ * module were fired.
+ */
+function get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
+	$current_timestamp = get_system_time ();
+
+	if (!$without_alerts) {
+		$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
+		if ($times_fired > 0) {
+			return 4; // Alert fired
+		}
+	}
+
+	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+
+	return $status_row['estado'];
+}
+
+/**
+ * Get the last status of an agent module.
+ *
+ * @param int Id agent module to check.
+ *
+ * @return int Module last status.
+ */
+function get_agentmodule_last_status($id_agentmodule = 0) {
+	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+
+	return $status_row['last_status'];
+}
+
+/**
+ * Get the worst status of all modules of the agents of a group.
+ *
+ * @param int Id module to check.
+ *
+ * @return int Worst status of a module for all of its agents.
+ * The value -1 is returned in case the agent has exceed its interval. <-- DISABLED
+ */
+function get_module_status ($id_module = 0) {
+	$time = get_system_time ();
+
+	$status = db_get_sql ("SELECT estado
+			FROM tagente_estado, tagente_modulo 
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.disabled = 0 
+				AND tagente_modulo.delete_pending = 0 
+				AND tagente_modulo.id_agente_modulo = ".$id_module);
+
+	// TODO: Check any alert for that agent who has recept alerts fired
+
+	return $status;
+}
+
+/**
+ * Get the current value of an agent module.
+ *
+ * @param int Agent module id.
+ *
+ * @return int a numerically formatted value
+ */
+function get_agent_module_last_value ($id_agentmodule) {
+	return db_get_value ('datos', 'tagente_estado',
+		'id_agente_modulo', $id_agentmodule);
+}
+
+/**
+ * Get the previous data to the timestamp provided.
+ *
+ * It's useful to know the first value of a module in an interval,
+ * since it will be the last value in the table which has a timestamp
+ * before the beginning of the interval. All this calculation is due
+ * to the data compression algorithm.
+ *
+ * @param int Agent module id
+ * @param int The timestamp to look backwards from and get the data.
+ * @param int 1 if the module has a string type.
+ *
+ * @return mixed The row of tagente_datos of the last period. False if there were no data.
+ */
+function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
+	if (empty ($utimestamp))
+		$utimestamp = time ();
+
+	if ($string == 1) {
+		$table = 'tagente_datos_string';
+	}
+	else {
+		$table = 'tagente_datos';
+	}
+
+	// 172800 = 60×60×24*2 Search up to 2 days before utimestamp
+	$sql = sprintf ('SELECT *
+		FROM ' . $table . '
+		WHERE id_agente_modulo = %d
+			AND utimestamp <= %d 
+			AND utimestamp >= %d 
+		ORDER BY utimestamp DESC',
+		$id_agent_module, $utimestamp, $utimestamp - 172800);
+
+	return db_get_row_sql ($sql, true);
+}
+
+/**
+ * Get the next data to the timestamp provided.
+ *
+ * @param int Agent module id
+ * @param int The timestamp to look backwards from and get the data.
+ * @param int 1 if the module has a string type.
+ *
+ * @return mixed The row of tagente_datos of the last period. False if there were no data.
+ */
+function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
+	if (empty ($utimestamp))
+		$utimestamp = time ();
+
+	if ($string == 1) {
+		$table = 'tagente_datos_string';
+	}
+	else {
+		$table = 'tagente_datos';
+	}
+
+	$interval = get_module_interval ($id_agent_module);
+	$sql = sprintf ('SELECT *
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d 
+			AND utimestamp <= %d 
+			AND utimestamp >= %d
+		ORDER BY utimestamp ASC',
+		$id_agent_module, $utimestamp + $interval, $utimestamp);
+
+	return db_get_row_sql ($sql, true);
+}
+
+/**
+ * Get all the values of an agent module in a period of time.
+ *
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ *
+ * @return array The module value and the timestamp
+ */
+function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
+	if ($date < 1) {
+		$date = get_system_time ();
+	}
+
+	$datelimit = $date - $period;
+
+	$sql = sprintf ("SELECT datos AS data, utimestamp
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d
+			AND utimestamp > %d AND utimestamp <= %d
+		ORDER BY utimestamp ASC",
+	$id_agent_module, $datelimit, $date);
+
+	$values = db_get_all_rows_sql ($sql, true, false);
+
+	if ($values === false) {
+		return array ();
+	}
+
+	$module_name = get_agentmodule_name ($id_agent_module);
+	$agent_id = get_agentmodule_agent ($id_agent_module);
+	$agent_name = get_agentmodule_agent_name ($id_agent_module);
+
+	foreach ($values as $key => $data) {
+		$values[$key]["module_name"] = $module_name;
+		$values[$key]["agent_id"] = $agent_id;
+		$values[$key]["agent_name"] = $agent_name;
+	}
+
+	return $values;
+}
+
+/**
+ * This function gets the modulegroup for a given group
+ *
+ * @param int The group id
+ *
+ * @return int The modulegroup id
+ */
+function get_agentmodule_modulegroup ($id_module) {
+	return (int) db_get_value ('id_module_group', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
+}
+
+/**
+ * Gets all module groups. (General, Networking, System).
+ *
+ * Module groups are merely for sorting frontend
+ *
+ * @return array All module groups
+ */
+function get_modulegroups () {
+	$result = db_get_all_fields_in_table ("tmodule_group");
+	$return = array ();
+
+	if (empty ($result)) {
+		return $return;
+	}
+
+	foreach ($result as $modulegroup) {
+		$return[$modulegroup["id_mg"]] = $modulegroup["name"];
+	}
+
+	return $return;
+}
+
+/**
+ * Gets a modulegroup name based on the id
+ *
+ * @param int The id of the modulegroup
+ *
+ * @return string The modulegroup name
+ */
+function get_modulegroup_name ($modulegroup_id) {
+	if($modulegroup_id == 0)
+		return false;
+	else
+		return (string) db_get_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
+}
+
 ?>

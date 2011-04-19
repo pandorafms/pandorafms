@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Setup Management");
+	db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 	return;
 }
@@ -36,7 +36,7 @@ $table->align[3] = 'center';
 $table->size[0] = '20px';
 $table->size[3] = '20px';
 
-$osList = get_db_all_rows_in_table('tconfig_os');
+$osList = db_get_all_rows_in_table('tconfig_os');
 
 $table->data = array();
 foreach ($osList as $os) {

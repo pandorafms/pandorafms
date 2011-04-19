@@ -19,10 +19,14 @@ global $config;
 ob_start();
 
 require_once ("include/functions_reporting.php");
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . '/include/functions_users.php');
+require_once($config['homedir'] . '/include/functions_modules.php');
+
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access agent main list view");
 	require ("general/noaccess.php");
 	return;
@@ -53,7 +57,7 @@ if (is_ajax ()) {
 			WHERE id_group IN (%s) 
 			ORDER BY sort_order DESC", $id_template, $filter_groups);
 			
-		$rows = get_db_all_rows_sql($sql);
+		$rows = db_get_all_rows_sql($sql);
 		
 		
 		if ($rows !== false)
@@ -68,7 +72,7 @@ if (is_ajax ()) {
 		$id_module = (int) get_parameter ('id_agent_module');
 		
 		if (! check_acl ($config['id_user'], get_agentmodule_group ($id_module), "AR")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 				"Trying to access agent main list view");
 			echo json_encode (false);
 			return;
@@ -82,7 +86,7 @@ if (is_ajax ()) {
 ob_end_clean();
 
 $first = true;
-while ($row = get_db_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")) {
+while ($row = db_get_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")) {
 	$first = false;
 }
 

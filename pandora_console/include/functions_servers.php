@@ -35,7 +35,7 @@ function get_server ($id_server, $filter = false, $fields = false) {
 		$filter = array ();
 	$filter['id_server'] = $id_server;
 	
-	return @get_db_row_filter ('tserver', $filter, $fields);
+	return @db_get_row_filter ('tserver', $filter, $fields);
 }
 
 /**
@@ -44,7 +44,7 @@ function get_server ($id_server, $filter = false, $fields = false) {
  * @return All the servers available.
  */
 function get_server_names () {
-	$all_servers = @get_db_all_rows_filter ('tserver', false, array ('DISTINCT(name) as name'));
+	$all_servers = @db_get_all_rows_filter ('tserver', false, array ('DISTINCT(name) as name'));
 	if ($all_servers === false)
 		return array ();
 	
@@ -70,16 +70,16 @@ function get_server_performance () {
 	// Get total modules running
 
 	if ($config["realtimestats"] == 1){
-		$data["total_remote_modules"] =  get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
+		$data["total_remote_modules"] =  db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
 			FROM tagente_modulo, tagente_estado
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND tagente_modulo.id_modulo != 1 AND disabled = 0 AND utimestamp > 0");
 	}
 	else {
-		$data["total_remote_modules"] = get_db_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type != 0");
+		$data["total_remote_modules"] = db_get_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type != 0");
 	}
 
-	$data["avg_interval_remote_modules"] = get_db_sql ("SELECT AVG(module_interval)
+	$data["avg_interval_remote_modules"] = db_get_sql ("SELECT AVG(module_interval)
 		FROM tagente_modulo, tagente_estado
 		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 			AND disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0");
@@ -91,16 +91,16 @@ function get_server_performance () {
 
 	// For local modules (ignoring local modules with custom invervals for simplicity).
 	if ($config["realtimestats"] == 1){
-		$data["total_local_modules"] =  get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
+		$data["total_local_modules"] =  db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
 			FROM tagente_modulo, tagente_estado
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND id_modulo = 1 AND disabled = 0 AND utimestamp > 0");
 	}
 	else {
-		$data["total_local_modules"] = get_db_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type = 0");
+		$data["total_local_modules"] = db_get_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type = 0");
 	}
 
-	$data["avg_interval_local_modules"] = get_db_sql ("SELECT AVG(tagente.intervalo) FROM tagente WHERE  disabled = 0 AND intervalo > 0");
+	$data["avg_interval_local_modules"] = db_get_sql ("SELECT AVG(tagente.intervalo) FROM tagente WHERE  disabled = 0 AND intervalo > 0");
 
 	if ($data["avg_interval_local_modules"] > 0){
 		$data["local_modules_rate"] =  $data["total_local_modules"] / $data["avg_interval_local_modules"]; 
@@ -137,7 +137,7 @@ function get_server_info ($id_server = -1) {
 	}
 	
 	$sql = "SELECT * FROM tserver".$select_id . " ORDER BY server_type";
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 	$time = get_system_time ();
 	
 	if (empty ($result)) {
@@ -209,10 +209,10 @@ function get_server_info ($id_server = -1) {
 			// Take data from database if not realtime stats
 			// ---------------------------------------------------------------
 
-			$server["lag"] = get_db_sql ("SELECT lag_time FROM tserver WHERE id_server = ".$server["id_server"]);
-			$server["modulelag"] = get_db_sql ("SELECT lag_modules FROM tserver WHERE id_server = ".$server["id_server"]);
-			$server["modules"] = get_db_sql ("SELECT my_modules FROM tserver WHERE id_server = ".$server["id_server"]);
-			$server["modules_total"] = get_db_sql ("SELECT total_modules_running FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["lag"] = db_get_sql ("SELECT lag_time FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["modulelag"] = db_get_sql ("SELECT lag_modules FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["modules"] = db_get_sql ("SELECT my_modules FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["modules_total"] = db_get_sql ("SELECT total_modules_running FROM tserver WHERE id_server = ".$server["id_server"]);
 
 		}
 		else {
@@ -232,15 +232,15 @@ function get_server_info ($id_server = -1) {
 				// ---------------------------------------------------------------
 				// Data, Plugin, WMI, Network and Others
 
-				$server["modules"] = get_db_sql ("SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = ".$server["id_server"]);
+				$server["modules"] = db_get_sql ("SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = ".$server["id_server"]);
 
-				$server["modules_total"] = get_db_sql ("SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ".$server["server_type"]);
+				$server["modules_total"] = db_get_sql ("SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ".$server["server_type"]);
 				
 				// Remote servers LAG Calculation (server_type != 0)
 				if ($server["server_type"] != 0) {
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
 								WHERE utimestamp > 0
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -250,7 +250,7 @@ function get_server_info ($id_server = -1) {
 								AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
 							break;
 						case "postgresql":
-							$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
 								WHERE utimestamp > 0
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -260,7 +260,7 @@ function get_server_info ($id_server = -1) {
 								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > current_interval");
 							break;
 						case "oracle":
-							$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
 								WHERE utimestamp > 0
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -275,7 +275,7 @@ function get_server_info ($id_server = -1) {
 					// Local/Dataserver server LAG calculation:
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
 								WHERE utimestamp > 0
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_tipo_modulo < 5
@@ -286,7 +286,7 @@ function get_server_info ($id_server = -1) {
 								AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
 							break;
 						case "postgresql":
-							$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
 								WHERE utimestamp > 0
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_tipo_modulo < 5 
@@ -297,7 +297,7 @@ function get_server_info ($id_server = -1) {
 								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > (current_interval * 1.1)");
 							break;
 						case "oracle":
-							$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
 								WHERE utimestamp > 0
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_tipo_modulo < 5 
@@ -330,29 +330,29 @@ function get_server_info ($id_server = -1) {
 				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
 			
 				//Total jobs running on this recon server
-				$server["modules"] = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
+				$server["modules"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
 		
 				//Total recon jobs (all servers)
-				$server["modules_total"] = get_db_sql ("SELECT COUNT(status) FROM trecon_task");
+				$server["modules_total"] = db_get_sql ("SELECT COUNT(status) FROM trecon_task");
 		
 				//Lag (take average active time of all active tasks)
 				$server["module_lag"] = 0;
 
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$server["lag"] = get_db_sql ("SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["lag"] = db_get_sql ("SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 
-						$server["module_lag"] = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						break;
 					case "postgresql":
-						$server["lag"] = get_db_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp from trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["lag"] = db_get_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp from trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 
-						$server["module_lag"] = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						break;
 					case "oracle":
-						$server["lag"] = get_db_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["lag"] = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 
-						$server["module_lag"] = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						break;
 				}
 			} // recon
@@ -374,6 +374,95 @@ function get_server_info ($id_server = -1) {
 	} // Main foreach
 
 	return $return;
+}
+
+/**
+ * Get the server name.
+ *
+ * @param int Server id.
+ *
+ * @return string Name of the given server
+ */
+function get_server_name ($id_server) {
+	return (string) db_get_value ('name', 'tserver', 'id_server', (int) $id_server);
+}
+
+/**
+ * Return a string containing image tag for a given target id (server)
+ * TODO: Make this print_servertype_icon and move to functions_ui.php. Make XHTML compatible. Make string translatable
+ *
+ * @deprecated Use print_servertype_icon instead
+ *
+ * @param int Server type id
+ *
+ * @return string Fully formatted IMG HTML tag with icon
+ */
+function show_server_type ($id) {
+	global $config;
+
+	switch ($id) {
+		case 1:
+			return print_image("images/database.png", true, array("title" => "Pandora FMS Data server"));
+			break;
+		case 2:
+			return print_image("images/network.png", true, array("title" => "Pandora FMS Network server"));
+			break;
+		case 4:
+			return print_image("images/plugin.png", true, array("title" => "Pandora FMS Plugin server"));
+			break;
+		case 5:
+			return print_image("images/chart_bar.png", true, array("title" => "Pandora FMS Prediction server"));
+			break;
+		case 6:
+			return print_image("images/wmi.png", true, array("title" => "Pandora FMS WMI server"));
+			break;
+		case 7:
+			return print_image("images/server_web.png", true, array("title" => "Pandora FMS WEB server"));
+			break;
+		default:
+			return "--";
+			break;
+	}
+}
+
+/**
+ * Get the numbers of servers up.
+ *
+ * This check assumes that server_keepalive should be at least 15 minutes.
+ *
+ * @return int The number of servers alive.
+ */
+function check_server_status () {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
+			break;
+		case "postgresql":
+			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL '15 MINUTE'";
+			break;
+
+		case "oracle":
+		$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > systimestamp - INTERVAL '15' MINUTE";
+		break;
+	}
+	$status = (int) db_get_sql ($sql); //Cast as int will assure a number value
+	// This function should just ack of server down, not set it down.
+	return $status;
+}
+
+/**
+ * @deprecated use get_server_info instead
+ * Get statistical information for a given server
+ *
+ * @param int Server id to get status.
+ *
+ * @return array Server info array
+ */
+function server_status ($id_server) {
+	$serverinfo = get_server_info ($id_server);
+	return $serverinfo[$id_server];
 }
 
 ?>

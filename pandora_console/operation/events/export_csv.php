@@ -20,6 +20,8 @@ require_once ("../../include/auth/mysql.php");
 require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
 require_once ("../../include/functions_events.php");
+require_once ("../../include/functions_agents.php");
+require_once ('../../include/functions_groups.php');
 
 session_write_close ();
 
@@ -99,10 +101,10 @@ echo chr (13);
 $fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
 	'event_type', 'criticity', 'timestamp');
 
-$sql = get_db_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
+$sql = db_get_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
 
 $new = true;
-while ($event = get_db_all_row_by_steps_sql($new, $result, $sql)) {
+while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
 	if (!check_acl($config["id_user"], $event["id_grupo"], "AR") ||
 	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))

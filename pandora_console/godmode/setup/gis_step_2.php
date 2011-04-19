@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Visual Setup Management");
+	db_pandora_audit("ACL Violation", "Trying to access Visual Setup Management");
 	require ("general/noaccess.php");
 	return;
 }
@@ -58,7 +58,7 @@ switch ($action) {
 		ui_print_page_header (__('Edit map connection'), "", false, "gis_setup_map_connection", true);
 		
 		$idConnectionMap = get_parameter('id_connection_map');
-		$mapConnection = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnectionMap);
+		$mapConnection = db_get_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnectionMap);
 		
 		$mapConnection_name = $mapConnection['conection_name'];
 		$mapConnection_group = $mapConnection['group_id'];

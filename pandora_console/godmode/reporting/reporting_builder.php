@@ -17,7 +17,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -128,7 +128,7 @@ switch ($action) {
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;
-				$report = get_db_row_filter('treport', array('id_report' => $idReport));
+				$report = db_get_row_filter('treport', array('id_report' => $idReport));
 				
 				$reportName = $report['name'];
 				$idGroupReport = $report['id_group'];
@@ -145,10 +145,10 @@ switch ($action) {
 				$description = get_parameter('description');
 				
 				if ($action == 'update') {
-					$resultOperationDB = (bool)process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
+					$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
 				}
 				else if ($action == 'save') {
-					$idOrResult = process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
+					$idOrResult = db_process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
 					if ($idOrResult === false) {
 						$resultOperationDB = false;
 					}
@@ -161,7 +161,7 @@ switch ($action) {
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;
-				$report = get_db_row_filter('treport', array('id_report' => $idReport));
+				$report = db_get_row_filter('treport', array('id_report' => $idReport));
 				
 				$reportName = $report['name'];
 				$idGroupReport = $report['id_group'];
@@ -220,7 +220,7 @@ switch ($action) {
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = safe_input(json_encode($style));
 						
-						$resultOperationDB = process_sql_update('treport_content', $values, array('id_rc' => $idItem));
+						$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						break;
 					case 'save':
 						$values = array();
@@ -276,7 +276,7 @@ switch ($action) {
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = safe_input(json_encode($style));
 						
-						$result = process_sql_insert('treport_content', $values);
+						$result = db_process_sql_insert('treport_content', $values);
 						
 						if ($result === false) {
 								$resultOperationDB = false;
@@ -286,12 +286,12 @@ switch ($action) {
 							
 							switch ($config["dbtype"]) {
 								case "mysql":
-									$max = get_db_all_rows_sql('SELECT max(`order`) AS max 
+									$max = db_get_all_rows_sql('SELECT max(`order`) AS max 
 										FROM treport_content WHERE id_report = ' . $idReport . ';');
 									break;
 								case "postgresql":
 								case "oracle":
-									$max = get_db_all_rows_sql('SELECT max("order") AS max 
+									$max = db_get_all_rows_sql('SELECT max("order") AS max 
 										FROM treport_content WHERE id_report = ' . $idReport . ';');
 									break;
 							}
@@ -303,11 +303,11 @@ switch ($action) {
 							}
 							switch ($config["dbtype"]) {
 								case "mysql":
-									process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
+									db_process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
 									break;
 								case "postgresql":
 								case "oracle":
-									process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
+									db_process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
 									break;
 							}
 							
@@ -326,7 +326,7 @@ switch ($action) {
 	case 'filter':
 	case 'edit':
 		$resultOperationDB = null;
-		$report = get_db_row_filter('treport', array('id_report' => $idReport));
+		$report = db_get_row_filter('treport', array('id_report' => $idReport));
 		
 		$reportName = $report['name'];
 		$idGroupReport = $report['id_group'];
@@ -335,18 +335,18 @@ switch ($action) {
 	case 'delete':
 		$idItem = get_parameter('id_item');
 		
-		$report = get_db_row_filter('treport', array('id_report' => $idReport));
+		$report = db_get_row_filter('treport', array('id_report' => $idReport));
 		$reportName = $report['name'];
 		
-		$resultOperationDB = process_sql_delete('treport_content_sla_combined', array('id_report_content' => $idItem));
+		$resultOperationDB = db_process_sql_delete('treport_content_sla_combined', array('id_report_content' => $idItem));
 		
 		if ($resultOperationDB !== false) {
-			$resultOperationDB = process_sql_delete('treport_content', array('id_rc' => $idItem));
+			$resultOperationDB = db_process_sql_delete('treport_content', array('id_rc' => $idItem));
 		}
 		break;
 	case 'order':
 		$resultOperationDB = null;
-		$report = get_db_row_filter('treport', array('id_report' => $idReport));
+		$report = db_get_row_filter('treport', array('id_report' => $idReport));
 		
 		$reportName = $report['name'];
 		$idGroupReport = $report['id_group'];
@@ -401,12 +401,12 @@ switch ($action) {
 						break;
 				}
 				
-				$ids = get_db_all_rows_sql($sql);
+				$ids = db_get_all_rows_sql($sql);
 				
 				$count = 1;
 				$resultOperationDB = true;
 				foreach($ids as $id) {
-					$result = process_sql_update('treport_content', array('order' => $count), array('id_rc' => $id['id_rc']));
+					$result = db_process_sql_update('treport_content', array('order' => $count), array('id_rc' => $id['id_rc']));
 					
 					if ($result === false) {
 						$resultOperationDB = false;
@@ -419,14 +419,14 @@ switch ($action) {
 			default:
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$oldOrder = get_db_value_sql('SELECT `order` FROM treport_content WHERE id_rc = ' . $idItem);
+						$oldOrder = db_get_value_sql('SELECT `order` FROM treport_content WHERE id_rc = ' . $idItem);
 						break;
 					case "postgresql":
 					case "oracle":
-						$oldOrder = get_db_value_sql('SELECT "order" FROM treport_content WHERE id_rc = ' . $idItem);
+						$oldOrder = db_get_value_sql('SELECT "order" FROM treport_content WHERE id_rc = ' . $idItem);
 						break;
 				}
-				//get_db_value_filter('order', 'treport_content', array('id_rc' => $idItem));
+				//db_get_value_filter('order', 'treport_content', array('id_rc' => $idItem));
 		
 				switch ($dir) {
 					case 'up':
@@ -437,43 +437,43 @@ switch ($action) {
 						break;	
 				}
 				
-				process_sql_begin();
+				db_process_sql_begin();
 				
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$resultOperationDB = process_sql_update('treport_content',
+						$resultOperationDB = db_process_sql_update('treport_content',
 							array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_report' => $idReport));
 						break;
 					case "postgresql":
-						$resultOperationDB = process_sql_update('treport_content',
+						$resultOperationDB = db_process_sql_update('treport_content',
 							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport));
 						break;
 					case "oracle":
-						$resultOperationDB = process_sql_update('treport_content',
+						$resultOperationDB = db_process_sql_update('treport_content',
 							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
 						break;
 				}
 				if ($resultOperationDB !== false) {
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$resultOperationDB = process_sql_update('treport_content', array('`order`' => $newOrder), array('id_rc' => $idItem));
+							$resultOperationDB = db_process_sql_update('treport_content', array('`order`' => $newOrder), array('id_rc' => $idItem));
 							break;
 						case "postgresql":
-							$resultOperationDB = process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem));
+							$resultOperationDB = db_process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem));
 							break;
 						case "oracle":
-							$resultOperationDB = process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem), 'AND', false);
+							$resultOperationDB = db_process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem), 'AND', false);
 							break;
 					}
 					if ($resultOperationDB !== false) {
-						process_sql_commit();
+						db_process_sql_commit();
 					}
 					else {
-						process_sql_rollback();
+						db_process_sql_rollback();
 					}
 				}
 				else {
-					process_sql_rollback();
+					db_process_sql_rollback();
 				}
 				break;
 		}

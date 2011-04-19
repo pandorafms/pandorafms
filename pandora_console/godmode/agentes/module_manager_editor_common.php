@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+include_once("include/functions_modules.php");
+
 function prepend_table_simple ($row, $id = false) {
 	global $table_simple;
 	

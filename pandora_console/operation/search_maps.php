@@ -24,7 +24,7 @@ if ($searchMaps) {
 			(SELECT COUNT(*) FROM tlayout_data AS t2 WHERE t2.id_layout = t1.id) AS count 
 		FROM tlayout AS t1 WHERE t1.name LIKE '%" . $stringSearchSQL . "%'
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-	$maps = process_sql($sql);
+	$maps = db_process_sql($sql);
 	
 	if($maps !== false) {
 		$maps_id = array();
@@ -46,7 +46,7 @@ if ($searchMaps) {
 		}
 		
 		$sql = "SELECT COUNT(id) AS count FROM tlayout WHERE name LIKE '%" . $stringSearchSQL . "%'".$maps_condition;
-		$totalMaps = get_db_row_sql($sql);
+		$totalMaps = db_get_row_sql($sql);
 		$totalMaps = $totalMaps['count'];
 	}
 }

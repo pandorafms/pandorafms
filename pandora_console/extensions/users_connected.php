@@ -48,7 +48,7 @@ function users_extension_main_god ($god = true) {
 		break;
 	}
 	
-	$rows = get_db_all_rows_sql ($sql);
+	$rows = db_get_all_rows_sql ($sql);
 	if (empty ($rows)) {
 		$rows = array ();
 		echo "<div class='nf'>".__('No other users connected')."</div>";

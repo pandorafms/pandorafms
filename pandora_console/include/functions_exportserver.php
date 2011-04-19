@@ -31,10 +31,10 @@ function get_exportservers ($active = 1) {
 	$return = array ();
 		
 	if ($active == 1) {
-		$servers = get_db_all_rows_sql ($query.' AND status = 1');
+		$servers = db_get_all_rows_sql ($query.' AND status = 1');
 	}
 	else {
-		$servers = get_db_all_rows_sql ($query);
+		$servers = db_get_all_rows_sql ($query);
 	}
 	
 	if (empty ($servers)) {
@@ -66,4 +66,16 @@ function get_exportservers_info ($active = 1, $row = "name") {
 	
 	return $return;
 }
+
+/**
+ * Get the name of an exporting server
+ *
+ * @param int $id_server Server id
+ *
+ * @return string The name of given server.
+ */
+function dame_nombre_servidorexportacion ($id_server) {
+	return (string) db_get_value ('name', 'tserver_export', 'id', (int) $id_server);
+}
+
 ?>

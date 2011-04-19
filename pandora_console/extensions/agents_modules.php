@@ -14,6 +14,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . "/include/functions_modules.php");
+include_once($config['homedir'] . '/include/functions_users.php');
+
 function mainAgentsModules() {
 	global $config;
 	
@@ -24,7 +28,7 @@ function mainAgentsModules() {
 	check_login ();
 	// ACL Check
 	if (! check_acl ($config['id_user'], 0, "AR")) {
-		pandora_audit("ACL Violation", 
+		db_pandora_audit("ACL Violation", 
 		"Trying to access Agent view (Grouped)");
 		require ("general/noaccess.php");
 		exit;
@@ -38,10 +42,10 @@ function mainAgentsModules() {
 		if (check_acl ($config['id_user'], $group, "AW")) {
 			$where = array("id_agente" => "ANY(SELECT id_agente FROM tagente WHERE id_grupo = " . $group);
 			
-			process_sql_update('tagente_modulo', array("flag" => 1), $where);
+			db_process_sql_update('tagente_modulo', array("flag" => 1), $where);
 		}
 		else {
-			pandora_audit("ACL Violation", "Trying to set flag for groups");
+			db_pandora_audit("ACL Violation", "Trying to set flag for groups");
 			require ("general/noaccess.php");
 			exit;
 		}
@@ -49,7 +53,7 @@ function mainAgentsModules() {
 
 
 	if ($config["realtimestats"] == 0) {
-		$updated_info = __('Last update'). " : ". ui_print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+		$updated_info = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	}
 	else {
 		$updated_info = __("Updated at realtime");

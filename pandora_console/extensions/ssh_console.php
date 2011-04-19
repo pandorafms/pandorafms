@@ -21,7 +21,7 @@ function main_ssh_console () {
 
 	$id_agente = get_parameter ("id_agente");
 
-	$ip = get_db_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
+	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
 
 ?>
 <div>

@@ -29,12 +29,12 @@
  * the WHERE keyword). Example:
  * <code>
  * Both are similars:
- * get_db_all_rows_filter ('table', array ('disabled', 0));
- * get_db_all_rows_filter ('table', 'disabled = 0');
+ * db_get_all_rows_filter ('table', array ('disabled', 0));
+ * db_get_all_rows_filter ('table', 'disabled = 0');
  * 
  * Both are similars:
- * get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
- * get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+ * db_get_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+ * db_get_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
  * </code>
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
@@ -43,7 +43,7 @@
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function get_events ($filter = false, $fields = false) {
-	return get_db_all_rows_filter ('tevento', $filter, $fields);
+	return db_get_all_rows_filter ('tevento', $filter, $fields);
 }
 
 function get_event ($id, $fields = false) {
@@ -56,7 +56,7 @@ function get_event ($id, $fields = false) {
 			$fields[] = 'id_grupo';
 	}
 	
-	$event = get_db_row ('tevento', 'id_evento', $id, $fields);
+	$event = db_get_row ('tevento', 'id_evento', $id, $fields);
 	if (! check_acl ($config['id_user'], $event['id_grupo'], 'IR'))
 		return false;
 	return $event;
@@ -78,7 +78,7 @@ function get_similar_events_ids ($id) {
 	if ($event === false)
 		return $ids;
 	
-	$events = get_db_all_rows_filter ('tevento',
+	$events = db_get_all_rows_filter ('tevento',
 		array ('evento' => $event['evento'],
 			'id_agentmodule' => $event['id_agentmodule']),
 		array ('id_evento'));
@@ -112,18 +112,18 @@ function delete_event ($id_event, $similar = true) {
 		}
 	}
 	
-	process_sql_begin ();
+	db_process_sql_begin ();
 	$errors = 0;
 	
 	foreach ($id_event as $event) {
-		$ret = process_sql_delete('tevento', array('id_evento' => $event));
+		$ret = db_process_sql_delete('tevento', array('id_evento' => $event));
 		
 		if (check_acl ($config["id_user"], get_event_group ($event), "IM") == 0) {
 			//Check ACL
-			pandora_audit("ACL Violation", "Attempted deleting event #".$event);
+			db_pandora_audit("ACL Violation", "Attempted deleting event #".$event);
 		}
 		elseif ($ret !== false) {
-			pandora_audit("Event deleted", "Deleted event #".$event);
+			db_pandora_audit("Event deleted", "Deleted event #".$event);
 			//ACL didn't fail nor did return
 			continue;
 
@@ -134,10 +134,10 @@ function delete_event ($id_event, $similar = true) {
 	}
 	
 	if ($errors > 1) {
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		return false;
 	} else {
-		process_sql_commit ();
+		db_process_sql_commit ();
 		return true;
 	}
 }
@@ -163,7 +163,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 		}
 	}
 	
-	process_sql_begin ();
+	db_process_sql_begin ();
 	$errors = 0;
 	
 	switch($new_status) {
@@ -198,11 +198,11 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 			'id_usuario' => $config['id_user'],
 			'user_comment' => $comment);
 		
-		$ret = process_sql_update('tevento', $values, array('id_evento' => $event), 'AND', false);
+		$ret = db_process_sql_update('tevento', $values, array('id_evento' => $event), 'AND', false);
 		
 		if (check_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
 			//Check ACL
-			pandora_audit("ACL Violation", "Attempted updating event #".$event);
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
 		}
 		elseif ($ret !== false) {
 			//ACL didn't fail nor did return
@@ -214,14 +214,14 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	}
 	
 	if ($errors > 1) {
-		process_sql_rollback ();
+		db_process_sql_rollback ();
 		return false;
 	}
 	else {
 		foreach ($id_event as $event) {
-			pandora_audit("Event validated", "Validated event #".$event);
+			db_pandora_audit("Event validated", "Validated event #".$event);
 		}
-		process_sql_commit ();
+		db_process_sql_commit ();
 		return true;
 	}
 }
@@ -234,7 +234,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
  * @return int Group id of the given event.
  */
 function get_event_group ($id_event) {
-	return (int) get_db_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
+	return (int) db_get_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
 }
 
 /** 
@@ -245,7 +245,7 @@ function get_event_group ($id_event) {
  * @return string Description of the given event.
  */
 function get_event_description ($id_event) {
-	return (string) get_db_value ('evento', 'tevento', 'id_evento', (int) $id_event);
+	return (string) db_get_value ('evento', 'tevento', 'id_evento', (int) $id_event);
 }
 
 /** 
@@ -293,7 +293,7 @@ function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "",
 			break;
 	}
 	
-	return (int) process_sql ($sql, "insert_id");
+	return (int) db_process_sql ($sql, "insert_id");
 }
 
 /** 
@@ -323,7 +323,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			}		
 			break;
 	}
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
 		echo '<div class="nf">'.__('No events').'</div>';
@@ -579,4 +579,97 @@ function print_event_type_description ($type, $return = false) {
 		return $output;
 	echo $output;
 }
+
+/**
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param mixed $id_group Group id to get events for.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function get_group_events ($id_group, $period, $date) {
+	global $config;
+
+	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
+
+	if (empty ($id_group)) {
+		//An empty array means the user doesn't have access
+		return false;
+	}
+
+	$datelimit = $date - $period;
+
+	$sql = sprintf ('SELECT * FROM tevento
+		WHERE utimestamp > %d AND utimestamp <= %d
+		AND id_grupo IN (%s)
+		ORDER BY utimestamp ASC',
+		$datelimit, $date, implode (",", $id_group));
+
+	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the events happened in an Agent during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param int $id_agent Agent id to get events.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function get_agent_events ($id_agent, $period, $date = 0) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
+	$datelimit = $date - $period;
+
+	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
+			max(timestamp) AS time2
+		FROM tevento
+		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
+		GROUP BY id_agentmodule, evento
+		ORDER BY time2 DESC', $id_agent, $datelimit, $date);
+
+	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the events happened in an Agent during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param int $id_agent_module Module id to get events.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function get_module_events ($id_agent_module, $period, $date = 0) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
+	$datelimit = $date - $period;
+
+	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
+		FROM tevento
+		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
+		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent_module, $datelimit, $date);
+
+	return db_get_all_rows_sql ($sql);
+}
+
 ?>

@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive alert deletion");
 	require ("general/noaccess.php");
 	return;
@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
+include_once($config['homedir'] . "/include/functions_profile.php");
 
 if (is_ajax ()) {
 	$get_users = (bool) get_parameter ('get_users');
@@ -34,7 +35,7 @@ if (is_ajax ()) {
 		$id_group = get_parameter ('id_group');
 		$id_profile = get_parameter ('id_profile');
 
-		$profile_data = get_db_all_rows_filter ("tusuario_perfil", array("id_perfil" => $id_profile[0], "id_grupo" => $id_group[0]));
+		$profile_data = db_get_all_rows_filter ("tusuario_perfil", array("id_perfil" => $id_profile[0], "id_grupo" => $id_group[0]));
 		
 		echo json_encode (index_array ($profile_data, 'id_up', 'id_usuario'));
 		return;
@@ -56,9 +57,9 @@ if ($delete_profiles) {
 		foreach($profiles_id as $profile) {
 			foreach($groups_id as $group) {
 				foreach($users_id as $id_up) {
-					$user = (string) get_db_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
+					$user = (string) db_get_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
 
-					pandora_audit("User management",
+					db_pandora_audit("User management",
 						"Deleted profile for user ".safe_input($user));
 
 					$result = delete_user_profile ($user, $id_up);
@@ -68,11 +69,11 @@ if ($delete_profiles) {
 	}
 	
 	if ($result) {
-		pandora_audit("Masive management", "Delete profile ", false, false,
+		db_pandora_audit("Masive management", "Delete profile ", false, false,
 			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
 	}
 	else {
-		pandora_audit("Masive management", "Fail try to delete profile", false, false,
+		db_pandora_audit("Masive management", "Fail try to delete profile", false, false,
 			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
 	}
 	

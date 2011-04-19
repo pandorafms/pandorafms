@@ -28,14 +28,14 @@ $id_graph = (int) get_parameter ('id');
 // Delete module SQL code
 if ($delete_graph) {
 	if (check_acl ($config['id_user'], 0, "AW")) {
-		$res = process_sql_delete('tgraph_source', array('id_graph' => $id_graph));
+		$res = db_process_sql_delete('tgraph_source', array('id_graph' => $id_graph));
 		
 		if ($res)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		
-		$res = process_sql_delete('tgraph', array('id_graph' => $id_graph));
+		$res = db_process_sql_delete('tgraph', array('id_graph' => $id_graph));
 		
 		if ($res)
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
@@ -44,7 +44,7 @@ if ($delete_graph) {
 		echo $result;
 	}
 	else {
-		pandora_audit("ACL Violation","Trying to delete a graph from access graph builder");
+		db_pandora_audit("ACL Violation","Trying to delete a graph from access graph builder");
 		include ("general/noaccess.php");
 		exit;
 	}
@@ -52,10 +52,10 @@ if ($delete_graph) {
 
 if ($view_graph) {
 	$sql="SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
-	$sources = get_db_all_rows_sql($sql);
+	$sources = db_get_all_rows_sql($sql);
 
 	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
-	$graph = get_db_row_sql($sql);
+	$graph = db_get_row_sql($sql);
 
 	$id_user = $graph["id_user"];
 	$private = $graph["private"];
@@ -98,7 +98,7 @@ if ($view_graph) {
 	
 	$name = $graph["name"];
 	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
-		pandora_audit("ACL Violation","Trying to access to a custom graph not allowed");
+		db_pandora_audit("ACL Violation","Trying to access to a custom graph not allowed");
 		include ("general/noaccess.php");
 		exit;
 	}

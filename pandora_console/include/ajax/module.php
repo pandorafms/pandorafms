@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+include_once($config['homedir'] . "/include/functions_agents.php");
+
 $search_modules = get_parameter('search_modules');
 
 if ($search_modules) {

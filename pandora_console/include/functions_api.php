@@ -18,6 +18,8 @@
 
 require_once('functions_agents.php');
 require_once('functions_modules.php');
+include_once($config['homedir'] . "/include/functions_profile.php");
+include_once($config['homedir'] . "/include/functions.php");
 
 /**
  * Parse the "other" parameter.
@@ -165,7 +167,7 @@ function get_agent_module_name_last_value($agentName, $moduleName, $other = ';',
 			break;
 	}
 	
-	$idModuleAgent = get_db_value_sql($sql);
+	$idModuleAgent = db_get_value_sql($sql);
 	
 	if ($idModuleAgent === false) {
 		switch ($other['type']) {
@@ -194,7 +196,7 @@ function get_agent_module_name_last_value($agentName, $moduleName, $other = ';',
 function get_module_last_value($idAgentModule, $trash1, $other = ';', $returnType)
 {
 	$sql = sprintf('SELECT datos FROM tagente_estado WHERE id_agente_modulo = %d', $idAgentModule);
-	$value = get_db_value_sql($sql);
+	$value = db_get_value_sql($sql);
 	if ($value === false) {
 		switch ($other['type']) {
 			case 'string':
@@ -261,11 +263,11 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 	
 	$returnVar = array();
 	
-	$groups = get_db_all_rows_sql('SELECT * FROM tgrupo');
+	$groups = db_get_all_rows_sql('SELECT * FROM tgrupo');
 	if ($groups === false) $groups = array();
 	$groups = str_replace('\n', $returnReplace, $groups);
 	
-	$agents = get_db_all_rows_sql('SELECT * FROM tagente');
+	$agents = db_get_all_rows_sql('SELECT * FROM tagente');
 	if ($agents === false) $agents = array();
 	$agents = str_replace('\n', $returnReplace, $agents);
 	
@@ -301,7 +303,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 					'agent_cascade_protection' => $agent['cascade_protection']
 				);
 				
-				$modules = get_db_all_rows_sql('SELECT *
+				$modules = db_get_all_rows_sql('SELECT *
 					FROM (SELECT *
 							FROM tagente_modulo 
 							WHERE id_agente = ' . $agent['id_agente'] . ') AS t1 
@@ -363,7 +365,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 						'module_last_status' => $module['last_status']
 					);
 					
-					$alerts = get_db_all_rows_sql('SELECT *,
+					$alerts = db_get_all_rows_sql('SELECT *,
 							t1.id AS alert_template_modules_id,
 							t2.id AS alert_templates_id,
 							t3.id AS alert_template_module_actions_id,
@@ -649,20 +651,20 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 		returnError('agent_name_exist', 'The name of agent yet exist in DB.');
 	}
 	else if (($idParent != 0) && 
-		(get_db_value_sql('SELECT id_agente FROM tagente WHERE id_agente = ' . $idParent) === false)) {
+		(db_get_value_sql('SELECT id_agente FROM tagente WHERE id_agente = ' . $idParent) === false)) {
 			returnError('parent_agent_not_exist', 'The agent parent don`t exist.');
 	}
-	else if (get_db_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = ' . $idGroup) === false) {
+	else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = ' . $idGroup) === false) {
 		returnError('id_grupo_not_exist', 'The group don`t exist.');
 	}
-	else if (get_db_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = ' . $idOS) === false) {
+	else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = ' . $idOS) === false) {
 		returnError('id_os_not_exist', 'The OS don`t exist.');
 	}
-	else if (get_db_value_sql($sql1) === false) {
+	else if (db_get_value_sql($sql1) === false) {
 		returnError('server_not_exist', 'The Pandora Server don`t exist.');
 	}
 	else {
-		$idAgente = process_sql_insert ('tagente', 
+		$idAgente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $name,
 				'direccion' => $ip,
 				'id_grupo' => $idGroup,
@@ -776,7 +778,7 @@ function get_module_data($id, $thrash1, $other, $returnType) {
 	
 	$data['type'] = 'array';
 	$data['list_index'] = array('utimestamp', 'datos');
-	$data['data'] = get_db_all_rows_sql($sql);
+	$data['data'] = db_get_all_rows_sql($sql);
 	
 	if ($data === false)
 		returnError('error_query_module_data', 'Error in the query of module data.');
@@ -835,17 +837,17 @@ function otherParameter2Filter($other) {
 		if ($idAgent != null) {
 			$filter['id_agente'] = $idAgent;
 		}
-		$idAgentModulo = get_db_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
+		$idAgentModulo = db_get_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
 		if ($idAgentModulo !== false) {
 			$filter['id_agentmodule'] = $idAgentModule;
 		}
 	}
 	
 	if ($other['data'][4] != '') {
-		$idTemplate = get_db_value_filter('id', 'talert_templates', array('name' => $other['data'][4]));
+		$idTemplate = db_get_value_filter('id', 'talert_templates', array('name' => $other['data'][4]));
 		if ($idTemplate !== false) {
 			if ($idAgentModulo != null) {
-				$idAlert = get_db_value_filter('id', 'talert_template_modules', array('id_agent_module' => $idAgentModulo,  'id_alert_template' => $idTemplate));
+				$idAlert = db_get_value_filter('id', 'talert_template_modules', array('id_agent_module' => $idAgentModulo,  'id_alert_template' => $idTemplate));
 				if ($idAlert !== false) {
 					$filter['id_alert_am'] = $idAlert;
 				}
@@ -857,7 +859,7 @@ function otherParameter2Filter($other) {
 		$filter['id_usuario'] = $other['data'][5];
 	}
 	
-	$filterString = format_array_to_where_clause_sql ($filter);
+	$filterString = db_format_array_where_clause_sql ($filter);
 	if ($filterString == '') {
 		$filterString = '1 = 1';
 	}
@@ -888,7 +890,7 @@ function set_new_alert_template($id, $id2, $other, $trash1) {
 	else if ($other['type'] == 'array') {
 		$idAgent = get_agent_id($id);
 		
-		$row = get_db_row_filter('talert_templates', array('name' => $id2));
+		$row = db_get_row_filter('talert_templates', array('name' => $id2));
 		
 		if ($row === false) {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -898,7 +900,7 @@ function set_new_alert_template($id, $id2, $other, $trash1) {
 		$idTemplate = $row['id'];
 		$idActionTemplate = $row['id_alert_action'];
 		
-		$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
+		$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
 		
 		if ($idAgentModule === false) {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -909,7 +911,7 @@ function set_new_alert_template($id, $id2, $other, $trash1) {
 			'id_agent_module' => $idAgentModule,
 			'id_alert_template' => $idActionTemplate);
 		
-		$return = process_sql_insert('talert_template_modules', $values);
+		$return = db_process_sql_insert('talert_template_modules', $values);
 		
 		$data['type'] = 'string';
 		if ($return === false) {
@@ -932,7 +934,7 @@ function set_delete_module($id, $id2, $other, $trash1) {
 		
 		$idAgent = get_agent_id($id);
 		
-		$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $id2));
+		$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $id2));
 		
 		if ($idAgentModule === false) {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -940,7 +942,7 @@ function set_delete_module($id, $id2, $other, $trash1) {
 		}
 		
 		if (!$simulate) {
-			$return = process_sql_delete('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+			$return = db_process_sql_delete('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 		}
 		else {
 			$return = true;
@@ -971,12 +973,12 @@ function set_module_data($id, $thrash2, $other, $trash1) {
 		$time = $other['data'][1];
 		if ($time == 'now') $time = time();
 		
-		$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+		$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 		if ($agentModule === false) {
 			returnError('error_parameter', 'Not found module agent.');
 		}
 		else {
-			$agent = get_db_row_filter('tagente', array('id_agente' => $agentModule['id_agente']));
+			$agent = db_get_row_filter('tagente', array('id_agente' => $agentModule['id_agente']));
 			
 			$xmlTemplate = "<?xml version='1.0' encoding='ISO-8859-1'?>
 				<agent_data description='' group='' os_name='%s' " .
@@ -1021,7 +1023,7 @@ function set_new_module($id, $id2, $other, $trash1) {
 		$values['id_agente'] = get_agent_id($id);
 		$values['nombre'] = $id2;
 		
-		$values['id_tipo_modulo'] = get_db_value_filter('id_tipo', 'ttipo_modulo', array('nombre' => $other['data'][0]));
+		$values['id_tipo_modulo'] = db_get_value_filter('id_tipo', 'ttipo_modulo', array('nombre' => $other['data'][0]));
 		if ($values['id_tipo_modulo'] === false) {
 			returnError('error_parameter', 'Error in the parameters.');
 			return;
@@ -1083,7 +1085,7 @@ function set_new_module($id, $id2, $other, $trash1) {
 		
 		$values['id_modulo'] = 2; 
 		
-		$return = process_sql_insert('tagente_modulo', $values);
+		$return = db_process_sql_insert('tagente_modulo', $values);
 		
 		$data['type'] = 'string';
 		if ($return === false) {
@@ -1112,27 +1114,27 @@ function set_alert_actions($id, $id2, $other, $trash1) {
 	else if ($other['type'] == 'array') {
 		$idAgent = get_agent_id($id);
 		
-		$row = get_db_row_filter('talert_templates', array('name' => $id2));
+		$row = db_get_row_filter('talert_templates', array('name' => $id2));
 		if ($row === false) {
 			returnError('error_parameter', 'Error in the parameters.');
 			return;
 		}		
 		$idTemplate = $row['id'];
 		
-		$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
+		$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
 		if ($idAgentModule === false) {
 			returnError('error_parameter', 'Error in the parameters.');
 			return;
 		}
 		
-		$idAlertTemplateModule = get_db_value_filter('id', 'talert_template_modules', array('id_alert_template' => $idTemplate, 'id_agent_module' => $idAgentModule));
+		$idAlertTemplateModule = db_get_value_filter('id', 'talert_template_modules', array('id_alert_template' => $idTemplate, 'id_agent_module' => $idAgentModule));
 		if ($idAlertTemplateModule === false) {
 			returnError('error_parameter', 'Error in the parameters.');
 			return;
 		}
 		
 		if ($other['data'][1] != '') {
-			$idAction = get_db_value_filter('id', 'talert_actions', array('name' => $other['data'][1]));
+			$idAction = db_get_value_filter('id', 'talert_actions', array('name' => $other['data'][1]));
 			if ($idAction === false) {
 				returnError('error_parameter', 'Error in the parameters.');
 				return;
@@ -1149,7 +1151,7 @@ function set_alert_actions($id, $id2, $other, $trash1) {
 		$values = array('id_alert_template_module' => $idAlertTemplateModule,
 			'id_alert_action' => $idAction, 'fires_min' => $firesMin, 'fires_max' => $firesMax);
 		
-		$return = process_sql_insert('talert_template_module_actions', $values);
+		$return = db_process_sql_insert('talert_template_module_actions', $values);
 		
 		$data['type'] = 'string';
 		if ($return === false) {
@@ -1225,7 +1227,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 			return;
 		}
 		else {
-			$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo',
+			$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo',
 				array('nombre' => $other['data'][4], 'id_agente' => $values['id_agente']));
 		}
 			
@@ -1243,7 +1245,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 		}
 		else {
 			if ($other['data'][5] != 'all') {
-				$idGroup = get_db_value_filter('id_grupo', 'tgrupo', array('nombre' => $other['data'][5]));
+				$idGroup = db_get_value_filter('id_grupo', 'tgrupo', array('nombre' => $other['data'][5]));
 			}
 			else {
 				$idGroup = 0;
@@ -1276,7 +1278,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 			//its optional parameter
 		}
 		else {
-			$idAlert = get_db_value_sql("SELECT t1.id 
+			$idAlert = db_get_value_sql("SELECT t1.id 
 				FROM talert_template_modules AS t1 
 					INNER JOIN talert_templates AS t2 
 						ON t1.id_alert_template = t2.id 
@@ -1295,7 +1297,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 	$values['timestamp'] = date("Y-m-d H:i:s", $time);
 	$values['utimestamp'] = $time;
 	
-	$return = process_sql_insert('tevento', $values);
+	$return = db_process_sql_insert('tevento', $values);
 	
 	$data['type'] = 'string';
 	if ($return === false) {
@@ -1340,7 +1342,7 @@ function set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
 			$filter['id_usuario'] = $other['data'][5];
 		}
 		
-		$filterString = format_array_to_where_clause_sql ($filter);
+		$filterString = db_format_array_where_clause_sql ($filter);
 		if ($filterString == '') {
 			$filterString = '1 = 1';
 		}
@@ -1355,14 +1357,14 @@ function set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
 	}
 	
 	if ($simulate) {
-		$rows = get_db_all_rows_filter('tevento', $filterString);
+		$rows = db_get_all_rows_filter('tevento', $filterString);
 		if ($rows !== false) {
 			returnData('string', count($rows));
 			return;
 		}
 	}
 	else {
-		returnData('string', process_sql_update('tevento', array('estado' => 1), $filterString));
+		returnData('string', db_process_sql_update('tevento', array('estado' => 1), $filterString));
 		return;
 	}
 }
@@ -1390,14 +1392,14 @@ function set_event_validate_filter($trash1, $trash2, $other, $trash3) {
 	}
 	
 	if ($simulate) {
-		$rows = get_db_all_rows_filter('tevento', $filterString);
+		$rows = db_get_all_rows_filter('tevento', $filterString);
 		if ($rows !== false) {
 			returnData('string', count($rows));
 			return;
 		}
 	}
 	else {
-		returnData('string', process_sql_update('tevento', array('estado' => 1), $filterString));
+		returnData('string', db_process_sql_update('tevento', array('estado' => 1), $filterString));
 		return;
 	}
 }
@@ -1425,7 +1427,7 @@ function get_events($trash1, $trash2, $other, $returnType) {
 		$filterString = otherParameter2Filter($other);
 	}
 	
-	$dataRows = get_db_all_rows_filter('tevento', $filterString);
+	$dataRows = db_get_all_rows_filter('tevento', $filterString);
 	
 	$data['type'] = 'array';
 	$data['data'] = $dataRows;
@@ -1496,7 +1498,7 @@ function set_delete_user_profile($id, $thrash1, $other, $thrash2) {
 		'id_usuario' => $id,
 		'id_perfil' => $profile,
 		'id_grupo' => $group);
-	$result = process_sql_delete('tusuario_perfil', $where);
+	$result = db_process_sql_delete('tusuario_perfil', $where);
 	if ($return === false)
 		returnError('error_delete_user_profile', 'Error delete user profile.');
 	else
@@ -1538,7 +1540,7 @@ function set_new_incident($thrash1, $thrash2, $other, $thrash3) {
 		'prioridad' => $priority,
 		'id_grupo' => $group,
 		'id_creator' => $id_creator);
-	$idIncident = process_sql_insert('tincidencia', $values);
+	$idIncident = db_process_sql_insert('tincidencia', $values);
 	
 	if ($return === false)
 		returnError('error_new_incident', 'Error create new incident.');
@@ -1560,7 +1562,7 @@ function set_new_note_incident($id, $id2, $other, $thrash2) {
 		'id_incident' => $id2,
 		'nota' => $other['data']);
 	
-	$idNote = process_sql_insert('tnota', $values);
+	$idNote = db_process_sql_insert('tnota', $values);
 	
 	if ($idNote === false)
 		returnError('error_new_incident', 'Error create new incident.');

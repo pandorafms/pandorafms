@@ -18,6 +18,8 @@ session_start ();
 require_once ("../../include/config.php");
 require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
+require_once ("../../include/functions_modules.php");
+require_once ("../../include/functions_agents.php");
 
 $config["id_user"] = $_SESSION["id_usuario"];
 if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
@@ -30,7 +32,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agent = $_GET["agent"];
 	$agentmodule_name = get_agentmodule_name ($id_agentmodule);
 	if (! check_acl ($config['id_user'], get_agent_group($id_agent), "AR")) {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to access Agent Export Data");
 		require ("../../general/noaccess.php");
 		exit;
@@ -69,7 +71,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 			FROM tagente_datos
 			WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule
 			ORDER BY utimestamp DESC";
-	$result1 = get_db_all_rows_sql ($sql1, true);
+	$result1 = db_get_all_rows_sql ($sql1, true);
 	if ($result1 === false) {
 		$result1 = array ();
 	}

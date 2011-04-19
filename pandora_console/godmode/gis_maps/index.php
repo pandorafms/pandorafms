@@ -22,7 +22,7 @@ require_once ('include/functions_gis.php');
 ui_require_javascript_file('openlayers.pandora');
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation", "Trying to access map builder");
+	db_pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }
@@ -32,10 +32,10 @@ if (is_ajax ()) {
 	$id_map = get_parameter('id_map');
 	
 	// Set to not default the actual default map
-	$returnOperationDB =  process_sql_update('tgis_map', array('default_map' => 0), array('default_map' => 1));
+	$returnOperationDB =  db_process_sql_update('tgis_map', array('default_map' => 0), array('default_map' => 1));
 
 	// Set default the new default map
-	$returnOperationDB =  process_sql_update('tgis_map', array('default_map' => 1), array('id_tgis_map' => $id_map));
+	$returnOperationDB =  db_process_sql_update('tgis_map', array('default_map' => 1), array('id_tgis_map' => $id_map));
 	
 	if ($returnOperationDB === false)
 		$data['correct'] = false;
@@ -77,7 +77,7 @@ $table->align[2] = 'center';
 $table->align[3] = 'center';
 $table->align[4] = 'center';
 
-$maps = get_db_all_rows_in_table ('tgis_map','map_name');
+$maps = db_get_all_rows_in_table ('tgis_map','map_name');
 
 $table->data = array();
 

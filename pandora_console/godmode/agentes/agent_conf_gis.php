@@ -20,13 +20,14 @@ if (!isset ($id_agente)) {
 
 require_once ('include/functions_gis.php');
 require_once ('include/functions_html.php');
+require_once ('include/functions_agents.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
 echo "<div style='margin-bottom: 10px;'></div>";
 
 $agentData = getDataLastPositionAgent($id_agente);
-$updateGisData = get_db_value('update_gis_data','tagente', 'id_agente', $id_agente);
+$updateGisData = db_get_value('update_gis_data','tagente', 'id_agente', $id_agente);
 $agent_name = get_agent_name($id_agente);
 
 /* Map with the current position */

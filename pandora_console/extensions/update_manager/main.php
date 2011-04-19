@@ -141,7 +141,7 @@ else {
 	$error = '<h5 class="error">'.__('File cannot be uploaded').'</h5>';
 }
 
-clean_cache();
+db_clean_cache();
 $settings = um_db_load_settings ();
 $user_key = get_user_key ($settings);
 

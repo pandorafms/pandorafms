@@ -19,7 +19,8 @@ global $config;
 check_login ();
 
 require_once ("include/functions_agents.php");
-require_once('operation/agentes/alerts_status.functions.php');
+require_once ('operation/agentes/alerts_status.functions.php');
+require_once ('include/functions_users.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
@@ -55,7 +56,7 @@ if ($idAgent != 0) {
 	$id_group = get_agent_group ($idAgent);
 	
 	if (check_acl ($config["id_user"], $id_group, "AR") == 0) {
-		pandora_audit("ACL Violation","Trying to access alert view");
+		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -69,7 +70,7 @@ if ($idAgent != 0) {
 } 
 else {
 	if (!check_acl ($config["id_user"], 0, "AR")) {
-		pandora_audit("ACL Violation","Trying to access alert view");
+		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -364,7 +365,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
 	
-	array_push ($table->data, format_alert_row ($alert, false, $print_agent, $url));
+	array_push ($table->data, ui_format_alert_row ($alert, false, $print_agent, $url));
 }
 
 echo '<form method="post" action="'.$url.'">';

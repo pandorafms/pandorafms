@@ -71,7 +71,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		
 		$sub = array ();
 		
-		$gisMaps = get_db_all_rows_in_table ('tgis_map', 'map_name');
+		$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
 		if ($gisMaps === false) {
 			$gisMaps = array ();
 		}
@@ -98,7 +98,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub = array ();
 	
-	$layouts = get_db_all_rows_in_table ('tlayout', 'name');
+	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
 	if ($layouts === false) {
 		$layouts = array ();
 	}
@@ -140,7 +140,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub = array ();		
 	// Show all recon servers, and generate menu for details
 
-	$servers = get_db_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
+	$servers = db_get_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
 	if ($servers === false) {
 		$servers = array ();
 	}

@@ -21,7 +21,7 @@ require_once ("include/functions_servers.php");
 check_login();
 
 if (! check_acl ($config["id_user"], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Server Management");
 	require ("general/noaccess.php");
 	exit;
@@ -32,7 +32,7 @@ if (isset($_GET["server"])) {
 	// Headers
 	ui_print_page_header (__('Update Server'), "", false, "", true);
 	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
-	$row = get_db_row_sql ($sql);
+	$row = db_get_row_sql ($sql);
 	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
 	print_input_hidden ("server",$id_server);
 	
@@ -58,7 +58,7 @@ else {
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
 		
-		$result = process_sql_delete('tserver', array('id_server' => $id_server));
+		$result = db_process_sql_delete('tserver', array('id_server' => $id_server));
 		
 		if ($result !== false) {
 			 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
@@ -73,7 +73,7 @@ else {
 		$id_server = get_parameter_post ("server");
 		
 		$values = array('ip_address' => $address, 'description' => $description);
-		$result = process_sql_update('tserver', $values, array('id_server' => $id_server));
+		$result = db_process_sql_update('tserver', $values, array('id_server' => $id_server));
 		if ($result !== false) {
 			echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
 		}

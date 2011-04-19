@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation", "Trying to access Group Management2");
+	db_pandora_audit("ACL Violation", "Trying to access Group Management2");
 	require ("general/noaccess.php");
 	return;
 }
@@ -30,7 +30,7 @@ $display_on_front = (bool) get_parameter ('display_on_front', 0);
 
 // Header
 if ($id_field) {
-	$field = get_db_row_filter('tagent_custom_fields',array('id_field' => $id_field));
+	$field = db_get_row_filter('tagent_custom_fields',array('id_field' => $id_field));
 	$name = $field['name'];
 	$display_on_front = $field['display_on_front'];
 	ui_print_page_header (__("Update agent custom field"), "images/note.png", false, "", true, "");

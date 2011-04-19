@@ -15,6 +15,7 @@
 
 require_once ('include/config.php');
 require_once ('include/functions_agents.php');
+require_once ('include/functions_users.php');
 
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');

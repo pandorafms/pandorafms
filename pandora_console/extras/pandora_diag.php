@@ -16,14 +16,14 @@
 function render_info ($table) {
 	global $console_mode;
 	
-	$info = get_db_sql  ("SELECT COUNT(*) FROM $table");
+	$info = db_get_sql  ("SELECT COUNT(*) FROM $table");
 	render_row ($info,"DB Table $table");
 }
 
 function render_info_data ($query, $label) {
 	global $console_mode;
 	
-	$info = get_db_sql  ($query);
+	$info = db_get_sql  ($query);
 	render_row ($info, $label);
 }
 
@@ -124,7 +124,7 @@ switch ($config["dbtype"]) {
 		render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_version'", "DB Schema Version");
 		render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_build'", "DB Schema Build");
 		render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'enterprise_installed'", "Enterprise installed");
-		render_row ( date ("Y/m/d H:i:s",get_db_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'")), "PandoraDB Last run");
+		render_row ( date ("Y/m/d H:i:s",db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'")), "PandoraDB Last run");
 		
 		render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'customer_key';", "Update Key");
 		render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'updating_code_path'", "Updating code path");
@@ -135,7 +135,7 @@ switch ($config["dbtype"]) {
 		render_info_data ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_version'", "DB Schema Version");
 		render_info_data ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_build'", "DB Schema Build");
 		render_info_data ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'enterprise_installed'", "Enterprise installed");
-		render_row ( date ("Y/m/d H:i:s",get_db_sql ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_maintance'")), "PandoraDB Last run");
+		render_row ( date ("Y/m/d H:i:s",db_get_sql ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_maintance'")), "PandoraDB Last run");
 		
 		render_info_data ("SELECT value FROM tupdate_settings WHERE \"key\" = 'customer_key';", "Update Key");
 		render_info_data ("SELECT value FROM tupdate_settings WHERE \"key\" = 'updating_code_path'", "Updating code path");
@@ -146,7 +146,7 @@ switch ($config["dbtype"]) {
 		render_info_data ("SELECT value FROM tconfig WHERE token = 'db_scheme_version'", "DB Schema Version");
 		render_info_data ("SELECT value FROM tconfig WHERE token = 'db_scheme_build'", "DB Schema Build");
 		render_info_data ("SELECT value FROM tconfig WHERE token = 'enterprise_installed'", "Enterprise installed");
-		render_row (get_db_sql ("SELECT value FROM tconfig WHERE token = 'db_maintance'"), "PandoraDB Last run");
+		render_row (db_get_sql ("SELECT value FROM tconfig WHERE token = 'db_maintance'"), "PandoraDB Last run");
 		
 		render_info_data ("SELECT value FROM tupdate_settings WHERE key = 'customer_key'", "Update Key");
 		render_info_data ("SELECT value FROM tupdate_settings WHERE key = 'updating_code_path'", "Updating code path");

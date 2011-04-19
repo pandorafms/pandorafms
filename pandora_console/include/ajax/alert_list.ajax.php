@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -41,7 +41,7 @@ if ($get_agent_alerts_simple) {
 	$id_group = get_agent_group ($id_agent);
 	
 	if (! check_acl ($config['id_user'], $id_group, "AR")) {
-		pandora_audit("ACL Violation",
+		db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		echo json_encode (false);
 		return;
@@ -49,6 +49,8 @@ if ($get_agent_alerts_simple) {
 	
 	require_once ('include/functions_agents.php');
 	require_once ('include/functions_alerts.php');
+	require_once ('include/functions_modules.php');
+
 	
 	$alerts = agents_get_alerts_simple ($id_agent);
 	if (empty ($alerts)) {

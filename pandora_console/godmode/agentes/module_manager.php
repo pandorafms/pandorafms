@@ -21,6 +21,9 @@ if (isset ($id_agente)) {
 
 enterprise_include ('godmode/agentes/module_manager.php');
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
+require_once ('include/functions_modules.php');
+require_once ('include/functions_agents.php');
+require_once ('include/functions_servers.php');
 
 // Create module/type combo
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';
@@ -30,10 +33,10 @@ echo "<tr><td class='datos'>";
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
-$network_available = get_db_sql ("SELECT count(*) from tserver where server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
-$wmi_available = get_db_sql ("SELECT count(*) from tserver where server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
-$plugin_available = get_db_sql ("SELECT count(*) from tserver where server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
-$prediction_available = get_db_sql ("SELECT count(*) from tserver where server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
+$network_available = db_get_sql ("SELECT count(*) from tserver where server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
+$wmi_available = db_get_sql ("SELECT count(*) from tserver where server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
+$plugin_available = db_get_sql ("SELECT count(*) from tserver where server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
+$prediction_available = db_get_sql ("SELECT count(*) from tserver where server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
 
 // Development mode to use all servers
 if ($develop_bypass) {
@@ -84,14 +87,14 @@ if ($multiple_delete) {
 		$id_grupo = (int) get_agent_group($id_agente);
 		
 		if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 			"Trying to delete a module without admin rights");
 			require ("general/noaccess.php");
 			exit;
 		}
 		
 		if ($id_agent_module_del < 1) {
-			pandora_audit("HACK Attempt",
+			db_pandora_audit("HACK Attempt",
 			"Expected variable from form is not correct");
 			die ("Nice try buddy");
 			exit;
@@ -102,32 +105,32 @@ if ($multiple_delete) {
 		
 		//Init transaction
 		$error = 0;
-		process_sql_begin ();
+		db_process_sql_begin ();
 		
 		// First delete from tagente_modulo -> if not successful, increment
 		// error. NOTICE that we don't delete all data here, just marking for deletion
 		// and delete some simple data.
 		$status = '';
-		if (process_sql("UPDATE tagente_modulo
+		if (db_process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false)
 			$error++;
 	
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":		
-				$result = process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
+				$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
 				if ($result === false)
 					$error++;
 		
-				$result = process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
+				$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
 				if ($result === false)
 					$error++;
 				break;
 			case "oracle":
-				$result = temp_sql_delete('tagente_estado', 'id_agente_modulo', $id_agent_module_del);
+				$result = db_process_delete_temp('tagente_estado', 'id_agente_modulo', $id_agent_module_del);
 				if ($result === false)
 					$error++;
-				$result = temp_sql_delete('tagente_datos_inc', 'id_agente_modulo', $id_agent_module_del);		
+				$result = db_process_delete_temp('tagente_datos_inc', 'id_agente_modulo', $id_agent_module_del);		
 				if ($result === false)
 					$error++;
 				break;
@@ -135,11 +138,11 @@ if ($multiple_delete) {
 		}	
 		//Check for errors
 		if ($error != 0) {
-			process_sql_rollback ();
+			db_process_sql_rollback ();
 			ui_print_error_message (__('There was a problem deleting the module'));
 		}
 		else {
-			process_sql_commit ();
+			db_process_sql_commit ();
 			ui_print_success_message (__('Module deleted succesfully'));
 		}
 	}
@@ -253,7 +256,7 @@ switch ($sortField) {
 		break;
 }
 
-$modules = get_db_all_rows_filter ('tagente_modulo',
+$modules = db_get_all_rows_filter ('tagente_modulo',
 	array ('delete_pending' => 0,
 		'id_agente' => $id_agente,
 		'order' => $order),
@@ -300,7 +303,7 @@ $agent_interval = get_agent_interval ($id_agente);
 $last_modulegroup = "0";
 
 //Extract the ids only numeric modules for after show the normalize link. 
-$tempRows = get_db_all_rows_sql("SELECT *
+$tempRows = db_get_all_rows_sql("SELECT *
 	FROM ttipo_modulo
 	WHERE nombre NOT LIKE '%string%' AND nombre NOT LIKE '%proc%'");
 $numericModules = array();
@@ -386,7 +389,7 @@ foreach ($modules as $module) {
 	}
 
 	// This module is initialized ? (has real data)
-	$module_init = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+	$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
 	if ($module_init == 0)
 		$data[2] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
 	

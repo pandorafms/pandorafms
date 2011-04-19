@@ -17,6 +17,9 @@
 global $config;
 
 include_once('include/functions_alerts.php');
+include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . "/include/functions_modules.php");
+
 
 $searchAlerts = check_acl($config['id_user'], 0, "AR");
 

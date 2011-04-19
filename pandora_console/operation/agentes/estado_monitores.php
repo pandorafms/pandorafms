@@ -18,11 +18,14 @@ global $config;
 
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
-	pandora_audit("HACK Attempt",
+	db_pandora_audit("HACK Attempt",
 			  "Trying to get to monitor list without id_agent passed");
 	include ("general/noaccess.php");
 	exit;
 }
+
+include_once($config['homedir'] . "/include/functions_modules.php");
+include_once($config['homedir'] . "/include/functions_servers.php");
 
 $id_agent = get_parameter('id_agente');
 $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $id_agent;
@@ -140,7 +143,7 @@ $sql = sprintf ("
 	ORDER BY tagente_modulo.id_module_group , %s %s
 	", $id_agente, $order['field'], $order['order']);
 
-$modules = get_db_all_rows_sql ($sql);
+$modules = db_get_all_rows_sql ($sql);
 if (empty ($modules)) {
 	$modules = array ();
 }
@@ -213,10 +216,10 @@ foreach ($modules as $module) {
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if ($module["id_policy_module"] != 0) {
 			$linked = isModuleLinked($module['id_agente_modulo']);
-			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
+			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
 
             if ($id_policy != "")
-                $name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+                $name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
             else
                 $name_policy = __("Unknown");
 

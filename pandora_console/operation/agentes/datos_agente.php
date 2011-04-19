@@ -29,7 +29,7 @@ $agentId = get_parameter("id_agente");
 
 
 if (! check_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Data view");
 	require ("general/noaccess.php");
 	return;
@@ -96,7 +96,7 @@ if ($moduletype_name == "log4x") {
 $sql = "SELECT * " . $sql_body;
 $sql_count = "SELECT count(*) " . $sql_body;
 
-$count = get_db_value_sql($sql_count);
+$count = db_get_value_sql($sql_count);
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -113,7 +113,7 @@ switch ($config["dbtype"]) {
 		break;		 
 }
 
-$result = get_db_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();
 }

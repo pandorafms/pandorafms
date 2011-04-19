@@ -64,8 +64,8 @@ $ownDir = dirname(__FILE__) . '/';
 require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir . 'functions.php');
 
-select_db_engine();
-connect_db();
+db_select_engine();
+db_connect();
 
 
 if (! defined ('EXTENSIONS_DIR'))
@@ -143,7 +143,7 @@ else {
 // Connect to the history DB
 if (isset($config['history_db_enabled'])) {
 	if ($config['history_db_enabled']) {
-		$config['history_db_connection'] = connect_db(
+		$config['history_db_connection'] = db_connect(
 			$config['history_db_host'] . ':' . $config['history_db_port'],
 			$config['history_db_user'],
 			$config['history_db_pass']);
@@ -151,5 +151,5 @@ if (isset($config['history_db_enabled'])) {
 }
 
 // Make dbconnection the default connection again (the link identifier of the already opened link will be returned)
-connect_db();
+db_connect();
 ?>

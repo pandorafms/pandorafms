@@ -49,7 +49,7 @@ if (is_ajax ()) {
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
@@ -58,10 +58,10 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 $id = (integer) get_parameter('id');
 
 $sql="SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
-$sources = get_db_all_rows_sql($sql);
+$sources = db_get_all_rows_sql($sql);
 
 $sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
-$graph = get_db_row_sql($sql);
+$graph = db_get_row_sql($sql);
 
 $id_user = $graph["id_user"];
 $private = $graph["private"];
@@ -106,7 +106,7 @@ if ($stacked == -1)
 
 $name = $graph["name"];
 
-$graphRows = get_db_all_rows_sql("SELECT t1.*,
+$graphRows = db_get_all_rows_sql("SELECT t1.*,
 	(SELECT t3.nombre 
 		FROM tagente AS t3 
 		WHERE t3.id_agente = 

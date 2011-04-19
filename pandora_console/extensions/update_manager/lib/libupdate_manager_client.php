@@ -162,7 +162,7 @@ function um_client_db_save_package ($package, $settings) {
 
 	um_client_db_connect($settings);
 
-	$result = process_sql_insert(DB_PREFIX.'tupdate_package', $fields);
+	$result = db_process_sql_insert(DB_PREFIX.'tupdate_package', $fields);
 	
 	if($result === false) {
 		return false;
@@ -188,7 +188,7 @@ function um_client_db_save_update ($update) {
 		unset($fields['order']);
 	}
 	
-	$result = process_sql_insert(DB_PREFIX.'tupdate', $fields);
+	$result = db_process_sql_insert(DB_PREFIX.'tupdate', $fields);
 
 	if($result === false) {
 		return false;
@@ -231,7 +231,7 @@ function um_client_create_update_file ($data, $md5path_name) {
 
 function um_client_apply_update_database (&$update) {
 	if ($update->type == 'db_data') {
-		$exists = get_db_value('COUNT(*)', $update->db_table, $update->db_field, $update->db_field_value);
+		$exists = db_get_value('COUNT(*)', $update->db_table, $update->db_field, $update->db_field_value);
 
 		/* If it exists, it failed. */
 		if ($exists != 0) {
@@ -240,7 +240,7 @@ function um_client_apply_update_database (&$update) {
 	}
 	
 	$query_array = explode(';',um_data_decode($update->data));
-	$result = process_sql($query_array[0]);
+	$result = db_process_sql($query_array[0]);
 
 	if ($result === false) {
 		//echo $result->getMessage ();
@@ -292,7 +292,7 @@ function um_client_rollback_update (&$update, $settings) {
 		$filename = $settings->updating_binary_path.'/'.$update->filename;
 		$success = um_client_rollback_update_file ($update, $filename);
 	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
-		process_sql_rollback();
+		db_process_sql_rollback();
 		$success = true;
 	} else {
 		return false;
@@ -515,7 +515,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 
 		um_db_update_setting ('current_update', $package->id);
 		
-		process_sql_commit();
+		db_process_sql_commit();
 	}
 	else {
 		$data_queries = '';
@@ -620,7 +620,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 
 function um_client_upgrade_to_latest ($user_key, $force = true) {
 	$settings = um_db_load_settings ();
-	process_sql_begin();
+	db_process_sql_begin();
 	do {
 		$package = um_client_get_package ($settings, $user_key);
 

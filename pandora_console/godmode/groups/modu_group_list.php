@@ -21,7 +21,7 @@ global $config;
 check_login();
 
 if (! check_acl($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
 	return;
@@ -35,13 +35,13 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
 		}
 		
-		$group = get_db_row ('tmodule_group', 'id_mg', $id_group);
+		$group = db_get_row ('tmodule_group', 'id_mg', $id_group);
 		
 		echo json_encode ($group);
 		return;
@@ -65,7 +65,7 @@ if ($create_group) {
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	
-	$result = process_sql_insert('tmodule_group', array('name' => $name));
+	$result = db_process_sql_insert('tmodule_group', array('name' => $name));
 	
 	if ($result) {
 		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
@@ -84,7 +84,7 @@ if ($update_group) {
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	
-	$result = process_sql_update('tmodule_group', array('name' => $name), array('id_mg' => $id_group));
+	$result = db_process_sql_update('tmodule_group', array('name' => $name), array('id_mg' => $id_group));
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
 	}
@@ -97,7 +97,7 @@ if ($update_group) {
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
 	
-	$result = process_sql_delete('tmodule_group', array('id_mg' => $id_group));
+	$result = db_process_sql_delete('tmodule_group', array('id_mg' => $id_group));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
@@ -115,7 +115,7 @@ $table->data = array ();
 
 $sql = "SELECT * 
 		FROM tmodule_group ";
-$groups = get_db_all_rows_sql ($sql, true);
+$groups = db_get_all_rows_sql ($sql, true);
 
 
 foreach ($groups as $id_group ) {

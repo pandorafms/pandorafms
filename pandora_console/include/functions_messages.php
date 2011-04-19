@@ -19,6 +19,9 @@
  * @subpackage Messages
  */
 
+require_once($config['homedir'] . "/include/functions_users.php");
+require_once ($config['homedir'].'/include/functions_groups.php');
+
 /** 
  * Creates a private message to be forwarded to other people
  * 
@@ -44,7 +47,7 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
 	$values["mensaje"] = $mensaje;
 	$values["timestamp"] = get_system_time ();
 	
-	$return = process_sql_insert ("tmensajes", $values);
+	$return = db_process_sql_insert ("tmensajes", $values);
 	
 	if ($return === false) {
 		return false;
@@ -77,19 +80,19 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
 	}
 	
 	//Start transaction so that if it fails somewhere along the way, we roll back
-	process_sql_begin ();
+	db_process_sql_begin ();
 	
 	foreach ($group_users as $user) {
 		$return = create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {
 			//Error sending message, rollback and return false
-			process_sql_rollback ();
+			db_process_sql_rollback ();
 			return false;
 		}
 	}
 	
 	//We got here, so we can commit - if this function gets extended, make sure to do SQL above these lines
-	process_sql_commit ();
+	db_process_sql_commit ();
 	
 	return true;
 }
@@ -107,7 +110,7 @@ function delete_message ($id_message) {
 	$where = array(
 		'id_usuario_destino' => $config["id_user"],
 		'id_mensaje' => $id_message);
-	return (bool)process_sql_delete('tmensajes', $where);
+	return (bool)db_process_sql_delete('tmensajes', $where);
 }
 
 /** 
@@ -126,7 +129,7 @@ function process_message_read ($message_id, $read = true) {
 		$read = 1;
 	}
 	
-	return (bool) process_sql_update('tmensajes', array('estado' => $read), array('id_mensaje' => $message_id));
+	return (bool) db_process_sql_update('tmensajes', array('estado' => $read), array('id_mensaje' => $message_id));
 }
 
 /** 
@@ -144,7 +147,7 @@ function get_message ($message_id) {
 	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje, timestamp
 		FROM tmensajes
 		WHERE id_usuario_destino='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
-    $row = get_db_row_sql ($sql);
+    $row = db_get_row_sql ($sql);
 	
 	if (empty ($row)) {
 		return false;
@@ -179,7 +182,7 @@ function get_message_count ($user = false, $incl_read = false) {
 	$sql = sprintf("SELECT COUNT(*)
 		FROM tmensajes WHERE id_usuario_destino='%s' %s", $user, $filter);
     
-	return (int) get_db_sql ($sql);
+	return (int) db_get_sql ($sql);
 }
 
 /** 
@@ -210,7 +213,7 @@ function get_message_overview ($order = "status", $order_dir = "ASC") {
 	}
 	
 	$result = array ();
-	$return = get_db_all_rows_field_filter ('tmensajes', 'id_usuario_destino', $config["id_user"], $order);
+	$return = db_get_all_rows_field_filter ('tmensajes', 'id_usuario_destino', $config["id_user"], $order);
 	
 	if ($return === false) {
 		return $result;

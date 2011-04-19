@@ -27,6 +27,9 @@ if (isset($config)) {
 	require_once ($config['homedir'].'/include/pandora_graph.php');
 	require_once ($config['homedir'].'/include/functions_fsgraph.php');
 	require_once ($config['homedir'].'/include/functions_reporting.php');
+	require_once ($config['homedir'] . "/include/functions_agents.php");
+	require_once ($config['homedir'] . "/include/functions_modules.php");
+	require_once ($config['homedir'] . '/include/functions_users.php');
 /**#@-*/
 
 }
@@ -38,6 +41,9 @@ else {
 	require_once ('../include/config.php');
 	require_once ($config['homedir'].'/include/pandora_graph.php');
 	require_once ($config['homedir'].'/include/functions_reporting.php');
+	require_once ("../include/functions_agents.php");
+	require_once ("../include/functions_modules.php");
+	require_once ("../include/functions_users.php");
 /**#@-*/
 
 }
@@ -186,7 +192,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 
 		// Get event data (contains alert data too)
 		if ($show_events == 1 || $show_alerts == 1) {
-			$events = get_db_all_rows_filter ('tevento',
+			$events = db_get_all_rows_filter ('tevento',
 				array ('id_agentmodule' => $agent_module_id,
 					"utimestamp > $datelimit",
 					"utimestamp < $date",
@@ -198,7 +204,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		}
 	
 		// Get module data
-		$data = get_db_all_rows_filter ('tagente_datos',
+		$data = db_get_all_rows_filter ('tagente_datos',
 			array ('id_agente_modulo' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
@@ -376,7 +382,7 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 		FROM tagente_modulo,ttipo_modulo
 		WHERE id_tipo_modulo = id_tipo AND id_agente = %d
 		GROUP BY id_tipo_modulo', $id_agent);
-	$modules = get_db_all_rows_sql ($sql);
+	$modules = db_get_all_rows_sql ($sql);
 	foreach ($modules as $module) {
 		$data[$module['nombre']] = $module[1];
 	}
@@ -418,14 +424,14 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":	
 			case "postgresql":	
-				$data[$name] = (int) get_db_value_filter ('COUNT(*)',
+				$data[$name] = (int) db_get_value_filter ('COUNT(*)',
 					'tagent_access',
 					array ('id_agent' => $id_agent,
 						'utimestamp > '.$bottom,
 						'utimestamp < '.$top));
 				break;
 			case "oracle":	
-				$data[$name] = (int) get_db_value_filter ('count(*)',
+				$data[$name] = (int) db_get_value_filter ('count(*)',
 					'tagent_access',
 					array ('id_agent' => $id_agent,
 						'utimestamp > '.$bottom,
@@ -486,7 +492,7 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 		}
 
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$criticity = (int) get_db_value_filter ('criticity',
+		$criticity = (int) db_get_value_filter ('criticity',
 			'tevento',
 			array ('id_agente' => $id_agent,
 				'utimestamp > '.$bottom,
@@ -521,7 +527,7 @@ function graph_incidents_status () {
 	$data[__('Outdated')] = 0;
 	$data[__('Invalid')] = 0;
 	
-	$incidents = get_db_all_rows_filter ('tincidencia',
+	$incidents = db_get_all_rows_filter ('tincidencia',
 		array ('estado' => array (0, 2, 3, 13)),
 		array ('estado'));
 	if ($incidents === false)
@@ -556,7 +562,7 @@ function grafico_incidente_prioridad () {
 		FROM tincidencia
 		GROUP BY prioridad
 		ORDER BY 2 DESC';
-	$incidents = get_db_all_rows_sql ($sql);
+	$incidents = db_get_all_rows_sql ($sql);
 	
 	if($incidents == false) {
 		$incidents = array();
@@ -595,7 +601,7 @@ function graphic_incident_group () {
 		WHERE tgrupo.id_grupo = tincidencia.id_grupo
 		GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
 		$max_items);
-	$incidents = get_db_all_rows_sql ($sql);
+	$incidents = db_get_all_rows_sql ($sql);
 	
 	if($incidents == false) {
 		$incidents = array();
@@ -629,7 +635,7 @@ function graphic_incident_user () {
 		FROM tincidencia
 		GROUP BY id_usuario
 		ORDER BY 1 DESC LIMIT %d', $max_items);
-	$incidents = get_db_all_rows_sql ($sql);
+	$incidents = db_get_all_rows_sql ($sql);
 	
 	if($incidents == false) {
 		$incidents = array();
@@ -681,7 +687,7 @@ function graphic_user_activity ($width = 350, $height = 230) {
 				ORDER BY 1 DESC', $max_items);
 			break;
 	}
-	$logins = get_db_all_rows_sql ($sql);
+	$logins = db_get_all_rows_sql ($sql);
 	
 	if($logins == false) {
 		$logins = array();
@@ -727,7 +733,7 @@ function graphic_incident_source ($width = 320, $height = 200) {
 				ORDER BY 1 DESC', $max_items);
 			break;
 	}
-	$origins = get_db_all_rows_sql ($sql);
+	$origins = db_get_all_rows_sql ($sql);
 	
 	if($origins == false) {
 		$origins = array();
@@ -758,13 +764,13 @@ function graph_db_agentes_modulos ($width, $height) {
 	switch ($config['dbtype']){
 		case "mysql":
 		case "postgresql":
-			$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+			$modules = db_get_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
 				FROM tagente_modulo
 				GROUP BY id_agente
 				ORDER BY 1 DESC LIMIT 10');
 			break;
 		case "oracle":
-			$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+			$modules = db_get_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
 				FROM tagente_modulo
 				WHERE rownum <= 10
 				GROUP BY id_agente
@@ -821,7 +827,7 @@ function grafico_eventos_usuario ($width, $height) {
 				ORDER BY 1 DESC) WHERE rownum <= %d', $max_items);
 			break;
 	}
-	$events = get_db_all_rows_sql ($sql);
+	$events = db_get_all_rows_sql ($sql);
 
 	if ($events === false) {
 		$events = array();
@@ -853,19 +859,19 @@ function grafico_eventos_total ($filter = "") {
 	$total = 0;
 	
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 0 $filter";
-	$data[__('Maintenance')] = get_db_sql ($sql);
+	$data[__('Maintenance')] = db_get_sql ($sql);
 	
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 1 $filter";
-	$data[__('Informational')] = get_db_sql ($sql);
+	$data[__('Informational')] = db_get_sql ($sql);
 
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 2 $filter";
-	$data[__('Normal')] = get_db_sql ($sql);
+	$data[__('Normal')] = db_get_sql ($sql);
 
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 3 $filter";
-	$data[__('Warning')] = get_db_sql ($sql);
+	$data[__('Warning')] = db_get_sql ($sql);
 
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 4 $filter";
-	$data[__('Critical')] = get_db_sql ($sql);
+	$data[__('Critical')] = db_get_sql ($sql);
 	
 	asort ($data);
 	
@@ -907,7 +913,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 				GROUP BY dbms_lob.substr(nombre,4000,1),id_agentmodule)', $id_agent, $max_items);
 			break;
 	}
-	$events = get_db_all_rows_sql ($sql);
+	$events = db_get_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {
 			return fs_error_image ();
@@ -923,7 +929,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	
 	/* System events */
 	$sql = "SELECT COUNT(*) FROM tevento WHERE id_agentmodule = 0 AND id_agente = $id_agent";
-	$value = get_db_sql ($sql);
+	$value = db_get_sql ($sql);
 	if ($value > 0) {
 		$data[__('System').' ('.$value.')'] = $value;
 	}
@@ -980,7 +986,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 			break;
 	}
 	
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 	if ($result === false) {
 		$result = array();
 	}
@@ -1191,23 +1197,23 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	// Three months ago
 	$time["3month"] = $time["all"] - 7776000;
 	
-	$data[__("Today")]        = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
-	$data["1 ".__("Week")]    = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
-	$data["1 ".__("Month")]   = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
-	$data["3 ".__("Months")]  = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
-	$data[__("Older")]        = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
+	$data[__("Today")]        = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")]    = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")]   = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")]  = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")]        = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
 	
-	$data[__("Today")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
-	$data["1 ".__("Week")]   += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
-	$data["1 ".__("Month")]  += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
-	$data["3 ".__("Months")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
-	$data[__("Older")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query), 0, true);
+	$data[__("Today")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query), 0, true);
 
-	$data[__("Today")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
-	$data["1 ".__("Week")]   += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
-	$data["1 ".__("Month")]  += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
-	$data["3 ".__("Months")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
-	$data[__("Older")]       += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query), 0, true);
+	$data[__("Today")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query), 0, true);
 
 	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
 
@@ -1284,7 +1290,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
-		$events = get_db_all_rows_filter ('tevento',
+		$events = db_get_all_rows_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
@@ -1296,7 +1302,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 
 	// Get module data
-	$data = get_db_all_rows_filter ('tagente_datos',
+	$data = db_get_all_rows_filter ('tagente_datos',
 		array ('id_agente_modulo' => $agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
@@ -1540,7 +1546,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
-		$events = get_db_all_rows_filter ('tevento',
+		$events = db_get_all_rows_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
@@ -1552,7 +1558,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 
 	// Get module data
-	$data = get_db_all_rows_filter ('tagente_datos',
+	$data = db_get_all_rows_filter ('tagente_datos',
 		array ('id_agente_modulo' => $agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
@@ -1801,7 +1807,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
-		$events = get_db_all_rows_filter ('tevento',
+		$events = db_get_all_rows_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
@@ -1813,7 +1819,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	}
 
 	// Get module data
-	$data = get_db_all_rows_filter ('tagente_datos_string',
+	$data = db_get_all_rows_filter ('tagente_datos_string',
 		array ('id_agente_modulo' => $agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
@@ -2047,7 +2053,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
         $rows = 0;
         
         $first = true;
-        while ($row = get_db_all_row_by_steps_sql($first, $result, $sql1)){
+        while ($row = db_get_all_row_by_steps_sql($first, $result, $sql1)){
         		$first = false;
         	
                 $rows++;
@@ -2374,16 +2380,16 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 function graph_custom_sql_graph ($id, $width, $height, $type = 1) {
 	global $config;
 
-    $report_content = get_db_row ('treport_content', 'id_rc', $id);
+    $report_content = db_get_row ('treport_content', 'id_rc', $id);
     if ($report_content["external_source"] != ""){
         $sql = safe_output ($report_content["external_source"]);
     }
     else {
-    	$sql = get_db_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
+    	$sql = db_get_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
     	$sql = safe_output($sql['sql']);
     }
 
-	$data_result = get_db_all_rows_sql ($sql);
+	$data_result = db_get_all_rows_sql ($sql);
 
 	if ($data_result === false)
 		$data_result = array ();

@@ -27,6 +27,7 @@ require_once "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 require_once "../../include/functions_api.php";
+require_once ('../../include/functions_users.php');
 
 global $config;
 
@@ -42,7 +43,7 @@ session_write_close ();
 
 
 if(!isInACL($_SERVER['REMOTE_ADDR'])){
-    pandora_audit("ACL Violation",
+    db_pandora_audit("ACL Violation",
 		"Trying to access marquee without ACL Access");
 	require ("../../general/noaccess.php");
 	exit;
@@ -69,11 +70,11 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$result = get_db_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql);
 foreach ($result as $row) {
 	$agente = "";
 	if ($row["id_agente"] != 0){
-		$agente = get_db_sql ("SELECT nombre FROM tagente WHERE id_agente = ". $row["id_agente"]);
+		$agente = db_get_sql ("SELECT nombre FROM tagente WHERE id_agente = ". $row["id_agente"]);
 		$agente = $agente . " : ";
 	}
 	$output .= strtoupper($agente) . $row["evento"]. " , ". human_time_comparation($row["timestamp"]);

@@ -18,8 +18,12 @@ global $config;
 
 check_login ();
 
+include_once($config['homedir'] . "/include/functions_profile.php");
+include_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
+
 if (! check_acl ($config['id_user'], 0, "UM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
 	exit;
@@ -94,7 +98,7 @@ if (isset ($_GET["user_del"])) { //delete user
 	if($id_user != $config['id_user']){
 		$result = delete_user ($id_user);
 
-		pandora_audit("User management",
+		db_pandora_audit("User management",
 			"Deleted user ".safe_input($id_user));
 
 		ui_print_result_message ($result,
@@ -196,7 +200,7 @@ foreach ($info as $user_id => $user_info) {
 	}
 	
 	$data[3] .= '<a href="#" class="tip"><span>';
-	$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
+	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
 	if ($result !== false) {
 		foreach ($result as $row) {
 			$data[3] .= get_profile_name ($row["id_perfil"]);
@@ -263,7 +267,7 @@ $table->head[11] = __('Delete');
 $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
 
-$profiles = get_db_all_rows_in_table ("tperfil");
+$profiles = db_get_all_rows_in_table ("tperfil");
 
 $img = print_image ("images/ok.png", true, array ("border" => 0)); 
 

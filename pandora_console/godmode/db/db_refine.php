@@ -21,10 +21,14 @@ global $config;
 check_login ();	
 
 if (! check_acl ($config['id_user'], 0, "DM")) {
-	pandora_audit("ACL Violation","Trying to access Database Debug Admin section");
+	db_pandora_audit("ACL Violation","Trying to access Database Debug Admin section");
 	require ("general/noaccess.php");
 	exit;
 }
+
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database debug'), "images/god8.png", false, "", true);
 
@@ -51,7 +55,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 		foreach ($origen_modulo as $id_agentemodulo) {
 			echo "<br /><br />".__('Filtering data module')."<b> [".get_agentmodule_name ($id_agentemodulo)."]</b>";
 			$sql = sprintf ("DELETE FROM tagente_datos WHERE id_agente_modulo = %d AND (datos < '%s' OR datos > '%s')", $id_agentemodulo, $min, $max);
-			process_sql ($sql);
+			db_process_sql ($sql);
 		} 
 	} //if copy modules or alerts
 	echo '<br /><br /><h3 class="suc">'.__('Filtering completed').'</h3>';

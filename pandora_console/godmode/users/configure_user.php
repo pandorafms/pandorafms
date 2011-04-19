@@ -18,6 +18,10 @@ global $config;
 
 check_login ();
 
+include_once($config['homedir'] . "/include/functions_profile.php");
+include_once($config['homedir'] . '/include/functions_users.php');
+include_once ($config['homedir'] . '/include/functions_groups.php');
+
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 
@@ -29,7 +33,7 @@ if ($user_info["language"] == ""){
 }
 
 if (! check_acl ($config['id_user'], 0, "UM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
 	return;
@@ -121,7 +125,7 @@ if ($create_user) {
 		
 		$result = create_user($id, $password_new, $values);
 
-		pandora_audit("User management",
+		db_pandora_audit("User management",
 			"Created user ".safe_input($id), false, false, $info);
 
 		ui_print_result_message ($result,
@@ -181,7 +185,7 @@ if ($update_user) {
 				' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'] . 
 				' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
 			
-			pandora_audit("User management", "Updated user ".safe_input($id),
+			db_pandora_audit("User management", "Updated user ".safe_input($id),
 				false, false, $info);
 		
 			ui_print_result_message ($res1,
@@ -202,7 +206,7 @@ if ($add_profile) {
 	$id2 = (string) get_parameter ('id');
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
-	pandora_audit("User management",
+	db_pandora_audit("User management",
 		"Added profile for user ".safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
 	$return = create_user_profile ($id2, $profile2, $group2);
 	ui_print_result_message ($return,
@@ -214,11 +218,11 @@ if ($delete_profile) {
 	$id2 = (string) get_parameter ('id_user');
 	$id_up = (int) get_parameter ('id_user_profile');
 	
-	$perfilUser = get_db_row('tusuario_perfil', 'id_up', $id_up);
+	$perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
 	$id_perfil = $perfilUser['id_perfil'];
-	$perfil = get_db_row('tperfil', 'id_perfil', $id_perfil);
+	$perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
 		
-	pandora_audit("User management",
+	db_pandora_audit("User management",
 		"Deleted profile for user ".safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 
 	$return = delete_user_profile ($id2, $id_up);
@@ -353,7 +357,7 @@ $table->head[1] = __('Group');
 $table->head[2] = __('Action');
 $table->align[2] = 'center';
 
-$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
+$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
 if ($result === false) {
 	$result = array ();
 }
@@ -375,12 +379,14 @@ foreach ($result as $profile) {
 
 $data = array ();
 $data[0] = '<form method="post">';
-if (check_acl ($config['id_user'], 0, "PM"))
+if (check_acl ($config['id_user'], 0, "PM")) {
 	$data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 		0, true, false, false);
-else
-	$data[0] .= print_select (get_profiles_filter ('pandora_management <> 1 and db_management <> 1'), 'assign_profile', 0, '', __('None'),
+}
+else {
+	$data[0] .= print_select (get_profiles (array ('pandora_management' => '<> 1', 'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'),
 		0, true, false, false);
+}
 $data[1] = print_select_groups($config['id_user'], "UM", $own_info['is_admin'],
 	'assign_group', -1, '', __('None'), -1, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);

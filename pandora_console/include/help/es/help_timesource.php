@@ -40,13 +40,13 @@ global $config;
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$timestamp = get_db_value_sql("SELECT UNIX_TIMESTAMP();");
+		$timestamp = db_get_value_sql("SELECT UNIX_TIMESTAMP();");
 		break;
 	case "postgresql":
-		$timestamp = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+		$timestamp = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
 		break;
 	case "oracle":
-		$timestamp = get_db_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
+		$timestamp = db_get_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
 		break;
 }
 ui_print_timestamp ($timestamp, false, $option);

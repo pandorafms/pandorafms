@@ -32,17 +32,17 @@ if (is_ajax ()) {
 			$alerts = agents_get_alerts_simple($agents);
 			
 			foreach ($alerts as $alert) {
-				$module = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
+				$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
 				
 				if ($module_group == $module['id_module_group']) {
 					if ($alert["times_fired"] > 0) {
 						echo '<strong>' . __('Number fired of alerts').': </strong> ' . $alert["times_fired"] . '<br />';
-						$agent = get_db_row('tagente', 'id_agente', $module['id_agente']);
+						$agent = db_get_row('tagente', 'id_agente', $module['id_agente']);
 						echo '<strong>' . __('Agent').': </strong>';
 						echo safe_output($agent['nombre']) . '<br />';
 						echo '<strong>' . __('Module') . ': </strong>';
 						echo safe_output($module['nombre']) . '<br />';
-						$template = get_db_row('talert_templates', 'id' , $alert['id_alert_template']);
+						$template = db_get_row('talert_templates', 'id' , $alert['id_alert_template']);
 						echo '<strong>' . __('Alert template') . ': </strong>';
 						echo safe_output($template['name']) . '<br />';
 						
@@ -52,7 +52,7 @@ if (is_ajax ()) {
 							WHERE t1.id_alert_template_module = ' . $template['id'] . '
 								OR t2.id = ' . $template['id_alert_action'] . ';';
 						
-						$actions = get_db_all_rows_sql($sql);
+						$actions = db_get_all_rows_sql($sql);
 						if ($actions === false) {
 							$actions = array();
 						}
@@ -88,6 +88,8 @@ function mainModuleGroups() {
 	global $config; //the useful global var of Pandora Console, it has many data can you use
 
 	require_once ('include/functions_reporting.php');
+	require_once($config['homedir'] . "/include/functions_agents.php");
+	require_once($config['homedir'] . "/include/functions_users.php");
 
 	//The big query
 	switch ($config["dbtype"]) {
@@ -154,7 +156,7 @@ function mainModuleGroups() {
 		foreach ($modelGroups as $idModelGroup => $modelGroup) {
 			$query = sprintf($sql,$idAgentGroup, $idModelGroup);
 
-			$rowsDB = get_db_all_rows_sql ($query);
+			$rowsDB = db_get_all_rows_sql ($query);
 			
 			
 			$agents = get_group_agents($idAgentGroup);
@@ -162,7 +164,7 @@ function mainModuleGroups() {
 				$alerts = agents_get_alerts_simple($agents);
 				
 				foreach ($alerts as $alert) {
-					$module = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
+					$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
 					
 					if ($idModelGroup == $module['id_module_group']) {
 						if ($alert["times_fired"] > 0) {

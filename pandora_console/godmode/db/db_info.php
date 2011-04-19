@@ -19,13 +19,15 @@
 global $config;
 
 require_once ($config["homedir"] . '/include/functions_graph.php'); 
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
 
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database information'), "images/god8.png", false, "", true);
 
 check_login ();
 	
 if (! check_acl ($config['id_user'], 0, "DM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Database Management Info");
 	require ("general/noaccess.php");
 	return;

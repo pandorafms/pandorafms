@@ -54,6 +54,7 @@ if (!isset ($config)) {
 ');
 }
 
+include_once($config['homedir'] . "/include/functions_profile.php");
 enterprise_include ('include/auth/mysql.php');
 
 $config["user_can_update_info"] = true;
@@ -88,7 +89,7 @@ function process_user_login ($login, $pass) {
 				$sql = sprintf ('SELECT id_user, password FROM tusuario WHERE id_user = \'%s\'', $login);
 				break;
 		}
-		$row = get_db_row_sql ($sql);
+		$row = db_get_row_sql ($sql);
 		
 		//Check that row exists, that password is not empty and that password is the same hash
 		if ($row !== false && $row["password"] !== md5 ("") && $row["password"] == md5 ($pass)) {
@@ -198,7 +199,7 @@ function is_user_admin ($id_user) {
 		return $is_admin;
 	*/
 
-	$is_admin = (bool) get_db_value ('is_admin', 'tusuario', 'id_user', $id_user);
+	$is_admin = (bool) db_get_value ('is_admin', 'tusuario', 'id_user', $id_user);
 	return $is_admin;
 }
 
@@ -234,7 +235,7 @@ function get_user_id ($user) {
  * @return bool True if the user exists.
  */
 function is_user ($user) {
-	$user = get_db_row('tusuario', 'id_user', get_user_id ($user));
+	$user = db_get_row('tusuario', 'id_user', get_user_id ($user));
 	if (! $user)
 		return false;
 	return true;
@@ -248,7 +249,7 @@ function is_user ($user) {
  * @return string The users full name
  */
 function get_user_fullname ($user) {
-	return (string) get_db_value ('fullname', 'tusuario', 'id_user', get_user_id ($user));
+	return (string) db_get_value ('fullname', 'tusuario', 'id_user', get_user_id ($user));
 }
 
 /** 
@@ -259,7 +260,7 @@ function get_user_fullname ($user) {
  * @return string The users email address
  */
 function get_user_email ($user) {
-	return (string) get_db_value ('email', 'tusuario', 'id_user', get_user_id ($user));
+	return (string) db_get_value ('email', 'tusuario', 'id_user', get_user_id ($user));
 }
 
 /**
@@ -270,7 +271,7 @@ function get_user_email ($user) {
  * @return mixed An array of users
  */
 function get_user_info ($user) {
-	return get_db_row ("tusuario", "id_user", get_user_id ($user));
+	return db_get_row ("tusuario", "id_user", get_user_id ($user));
 }
 
 /**
@@ -303,7 +304,7 @@ function get_users ($order = "fullname", $filter = false, $fields = false) {
 	
 	$output = array();
 	
-	$result = get_db_all_rows_filter ("tusuario", $filter, $fields);
+	$result = db_get_all_rows_filter ("tusuario", $filter, $fields);
 	if ($result !== false) {
 		foreach ($result as $row) {
 			$output[$row["id_user"]] = $row;
@@ -319,7 +320,7 @@ function get_users ($order = "fullname", $filter = false, $fields = false) {
  * @param string User id
  */
 function process_user_contact ($id_user) {
-	return process_sql_update ("tusuario",
+	return db_process_sql_update ("tusuario",
 		array ("last_connect" => get_system_time ()),
 			array ("id_user" => $id_user));
 }
@@ -336,7 +337,7 @@ function create_user ($id_user, $password, $user_info) {
 	$values["last_connect"] = 0;
 	$values["registered"] = get_system_time ();
 
-	return (@process_sql_insert ("tusuario", $values)) !== false;
+	return (@db_process_sql_insert ("tusuario", $values)) !== false;
 }
 
 /**
@@ -345,12 +346,12 @@ function create_user ($id_user, $password, $user_info) {
  * @param string User id
  */
 function delete_user ($id_user) {
-	$result = process_sql_delete('tusuario_perfil', array('id_usuario' => $id_user));
+	$result = db_process_sql_delete('tusuario_perfil', array('id_usuario' => $id_user));
 	if ($result === false) {
 		return false;
 	}
 	
-	$result = process_sql_delete('tusuario', array('id_user' => $id_user));
+	$result = db_process_sql_delete('tusuario', array('id_user' => $id_user));
 	if ($result === false) {
 		return false;
 	}
@@ -367,7 +368,7 @@ function delete_user ($id_user) {
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function update_user_password ($user, $password_new) {
-	return process_sql_update ('tusuario',
+	return db_process_sql_update ('tusuario',
 		array ('password' => md5 ($password_new)),
 		array ('id_user' => $user));
 }
@@ -385,7 +386,7 @@ function update_user ($id_user, $values) {
 	if (! is_array ($values))
 		return false;
 	
-	return process_sql_update ("tusuario", $values, array ("id_user" => $id_user));
+	return db_process_sql_update ("tusuario", $values, array ("id_user" => $id_user));
 }
 
 /**

@@ -19,6 +19,8 @@
  * @subpackage Reporting
  */
 
+require_once ($config['homedir'].'/include/functions_users.php');
+
 /**
  * Get a custom user report.
  *
@@ -42,7 +44,7 @@ function get_report ($id_report, $filter = false, $fields = false) {
 	if (is_array ($fields))
 		$fields[] = 'id_group';
 	
-	$report = get_db_row_filter ('treport', $filter, $fields);
+	$report = db_get_row_filter ('treport', $filter, $fields);
 	if (! check_acl ($config['id_user'], $report['id_group'], 'AR'))
 		return false;
 	return $report;
@@ -77,7 +79,7 @@ function get_reports ($filter = false, $fields = false, $returnAllGroup = true, 
 	$groups = get_user_groups ($config['id_user'], $privileges, $returnAllGroup);
 
 	$reports = array ();
-	$all_reports = @get_db_all_rows_filter ('treport', $filter, $fields);
+	$all_reports = @db_get_all_rows_filter ('treport', $filter, $fields);
 	if ($all_reports !== FALSE)
 	foreach ($all_reports as $report){
 		if (!in_array($report['id_group'], array_keys($groups)))
@@ -109,7 +111,7 @@ function create_report ($name, $id_group, $values = false) {
 	$values['id_group'] = $id_group;
 	$values['id_user'] = $config['id_user'];
 	
-	return @process_sql_insert ('treport', $values);
+	return @db_process_sql_insert ('treport', $values);
 }
 
 
@@ -125,7 +127,7 @@ function update_report ($id_report, $values) {
 	$report = get_report ($id_report, false, array ('id_report'));
 	if ($report === false)
 		return false;
-	return (@process_sql_update ('treport',
+	return (@db_process_sql_update ('treport',
 		$values,
 		array ('id_report' => $id_report))) !== false;
 }
@@ -144,8 +146,8 @@ function delete_report ($id_report) {
 	$report = get_report ($id_report);
 	if ($report === false)
 		return false;
-	@process_sql_delete ('treport_content', array ('id_report' => $id_report));
-	return @process_sql_delete ('treport', array ('id_report' => $id_report));
+	@db_process_sql_delete ('treport_content', array ('id_report' => $id_report));
+	return @db_process_sql_delete ('treport', array ('id_report' => $id_report));
 }
 
 /**
@@ -165,7 +167,7 @@ function get_report_content ($id_report_content, $filter = false, $fields = fals
 		$fields[] = 'id_report';
 	$filter['id_rc'] = $id_report_content;
 	
-	$content = @get_db_row_filter ('treport_content', $filter, $fields);
+	$content = @db_get_row_filter ('treport_content', $filter, $fields);
 	if ($content === false)
 		return false;
 	$report = get_report ($content['id_report']);
@@ -200,19 +202,19 @@ function create_report_content ($id_report, $values) {
 		case "mysql":
 			unset ($values['`order`']);
 			
-			$order = (int) get_db_value ('MAX(`order`)', 'treport_content', 'id_report', $id_report);
+			$order = (int) db_get_value ('MAX(`order`)', 'treport_content', 'id_report', $id_report);
 			$values['`order`'] = $order + 1;
 			break;
 		case "postgresql":
 		case "oracle":
 			unset ($values['"order"']);
 			
-			$order = (int) get_db_value ('MAX("order")', 'treport_content', 'id_report', $id_report);
+			$order = (int) db_get_value ('MAX("order")', 'treport_content', 'id_report', $id_report);
 			$values['"order"'] = $order + 1;
 			break;
 	}
 	
-	return @process_sql_insert ('treport_content', $values);
+	return @db_process_sql_insert ('treport_content', $values);
 }
 
 /**
@@ -237,7 +239,7 @@ function get_report_contents ($id_report, $filter = false, $fields = false) {
 	$filter['id_report'] = $id_report;
 	$filter['order'] = '`order`';
 	
-	$contents = get_db_all_rows_filter ('treport_content', $filter, $fields);
+	$contents = db_get_all_rows_filter ('treport_content', $filter, $fields);
 	if ($contents === false)
 		return array ();
 	return $contents;
@@ -262,27 +264,27 @@ function move_report_content_up ($id_report_content) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+			$order = db_get_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
 			/* Set the previous element order to the current of the content we want to change */
-			process_sql_update ('treport_content', 
+			db_process_sql_update ('treport_content', 
 				array ('`order` = `order` + 1'),
 				array ('id_report' => $content['id_report'],
 					'`order` = '.($order - 1)));
 				
-			return (@process_sql_update ('treport_content',
+			return (@db_process_sql_update ('treport_content',
 				array ('`order` = `order` - 1'),
 				array ('id_rc' => $id_report_content))) !== false;
 			break;
 		case "postgresql":
 		case "oracle":
-			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
+			$order = db_get_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
 			/* Set the previous element order to the current of the content we want to change */
-			process_sql_update ('treport_content', 
+			db_process_sql_update ('treport_content', 
 				array ('"order" = "order" + 1'),
 				array ('id_report' => $content['id_report'],
 					'"order" = '.($order - 1)));
 				
-			return (@process_sql_update ('treport_content',
+			return (@db_process_sql_update ('treport_content',
 				array ('"order" = "order" - 1'),
 				array ('id_rc' => $id_report_content))) !== false;
 			break;
@@ -308,25 +310,25 @@ function move_report_content_down ($id_report_content) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+			$order = db_get_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
 			/* Set the previous element order to the current of the content we want to change */
-			process_sql_update ('treport_content', 
+			db_process_sql_update ('treport_content', 
 				array ('`order` = `order` - 1'),
 				array ('id_report' => (int) $content['id_report'],
 					'`order` = '.($order + 1)));
-			return (@process_sql_update ('treport_content',
+			return (@db_process_sql_update ('treport_content',
 				array ('`order` = `order` + 1'),
 				array ('id_rc' => $id_report_content))) !== false;
 			break;
 		case "postgresql":
 		case "oracle":
-			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
+			$order = db_get_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
 			/* Set the previous element order to the current of the content we want to change */
-			process_sql_update ('treport_content', 
+			db_process_sql_update ('treport_content', 
 				array ('"order" = "order" - 1'),
 				array ('id_report' => (int) $content['id_report'],
 					'"order" = '.($order + 1)));
-			return (@process_sql_update ('treport_content',
+			return (@db_process_sql_update ('treport_content',
 				array ('"order" = "order" + 1'),
 				array ('id_rc' => $id_report_content))) !== false;
 			break;
@@ -350,23 +352,23 @@ function delete_report_content ($id_report_content) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-			process_sql_update ('treport_content',
+			$order = db_get_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+			db_process_sql_update ('treport_content',
 				array ('`order` = `order` - 1'),
 				array ('id_report' => (int) $content['id_report'],
 					'`order` > '.$order));
 			break;
 		case "postgresql":
 		case "oracle":
-			$order = get_db_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
-			process_sql_update ('treport_content',
+			$order = db_get_value ('"order"', 'treport_content', 'id_rc', $id_report_content);
+			db_process_sql_update ('treport_content',
 				array ('"order" = "order" - 1'),
 				array ('id_report' => (int) $content['id_report'],
 					'"order" > '.$order));
 			break;
 	}
 		
-	return (@process_sql_delete ('treport_content',
+	return (@db_process_sql_delete ('treport_content',
 		array ('id_rc' => $id_report_content))) !== false;
 }
 ?>

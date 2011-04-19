@@ -19,6 +19,11 @@
  * @subpackage UI
  */
 
+require_once ($config['homedir'].'/include/functions_agents.php');
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . "/include/functions.php");
+require_once ($config['homedir'] . '/include/functions_groups.php');
+
 /**
  * Truncate a text to num chars (pass as parameter) and if flag show tooltip is
  * true the html artifal to show the tooltip with rest of text.
@@ -288,7 +293,7 @@ function ui_print_username ($username, $return = false) {
  */
 function ui_print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true) {
 	if($id_group > 0)
-		$icon = (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
 		$icon = "world";
 	
@@ -324,7 +329,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
  */
 function ui_print_group_icon_path ($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
 	if($id_group > 0)
-		$icon = (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
 		$icon = "world";
 	
@@ -359,7 +364,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * @return string HTML with icon of the OS
  */
 function ui_print_os_icon ($id_os, $name = true, $return = false) {
-	$icon = (string) get_db_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
+	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		return "-";
@@ -527,11 +532,11 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
 		$data[$index['template']] .= print_image ('images/zoom.png', true);
 		$data[$index['template']] .= '</a> ';
-		$actionDefault = get_db_value_sql("SELECT id_alert_action
+		$actionDefault = db_get_value_sql("SELECT id_alert_action
 			FROM talert_templates WHERE id = " . $alert['id_alert_template']);
 	}
 	else {
-		$actionDefault = get_db_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
+		$actionDefault = db_get_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
 	}
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
@@ -550,7 +555,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	}
 	else {
 		if ($actionDefault != "")
-		$actionText = get_db_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
+		$actionText = db_get_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
 	}
 
 	$data[$index['action']] = $actionText;
@@ -1240,7 +1245,7 @@ function ui_debug ($var, $backtrace = true) {
 function ui_print_moduletype_icon ($id_moduletype, $return = false) {
 	global $config;
 	
-	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
+	$type = db_get_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
 	if ($type === false) {
 		$type = array ();
 		$type["descripcion"] = __('Unknown type'); 

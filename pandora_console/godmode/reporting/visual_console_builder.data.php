@@ -18,13 +18,14 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
 
 require_once ('include/functions_visual_map.php');
+require_once ('include/functions_users.php');
 
 switch ($action) {
 	case 'new':

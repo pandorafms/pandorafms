@@ -22,6 +22,7 @@ check_login ();
 ui_print_page_header (__("Visual console"), "images/monitor.png", false, "operation_visual_console");
 
 require_once ('include/functions_visual_map.php');
+require_once ('include/functions_groups.php');
 
 $layouts = get_user_layouts ();	
 
@@ -54,7 +55,7 @@ foreach ($layouts as $layout) {
 		$layout['id'].'">'.$layout['name'].'</a> ';
 	$data[1] = ui_print_group_icon ($layout["id_group"], true);
 	$data[1] .= "&nbsp;".get_group_name ($layout["id_group"], true);
-	$data[2] = get_db_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
+	$data[2] = db_get_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
 		
 	array_push ($table->data, $data);
 }

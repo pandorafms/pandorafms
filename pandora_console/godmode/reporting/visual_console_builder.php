@@ -18,13 +18,14 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
 
 require_once ('include/functions_visual_map.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
 
 $action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor', 'preview'), 'data');
@@ -49,7 +50,7 @@ switch ($activeTab) {
 				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
 					
 				// If the background is changed the size is reseted 			
-				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
 				if($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
@@ -59,7 +60,7 @@ switch ($activeTab) {
 				
 				switch ($action) {
 					case 'update':
-						$result = process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
+						$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
 						if ($result !== false && $values['background']) {
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully update.').'</h3>');
@@ -71,7 +72,7 @@ switch ($activeTab) {
 					case 'save':
 						
 						if($values['name'] != "" && $values['background'])
-							$idVisualConsole = process_sql_insert('tlayout', $values);
+							$idVisualConsole = db_process_sql_insert('tlayout', $values);
 						else
 							$idVisualConsole = false;
 							
@@ -84,10 +85,10 @@ switch ($activeTab) {
 						}
 						break;
 				}
-				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				break;
 			case 'edit':
-				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
 				$idGroup = $visualConsole['id_group'];
 				$background = $visualConsole['background'];
@@ -109,11 +110,11 @@ switch ($activeTab) {
 					$height = $sizeBackground[1];
 				}
 				
-				process_sql_update('tlayout', array('background' => $background,
+				db_process_sql_update('tlayout', array('background' => $background,
 					'width' => $width, 'height' => $height), array('id' => $idVisualConsole));
 				
 				//Update elements in visual map
-				$idsElements = get_db_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));
+				$idsElements = db_get_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));
 				foreach ($idsElements as $idElement) {
 					$id = $idElement['id'];
 					$values = array();
@@ -129,23 +130,23 @@ switch ($activeTab) {
 					$values['parent_item'] = get_parameter('parent_' . $id, 0);
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
 					$values['label_color'] = get_parameter('label_color_' . $id, '#000000');
-					process_sql_update('tlayout_data', $values, array('id' => $id));
+					db_process_sql_update('tlayout_data', $values, array('id' => $id));
 				}
 				break;
 			case 'delete':
 				$id_element = get_parameter('id_element');
-				$result = process_sql_delete('tlayout_data', array('id' => $id_element));
+				$result = db_process_sql_delete('tlayout_data', array('id' => $id_element));
 				if ($result !== false) {
 					$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully delete.').'</h3>');
 				}
 				break;
 		}
-		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
 		$action = 'edit';
 		break;
 	case 'wizard':
-		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
 		$background = $visualConsole['background'];
 		switch ($action) {
@@ -176,7 +177,7 @@ switch ($activeTab) {
 								$sql = "SELECT id_agente_modulo
 									FROM tagente_modulo
 									WHERE delete_pending = 0 AND id_agente = ".$ag." AND nombre = '".$mod."'";
-								$result = get_db_row_sql ($sql);
+								$result = db_get_row_sql ($sql);
 								$id_modules[$cont_dest] = $result['id_agente_modulo'];
 								$cont_ag = $cont_ag + 1;
 								$cont_dest = $cont_dest + 1;
@@ -195,14 +196,14 @@ switch ($activeTab) {
 		switch ($action) {
 			case 'update':
 			case 'edit':
-				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
 				$action = 'edit';
 				break;
 		}
 		break;
 	case 'preview':
-		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
 		break;
 }

@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 
 require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once ('include/functions_visual_map.php');
+require_once ($config['homedir'].'/include/functions_agents.php');
 
 //Arrays for select box.
 $backgrounds_list = list_files('images/console/background/', "jpg", 1, 0);
@@ -90,7 +91,7 @@ $table->data[0][2] = print_input_text('width', $visualConsole['width'], '', 3, 5
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
 $i = 1;
-$layoutDatas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
+$layoutDatas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
 

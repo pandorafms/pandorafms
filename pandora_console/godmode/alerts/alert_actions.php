@@ -17,11 +17,13 @@
 global $config;
 
 require_once ("include/functions_alerts.php");
+require_once ('include/functions_users.php');
+require_once ('include/functions_groups.php');
 
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert actions");
 	require ("general/noaccess.php");
 	exit;
@@ -58,7 +60,7 @@ if ($copy_action) {
 		if ($al_action['id_group'] == 0){
 			// then must have "PM" access privileges
 			if (! check_acl ($config['id_user'], 0, "PM")) {
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -78,7 +80,7 @@ if ($copy_action) {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 			else{
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -92,10 +94,10 @@ if ($copy_action) {
 	$result = alerts_clone_alert_action ($id);
 	
 	if ($result) {
-		pandora_audit("Command management", "Duplicate alert action " . $id . " clone to " . $result);
+		db_pandora_audit("Command management", "Duplicate alert action " . $id . " clone to " . $result);
 	}
 	else {
-		pandora_audit("Command management", "Fail try to duplicate alert action " . $id);
+		db_pandora_audit("Command management", "Fail try to duplicate alert action " . $id);
 	}
 	
 	ui_print_result_message ($result,
@@ -124,10 +126,10 @@ if ($create_action) {
 		' Action threshold: ' . $action_threshold;
 		
 	if ($result) {
-		pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
+		db_pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
 	}
 	else {
-		pandora_audit("Command management", "Fail try to create alert action", false, false, $info);
+		db_pandora_audit("Command management", "Fail try to create alert action", false, false, $info);
 	}
 	
 	ui_print_result_message ($result,
@@ -143,7 +145,7 @@ if ($update_action) {
 	if ($al_action !== false){
 		if ($al_action['id_group'] == 0){
 			if (! check_acl ($config['id_user'], 0, "PM")) {
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -180,10 +182,10 @@ if ($update_action) {
 		' Action threshold: ' . $action_threshold;
 		
 	if ($result) {
-		pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));
+		db_pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));
 	}
 	else {
-		pandora_audit("Command management", "Fail try to update alert action " . $id, false, false, json_encode($values));
+		db_pandora_audit("Command management", "Fail try to update alert action " . $id, false, false, json_encode($values));
 	}
 	
 	ui_print_result_message ($result,
@@ -201,7 +203,7 @@ if ($delete_action) {
 		if ($al_action['id_group'] == 0){
 			// then must have "PM" access privileges
 			if (! check_acl ($config['id_user'], 0, "PM")) {
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -222,7 +224,7 @@ if ($delete_action) {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 			else{
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -237,10 +239,10 @@ if ($delete_action) {
 	$result = alerts_delete_alert_action ($id);
 	
 	if ($result) {
-		pandora_audit("Command management", "Delete alert action " . $id);
+		db_pandora_audit("Command management", "Delete alert action " . $id);
 	}
 	else {
-		pandora_audit("Command management", "Fail try to delete alert action " . $id);
+		db_pandora_audit("Command management", "Fail try to delete alert action " . $id);
 	}
 	
 	ui_print_result_message ($result,
@@ -264,7 +266,7 @@ $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';
 
-$actions = get_db_all_rows_in_table ('talert_actions');
+$actions = db_get_all_rows_in_table ('talert_actions');
 if ($actions === false)
 	$actions = array ();
 

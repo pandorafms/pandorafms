@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -28,11 +28,15 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 /* Check if this page is included from a agent edition */
 
 if (! check_acl ($config['id_user'], 0, "LW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
 }
+
+require_once ($config['homedir'].'/include/functions_agents.php');
+require_once ($config['homedir'].'/include/functions_modules.php');
+require_once ($config['homedir'].'/include/functions_users.php');
 
 // Table for filter controls
 $form_filter = '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
@@ -68,10 +72,10 @@ $form_filter .= "<tr>\n";
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$temp = get_db_all_rows_sql("SELECT id, name FROM talert_actions;");
+			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions;");
 			break;
 		case "oracle":
-			$temp = get_db_all_rows_sql("SELECT id, name FROM talert_actions");
+			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions");
 			break;
 }
 
@@ -444,9 +448,9 @@ foreach ($simple_alerts as $alert) {
 	$data[6] = '';
 	if (empty($actions)){
 		// Get and show default actions for this alert
-		$default_action = get_db_sql ("SELECT id_alert_action FROM talert_templates WHERE id = ".$alert["id_alert_template"]);
+		$default_action = db_get_sql ("SELECT id_alert_action FROM talert_templates WHERE id = ".$alert["id_alert_template"]);
 		if ($default_action != ""){
-			$data[6] = __("Default"). " : ".get_db_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
+			$data[6] = __("Default"). " : ".db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
 		}
 
 	}

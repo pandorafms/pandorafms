@@ -20,7 +20,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Network Profile Management");
 	require ("general/noaccess.php");
 	return;
@@ -93,7 +93,7 @@ if ($export_profile) {
 			break;
 	}
 	
-	$components = get_db_all_rows_sql ($sql);
+	$components = db_get_all_rows_sql ($sql);
 	
 	$row_names = array ();
 	$inv_names = array ();
@@ -133,7 +133,7 @@ if ($export_profile) {
 	exit;
 }
 
-$result = get_db_all_rows_in_table ("tnetwork_profile", "name");
+$result = db_get_all_rows_in_table ("tnetwork_profile", "name");
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;

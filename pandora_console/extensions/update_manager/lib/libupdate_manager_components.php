@@ -22,13 +22,13 @@ function um_component_database_get_data ($component_db) {
 
 	$fields = um_component_database_get_table_fields ($component_db->table_name);
 	
-	$result = process_sql('SELECT COUNT(*) FROM '.$component_db->table_name);
+	$result = db_process_sql('SELECT COUNT(*) FROM '.$component_db->table_name);
 	if ($result === false) {
 		echo '<strong>Error getting table fields</strong> <br />';
 		return NULL;
 	}
 	
-	$result = process_sql('SELECT '.implode (',', $fields).' FROM '.$component_db->table_name);
+	$result = db_process_sql('SELECT '.implode (',', $fields).' FROM '.$component_db->table_name);
 
 	$cont = 0;
 	$resultdata = array();
@@ -62,13 +62,13 @@ function um_component_database_get_all_tables () {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SHOW TABLES');
+			$result = db_process_sql('SHOW TABLES');
 			break;
 		case "postgresql":
-			$result = process_sql('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\';');
+			$result = db_process_sql('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\';');
 			break;
 		case "oracle":
-			$result = process_sql('SELECT table_name FROM user_tables');
+			$result = db_process_sql('SELECT table_name FROM user_tables');
 			break;
 	}
 
@@ -113,14 +113,14 @@ function um_component_database_get_table_fields ($table_name) {
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SHOW COLUMNS FROM '.$table_name.' WHERE `Key` != "PRI"');
+			$result = db_process_sql('SHOW COLUMNS FROM '.$table_name.' WHERE `Key` != "PRI"');
 			break;
 		case "postgresql":
 			//TODO: verificar que se extraen todos los campos menos clave primaria
-			$result = process_sql("SELECT * FROM pg_indexes WHERE tablename = '" . $table_name . "'");
+			$result = db_process_sql("SELECT * FROM pg_indexes WHERE tablename = '" . $table_name . "'");
 			break;
 		case "oracle":
-			$result = process_sql("SELECT cols1.column_name as Fields, cols1.data_type as Type,
+			$result = db_process_sql("SELECT cols1.column_name as Fields, cols1.data_type as Type,
 					      CASE WHEN (cols1.nullable = 'Y') THEN 'YES' ELSE 'NO' END as \"Null\", 
 					      cols1.data_default as \"Default\", '' as Extra
 					      FROM user_tab_columns cols1 
@@ -197,11 +197,11 @@ function um_component_get_all_blacklisted ($component) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SELECT COUNT(name) FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+			$result = db_process_sql('SELECT COUNT(name) FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
 			break;
 		case "postgresql":
 		case "oracle":
-			$result = process_sql('SELECT COUNT(name)
+			$result = db_process_sql('SELECT COUNT(name)
 				FROM '.DB_PREFIX.'tupdate_component_blacklist
 				WHERE component = \''.$component->name.'\'');
 			break;
@@ -214,11 +214,11 @@ function um_component_get_all_blacklisted ($component) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SELECT name FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
+			$result = db_process_sql('SELECT name FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'"');
 			break;
 		case "postgresql":
 		case "oracle":
-			$result = process_sql('SELECT name
+			$result = db_process_sql('SELECT name
 			FROM '.DB_PREFIX.'tupdate_component_blacklist
 			WHERE component = \''.$component->name.'\'');
 			break;
@@ -243,11 +243,11 @@ function um_component_is_blacklisted ($component, $name) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SELECT COUNT(*) AS blacklisted FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'" AND name = "'.$name.'"');
+			$result = db_process_sql('SELECT COUNT(*) AS blacklisted FROM '.DB_PREFIX.'tupdate_component_blacklist WHERE component = "'.$component->name.'" AND name = "'.$name.'"');
 			break;
 		case "postgresql":
 		case "oracle":
-			$result = process_sql('SELECT COUNT(*) AS blacklisted
+			$result = db_process_sql('SELECT COUNT(*) AS blacklisted
 				FROM '.DB_PREFIX.'tupdate_component_blacklist
 				WHERE component = \''.$component->name.'\' AND name = \''.$name.'\'');
 			break;
@@ -265,7 +265,7 @@ function um_component_is_blacklisted ($component, $name) {
 
 function um_component_add_blacklist ($component, $name) {
 	$values = array('component' => $component->name, 'name' => $name);
-	$result = process_sql_insert(DB_PREFIX.'tupdate_component_blacklist', $values);
+	$result = db_process_sql_insert(DB_PREFIX.'tupdate_component_blacklist', $values);
 
 	if ($result === false) {
 		echo '<strong>Error creating blacklist component</strong> <br />';

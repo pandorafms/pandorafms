@@ -16,6 +16,9 @@
 
 global $config;
 
+include_once($config['homedir'] . "/include/functions_modules.php");
+include_once($config['homedir'] . '/include/functions_users.php');
+
 $searchModules = check_acl($config['id_user'], 0, "AR");
 
 $selectModuleNameUp = '';
@@ -136,14 +139,14 @@ if ($searchModules) {
 	$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	
-	$modules = get_db_all_rows_sql($select . $chunk_sql . $limit);
+	$modules = db_get_all_rows_sql($select . $chunk_sql . $limit);
 }
 
 if (!$modules) {
 		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
 else {
-	$totalModules = get_db_all_rows_sql("SELECT COUNT(t1.id_agente_modulo) AS count_modules " . $chunk_sql);
+	$totalModules = db_get_all_rows_sql("SELECT COUNT(t1.id_agente_modulo) AS count_modules " . $chunk_sql);
 	$totalModules = $totalModules[0]['count_modules'];
 	
 	$table->cellpadding = 4;

@@ -19,6 +19,10 @@ global $config;
 
 check_login ();
 
+include_once($config['homedir'] . "/include/functions_profile.php");
+include_once($config['homedir'] . '/include/functions_users.php');
+include_once ($config['homedir'] . '/include/functions_groups.php');
+
 $id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
 $user_info = get_user_info ($id);
 if ($user_info["language"] == ""){
@@ -28,7 +32,7 @@ if ($user_info["language"] == ""){
 $id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
 
 if ((!check_acl ($config["id_user"], get_user_groups ($id), "UM")) AND ($id != $config["id_user"])){
-	pandora_audit("ACL Violation","Trying to view a user without privileges");
+	db_pandora_audit("ACL Violation","Trying to view a user without privileges");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -188,7 +192,7 @@ $table->head[1] = __('Group');
 
 $table->data = array ();
 
-$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
+$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
 if ($result === false) {
 	$result = array ();
 }

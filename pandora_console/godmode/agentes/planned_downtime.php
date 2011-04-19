@@ -19,11 +19,13 @@ global $config;
 check_login();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
 	return;
 }
+
+require_once ('include/functions_users.php');
 
 //Initialize data
 $id_agent = get_parameter ("id_agent");
@@ -61,7 +63,7 @@ if ($insert_downtime_agent == 1){
 		$values = array(
 			'id_downtime' => $id_downtime,
 			'id_agent' => $id_agente_dt);
-		$result = process_sql_insert('tplanned_downtime_agents', $values);
+		$result = db_process_sql_insert('tplanned_downtime_agents', $values);
 	}
 }
 
@@ -70,14 +72,14 @@ if ($delete_downtime_agent == 1){
 
 	$id_da = get_parameter ("id_downtime_agent");
 	
-	$result = process_sql_delete('tplanned_downtime_agents', array('id' => $id_da));
+	$result = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_da));
 }
 
 // DELETE WHOLE DOWNTIME!
 if ($delete_downtime) {
-	$result = process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
+	$result = db_process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
 	
-	$result2 = process_sql_delete('tplanned_downtime_agents', array('id' => $id_downtime));
+	$result2 = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_downtime));
 
 	if (($result === false) OR ($result2 === false)){
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
@@ -107,7 +109,7 @@ if ($create_downtime || $update_downtime) {
 				'date_from' => $datetime_from,
 				'date_to' => $datetime_to,
 				'id_group' => $id_group);
-			$result = process_sql_insert('tplanned_downtime', $values);
+			$result = db_process_sql_insert('tplanned_downtime', $values);
 		}
 		else if ($update_downtime) {
 			$values = array(
@@ -116,7 +118,7 @@ if ($create_downtime || $update_downtime) {
 				'date_from' => $datetime_from,
 				'date_to' => $datetime_to,
 				'id_group' => $id_group);
-			$result = process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
+			$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 		}
 		
 		if ($result === false) {
@@ -151,7 +153,7 @@ if ($create_downtime || $update_downtime) {
 					break;
 			}
 			
-			$result = get_db_row_sql ($sql);
+			$result = db_get_row_sql ($sql);
 			$name = $result["name"];
 			$description = $result["description"];
 			$date_from = strftime ('%Y-%m-%d', $result["date_from"]);
@@ -225,7 +227,7 @@ if ($create_downtime || $update_downtime) {
 						AND tplanned_downtime_agents.id_downtime = %d
 				) AND disabled = 0 $filter_cond
 			ORDER by tagente.nombre", $id_downtime);
-		$downtimes = get_db_all_rows_sql ($sql);
+		$downtimes = db_get_all_rows_sql ($sql);
 		$data = array ();
 		if ($downtimes)
 			foreach ($downtimes as $downtime) {		
@@ -259,7 +261,7 @@ if ($create_downtime || $update_downtime) {
 			WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
 				AND tplanned_downtime_agents.id_downtime = %d ",$id_downtime);
 		
-		$downtimes = get_db_all_rows_sql ($sql);
+		$downtimes = db_get_all_rows_sql ($sql);
 		if ($downtimes === false) {
 			echo '<div class="nf">'. __('There are no scheduled downtimes').'</div>';
 		}
@@ -280,7 +282,7 @@ if ($create_downtime || $update_downtime) {
 			
 			$data[0] = $downtime['nombre'];
 	
-			$data[1] = get_db_sql ("SELECT nombre FROM tgrupo WHERE id_grupo = ". $downtime["id_grupo"]);
+			$data[1] = db_get_sql ("SELECT nombre FROM tgrupo WHERE id_grupo = ". $downtime["id_grupo"]);
 	
 	
 			$data[2] = ui_print_os_icon ($downtime["id_os"], true, true);
@@ -319,7 +321,7 @@ else {
 		$table->align[7] = "center";
 
 		$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
-		$downtimes = get_db_all_rows_sql ($sql);
+		$downtimes = db_get_all_rows_sql ($sql);
 		if (!$downtimes) {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
 		}
@@ -327,7 +329,7 @@ else {
 			echo '<h3>'.__('Planned Downtime present on system').':</h3>';
 			foreach ($downtimes as $downtime) {
 				$data = array();
-				$total  = get_db_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
+				$total  = db_get_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
 
 				$data[0] = $downtime['name']. " ($total)";
 				$data[1] = $downtime['description'];

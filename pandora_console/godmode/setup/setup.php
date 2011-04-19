@@ -32,7 +32,7 @@ if (is_ajax ()) {
 
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Setup Management");
+	db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 	return;
 }
@@ -59,13 +59,13 @@ $table->data = array ();
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$current_system_lang = get_db_sql ('SELECT `value` FROM tconfig WHERE `token` = "language"');
+		$current_system_lang = db_get_sql ('SELECT `value` FROM tconfig WHERE `token` = "language"');
 		break;
 	case "postgresql":
-		$current_system_lang = get_db_sql ('SELECT "value" FROM tconfig WHERE "token" = \'language\'');
+		$current_system_lang = db_get_sql ('SELECT "value" FROM tconfig WHERE "token" = \'language\'');
 		break;
 	case "oracle":
-		$current_system_lang = get_db_sql ('SELECT value FROM tconfig WHERE token = \'language\'');
+		$current_system_lang = db_get_sql ('SELECT value FROM tconfig WHERE token = \'language\'');
 		break;
 }
 

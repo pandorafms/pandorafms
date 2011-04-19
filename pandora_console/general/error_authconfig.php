@@ -45,7 +45,7 @@
 			the database server is not running.</i><br /><br /><span class="error">
 				<b>DB ERROR:</b>
 				<?php
-				echo get_db_last_error();
+				echo db_get_last_error();
 				?></span>
 			</div>	
 			<div class="msg">

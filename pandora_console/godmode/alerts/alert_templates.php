@@ -17,6 +17,8 @@
 global $config;
 
 require_once ('include/functions_alerts.php');
+require_once ('include/functions_users.php');
+require_once ('include/functions_groups.php');
 
 check_login ();
 
@@ -100,7 +102,7 @@ if (is_ajax ()) {
 }
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -140,7 +142,7 @@ if ($delete_template) {
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
 		if ($al_template['id_group'] == 0){
 			if (! check_acl ($config['id_user'], 0, "PM")) {
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -160,7 +162,7 @@ if ($delete_template) {
 				// Header
 				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 			else{
-				pandora_audit("ACL Violation",
+				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
@@ -173,10 +175,10 @@ if ($delete_template) {
 	$result = alerts_delete_alert_template ($id);
 	
 	if ($result) {
-		pandora_audit("Template alert management", "Delete alert template " . $id);
+		db_pandora_audit("Template alert management", "Delete alert template " . $id);
 	}
 	else {
-		pandora_audit("Template alert management", "Fail try to delete alert template " . $id);
+		db_pandora_audit("Template alert management", "Fail try to delete alert template " . $id);
 	}
 	
 	ui_print_result_message ($result,

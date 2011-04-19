@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive alert deletion");
 	require ("general/noaccess.php");
 	return;
@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
+require_once ('include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_alerts = (bool) get_parameter ('get_alerts');
@@ -77,10 +78,10 @@ switch($action) {
 		
 		$info = 'Alert: ' . json_encode($id_standby_alerts);	
 		if ($result) {
-			pandora_audit("Masive management", "Set off standby alerts", false, false, $info);
+			db_pandora_audit("Masive management", "Set off standby alerts", false, false, $info);
 		}
 		else {
-			pandora_audit("Masive management", "Fail try to set off standby alerts", false, false, $info);
+			db_pandora_audit("Masive management", "Fail try to set off standby alerts", false, false, $info);
 		}
 		break;
 	case 'set_standby_alerts':
@@ -95,10 +96,10 @@ switch($action) {
 		
 		$info = 'Alert: ' . json_encode($id_not_standby_alerts);	
 		if ($result) {
-			pandora_audit("Masive management", "Set on standby alerts", false, false, $info);
+			db_pandora_audit("Masive management", "Set on standby alerts", false, false, $info);
 		}
 		else {
-			pandora_audit("Masive management", "Fail try to set on standby alerts", false, false, $info);
+			db_pandora_audit("Masive management", "Fail try to set on standby alerts", false, false, $info);
 		}
 		break;
 	default:

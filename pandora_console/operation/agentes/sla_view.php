@@ -18,11 +18,13 @@
 global $config;
 
 require_once ("include/functions_reporting.php");
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
 
 check_login();
 
 if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access SLA View");
 	require ("general/noaccess.php");
 	exit;
@@ -107,7 +109,7 @@ unset ($table);
 $sql = "SELECT id_agent_module, sla_max, sla_min, sla_limit
 	FROM treport_content_sla_combined
 	WHERE id_agent_module IN (".implode (",",array_keys ($modules)).")";
-$result = get_db_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql);
 if ($result !== false) {
 	echo "<h3>".__('User-defined SLA items')." - ".human_time_description_raw ($config["sla_period"])."</h3>";
 	$table->width = '95%';

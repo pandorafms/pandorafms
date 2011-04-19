@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Profile Management");
 	require ("general/noaccess.php");
 	return;
@@ -37,14 +37,14 @@ $id_profile = (int) get_parameter ('id');
 // Profile deletion
 if ($delete_profile) {
 	// Delete profile
-	$profile = get_db_row('tperfil', 'id_perfil', $id_profile);
+	$profile = db_get_row('tperfil', 'id_perfil', $id_profile);
 	$sql = sprintf ('DELETE FROM tperfil WHERE id_perfil = %d', $id_profile);
-	$ret = process_sql ($sql);
+	$ret = db_process_sql ($sql);
 	if ($ret === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting the profile').'</h3>';
 	}
 	else {		
-		pandora_audit("Profile management",
+		db_pandora_audit("Profile management",
 			"Delete profile ". $profile['name']);
 		
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
@@ -53,7 +53,7 @@ if ($delete_profile) {
 	
 	//Delete profile from user data
 	$sql = sprintf ('DELETE FROM tusuario_perfil WHERE id_perfil = %d', $id_profile);
-	process_sql ($sql);
+	db_process_sql ($sql);
 	
 	$id_profile = 0;
 }
@@ -81,7 +81,7 @@ if ($update_profile) {
 		$agent_view, $agent_edit, $alert_edit, $user_management,
 		$db_management, $alert_management, $pandora_management,
 		$id_profile);
-	$ret = process_sql ($sql);
+	$ret = db_process_sql ($sql);
 	if ($ret !== false) {
 		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
 			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
@@ -89,7 +89,7 @@ if ($update_profile) {
 			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
 			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
 			' Pandora Management: ' . $pandora_management;
-		pandora_audit("User management",
+		db_pandora_audit("User management",
 			"Update profile ". $name, false, false, $info);
 		
 		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
@@ -127,7 +127,7 @@ if ($create_profile) {
 		'db_management' => $db_management,
 		'alert_management' => $alert_management,
 		'pandora_management' => $pandora_management);
-	$ret = process_sql_insert('tperfil', $values);
+	$ret = db_process_sql_insert('tperfil', $values);
 	
 	if ($ret !== false) {
 		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
@@ -139,7 +139,7 @@ if ($create_profile) {
 			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
 			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
 			' Pandora Management: ' . $pandora_management;
-		pandora_audit("User management",
+		db_pandora_audit("User management",
 			"Created profile ". $name, false, false, $info);
 	}
 	else {
@@ -167,7 +167,7 @@ if ($id_profile || $new_profile) {
 		$page_title = __('Create profile');
 	}
 	else {
-		$profile = get_db_row ('tperfil', 'id_perfil', $id_profile);
+		$profile = db_get_row ('tperfil', 'id_perfil', $id_profile);
 	
 		if ($profile === false) {
 			echo '<h3 class="error">'.__('There was a problem loading profile').'</h3></table>';
@@ -187,7 +187,7 @@ if ($id_profile || $new_profile) {
 		$alert_management = (bool) $profile["alert_management"];
 		$pandora_management = (bool) $profile["pandora_management"];
 		
-		$id_audit = pandora_audit("User management",
+		$id_audit = db_pandora_audit("User management",
 			"Edit profile ". $name);
 		enterprise_include_once('include/functions_audit.php');
 		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .

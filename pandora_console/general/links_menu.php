@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 $sql = 'SELECT link, name FROM tlink ORDER BY name';
-$result = get_db_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql);
 if ($result !== false) {
 	echo '<div class="tit bg4">:: '.__('Links').' ::</div>';
 	echo '<div class="menu"><ul>';

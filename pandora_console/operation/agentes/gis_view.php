@@ -19,13 +19,14 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_user'])) {
-        pandora_audit("ACL Violation", "Trying to access GIS Agent view");
+        db_pandora_audit("ACL Violation", "Trying to access GIS Agent view");
         require ("general/noaccess.php");
         return;
 }
 
 require_once ('include/functions_gis.php');
 require_once ('include/functions_html.php');
+require_once ($config['homedir'].'/include/functions_agents.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
@@ -51,13 +52,13 @@ if (!getAgentMap($agentId, "500px", "98%", true, true, $period)) {
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP();");
+		$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP();");
 		break;
 	case "postgresql":
-		$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+		$timestampLastOperation = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
 		break;
 	case "oracle":
-		$timestampLastOperation = get_db_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
+		$timestampLastOperation = db_get_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
 		break;
 }
 
@@ -98,7 +99,7 @@ echo "</form>";
 echo "<h3>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h3>";
 /* Get the total number of Elements for the pagination */ 
 $sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d) ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
-$countData = get_db_value_sql($sqlCount);
+$countData = db_get_value_sql($sqlCount);
 /* Get the elements to present in this page */
 $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_timestamp, description, number_of_packages, manual_placement
 	FROM tgis_data_history
@@ -106,7 +107,7 @@ $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_time
 	ORDER BY end_timestamp DESC
 	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
 
-$result = get_db_all_rows_sql ($sql, true);
+$result = db_get_all_rows_sql ($sql, true);
 
 if ($result === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any GIS data')."</div>";

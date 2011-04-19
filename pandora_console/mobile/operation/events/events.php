@@ -13,6 +13,7 @@
 // GNU General Public License for more details.
 
 require_once('../include/functions_events.php');
+require_once('../include/functions_users.php');
 
 class EventsView {
 	private $system;
@@ -25,6 +26,8 @@ class EventsView {
 	
 	function show() {
 		global $config;
+
+		require_once ($config['homedir'].'/include/functions_agents.php');
 		
 		$config['text_char_long'] = 12;
 		
@@ -135,9 +138,9 @@ class EventsView {
 				break;
 		}
 		
-		$count = get_db_value_sql($sql_count);
+		$count = db_get_value_sql($sql_count);
 		
-		$rows = get_db_all_rows_sql($sql);
+		$rows = db_get_all_rows_sql($sql);
 		if ($rows === false)
 			$rows = array();
 		

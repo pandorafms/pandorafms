@@ -19,11 +19,14 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
 }
+
+include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . '/include/functions_users.php');
 
 $table->id = 'add_alert_table';
 $table->class = 'databox';

@@ -17,7 +17,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access massive agent deletion section");
 	require ("general/noaccess.php");
 	return;
@@ -29,6 +29,7 @@ require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
+require_once ('include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_n_conf_files = (bool) get_parameter ('get_n_conf_files');
@@ -78,7 +79,7 @@ if ($update_agents) {
 	if (get_parameter ('delete_conf', 0) != 0)
 		$values['delete_conf'] = get_parameter('delete_conf');
 
-	$fields = get_db_all_fields_in_table('tagent_custom_fields');
+	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
 	
@@ -108,10 +109,10 @@ if ($update_agents) {
 		
 		
 		if ($n_deleted > 0) {
-			pandora_audit("Masive management", "Delete conf file " . $id_agent);
+			db_pandora_audit("Masive management", "Delete conf file " . $id_agent);
 		}
 		else {
-			pandora_audit("Masive management", "Try to delete conf file " . $id_agent);
+			db_pandora_audit("Masive management", "Try to delete conf file " . $id_agent);
 		}
 		
 		
@@ -128,7 +129,7 @@ if ($update_agents) {
 	$result = false;
 	foreach ($id_agents as $id_agent) {		
 		if (!empty($values)) {
-			$result = process_sql_update ('tagente',
+			$result = db_process_sql_update ('tagente',
 					 $values,
 					 array ('id_agente' => $id_agent));
 		}
@@ -139,15 +140,15 @@ if ($update_agents) {
 				$key = $field['id_field'];
 				$value = get_parameter_post ('customvalue_'.$field['id_field'], '');
 			
-				$old_value = get_db_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agent, 'id_field' => $key));
+				$old_value = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agent, 'id_field' => $key));
 			
 				if ($old_value === false) {
 					// Create custom field if not exist
-					$result = process_sql_insert ('tagent_custom_data',
+					$result = db_process_sql_insert ('tagent_custom_data',
 						 array('id_field' => $key,'id_agent' => $id_agent, 'description' => $value));
 				}
 				else {		
-					$result = process_sql_update ('tagent_custom_data',
+					$result = db_process_sql_update ('tagent_custom_data',
 						 array('description' => $value),
 						 array('id_field' => $key,'id_agent' => $id_agent));
 				}
@@ -159,10 +160,10 @@ if ($update_agents) {
 	
 	
 	if ($result !== false) {
-		pandora_audit("Masive management", "Update agent " . $id_agent, false, false, json_encode($fields));
+		db_pandora_audit("Masive management", "Update agent " . $id_agent, false, false, json_encode($fields));
 	}
 	else {
-		pandora_audit("Masive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
+		db_pandora_audit("Masive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
 	}
 	
 	
@@ -346,7 +347,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$fields = get_db_all_fields_in_table('tagent_custom_fields');
+$fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 if ($fields === false) $fields = array();
 
@@ -354,7 +355,7 @@ foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
 		
-	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
 	if ($custom_value === false) {
 		$custom_value = '';

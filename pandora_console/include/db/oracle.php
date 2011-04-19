@@ -64,7 +64,7 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null)
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function oracle_get_db_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
+function oracle_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d AND rownum < 2",
@@ -79,7 +79,7 @@ function oracle_get_db_value ($field, $table, $field_search = 1, $condition = 1,
 				$field, $table, $field_search, $condition);
 	}
 
-	$result = get_db_all_rows_sql ($sql, $search_history_db);
+	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
 	if ($result === false)
 		return false;
@@ -108,7 +108,7 @@ function oracle_get_db_value ($field, $table, $field_search = 1, $condition = 1,
  * 
  * @return mixed The first row of a database query or false.
  */
-function oracle_get_db_row ($table, $field_search, $condition, $fields = false) {
+function oracle_db_get_row ($table, $field_search, $condition, $fields = false) {
 	if (empty ($fields)) {
 		$fields = '*';
 	}
@@ -131,7 +131,7 @@ function oracle_get_db_row ($table, $field_search, $condition, $fields = false) 
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' AND rownum < 2", 
 			$fields, $table, $field_search, $condition);
 	}
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 		
 	if ($result === false) 
 		return false;
@@ -139,7 +139,7 @@ function oracle_get_db_row ($table, $field_search, $condition, $fields = false) 
 	return $result[0];
 }
 
-function oracle_get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
+function oracle_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
 	global $config;
 	
 	$history = array ();
@@ -155,14 +155,14 @@ function oracle_get_db_all_rows_sql ($sql, $search_history_db = false, $cache = 
 		$history = false;
 		
 		if (isset($config['history_db_connection']))
-			$history = oracle_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
+			$history = oracle_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
 			
 		if ($history === false) {
 			$history = array ();
 		}
 	}
 	
-	$return = oracle_process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
+	$return = oracle_db_process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
 	if ($return === false) {
 		return false;
 	}
@@ -198,7 +198,7 @@ function oracle_get_db_all_rows_sql ($sql, $search_history_db = false, $cache = 
  * @return mixed An array with the rows, columns and values in a multidimensional array or false in error
  */
 // TODO: Return debug info of the query
-function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null, $autocommit = true) {
+function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null, $autocommit = true) {
 	global $config;
 	global $sql_cache;
 	
@@ -210,7 +210,7 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 	if ($cache && ! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
-		add_database_debug_trace ($sql);
+		db_add_database_debug_trace ($sql);
 	}
 	else {
 		$id = 0;
@@ -263,8 +263,8 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 			$e = oci_error($query);
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				htmlentities($e['message'], ENT_QUOTES), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			add_database_debug_trace ($sql, htmlentities($e['message'], ENT_QUOTES));
-			set_error_handler ('sql_error_handler');
+			db_add_database_debug_trace ($sql, htmlentities($e['message'], ENT_QUOTES));
+			set_error_handler ('db_sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();
 			
@@ -285,13 +285,13 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
 				else {
 					$result = $rows;
 				}
-				add_database_debug_trace ($sql, $result, $rows,
+				db_add_database_debug_trace ($sql, $result, $rows,
 						array ('time' => $time));
 						
 				return $result;	
 			}
 			else { //The query IS a select.
-				add_database_debug_trace ($sql, 0, $rows, array ('time' => $time));
+				db_add_database_debug_trace ($sql, 0, $rows, array ('time' => $time));
 				while ($row = oci_fetch_assoc($query)) {
 					$i = 1;
 					$result_temp = array();
@@ -342,20 +342,20 @@ function oracle_process_sql($sql, $rettype = "affected_rows", $dbconnection = ''
  *
  * @return mixed A matrix with all the values in the table
  */
-function oracle_get_db_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
+function oracle_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
  		
 		// Clob fields are not allowed in ORDER BY statements, they need cast to varchar2 datatype
-		$type = get_db_value_filter ('data_type', 'user_tab_columns', array ('table_name' => strtoupper($table), 'column_name' => strtoupper($order_field)), 'AND');
+		$type = db_get_value_filter ('data_type', 'user_tab_columns', array ('table_name' => strtoupper($table), 'column_name' => strtoupper($order_field)), 'AND');
 		if ($type == 'CLOB') {
-			return get_db_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY dbms_lob.substr(' . $order_field . ',4000,1) ' . $order);
+			return db_get_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY dbms_lob.substr(' . $order_field . ',4000,1) ' . $order);
 		}
 		else {
-			return get_db_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY ' . $order_field . ' ' . $order);
+			return db_get_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY ' . $order_field . ' ' . $order);
 		}
 	}
 	else {	
-		return get_db_all_rows_sql ('SELECT * FROM ' . $table);
+		return db_get_all_rows_sql ('SELECT * FROM ' . $table);
 	}
 }
 
@@ -372,7 +372,7 @@ function oracle_get_db_all_rows_in_table($table, $order_field = "", $order = 'AS
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function oracle_process_sql_insert($table, $values, $autocommit = true) {
+function oracle_db_process_sql_insert($table, $values, $autocommit = true) {
 	//Empty rows or values not processed
 	if (empty ($values))
 		return false;
@@ -411,7 +411,7 @@ function oracle_process_sql_insert($table, $values, $autocommit = true) {
 	$query .= ' VALUES (' . $values_str . ')';
 	$status = '';
 
-	return process_sql($query, 'insert_id', '', true, $status, $autocommit);
+	return db_process_sql($query, 'insert_id', '', true, $status, $autocommit);
 }
 
 /**
@@ -431,14 +431,14 @@ function oracle_escape_string_sql($string) {
  *
  * Example:
  <code>
- get_db_value_filter ('name', 'talert_templates',
+ db_get_value_filter ('name', 'talert_templates',
  array ('value' => 2, 'type' => 'equal'));
  // Equivalent to:
  // SELECT name FROM talert_templates WHERE value = 2 AND type = 'equal' LIMIT 1
  // In oracle sintax:
  // SELECT name FROM talert_templates WHERE value = 2 AND type = 'equal' AND rownum < 2
 
- get_db_value_filter ('description', 'talert_templates',
+ db_get_value_filter ('description', 'talert_templates',
  array ('name' => 'My alert', 'type' => 'regex'), 'OR');
  // Equivalent to:
  // SELECT description FROM talert_templates WHERE name = 'My alert' OR type = 'equal' LIMIT 1
@@ -448,13 +448,13 @@ function oracle_escape_string_sql($string) {
  *
  * @param string Field name to get
  * @param string Table to retrieve the data
- * @param array Conditions to filter the element. See format_array_to_where_clause_sql()
+ * @param array Conditions to filter the element. See db_format_array_where_clause_sql()
  * for the format
  * @param string Join operator for the elements in the filter.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function oracle_get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
+function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
 
@@ -464,9 +464,9 @@ function oracle_get_db_value_filter ($field, $table, $filter, $where_join = 'AND
 
 	$sql = sprintf ("SELECT %s FROM %s WHERE %s AND rownum < 2",
 		$field, $table,
-		format_array_to_where_clause_sql ($filter, $where_join));
+		db_format_array_where_clause_sql ($filter, $where_join));
 	
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 
 	if ($result === false)
 		return false;
@@ -486,7 +486,7 @@ function oracle_get_db_value_filter ($field, $table, $filter, $where_join = 'AND
  $values['name'] = "Name";
  $values['description'] = "Long description";
  $values['limit'] = $config['block_size']; // Assume it's 20
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  echo $sql;
  </code>
  * Will return:
@@ -504,13 +504,13 @@ function oracle_get_db_value_filter ($field, $table, $filter, $where_join = 'AND
  <code>
  $values = array ();
  $values['value'] = 10;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  // SELECT * FROM table WHERE VALUE = 10
 
  $values = array ();
  $values['value'] = 10;
  $values['order'] = 'name DESC';
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  // SELECT * FROM table WHERE VALUE = 10 ORDER BY name DESC
 
 
@@ -520,7 +520,7 @@ function oracle_get_db_value_filter ($field, $table, $filter, $where_join = 'AND
  * @return string Values joined into an SQL string that can fits into the WHERE
  * clause of an SQL sentence.
  */
-function oracle_format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
+function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = false) {
 
 	$fields = array ();
 
@@ -646,13 +646,13 @@ function oracle_format_array_to_where_clause_sql ($values, $join = 'AND', $prefi
  $values = array ();
  $values['limit'] = 10;
  $values['offset'] = 20;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values);
  // Wrong SQL: SELECT * FROM table WHERE LIMIT 10 OFFSET 20
 
  $values = array ();
  $values['limit'] = 10;
  $values['offset'] = 20;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values, 'AND', 'WHERE');
  // Good SQL: SELECT * FROM table LIMIT 10 OFFSET 20
  // This in Oracle Sql sintaxis is translate to:
  // SELECT * FROM (SELECT ROWNUM AS rnum, a.* FROM (SELECT * FROM table) a) WHERE rnum > 20 AND rnum <= 30
@@ -661,14 +661,14 @@ function oracle_format_array_to_where_clause_sql ($values, $join = 'AND', $prefi
  $values['value'] = 5;
  $values['limit'] = 10;
  $values['offset'] = 20;
- $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+ $sql = 'SELECT * FROM table WHERE '.db_format_array_where_clause_sql ($values, 'AND', 'WHERE');
  // Good SQL: SELECT * FROM table WHERE value = 5 LIMIT 10 OFFSET 20
  // This in Oracle Sql sintaxis is translate to:
  // SELECT * FROM (SELECT ROWNUM AS rnum, a.* FROM (SELECT * FROM table WHERE value = 5) a) WHERE rnum > 20 AND rnum <= 30;
  </code>
 
  * @param string Sql from SELECT to WHERE reserved words: SELECT * FROM mytable WHERE
- * @param array Conditions to filter the element. See format_array_to_where_clause_sql()
+ * @param array Conditions to filter the element. See db_format_array_where_clause_sql()
  * for the format. LIMIT + OFFSET are allowed in this function: 
 
  <code>
@@ -808,7 +808,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 		return $result;
 	}
 	else{
-		$result = oracle_process_sql($result);
+		$result = oracle_db_process_sql($result);
 		for ($i=0; $i < count($result); $i++) {
 			unset($result[$i]['RNUM']);		
 		}
@@ -824,9 +824,9 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
  * @return the first value of the first row of a table result from query.
  *
  */
-function oracle_get_db_value_sql($sql) {	
+function oracle_db_get_value_sql($sql) {	
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
-	$result = get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 
 	if($result === false)
 		return false;
@@ -842,9 +842,9 @@ function oracle_get_db_value_sql($sql) {
  *
  * @return mixed The first row of the result or false
  */
-function oracle_get_db_row_sql ($sql, $search_history_db = false) {
+function oracle_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
-	$result = get_db_all_rows_sql($sql, $search_history_db);
+	$result = db_get_all_rows_sql($sql, $search_history_db);
 
 	if($result === false)
 		return false;
@@ -862,13 +862,13 @@ function oracle_get_db_row_sql ($sql, $search_history_db = false) {
  * the WHERE keyword). Example:
  <code>
  Both are similars:
- get_db_row_filter ('table', array ('disabled', 0));
- get_db_row_filter ('table', 'disabled = 0');
+ db_get_row_filter ('table', array ('disabled', 0));
+ db_get_row_filter ('table', 'disabled = 0');
 
  Both are similars:
- get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name, description', 'OR');
- get_db_row_filter ('table', 'disabled = 0 OR history_data = 0', 'name, description');
- get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), array ('name', 'description'), 'OR');
+ db_get_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name, description', 'OR');
+ db_get_row_filter ('table', 'disabled = 0 OR history_data = 0', 'name, description');
+ db_get_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), array ('name', 'description'), 'OR');
  </code>
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
@@ -876,7 +876,7 @@ function oracle_get_db_row_sql ($sql, $search_history_db = false) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function oracle_get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+function oracle_db_get_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
 	if (empty ($fields)) {
 		$fields = '*';
 	}
@@ -888,7 +888,7 @@ function oracle_get_db_row_filter ($table, $filter, $fields = false, $where_join
 	}
 
 	if (is_array ($filter))
-		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	else if (is_string ($filter))
 		$filter = 'WHERE '.$filter;
 	else
@@ -896,7 +896,7 @@ function oracle_get_db_row_filter ($table, $filter, $fields = false, $where_join
 	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-	return get_db_row_sql ($sql);
+	return db_get_row_sql ($sql);
 }
 
 /**
@@ -909,12 +909,12 @@ function oracle_get_db_row_filter ($table, $filter, $fields = false, $where_join
  * the WHERE keyword). Example:
  * <code>
  * Both are similars:
- * get_db_all_rows_filter ('table', array ('disabled', 0));
- * get_db_all_rows_filter ('table', 'disabled = 0');
+ * db_get_all_rows_filter ('table', array ('disabled', 0));
+ * db_get_all_rows_filter ('table', 'disabled = 0');
  *
  * Both are similars:
- * get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
- * get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+ * db_get_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+ * db_get_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
  * </code>
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
@@ -923,7 +923,7 @@ function oracle_get_db_row_filter ($table, $filter, $fields = false, $where_join
  *
  * @return mixed Array of the row or false in case of error.
  */
-function oracle_get_db_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
+function oracle_db_get_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
 	//TODO: Validate and clean fields
 	if (empty($fields)) {
 		$fields = '*';
@@ -937,7 +937,7 @@ function oracle_get_db_all_rows_filter ($table, $filter = array(), $fields = fal
 
 	//TODO: Validate and clean filter options
 	if (is_array ($filter)) {
-		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	}
 	elseif (is_string ($filter)) {
 		$filter = 'WHERE '.$filter;
@@ -951,7 +951,7 @@ function oracle_get_db_all_rows_filter ($table, $filter = array(), $fields = fal
 	if ($returnSQL)
 		return $sql;
 	else
-		return get_db_all_rows_sql ($sql, $search_history_db);
+		return db_get_all_rows_sql ($sql, $search_history_db);
 }
 
 /**
@@ -960,7 +960,7 @@ function oracle_get_db_all_rows_filter ($table, $filter = array(), $fields = fal
  * @param $sql
  * @return integer The count of rows of query.
  */
-function oracle_get_db_num_rows ($sql) {
+function oracle_db_get_num_rows ($sql) {
 	global $config;
 
 	$type = explode(' ',strtoupper(trim($sql)));
@@ -992,7 +992,7 @@ function oracle_get_db_num_rows ($sql) {
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field or false
  */
-function oracle_get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
+function oracle_db_get_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
 	if (is_int ($condition) || is_bool ($condition)) {
 		$sql = sprintf ("SELECT * FROM %s WHERE %s = %d", $table, $field, $condition);
 	}
@@ -1006,7 +1006,7 @@ function oracle_get_db_all_rows_field_filter ($table, $field, $condition, $order
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
 
-	return get_db_all_rows_sql ($sql);
+	return db_get_all_rows_sql ($sql);
 }
 
 /**
@@ -1017,7 +1017,7 @@ function oracle_get_db_all_rows_field_filter ($table, $field, $condition, $order
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field
  */
-function oracle_get_db_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
+function oracle_db_get_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
 	$sql = sprintf ("SELECT * FROM %s", $table);
 	
 	if ($condition != '') {
@@ -1027,7 +1027,7 @@ function oracle_get_db_all_fields_in_table ($table, $field = '', $condition = ''
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
 
-	return get_db_all_rows_sql ($sql);
+	return db_get_all_rows_sql ($sql);
 }
 
 /**
@@ -1040,7 +1040,7 @@ function oracle_get_db_all_fields_in_table ($table, $field = '', $condition = ''
  * $values = array ();
  * $values['name'] = "Name";
  * $values['description'] = "Long description";
- * $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
+ * $sql = 'UPDATE table SET '.db_format_array_to_update_sql ($values).' WHERE id=1';
  * echo $sql;
  * </code>
  * Will return:
@@ -1053,7 +1053,7 @@ function oracle_get_db_all_fields_in_table ($table, $field = '', $condition = ''
  * @return string Values joined into an SQL string that can fits into an UPDATE
  * sentence.
  */
-function oracle_format_array_to_update_sql ($values) {
+function oracle_db_format_array_to_update_sql ($values) {
 	$fields = array ();
 
 	foreach ($values as $field => $value) {
@@ -1095,10 +1095,10 @@ function oracle_format_array_to_update_sql ($values) {
  * Examples:
  *
  * <code>
- * process_sql_update ('table', array ('field' => 1), array ('id' => $id));
- * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
- * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
- * process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
+ * db_process_sql_update ('table', array ('field' => 1), array ('id' => $id));
+ * db_process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
+ * db_process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
+ * db_process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
  * </code>
  *
  * @param string Table to insert into
@@ -1112,10 +1112,10 @@ function oracle_format_array_to_update_sql ($values) {
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function oracle_process_sql_update($table, $values, $where = false, $where_join = 'AND', $autocommit = true) {
+function oracle_db_process_sql_update($table, $values, $where = false, $where_join = 'AND', $autocommit = true) {
 	$query = sprintf ("UPDATE %s SET %s",
 	$table,
-	format_array_to_update_sql ($values));
+	db_format_array_to_update_sql ($values));
 
 	if ($where) {
 		if (is_string ($where)) {
@@ -1123,11 +1123,11 @@ function oracle_process_sql_update($table, $values, $where = false, $where_join 
 			$query .= " WHERE " . $where;
 		}
 		else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where, $where_join, ' WHERE ');
+			$query .= db_format_array_where_clause_sql ($where, $where_join, ' WHERE ');
 		}
 	}
 	$status = '';
-	return process_sql ($query, "affected_rows", '', true, $status, $autocommit);
+	return db_process_sql ($query, "affected_rows", '', true, $status, $autocommit);
 }
 
 /**
@@ -1137,13 +1137,13 @@ function oracle_process_sql_update($table, $values, $where = false, $where_join 
  * Examples:
  *
  * <code>
- * process_sql_delete ('table', array ('id' => 1));
+ * db_process_sql_delete ('table', array ('id' => 1));
  * // DELETE FROM table WHERE id = 1
- * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
+ * db_process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
  * // DELETE FROM table WHERE id = 1 AND name = 'example'
- * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
+ * db_process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
  * // DELETE FROM table WHERE id = 1 OR name = 'example'
- * process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
+ * db_process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
  * // DELETE FROM table WHERE id in (1, 2, 3) OR id > 10
  * </code>
  *
@@ -1158,7 +1158,7 @@ function oracle_process_sql_update($table, $values, $where = false, $where_join 
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function oracle_process_sql_delete($table, $where, $where_join = 'AND') {
+function oracle_db_process_sql_delete($table, $where, $where_join = 'AND') {
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
@@ -1172,14 +1172,14 @@ function oracle_process_sql_delete($table, $where, $where_join = 'AND') {
 			$query .= $where;
 		}
 		else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where, $where_join);
+			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
 
-	return process_sql ($query);
+	return db_process_sql ($query);
 }
 
-function oracle_process_sql_delete_temp ($table, $where, $where_join = 'AND'){
+function oracle_db_process_sql_delete_temp ($table, $where, $where_join = 'AND'){
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
@@ -1193,12 +1193,12 @@ function oracle_process_sql_delete_temp ($table, $where, $where_join = 'AND'){
 			$query .= $where;
 		}
 		else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where, $where_join);
+			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
 
 	$result = '';
-	return process_sql ($query, "affected_rows", '', true, $result, false);
+	return db_process_sql ($query, "affected_rows", '', true, $result, false);
 }
 
 
@@ -1212,7 +1212,7 @@ function oracle_process_sql_delete_temp ($table, $where, $where_join = 'AND'){
  * @param string $sql
  * @return mixed The row or false in error.
  */
-function oracle_get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
+function oracle_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	global $config;
 
 	if ($new == true){
@@ -1254,7 +1254,7 @@ function oracle_get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) 
 /**
  * Starts a database transaction.
  */
-function oracle_process_sql_begin() {
+function oracle_db_process_sql_begin() {
 	global $config;
 
 	$query = oci_parse($config['dbconnection'], 'SET TRANSACTION READ WRITE');
@@ -1265,7 +1265,7 @@ function oracle_process_sql_begin() {
 /**
  * Commits a database transaction.
  */
-function oracle_process_sql_commit() {
+function oracle_db_process_sql_commit() {
 	global $config;
 
 	oci_commit($config['dbconnection']);
@@ -1274,7 +1274,7 @@ function oracle_process_sql_commit() {
 /**
  * Rollbacks a database transaction.
  */
-function oracle_process_sql_rollback() {
+function oracle_db_process_sql_rollback() {
 	global $config;
 
 	oci_rollback($config['dbconnection']);
@@ -1297,7 +1297,7 @@ function oracle_safe_sql_string($string) {
  * 
  * @return string Return the string error.
  */
-function oracle_get_db_last_error() {
+function oracle_db_get_last_error() {
 	$ora_erno = oci_error();
 	
 	return $ora_erno['message'];
@@ -1317,7 +1317,7 @@ function oracle_get_system_time() {
 		return $time;
 	
 	if ($config["timesource"] = "sql") {
-		$time = get_db_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
+		$time = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
 		if (empty ($time)) {
 			return time ();
 		}
@@ -1336,7 +1336,7 @@ function oracle_get_system_time() {
  * 
  * @return mixed Return the type name or False in error case.
  */
-function oracle_get_db_type_field_table($table, $field) {
+function oracle_db_get_type_field_table($table, $field) {
 	global $config;
 
 	$query = oci_parse($config['dbconnection'], "SELECT * FROM " . $table . " WHERE rownum < 2");

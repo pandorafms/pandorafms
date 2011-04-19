@@ -72,6 +72,8 @@ if (is_ajax ()) {
 require_once ("include/config.php");
 require_once ("include/functions_agents.php");
 require_once ("include/functions_reporting.php");
+require_once ('include/functions_modules.php');
+require_once ('include/functions_users.php');
 
 check_login();
 

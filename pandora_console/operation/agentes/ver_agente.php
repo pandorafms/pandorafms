@@ -19,6 +19,10 @@
 global $config;
 
 require_once ("include/functions_gis.php");
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . "/include/functions_groups.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
@@ -52,7 +56,7 @@ if (is_ajax ()) {
 			$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
 		}
 
-		$agents = get_db_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
+		$agents = db_get_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
 
 		echo json_encode($agents);
 		return;
@@ -61,7 +65,7 @@ if (is_ajax ()) {
 	if ($get_agent_json) {
 		$id_agent = (int) get_parameter ('id_agent');
 		
-		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
+		$agent = db_get_row ('tagente', 'id_agente', $id_agent);
 		
 		echo json_encode ($agent);
 		return;
@@ -70,7 +74,7 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents_id) {
 		$idAgents = get_parameter('id_agent');
 		
-		$nameModules = get_db_all_rows_sql('SELECT nombre, id_agente_modulo
+		$nameModules = db_get_all_rows_sql('SELECT nombre, id_agente_modulo
 			FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
 		
 		echo json_encode($nameModules);
@@ -80,7 +84,7 @@ if (is_ajax ()) {
 	if ($get_agents_json_for_multiple_modules) {
 		$nameModules = get_parameter('module_name');
 		
-		$nameAgents = get_db_all_rows_sql('SELECT DISTINCT(t1.nombre) as name
+		$nameAgents = db_get_all_rows_sql('SELECT DISTINCT(t1.nombre) as name
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')
@@ -102,7 +106,7 @@ if (is_ajax ()) {
 		$idAgents = get_parameter('id_agent');
 		$id_template = get_parameter('template');
 		
-		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre)
+		$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
 			FROM tagente_modulo t1, talert_template_modules t2
 			WHERE t2.id_agent_module = t1.id_agente_modulo
 				AND delete_pending = 0
@@ -139,7 +143,7 @@ if (is_ajax ()) {
 				break;
 		}
 		
-		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre)
+		$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
 			FROM tagente_modulo t1
 			WHERE ' . $enabled . '
 				AND delete_pending = 0
@@ -197,7 +201,7 @@ if (is_ajax ()) {
 	
 	if ($get_agent_status_tooltip) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
+		$agent = db_get_row ('tagente', 'id_agente', $id_agent);
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
@@ -213,12 +217,12 @@ if (is_ajax ()) {
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.disabled = 0 
 				AND tagente_estado.estado = 1', $id_agent);
-		$bad_modules = get_db_all_rows_sql ($sql);
+		$bad_modules = db_get_all_rows_sql ($sql);
 		$sql = sprintf ('SELECT COUNT(*)
 			FROM tagente_modulo
 			WHERE id_agente = %d
 				AND disabled = 0', $id_agent);
-		$total_modules = get_db_sql ($sql);
+		$total_modules = db_get_sql ($sql);
 		
 		if ($bad_modules === false)
 			$size_bad_modules = 0;
@@ -247,7 +251,7 @@ if (is_ajax ()) {
 					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
-		$alert_modules = get_db_sql ($sql);
+		$alert_modules = db_get_sql ($sql);
 		if ($alert_modules > 0){
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
 				FROM talert_template_modules, tagente_modulo, tagente
@@ -258,7 +262,7 @@ if (is_ajax ()) {
 					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
-			$alerts = get_db_all_rows_sql ($sql);
+			$alerts = db_get_all_rows_sql ($sql);
 			echo '<strong>'.__('Alerts fired').':</strong>';
 			echo "<ul>";
 			foreach ($alerts as $alert_item) {
@@ -275,7 +279,7 @@ if (is_ajax ()) {
 	
 		if ($get_agentmodule_status_tooltip) {
 		$id_module = (int) get_parameter ('id_module');
-		$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_module);
+		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
 		echo print_image("images/brick.png", true) . '&nbsp;'; 
 		echo ui_print_truncate_text($module['nombre'],25,false,true,false).'</h3>';
@@ -299,7 +303,7 @@ if (is_ajax ()) {
 
 	if ($get_group_status_tooltip) {
 		$id_group = (int) get_parameter ('id_group');
-		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
+		$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
 		echo '<h3>' . print_image("images/groups_small/" . get_group_icon ($group['id_grupo']) . ".png", true);
 		echo ui_print_truncate_text($group['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
@@ -307,12 +311,12 @@ if (is_ajax ()) {
 			echo __('None').'<br />';
 		}
 		else {
-			$group_parent = get_db_row ('tgrupo', 'id_grupo', $group['parent']);
+			$group_parent = db_get_row ('tgrupo', 'id_grupo', $group['parent']);
 			echo print_image("images/groups_small/" . get_group_icon ($group['parent']) . ".png", true); 
 			echo $group_parent['nombre'].'<br />';
 		}
 		echo '<strong>'.__('Sons').':</strong> ';
-		$groups_sons = get_db_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
+		$groups_sons = db_get_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
 		if($groups_sons === false){ 
 			echo __('None').'<br />';
 		}
@@ -335,11 +339,11 @@ if (empty ($id_agente)) {
 	return;
 }
 
-$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
 if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".get_agent_name($id_agente));
 	include ("general/noaccess.php");
 	return;
@@ -351,14 +355,14 @@ if ($flag !== '') {
 	if ($flag == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
 		$id_agent_module = get_parameter('id_agente_modulo');
 		
-		process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente_modulo' => $id_agent_module));
+		db_process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente_modulo' => $id_agent_module));
 	}
 }
 // Check for Network FLAG change request
 $flag_agent = get_parameter('flag_agent','');
 if ($flag_agent !== ''){
 	if ($flag_agent == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
-		process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente' =>$id_agente));
+		db_process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente' =>$id_agente));
 	}
 }
 

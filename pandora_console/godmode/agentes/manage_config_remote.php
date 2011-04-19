@@ -24,11 +24,14 @@ $update_agent = get_parameter ("update_agent", -1);
 $update_group = get_parameter ("update_group", -1);
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access remote config copy tool");
 	require ("general/noaccess.php");
 	exit;
 }
+
+require_once ($config['homedir'].'/include/functions_agents.php');
+require_once ($config['homedir'].'/include/functions_users.php');
 
 // Operations
 if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
@@ -55,7 +58,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 		// Security check here
 		if (!user_access_to_agent ($id_origen)) {
-			pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
+			db_pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
 			require ("general/noaccess.php");
 			exit;
 		}		
@@ -69,7 +72,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			
 			// Security check here
 			if (!user_access_to_agent ($id_agente)){
-				pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
+				db_pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
 				require ("general/noaccess.php");
 				exit;
 			}			
@@ -121,7 +124,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
 		echo '<select name="origen" style="width:200px">';
 		
-		$rows = get_db_all_rows_sql($sql1);
+		$rows = db_get_all_rows_sql($sql1);
 		
 		if ($rows === false) {
 			$rows = array();
@@ -147,7 +150,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		else
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
 
-		$rows = get_db_all_rows_sql($sql1);
+		$rows = db_get_all_rows_sql($sql1);
 		
 		if ($rows === false) {
 			$rows = array();

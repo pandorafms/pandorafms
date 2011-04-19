@@ -16,7 +16,7 @@
 
 // Check ACL
 if (! check_acl ($config['id_user'], 0, "LW")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access SNMP Filter Management");
 	require ("general/noaccess.php");
 	return;
@@ -46,7 +46,7 @@ else {// Overview header
 if ($update_filter > -2) {
 	if ($update_filter > -1) {
 		$values = array('description' => $description, 'filter' => $filter);
-		$result = process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $update_filter));
+		$result = db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $update_filter));
 		if ($result === false) {
 			ui_print_error_message (__('There was a problem updating the filter'));
 		}
@@ -58,7 +58,7 @@ if ($update_filter > -2) {
 		$values = array(
 			'description' => $description,
 			'filter' => $filter);
-		$result = process_sql_insert('tsnmp_filter', $values);
+		$result = db_process_sql_insert('tsnmp_filter', $values);
 		if ($result === false) {
 			ui_print_error_message (__('There was a problem creating the filter'));
 		}
@@ -68,7 +68,7 @@ if ($update_filter > -2) {
 	}
 }
 else if ($delete_filter > -1) { // Delete
-	$result = process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $delete_filter));
+	$result = db_process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $delete_filter));
 	if ($result === false) {
 		ui_print_error_message (__('There was a problem deleting the filter'));
 	}
@@ -79,7 +79,7 @@ else if ($delete_filter > -1) { // Delete
 
 // Read filter data from the database
 if ($edit_filter > -1) {
-	$filter = get_db_row ('tsnmp_filter', 'id_snmp_filter', $edit_filter);
+	$filter = db_get_row ('tsnmp_filter', 'id_snmp_filter', $edit_filter);
 	if ($filter !== false) {
 		$description = $filter['description'];
 		$filter = $filter['filter'];
@@ -108,7 +108,7 @@ if ($edit_filter > -2) {
 	echo '</form>';
 // Overview
 } else {
-	$result = get_db_all_rows_in_table ("tsnmp_filter");
+	$result = db_get_all_rows_in_table ("tsnmp_filter");
 	if ($result === false) {
 		$result = array ();
 		echo "<div class='nf'>".__('There are no SNMP filters')."</div>";

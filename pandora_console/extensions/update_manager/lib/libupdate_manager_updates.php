@@ -24,13 +24,13 @@ function um_update_get_last_from_filename ($component_name, $filename) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
+			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
 			break;
 		case "postgresql":
-			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
+			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
 			break;
 		case "oracle":
-			$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE (component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\') AND rownum < 2 ORDER BY id DESC');
+			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE (component = \''.$component_name.'\' AND filename = \''.$component->relative_path.$filename.'\') AND rownum < 2 ORDER BY id DESC');
 			break;
 	}
 
@@ -41,16 +41,16 @@ function um_update_get_last_from_filename ($component_name, $filename) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
+			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND filename = "'.$component->relative_path.$filename.'" ORDER BY id DESC LIMIT 1');
 			break;
 		case "postgresql":
-			$result = process_sql('SELECT *
+			$result = db_process_sql('SELECT *
 				FROM '.DB_PREFIX.'tupdate
 				WHERE component = \''.$component_name.'\'
 					AND filename = \''.$component->relative_path.$filename.'\' ORDER BY id DESC LIMIT 1');
 			break;
 		case "oracle":
-			$result = process_sql('SELECT *
+			$result = db_process_sql('SELECT *
 				FROM '.DB_PREFIX.'tupdate
 				WHERE (component = \''.$component_name.'\'
 					AND filename = \''.$component->relative_path.$filename.'\') AND rownum < 2 ORDER BY id DESC');
@@ -63,14 +63,14 @@ function um_update_get_last_from_filename ($component_name, $filename) {
 }
 
 function um_update_get_last_from_table_field_value ($component_name, $id_component_db, $field_value) {
-	$result = process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND id_component_db = "'.$id_component_db.'" AND db_field_value = "'.$field_value.'" ORDER BY id DESC LIMIT 1');
+	$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND id_component_db = "'.$id_component_db.'" AND db_field_value = "'.$field_value.'" ORDER BY id DESC LIMIT 1');
 
 	if ($result === false) {
 		echo '<strong>Error getting last value</strong> <br />';
 		return NULL;
 	}
 		
-	$result = process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND id_component_db = "'.$id_component_db.'" AND db_field_value = "'.$field_value.'" ORDER BY id DESC LIMIT 1');
+	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE component = "'.$component_name.'" AND id_component_db = "'.$id_component_db.'" AND db_field_value = "'.$field_value.'" ORDER BY id DESC LIMIT 1');
 		
 	$update = um_std_from_result($result);
 
@@ -78,7 +78,7 @@ function um_update_get_last_from_table_field_value ($component_name, $id_compone
 }
 
 function um_db_get_orphan_updates () {
-	$result = process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE id_update_package IS NULL');
+	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE id_update_package IS NULL');
 
 	if ($result === false) {
 		echo '<strong>Error getting orphan updates</strong> <br />';
@@ -100,7 +100,7 @@ function um_db_get_orphan_updates () {
 }
 
 function um_db_get_update ($id_update) {
-	$result = process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE id = "'.$id_update.'" LIMIT 1');
+	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE id = "'.$id_update.'" LIMIT 1');
 
 	if ($result === false) {
 		echo '<strong>Error getting update</strong> <br />';
@@ -121,7 +121,7 @@ function um_db_delete_update ($id_update) {
 		echo '<strong>Error</strong>: '.'Only packages in development state can be deleted';
 		return false;
 	}
-	$result = process_sql_delete(DB_PREFIX.'tupdate', array('id' => $id_update));
+	$result = db_process_sql_delete(DB_PREFIX.'tupdate', array('id' => $id_update));
 
 	if ($result === false) {
 		echo '<strong>Error deleting update</strong> <br />';
@@ -193,7 +193,7 @@ function um_db_create_update ($type, $component_name, $id_package, $update, $db_
 		return false;
 	}
 	
-	$result = process_sql_insert(DB_PREFIX.'tupdate', $values);
+	$result = db_process_sql_insert(DB_PREFIX.'tupdate', $values);
 
 	if ($result === false) {
 		echo '<strong>Error creating update</strong> <br />';

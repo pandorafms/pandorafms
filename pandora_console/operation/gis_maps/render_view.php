@@ -19,17 +19,18 @@ global $config;
 check_login ();
 
 require_once ('include/functions_gis.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
 
 ui_require_javascript_file('openlayers.pandora');
 
 $idMap = (int) get_parameter ('map_id');
 $show_history = get_parameter ('show_history', 'n');
 
-$map = get_db_row ('tgis_map', 'id_tgis_map', $idMap);
+$map = db_get_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = getMapConf($idMap);
 
 if (! check_acl ($config['id_user'], $map['group_id'], "IR")) {
-	pandora_audit("ACL Violation", "Trying to access map builder");
+	db_pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }
@@ -164,7 +165,7 @@ if ($layers != false) {
 			}
 			$icon = get_agent_icon_map($idAgent, true);
 			$status = get_agent_status($idAgent);
-			$parent = get_db_value('id_parent', 'tagente', 'id_agente', $idAgent);
+			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
 			addAgentPoint($layer['layer_name'], $agentName, $coords['stored_latitude'],
 				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info', $parent);
@@ -174,13 +175,13 @@ if ($layers != false) {
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
+			$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP()");
 			break;
 		case "postgresql":
-			$timestampLastOperation = get_db_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
+			$timestampLastOperation = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
 			break;
 		case "oracle":
-			$timestampLastOperation = get_db_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
+			$timestampLastOperation = db_get_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
 			break;
 	}
 	

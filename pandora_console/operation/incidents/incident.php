@@ -19,7 +19,7 @@ require_once ("include/functions_incidents.php");
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "IR")) {
-	pandora_audit("ACL Violation","Trying to access incident viewer");
+	db_pandora_audit("ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
 }

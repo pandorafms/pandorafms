@@ -18,7 +18,7 @@ function pluginreg_extension_main () {
 	global $config;
 
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-		pandora_audit("ACL Violation", "Trying to access Setup Management");
+		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -93,7 +93,7 @@ function pluginreg_extension_main () {
 	// Verify if a plugin with the same name is already registered
 
 	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . safe_input ($ini_array["plugin_definition"]["name"]) . "'";
-	$result = get_db_sql ($sql0);
+	$result = db_get_sql ($sql0);
 	
 	
 	if ($result> 0) {
@@ -113,7 +113,7 @@ function pluginreg_extension_main () {
 		'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
 		'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
 	
-	$create_id = process_sql_insert('tplugin', $values);
+	$create_id = db_process_sql_insert('tplugin', $values);
 	
 	$values = array(
 		'name' => safe_input ($ini_array["plugin_definition"]["name"]),
@@ -125,7 +125,7 @@ function pluginreg_extension_main () {
 		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
 		'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
 		'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
-	$create_id = process_sql_insert('tplugin', $values);
+	$create_id = db_process_sql_insert('tplugin', $values);
 
 	for ($ax=1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++){
 		$label = "module".$ax;
@@ -150,7 +150,7 @@ function pluginreg_extension_main () {
 			'min_ff_event' => $ini_array[$label]["min_ff_event"],
 			'tcp_port' => $ini_array[$label]["tcp_port"],
 			'id_plugin' => $create_id);
-		process_sql_insert('tnetwork_component', $values);
+		db_process_sql_insert('tnetwork_component', $values);
 		
 		echo "<h3 class=suc>".__("Module plugin registered"). " : ". $ini_array[$label]["name"] ."</h2>";
 	}

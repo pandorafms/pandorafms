@@ -20,10 +20,12 @@ global $config;
 check_login();
 
 require_once("include/functions_groups.php");
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . '/include/functions_users.php');
 
 if (is_ajax ()) {
 	if (! check_acl($config['id_user'], 0, "AR")) {
-		pandora_audit("ACL Violation", "Trying to access Group Management");
+		db_pandora_audit("ACL Violation", "Trying to access Group Management");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -47,13 +49,13 @@ if (is_ajax ()) {
 		}
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
 		}
 		
-		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
+		$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
 		
 		echo json_encode ($group);
 		return;
@@ -64,7 +66,7 @@ if (is_ajax ()) {
 		$disabled = (int) get_parameter ('disabled', 0);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
-			pandora_audit("ACL Violation",
+			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
@@ -78,7 +80,7 @@ if (is_ajax ()) {
 }
 
 if (! check_acl($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
 	return;
@@ -111,7 +113,7 @@ if ($create_group) {
 			'id_skin' => $skin
 		);
 		
-		$result = process_sql_insert('tgrupo', $values);
+		$result = db_process_sql_insert('tgrupo', $values);
 	}
 	else {
 		$result = false;
@@ -151,7 +153,7 @@ if ($update_group) {
 						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
 				break;
 		}		
-		$result = process_sql ($sql);
+		$result = db_process_sql ($sql);
 	} else {
 		$result = false;
 	}
@@ -171,13 +173,13 @@ if ($delete_group) {
 	
 	if (!$usedGroup['return']) {
 		
-		$group = get_db_row_filter('tgrupo', array('id_grupo' => $id_group));
+		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
 		
-		process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
+		db_process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
 		
-		$result = process_sql_delete('tgroup_stat', array('id_group' => $id_group));
+		$result = db_process_sql_delete('tgroup_stat', array('id_group' => $id_group));
 		
-		$result = process_sql_delete('tgrupo', array('id_grupo' => $id_group));
+		$result = db_process_sql_delete('tgrupo', array('id_grupo' => $id_group));
 	}
 	else {
 		echo "<h3 class='error'>" .

@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation", "Trying to access File manager");
+	db_pandora_audit("ACL Violation", "Trying to access File manager");
 	require ("general/noaccess.php");
 	return;
 }

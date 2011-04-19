@@ -20,7 +20,7 @@ global $config;
 check_login();
 
 if (!check_acl($config['id_user'], 0, "PM")) {
-	pandora_audit("ACL Violation",
+	db_pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
 	
@@ -41,7 +41,7 @@ $display_on_front = (int) get_parameter ('display_on_front', 0);
 if ($create_field) {
 	/*Check if name field is empty*/
 	if ($name != "") {
-		$result = process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
+		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
 	}
 	else {
 		$result = false;
@@ -61,7 +61,7 @@ if ($update_field) {
 	if( $name != "") {	
 		$values = array('name' => $name, 'display_on_front' => $display_on_front);
 		
-		$result = process_sql_update('tagent_custom_fields', $values, array('id_field' => $id_field));
+		$result = db_process_sql_update('tagent_custom_fields', $values, array('id_field' => $id_field));
 	}
 	else {
 		$result = false;
@@ -77,7 +77,7 @@ if ($update_field) {
 
 /* Delete field */
 if ($delete_field) {	
-	$result = process_sql_delete('tagent_custom_fields', array('id_field' => $id_field));
+	$result = db_process_sql_delete('tagent_custom_fields', array('id_field' => $id_field));
 	
 	if (!$result)
 		echo "<h3 class='error'>".__('There was a problem deleting field')."</h3>"; 
@@ -85,7 +85,7 @@ if ($delete_field) {
 		echo "<h3 class='suc'>".__('Field successfully deleted')."</h3>";	 
 }
 
-$fields = get_db_all_fields_in_table('tagent_custom_fields');
+$fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 	$table->width = '65%';
 if ($fields) {

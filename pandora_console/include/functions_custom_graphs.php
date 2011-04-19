@@ -24,8 +24,12 @@
  * @global array Contents all var configs for the local instalation. 
  */ 
 global $config;
+if ($config['flash_charts']) {
+	require_once ('include/fgraph.php');
+}
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
 
 /**
  * Get all the custom graphs a user can see.
@@ -47,7 +51,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 
  	$groups = get_user_groups ($id_user, $privileges, $returnAllGroup);
 
-	$all_graphs = get_db_all_rows_in_table ('tgraph', 'name');
+	$all_graphs = db_get_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
 		return array ();
 
@@ -69,7 +73,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 		}
 		else {
 			$graphs[$graph['id_graph']] = $graph;
-			$graphsCount = get_db_value_sql("SELECT COUNT(id_gs) FROM tgraph_source WHERE id_graph = " . $graph['id_graph']);
+			$graphsCount = db_get_value_sql("SELECT COUNT(id_gs) FROM tgraph_source WHERE id_graph = " . $graph['id_graph']);
 			$graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
 		}
 	}
@@ -92,7 +96,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
 	global $config;
 
-	$sources = get_db_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
+	$sources = db_get_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
 	$modules = array ();
 	$weights = array ();
 	

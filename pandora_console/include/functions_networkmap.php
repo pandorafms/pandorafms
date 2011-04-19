@@ -23,6 +23,8 @@
  * Include agents function
  */
 require_once ('functions_agents.php');
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . "/include/functions_groups.php");
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 
@@ -132,14 +134,14 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 		
 		foreach($id_groups as $id_group) {
 			if(check_acl($config["id_user"], $id_group, 'AR')) {
-				$groups[] = get_db_row ('tgrupo', 'id_grupo', $id_group);
+				$groups[] = db_get_row ('tgrupo', 'id_grupo', $id_group);
 			}
 		}
 				
 		$filter['id_grupo'] = $id_groups;
 	}
 	else {
-		$groups = get_db_all_rows_in_table ('tgrupo');
+		$groups = db_get_all_rows_in_table ('tgrupo');
 	}
 	
 	// Open Graph
@@ -205,7 +207,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 			foreach ($modules as $key => $module) {
 				$node_count ++;
 				$agent_module = get_agentmodule($key);
-				$alerts_module = get_db_sql('SELECT count(*) as num
+				$alerts_module = db_get_sql('SELECT count(*) as num
 					FROM talert_template_modules WHERE id_agent_module = '.$key);
 				
 				if($alerts_module == 0 && $modwithalerts){
@@ -564,7 +566,7 @@ function create_networkmap ($name, $type = 'topology', $layout = 'radial', $noov
 	$values['center'] = $center;
 	$values['id_user'] = $config['id_user'];
 	
-	return @process_sql_insert ('tnetwork_map', $values);
+	return @db_process_sql_insert ('tnetwork_map', $values);
 }
 
 /**
@@ -588,7 +590,7 @@ function get_networkmap ($id_networkmap, $filter = false, $fields = false) {
 	$filter['id_networkmap'] = $id_networkmap;
 	$filter['id_user'] = $config['id_user'];
 
-	$networkmap = get_db_row_filter ('tnetwork_map', $filter, $fields);
+	$networkmap = db_get_row_filter ('tnetwork_map', $filter, $fields);
 		
 	return $networkmap;
 }
@@ -624,11 +626,11 @@ function get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$networkmaps_raw =  get_db_all_rows_filter ('tnetwork_map', 'id_user = "'.$id_user.'"'.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+			$networkmaps_raw =  db_get_all_rows_filter ('tnetwork_map', 'id_user = "'.$id_user.'"'.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
 			break;
 		case "postgresql":
 		case "oracle":
-			$networkmaps_raw =  get_db_all_rows_filter ('tnetwork_map', 'id_user = \''.$id_user.'\' '.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+			$networkmaps_raw =  db_get_all_rows_filter ('tnetwork_map', 'id_user = \''.$id_user.'\' '.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
 			break;
 	}
 	
@@ -664,7 +666,7 @@ function delete_networkmap ($id_networkmap) {
 	$networkmap = get_networkmap ($id_networkmap);
 	if ($networkmap === false)
 		return false;
-	return @process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap));
+	return @db_process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap));
 }
 
 /**
@@ -679,7 +681,7 @@ function update_networkmap ($id_networkmap, $values) {
 	$networkmap = get_networkmap ($id_networkmap);
 	if ($networkmap === false)
 		return false;
-	return (process_sql_update ('tnetwork_map',
+	return (db_process_sql_update ('tnetwork_map',
 		$values,
 		array ('id_networkmap' => $id_networkmap))) !== false;
 }

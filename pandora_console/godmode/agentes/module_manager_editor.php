@@ -27,7 +27,7 @@ if (is_ajax ()) {
 	if ($get_module_component) {
 		$id_component = (int) get_parameter ('id_module_component');
 		
-		$component = get_db_row ('tnetwork_component', 'id_nc', $id_component);
+		$component = db_get_row ('tnetwork_component', 'id_nc', $id_component);
 		
 		echo json_encode ($component);
 		return;
@@ -60,7 +60,7 @@ if (is_ajax ()) {
 	if ($get_module_local_component) {
 		$id_component = (int) get_parameter ('id_module_component');
 		
-		$component = get_db_row ('tlocal_component', 'id', $id_component);
+		$component = db_get_row ('tlocal_component', 'id', $id_component);
 		foreach ($component as $index => $element) {
 			$component[$index] = html_entity_decode($element, ENT_QUOTES, "UTF-8");
 		}
@@ -69,11 +69,11 @@ if (is_ajax ()) {
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
-						$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
+						$component['type'] = db_get_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
 				break;
 			case "postgresql":
 			case "oracle":
-						$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE \'' . $typeName . '\'');
+						$component['type'] = db_get_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE \'' . $typeName . '\'');
 				break;
 		}
 		
@@ -115,6 +115,8 @@ if (is_ajax ()) {
 }
 
 require_once ("include/functions_exportserver.php");
+require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . "/include/functions_agents.php");
 
 // Using network component to fill some fields
 if ($id_agent_module) {
@@ -230,14 +232,14 @@ if($relink_policy) {
 	$result = relink_module_policy($id_agent_module);
 	ui_print_result_message($result, 'Module relinked to the policy successful');
 	
-	pandora_audit("Agent management", "Re-link module " . $id_agent_module);
+	db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 }
 
 if($unlink_policy) {
 	$result = unlink_module_policy($id_agent_module);
 	ui_print_result_message($result, 'Module unlinked from the policy successful');
 	
-	pandora_audit("Agent management", "Unlink module " . $id_agent_module);
+	db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
 }
 
 switch ($moduletype) {

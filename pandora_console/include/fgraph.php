@@ -1680,9 +1680,11 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			}
 		}
 
-		$chart[$timestamp]['count'] = 0;
-		$chart[$timestamp]['timestamp_bottom'] = $timestamp;
-		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
+		////$chart[$timestamp]['count'] = 0;
+		////////////
+		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
+		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
+		///////////
 		$chart[$timestamp]['min'] = 0;
 		$chart[$timestamp]['max'] = 0;
 		$chart[$timestamp]['event'] = $event_value;

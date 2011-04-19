@@ -124,7 +124,7 @@ else
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
 	echo "<h3>" . $modules[$idModuleShowGraph] . '</h3>';
 	echo grafico_modulo_sparse2($idModuleShowGraph, $period, $draw_events, $width, $height,
-		$modules[$idModuleShowGraph], $unit_name, $draw_alerts, $avg_only, $pure, $date);
+		$modules[$idModuleShowGraph], null, $draw_alerts, $avg_only, false, $date);
 }
 
 echo "<div style='clear: both;'></div>";

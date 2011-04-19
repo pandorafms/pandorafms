@@ -146,47 +146,26 @@ $urlImage .= $config['dbhost'] . $config['homeurl'] . '/';
 // log4x doesnt support flash yet
 //
 switch ($graph_type) {
+	case 'boolean':
+		echo grafico_modulo_boolean2 ($id, $period, $draw_events, $width, $height,
+				$label, null, $draw_alerts, 1, false, $date, false, $urlImage);
+		break;
 	case 'sparse':
 		echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
 			$label, null, $draw_alerts, $avg_only, false, $date, $baseline,
 			0, true, false, $urlImage);
 		break;
+	case 'string':
+		echo grafico_modulo_string2 ($id, $period, $draw_events, $width, $height,
+			$label, null, $draw_alerts, 1, false, $date, false, $urlImage);
+		break;
+	case 'log4x':
+		echo grafico_modulo_log4x_2 ($id, $period, $draw_events, $width, $height,
+			$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+		break;
 	default:
 		echo fs_error_image ('../images');
 		break;
-}
-	
-if ($config['flash_charts'] && $graph_type != "log4x") {
-	switch ($graph_type) {
-		case 'boolean': 
-			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, 1, $pure, $date);
-			break;
-		case 'string':
-			echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-			break;
-		case 'log4x':
-			echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-			break;
-	}
-}
-else {
-	switch ($graph_type) {
-		case 'boolean': 
-			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, 1, $pure, $date);
-			break;
-		case 'string':
-			echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-			break;
-		case 'log4x':
-			echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
-				$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
-			break;
-	}
 }
 
 //z-index is 1 because 2 made the calendar show under the divmenu.

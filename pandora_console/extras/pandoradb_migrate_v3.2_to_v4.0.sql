@@ -79,3 +79,12 @@ ALTER TABLE `treport_content` ADD COLUMN `style` TEXT NOT NULL DEFAULT '';
 -- Table `tperfil`
 -- -----------------------------------------------------
 ALTER TABLE `tperfil` MODIFY `name` TEXT NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `tsesion`
+-- -----------------------------------------------------
+
+ALTER TABLE `tsesion` CHANGE `ID_sesion` `id_sesion` bigint(20) unsigned NOT NULL auto_increment;
+ALTER TABLE `tsesion` CHANGE `ID_usuario` `id_usuario` varchar(60) NOT NULL default '0';
+ALTER TABLE `tsesion` CHANGE `IP_origen` `ip_origen` varchar(100) NOT NULL default '';
+

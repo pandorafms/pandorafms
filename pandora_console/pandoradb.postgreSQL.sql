@@ -610,16 +610,16 @@ CREATE INDEX "tserver_status_idx" ON "tserver"("status");
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
 CREATE TABLE "tsesion" (
-	"ID_sesion" BIGSERIAL NOT NULL PRIMARY KEY,
-	"ID_usuario" varchar(60) NOT NULL default '0',
-	"IP_origen" varchar(100) NOT NULL default '',
+	"id_sesion" BIGSERIAL NOT NULL PRIMARY KEY,
+	"id_usuario" varchar(60) NOT NULL default '0',
+	"ip_origen" varchar(100) NOT NULL default '',
 	"accion" varchar(100) NOT NULL default '',
 	"descripcion" text NOT NULL default '',
 	"fecha" TIMESTAMP without time zone default NULL,
 	"utimestamp" BIGINT NOT NULL default 0
 );
 CREATE INDEX "tsesion_utimestamp_idx" ON "tsesion"("utimestamp");
-CREATE INDEX "tsesion_ID_usuario_idx" ON "tsesion"("ID_usuario");
+CREATE INDEX "tsesion_id_usuario_idx" ON "tsesion"("id_usuario");
 
 CREATE TABLE "ttipo_modulo" (
 	"id_tipo" SERIAL NOT NULL PRIMARY KEY,

@@ -24,9 +24,12 @@
 -- Pandora schema creation script
 -- Triggers must end with two semicolons because Pandora installer need it 
 
+CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
+CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
+
 CREATE TABLE taddress (
 	id_a NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	ip VARCHAR(60) default '' NOT NULL,
+	ip VARCHAR(60) default '',
 	ip_pack NUMBER(10, 0) default 0 NOT NULL 
 );
 CREATE INDEX taddress_ip_idx ON taddress(ip);
@@ -48,7 +51,7 @@ CREATE OR REPLACE TRIGGER taddress_agent_inc BEFORE INSERT ON taddress_agent REF
 
 CREATE TABLE tagente (
 	id_agente NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre VARCHAR2(600) default '' NOT NULL,
+	nombre VARCHAR2(600) default '',
 	direccion VARCHAR2(100) default NULL,
 	comentarios VARCHAR2(255) default '',
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
@@ -124,7 +127,7 @@ CREATE OR REPLACE TRIGGER tagente_datos_log4x_inc BEFORE INSERT ON tagente_datos
 CREATE TABLE tagente_estado (
 	id_agente_estado NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	datos CLOB default '' NOT NULL,
+	datos CLOB default '',
 	timestamp TIMESTAMP default NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
 	id_agente NUMBER(10, 0) default 0 NOT NULL,
@@ -161,8 +164,8 @@ CREATE TABLE tagente_modulo (
 	id_agente_modulo NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente NUMBER(10, 0) default 0 NOT NULL,
 	id_tipo_modulo NUMBER(10, 0) default 0 NOT NULL,
-	descripcion CLOB default '' NOT NULL,
-	nombre CLOB default '' NOT NULL,
+	descripcion CLOB default '',
+	nombre CLOB default '',
 	id_policy_module NUMBER(10, 0) default 0 NOT NULL,
 	max NUMBER(19, 0) default 0 NOT NULL,
 	min NUMBER(19, 0) default 0 NOT NULL,
@@ -221,14 +224,14 @@ CREATE INDEX tagent_access_utimestamp_idx ON tagent_access(utimestamp);
 CREATE TABLE talert_snmp (
 	id_as NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_alert NUMBER(10, 0) default 0 NOT NULL,
-	al_field1 CLOB default '' NOT NULL,
-	al_field2 CLOB default '' NOT NULL,
-	al_field3 CLOB default '' NOT NULL,
+	al_field1 CLOB default '',
+	al_field2 CLOB default '',
+	al_field3 CLOB default '',
 	description VARCHAR2(255) default '',
 	alert_type NUMBER(5, 0) default 0 NOT NULL,
 	agent VARCHAR2(100) default '',
 	custom_oid VARCHAR2(200) default '',
-	oid VARCHAR2(255) default '' NOT NULL,
+	oid VARCHAR2(255) default '',
 	time_threshold NUMBER(10, 0) default 0 NOT NULL,
 	times_fired NUMBER(5, 0) default 0 NOT NULL,
 	last_fired TIMESTAMP default NULL,
@@ -244,7 +247,7 @@ CREATE OR REPLACE TRIGGER talert_snmp_inc BEFORE INSERT ON talert_snmp REFERENCI
 
 CREATE TABLE talert_commands (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
+	name VARCHAR2(100) default '',
 	command CLOB default '',
 	description CLOB default '',
 	internal NUMBER(10, 0) default 0
@@ -258,7 +261,7 @@ CREATE TABLE talert_actions (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name CLOB default '',
 	id_alert_command NUMBER(10, 0) NOT NULL REFERENCES talert_commands(id)  ON DELETE CASCADE,
-	field1 CLOB default '' NOT NULL,
+	field1 CLOB default '',
 	field2 CLOB default '',
 	field3 CLOB default '',
 	id_group NUMBER(19, 0) default 0 NOT NULL,
@@ -300,7 +303,7 @@ CREATE TABLE talert_templates (
 	saturday NUMBER(5, 0) default 1,
 	sunday NUMBER(5, 0) default 1,
 	recovery_notify NUMBER(5, 0) default 0,
-	field2_recovery CLOB default '' NOT NULL,
+	field2_recovery CLOB default '',
 	field3_recovery CLOB NOT NULL,
 	priority NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL, 
@@ -379,7 +382,7 @@ CREATE TABLE talert_compound (
 	saturday NUMBER(5, 0) default 1,
 	sunday NUMBER(5, 0) default 1,
 	recovery_notify NUMBER(5, 0) default 0,
-	field2_recovery VARCHAR2(255) default '' NOT NULL,
+	field2_recovery VARCHAR2(255) default '',
 	field3_recovery CLOB NOT NULL,
 	internal_counter NUMBER(10, 0) default 0,
 	last_fired NUMBER(19, 0) default 0 NOT NULL,
@@ -437,8 +440,8 @@ CREATE OR REPLACE TRIGGER talert_compound_action_update1 AFTER UPDATE OF ID ON t
 CREATE TABLE tattachment (
 	id_attachment NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_incidencia NUMBER(10, 0) default 0 NOT NULL,
-	id_usuario VARCHAR2(60) default '' NOT NULL,
-	filename VARCHAR2(255) default '' NOT NULL,
+	id_usuario VARCHAR2(60) default '',
+	filename VARCHAR2(255) default '',
 	description VARCHAR2(150) default '',
 	"size" NUMBER(19, 0) default 0 NOT NULL
 );
@@ -449,8 +452,8 @@ CREATE OR REPLACE TRIGGER tattachment_inc BEFORE INSERT ON tattachment REFERENCI
 
 CREATE TABLE tconfig (
 	id_config NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	token VARCHAR2(100) default '' NOT NULL,
-	value VARCHAR2(100) default '' NOT NULL 
+	token VARCHAR2(100) default '',
+	value VARCHAR2(100) default '' 
 );
 
 CREATE SEQUENCE tconfig_s INCREMENT BY 1 START WITH 1;
@@ -459,7 +462,7 @@ CREATE OR REPLACE TRIGGER tconfig_inc BEFORE INSERT ON tconfig REFERENCING NEW A
 
 CREATE TABLE tconfig_os (
 	id_os NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
+	name VARCHAR2(100) default '',
 	description VARCHAR2(250) default '',
 	icon_name VARCHAR2(100) default ''
 );
@@ -472,13 +475,13 @@ CREATE TABLE tevento (
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
 	timestamp TIMESTAMP default NULL, 			
-	evento CLOB default '' NOT NULL,
+	evento CLOB default '',
 	utimestamp NUMBER(19, 0) default 0 NOT NULL,
 	event_type VARCHAR2(50) default 'unknown',
 	id_agentmodule NUMBER(10, 0) default 0 NOT NULL,
 	id_alert_am NUMBER(10, 0) default 0 NOT NULL,
 	criticity NUMBER(10, 0) default 0 NOT NULL,
-	user_comment CLOB NOT NULL,
+	user_comment CLOB,
 	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal'))
 );
 CREATE INDEX tevento_id_1_idx ON tevento(id_agente, id_evento);
@@ -496,7 +499,7 @@ CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW A
 -- Criticity: 4 - Critical (red) (status 1)
 CREATE TABLE tgrupo (
 	id_grupo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre CLOB default '' NOT NULL,
+	nombre CLOB default '',
 	icon VARCHAR2(50) default 'world',
 	parent NUMBER(10, 0) default 0 NOT NULL,
 	propagate NUMBER(5, 0) default 0,
@@ -512,10 +515,10 @@ CREATE TABLE tincidencia (
 	id_incidencia NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	inicio TIMESTAMP default NULL,
 	cierre TIMESTAMP default NULL,
-	titulo CLOB default '' NOT NULL,
+	titulo CLOB default '',
 	descripcion CLOB NOT NULL,
-	id_usuario VARCHAR2(60) default '' NOT NULL,
-	origen VARCHAR2(100) default '' NOT NULL,
+	id_usuario VARCHAR2(60) default '',
+	origen VARCHAR2(100) default '',
 	estado NUMBER(10, 0) default 0 NOT NULL,
 	prioridad NUMBER(10, 0) default 0 NOT NULL,
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
@@ -536,14 +539,14 @@ CREATE SEQUENCE tincidencia_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tincidencia_inc BEFORE INSERT ON tincidencia REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tincidencia_s.nextval INTO :NEW.ID_INCIDENCIA FROM dual; END;;
 
 CREATE TABLE tlanguage (
-	id_language VARCHAR2(6) default '' NOT NULL,
-	name VARCHAR2(100) default '' NOT NULL
+	id_language VARCHAR2(6) default '',
+	name VARCHAR2(100) default ''
 );
 
 CREATE TABLE tlink (
 	id_link NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
-	link VARCHAR2(255) default '' NOT NULL
+	name VARCHAR2(100) default '',
+	link VARCHAR2(255) default ''
 );
 
 CREATE SEQUENCE tlink_s INCREMENT BY 1 START WITH 1;
@@ -552,11 +555,11 @@ CREATE OR REPLACE TRIGGER tlink_inc BEFORE INSERT ON tlink REFERENCING NEW AS NE
 
 CREATE TABLE tmensajes (
 	id_mensaje NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_usuario_origen VARCHAR2(60) default '' NOT NULL,
-	id_usuario_destino VARCHAR2(60) default '' NOT NULL,
+	id_usuario_origen VARCHAR2(60) default '',
+	id_usuario_destino VARCHAR2(60) default '',
 	mensaje CLOB NOT NULL,
 	timestamp NUMBER(19, 0) default 0 NOT NULL,
-	subject VARCHAR2(255) default '' NOT NULL,
+	subject VARCHAR2(255) default '',
 	estado NUMBER(10, 0) default 0 NOT NULL 
 );
 
@@ -566,7 +569,7 @@ CREATE OR REPLACE TRIGGER tmensajes_inc BEFORE INSERT ON tmensajes REFERENCING N
 
 CREATE TABLE tmodule_group (
 	id_mg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(150) default '' NOT NULL
+	name VARCHAR2(150) default ''
 );
 
 CREATE SEQUENCE tmodule_group_s INCREMENT BY 1 START WITH 1;
@@ -614,14 +617,14 @@ CREATE OR REPLACE TRIGGER tnetwork_component_inc BEFORE INSERT ON tnetwork_compo
 
 CREATE TABLE tnetwork_component_group (
 	id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(200) default '' NOT NULL,
+	name VARCHAR2(200) default '',
 	parent NUMBER(19, 0) default 0 NOT NULL 
 );
 
 
 CREATE TABLE tnetwork_profile (
 	id_np NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
+	name VARCHAR2(100) default '',
 	description VARCHAR2(250) default ''
 );
 
@@ -645,12 +648,12 @@ CREATE TABLE tnota (
 CREATE INDEX tnota_id_incident_idx ON tnota(id_incident);
 
 CREATE TABLE torigen (
-	origen VARCHAR2(100) default '' NOT NULL
+	origen VARCHAR2(100) default ''
 );
 
 CREATE TABLE tperfil (
 	id_perfil NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name CLOB default '' NOT NULL,
+	name CLOB default '',
 	incident_edit NUMBER(5, 0) default 0 NOT NULL,
 	incident_view NUMBER(5, 0) default 0 NOT NULL,
 	incident_management NUMBER(5, 0) default 0 NOT NULL,
@@ -680,9 +683,9 @@ CREATE OR REPLACE TRIGGER trecon_script_inc BEFORE INSERT ON trecon_script REFER
 
 CREATE TABLE trecon_task (
 	id_rt NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
-	description VARCHAR2(250) default '' NOT NULL,
-	subnet VARCHAR2(64) default '' NOT NULL,
+	name VARCHAR2(100) default '',
+	description VARCHAR2(250) default '',
+	subnet VARCHAR2(64) default '',
 	id_network_profile NUMBER(10, 0) default 0 NOT NULL,
 	create_incident NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 1 NOT NULL,
@@ -691,13 +694,13 @@ CREATE TABLE trecon_task (
 	interval_sweep NUMBER(10, 0) default 0 NOT NULL,
 	id_recon_server NUMBER(10, 0) default 0 NOT NULL,
 	id_os NUMBER(10, 0) default 0 NOT NULL,
-	recon_ports VARCHAR2(250) default '' NOT NULL,
+	recon_ports VARCHAR2(250) default '',
 	snmp_community VARCHAR2(64) default 'public' NOT NULL,
 	id_recon_script NUMBER(10, 0),
-	field1 VARCHAR2(250) default '' NOT NULL,
-	field2 VARCHAR2(250) default '' NOT NULL,
-	field3 VARCHAR2(250) default '' NOT NULL,
-	field4 VARCHAR2(250) default '' NOT NULL
+	field1 VARCHAR2(250) default '',
+	field2 VARCHAR2(250) default '',
+	field3 VARCHAR2(250) default '',
+	field4 VARCHAR2(250) default ''
 );
 CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
 
@@ -707,8 +710,8 @@ CREATE OR REPLACE TRIGGER trecon_task_inc BEFORE INSERT ON trecon_task REFERENCI
 
 CREATE TABLE tserver (
 	id_server NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
-	ip_address VARCHAR2(100) default '' NOT NULL,
+	name VARCHAR2(100) default '',
+	ip_address VARCHAR2(100) default '',
 	status NUMBER(10, 0) default 0 NOT NULL,
 	laststart TIMESTAMP default NULL,
 	keepalive TIMESTAMP default NULL,
@@ -719,7 +722,7 @@ CREATE TABLE tserver (
 	checksum NUMBER(10, 0) default 0 NOT NULL,
 	description VARCHAR2(255) default NULL,
 	recon_server NUMBER(10, 0) default 0 NOT NULL,
-	version VARCHAR2(20) default '' NOT NULL,
+	version VARCHAR2(20) default '',
 	plugin_server NUMBER(10, 0) default 0 NOT NULL,
 	prediction_server NUMBER(10, 0) default 0 NOT NULL,
 	wmi_server NUMBER(10, 0) default 0 NOT NULL,
@@ -755,16 +758,16 @@ CREATE OR REPLACE TRIGGER tserver_inc BEFORE INSERT ON tserver REFERENCING NEW A
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
 CREATE TABLE tsesion (
-	ID_sesion NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	ID_usuario VARCHAR2(60) default '0' NOT NULL,
-	IP_origen VARCHAR2(100) default '' NOT NULL,
-	accion VARCHAR2(100) default '' NOT NULL,
-	descripcion CLOB default '' NOT NULL,
+	id_sesion NUMBER(19, 0) NOT NULL PRIMARY KEY,
+	id_usuario VARCHAR2(60) default '0' NOT NULL,
+	ip_origen VARCHAR2(100) default '',
+	accion VARCHAR2(100) default '',
+	descripcion CLOB default '',
 	fecha TIMESTAMP default NULL,
 	utimestamp NUMBER(19, 0) default 0 NOT NULL
 );
 CREATE INDEX tsesion_utimestamp_idx ON tsesion(utimestamp);
-CREATE INDEX tsesion_ID_usuario_idx ON tsesion(ID_usuario);
+CREATE INDEX tsesion_id_usuario_idx ON tsesion(id_usuario);
 
 CREATE SEQUENCE tsesion_s INCREMENT BY 1 START WITH 1;
 
@@ -772,9 +775,9 @@ CREATE OR REPLACE TRIGGER tsesion_inc BEFORE INSERT ON tsesion REFERENCING NEW A
 
 CREATE TABLE ttipo_modulo (
 	id_tipo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre VARCHAR2(100) default '' NOT NULL,
+	nombre VARCHAR2(100) default '',
 	categoria NUMBER(10, 0) default 0 NOT NULL,
-	descripcion VARCHAR2(100) default '' NOT NULL,
+	descripcion VARCHAR2(100) default '',
 	icon VARCHAR2(100) default NULL
 );
 
@@ -784,8 +787,8 @@ CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFEREN
 
 CREATE TABLE ttrap (
 	id_trap NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	source VARCHAR2(50) default '' NOT NULL,
-	oid CLOB default '' NOT NULL,
+	source VARCHAR2(50) default '',
+	oid CLOB default '',
 	oid_custom CLOB default '',
 	type NUMBER(10, 0) default 0 NOT NULL,
 	type_custom VARCHAR2(100) default '',
@@ -807,7 +810,7 @@ CREATE TABLE tusuario (
 	fullname VARCHAR2(255) NOT NULL,
 	firstname VARCHAR2(255) NOT NULL,
 	lastname VARCHAR2(255) NOT NULL,
-	middlename VARCHAR2(255) default '' NOT NULL,
+	middlename VARCHAR2(255) default '',
 	password VARCHAR2(45) default NULL,
 	comments VARCHAR2(200) default NULL,
 	last_connect NUMBER(19, 0) default 0 NOT NULL,
@@ -823,10 +826,10 @@ CREATE TABLE tusuario (
 
 CREATE TABLE tusuario_perfil (
 	id_up NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_usuario VARCHAR2(100) default '' NOT NULL,
+	id_usuario VARCHAR2(100) default '',
 	id_perfil NUMBER(10, 0) default 0 NOT NULL,
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	assigned_by VARCHAR2(100) default '' NOT NULL
+	assigned_by VARCHAR2(100) default ''
 );
 
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
@@ -835,8 +838,8 @@ CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil R
 
 CREATE TABLE tnews (
 	id_news NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	author VARCHAR2(255) DEFAULT '' NOT NULL,
-	subject VARCHAR2(255) DEFAULT '' NOT NULL,
+	author VARCHAR2(255) DEFAULT '',
+	subject VARCHAR2(255) DEFAULT '',
 	text CLOB NOT NULL,
 	timestamp TIMESTAMP default NULL
 );
@@ -847,8 +850,8 @@ CREATE OR REPLACE TRIGGER tnews_inc BEFORE INSERT ON tnews REFERENCING NEW AS NE
 
 CREATE TABLE tgraph (
 	id_graph NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_user VARCHAR2(100) default '' NOT NULL,
-	name VARCHAR2(150) default '' NOT NULL,
+	id_user VARCHAR2(100) default '',
+	name VARCHAR2(150) default '',
 	description CLOB NOT NULL,
 	period NUMBER(10, 0) default 0 NOT NULL,
 	width NUMBER(10, 0) default 0 NOT NULL,
@@ -876,8 +879,8 @@ CREATE OR REPLACE TRIGGER tgraph_source_inc BEFORE INSERT ON tgraph_source REFER
 
 CREATE TABLE treport (
 	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_user VARCHAR2(100) default '' NOT NULL,
-	name VARCHAR2(150) default '' NOT NULL,
+	id_user VARCHAR2(100) default '',
+	name VARCHAR2(150) default '',
 	description CLOB NOT NULL,
 	private NUMBER(5, 0) default 0 NOT NULL,
 	id_group NUMBER(19, 0) default 0 NOT NULL,
@@ -931,7 +934,7 @@ CREATE TABLE treport_content (
 	order_uptodown NUMBER(10, 0) default 0 NOT NULL,
 	show_graph NUMBER(10, 0) default 0 NOT NULL,
 	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
-	style CLOB default '' NOT NULL,
+	style CLOB default '',
 	id_group NUMBER(10, 0) default 0 NOT NULL,
 	id_module_group NUMBER(10, 0) default 0 NOT NULL
 );
@@ -975,7 +978,7 @@ CREATE OR REPLACE TRIGGER treport_content_item_inc BEFORE INSERT ON treport_cont
 
 CREATE TABLE treport_custom_sql (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(150) default '' NOT NULL,
+	name VARCHAR2(150) default '',
 	sql CLOB default NULL
 );
 
@@ -1039,7 +1042,7 @@ CREATE OR REPLACE TRIGGER tplugin_inc BEFORE INSERT ON tplugin REFERENCING NEW A
 
 CREATE TABLE tmodule (
 	id_module NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL 
+	name VARCHAR2(100) default '' 
 );
 
 CREATE SEQUENCE tmodule_s INCREMENT BY 1 START WITH 1;
@@ -1048,17 +1051,17 @@ CREATE OR REPLACE TRIGGER tmodule_inc BEFORE INSERT ON tmodule REFERENCING NEW A
 
 CREATE TABLE tserver_export (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' NOT NULL,
-	preffix VARCHAR2(100) default '' NOT NULL,
+	name VARCHAR2(100) default '',
+	preffix VARCHAR2(100) default '',
 	interval NUMBER(10, 0) default 300 NOT NULL,
-	ip_server VARCHAR2(100) default '' NOT NULL,
+	ip_server VARCHAR2(100) default '',
 	connect_mode VARCHAR2(20) default 'local',
 	id_export_server NUMBER(10, 0) default NULL ,
-	"user" VARCHAR2(100) default '' NOT NULL,
-	pass VARCHAR2(100) default '' NOT NULL,
+	"user" VARCHAR2(100) default '',
+	pass VARCHAR2(100) default '',
 	port NUMBER(10, 0) default 0 NOT NULL,
-	directory VARCHAR2(100) default '' NOT NULL,
-	options VARCHAR2(100) default '' NOT NULL,
+	directory VARCHAR2(100) default '',
+	options VARCHAR2(100) default '',
 	--Number of hours of diference with the server timezone
 	timezone_offset NUMBER(5, 0) default 0 NOT NULL,
 	CONSTRAINT tserver_export_conn_mode_cons CHECK (connect_mode IN ('tentacle', 'ssh', 'local'))
@@ -1073,9 +1076,9 @@ CREATE OR REPLACE TRIGGER tserver_export_inc BEFORE INSERT ON tserver_export REF
 CREATE TABLE tserver_export_data (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_export_server NUMBER(10, 0) default 0 NOT NULL,
-	agent_name VARCHAR2(100) default '' NOT NULL,
-	module_name VARCHAR2(100) default '' NOT NULL,
-	module_type VARCHAR2(100) default '' NOT NULL,
+	agent_name VARCHAR2(100) default '',
+	module_name VARCHAR2(100) default '',
+	module_type VARCHAR2(100) default '',
 	data VARCHAR2(255) default NULL, 
 	timestamp TIMESTAMP default NULL
 );
@@ -1370,7 +1373,7 @@ CREATE OR REPLACE TRIGGER tsnmp_filter_inc BEFORE INSERT ON tsnmp_filter REFEREN
 -- -----------------------------------------------------
 CREATE TABLE tagent_custom_fields (
 	id_field NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(45) default '' NOT NULL,
+	name VARCHAR2(45) default '',
 	display_on_front NUMBER(5, 0) default 0 NOT NULL
 );
 

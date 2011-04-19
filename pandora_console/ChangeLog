@@ -1,5 +1,10 @@
 2011-04-19 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/setup/setup_visuals.php: change the text field fonts to
+	select box.
+
+2011-04-19 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_graph.php, include/fgraph.php,
 	operation/agentes/graphs.php, operation/agentes/stat_win.php: added the
 	new engine.

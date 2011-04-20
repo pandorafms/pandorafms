@@ -1,3 +1,12 @@
+2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php,
+	include/graphs/functions_pchart.php: some fixes, and set font size equal
+	for all text in graphs. And starte the change to vertical bar the graph
+	for string module.
+
+	* include/functions_reporting.php: added to take the font and size.
+
 2011-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_alert_macros.php,

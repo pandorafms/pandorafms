@@ -635,7 +635,7 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 	if ($only_image) {
 		$flash_charts = false;
 	}
-	$flash_charts = false;
+	
 	switch ($stacked) {
 		case GRAPH_AREA:
 			$color = null;
@@ -1484,7 +1484,7 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
-		$events = get_db_all_rows_filter ('tevento',
+		$events = db_get_all_rows_filter('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
@@ -1496,7 +1496,7 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	}
 
 	// Get module data
-	$data = get_db_all_rows_filter ('tagente_datos',
+	$data = db_get_all_rows_filter ('tagente_datos',
 		array ('id_agente_modulo' => $agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
@@ -1798,7 +1798,7 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
-		$events = get_db_all_rows_filter ('tevento',
+		$events = db_get_all_rows_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
@@ -1810,7 +1810,7 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	}
 
 	// Get module data
-	$data = get_db_all_rows_filter ('tagente_datos_string',
+	$data = db_get_all_rows_filter ('tagente_datos_string',
 		array ('id_agente_modulo' => $agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
@@ -1963,12 +1963,8 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$color = array();
 	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
-	if($show_events) {
-		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
-	}
-	if($show_alerts) {
-		$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
-	}
+	$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+	$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	//$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
@@ -1981,6 +1977,14 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	
 	$legend = null;
 	
+	//TODO FIX
+	
+	return vbar_graph($flash_chart, $chart, $width, $height, $color,
+		$legend, "", "", $homeurl,
+		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
+	
+		//old
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",

@@ -1203,7 +1203,9 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$data[__('Alerts fired')] = $fired_percentage;
 	$data[__('Alerts not fired')] = $not_fired_percentage;
 	
-	$output .= pie3d_graph($config['flash_charts'], $data, 280, 150);
+	$output .= pie3d_graph($config['flash_charts'], $data, 280, 150,
+		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']); 
 		
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
 	$output .= '<strong>'.__('Total alerts monitored').': '.sizeof ($alerts).'</strong><br />';
@@ -1275,7 +1277,9 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$data[__('Monitors OK')] = $down_percentage;
 	$data[__('Monitors BAD')] = $not_down_percentage;
 	
-	$output .= pie3d_graph($config['flash_charts'], $data, 280, 150);
+	$output .= pie3d_graph($config['flash_charts'], $data, 280, 150,
+		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']); 
 	
 	if (!$return)
 		echo $output;
@@ -2125,7 +2129,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data_pie_graph = json_encode ($data_graph);
 			if (($show_graph == 1 || $show_graph == 2) && !empty($slas)) {
 				$data[0] = pie3d_graph($config['flash_charts'], $data_graph,
-					500, 150, __("other"));
+					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
 				
 				//Display horizontal bar graphs
@@ -3080,7 +3085,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph($config['flash_charts'], $data_pie_graph,
-					600, 150, __("other"));
+					600, 150, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']); 
 				
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -3328,7 +3334,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph($config['flash_charts'], $data_graph,
-					600, 150, __("other"));
+					600, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;

@@ -921,7 +921,7 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	$table->head[2] = __('User ID');
 	$table->head[3] = __('Timestamp');
 	
-	$events = events_get_group ($id_group, $period, $date);
+	$events = events_get_group_events ($id_group, $period, $date);
 	if (empty ($events)) {
 		$events = array ();
 	}
@@ -1651,7 +1651,7 @@ function get_group_detailed_event_reporting ($id_group, $period = 0, $date = 0, 
 	$table->head[2] = __('Criticity');
 	$table->head[3] = __('Timestamp');
 	
-	$events = events_get_group($id_group, $period, $date);
+	$events = events_get_group_events($id_group, $period, $date);
 	
 	if ($events) {
 		foreach ($events as $event) {

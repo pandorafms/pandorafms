@@ -591,7 +591,7 @@ function events_print_type_description ($type, $return = false) {
  *
  * @return array An array with all the events happened.
  */
-function events_get_group ($id_group, $period, $date) {
+function events_get_group_events ($id_group, $period, $date) {
 	global $config;
 
 	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");

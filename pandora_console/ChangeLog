@@ -1,3 +1,16 @@
+2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* images/logo_vertical_water.png: added water mark for the graphs.
+	
+	* godmode/db/db_info.php: cleaned source code style.
+	
+	* include/graphs/pChart/pDraw.class.php: re-added lost line for the
+	rotation label value.
+
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/graphs/functions_fsgraph.php, include/graphs/fgraph.php: added the
+	source code to show warter mark.
+
 2011-04-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_events.php

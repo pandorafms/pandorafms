@@ -152,7 +152,10 @@ ui_require_javascript_file ('pandora_alerts');
 <script type="text/javascript">
 $(document).ready (function () {
 <?php if ($id_command) : ?>
-	original_command = "<?php echo alerts_get_alert_command_command ($id_command); ?>";
+	original_command = "<?php $command = get_alert_command_command ($id_command);
+								$command = safe_output($command);
+								echo addslashes($command);
+		?>";
 	render_command_preview ();
 <?php endif; ?>
 	$("#id_command").change (function () {

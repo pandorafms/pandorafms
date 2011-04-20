@@ -1634,6 +1634,13 @@ sub get_module_status ($$$) {
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 
+	# Was the module status set in the XML data file?
+	if (defined ($module->{'status'})) {
+		return 1 if (uc ($module->{'status'}) eq 'CRITICAL');
+		return 2 if (uc ($module->{'status'}) eq 'WARNING');
+		return 0 if (uc ($module->{'status'}) eq 'NORMAL');
+	}
+
 	# Set default critical max/min for *proc modules
 	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);

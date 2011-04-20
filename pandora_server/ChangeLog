@@ -1,5 +1,11 @@
 2011-04-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/DataServer.pm: Module status can be set from the XML
+	  data file.
+
+2011-04-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Added _policy_ macro to alerts (Enterprise).
 
 2011-04-19  Ramon Novoa  <rnovoa@artica.es>

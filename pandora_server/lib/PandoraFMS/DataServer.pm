@@ -548,6 +548,9 @@ sub process_module_data ($$$$$$$$$) {
 	my $data_object = get_module_data($data, $module_type);
 	my $extra_macros = get_macros_for_data($data, $module_type);
 	
+	# Get module status from XML data file if available
+	$module->{'status'} = get_tag_value ($data, 'status', undef);
+	
 	pandora_process_module ($pa_config, $data_object, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh, $extra_macros);
 }
 

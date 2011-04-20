@@ -1388,7 +1388,7 @@ function graphic_agentevents2 ($id_agent, $width, $height, $period = 0) {
 }
 
 // Clean FLASH string strips non-valid characters for flashchart
-function clean_flash_string ($string) {
+function clean_flash_string2 ($string) {
 	$string = html_entity_decode ($string, ENT_QUOTES, "UTF-8");
 	$string = str_replace('&', '', $string);
 	$string = str_replace(' ', '', $string);
@@ -1416,7 +1416,7 @@ function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
 		} else {
 			$show_name = '0';
 		}
-		$chart->addChartData(1, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=' . $value);
+		$chart->addChartData(1, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name . ';color=' . $value);
 	}
 
 	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');

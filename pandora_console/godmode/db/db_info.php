@@ -18,7 +18,7 @@
 // Load global vars
 global $config;
 
-require_once ($config["homedir"] . '/include/functions_graph.php'); 
+require_once ($config["homedir"] . '/include/functions_graph.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
 

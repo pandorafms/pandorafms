@@ -1745,6 +1745,7 @@
      $LabelingMethod	= isset($Format["LabelingMethod"]) ? $Format["LabelingMethod"] : LABELING_ALL;
      $LabelSkip		= isset($Format["LabelSkip"]) ? $Format["LabelSkip"] : 1;
      $LabelRotation	= isset($Format["LabelRotation"]) ? $Format["LabelRotation"] : 0;
+     $LabelValuesRotation	= isset($Format["LabelValuesRotation"]) ? $Format["LabelValuesRotation"] : 0;
      $SkippedAxisTicks	= isset($Format["SkippedAxisTicks"]) ? $Format["SkippedAxisTicks"] : $GridTicks+2;
      $SkippedAxisR	= isset($Format["SkippedAxisR"]) ? $Format["SkippedAxisR"] : $GridR;
      $SkippedAxisG	= isset($Format["SkippedAxisG"]) ? $Format["SkippedAxisG"] : $GridG;

@@ -304,7 +304,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	}
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl);
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		 $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -639,23 +640,26 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			$color = null;
 			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
-				"", "", $homeurl);
+				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png");
 			break;
 		default:
 		case GRAPH_STACKED_AREA:
 			$color = null;
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				"", "", $config['homedir'] .  "/images/logo_vertical_water.png");
 			break;
 		case GRAPH_LINE:
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				"", "", $config['homedir'] .  "/images/logo_vertical_water.png");
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
 			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png");
+				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				"", "", $config['homedir'] .  "/images/logo_vertical_water.png");
 			break;
 	}
 }
@@ -702,7 +706,8 @@ function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
 	}
 	
 	echo area_graph($config['flash_charts'], $data, $width, $height,
-		null, null, null, "images/image_problem.opaque.png");
+		null, null, null, "images/image_problem.opaque.png", "", "", "",
+		 $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -745,7 +750,8 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 	}
 	asort ($data);
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"));
+	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
+		'', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
@@ -777,6 +783,8 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $daysWeek, $time_
 function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
 	global $config;
 	global $graphic_type;
+	
+	include_flash_chart_script();
 
 	if ($id_agent < 1) {
 		$id_agent = -1;
@@ -822,7 +830,8 @@ function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
 	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
 
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -834,6 +843,8 @@ function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
 function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
+	
+	include_flash_chart_script();
 
 	$data = array ();
 	$legend = array ();
@@ -848,7 +859,8 @@ function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
 		$data[$agents[$agent_id]]['g'] = $value;
 	}
 	
-	return hbar_graph($config['flash_charts'], $data, $width, $height, array(), $legend);
+	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
+		$legend, "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -860,6 +872,8 @@ function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
 function graph_db_agentes_modulos2($width, $height) {
 	global $config;
 	global $graphic_type;
+	
+	include_flash_chart_script();
 
 	$data = array ();
 	
@@ -895,7 +909,8 @@ function graph_db_agentes_modulos2($width, $height) {
 		}
 	}
 	
-	return hbar_graph($config['flash_charts'], $data, $width, $height);
+	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
+		array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -936,7 +951,8 @@ function graphic_user_activity2 ($width = 350, $height = 230) {
 		$data[$login['id_usuario']] = $login['n_incidents'];
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -969,7 +985,8 @@ function grafico_incidente_prioridad2 () {
 			__('Very serious') => $data_tmp[4],
 			__('Maintenance') => $data_tmp[5]);
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1002,7 +1019,8 @@ function graph_incidents_status2 () {
 			$data[__("Invalid")]++;
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 370, 180);
+	return pie3d_graph($config['flash_charts'], $data, 370, 180,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1028,7 +1046,8 @@ function graphic_incident_group2 () {
 		$data[$incident['nombre']] = $incident['n_incidents'];
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1065,7 +1084,8 @@ function graphic_incident_user2 () {
 		$data[$name] = $incident['n_incidents'];
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1107,7 +1127,8 @@ function graphic_incident_source2($width = 320, $height = 200) {
 		$data[$origin['origen']] = $origin['n_incident'];
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1171,7 +1192,8 @@ function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
 		$loop++;
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1205,7 +1227,8 @@ function grafico_eventos_total2($filter = "") {
 	
 	asort ($data);
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200);
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1241,7 +1264,8 @@ function grafico_eventos_usuario2 ($width, $height) {
 		$events = array();
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height);
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1295,13 +1319,15 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
 	
     switch ($type) {
         case 'sql_graph_vbar': // vertical bar
-        	return hbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", false, $homeurl);
+        	return hbar_graph($flash_charts, $data, $width, $height, array(),
+        		array(), "", "", false, $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png");
             break;
         case 'sql_graph_hbar': // horizontal bar
         	return vbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", $homeurl);
             break;
         case 'sql_graph_pie': // Pie
-            return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl);
+            return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,
+            	$config['homedir'] .  "/images/logo_vertical_water.png");
             break;
     }
 }
@@ -1721,7 +1747,8 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	}
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl);
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		 $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 /**
@@ -1947,7 +1974,8 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	$legend = null;
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl);
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		 $config['homedir'] .  "/images/logo_vertical_water.png");
 }
 
 function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,

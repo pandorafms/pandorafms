@@ -309,7 +309,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 }
 
 
-function fs_area_graph($chart_data, $width, $height, $colors, $legend, $long_index) {
+function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '') {
 	global $config;
 
 	$graph_type = "MSArea2D"; //MSLine is possible also

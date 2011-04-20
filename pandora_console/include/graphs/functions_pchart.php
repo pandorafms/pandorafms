@@ -94,6 +94,11 @@ if (!$force_height) {
 	}
 }
 
+$water_mark = '';
+if(isset($graph['water_mark'])) { 
+	$water_mark = $graph['water_mark']; //"/var/www/pandora_console/images/logo_vertical_water.png";
+}
+debugPrint($graph['water_mark'], true);
 
 /*
 $colors = array();
@@ -247,7 +252,7 @@ foreach($colors as $i => $color) {
 switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
-			pch_pie_graph($graph_type, array_values($data), array_keys($data), $width, $height, $font);
+			pch_pie_graph($graph_type, array_values($data), array_keys($data), $width, $height, $font, $water_mark);
 			break;
 	case 'slicebar':
 			pch_slicebar_graph($graph_type, $data, $width, $height, $colors, $font, $round_corner);
@@ -258,12 +263,16 @@ switch($graph_type) {
 			break;
 	case 'hbar':
 	case 'vbar':
-			pch_bar_graph($graph_type, $data_keys, $data_values, $width, $height, $font, $antialiasing, $rgb_color, $xaxisname, $yaxisname, false, $legend, $fine_colors);
+			pch_bar_graph($graph_type, $data_keys, $data_values, $width, $height,
+				$font, $antialiasing, $rgb_color, $xaxisname, $yaxisname, false,
+				$legend, $fine_colors, $water_mark);
 			break;
 	case 'stacked_area':
 	case 'area':
 	case 'line':
-			pch_vertical_graph($graph_type, $data_keys, $data_values, $width, $height, $rgb_color, $xaxisname, $yaxisname, false, $legend, $font, $antialiasing);
+			pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
+				$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
+				$font, $antialiasing, $water_mark);
 			break;
 	case 'threshold':
 			pch_threshold_graph($graph_type, $data_keys, $data_values, $width, $height, $font, $antialiasing, $xaxisname, $yaxisname, $title);
@@ -330,7 +339,7 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 	$myPicture->Stroke ();
 }
 
-function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $height, $font) {
+function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $height, $font, $water_mark) {
 	 /* CAT:Pie charts */
 
 	 /* Create and populate the pData object */
@@ -348,6 +357,21 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 	 /* Set the default font properties */ 
 	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>10,"R"=>80,"G"=>80,"B"=>80));
 
+	 
+	 
+	 $water_mark_height = 0;
+	 $water_mark_width = 0;
+	 debugPrint($water_mark, true);
+	 if (!empty($water_mark)) {
+		$size_water_mark = getimagesize($water_mark);
+		$water_mark_height = $size_water_mark[1];
+		$water_mark_width = $size_water_mark[0];
+		
+		$myPicture->drawFromPNG(($width - $water_mark_width),
+	 		($height - $water_mark_height) - 50, $water_mark);
+	 }
+	 
+	 
 	 /* Create the pPie object */ 
 	 $PieChart = new pPie($myPicture,$MyData);
 
@@ -357,7 +381,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 			    $PieChart->draw2DPie($width/4,$height/2,array("DataGapAngle"=>0,"DataGapRadius"=>0, "Border"=>FALSE, "BorderR"=>200, "BorderG"=>200, "BorderB"=>200, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
 				break;
 		 case "pie3d":
-			    $PieChart->draw3DPie($width/4,$height/2,array("DataGapAngle"=>10,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
+			    $PieChart->draw3DPie($width/4, $height/2,array("DataGapAngle"=>10,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
 				break;
 	 }
 
@@ -381,7 +405,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 	 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 		 
 	 /* Render the picture */
-	 $myPicture->stroke(); 
+	 $myPicture->stroke();
 }
 
 function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $height, $font) {
@@ -424,7 +448,9 @@ function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $h
 	 $myPicture->stroke(); 
 }
 
-function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font, $antialiasing, $rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false, $legend = array(), $fine_colors = array()) {
+function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
+	$antialiasing, $rgb_color = false, $xaxisname = "", $yaxisname = "",
+	$show_values = false, $legend = array(), $fine_colors = array(), $water_mark = '') {
 	/* CAT: Vertical Bar Chart */
 	if(!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -470,7 +496,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font, $ant
 
 	 /* Create the pChart object */
 	 $myPicture = new pImage($width,$height,$MyData);
-
+	 
 	 /* Turn of Antialiasing */
 	 $myPicture->Antialias = $antialiasing;
 
@@ -498,24 +524,39 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font, $ant
 		}
 	 }
 	 $margin_top = 10 * $max_chars;
-				 
+	
 	 switch($graph_type) {
 		case "vbar":
-				$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, "GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
+				$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, 
+					"GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, 
+					"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
 				$margin_left = 40;
 				$margin_top = 10;
 				$margin_bottom = 8 * $max_chars;
 				break;
 		case "hbar":
-				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, "LabelValuesRotation" => 60);
-				$margin_left = 8 * $max_chars;
+				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
+					"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, 
+					"LabelValuesRotation" => 60);
+				$margin_left = 5 * $max_chars;
 				$margin_top = 40;
 				$margin_bottom = 10;
 				break;
 	 }
 	 
+	 $water_mark_height = 0;
+	 $water_mark_width = 0;
+	 if (!empty($water_mark)) {
+		$size_water_mark = getimagesize($water_mark);
+		$water_mark_height = $size_water_mark[1];
+		$water_mark_width = $size_water_mark[0];
+		
+		$myPicture->drawFromPNG(($width - $water_mark_width),
+	 		($height - $water_mark_height) - $margin_bottom, $water_mark);
+	 }
+	 
 	 /* Define the chart area */
-	 $myPicture->setGraphArea($margin_left,$margin_top,$width,$height-$margin_bottom);
+	 $myPicture->setGraphArea($margin_left,$margin_top,$width - $water_mark_width,$height-$margin_bottom);
 
 	 $myPicture->drawScale($scaleSettings);
 
@@ -537,7 +578,9 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font, $ant
 	 $myPicture->stroke(); 
 }
 
-function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false, $legend = array(), $font, $antialiasing) {
+function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
+	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
+	$legend = array(), $font, $antialiasing, $water_mark = '') {
 	/* CAT:Vertical Charts */
 	if(!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -647,13 +690,25 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 }
 	 $margin_bottom = 10 * $max_chars;
 	 
+	 $water_mark_height = 0;
+	 $water_mark_width = 0;
+	 if (!empty($water_mark)) {
+		$size_water_mark = getimagesize($water_mark);
+		$water_mark_height = $size_water_mark[1];
+		$water_mark_width = $size_water_mark[0];
+		
+		$myPicture->drawFromPNG(($width - $water_mark_width),
+	 		($height - $water_mark_height) - $margin_bottom, $water_mark);
+	 }
+	 
+	 
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40,$size['Height'],$width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea(40,$size['Height'],$width - $water_mark_width,$height - $margin_bottom);
 	 }
 	 else {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40, 5,$width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea(40, 5,$width - $water_mark_width,$height - $margin_bottom);
 	 }
 
 	 /* Draw the scale */
@@ -686,6 +741,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height, $rgb_c
 	 	"DisplayZeros"=> FALSE,
 	 	"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	 
+		
 	 switch($graph_type) {
 	 	case "stacked_area":
 		case "area":

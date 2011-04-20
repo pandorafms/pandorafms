@@ -4,6 +4,10 @@
 
 2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_graph.php: fixed duplicated function.
+
+2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* images/logo_vertical_water.png: added water mark for the graphs.
 	
 	* godmode/db/db_info.php: cleaned source code style.

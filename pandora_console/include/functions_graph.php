@@ -1422,11 +1422,11 @@ function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
 	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
 }
 
 // Returns the code needed to display the chart
-function get_chart_code ($chart, $width, $height, $swf) {
+function get_chart_code2 ($chart, $width, $height, $swf) {
 	$random_number = rand ();
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;

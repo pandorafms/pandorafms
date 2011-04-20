@@ -1,3 +1,9 @@
+2011-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_alert_macros.php,
+	  include/help/es/help_alert_macros.php: Added the new _policy_ alert
+	  macro.
+
 2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/fonts/unicode.ttf: renamed form code.ttf.

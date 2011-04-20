@@ -26,7 +26,7 @@ The following macros are available:
 <li>_alert_priority_ : Numerical alert priorityu </li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
-
+<li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 
 </ul>
 <p>

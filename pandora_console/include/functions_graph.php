@@ -1366,7 +1366,7 @@ function graphic_agentevents2 ($id_agent, $width, $height, $period = 0) {
 		}
 
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$criticity = (int) get_db_value_filter ('criticity',
+		$criticity = (int) db_get_value_filter ('criticity',
 			'tevento',
 			array ('id_agente' => $id_agent,
 				'utimestamp > '.$bottom,

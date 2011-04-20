@@ -1,3 +1,16 @@
+2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/fgraph.php, operation/agentes/stat_win.php: fixed duplicate
+	functions, and start to support custom font in Pandora connector.
+
+	* index.php: fixed when include again the extension file.
+	
+	* include/functions_html.php: fixed when include this file in other
+	location to index.
+
+	* godmode/reporting/graph_builder.preview.php: cleaned source code style.
+
 2011-04-20 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/alerts/configure_alert_action.php: Fixed a small bug about

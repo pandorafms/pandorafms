@@ -19,6 +19,17 @@
  * @subpackage HTML
  */
 
+if (!isset($config)) {
+	$working_dir = getcwd();
+	$levels = substr_count($working_dir, '/');
+	
+	for ($i = 0; $i < $levels; $i++) {
+		if(file_exists(str_repeat("../", $i) . 'config.php')) {
+			require_once(str_repeat("../", $i) . "config.php");
+		}
+	}
+}
+
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions_groups.php');
 

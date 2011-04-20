@@ -77,8 +77,10 @@ if(isset($graph['yaxisname'])) {
 if(isset($graph['round_corner'])) { 
 	$round_corner = $graph['round_corner'];
 }
-if(isset($graph['font'])) { 
-	$font = $graph['font'];
+if(isset($graph['font'])) {
+	if (!empty($graph['font'])) {
+		$font = $graph['font'];
+	}
 }
 if(isset($graph['antialiasing'])) { 
 	$antialiasing = $graph['antialiasing'];

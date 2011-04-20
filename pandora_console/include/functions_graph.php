@@ -107,7 +107,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 	}
@@ -731,7 +731,7 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 	$events = db_get_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 		return;
@@ -1401,7 +1401,7 @@ function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
 	global $config;
 
 	if (sizeof ($data) == 0) {
-		return fs_error_image ();
+		return fs_error_image2 ();
 	}
 
 	// Generate the XML
@@ -1425,27 +1425,8 @@ function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
 	return get_chart_code2 ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
 }
 
-// Returns the code needed to display the chart
-function get_chart_code2 ($chart, $width, $height, $swf) {
-	$random_number = rand ();
-	$div_id = 'chart_div_' . $random_number;
-	$chart_id = 'chart_' . $random_number;
-	$output = '<div id="' . $div_id. '"></div>';
-	$output .= '<script type="text/javascript">
-			<!--
-				$(document).ready(function pie_' . $chart_id . ' () {
-					var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
-					myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
-					myChart.addParam("WMode", "Transparent");
-					myChart.render("' . $div_id . '");
-				})
-			-->
-			</script>';
-	return $output;
-}
-
 // Prints an error image
-function fs_error_image () {
+function fs_error_image2 () {
 	global $config;
 
 	return print_image("images/image_problem.png", true, array("border" => '0'));
@@ -1530,7 +1511,7 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 	}
@@ -1843,7 +1824,7 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 	}
@@ -1983,7 +1964,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 	 $date = 0) 
 {
 
-        grafico_modulo_log4x_trace("<pre style='text-align:left;'>");
+        grafico_modulo_log4x_trace2("<pre style='text-align:left;'>");
 
 	if ($date == "")
 		$now = time ();
@@ -2018,7 +1999,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $num_slices = $periodo / $adjust_time;
 
-        $fechatope_index = grafico_modulo_log4x_index($fechatope, $adjust_time);
+        $fechatope_index = grafico_modulo_log4x_index2($fechatope, $adjust_time);
 
         $sql1="SELECT utimestamp, SEVERITY " .
                 " FROM tagente_datos_log4x " .
@@ -2029,7 +2010,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
         $max_count = -1;
         $min_count = 9999999;
 
-        grafico_modulo_log4x_trace("$sql1");
+        grafico_modulo_log4x_trace2("$sql1");
 
         $rows = 0;
         
@@ -2045,7 +2026,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 if (!isset($valores[$severity]))
                         $valores[$severity] = array();
 
-                $dest = grafico_modulo_log4x_index($utimestamp, $adjust_time);
+                $dest = grafico_modulo_log4x_index2($utimestamp, $adjust_time);
 
                 $index = (($dest - $fechatope_index) / $adjust_time) - 1;
 
@@ -2062,25 +2043,25 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 $min_count = min($min_count, $valores[$severity][$index]['count']);
        }
 
-        grafico_modulo_log4x_trace("$rows rows");
+        grafico_modulo_log4x_trace2("$rows rows");
 
         // Create graph
         // *************
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
 	//set_error_handler("myErrorHandler");
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 	set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . "/../../include");
 
 	require_once 'Image/Graph.php';
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
         $Graph =& Image_Graph::factory('graph', array($width, $height));
  
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
 
 
@@ -2114,7 +2095,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $title_period = html_entity_decode($title_period);
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
         if ($pure == 0){
                 $Graph->add(
@@ -2144,7 +2125,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 $Graph->add($Plotarea = Image_Graph::factory('plotarea', array('Image_Graph_Axis', 'Image_Graph_Axis')));
         }
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
         $dataset = array();
 
@@ -2169,7 +2150,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                                 $x = 100.0 * ($pivot - $fechatope) / ($now - $fechatope);
                                 if ($x > 100) $x = 100;
 
-                                $size = grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius);
+                                $size = grafico_modulo_log4x_bubble_size2($count, $max_count, $max_bubble_radius);
 
                                 // pivot is the value in the X axis
                                 // y is the number of steps (from the bottom of the graphics) (zero based)
@@ -2189,14 +2170,14 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 $i++;
         }
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
         // create the 1st plot as smoothed area chart using the 1st dataset
         $Plot =& $Plotarea->addNew('bubble', array(&$dataset));
         $Plot->setFont($Font);
 
         $AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
-        $AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_x_axis'));
+        $AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_x_axis2'));
         $AxisX->forceMinimum($fechatope);
         $AxisX->forceMaximum($now);
 
@@ -2222,10 +2203,10 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
         //$GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Dotted', array("white", "gray", "gray", "gray")));
         $GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Formatted', array(array("transparent", "transparent", "transparent", "gray"))));
         //*/
-        //grafico_modulo_log4x_trace(print_r($AxisX, true));
+        //grafico_modulo_log4x_trace2(print_r($AxisX, true));
 
         $AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-        $AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_y_axis'));
+        $AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_y_axis2'));
         $AxisY->setLabelOption("showtext",true);
         //$AxisY->setLabelInterval(0);
         //$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
@@ -2248,7 +2229,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
         foreach($colors as $color)
                 $FillArray->addColor($color);
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
         $FillArray->addColor('green@0.6');
         //$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
@@ -2271,24 +2252,24 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $plotMinMax =& $PlotareaMinMax->addNew('bubble', array(&$dataset, true));
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 
         $Graph->done();
 
-        grafico_modulo_log4x_trace(__LINE__);
+        grafico_modulo_log4x_trace2(__LINE__);
 }
 
-function grafico_modulo_log4x_index($x, $interval)
+function grafico_modulo_log4x_index2($x, $interval)
 {
         return $x + $interval - (($x - 1) % $interval) - 1;
 }
 
-function grafico_modulo_log4x_trace($str)
+function grafico_modulo_log4x_trace2($str)
 {
         //echo "$str\n";
 }
 
-function grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius)
+function grafico_modulo_log4x_bubble_size2($count, $max_count, $max_bubble_radius)
 {
         //Superformula de ROA
         $r0 = 1.5;
@@ -2322,7 +2303,7 @@ function grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius
         return 5 + log($count);
 }
 
-function grafico_modulo_log4x_format_x_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
+function grafico_modulo_log4x_format_x_axis2 ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
 {
         // $number is the unix time in the local timezone
 
@@ -2334,7 +2315,7 @@ function grafico_modulo_log4x_format_x_axis ( $number , $decimals=2, $dec_point=
         return date("d/m", $number) . "\n" . date("H:i", $number);
 }
 
-function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
+function grafico_modulo_log4x_format_y_axis2 ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
 {
         $n = "";
 

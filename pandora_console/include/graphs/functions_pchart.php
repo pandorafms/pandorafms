@@ -452,12 +452,12 @@ function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width,
 					"LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,
 					"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,
 					"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), 
-					"FontName"=>$font,"FontSize"=>$font_size / 1.8);
+					"FontName"=>$font,"FontSize"=>$font_size);
 			    $SplitChart->drawRadar($myPicture,$MyData,$Options); 
 				break;
 		 case "polar":
 				$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50),
-					"FontName"=>$font,"FontSize"=>$font_size / 1.8); 
+					"FontName"=>$font,"FontSize"=>$font_size); 
  			    $SplitChart->drawRadar($myPicture,$MyData,$Options); 
 				break;
 	 }
@@ -796,14 +796,14 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font
 	 
 	 /* Write the picture title */ 
 	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
-	 $myPicture->drawText(60,35,$title,array("FontSize"=>($font_size * 1.8),"Align"=>TEXT_ALIGN_BOTTOMLEFT));
+	 $myPicture->drawText(60,35,$title,array("FontSize"=>$font_size,"Align"=>TEXT_ALIGN_BOTTOMLEFT));
 
 	 /* Do some cosmetic and draw the chart */
 	 $myPicture->setGraphArea(60,40,670,190);
 	 $myPicture->drawFilledRectangle(60,40,670,190,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
 	 $myPicture->drawScale(array("GridR"=>180,"GridG"=>180,"GridB"=>180, "Mode" => SCALE_MODE_START0));
 	 $myPicture->setShadow(TRUE,array("X"=>2,"Y"=>2,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>($font_size / 1.8)));
+	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
 	 $settings = array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	 $myPicture->drawSplineChart($settings);
 	 $myPicture->setShadow(FALSE);

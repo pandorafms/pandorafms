@@ -145,13 +145,13 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
 	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
-		logon_db ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
 	}
 	else {
 		require_once ('general/login_page.php');
-		pandora_audit("Logon Failed (loginhash", "", "system");
+		db_pandora_audit("Logon Failed (loginhash", "", "system");
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
@@ -162,8 +162,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
 	$nick = get_parameter_post ("nick"); //This is the variable with the login
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
-	$nick = escape_string_sql($nick);
-	$pass = escape_string_sql($pass);
+	$nick = db_escape_string_sql($nick);
+	$pass = db_escape_string_sql($pass);
 	// process_user_login is a virtual function which should be defined in each auth file.
 	// It accepts username and password. The rest should be internal to the auth file.
 	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
@@ -173,7 +173,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	if ($nick_in_db !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
-		logon_db ($nick_in_db, $_SERVER['REMOTE_ADDR']);
+		db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $nick_in_db;
 		$config['id_user'] = $nick_in_db;
 		//Remove everything that might have to do with people's passwords or logins
@@ -195,7 +195,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
-		pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+		db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
@@ -211,7 +211,7 @@ elseif (! isset ($config['id_user'])) {
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
-	logoff_db ($iduser, $_SERVER['REMOTE_ADDR']);
+	db_logoff ($iduser, $_SERVER['REMOTE_ADDR']);
 	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
 	unset($_SESSION['id_usuario']);
 	unset($iduser);
@@ -290,7 +290,7 @@ if ($config["pure"] == 0) {
 }
 while (@ob_end_flush ());
 
-print_database_debug ();
+db_print_database_debug ();
 echo '</html>';
 
 $run_time = format_numeric (microtime (true) - $config['start_time'], 3);

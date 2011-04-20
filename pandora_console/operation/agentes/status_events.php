@@ -25,6 +25,6 @@ if (!isset($id_agente)){
 require_once ("include/functions_events.php");
 
 echo "<h3>".__('Latest events for this agent')."</h3>";
-print_events_table ("WHERE id_agente = $id_agente", $limit = 10, $width=750);
+events_print_event_table ("WHERE id_agente = $id_agente", $limit = 10, $width=750);
 
 ?>

@@ -60,7 +60,7 @@ $table->align[0] = 'center';
 
 $table->data = array();
 foreach($ids as $key => $id) {
-	$event = get_event($id);
+	$event = events_get_event($id);
 	// Colored box
 	switch($event["estado"]) {
 		case 0:

@@ -1,3 +1,20 @@
+2011-04-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_events.php
+	include/functions_reporting.php
+	include/functions_alerts.php
+	operation/incidents/incident_detail.php
+	operation/agentes/status_events.php
+	operation/agentes/tactical.php
+	operation/integria_incidents/incident_detail.php
+	operation/events/events_validate.php
+	operation/events/events_list.php
+	operation/events/events.php
+	operation/reporting/reporting_xml.php: Functions in functions_events.php have "events_"
+	prefix.  
+	* index.php: Added some "db_" prefixes that I forgot in my last commit. Functions in 
+	functions_events.php have "events_" prefix.
+
 2011-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* Changelog: Forget to update the Changelog in my last commit.

@@ -78,20 +78,20 @@ $table->data[9][1] = print_select ($iconsets, 'status_images_set', $config["stat
 
 
 $table->data[10][0] = __('Font path');
-
 $fonts = load_fonts();
-
 $table->data[10][1] = print_select($fonts, 'fontpath', $config["fontpath"], '', '', 0, true);
 
-//$table->data[10][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
 
-$table->data[11][0] = __('Flash charts');
-$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $config["flash_charts"], true).'&nbsp;&nbsp;';
-$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $config["flash_charts"], true);
+$table->data[11][0] = __('Font size');
+$table->data[11][1] = print_select(range(1, 15), 'font_size', $config["font_size"], '', '', 0, true); 
+
+$table->data[12][0] = __('Flash charts');
+$table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $config["flash_charts"], true).'&nbsp;&nbsp;';
+$table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $config["flash_charts"], true);
 
 if (!defined ('PANDORA_ENTERPRISE')){
-	$table->data[12][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
-	$table->data[12][1] = print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
+	$table->data[13][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
+	$table->data[13][1] = print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
 }
 
 echo '<form id="form_setup" method="post">';

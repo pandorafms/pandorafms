@@ -1,4 +1,17 @@
 2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/fonts/unicode.ttf: renamed form code.ttf.
+	
+	* include/fonts/smallfont.ttf: added new smaller font.
+	
+	* include/functions_config.php, godmode/setup/setup_visuals.php: now you
+	can set the size of font for the graphs.
+	
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php: changed source code to set the size of font
+	in the graphs.
+
+2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php, include/graphs/functions_pchart.php,
 	include/fgraph.php, operation/agentes/stat_win.php: fixed duplicate

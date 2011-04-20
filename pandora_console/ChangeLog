@@ -1,5 +1,9 @@
 2011-04-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php: Fixed some mistakes of my last commit.
+
+2011-04-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_events.php
 	include/functions_reporting.php: Fixed some mistakes of my last commit.
 

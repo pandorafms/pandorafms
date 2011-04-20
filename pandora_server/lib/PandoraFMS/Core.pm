@@ -639,7 +639,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
-				_id_alert_ => $alert->{'id'}
+				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -1495,8 +1495,13 @@ sub subst_alert_macros ($$) {
 	my ($string, $macros) = @_;
 
 	while ((my $macro, my $value) = each (%{$macros})) {
+		
+		# Undefined macro value
+		next unless defined ($value);
+		
 		# Macro data may contain HTML entities
 		my $decoded_value = decode_entities ($value);
+		
 		$string =~ s/($macro)/$decoded_value/ig;
 	}
 

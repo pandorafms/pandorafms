@@ -1,3 +1,7 @@
+2011-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added _policy_ macro to alerts (Enterprise).
+
 2011-04-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm,

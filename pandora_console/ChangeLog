@@ -1,3 +1,10 @@
+2011-04-20 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/alerts/configure_alert_action.php: Fixed a small bug about
+	entities on "Command preview"
+
+	Fix: #3276373
+
 2011-04-19 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_modules.php: Fixed an error about the agent status

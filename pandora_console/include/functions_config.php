@@ -239,7 +239,9 @@ function config_update_config () {
 	
 	config_update_value ('api_password', get_parameter('api_password', $config['api_password']));
 	
-	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));	
+	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));
+
+	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
 	
 	$enterprise = enterprise_include_once('include/functions_policies.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
@@ -392,6 +394,10 @@ function config_process_config () {
 	if (!isset ($config["collection_max_size"])) {
 		config_update_value ('collection_max_size', 1000000);
 	}
+	
+	if (!isset ($config["font_size"])) {
+		config_update_value ('font_size', 7);
+	}
 
 	/* 
 	 *Parse the ACL IP list for access API that it's save in chunks as
@@ -430,7 +436,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['fontpath'])) {
-		config_update_value ( 'fontpath', $config['homedir'].'/include/fonts/code.ttf');
+		config_update_value ( 'fontpath', $config['homedir'].'/include/fonts/unicode.ttf');
 	}
 
 	if (!isset ($config['style'])) {

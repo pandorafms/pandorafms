@@ -36,11 +36,12 @@ $default_fine_colors[] = "#999999";
 // Default values
 
 $antialiasing = true;
-$font = '../fonts/code.ttf';
+$font = '../fonts/unicode.ttf';
 $xaxisname = '';
 $yaxisname = '';
 $legend = null;
 $colors = null;
+$font_size = 8;
 
 $graph_type = get_parameter('graph_type', '');
 
@@ -82,6 +83,11 @@ if(isset($graph['font'])) {
 		$font = $graph['font'];
 	}
 }
+if(isset($graph['font_size'])) {
+	if (!empty($graph['font_size'])) {
+		$font_size = $graph['font_size'];
+	}
+}
 if(isset($graph['antialiasing'])) { 
 	$antialiasing = $graph['antialiasing'];
 }
@@ -100,7 +106,6 @@ $water_mark = '';
 if(isset($graph['water_mark'])) { 
 	$water_mark = $graph['water_mark']; //"/var/www/pandora_console/images/logo_vertical_water.png";
 }
-debugPrint($graph['water_mark'], true);
 
 /*
 $colors = array();
@@ -254,34 +259,38 @@ foreach($colors as $i => $color) {
 switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
-			pch_pie_graph($graph_type, array_values($data), array_keys($data), $width, $height, $font, $water_mark);
+			pch_pie_graph($graph_type, array_values($data), array_keys($data),
+				$width, $height, $font, $water_mark, $font_size);
 			break;
 	case 'slicebar':
-			pch_slicebar_graph($graph_type, $data, $width, $height, $colors, $font, $round_corner);
+			pch_slicebar_graph($graph_type, $data, $width, $height, $colors, $font, $round_corner, $font_size);
 			break;
 	case 'polar':
 	case 'radar':
-			pch_kiviat_graph($graph_type, array_values($data), array_keys($data), $width, $height, $font);
+			pch_kiviat_graph($graph_type, array_values($data), array_keys($data),
+				$width, $height, $font, $font_size);
 			break;
 	case 'hbar':
 	case 'vbar':
 			pch_bar_graph($graph_type, $data_keys, $data_values, $width, $height,
 				$font, $antialiasing, $rgb_color, $xaxisname, $yaxisname, false,
-				$legend, $fine_colors, $water_mark);
+				$legend, $fine_colors, $water_mark, $font_size);
 			break;
 	case 'stacked_area':
 	case 'area':
 	case 'line':
 			pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
 				$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
-				$font, $antialiasing, $water_mark);
+				$font, $antialiasing, $water_mark, $font_size);
 			break;
 	case 'threshold':
-			pch_threshold_graph($graph_type, $data_keys, $data_values, $width, $height, $font, $antialiasing, $xaxisname, $yaxisname, $title);
+			pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
+				$height, $font, $antialiasing, $xaxisname, $yaxisname, $title,
+				$font_size);
 			break;
 }
 
-function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font, $round_corner) {
+function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font, $round_corner, $font_size) {
 	 /* CAT:Slicebar charts */
 
 	set_time_limit (0);
@@ -292,7 +301,7 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 	/* Turn of Antialiasing */
 	$myPicture->Antialias = $antialiasing;
 	 
-	$myPicture->setFontProperties(array("FontName"=>"../fonts/code.ttf","FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
+	$myPicture->setFontProperties(array("FontName"=> $font, "FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 
 	// Round corners defined in global setup
 	if ($round_corner != 0)
@@ -341,7 +350,8 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 	$myPicture->Stroke ();
 }
 
-function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $height, $font, $water_mark) {
+function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
+	$height, $font, $water_mark, $font_size) {
 	 /* CAT:Pie charts */
 
 	 /* Create and populate the pData object */
@@ -357,7 +367,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 	 $myPicture = new pImage($width,$height,$MyData,TRUE);
 	 
 	 /* Set the default font properties */ 
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>10,"R"=>80,"G"=>80,"B"=>80));
+	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 
 	 
 	 
@@ -410,7 +420,8 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width, $heig
 	 $myPicture->stroke();
 }
 
-function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $height, $font) {
+function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width,
+	$height, $font, $font_size) {
 	 /* CAT:Radar/Polar charts */
 
 	 /* Create and populate the pData object */
@@ -426,7 +437,7 @@ function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $h
 	 $myPicture = new pImage($width,$height,$MyData,TRUE);
 
 	 /* Set the default font properties */ 
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>8,"R"=>80,"G"=>80,"B"=>80));
+	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 
 	 /* Create the pRadar object */ 
 	 $SplitChart = new pRadar();
@@ -437,11 +448,16 @@ function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $h
 	 /* Draw an AA pie chart */
 	 switch($graph_type) {
 		 case "radar":
-				$Options = array("SkipLabels"=>0,"LabelPos"=>RADAR_LABELS_HORIZONTAL, "LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), "FontName"=>$font,"FontSize"=>6);
+				$Options = array("SkipLabels"=>0,"LabelPos"=>RADAR_LABELS_HORIZONTAL,
+					"LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,
+					"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,
+					"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), 
+					"FontName"=>$font,"FontSize"=>$font_size / 1.8);
 			    $SplitChart->drawRadar($myPicture,$MyData,$Options); 
 				break;
 		 case "polar":
-				$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), "FontName"=>$font,"FontSize"=>6); 
+				$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50),
+					"FontName"=>$font,"FontSize"=>$font_size / 1.8); 
  			    $SplitChart->drawRadar($myPicture,$MyData,$Options); 
 				break;
 	 }
@@ -452,7 +468,7 @@ function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width, $h
 
 function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$antialiasing, $rgb_color = false, $xaxisname = "", $yaxisname = "",
-	$show_values = false, $legend = array(), $fine_colors = array(), $water_mark = '') {
+	$show_values = false, $legend = array(), $fine_colors = array(), $water_mark = '', $font_size) {
 	/* CAT: Vertical Bar Chart */
 	if(!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -509,7 +525,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	 $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
 
 	 /* Set the default font */
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>10));
+	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
 
 	 /* Draw the scale */
 	 // TODO: AvoidTickWhenEmpty = FALSE When the distance between two ticks will be less than 50 px
@@ -582,7 +598,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
-	$legend = array(), $font, $antialiasing, $water_mark = '') {
+	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size) {
 	/* CAT:Vertical Charts */
 	if(!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -665,7 +681,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 //$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 
 	 /* Set the default font */
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>10));
+	 $myPicture->setFontProperties(array("FontName"=>$font, "FontSize"=>$font_size));
 
  	if(isset($legend)) {
 		/* Set horizontal legend if is posible */
@@ -758,7 +774,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 $myPicture->stroke(); 
 }
 
-function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font, $antialiasing, $xaxisname = "", $yaxisname = "", $title = "", $show_values = false, $show_legend = false) {
+function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font,
+	$antialiasing, $xaxisname = "", $yaxisname = "", $title = "",
+	$show_values = false, $show_legend = false, $font_size) {
 	 /* CAT:Threshold Chart */
 
 	/* Create and populate the pData object */
@@ -777,15 +795,15 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font
 	 $myPicture->drawRectangle(0,0,699,229,array("R"=>200,"G"=>200,"B"=>200));
 	 
 	 /* Write the picture title */ 
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>11));
-	 $myPicture->drawText(60,35,$title,array("FontSize"=>20,"Align"=>TEXT_ALIGN_BOTTOMLEFT));
+	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
+	 $myPicture->drawText(60,35,$title,array("FontSize"=>($font_size * 1.8),"Align"=>TEXT_ALIGN_BOTTOMLEFT));
 
 	 /* Do some cosmetic and draw the chart */
 	 $myPicture->setGraphArea(60,40,670,190);
 	 $myPicture->drawFilledRectangle(60,40,670,190,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
 	 $myPicture->drawScale(array("GridR"=>180,"GridG"=>180,"GridB"=>180, "Mode" => SCALE_MODE_START0));
 	 $myPicture->setShadow(TRUE,array("X"=>2,"Y"=>2,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>6));
+	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>($font_size / 1.8)));
 	 $settings = array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	 $myPicture->drawSplineChart($settings);
 	 $myPicture->setShadow(FALSE);

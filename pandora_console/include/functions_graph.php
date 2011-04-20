@@ -305,7 +305,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png");
+		 $config['homedir'] .  "/images/logo_vertical_water.png",
+		 $config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -640,26 +641,30 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			$color = null;
 			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
-				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png");
+				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
+				$config['fontpath'], $config['font_size']);
 			break;
 		default:
 		case GRAPH_STACKED_AREA:
 			$color = null;
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
-				"", "", $config['homedir'] .  "/images/logo_vertical_water.png");
+				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
+				$config['fontpath'], $config['font_size']);
 			break;
 		case GRAPH_LINE:
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
-				"", "", $config['homedir'] .  "/images/logo_vertical_water.png");
+				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
+				$config['fontpath'], $config['font_size']);
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
 			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
-				"", "", $config['homedir'] .  "/images/logo_vertical_water.png");
+				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
+				$config['fontpath'], $config['font_size']);
 			break;
 	}
 }
@@ -707,7 +712,8 @@ function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
 	
 	echo area_graph($config['flash_charts'], $data, $width, $height,
 		null, null, null, "images/image_problem.opaque.png", "", "", "",
-		 $config['homedir'] .  "/images/logo_vertical_water.png");
+		 $config['homedir'] .  "/images/logo_vertical_water.png",
+		 $config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -751,7 +757,8 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 	asort ($data);
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $config['homedir'] .  "/images/logo_vertical_water.png");
+		'', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
@@ -831,7 +838,8 @@ function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
 
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -860,7 +868,9 @@ function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
 	}
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
-		$legend, "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png");
+		$legend, "", "", true, "",
+		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -910,7 +920,9 @@ function graph_db_agentes_modulos2($width, $height) {
 	}
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
-		array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png");
+		array(), "", "", true, "",
+		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -952,7 +964,8 @@ function graphic_user_activity2 ($width = 350, $height = 230) {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -986,7 +999,8 @@ function grafico_incidente_prioridad2 () {
 			__('Maintenance') => $data_tmp[5]);
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1020,7 +1034,8 @@ function graph_incidents_status2 () {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 370, 180,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1047,7 +1062,8 @@ function graphic_incident_group2 () {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1085,7 +1101,8 @@ function graphic_incident_user2 () {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1128,7 +1145,8 @@ function graphic_incident_source2($width = 320, $height = 200) {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1193,7 +1211,8 @@ function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1228,7 +1247,8 @@ function grafico_eventos_total2($filter = "") {
 	asort ($data);
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1265,7 +1285,8 @@ function grafico_eventos_usuario2 ($width, $height) {
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png");
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1320,14 +1341,19 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
     switch ($type) {
         case 'sql_graph_vbar': // vertical bar
         	return hbar_graph($flash_charts, $data, $width, $height, array(),
-        		array(), "", "", false, $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png");
+        		array(), "", "", false, $homeurl,
+        		$config['homedir'] .  "/images/logo_vertical_water.png",
+        		$config['fontpath'], $config['font_size']);
             break;
         case 'sql_graph_hbar': // horizontal bar
-        	return vbar_graph($flash_charts, $data, $width, $height, array(), array(), "", "", $homeurl);
+        	return vbar_graph($flash_charts, $data, $width, $height, array(),
+        		array(), "", "", $homeurl,
+        		$config['homedir'] .  "/images/logo_vertical_water.png",
+        		$config['fontpath'], $config['font_size']);
             break;
         case 'sql_graph_pie': // Pie
             return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,
-            	$config['homedir'] .  "/images/logo_vertical_water.png");
+            	$config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath']);
             break;
     }
 }
@@ -1729,7 +1755,8 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png");
+		 $config['homedir'] .  "/images/logo_vertical_water.png",
+		 $config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -1956,7 +1983,8 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png");
+		 $config['homedir'] .  "/images/logo_vertical_water.png",
+		 $config['fontpath'], $config['font_size']);
 }
 
 function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,

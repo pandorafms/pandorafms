@@ -916,7 +916,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	$events = db_get_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 		return;
@@ -1343,7 +1343,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 	}
@@ -1599,7 +1599,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 	}
@@ -1860,7 +1860,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			return fs_error_image2 ();
 		}
 		graphic_error ();
 	}

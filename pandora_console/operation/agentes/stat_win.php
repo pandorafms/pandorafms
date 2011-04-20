@@ -165,7 +165,7 @@ switch ($graph_type) {
 			$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
 		break;
 	default:
-		echo fs_error_image ('../images');
+		echo fs_error_image2 ('../images');
 		break;
 }
 

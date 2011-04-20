@@ -259,7 +259,7 @@ else {
 		} 
 		elseif (file_exists ($page)) {
 			if (! is_extension ($page)){
-				require ($page);
+				require_once($page);
 			}
 			else {
 				if ($sec[0] == 'g')

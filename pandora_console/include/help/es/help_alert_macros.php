@@ -25,6 +25,7 @@ Las siguientes macros están disponibles:
 <li>_alert_priority_: Prioridad de la alerta.</li>
 <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
 <li>_id_alert_: ID de la alerta, util para correlar la alerta en herramientas de terceros.</li>
+<li>_policy_: Nombre de la política a la que pertenece el módulo (si aplica).</li>
 
 </ul>
 <p>

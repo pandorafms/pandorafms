@@ -171,8 +171,8 @@ elseif (isset ($_GET["insert_form"])) {
 	
 	if (isset ($_GET["from_event"])) {
 		$event = get_parameter_get ("from_event");
-		$titulo = get_event_description ($event);
-		$id_grupo = get_event_group ($event);
+		$titulo = events_get_description ($event);
+		$id_grupo = events_get_group ($event);
 		$origen = "Pandora FMS event";
 		unset ($event);
 	}

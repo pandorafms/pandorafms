@@ -346,7 +346,7 @@ foreach ($contents as $content) {
 			
 			$date = get_system_time ();
 			
-			$events = get_agent_events ($content['id_agent'], $content['period'], $date );
+			$events = events_get_agent ($content['id_agent'], $content['period'], $date );
 			if (empty ($events)) {
 				$events = array ();
 			}

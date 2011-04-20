@@ -42,11 +42,11 @@
  * 
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function get_events ($filter = false, $fields = false) {
+function events_get_events ($filter = false, $fields = false) {
 	return db_get_all_rows_filter ('tevento', $filter, $fields);
 }
 
-function get_event ($id, $fields = false) {
+function events_get_event ($id, $fields = false) {
 	if (empty ($id))
 		return false;
 	global $config;
@@ -72,9 +72,9 @@ function get_event ($id, $fields = false) {
  *
  * @return array A list of events ids.
  */
-function get_similar_events_ids ($id) {
+function events_get_similar_ids ($id) {
 	$ids = array ();
-	$event = get_event ($id, array ('evento', 'id_agentmodule'));
+	$event = events_get_event ($id, array ('evento', 'id_agentmodule'));
 	if ($event === false)
 		return $ids;
 	
@@ -99,7 +99,7 @@ function get_similar_events_ids ($id) {
  *
  * @return bool Whether or not it was successful
  */
-function delete_event ($id_event, $similar = true) {
+function events_delete_event ($id_event, $similar = true) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
@@ -108,7 +108,7 @@ function delete_event ($id_event, $similar = true) {
 	/* We must delete all events like the selected */
 	if ($similar) {
 		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
 		}
 	}
 	
@@ -118,7 +118,7 @@ function delete_event ($id_event, $similar = true) {
 	foreach ($id_event as $event) {
 		$ret = db_process_sql_delete('tevento', array('id_evento' => $event));
 		
-		if (check_acl ($config["id_user"], get_event_group ($event), "IM") == 0) {
+		if (check_acl ($config["id_user"], events_get_group ($event), "IM") == 0) {
 			//Check ACL
 			db_pandora_audit("ACL Violation", "Attempted deleting event #".$event);
 		}
@@ -150,7 +150,7 @@ function delete_event ($id_event, $similar = true) {
  *
  * @return bool Whether or not it was successful
  */	
-function validate_event ($id_event, $similars = true, $comment = '', $new_status = 1) {
+function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
@@ -159,7 +159,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	/* We must validate all events like the selected */
 	if ($similars) {
 		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
 		}
 	}
 	
@@ -186,7 +186,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
 	
 	foreach ($id_event as $event) {
-		$fullevent = get_event($event);
+		$fullevent = events_get_event($event);
 
 		if($fullevent['user_comment'] != ''){
 			$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$fullevent['user_comment'].'</div>';
@@ -200,7 +200,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 		
 		$ret = db_process_sql_update('tevento', $values, array('id_evento' => $event), 'AND', false);
 		
-		if (check_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
+		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
 			//Check ACL
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
 		}
@@ -233,7 +233,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
  * 
  * @return int Group id of the given event.
  */
-function get_event_group ($id_event) {
+function events_get_group ($id_event) {
 	return (int) db_get_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
 }
 
@@ -244,7 +244,7 @@ function get_event_group ($id_event) {
  * 
  * @return string Description of the given event.
  */
-function get_event_description ($id_event) {
+function events_get_description ($id_event) {
 	return (string) db_get_value ('evento', 'tevento', 'id_evento', (int) $id_event);
 }
 
@@ -263,7 +263,7 @@ function get_event_description ($id_event) {
  *
  * @return int event id
  */
-function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0) {
+function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
@@ -306,7 +306,7 @@ function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "",
  * 
  * @return string HTML with table element 
  */
-function print_events_table ($filter = "", $limit = 10, $width = 440, $return = false) {
+function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
@@ -416,7 +416,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 					"title" => get_priority_name ($event["criticity"])));
 			
 			/* Event type */
-			$data[2] = print_event_type_img ($event["event_type"], true);
+			$data[2] = events_print_type_img ($event["event_type"], true);
 			
 			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
 			$wrap = floor ($width / 10);
@@ -467,56 +467,56 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
  * 
  * @return string HTML with img 
  */
-function print_event_type_img ($type, $return = false) {
+function events_print_type_img ($type, $return = false) {
 	$output = '';
 	
 	switch ($type) {
 	case "alert_recovered": 
 		$output .= print_image ("images/error.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "alert_manual_validation": 
 		$output .= print_image ("images/eye.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_up_warning":
 		$output .= print_image ("images/b_yellow.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_down_critical":
 	case "going_up_critical": //This is to be backwards compatible
 		$output .= print_image ("images/b_red.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_up_normal":
 	case "going_down_normal": //This is to be backwards compatible
 		$output .= print_image ("images/b_green.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_down_warning":
 		$output .= print_image ("images/b_yellow.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "alert_fired":
 		$output .= print_image ("images/bell.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "system";
 		$output .= print_image ("images/cog.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "recon_host_detected";
 		$output .= print_image ("images/network.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "new_agent";
 		$output .= print_image ("images/wand.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "unknown": 
 	default:
 		$output .= print_image ("images/err.png", true,
-			array ("title" => print_event_type_description($type, true)));
+			array ("title" => events_print_type_description($type, true)));
 		break;
 	}
 	
@@ -533,7 +533,7 @@ function print_event_type_img ($type, $return = false) {
  * 
  * @return string HTML with img 
  */
-function print_event_type_description ($type, $return = false) {
+function events_print_type_description ($type, $return = false) {
 	$output = '';
 	
 	switch ($type) {
@@ -591,7 +591,7 @@ function print_event_type_description ($type, $return = false) {
  *
  * @return array An array with all the events happened.
  */
-function get_group_events ($id_group, $period, $date) {
+function events_get_group ($id_group, $period, $date) {
 	global $config;
 
 	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
@@ -623,7 +623,7 @@ function get_group_events ($id_group, $period, $date) {
  *
  * @return array An array with all the events happened.
  */
-function get_agent_events ($id_agent, $period, $date = 0) {
+function events_get_agent ($id_agent, $period, $date = 0) {
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
@@ -654,7 +654,7 @@ function get_agent_events ($id_agent, $period, $date = 0) {
  *
  * @return array An array with all the events happened.
  */
-function get_module_events ($id_agent_module, $period, $date = 0) {
+function events_get_module ($id_agent_module, $period, $date = 0) {
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}

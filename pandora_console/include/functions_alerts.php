@@ -1124,7 +1124,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module) {
 			array ('id' => $id));
 		
 		if ($result > 0) {
-			create_event ("Manual validation of alert for ".
+			events_create_event ("Manual validation of alert for ".
 				alerts_get_alert_template_description ($alert["id_alert_template"]),
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id_agent_module"],
@@ -1480,7 +1480,7 @@ function alerts_validate_alert_compound ($id_alert_compound) {
 			array ('id' => $id));
 		
 		if ($result > 0) {
-			create_event ("Manual validation of compound alert for ".
+			events_create_event ("Manual validation of compound alert for ".
 				$alert["name"],
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id"],

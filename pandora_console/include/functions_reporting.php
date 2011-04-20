@@ -921,7 +921,7 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	$table->head[2] = __('User ID');
 	$table->head[3] = __('Timestamp');
 	
-	$events = get_group_events ($id_group, $period, $date);
+	$events = events_get_group ($id_group, $period, $date);
 	if (empty ($events)) {
 		$events = array ();
 	}
@@ -1600,7 +1600,7 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 	$events = array ();
 	
 	foreach ($id_agents as $id_agent) {
-		$event = get_agent_events ($id_agent, (int) $period, (int) $date);
+		$event = events_get_agent ($id_agent, (int) $period, (int) $date);
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
@@ -1651,7 +1651,7 @@ function get_group_detailed_event_reporting ($id_group, $period = 0, $date = 0, 
 	$table->head[2] = __('Criticity');
 	$table->head[3] = __('Timestamp');
 	
-	$events = get_group_events($id_group, $period, $date);
+	$events = events_get_group($id_group, $period, $date);
 	
 	if ($events) {
 		foreach ($events as $event) {
@@ -1715,7 +1715,7 @@ function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 
 	$events = array ();
 	
 	foreach ($id_modules as $id_module) {
-		$event = get_module_events ($id_module, (int) $period, (int) $date);
+		$event = events_get_module ($id_module, (int) $period, (int) $date);
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}

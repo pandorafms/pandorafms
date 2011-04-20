@@ -39,14 +39,14 @@ if (is_ajax ()) {
 	
 	if ($get_event_tooltip) {
 		$id = (int) get_parameter ('id');
-		$event = get_event ($id);
+		$event = events_get_event ($id);
 		if ($event === false)
 			return;
 		
 		echo '<h3>'.__('Event').'</h3>';
 		echo '<strong>'.__('Type').': </strong><br />';
 		
-		print_event_type_img ($event["event_type"]);
+		events_print_type_img ($event["event_type"]);
 		echo ' ';
 		if ($event["event_type"] == "system") {
 			echo __('System');
@@ -71,7 +71,7 @@ if (is_ajax ()) {
 	
 	if ($standby_alert) {
 		$id = (int) get_parameter ('id');
-		$event = get_event ($id);
+		$event = events_get_event ($id);
 		if ($event === false)
 			return;
 
@@ -87,11 +87,11 @@ if (is_ajax ()) {
 
 		// Set off the standby mode when close an event
 		if($new_status == 1) {
-			$event = get_event ($id);
+			$event = events_get_event ($id);
 			alerts_agent_module_standby ($event['id_alert_am'], 0);
 		}
 				
-		$return = validate_event ($id, $similars, $comment, $new_status);
+		$return = events_validate_event ($id, $similars, $comment, $new_status);
 		if ($return)
 			echo 'ok';
 		else
@@ -103,7 +103,7 @@ if (is_ajax ()) {
 		$id = (array) get_parameter ("id");
 		$similars = (bool) get_parameter ('similars');
 		
-		$return = delete_event ($id, $similars);
+		$return = events_delete_event ($id, $similars);
 		if ($return)
 			echo 'ok';
 		else
@@ -243,14 +243,14 @@ if ($validate) {
 	// Avoid to re-set inprocess events
 	if($new_status == 2) {
 		foreach($ids as $key => $id) {
-			$event = get_event($id);
+			$event = events_get_event($id);
 			if($event['estado'] == 2) {
 				unset($ids[$key]);
 			}
 		}
 	}
 	if(isset($ids[0]) && $ids[0] != -1){
-		$return = validate_event ($ids, ($group_rep == 1), $comment, $new_status);
+		$return = events_validate_event ($ids, ($group_rep == 1), $comment, $new_status);
 		if($new_status == 1) {
 			ui_print_result_message ($return,
 				__('Successfully validated'),
@@ -269,7 +269,7 @@ if ($delete) {
 	$ids = (array) get_parameter ("eventid", -1);
 		
 	if ($ids[0] != -1) {
-		$return = delete_event ($ids, ($group_rep == 1));
+		$return = events_delete_event ($ids, ($group_rep == 1));
 		ui_print_result_message ($return,
 			__('Successfully deleted'),
 			__('Could not be deleted'));

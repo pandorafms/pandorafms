@@ -533,7 +533,7 @@ foreach ($result as $event) {
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Type') . ':</b></td><td align="left">';
-	$string .= print_event_type_img ($event["event_type"], true).' '.print_event_type_description($event["event_type"], true);
+	$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Agent name') . ':</b></td><td align="left">';

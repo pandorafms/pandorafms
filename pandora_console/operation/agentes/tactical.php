@@ -222,7 +222,7 @@ print_cells_temp ($cells);
 echo "</table>";
 echo '</div>'; //Left column
 
-echo '<div style="width: 75%; float:left;" id="rightcolumn">';
+echo '<div style="width: 70%; float:left;" id="rightcolumn">';
 
 
 // --------------------------------------------------------------------------

@@ -246,8 +246,8 @@ SELECT setval('ttipo_modulo_id_tipo_seq', (SELECT (SELECT MAX(id_tipo) FROM ttip
 --
 -- Dumping data for table "tusuario"
 --
-INSERT INTO "tusuario" ("id_user", "fullname", "firstname", "lastname", "middlename", "password", "comments", "last_connect", "registered", "email", "phone", "is_admin") VALUES
-('admin', 'Pandora', 'Pandora', 'Admin', '', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1);
+INSERT INTO "tusuario" ("id_user", "fullname", "firstname", "lastname", "middlename", "password", "comments", "last_connect", "registered", "email", "phone", "is_admin", "flash_chart") VALUES
+('admin', 'Pandora', 'Pandora', 'Admin', '', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1);
 
 --
 -- Dumping data for table "tusuario_perfil"

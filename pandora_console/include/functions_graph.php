@@ -870,7 +870,7 @@ function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		$legend, "", "", true, "",
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], false);
 }
 
 /**
@@ -922,7 +922,7 @@ function graph_db_agentes_modulos2($width, $height) {
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		array(), "", "", true, "",
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], false);
 }
 
 /**
@@ -1343,13 +1343,13 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
         	return hbar_graph($flash_charts, $data, $width, $height, array(),
         		array(), "", "", false, $homeurl,
         		$config['homedir'] .  "/images/logo_vertical_water.png",
-        		$config['fontpath'], $config['font_size']);
+        		$config['fontpath'], $config['font_size'], false);
             break;
         case 'sql_graph_hbar': // horizontal bar
         	return vbar_graph($flash_charts, $data, $width, $height, array(),
         		array(), "", "", $homeurl,
         		$config['homedir'] .  "/images/logo_vertical_water.png",
-        		$config['fontpath'], $config['font_size']);
+        		$config['fontpath'], $config['font_size'], false);
             break;
         case 'sql_graph_pie': // Pie
             return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,

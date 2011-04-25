@@ -1,3 +1,9 @@
+2011-04-25 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php: added parameter to choose if show all xaxis
+	marks or not.
+
 2011-04-25 Javier Lanz <javier.lanz@artica.es>
 
 	* operation/agentes/tactical.php: Fixed a style problem on Internet
@@ -5,7 +11,7 @@
 
 	Fix: #3279238
 
-2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+2011-04-25 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb_data.sql, pandoradb.data.postgreSQL.sql,
 	pandoradb.data.oracle.sql: added the default value for flash_chart for

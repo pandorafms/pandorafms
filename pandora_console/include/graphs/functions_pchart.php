@@ -62,6 +62,7 @@ $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
 $colors = null;
+$force_steps = true; 
 if (isset($graph['color']))
 	$colors = $graph['color'];
 $legend = null;
@@ -107,6 +108,10 @@ if(isset($graph['water_mark'])) {
 	$water_mark = $graph['water_mark']; //"/var/www/pandora_console/images/logo_vertical_water.png";
 }
 
+if (isset($graph['force_steps'])) {
+	$force_steps = $graph['force_steps'];
+}
+
 /*
 $colors = array();
 $colors['pep1'] = array('border' => '#000000', 'color' => '#000000', 'alpha' => 50);
@@ -115,20 +120,19 @@ $colors['pep3'] = array('border' => '#ff0000', 'color' => '#00ff00', 'alpha' => 
 $colors['pep4'] = array('border' => '#000000', 'color' => '#0000ff', 'alpha' => 50);
 */
 
-$pixels_between_xdata = 40;
-$max_xdata_display = round($width / $pixels_between_xdata);
-$ndata = count($data);
-if($max_xdata_display > $ndata) {
-	$xdata_display = $ndata;
-}
-else {
-	$xdata_display = $max_xdata_display;
-}
-
-$step = round($ndata/$xdata_display);
-
-if(($graph_type == 'hbar') || ($graph_type == 'vbar')) {
-	$step = 1;
+$step = 1;
+if ($force_steps) {
+	$pixels_between_xdata = 40;
+	$max_xdata_display = round($width / $pixels_between_xdata);
+	$ndata = count($data);
+	if($max_xdata_display > $ndata) {
+		$xdata_display = $ndata;
+	}
+	else {
+		$xdata_display = $max_xdata_display;
+	}
+	
+	$step = round($ndata/$xdata_display);
 }
 
 $c = 0;

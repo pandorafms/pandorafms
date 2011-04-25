@@ -108,7 +108,7 @@ function slicesbar_graph($chart_data, $width, $height, $colors, $font, $round_co
 
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $homedir="",
-	$water_mark = '', $font = '', $font_size = '') {
+	$water_mark = '', $font = '', $font_size = '', $force_steps = true) {
 	if($flash_chart) {
 		echo fs_2d_column_chart ($chart_data, $width, $height);
 	}
@@ -124,6 +124,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		$graph['water_mark'] = $water_mark;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
+		$graph['force_steps'] = $force_steps;
 
 		$id_graph = serialize_in_temp($graph);
 	
@@ -288,7 +289,7 @@ function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image)
 
 function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $force_height = true,
-	$homedir="", $water_mark = '', $font = '', $font_size = '') {$flash_chart = false;
+	$homedir="", $water_mark = '', $font = '', $font_size = '', $force_steps = true) {
 	if($flash_chart) {
 		echo fs_2d_hcolumn_chart ($chart_data, $width, $height);
 	}
@@ -305,6 +306,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		$graph['water_mark'] = $water_mark;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
+		$graph['force_steps'] = $force_steps;
 
 		$id_graph = serialize_in_temp($graph);
 	
@@ -315,13 +317,13 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '') {
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font);
+		$others_str, $homedir, $water_mark, $font, $font_size);
 }
 
 function pie2d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '') {
 	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font);
+		$others_str, $homedir, $water_mark, $font, $font_size);
 }
 
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,

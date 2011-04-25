@@ -844,7 +844,7 @@ function mysql_db_process_sql_update($table, $values, $where = false, $where_joi
 			$query .= db_format_array_where_clause_sql ($where, $where_join, ' WHERE ');
 		}
 	}
-
+	
 	return db_process_sql ($query);
 }
 

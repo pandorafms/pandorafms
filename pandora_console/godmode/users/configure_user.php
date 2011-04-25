@@ -22,6 +22,8 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 
+$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 
@@ -66,7 +68,9 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['comments'] = '';
 	$user_info['is_admin'] = 0;
 	$user_info['language'] = $config["language"];
-	$user_info['id_skin'] = '';
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		$user_info['id_skin'] = '';
+	}
 	//This attributes are inherited from global configuration
 	$user_info['block_size'] = $config["block_size"];
 	$user_info['flash_chart'] = $config["flash_charts"];
@@ -90,7 +94,9 @@ if ($create_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', $config["language"]);
-	$values['id_skin'] = get_parameter ('skin', 0);
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		$values['id_skin'] = get_parameter ('skin', 0);
+	}
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 	
@@ -120,8 +126,12 @@ if ($create_user) {
 			' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 			' Is_admin: ' . $values['is_admin'] .
-			' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'] . 
+			' Language: ' . $values['language'] . 
 			' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
+		
+		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+			$info .= ' Skin: ' . $values['id_skin'];
+		}
 		
 		$result = create_user($id, $password_new, $values);
 
@@ -157,7 +167,9 @@ if ($update_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
 	$values['language'] = (string) get_parameter ('language', $config["language"]);
-	$values['id_skin'] = get_parameter ('skin', 0);
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		$values['id_skin'] = get_parameter ('skin', 0);
+	}
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 
@@ -182,8 +194,12 @@ if ($update_user) {
 				' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 				' Is_admin: ' . $values['is_admin'] .
-				' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'] . 
+				' Language: ' . $values['language'] . 
 				' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
+			
+			if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+				$info .= ' Skin: ' . $values['id_skin'];
+			}
 			
 			db_pandora_audit("User management", "Updated user ".safe_input($id),
 				false, false, $info);
@@ -305,8 +321,6 @@ if ($new_user){
 
 // User only can change skins if has more than one group 
 if (count($usr_groups) > 1){
-
-	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$table->data[10][0] = __('Skin');
 		$table->data[10][1] = print_select_skins($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
@@ -314,7 +328,7 @@ if (count($usr_groups) > 1){
 }
 
 $table->data[11][0] = __('Flash charts');
-$values = array(-1 => 'Default',1 => 'Yes',0 => 'No');
+$values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
 $table->data[11][1] = print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false); 
 $table->data[12][0] = __('Block size for pagination');
 $table->data[12][1] = print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);

@@ -1,3 +1,14 @@
+2011-04-20 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb_data.sql, pandoradb.data.postgreSQL.sql,
+	pandoradb.data.oracle.sql: added the default value for flash_chart for
+	admin user. The value is "use the global conf".
+	
+	* include/db/mysql.php: cleaned source code style.
+	
+	* godmode/users/configure_user.php: fixed when update or create the user
+	in Pandora Console without Enterprise version installed.
+
 2011-04-23  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alert_macros.php: Added the new _policy_ alert

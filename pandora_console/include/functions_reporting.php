@@ -2099,7 +2099,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 									
 					if ($sla_value === false) {
 						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-						$data[5] = __('Unknown');
+						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
 					} else {
 						if ($sla_value >= $sla['sla_limit']) {
 							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';

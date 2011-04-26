@@ -1,3 +1,11 @@
+2011-04-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/functions_gd.php
+	include/graphs/fgraph.php: Merged sancho works from 
+	integria passing fonts and sizes in integria. Little 
+	fixes
+
 2011-04-25 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_reporting.php: Fixed a small font problem displaying

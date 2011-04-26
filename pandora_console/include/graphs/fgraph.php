@@ -134,7 +134,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 
 function threshold_graph($flash_chart, $chart_data, $width, $height) {
 	if($flash_chart) {
-		echo fs_2d_column_chart ($chart_data, $width, $height);
+		echo fs_area_chart ($chart_data, $width, $height);
 	}
 	else {
 		echo "<img src='include/graphs/functions_pchart.php?graph_type=threshold&data=".json_encode($chart_data)."&width=".$width."&height=".$height."'>";

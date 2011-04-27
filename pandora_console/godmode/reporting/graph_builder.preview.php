@@ -155,17 +155,17 @@ echo "<td>";
 echo "<b>".__('Date')."</b>"." ";
 echo "</td>";
 echo "<td>";
-echo print_input_text ('date', $date, '', 12, 10, true). ' ';
+echo html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 echo "</td>";
 echo "<td>";
-echo print_input_text ('time', $time, '', 7, 7, true). ' ';
+echo html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 echo "</td>";
 echo "<td class='datos'>";
 echo "<b>".__('Period')."</b>";
 echo "</td>";
 echo "<td class='datos'>";
 
-print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
+html_print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
 	'', '', 0, false, false, false);
 
 echo "</td>";
@@ -176,7 +176,7 @@ $stackeds[0] = __('Area');
 $stackeds[1] = __('Stacked area');
 $stackeds[2] = __('Line');
 $stackeds[3] = __('Stacked line');
-print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
+html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 
 echo "</td>";
 echo "<td class='datos'>";
@@ -185,7 +185,7 @@ $zooms[0] = __('Graph defined');
 $zooms[1] = __('Zoom x1');
 $zooms[2] = __('Zoom x2');
 $zooms[3] = __('Zoom x3');
-print_select ($zooms, 'zoom', $zoom , '', '', 0);
+html_print_select ($zooms, 'zoom', $zoom , '', '', 0);
 
 echo "</td>";
 echo "<td class='datos'>";

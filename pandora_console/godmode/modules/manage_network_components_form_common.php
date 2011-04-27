@@ -45,7 +45,7 @@ $table->colspan[0][1] = 3;
 $table->data = array ();
 
 $table->data[0][0] = __('Name');
-$table->data[0][1] = print_input_text ('name', $name, '', 55, 255, true);
+$table->data[0][1] = html_print_input_text ('name', $name, '', 55, 255, true);
 
 $table->data[1][0] = __('Type') . ' ' . ui_print_help_icon ('module_type', true);
 $sql = sprintf ('SELECT id_tipo, descripcion
@@ -53,44 +53,44 @@ $sql = sprintf ('SELECT id_tipo, descripcion
 	WHERE categoria IN (%s)
 	ORDER BY descripcion',
 	implode (',', $categories));
-$table->data[1][1] = print_select_from_sql ($sql, 'type',
+$table->data[1][1] = html_print_select_from_sql ($sql, 'type',
 	$type, ($id_component_type == 2 ? 'type_change()' : ''), '', '', true,
 	false, false);
 
 $table->data[1][2] = __('Module group');
-$table->data[1][3] = print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
+$table->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
 	'id_module_group', $id_module_group, '', '', '', true, false, false);
 
 $table->data[2][0] = __('Group');
-$table->data[2][1] = print_select (get_network_component_groups (),
+$table->data[2][1] = html_print_select (get_network_component_groups (),
 	'id_group', $id_group, '', '', '', true, false, false);
 $table->data[2][2] = __('Interval');
-$table->data[2][3] = print_input_text ('module_interval', $module_interval, '',
+$table->data[2][3] = html_print_input_text ('module_interval', $module_interval, '',
 	5, 15, true);
 
 $table->data[3][0] = __('Warning status');
 $table->data[3][1] = '<em>'.__('Min.').'</em>';
-$table->data[3][1] .= print_input_text ('min_warning', $min_warning,
+$table->data[3][1] .= html_print_input_text ('min_warning', $min_warning,
 	'', 5, 15, true);
 $table->data[3][1] .= '<br /><em>'.__('Max.').'</em>';
-$table->data[3][1] .= print_input_text ('max_warning', $max_warning,
+$table->data[3][1] .= html_print_input_text ('max_warning', $max_warning,
 	'', 5, 15, true);
 $table->data[3][2] = __('Critical status');
 $table->data[3][3] = '<em>'.__('Min.').'</em>';
-$table->data[3][3] .= print_input_text ('min_critical', $min_critical,
+$table->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
 	'', 5, 15, true);
 $table->data[3][3] .= '<br /><em>'.__('Max.').'</em>';
-$table->data[3][3] .= print_input_text ('max_critical', $max_critical,
+$table->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
 	'', 5, 15, true);
 
 $table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
-$table->data[4][1] = print_input_text ('ff_event', $ff_event,
+$table->data[4][1] = html_print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true);
 $table->data[4][2] = __('Historical data');
-$table->data[4][3] = print_checkbox ("history_data", 1, $history_data, true);
+$table->data[4][3] = html_print_checkbox ("history_data", 1, $history_data, true);
 
 $table->data[5][0] = __('Min. Value');
-$table->data[5][1] = print_input_text ('min', $min, '', 5, 15, true);
+$table->data[5][1] = html_print_input_text ('min', $min, '', 5, 15, true);
 $table->data[5][2] = __('Max. Value');
-$table->data[5][3] = print_input_text ('max', $max, '', 5, 15, true);
+$table->data[5][3] = html_print_input_text ('max', $max, '', 5, 15, true);
 ?>

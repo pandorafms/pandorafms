@@ -26,7 +26,7 @@
  *
  * @return (array) An array of server information (similar to server_info) but without the other servers
 **/
-function get_exportservers ($active = 1) {
+function exportserver_get_exportservers ($active = 1) {
 	$query = "SELECT * FROM tserver WHERE export_server = 1";
 	$return = array ();
 		
@@ -54,10 +54,10 @@ function get_exportservers ($active = 1) {
  * @param (bool) $active (bool) Whether or not to exclude inactive servers (defaults to 1 => no inactive servers)
  * @param (string) $row What row to select from the server info table
  *
- * @return (array) An array of server information (similar to get_exportservers) but without the extra data
+ * @return (array) An array of server information (similar to exportserver_get_exportservers) but without the extra data
  **/
-function get_exportservers_info ($active = 1, $row = "name") {
-	$exportservers = get_exportservers ();
+function exportserver_get_info ($active = 1, $row = "name") {
+	$exportservers = exportserver_get_exportservers ();
 	$return = array ();
 	
 	foreach ($exportservers as $server_id => $server_info) {
@@ -74,7 +74,7 @@ function get_exportservers_info ($active = 1, $row = "name") {
  *
  * @return string The name of given server.
  */
-function dame_nombre_servidorexportacion ($id_server) {
+function exportserver_get_name ($id_server) {
 	return (string) db_get_value ('name', 'tserver_export', 'id', (int) $id_server);
 }
 

@@ -59,11 +59,11 @@ foreach ($reports as $report) {
 	$data[0] = $report['name'];
 	$data[1] = $report['description'];
 	$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
-			print_image("images/reporting.png", true) . '</a>';
-	$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+			html_print_image("images/reporting.png", true) . '</a>';
+	$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 
 	enterprise_hook ('load_custom_reporting_2');
 	array_push ($table->data, $data);
 }
-print_table ($table);
+html_print_table ($table);
 ?>

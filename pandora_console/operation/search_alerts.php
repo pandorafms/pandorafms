@@ -200,17 +200,17 @@ else {
 	
 	$table->head = array ();
 	$table->head[0] = '' . ' ' . 
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=disabled&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectDisabledUp)) . '</a>' .
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=disabled&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectDisabledDown)) . '</a>';
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=disabled&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDisabledUp)) . '</a>' .
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=disabled&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDisabledDown)) . '</a>';
 	$table->head[1] = __('Agent') . ' ' . 
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=agent&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 	$table->head[2] = __('Module') . ' ' . 
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 	$table->head[3] = __('Template') . ' ' . 
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+		'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 	$table->head[4] = __('Action');
 	
 	$table->align = array ();
@@ -230,9 +230,9 @@ else {
 	$table->data = array ();
 	foreach ($alerts as $alert) {
 		if ($alert['disabled'])
-			$disabledCell = print_image ('images/lightbulb_off.png', true, array('title' => 'disable', 'alt' => 'disable'));
+			$disabledCell = html_print_image ('images/lightbulb_off.png', true, array('title' => 'disable', 'alt' => 'disable'));
 		else
-			$disabledCell = print_image ('images/lightbulb.png', true, array('alt' => 'enable', 'title' => 'enable'));
+			$disabledCell = html_print_image ('images/lightbulb.png', true, array('alt' => 'enable', 'title' => 'enable'));
 		
 		$actionCell = '';
 		if (strlen($alert["actions"]) > 0) {
@@ -253,7 +253,7 @@ else {
 	}
 	
 	echo "<br />";ui_pagination ($totalAlerts);
-	print_table ($table); unset($table);
+	html_print_table ($table); unset($table);
 	ui_pagination ($totalAlerts);
 }
 ?>

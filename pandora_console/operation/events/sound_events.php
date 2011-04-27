@@ -62,7 +62,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 echo "</head>";
 echo "<body>";
 
-echo "<h1 style='background: #66AA44; color: #fff;'>" . print_image('images/pandora_header_logo.png', true) . __("Sound Events") . "</h1>";
+echo "<h1 style='background: #66AA44; color: #fff;'>" . html_print_image('images/pandora_header_logo.png', true) . __("Sound Events") . "</h1>";
 
 $table = null;
 $table->width = '100%';
@@ -72,16 +72,16 @@ $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'group', '', 'changeGroup();', '', 0, true);
+$table->data[0][1] = html_print_select_groups(false, "AR", true, 'group', '', 'changeGroup();', '', 0, true);
 $table->data[1][0] = __('Type');
-$table->data[1][1] = print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
-	print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
-	print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />' .
+$table->data[1][1] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
+	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
+	html_print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />' .
 $table->data[2][0] = '';
-$table->data[2][1] = '<a href="javascript: toggleButton();">' . print_image("images/play.button.png", true, array("id" => "button")) . '</a>';
-$table->data[2][1] .= '<a href="javascript: ok();">' . print_image("images/ok.button.png", true, array("style" => "margin-left: 10px;")) . '</a>';
+$table->data[2][1] = '<a href="javascript: toggleButton();">' . html_print_image("images/play.button.png", true, array("id" => "button")) . '</a>';
+$table->data[2][1] .= '<a href="javascript: ok();">' . html_print_image("images/ok.button.png", true, array("style" => "margin-left: 10px;")) . '</a>';
 
-print_table($table);
+html_print_table($table);
 ?>
 <script src="../../include/javascript/jquery.js" type="text/javascript"></script>
 <script type="text/javascript">

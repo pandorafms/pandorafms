@@ -316,11 +316,11 @@ if ($get_image_path_status){
 
 	$result = array();
 	
-	$result['bad'] = print_image($img_src . '_bad.png', true, '', $only_src);
-	$result['ok'] = print_image($img_src . '_ok.png', true, '', $only_src);
-	$result['warning'] = print_image($img_src . '_warning.png', true, '', $only_src);
-	$result['ok'] = print_image($img_src . '_ok.png', true, '', $only_src);
-	$result['normal'] = print_image($img_src . '.png', true, '', $only_src);
+	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
+	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
+	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
 
 	echo json_encode($result);
 }

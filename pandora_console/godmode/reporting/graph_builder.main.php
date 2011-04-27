@@ -105,7 +105,7 @@ else
 	$return_all_groups = false;
 	
 echo "<td><b>".__('Group')."</b></td><td>" .
-	print_select_groups($config['id_user'], "AR", $return_all_groups, 'graph_id_group', $id_group, '', '', '', true) .
+	html_print_select_groups($config['id_user'], "AR", $return_all_groups, 'graph_id_group', $id_group, '', '', '', true) .
 	"</td></tr>";
 echo "<tr>";
 echo "<td class='datos2'><b>".__('Description')."</b></td>";
@@ -137,7 +137,7 @@ echo "<tr>";
 echo "<td class='datos'>";
 echo "<b>".__('Period')."</b></td>";
 echo "<td class='datos'>";
-print_select ($periods, 'period', $period);
+html_print_select ($periods, 'period', $period);
 echo "</td><td class='datos2'>";
 echo "<b>".__('Stacked')."</b></td>";
 echo "<td class='datos2'>";
@@ -149,21 +149,21 @@ $stackeds = array(
 	GRAPH_STACKED_AREA => __('Stacked area'),
 	GRAPH_LINE => __('Line'),
 	GRAPH_STACKED_LINE => __('Stacked line'));
-print_select ($stackeds, 'stacked', $stacked);
+html_print_select ($stackeds, 'stacked', $stacked);
 echo "</td>";
 
 echo "<tr>";
 echo "<td class='datos'>";
 echo "<b>".__('View events')."</b></td>";
 echo "<td class='datos'>";
-print_checkbox('events', 1, $events);
+html_print_checkbox('events', 1, $events);
 echo "</td>";
 
 echo "<td></td><td></td>";
 /*echo "<td class='datos'>";
 echo "<b>".__('View alerts')."</b></td>";
 echo "<td class='datos'>";
-print_checkbox('alerts', 1, $alerts);
+html_print_checkbox('alerts', 1, $alerts);
 echo "</td>";*/
 
 echo "</tr>";

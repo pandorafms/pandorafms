@@ -116,30 +116,30 @@ function mainInsertData() {
 	
 	$table->data = array();
 	$table->data[0][0] = __('Agent');
-	$table->data[0][1] = print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
+	$table->data[0][1] = html_print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 		. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	$table->data[1][0] = __('Module');
 	$modules = array ();
 	if ($id_agent)
 		$modules = get_agent_modules ($id_agent, false, array("delete_pending" => 0));
-	$table->data[1][1] = print_select ($modules, 'id_agent_module', $id_agent_module, true,
+	$table->data[1][1] = html_print_select ($modules, 'id_agent_module', $id_agent_module, true,
 		__('Select'), 0, true, false, true, '', ($id_agent === ''));
 	$table->data[2][0] = __('Data');
-	$table->data[2][1] = print_input_text('data', $data, __('Data'), 40, 60, true);
+	$table->data[2][1] = html_print_input_text('data', $data, __('Data'), 40, 60, true);
 	$table->data[3][0] = __('Date');
-	$table->data[3][1] = print_input_text ('date', $date, '', 11, 11, true).' ';
-	$table->data[3][1] .= print_input_text ('time', $time, '', 7, 7, true);
+	$table->data[3][1] = html_print_input_text ('date', $date, '', 11, 11, true).' ';
+	$table->data[3][1] .= html_print_input_text ('time', $time, '', 7, 7, true);
 	$table->data[4][0] = __('CSV');
-	$table->data[4][1] = print_input_file('csv', true);
+	$table->data[4][1] = html_print_input_file('csv', true);
 	
 	echo "<form method='post' enctype='multipart/form-data'>";
 	
-	print_table($table);
+	html_print_table($table);
 	
 	echo "<div style='text-align: right; width: " . $table->width . "'>";
-	print_input_hidden('save', 1);
-	print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
+	html_print_input_hidden('save', 1);
+	html_print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
 	echo "</div>";
 	
 	echo "</form>";

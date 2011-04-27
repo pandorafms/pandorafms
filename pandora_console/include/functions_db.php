@@ -1044,12 +1044,12 @@ function db_print_database_debug () {
 		array_push ($table->data, $data);
 
 		if (($i % 100) == 0) {
-			print_table ($table);
+			html_print_table ($table);
 			$table->data = array ();
 		}
 	}
 
-	print_table ($table);
+	html_print_table ($table);
 }
 
 /**

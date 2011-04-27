@@ -210,40 +210,40 @@ if ($id_profile || $new_profile) {
 	$table->data = array ();
 	
 	$table->data[0][0] = __('Profile name');
-	$table->data[0][1] = print_input_text ('name', $name, '', 30, 60, true);
+	$table->data[0][1] = html_print_input_text ('name', $name, '', 30, 60, true);
 	$table->data[1][0] = __('View incidents');
-	$table->data[1][1] = print_checkbox ('incident_view', 1, $incident_view, true);
+	$table->data[1][1] = html_print_checkbox ('incident_view', 1, $incident_view, true);
 	$table->data[2][0] = __('Edit incidents');
-	$table->data[2][1] = print_checkbox ('incident_edit', 1, $incident_edit, true);
+	$table->data[2][1] = html_print_checkbox ('incident_edit', 1, $incident_edit, true);
 	$table->data[3][0] = __('Manage incidents');
-	$table->data[3][1] = print_checkbox ('incident_management', 1, $incident_management, true);
+	$table->data[3][1] = html_print_checkbox ('incident_management', 1, $incident_management, true);
 	$table->data[4][0] = __('View agents');
-	$table->data[4][1] = print_checkbox ('agent_view', 1, $agent_view, true);
+	$table->data[4][1] = html_print_checkbox ('agent_view', 1, $agent_view, true);
 	$table->data[5][0] = __('Edit agents');
-	$table->data[5][1] = print_checkbox ('agent_edit', 1, $agent_edit, true);
+	$table->data[5][1] = html_print_checkbox ('agent_edit', 1, $agent_edit, true);
 	$table->data[6][0] = __('Edit alerts');
-	$table->data[6][1] = print_checkbox ('alert_edit', 1, $alert_edit, true);
+	$table->data[6][1] = html_print_checkbox ('alert_edit', 1, $alert_edit, true);
 	$table->data[7][0] = __('Manage alerts');
-	$table->data[7][1] = print_checkbox ('alert_management', 1, $alert_management, true);
+	$table->data[7][1] = html_print_checkbox ('alert_management', 1, $alert_management, true);
 	$table->data[8][0] = __('Manage users');
-	$table->data[8][1] = print_checkbox ('user_management', 1, $user_management, true);
+	$table->data[8][1] = html_print_checkbox ('user_management', 1, $user_management, true);
 	$table->data[9][0] = __('Manage Database');
-	$table->data[9][1] = print_checkbox ('db_management', 1, $db_management, true);
+	$table->data[9][1] = html_print_checkbox ('db_management', 1, $db_management, true);
 	$table->data[10][0] = __('Pandora management');
-	$table->data[10][1] = print_checkbox ('pandora_management', 1, $pandora_management, true);
+	$table->data[10][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
 	
 	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
 	
-	print_table ($table);
+	html_print_table ($table);
 	
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	if ($new_profile) {
-		print_submit_button (__('Add'), "crt", false, 'class="sub wand"');
-		print_input_hidden ('create_profile', 1);
+		html_print_submit_button (__('Add'), "crt", false, 'class="sub wand"');
+		html_print_input_hidden ('create_profile', 1);
 	} else {
-		print_input_hidden ('id', $id_profile);
-		print_input_hidden ('update_profile', 1);
-		print_submit_button (__('Update'), "upd", false, 'class="sub upd"');
+		html_print_input_hidden ('id', $id_profile);
+		html_print_input_hidden ('update_profile', 1);
+		html_print_submit_button (__('Update'), "upd", false, 'class="sub upd"');
 	}
 	echo "</div></form>";
 

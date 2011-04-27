@@ -26,14 +26,14 @@ ui_require_javascript_file('openlayers.pandora');
 
 echo "<div style='margin-bottom: 10px;'></div>";
 
-$agentData = getDataLastPositionAgent($id_agente);
+$agentData = gis_get_data_last_position_agent($id_agente);
 $updateGisData = db_get_value('update_gis_data','tagente', 'id_agente', $id_agente);
 $agent_name = get_agent_name($id_agente);
 
 /* Map with the current position */
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 
-if (!getAgentMap($id_agente, "500px", "98%", false)) {
+if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
 } 
 
@@ -49,28 +49,28 @@ $table->head[0] =__('Agent position');
 $table->head_colspan[0] = 2;
 
 $table->data[1][0] = __('Longitude: ');
-$table->data[1][1] = print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 10, 10, false, '',
+$table->data[1][1] = html_print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 10, 10, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[2][0] = __('Latitude: ');
-$table->data[2][1] = print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 10, 10, false, '',
+$table->data[2][1] = html_print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 10, 10, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[3][0] = __('Altitude: ');
-$table->data[3][1] = print_input_text_extended ('altitude', $agentData['stored_altitude'], 'text-altitude', '', 10, 10, false, '',
+$table->data[3][1] = html_print_input_text_extended ('altitude', $agentData['stored_altitude'], 'text-altitude', '', 10, 10, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[4][0] = __('Ignore new GIS data:');
-$table->data[4][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
-$table->data[4][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] = __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] .= __('Active').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
 echo "<form method='post' action='" . $url . "' onsubmit ='return validateFormFields();'>";
-print_input_hidden('update_gis', 1);
-print_table($table);
+html_print_input_hidden('update_gis', 1);
+html_print_table($table);
 
 echo '<div class="action-buttons" style="clear: left; width: ' . $table->width . '; float: left;">';
-print_submit_button (__('Update'), '', false, 'class="sub upd"');
+html_print_submit_button (__('Update'), '', false, 'class="sub upd"');
 echo '</div>';
 echo "</form>";
 ?>

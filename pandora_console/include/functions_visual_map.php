@@ -34,7 +34,7 @@ function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabl
 		$margin = 'margin-left';
 	}
 	
-	print_button($label, 'button_toolbox2', $disabled, "click2('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . ';"', false, $imageButton);
+	html_print_button($label, 'button_toolbox2', $disabled, "click2('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . ';"', false, $imageButton);
 	return;
 	
 	if (!$disabled) $disableClass = '';
@@ -94,9 +94,9 @@ function printItemInVisualConsole($layoutData) {
 			echo '<div id="' . $id . '" class="item static_graph" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				if (($width != 0) && ($height != 0)) 
-					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
 				else
-					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
 				echo '<br />';
 			}
 			echo $text;
@@ -151,9 +151,9 @@ function printItemInVisualConsole($layoutData) {
 			if ($layoutData['image'] != null) {
 
 				if (($width != 0) && ($height != 0)) 
-					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height"));
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height"));
 				else
-					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id));
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id));
 				echo '<br />';
 			}
 			echo "</div>";
@@ -618,7 +618,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				else
 					$img_style["height"] = (integer)($proportion * $infoImage[1]);
 				
-				print_image ($img, false, $img_style);
+				html_print_image ($img, false, $img_style);
 		
 				echo "</a>";
 				
@@ -720,7 +720,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					else
 						$img_style["height"] = (integer)($proportion * $infoImage[1]);
 				
-					print_image ($img, false, $img_style);
+					html_print_image ($img, false, $img_style);
 					
 					if ($endTagA) echo "</a>";
 					
@@ -866,7 +866,7 @@ function get_layout_data_types () {
  *
  * @param int User id.
  * @param bool Wheter to return all the fields or only the name (to use in
- * print_select() directly)
+ * html_print_select() directly)
  * @param array Additional filters to filter the layouts.
  * @param bool Whether to return All group or not.
  *

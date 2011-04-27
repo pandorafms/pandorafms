@@ -66,16 +66,16 @@ $table->size[3] = '35%';
 /* Source selection */
 $table->id = 'source_table';
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'source_id_group', $source_id_group,
+$table->data[0][1] = html_print_select_groups(false, "AR", true, 'source_id_group', $source_id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';
-$table->data[0][2] .= print_image ("images/spinner.png", true);
+$table->data[0][2] .= html_print_image ("images/spinner.png", true);
 $table->data[0][2] .= '</span>';
-$table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "none"),
+$table->data[0][3] = html_print_select (get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
-//$table->data[0][3] = print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
+//$table->data[0][3] = html_print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
 //	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 //	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 
@@ -85,7 +85,7 @@ echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');
 ui_print_help_icon ('manageconfig');
 echo '</span></legend>';
-print_table ($table);
+html_print_table ($table);
 echo '</fieldset>';
 
 /* Target selection */
@@ -98,18 +98,18 @@ if ($source_id_agent)
 
 $table->data['operations'][0] = __('Operations');
 $table->data['operations'][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
-$table->data['operations'][1] .= print_checkbox ('copy_modules', 1, true, true);
-$table->data['operations'][1] .= print_label (__('Copy modules'), 'checkbox-copy_modules', true);
+$table->data['operations'][1] .= html_print_checkbox ('copy_modules', 1, true, true);
+$table->data['operations'][1] .= html_print_label (__('Copy modules'), 'checkbox-copy_modules', true);
 $table->data['operations'][1] .= '</span><br />';
 
 $table->data['operations'][1] .= '<span class="with_alerts'.(empty ($alerts) ? ' invisible': '').'">';
-$table->data['operations'][1] .= print_checkbox ('copy_alerts', 1, true, true);
-$table->data['operations'][1] .= print_label (__('Copy alerts'), 'checkbox-copy_alerts', true);
+$table->data['operations'][1] .= html_print_checkbox ('copy_alerts', 1, true, true);
+$table->data['operations'][1] .= html_print_label (__('Copy alerts'), 'checkbox-copy_alerts', true);
 $table->data['operations'][1] .= '</span>';
 
 $table->data[1][0] = __('Modules');
 $table->data[1][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
-$table->data[1][1] .= print_select ($modules,
+$table->data[1][1] .= html_print_select ($modules,
 	'target_modules[]', 0, false, '', '', true, true);
 $table->data[1][1] .= '</span>';
 $table->data[1][1] .= '<span class="without_modules'.(! empty ($modules) ? ' invisible': '').'">';
@@ -128,7 +128,7 @@ foreach ($agent_alerts as $alert) {
 	$alerts[$alert['id']] = $name;
 }
 $table->data[2][1] = '<span class="with_alerts'.(empty ($alerts) ? ' invisible': '').'">';
-$table->data[2][1] .= print_select ($alerts,
+$table->data[2][1] .= html_print_select ($alerts,
 	'target_alerts[]', 0, false, '', '', true, true);
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '<span class="without_alerts'.(! empty ($modules) ? ' invisible': '').'">';
@@ -136,37 +136,37 @@ $table->data[2][1] .= '<em>'.__('No alerts for this agent').'</em>';
 $table->data[2][1] .= '</span>';
 
 echo '<div id="modules_loading" class="loading invisible">';
-print_image ("images/spinner.png");
+html_print_image ("images/spinner.png");
 echo __('Loading').'&hellip;';
 echo '</div>';
 
 echo '<fieldset id="fieldset_targets"'.($source_id_agent ? '' : ' class="invisible"').'>';
 echo '<legend><span>'.__('Targets').'</span></legend>';
-print_table ($table);
+html_print_table ($table);
 echo '</fieldset>';
 
 /* Destiny selection */
 $table->id = 'destiny_table';
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select ($groups, 'destiny_id_group', $destiny_id_group,
+$table->data[0][1] = html_print_select ($groups, 'destiny_id_group', $destiny_id_group,
 	false, '', '', true);
 
 $table->data[1][0] = __('Agent');
 $table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
-$table->data[1][0] .= print_image ("images/spinner.png", true);
+$table->data[1][0] .= html_print_image ("images/spinner.png", true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = print_select (get_group_agents ($destiny_id_group, false, "none"),
+$table->data[1][1] = html_print_select (get_group_agents ($destiny_id_group, false, "none"),
 	'destiny_id_agent[]', 0, false, '', '', true, true);
 
 echo '<fieldset id="fieldset_destiny"'.($source_id_agent ? '' : ' class="invisible"').'>';
 echo '<legend><span>'.__('To agent(s)').'</span></legend>';
-print_table ($table);
+html_print_table ($table);
 echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('do_operation', 1);
-print_submit_button (__('Copy'), 'go', false, 'class="sub wand"');
+html_print_input_hidden ('do_operation', 1);
+html_print_submit_button (__('Copy'), 'go', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';
 

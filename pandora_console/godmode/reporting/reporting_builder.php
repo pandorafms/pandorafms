@@ -97,23 +97,23 @@ switch ($action) {
 					
 				$data[3] = ui_print_group_icon($report['id_group'], true);
 				$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-				$data[4] .= print_input_hidden ('id_report', $report['id_report'], true);
-				$data[4] .= print_input_hidden ('action','delete_report', true);
-				$data[4] .= print_input_image ('delete', 'images/cross.png', 1, '',
+				$data[4] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+				$data[4] .= html_print_input_hidden ('action','delete_report', true);
+				$data[4] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
 					true, array ('title' => __('Delete')));
 					$data[4] .= '</form>';
 				
 				array_push ($table->data, $data);
 							
 			}
-			print_table ($table);
+			html_print_table ($table);
 		} else {
 			echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 		}
 		
 		echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
 		echo '<div class="action-buttons" style="width: 720px;">';
-		print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
+		html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 		echo "</div>";
 		echo "</form>";
 		return;
@@ -490,13 +490,13 @@ if ($enterpriseEnable) {
 $buttons = array(
 	'main' => array('active' => false,
 		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '">' . 
-			print_image("images/reporting_edit.png", true, array ("title" => __('Main'))) .'</a>'),
+			html_print_image("images/reporting_edit.png", true, array ("title" => __('Main'))) .'</a>'),
 	'list_items' => array('active' => false,
 		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '">' . 
-			print_image("images/god6.png", true, array ("title" => __('List items'))) .'</a>'),
+			html_print_image("images/god6.png", true, array ("title" => __('List items'))) .'</a>'),
 	'item_editor' => array('active' => false,
 		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
-			print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
+			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
 	
 if ($enterpriseEnable) {
@@ -505,7 +505,7 @@ if ($enterpriseEnable) {
 
 $buttons['preview'] = array('active' => false,
 	'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=preview&action=edit&id_report=' . $idReport . '">' . 
-			print_image("images/reporting.png", true, array ("title" => __('Preview'))) .'</a>');
+			html_print_image("images/reporting.png", true, array ("title" => __('Preview'))) .'</a>');
 	
 $buttons[$activeTab]['active'] = true;
 

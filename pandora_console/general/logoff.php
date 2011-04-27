@@ -22,7 +22,7 @@
 		<tr><td align="left">
 			<?php
 				echo '<a href="index.php">';
-				print_image ("images/pandora_logo.png", false, array ("alt" => "logo", "border" => 0));
+				html_print_image ("images/pandora_logo.png", false, array ("alt" => "logo", "border" => 0));
 				echo '</a> '.$pandora_version;
 			?>
 		</td><td valign="bottom">

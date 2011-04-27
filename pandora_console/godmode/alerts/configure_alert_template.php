@@ -410,55 +410,55 @@ if ($step == 2) {
 	
 	$table->data[0][0] = __('Days of week');
 	$table->data[0][1] = __('Mon');
-	$table->data[0][1] .= print_checkbox ('monday', 1, $monday, true);
+	$table->data[0][1] .= html_print_checkbox ('monday', 1, $monday, true);
 	$table->data[0][1] .= __('Tue');
-	$table->data[0][1] .= print_checkbox ('tuesday', 1, $tuesday, true);
+	$table->data[0][1] .= html_print_checkbox ('tuesday', 1, $tuesday, true);
 	$table->data[0][1] .= __('Wed');
-	$table->data[0][1] .= print_checkbox ('wednesday', 1, $wednesday, true);
+	$table->data[0][1] .= html_print_checkbox ('wednesday', 1, $wednesday, true);
 	$table->data[0][1] .= __('Thu');
-	$table->data[0][1] .= print_checkbox ('thursday', 1, $thursday, true);
+	$table->data[0][1] .= html_print_checkbox ('thursday', 1, $thursday, true);
 	$table->data[0][1] .= __('Fri');
-	$table->data[0][1] .= print_checkbox ('friday', 1, $friday, true);
+	$table->data[0][1] .= html_print_checkbox ('friday', 1, $friday, true);
 	$table->data[0][1] .= __('Sat');
-	$table->data[0][1] .= print_checkbox ('saturday', 1, $saturday, true);
+	$table->data[0][1] .= html_print_checkbox ('saturday', 1, $saturday, true);
 	$table->data[0][1] .= __('Sun');
-	$table->data[0][1] .= print_checkbox ('sunday', 1, $sunday, true);
+	$table->data[0][1] .= html_print_checkbox ('sunday', 1, $sunday, true);
 	
 	$table->data[1][0] = __('Time from');
-	$table->data[1][1] = print_input_text ('time_from', $time_from, '', 7, 7,
+	$table->data[1][1] = html_print_input_text ('time_from', $time_from, '', 7, 7,
 		true);
 	$table->data[1][2] = __('Time to');
-	$table->data[1][3] = print_input_text ('time_to', $time_to, '', 7, 7,
+	$table->data[1][3] = html_print_input_text ('time_to', $time_to, '', 7, 7,
 		true);
 	
 	$table->data['threshold'][0] = __('Time threshold');
-	$table->data['threshold'][1] = print_select ($threshold_values,
+	$table->data['threshold'][1] = html_print_select ($threshold_values,
 		'threshold', $threshold_selected, '', '', '', true, false, false);
 	$table->data['threshold']['other_label'] = __('Other value');
-	$table->data['threshold']['other_input'] = print_input_text ('other_threshold',
+	$table->data['threshold']['other_input'] = html_print_input_text ('other_threshold',
 		$threshold, '', 5, 7, true);
 	$table->data['threshold']['other_input'] .= ' '.__('seconds');
 	
 	$table->data[3][0] = __('Min. number of alerts');
-	$table->data[3][1] = print_input_text ('min_alerts', $min_alerts, '',
+	$table->data[3][1] = html_print_input_text ('min_alerts', $min_alerts, '',
 		5, 7, true);
 	$table->data[3][2] = __('Max. number of alerts');
-	$table->data[3][3] = print_input_text ('max_alerts', $max_alerts, '',
+	$table->data[3][3] = html_print_input_text ('max_alerts', $max_alerts, '',
 		5, 7, true);
 	
 	$table->data['field1'][0] = __('Field 1') . ui_print_help_icon ('alert_macros', true);
-	$table->data['field1'][1] = print_input_text ('field1', $field1, '', 70, 255, true);
+	$table->data['field1'][1] = html_print_input_text ('field1', $field1, '', 70, 255, true);
 	
 	$table->data['field2'][0] = __('Field 2') . ui_print_help_icon ('alert_macros', true);
-	$table->data['field2'][1] = print_input_text ('field2', $field2, '', 70, 255, true);
+	$table->data['field2'][1] = html_print_input_text ('field2', $field2, '', 70, 255, true);
 	
 	$table->data['field3'][0] = __('Field 3') . ui_print_help_icon ('alert_macros', true);
-	$table->data['field3'][1] = print_textarea ('field3', 10, 30, $field3, '', true);
+	$table->data['field3'][1] = html_print_textarea ('field3', 10, 30, $field3, '', true);
 	
 	$table->data[4][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(get_user_groups($config['id_user'], 'LM', true)));
 	$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
-	$table->data[4][1] = print_select_from_sql ($sql_query,
+	$table->data[4][1] = html_print_select_from_sql ($sql_query,
 		'default_action', $default_action, '', __('None'), 0,
 		true, false, false).ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 } else if ($step == 3) {
@@ -470,16 +470,16 @@ if ($step == 2) {
 	}
 	$table->data[0][0] = __('Alert recovery');
 	$values = array (false => __('Disabled'), true => __('Enabled'));
-	$table->data[0][1] = print_select ($values,
+	$table->data[0][1] = html_print_select ($values,
 		'recovery_notify', $recovery_notify, '', '', '', true, false,
 		false);
 	
 	$table->data['field2'][0] = __('Field 2');
-	$table->data['field2'][1] = print_input_text ('field2_recovery',
+	$table->data['field2'][1] = html_print_input_text ('field2_recovery',
 		$field2_recovery, '', 35, 255, true);
 	
 	$table->data['field3'][0] = __('Field 3');
-	$table->data['field3'][1] = print_textarea ('field3_recovery', 10, 30,
+	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
 } else {
 	/* Step 1 by default */
@@ -514,7 +514,7 @@ if ($step == 2) {
 	}
 
 	$table->data[0][0] = __('Name');
-	$table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
+	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
 
 	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
 	$groups = get_user_groups ();
@@ -524,34 +524,34 @@ if ($step == 2) {
 		$display_all_group = true;
 	else	
 		$display_all_group = false;
-	$table->data[0][1] .= "&nbsp;".print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
+	$table->data[0][1] .= "&nbsp;".html_print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
 
 	$table->data[1][0] = __('Description');
-	$table->data[1][1] =  print_textarea ('description', 10, 30,
+	$table->data[1][1] =  html_print_textarea ('description', 10, 30,
 		$description, '', true);
 	
 	$table->data[2][0] = __('Priority');
-	$table->data[2][1] = print_select (get_priorities (), 'priority',
+	$table->data[2][1] = html_print_select (get_priorities (), 'priority',
 		$priority, '', 0, 0, true, false, false);
 	
 	$table->data[3][0] = __('Condition type');
-	$table->data[3][1] = print_select (alerts_get_alert_templates_types (), 'type',
+	$table->data[3][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
 	$table->data[3][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
-	$table->data[3][1] .= '&nbsp;'.print_checkbox ('matches_value', 1, $matches, true);
-	$table->data[3][1] .= print_label (__('Trigger when matches the value'),
+	$table->data[3][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[3][1] .= html_print_label (__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
 	$table->data[3][1] .= '</span>';
 
 	$table->data['value'][0] = __('Value');
-	$table->data['value'][1] = print_input_text ('value', $value, '',
+	$table->data['value'][1] = html_print_input_text ('value', $value, '',
 		35, 255, true);
 	$table->data['value'][1] .= '&nbsp;<span id="regex_ok">';
-	$table->data['value'][1] .= print_image ('images/suc.png', true,
+	$table->data['value'][1] .= html_print_image ('images/suc.png', true,
 		array ('style' => 'display:none',
 			'id' => 'regex_good',
 			'title' => __('The regular expression is valid')));
-	$table->data['value'][1] .= print_image ('images/err.png', true,
+	$table->data['value'][1] .= html_print_image ('images/err.png', true,
 		array ('style' => 'display:none',
 			'id' => 'regex_bad',
 			'title' => __('The regular expression is not valid')));
@@ -559,10 +559,10 @@ if ($step == 2) {
 
 	//Min first, then max, that's more logical
 	$table->data['min'][0] = __('Min.');
-	$table->data['min'][1] = print_input_text ('min', $min, '', 5, 255, true);
+	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
 
 	$table->data['max'][0] = __('Max.');
-	$table->data['max'][1] = print_input_text ('max', $max, '', 5, 255, true);
+	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5, 255, true);
 	
 	$table->data['example'][1] = ui_print_alert_template_example ($id, true, false);
 	$table->colspan['example'][1] = 2;
@@ -574,21 +574,21 @@ if ($step >= LAST_STEP) {
 } else {
 	echo '<form method="post">';
 }
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
-	print_input_hidden ('id', $id);
-	print_input_hidden ('update_template', 1);
+	html_print_input_hidden ('id', $id);
+	html_print_input_hidden ('update_template', 1);
 } else {
-	print_input_hidden ('create_template', 1);
+	html_print_input_hidden ('create_template', 1);
 }
 
 if ($step >= LAST_STEP) {
-	print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
+	html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
 } else {
-	print_input_hidden ('step', $step + 1);
-	print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+	html_print_input_hidden ('step', $step + 1);
+	html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
 }
 echo '</div>';
 echo '</form>';

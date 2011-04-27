@@ -35,7 +35,7 @@ function render_agent_field ($agent, $field, $field_value = false, $return = fal
 		if (! isset ($agent['id_grupo']))
 			return '';
 		
-		$output = get_group_name ($agent['id_grupo'], true);
+		$output = groups_get_name ($agent['id_grupo'], true);
 		
 		break;
 	case 'group_icon':
@@ -50,7 +50,7 @@ function render_agent_field ($agent, $field, $field_value = false, $return = fal
 		
 		$output = ui_print_group_icon ($agent['id_grupo'], true);
 		$output .= ' ';
-		$output .= get_group_name ($agent['id_grupo']);
+		$output .= groups_get_name ($agent['id_grupo']);
 		
 		break;
 	case 'view_link':
@@ -99,7 +99,7 @@ function render_agent_field ($agent, $field, $field_value = false, $return = fal
 			$text = $field_value['name'];
 		
 		if (isset ($field_value['image']))
-			$text = print_image ($field_value['image'], true, array ('title' => $text));
+			$text = html_print_image ($field_value['image'], true, array ('title' => $text));
 		
 		$output = '<a href="#" onclick="'.$field_value['callback'].'(this, '.$parameters.'); return false"">';
 		$output .= $text;

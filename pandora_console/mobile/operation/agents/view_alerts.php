@@ -91,7 +91,7 @@ class ViewAlerts {
 			$table->data[] = $data;
 		}
 		
-		print_table($table);
+		html_print_table($table);
 	}
 }
 ?>

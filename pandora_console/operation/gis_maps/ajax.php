@@ -114,7 +114,7 @@ switch ($opt) {
 			$status = get_agent_status($row['tagente_id_agente']);
 			
 			$agents[$row['tagente_id_agente']] = array(
-				'icon_path' => get_agent_icon_map($row['tagente_id_agente'], true, $status),
+				'icon_path' => gis_get_agent_icon_map($row['tagente_id_agente'], true, $status),
 				'name' => $row['nombre'],
 				'status' => $status,
 				'stored_longitude' => $row['stored_longitude'],
@@ -145,7 +145,7 @@ switch ($opt) {
 	case 'point_agent_info':
 		$id = get_parameter('id');
 		$row = db_get_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
-		$agentDataGIS =  getDataLastPositionAgent($row['id_agente']);
+		$agentDataGIS =  gis_get_data_last_position_agent($row['id_agente']);
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
@@ -177,7 +177,7 @@ switch ($opt) {
 		if ($agent_description || $agent_description != '') {
 			$returnJSON['content'] .= __('Description').': '.$agent_description.'<br />';
 		}
-		$returnJSON['content'] .= __('Group').': ' . ui_print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.get_group_name ($row["id_grupo"]).'</strong>)<br />';
+		$returnJSON['content'] .= __('Group').': ' . ui_print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.groups_get_name ($row["id_grupo"]).'</strong>)<br />';
 		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
 		$returnJSON['content'] .= __('Last contact') . ": ";
 		if ($row["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {

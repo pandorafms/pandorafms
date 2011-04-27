@@ -195,11 +195,11 @@ if ($result !== false) {
 			
 		if ($row["id_recon_script"] == 0){
 		// Network recon task
-			$data[2] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
+			$data[2] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
 			$data[2] .= get_networkprofile_name ($row["id_network_profile"]);
 		} else {
 			// APP recon task
-			$data[2] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
+			$data[2] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
 			$data[2] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
 		}	
 			
@@ -234,14 +234,14 @@ if ($result !== false) {
 		}
 		
 		// ACTION
-		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'>" . print_image("images/eye.png", true) . "</a>&nbsp;".
-			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .
-			print_image("images/config.png", true) . '</a>';
+		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'>" . html_print_image("images/eye.png", true) . "</a>&nbsp;".
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .
+			html_print_image("images/config.png", true) . '</a>';
 		
 		$table->data[] = $data;
 	}
 	
-	print_table ($table);
+	html_print_table ($table);
 	unset ($table);
 } else {
 	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
@@ -249,7 +249,7 @@ if ($result !== false) {
 
 echo '<div class="action-buttons" style="width: 700px">';
 echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';
-echo print_submit_button (__('Create'),"crt",false,'class="sub next"',true);
+echo html_print_submit_button (__('Create'),"crt",false,'class="sub next"',true);
 echo '</form>';
 echo "</div>";
 

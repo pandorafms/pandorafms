@@ -133,12 +133,12 @@ if (!$maps) {
 			$data[1] = ui_print_group_icon ($map['id_group'], true);
 			$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
-			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.print_image ("images/copy.png", true).'</a>';
-			$data[4] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.print_image ("images/cross.png", true).'</a>';
+			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+			$data[4] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 			array_push ($table->data, $data);
 		}
 	}
-	print_table ($table);
+	html_print_table ($table);
 }
 if (!$maps) {
 	echo '<div class="action-buttons" style="width: 0px;">';
@@ -147,8 +147,8 @@ else {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 }
 echo '<form action="index.php?sec=gmap&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
-print_input_hidden ('edit_layout', 1);
-print_submit_button (__('Create'), '', false, 'class="sub next"');
+html_print_input_hidden ('edit_layout', 1);
+html_print_submit_button (__('Create'), '', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
 ?>

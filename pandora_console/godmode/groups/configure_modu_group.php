@@ -54,20 +54,20 @@ if ($id_group) {
 $table->width = '450px';
 $table->data = array ();
 $table->data[0][0] = __('Name');
-$table->data[0][1] = print_input_text ('name', $name, '', 35, 100, true);
+$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 
 
 echo'</span>';
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/modu_group_list">';
-print_table ($table);
+html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {
-	print_input_hidden ('update_group', 1);
-	print_input_hidden ('id_group', $id_group);
-	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+	html_print_input_hidden ('update_group', 1);
+	html_print_input_hidden ('id_group', $id_group);
+	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 } else {
-	print_input_hidden ('create_group', 1);
-	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_input_hidden ('create_group', 1);
+	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';

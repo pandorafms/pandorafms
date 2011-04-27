@@ -65,13 +65,13 @@ foreach ($modules as $id => $module) {
 	$checked = false;
 	if (isset($modulesChecked[$id]))
 		$checked = (bool) $modulesChecked[$id];
-	$listModules[] = '<span style="white-space: nowrap;">' . print_checkbox('modules[' .  $id . ']', 1, $checked, true) . ' ' . $module . '</span>';
+	$listModules[] = '<span style="white-space: nowrap;">' . html_print_checkbox('modules[' .  $id . ']', 1, $checked, true) . ' ' . $module . '</span>';
 }
 $table->data[0][1] = implode(' ', $listModules);
 
 $table->data[1][0] = __('Begin date');
-$table->data[1][1] = print_input_text ("start_date", substr ($start_date, 0, 10),'', 10, 40, true);
-$table->data[1][1] .= print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+$table->data[1][1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10, 40, true);
+$table->data[1][1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
 
 $table->data[2][0] = __('Zoom factor');
 $options = array ();
@@ -80,7 +80,7 @@ $options[1] = 'x1';
 $options[2] = 'x2';
 $options[3] = 'x3';
 $options[4] = 'x4';
-$table->data[2][1] = print_select ($options, "zoom", $zoom, '', '', 0, true);
+$table->data[2][1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
 
 $table->data[3][0] = __('Time range');
 $options = array ();
@@ -96,18 +96,18 @@ $options[1296000] = human_time_description_raw (1296000);
 $options[2592000] = human_time_description_raw (2592000);
 $options[5184000] = human_time_description_raw (5184000);
 $options[15552000] = human_time_description_raw (15552000);
-$table->data[3][1] = print_extended_select_for_time($options, 'period', $period, '', '', 0, 7, true) . ' ' . __('secs');
+$table->data[3][1] = html_print_extended_select_for_time($options, 'period', $period, '', '', 0, 7, true) . ' ' . __('secs');
 
 $table->data[4][0] = __('Show events');
-$table->data[4][1] = print_checkbox ("draw_events", 1, (bool) $draw_events, true);
+$table->data[4][1] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
 $table->data[5][0] = __('Show alerts');
-$table->data[5][1] = print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
+$table->data[5][1] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
 
 $htmlForm = '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente=' . $id_agente . '" >';
-$htmlForm .= print_table($table, true);
-$htmlForm .= print_input_hidden('filter', 1, true);
+$htmlForm .= html_print_table($table, true);
+$htmlForm .= html_print_input_hidden('filter', 1, true);
 $htmlForm .= '<div class="action-buttons" style="width: '.$table->width.'">';
-$htmlForm .= print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd"', true);
+$htmlForm .= html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd"', true);
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 

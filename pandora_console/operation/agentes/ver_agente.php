@@ -205,8 +205,8 @@ if (is_ajax ()) {
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
-		echo print_image('images/groups_small/'.get_group_icon ($agent['id_grupo']).'.png', true); 
-		echo get_group_name ($agent['id_grupo']).'<br />';
+		echo html_print_image('images/groups_small/'.groups_get_icon ($agent['id_grupo']).'.png', true); 
+		echo groups_get_name ($agent['id_grupo']).'<br />';
 
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
@@ -281,12 +281,12 @@ if (is_ajax ()) {
 		$id_module = (int) get_parameter ('id_module');
 		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
-		echo print_image("images/brick.png", true) . '&nbsp;'; 
+		echo html_print_image("images/brick.png", true) . '&nbsp;'; 
 		echo ui_print_truncate_text($module['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Type').':</strong> ';
 		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
 		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
-		echo print_image("images/" . get_module_type_icon ($agentmoduletype), true) . '<br />';
+		echo html_print_image("images/" . get_module_type_icon ($agentmoduletype), true) . '<br />';
 		echo '<strong>'.__('Module group').':</strong> ';
 		$modulegroup =  get_modulegroup_name (get_agentmodule_modulegroup ($module['id_agente_modulo']));
 		if($modulegroup === false){
@@ -304,7 +304,7 @@ if (is_ajax ()) {
 	if ($get_group_status_tooltip) {
 		$id_group = (int) get_parameter ('id_group');
 		$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
-		echo '<h3>' . print_image("images/groups_small/" . get_group_icon ($group['id_grupo']) . ".png", true);
+		echo '<h3>' . html_print_image("images/groups_small/" . groups_get_icon ($group['id_grupo']) . ".png", true);
 		echo ui_print_truncate_text($group['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
 		if($group['parent'] == 0) {
@@ -312,7 +312,7 @@ if (is_ajax ()) {
 		}
 		else {
 			$group_parent = db_get_row ('tgrupo', 'id_grupo', $group['parent']);
-			echo print_image("images/groups_small/" . get_group_icon ($group['parent']) . ".png", true); 
+			echo html_print_image("images/groups_small/" . groups_get_icon ($group['parent']) . ".png", true); 
 			echo $group_parent['nombre'].'<br />';
 		}
 		echo '<strong>'.__('Sons').':</strong> ';
@@ -323,7 +323,7 @@ if (is_ajax ()) {
 		else{
 			echo '<br /><br />';
 			foreach($groups_sons as $group_son) {
-				echo print_image("images/groups_small/" . get_group_icon ($group_son['id_grupo']) . ".png", true);
+				echo html_print_image("images/groups_small/" . groups_get_icon ($group_son['id_grupo']) . ".png", true);
 				echo $group_son['nombre'].'<br />';
 			}
 		}
@@ -367,7 +367,7 @@ if ($flag_agent !== ''){
 }
 
 if ($agent["icon_path"]) {
-	$icon = get_agent_icon_map($agent["id_agente"], true);
+	$icon = gis_get_agent_icon_map($agent["id_agente"], true);
 }
 else {
 	$icon = 'images/bricks.png';
@@ -382,7 +382,7 @@ $managetab = "";
 
 if (check_acl ($config['id_user'],$id_grupo, "AW")) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
-		. print_image("images/setup.png", true, array ("title" => __('Manage')))
+		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
 
 	if ($tab == 'manage')
@@ -393,7 +393,7 @@ if (check_acl ($config['id_user'],$id_grupo, "AW")) {
 
 /* Main tab */
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
-		. print_image("images/monitor.png", true, array("title" => __('Main')))
+		. html_print_image("images/monitor.png", true, array("title" => __('Main')))
 		. '</a>';
 		
 if ($tab == 'main')
@@ -403,7 +403,7 @@ else
 	
 /* Data */
 $datatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=data">'
-	. print_image("images/lightbulb.png", true, array("title" => __('Data')))
+	. html_print_image("images/lightbulb.png", true, array("title" => __('Data')))
 	. '</a>';
 
 if (($tab == 'data') OR ($tab == 'data_view'))
@@ -413,7 +413,7 @@ else
 
 /* Alert tab */
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
-		. print_image("images/bell.png", true, array("title" => __('Alerts')))
+		. html_print_image("images/bell.png", true, array("title" => __('Alerts')))
 		. '</a>';
 		
 if ($tab == 'alert')
@@ -423,7 +423,7 @@ else
 	
 /* SLA view */
 $slatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente='.$id_agente.'">'
-		. print_image("images/images.png", true, array("title" => __('S.L.A.')))
+		. html_print_image("images/images.png", true, array("title" => __('S.L.A.')))
 		. '</a>';
 
 if ($tab == 'sla') {
@@ -453,7 +453,7 @@ if ($policyTab == -1)
 /* Group tab */
 
 $grouptab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$id_grupo.'">'
-	. print_image("images/agents_group.png", true, array( "title" =>  __('Group')))
+	. html_print_image("images/agents_group.png", true, array( "title" =>  __('Group')))
 	. '</a>';
 	
 $grouptab['active']=false;
@@ -463,7 +463,7 @@ $gistab="";
 if ($config['activate_gis']) {
 	
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
-		.print_image("images/world.png", true, array( "title" => __('GIS data')))
+		.html_print_image("images/world.png", true, array( "title" => __('GIS data')))
 		.'</a>';
 	
 	if ($tab == 'gis')
@@ -473,7 +473,7 @@ if ($config['activate_gis']) {
 }
 
 $custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
-		. print_image("images/note.png", true, array("title" => __('Custom fields')))
+		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
 		. '</a>';
 
 if ($tab == 'custom_fields') {
@@ -484,7 +484,7 @@ else {
 }
 
 $graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'
-		. print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
+		. html_print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
 		. '</a>';
 if ($tab == 'graphs') {
 	$graphs['active'] = true;
@@ -516,7 +516,7 @@ foreach($config['extensions'] as $extension) {
 		
 		$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
 		
-		$extension_tab = array('text' => '<a href="' . $url .'">' . print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
+		$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
 		
 		$onheader = $onheader + array($id => $extension_tab);	
 	}

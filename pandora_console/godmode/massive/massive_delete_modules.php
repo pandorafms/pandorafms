@@ -115,30 +115,30 @@ $modulesSelect = array();
 foreach ($modules as $module) {
 	$modulesSelect[$module] = $module;
 }
-$table->data[0][1] = print_select($modulesSelect,
+$table->data[0][1] = html_print_select($modulesSelect,
 	'module_name', $module_name, false, __('Select'), '', true);
 
 $table->data[1][0] = __('Group');
-$table->data[1][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+$table->data[1][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true, false, true, '', empty ($module_name));
 
 $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[2][0] .= print_image('images/spinner.png', true);
+$table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $agents = get_agents_with_module_name ($module_name, $id_group,
 	array ('delete_pending' => 0,
 		'tagente_modulo.disabled' => 0),
 	array ('tagente.id_agente', 'tagente.nombre'));
-$table->data[2][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
+$table->data[2][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('delete', 1);
-print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
+html_print_input_hidden ('delete', 1);
+html_print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
 echo '</div>';
 echo '</form>';
 

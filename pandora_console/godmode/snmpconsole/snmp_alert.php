@@ -164,49 +164,49 @@ if (isset ($_GET["update_alert"])) {
 		$fields[$row["id"]] = $row["name"];
 	}
 	
-	print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+	html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
 		"alert_type", $alert_type, '', '', 0, false, false, false);
 	echo '</td></tr>';
 	
 	// Description
 	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
-	print_input_text ("description", $description, '', 60);
+	html_print_input_text ("description", $description, '', 60);
 	echo '</td></tr>';
 	
 	// OID
 	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
-	print_input_text ("oid", $oid, '', 30);
+	html_print_input_text ("oid", $oid, '', 30);
 	echo '</td></tr>';
 
 	// OID Custom
 	echo '<tr id="tr-custom_value"><td class="datos">'.__('Custom Value')."/".__("OID").'</td><td class="datos">';
-	print_input_text ("custom_value", $custom_value, '', 30);
+	html_print_input_text ("custom_value", $custom_value, '', 30);
 	echo '</td></tr>';
 
 	// SNMP Agent
 	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
-	print_input_text ("source_ip", $source_ip, '', 30);
+	html_print_input_text ("source_ip", $source_ip, '', 30);
 	echo '</td></tr>';
 		
 	// Alert fields
 	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)').'</td><td class="datos">';
-	print_input_text ("al_field1", $al_field1, '', 30);
+	html_print_input_text ("al_field1", $al_field1, '', 30);
 	echo '</td></tr>';
 	
 	echo '<tr><td class="datos2">'.__('Field #2 (Single Line)').'</td><td class="datos2">';
-	print_input_text ("al_field2", $al_field2, '', 30);
+	html_print_input_text ("al_field2", $al_field2, '', 30);
 	echo '</td></tr>';
 	
 	echo '<tr><td class="datos" valign="top">'.__('Field #3 (Full Text)').'<td class="datos">';
-	print_textarea ("al_field3", $al_field3, 4, $al_field3, 'style="width:400px"');
+	html_print_textarea ("al_field3", $al_field3, 4, $al_field3, 'style="width:400px"');
 	echo '</td></tr>';
 	
 	// Max / Min alerts
 	echo '<tr><td class="datos2">'.__('Min. number of alerts').'</td><td class="datos2">';
-	print_input_text ("min_alerts", $min_alerts, '', 3);
+	html_print_input_text ("min_alerts", $min_alerts, '', 3);
 	
 	echo '</td></tr><tr><td class="datos">'.__('Max. number of alerts').'</td><td class="datos">';
-	print_input_text ("max_alerts", $max_alerts, '', 3);
+	html_print_input_text ("max_alerts", $max_alerts, '', 3);
 	echo '</td></tr>';
 
 	// Time Threshold
@@ -226,22 +226,22 @@ if (isset ($_GET["update_alert"])) {
 	$fields[604800] = human_time_description_raw (604800);
 	$fields[-1] = __('Other value');
 	
-	print_select ($fields, "time_threshold", $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');
+	html_print_select ($fields, "time_threshold", $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');
 	echo '<div id="div-time_other" style="display:none">';
-	print_input_text ("time_other", 0, '', 6);
+	html_print_input_text ("time_other", 0, '', 6);
 	echo ' '.__('seconds').'</div></td></tr>';
 		
 	// Priority
 	echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
-	echo print_select (get_priorities (), "priority", $priority, '', '', '0', false, false, false);
+	echo html_print_select (get_priorities (), "priority", $priority, '', '', '0', false, false, false);
 	echo '</td></tr>';
 
 	//Button
 	echo '<tr><td></td><td align="right">';
 	if ($id_as > 0) {
-		print_submit_button (__('Update'), "submit", false, 'class="sub upd"', false);
+		html_print_submit_button (__('Update'), "submit", false, 'class="sub upd"', false);
 	} else {
-		print_submit_button (__('Create'), "submit", false, 'class="sub wand"', false);
+		html_print_submit_button (__('Create'), "submit", false, 'class="sub wand"', false);
 	}
 	
 	// End table
@@ -311,9 +311,9 @@ if (isset ($_GET["update_alert"])) {
 		}
 		
 		$data[7] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">' .
-				print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>&nbsp;
+				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>&nbsp;
 				<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
-				print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
 		array_push ($table->data, $data);
 		
@@ -321,14 +321,14 @@ if (isset ($_GET["update_alert"])) {
 	}
 
 	if (!empty ($table->data)) {
-		print_table ($table);
+		html_print_table ($table);
 	}
 	
 	unset ($table);	
 	
 	echo '<div style="text-align:right; width:740px">';
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
-	print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
+	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";
 
 	echo '<div style="margin-left: 30px; line-height: 17px; vertical-align: top; width:120px;">';

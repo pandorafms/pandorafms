@@ -163,22 +163,22 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 }
 
 $table->head[2] = __('Type') . ' ' .
-	'<a href="' . $url . '&sort_field=type&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
-	'<a href="' . $url . '&sort_field=type&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
 $table->head[3] = __('Module name') . ' ' .
-	'<a href="' . $url . '&sort_field=name&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
-	'<a href="' . $url . '&sort_field=name&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 $table->head[4] = __('Description');
 $table->head[5] = __('Status') . ' ' .
-	'<a href="' . $url . '&sort_field=status&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
-	'<a href="' . $url . '&sort_field=status&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
 $table->head[6] = __('Data') . ' ' .
-	'<a href="' . $url . '&sort_field=data&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up")) . '</a>' .
-	'<a href="' . $url . '&sort_field=data&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
 $table->head[7] = __('Graph');
 $table->head[8] = __('Last contact') . ' ' .
-	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
-	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array("left","left","left","left","left","center");
 
@@ -203,10 +203,10 @@ foreach ($modules as $module) {
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 		if ($module["flag"] == 0) {
-			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;flag=1&amp;refr=60">' . print_image("images/target.png", true, array("border" => '0', "alt" => "target")) . '</a>';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;flag=1&amp;refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => "target")) . '</a>';
 		}
 		else {
-			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . print_image("images/refresh.png", true, array("border" => "0", "alt" => "refresh")) . '</a>';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => "0", "alt" => "refresh")) . '</a>';
 		}
 	}
 	else {
@@ -252,7 +252,7 @@ foreach ($modules as $module) {
 			}
 
 			$data[1] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $id_policy . '">' . 
-				print_image($img,true, array('title' => $title)) .
+				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 		else {
@@ -263,7 +263,7 @@ foreach ($modules as $module) {
 	$data[2] = show_server_type ($module['id_modulo']);
 
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
+	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
 	$data[3] = ui_print_string_substr ($module["nombre"], 25, true);
 	$data[4] = ui_print_string_substr ($module["descripcion"], 30, true);
@@ -336,7 +336,7 @@ foreach ($modules as $module) {
 				$salida = "<span id='value_module_" . $module["id_agente_modulo"] . "'
 					title='".$module_value."' style='white-space: nowrap;'>" . 
 					'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
-					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . print_image("images/rosette.png", true) . "" . "</span>";
+					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
 			}
 		}
 	}
@@ -354,8 +354,8 @@ foreach ($modules as $module) {
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
 
 	//	if ($nombre_tipo_modulo != "log4x")
-			$data[7] .= '<a href="javascript:'.$link.'">' . print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a>';
-		$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
+			$data[7] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a>';
+		$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
 	}
 	
 	if ($module['estado'] == 3) {
@@ -388,7 +388,7 @@ if (empty ($table->data)) {
 }
 else {
 	echo "<h3>".__('Full list of monitors')."</h3>";
-	print_table ($table);
+	html_print_table ($table);
 }
 
 unset ($table);

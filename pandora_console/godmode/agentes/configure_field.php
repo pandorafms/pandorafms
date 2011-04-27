@@ -41,22 +41,22 @@ if ($id_field) {
 $table->width = '450px';
 $table->data = array ();
 $table->data[0][0] = __('Name');
-$table->data[0][1] = print_input_text ('name', $name, '', 35, 100, true);
+$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 
 $table->data[1][0] = __('Display on front').ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
-$table->data[1][1] = print_checkbox ('display_on_front', 1, $display_on_front, true);
+$table->data[1][1] = html_print_checkbox ('display_on_front', 1, $display_on_front, true);
 
 echo '<form name="field" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/fields_manager">';
-print_table ($table);
+html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
 if ($id_field) {
-	print_input_hidden ('update_field', 1);
-	print_input_hidden ('id_field', $id_field);
-	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+	html_print_input_hidden ('update_field', 1);
+	html_print_input_hidden ('id_field', $id_field);
+	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 } else {
-	print_input_hidden ('create_field', 1);
-	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_input_hidden ('create_field', 1);
+	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 }
 
 echo '</div>';

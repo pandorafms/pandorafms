@@ -44,7 +44,7 @@ class MonitorStatus {
 		$table->colspan[1][2] = 2;
 		
 		$table->data[0][0] = '<span alt="' . __('Group') . '" title="' . __('Group') . '"><b>' . __('G') . '</b></span>';
-		$table->data[0][1] = print_select_groups($this->system->getConfig("id_user"), "IR", true, 'group', $group, '', '', 0, true, false, false, 'w130');
+		$table->data[0][1] = html_print_select_groups($this->system->getConfig("id_user"), "IR", true, 'group', $group, '', '', 0, true, false, false, 'w130');
 		$table->data[0][2] = '<span alt="' . __('Monitor status') . '" title="' . __('Monitor Status') . '"><b>' . __('M') . '</b></span>';
 		$fields = array ();
 		$fields[-1] = __('All');
@@ -57,15 +57,15 @@ class MonitorStatus {
 		foreach ($fields as $key => $field) {
 			$fields[$key] = ui_print_truncate_text($field, $config['text_char_long'], false, true, false);
 		}
-		$table->data[0][3] = print_select ($fields, "status", $status, '', '', -1, true);
+		$table->data[0][3] = html_print_select ($fields, "status", $status, '', '', -1, true);
 		$table->data[1][0] = '<span alt="' . __('Module group') . '" title="' . __('Module group') . '"><b>' . __('M') . '</b></span>';
-		$table->data[1][1] = print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+		$table->data[1][1] = html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 			'module_group', $modulegroup, '',__('All'), 0, true);
-		$table->data[1][2] = print_input_text('search', $search, '', 5, 20, true);
+		$table->data[1][2] = html_print_input_text('search', $search, '', 5, 20, true);
 		$table->data[1][2] .= "<input type='submit' class='button_filter' name='submit_button' value='' alt='" . __('Filter') . "' title='" . __('Filter') . "' />";
 		
 		echo "<form method='post'>";
-		print_table($table);
+		html_print_table($table);
 		echo "</form>";
 		
 		
@@ -229,7 +229,7 @@ class MonitorStatus {
 			$table->data[] = $data;
 		}
 		
-		print_table($table);
+		html_print_table($table);
 		
 		$pagination = pagination ($total,
 			ui_get_url_refresh (array ()),

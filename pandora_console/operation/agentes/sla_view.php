@@ -88,9 +88,9 @@ foreach ($modules as $module_id => $module) {
 	//TODO: Make this work for all new status
 	$status = get_agentmodule_status ($module_id);
 	if ($status == 1){
-		$data[3] = print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
+		$data[3] = html_print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
 	} else {
-		$data[3] = print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
+		$data[3] = html_print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
 	}
 			
 	if ($module["module_interval"] > 0) {
@@ -102,7 +102,7 @@ foreach ($modules as $module_id => $module) {
 	$loc++;
 }
 
-print_table ($table);
+html_print_table ($table);
 unset ($table);
 
 // Get all SLA report components
@@ -131,13 +131,13 @@ if ($result !== false) {
 		$data[2] = format_numeric (get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';
 		$status = get_agentmodule_status ($sla_data["id_agent_module"]);
 		if ($status == 1){
-			$data[3] = print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
+			$data[3] = html_print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
 		} else {
-			$data[3] = print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
+			$data[3] = html_print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
 		}
 		array_push ($table->data, $data);
 	}
-	print_table ($table);
+	html_print_table ($table);
 	unset ($table);
 }
 ?>

@@ -130,7 +130,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	// Get groups data
 	if ($group > 0) {
 		$groups = array();
-		$id_groups = get_id_groups_recursive($group, true);
+		$id_groups = groups_get_id_recursive($group, true);
 		
 		foreach($id_groups as $id_group) {
 			if(check_acl($config["id_user"], $id_group, 'AR')) {
@@ -303,7 +303,7 @@ function create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep,
 
 // Returns a group node definition
 function create_group_node ($group, $simple = 0, $font_size = 10) {
-	$status = get_group_status ($group['id_grupo']);
+	$status = groups_get_status ($group['id_grupo']);
 	
 	// Set node status
 	switch($status) {
@@ -324,17 +324,17 @@ function create_group_node ($group, $simple = 0, $font_size = 10) {
 			break;
 	}
 	
-	$icon = get_group_icon($group['id_grupo']);
+	$icon = groups_get_icon($group['id_grupo']);
 	
 	if ($simple == 0){
 		// Set node icon
 		if (file_exists ('images/groups_small/'.$icon.'.png')) { 
-			$img_node = print_image("images/groups_small/" . $icon . ".png", true);
+			$img_node = html_print_image("images/groups_small/" . $icon . ".png", true);
 		} else {
 			$img_node = '-';
 		}
 
-		$name = get_group_name($group['id_grupo']);
+		$name = groups_get_name($group['id_grupo']);
 		
 		$node = $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
@@ -382,7 +382,7 @@ function create_agent_node ($agent, $simple = 0, $font_size = 10) {
 			$img_node = 'images/networkmap/0.png';
 		}
 
-		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . print_image($img_node, true) . '</TD></TR>
+		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . html_print_image($img_node, true) . '</TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
@@ -429,7 +429,7 @@ function create_module_node ($module, $simple = 0, $font_size = 10) {
 
 // Returns the definition of the central module
 function create_pandora_node ($name, $font_size = 10, $simple = 0) {
-	$img = '<TR><TD>' . print_image("images/networkmap/pandora_node.png", true) . '</TD></TR>';
+	$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true) . '</TD></TR>';
 	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
 	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
 	if ($simple == 1){
@@ -444,12 +444,12 @@ function create_pandora_node ($name, $font_size = 10, $simple = 0) {
 
 // Opens a group definition
 function open_group ($id) {
-	$img = 'images/'.get_group_icon ($id).'.png';
-	$name = get_group_name ($id);
+	$img = 'images/'.groups_get_icon ($id).'.png';
+	$name = groups_get_name ($id);
 	
 	$group = 'subgraph cluster_' . $id . 
 		' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER="0">
-		<TR><TD>' . print_image($img, true) . '</TD><TD>'.$name.'</TD></TR>
+		<TR><TD>' . html_print_image($img, true) . '</TD><TD>'.$name.'</TD></TR>
 		</TABLE>>; tooltip="'.$name.'";
 		URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='
 		. $id . '";';

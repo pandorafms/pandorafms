@@ -40,6 +40,6 @@ foreach($tracking as $value) {
 	$row++;
 }
 
-print_table($table);
+html_print_table($table);
 
 ?>

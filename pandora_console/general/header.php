@@ -28,9 +28,9 @@ $msg_cnt = 0;
 		<a href="index.php?sec=main">
 <?php
 		if (!defined ('PANDORA_ENTERPRISE')){
-			echo print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
+			echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
 		} else {
-			echo print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
+			echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
 		}
 ?>
 		</a>
@@ -38,9 +38,9 @@ $msg_cnt = 0;
 		<td width="20%">
 			<?php 
 				if (is_user_admin ($config["id_user"]) == 1)
-					print_image("images/user_suit.png" , false, array("class" => 'bot', "alt" => 'user'));
+					html_print_image("images/user_suit.png" , false, array("class" => 'bot', "alt" => 'user'));
 				else
-					print_image("images/user_green.png" , false, array("class" => 'bot', "alt" => 'user'));
+					html_print_image("images/user_green.png" , false, array("class" => 'bot', "alt" => 'user'));
 			?>			
 			<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
@@ -54,14 +54,14 @@ $msg_cnt = 0;
 					ui_require_jquery_file ('ui.core');
 					ui_require_jquery_file ('ui.dialog');
 					echo '<a href="ajax.php?page=operation/messages/message" id="show_messages_dialog">';
-					print_image ("images/email.png", false,
+					html_print_image ("images/email.png", false,
 					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
 					echo '</a>';
 				}
 			}
 			?>
 			&nbsp;
-			<a class="white_bold" href="index.php?bye=bye"><?php print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')))?></a>
+			<a class="white_bold" href="index.php?bye=bye"><?php html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')))?></a>
 		</td>
 		
 		<td width="20%">
@@ -75,15 +75,15 @@ $msg_cnt = 0;
 			$servers["down"] = $servers["all"] - $servers["up"];
 			if ($servers["up"] == 0) {
 				//All Servers down or no servers at all
-				echo print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
+				echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
 			}
 			elseif ($servers["down"] != 0) {
 				//Some servers down
-				echo print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
+				echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
 			}
 			else {
 				//All servers up
-				echo print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
+				echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
 			}
 			unset ($servers); // Since this is the header, we don't like to trickle down variables.
 			echo '</a>';
@@ -100,13 +100,13 @@ $msg_cnt = 0;
 			$ignored_params = array ('agent_config' => false, 'code' => false);
 			if ($config["refr"]) {
 				$ignored_params['refr'] = 0;
-				echo '<a id="autorefresh" class="white_grey_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo '<a id="autorefresh" class="white_grey_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
 				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				echo '</a>';
 			}
 			else {	
 				$ignored_params['refr'] = '';
-				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
 				$values = array (
 					'5' => '5 '.__('seconds'),
 					'10' => '10 '.__('seconds'),
@@ -119,7 +119,7 @@ $msg_cnt = 0;
 					'1800' => '30 '.__('minutes'),
 					'3600' => '1 '.__('hour'));
 				echo '<span id="combo_refr" style="display: none">';
-				print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
+				html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
 				unset ($values);
 				echo '</span>';
 			}
@@ -127,7 +127,7 @@ $msg_cnt = 0;
 		echo "<td width='20%' rowspan='2'>";
 		echo "<a href='index.php?sec=main'>";
 		if (isset($config["custom_logo"]))
-			echo print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
+			echo html_print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
 		echo "</a>";
 ?>
 		</td>
@@ -162,7 +162,7 @@ $msg_cnt = 0;
 		<td>
 		<?php
 if ($config["metaconsole"] == 0){
-	echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
+	echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
 }
 		?>
 		</td>

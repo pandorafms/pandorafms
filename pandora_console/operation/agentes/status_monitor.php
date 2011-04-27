@@ -50,7 +50,7 @@ echo '<table cellspacing="4" cellpadding="4" width="750" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
-print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();',
+html_print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();',
 	'', '0', false, false, false, 'w130', false, 'width:150px;');
 
 echo "</td>";
@@ -64,12 +64,12 @@ $fields[3] = __('Unknown');
 $fields[4] = __('Not normal'); //default
 $fields[5] = __('Not init');
 
-print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1, false, false, true, '', false, 'width: 125px;');
+html_print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1, false, false, true, '', false, 'width: 125px;');
 echo '</td>';
 
 echo '<td valign="middle">'.__('Module group').'</td>';
 echo '<td valign="middle">';
-print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 	'modulegroup', $modulegroup, 'this.form.submit();',__('All'), 0, false, false, true, false, 'width: 100px;');
 
 echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
@@ -188,16 +188,16 @@ switch ($config["dbtype"]) {
 
 $modules = db_get_all_rows_sql($sql);
 
-print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
+html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
 
 echo '</td><td valign="middle" align="right">'.__('Search').'</td>';
 
 echo '<td valign="middle">';
-print_input_text ("ag_freestring", $ag_freestring, '', 20,30, false);
+html_print_input_text ("ag_freestring", $ag_freestring, '', 20,30, false);
 
 echo '</td><td valign="middle">';
-print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
+html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
 
 echo "</td><tr>";
 echo "</table>";
@@ -409,7 +409,7 @@ foreach ($result as $row) {
 			}
 				
 			$data[0] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id_policy'] . '">' . 
-				print_image($img,true, array('title' => $title)) .
+				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 	}
@@ -418,7 +418,7 @@ foreach ($result as $row) {
 	$data[1] .= substr ($row["agent_name"], 0, 25);
 	$data[1] .= '</a></strong>';
 	
-	$data[2] = print_image("images/" . show_icon_type ($row["module_type"]), true); 
+	$data[2] = html_print_image("images/" . show_icon_type ($row["module_type"]), true); 
 	
 	$data[3] = mb_strimwidth (safe_output($row["module_name"]), 0, 30);
 
@@ -464,8 +464,8 @@ foreach ($result as $row) {
 
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
 
-		$data[6] = '<a href="javascript:'.$link.'">' . print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
-		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
+		$data[6] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
+		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 	}
 
 	if (is_numeric($row["datos"]))
@@ -488,7 +488,7 @@ foreach ($result as $row) {
 	array_push ($table->data, $data);
 }
 if (!empty ($table->data)) {
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo '<div class="nf">'.__('This group doesn\'t have any monitor').'</div>';
 }

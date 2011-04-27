@@ -318,55 +318,55 @@ if ($step == 2) {
 	
 	$table->data[0][0] = __('Days of week');
 	$table->data[0][1] = __('Mon');
-	$table->data[0][1] .= print_checkbox ('monday', 1, $monday, true);
+	$table->data[0][1] .= html_print_checkbox ('monday', 1, $monday, true);
 	$table->data[0][1] .= __('Tue');
-	$table->data[0][1] .= print_checkbox ('tuesday', 1, $tuesday, true);
+	$table->data[0][1] .= html_print_checkbox ('tuesday', 1, $tuesday, true);
 	$table->data[0][1] .= __('Wed');
-	$table->data[0][1] .= print_checkbox ('wednesday', 1, $wednesday, true);
+	$table->data[0][1] .= html_print_checkbox ('wednesday', 1, $wednesday, true);
 	$table->data[0][1] .= __('Thu');
-	$table->data[0][1] .= print_checkbox ('thursday', 1, $thursday, true);
+	$table->data[0][1] .= html_print_checkbox ('thursday', 1, $thursday, true);
 	$table->data[0][1] .= __('Fri');
-	$table->data[0][1] .= print_checkbox ('friday', 1, $friday, true);
+	$table->data[0][1] .= html_print_checkbox ('friday', 1, $friday, true);
 	$table->data[0][1] .= __('Sat');
-	$table->data[0][1] .= print_checkbox ('saturday', 1, $saturday, true);
+	$table->data[0][1] .= html_print_checkbox ('saturday', 1, $saturday, true);
 	$table->data[0][1] .= __('Sun');
-	$table->data[0][1] .= print_checkbox ('sunday', 1, $sunday, true);
+	$table->data[0][1] .= html_print_checkbox ('sunday', 1, $sunday, true);
 	
 	$table->data[1][0] = __('Time from');
-	$table->data[1][1] = print_input_text ('time_from', $time_from, '', 7, 7,
+	$table->data[1][1] = html_print_input_text ('time_from', $time_from, '', 7, 7,
 		true);
 	$table->data[1][2] = __('Time to');
-	$table->data[1][3] = print_input_text ('time_to', $time_to, '', 7, 7,
+	$table->data[1][3] = html_print_input_text ('time_to', $time_to, '', 7, 7,
 		true);
 	
 	$table->data['threshold'][0] = __('Time threshold');
-	$table->data['threshold'][1] = print_select ($threshold_values,
+	$table->data['threshold'][1] = html_print_select ($threshold_values,
 		'threshold', $threshold_selected, '', '', '', true, false, false);
 	$table->data['threshold']['other_label'] = __('Other value');
-	$table->data['threshold']['other_input'] = print_input_text ('other_threshold',
+	$table->data['threshold']['other_input'] = html_print_input_text ('other_threshold',
 		$threshold, '', 5, 7, true);
 	$table->data['threshold']['other_input'] .= ' '.__('seconds');
 	
 	$table->data[3][0] = __('Min. number of alerts');
-	$table->data[3][1] = print_input_text ('min_alerts', $min_alerts, '',
+	$table->data[3][1] = html_print_input_text ('min_alerts', $min_alerts, '',
 		5, 7, true);
 	$table->data[3][2] = __('Max. number of alerts');
-	$table->data[3][3] = print_input_text ('max_alerts', $max_alerts, '',
+	$table->data[3][3] = html_print_input_text ('max_alerts', $max_alerts, '',
 		5, 7, true);
 	
 	$table->data[4][0] = __('Actions');
-	$table->data[4][1] = print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+	$table->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
 		'action', '', '', __('Select'), 0, true, false, false).' ';
-	$table->data[4][1] .= print_button (__('Add'), 'add_action', false, '',
+	$table->data[4][1] .= html_print_button (__('Add'), 'add_action', false, '',
 		'class="sub next"', true);
 	$table->data[4][1] .=  '<br />';
 	/* TODO: Finish fires_max and fires_min support */
 /*	$table->data[4][1] .=  '<span><a href="" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
 	$table->data[4][1] .=  '<span class="advanced_actions invisible">';
 	$table->data[4][1] .=  __('From').' ';
-	$table->data[4][1] .= print_input_text ('fires_min', 0, '', 4, 10, true);
+	$table->data[4][1] .= html_print_input_text ('fires_min', 0, '', 4, 10, true);
 	$table->data[4][1] .=  ' '.__('to').' ';
-	$table->data[4][1] .= print_input_text ('fires_max', 0, '', 4, 10, true);
+	$table->data[4][1] .= html_print_input_text ('fires_max', 0, '', 4, 10, true);
 	$table->data[4][1] .=  ' '.__('matches of the alert');
 	$table->data[4][1] .=  ui_print_help_icon("alert-matches", true);
 	$table->data[4][1] .=  '</span>';
@@ -407,16 +407,16 @@ if ($step == 2) {
 	}
 	$table->data[0][0] = __('Alert recovery');
 	$values = array (false => __('Disabled'), true => __('Enabled'));
-	$table->data[0][1] = print_select ($values,
+	$table->data[0][1] = html_print_select ($values,
 		'recovery_notify', $recovery_notify, '', '', '', true, false,
 		false);
 	
 	$table->data['field2'][0] = __('Field 2');
-	$table->data['field2'][1] = print_input_text ('field2_recovery',
+	$table->data['field2'][1] = html_print_input_text ('field2_recovery',
 		$field2_recovery, '', 35, 255, true);
 	
 	$table->data['field3'][0] = __('Field 3');
-	$table->data['field3'][1] = print_textarea ('field3_recovery', 10, 30,
+	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
 } else {
 	/* Step 1 by default */
@@ -435,13 +435,13 @@ if ($step == 2) {
 	}
 
 	$table->data[0][0] = __('Name');
-	$table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
+	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
 	
 	$table->data[1][0] = __('Assigned to');
-	$table->data[1][1] = print_select (get_group_agents (array_keys ($groups)),
+	$table->data[1][1] = html_print_select (get_group_agents (array_keys ($groups)),
 		'id_agent', $id_agent, '', __('Select'), 0, true);
 	$table->data[2][0] = __('Description');
-	$table->data[2][1] =  print_textarea ('description', 10, 30,
+	$table->data[2][1] =  html_print_textarea ('description', 10, 30,
 		$description, '', true);
 
 	$table->data[3][0] = __('Condition');
@@ -473,7 +473,7 @@ if ($step == 2) {
 			
 			$alert = alerts_get_alert_agent_module ($condition['id_alert_template_module']);
 			$data[0] = '<a href="#" class="remove_alert" id="alert-'.$alert['id'].'" />';
-			$data[0] .= print_image("images/delete.png", true);
+			$data[0] .= html_print_image("images/delete.png", true);
 			$data[0] .= '</a>';
 			$idAgent = get_agent_module_id($alert['id_agent_module']);
 			$nameAgent = get_agent_name($idAgent);
@@ -481,18 +481,18 @@ if ($step == 2) {
 			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
 			$data[3] = get_agentmodule_name ($alert['id_agent_module']);
 			if ($condition['operation'] == 'NOP') {
-				$data[4] = print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
+				$data[4] = html_print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
 			} else {
-				$data[4] = print_select (alerts_compound_operations (),
+				$data[4] = html_print_select (alerts_compound_operations (),
 					'operations['.$alert['id'].']', $condition['operation'], '', '', '', true);
 			}
-			$data[4] .= print_input_hidden ("conditions[]", $alert['id'], true);
+			$data[4] .= html_print_input_hidden ("conditions[]", $alert['id'], true);
 			
 			array_push ($table_alerts->data, $data);
 		}
 	}
 	
-	$table->data['conditions'][1] = print_table ($table_alerts, true);
+	$table->data['conditions'][1] = html_print_table ($table_alerts, true);
 	$table->colspan['conditions'][1] = 2;
 }
 
@@ -502,22 +502,22 @@ if ($step >= LAST_STEP) {
 } else {
 	echo '<form method="post" id="alert_form">';
 }
-print_table ($table);
+html_print_table ($table);
 
 echo '<div id="message" class="invisible error">&nbsp;</div>';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
-	print_input_hidden ('id', $id);
-	print_input_hidden ('update_compound', 1);
+	html_print_input_hidden ('id', $id);
+	html_print_input_hidden ('update_compound', 1);
 } else {
-	print_input_hidden ('create_compound', 1);
+	html_print_input_hidden ('create_compound', 1);
 }
 
 if ($step >= LAST_STEP) {
-	print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
+	html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
 } else {
-	print_input_hidden ('step', $step + 1);
-	print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+	html_print_input_hidden ('step', $step + 1);
+	html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
 }
 echo '</div>';
 echo '</form>';
@@ -538,18 +538,18 @@ if ($step == 1) {
 	$table->size[3] = '40%';
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = print_select_groups(false, "AR", true, 'search_id_group', $id_group,
+	$table->data[0][1] = html_print_select_groups(false, "AR", true, 'search_id_group', $id_group,
 		false, '', '', true);
 	$table->data[0][2] = __('Agent');
-	$table->data[0][3] = print_select (get_group_agents ($id_group, false, "none"),
+	$table->data[0][3] = html_print_select (get_group_agents ($id_group, false, "none"),
 		'search_id_agent', $id_agent, false, __('Select'), 0, true);
 	$table->data[0][3] .= '<span id="agent_loading" class="invisible">';
-	$table->data[0][3] .= print_image('images/spinner.png', true);
+	$table->data[0][3] .= html_print_image('images/spinner.png', true);
 	$table->data[0][3] .= '</span>';
 	
-	print_table ($table);
+	html_print_table ($table);
 	echo '<div id="alerts_loading" class="loading invisible">';
-	echo print_image('images/spinner.png', true);
+	echo html_print_image('images/spinner.png', true);
 	echo __('Loading').'&hellip;';
 	echo '</div>';
 	
@@ -574,7 +574,7 @@ if ($step == 1) {
 			$data = array ();
 			
 			$data[0] = '<a href="#" class="add_alert" id="add-'.$alert['id'].'" />';
-			$data[0] .= print_image('images/add.png', true);
+			$data[0] .= html_print_image('images/add.png', true);
 			$data[0] .= '</a>';
 			$data[1] = get_agentmodule_name ($alert['id_agent_module']);
 			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
@@ -583,16 +583,16 @@ if ($step == 1) {
 		}
 	}
 	
-	print_table ($table_alerts);
+	html_print_table ($table_alerts);
 	
 	/* Pager for alert list using Javascript */
 	echo '<div id="alerts_pager" class="'.($id_agent ? '' : 'invisible ').'pager">';
 	echo '<form>';
-	echo print_image("images/go_first.png", true, array("class" => "first"));
-	echo print_image("images/go_previous.png", true, array("class" => "prev"));
+	echo html_print_image("images/go_first.png", true, array("class" => "first"));
+	echo html_print_image("images/go_previous.png", true, array("class" => "prev"));
 	echo '<input type="text" class="pagedisplay" />';
-	echo print_image("images/go_next.png", true, array("class" => "next"));
-	echo print_image("images/go_last.png", true, array("class" => "last"));
+	echo html_print_image("images/go_next.png", true, array("class" => "next"));
+	echo html_print_image("images/go_last.png", true, array("class" => "last"));
 	echo '<select class="pagesize invisible">';
 	echo '<option selected="selected" value="'.$config['block_size'].'">'.$config['block_size'].'</option>';
 	echo '</select>';
@@ -600,7 +600,7 @@ if ($step == 1) {
 	echo '</div>';
 	
 	echo '<div class="invisible">';
-	print_select (alerts_compound_operations (), 'operations');
+	html_print_select (alerts_compound_operations (), 'operations');
 	echo '</div>';
 }
 

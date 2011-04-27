@@ -163,7 +163,7 @@ switch($graph_type) {
 				}
 				
 				foreach($fine as $i => $fine_color) {
-					$rgb_fine = html2rgb($fine_color);
+					$rgb_fine = html_html2rgb($fine_color);
 					$fine_colors[$i]['R'] = $rgb_fine[0];
 					$fine_colors[$i]['G'] = $rgb_fine[1];
 					$fine_colors[$i]['B'] = $rgb_fine[2];
@@ -226,12 +226,12 @@ if (!isset($colors))
 	$colors = array();
 
 foreach($colors as $i => $color) {		
-	$rgb['border'] = html2rgb($color['border']);
+	$rgb['border'] = html_html2rgb($color['border']);
 	$rgb_color[$i]['border']['R'] = $rgb['border'][0];
 	$rgb_color[$i]['border']['G'] = $rgb['border'][1];
 	$rgb_color[$i]['border']['B'] = $rgb['border'][2];
 	
-	$rgb['color'] = html2rgb($color['color']);
+	$rgb['color'] = html_html2rgb($color['color']);
 	$rgb_color[$i]['color']['R'] = $rgb['color'][0];
 	$rgb_color[$i]['color']['G'] = $rgb['color'][1];
 	$rgb_color[$i]['color']['B'] = $rgb['color'][2];
@@ -241,14 +241,14 @@ foreach($colors as $i => $color) {
 
 /*foreach($colors as $i => $color) {
 	if (isset($color['border'])) {
-		$rgb['border'] = html2rgb($color['border']);
+		$rgb['border'] = html_html2rgb($color['border']);
 		$rgb_color[$i]['border']['R'] = $rgb['border'][0];
 		$rgb_color[$i]['border']['G'] = $rgb['border'][1];
 		$rgb_color[$i]['border']['B'] = $rgb['border'][2];
 	}
 	
 	if (isset($color['color'])) {
-		$rgb['color'] = html2rgb($color['color']);
+		$rgb['color'] = html_html2rgb($color['color']);
 		$rgb_color[$i]['color']['R'] = $rgb['color'][0];
 		$rgb_color[$i]['color']['G'] = $rgb['color'][1];
 		$rgb_color[$i]['color']['B'] = $rgb['color'][2];
@@ -317,7 +317,7 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 	/* Color stuff */
 	$colorsrgb = array();
 	foreach($colors as $key => $col) {
-		$rgb = html2rgb($col);
+		$rgb = html_html2rgb($col);
 		$colorsrgb[$key]['R'] = $rgb[0];
 		$colorsrgb[$key]['G'] = $rgb[1];
 		$colorsrgb[$key]['B'] = $rgb[2];

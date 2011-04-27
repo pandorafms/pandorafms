@@ -44,22 +44,22 @@ $table->style[0] = 'font-weight: bold';
 $table->data = array ();
 
 $table->data[0][0] = __('Name');
-$table->data[0][1] = print_input_text ('name', $name, '', 15, 255, true);
+$table->data[0][1] = html_print_input_text ('name', $name, '', 15, 255, true);
 
 $table->data[1][0] = __('Parent');
-$table->data[1][1] = print_select (get_network_component_groups (),
+$table->data[1][1] = html_print_select (get_network_component_groups (),
 	'parent', $parent, false, __('None'), 0, true, false, false);
 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups">';
-print_table ($table);
+html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
-	print_input_hidden ('update', 1);
-	print_input_hidden ('id', $id);
-	print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
+	html_print_input_hidden ('update', 1);
+	html_print_input_hidden ('id', $id);
+	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
 } else {
-	print_input_hidden ('create', 1);
-	print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
+	html_print_input_hidden ('create', 1);
+	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';

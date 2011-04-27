@@ -169,19 +169,19 @@ if ($create_downtime || $update_downtime) {
 		$table->width = '90%';
 		$table->data = array ();
 		$table->data[0][0] = __('Name');
-		$table->data[0][1] = print_input_text ('name', $name, '', 25, 40, true);
+		$table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true);
 		$table->data[2][0] = __('Description');
-		$table->data[2][1] = print_textarea ('description', 3, 35, $description, '', true);
+		$table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
 		$table->data[3][0] = __('Timestamp from');
-		$table->data[3][1] = print_input_text ('date_from', $date_from, '', 10, 10, true);
-		$table->data[3][1] .= print_input_text ('time_from', $time_from, '', 7, 7, true);
+		$table->data[3][1] = html_print_input_text ('date_from', $date_from, '', 10, 10, true);
+		$table->data[3][1] .= html_print_input_text ('time_from', $time_from, '', 7, 7, true);
 		
 		$table->data[4][0] = __('Timestamp to');
-		$table->data[4][1] = print_input_text ('date_to', $date_to, '', 10, 10, true);
-		$table->data[4][1] .= print_input_text ('time_to', $time_to, '', 7, 7, true);
+		$table->data[4][1] = html_print_input_text ('date_to', $date_to, '', 10, 10, true);
+		$table->data[4][1] .= html_print_input_text ('time_to', $time_to, '', 7, 7, true);
 
 		$table->data[5][0] = __('Group');
-		$table->data[5][1] = print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
+		$table->data[5][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
 		echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
 		if ($id_downtime > 0){
@@ -191,18 +191,18 @@ if ($create_downtime || $update_downtime) {
 	
 		//Editor form
 		echo '<h3>'.__('Planned Downtime Form').' '.ui_print_help_icon ('planned_downtime', true).'</h3>';
-		print_table ($table);
+		html_print_table ($table);
 		
-		print_input_hidden ('id_agent', $id_agent);
+		html_print_input_hidden ('id_agent', $id_agent);
 		echo '<div class="action-buttons" style="width: 90%">';
 		if ($id_downtime) {
-			print_input_hidden ('update_downtime', 1);
-			print_input_hidden ('id_downtime', $id_downtime);
-			print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+			html_print_input_hidden ('update_downtime', 1);
+			html_print_input_hidden ('id_downtime', $id_downtime);
+			html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 		}
 		else {
-			print_input_hidden ('create_downtime', 1);
-			print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
+			html_print_input_hidden ('create_downtime', 1);
+			html_print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
 		}
 		echo '</div>';
 		echo '</form>';
@@ -238,16 +238,16 @@ if ($create_downtime || $update_downtime) {
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
 
-		print_select_groups(false, "AR", true, 'filter_group', $filter_group);	
+		html_print_select_groups(false, "AR", true, 'filter_group', $filter_group);	
 		echo "<br /><br />";
-		print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
+		html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
-		echo print_select ($data, "id_agent[]", '', '', '', 0, false, true);
+		echo html_print_select ($data, "id_agent[]", '', '', '', 0, false, true);
 		echo "<br /><br /><br />";
-		print_submit_button (__('Add'), '', false, 'class="sub next"',false);
+		html_print_submit_button (__('Add'), '', false, 'class="sub next"',false);
 		echo "</form>";
 		echo "</table>";
 		
@@ -291,11 +291,11 @@ if ($create_downtime || $update_downtime) {
 	
 			$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
 				$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">' .
-				print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 	
 			array_push ($table->data, $data);
 		}
-			print_table ($table);
+			html_print_table ($table);
 		}
 	}
 }
@@ -339,9 +339,9 @@ else {
 				if ($downtime["executed"] == 0){
 					$data[5] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
 					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-					print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
-					print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 				}
 				else {
 					$data[5]= "N/A";
@@ -349,19 +349,19 @@ else {
 
 				}
 				if ($downtime["executed"] == 0)
-					$data[7] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
+					$data[7] = html_print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
-					$data[7] = print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+					$data[7] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 
 				array_push ($table->data, $data);
 			}
-			print_table ($table);
+			html_print_table ($table);
 		}
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
-	print_input_hidden ("first_create", 1);
-	print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+	html_print_input_hidden ("first_create", 1);
+	html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 	echo '</form>';
 	echo '</div>';
 }

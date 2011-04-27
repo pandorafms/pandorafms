@@ -305,9 +305,9 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if (empty ($icon))
-		$output .= '<span title="'. get_group_name($id_group, true).'">&nbsp;-&nbsp</span>';
+		$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
 	else
-		$output .= print_image("images/" . $path . "/" . $icon . ".png", true, array("style" => $style, "class" => "bot", "alt" => get_group_name($id_group, true), "title" => get_group_name ($id_group, true)));
+		$output .= html_print_image("images/" . $path . "/" . $icon . ".png", true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
 	
 	if ($link) 
 		$output .= '</a>';
@@ -341,9 +341,9 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if (empty ($icon))
-		$output .= '<span title="'. get_group_name($id_group, true).'">&nbsp;-&nbsp</span>';
+		$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
 	else
-		$output .= '<img style="' . $style . '" class="bot" src="'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group, true).'" title="'.get_group_name ($id_group, true).'" />';
+		$output .= '<img style="' . $style . '" class="bot" src="'.$path.'/'.$icon.'.png" alt="'.groups_get_name ($id_group, true).'" title="'.groups_get_name ($id_group, true).'" />';
 	
 	if ($link) 
 		$output .= '</a>';
@@ -370,7 +370,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false) {
 		return "-";
 	}
 	
-	$output = print_image("images/os_icons/".$icon, true, array("alt" => $os_name, "title" => $os_name)); 
+	$output = html_print_image("images/os_icons/".$icon, true, array("alt" => $os_name, "title" => $os_name)); 
 	
 	if ($name === true) {
 		$output .= ' - '.$os_name;
@@ -488,7 +488,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 			$img = 'images/policies.png';
 				
 			$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
-				print_image($img,true, array('title' => $policyInfo['name'])) .
+				html_print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
 		}
 	}
@@ -498,7 +498,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	// Standby
 	$data[$index['standby']] = '';
 	if (isset ($alert["standby"]) && $alert["standby"] == 1) {
-		$data[$index['standby']] = print_image ('images/bell_pause.png', true, array('title' => __('Standby on')));
+		$data[$index['standby']] = html_print_image ('images/bell_pause.png', true, array('title' => __('Standby on')));
 	} 
 	
 	// Force alert execution
@@ -506,11 +506,11 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	if (! $compound) {
 		if ($alert["force_execution"] == 0) {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . print_image("images/target.png", true) . '</a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true) . '</a>';
 		} 
 		else {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . print_image("images/refresh.png", true) . '</a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
 		}
 	}
 	
@@ -530,7 +530,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	$data[$index['description']] = '';
 	if (! $compound) {
 		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
-		$data[$index['template']] .= print_image ('images/zoom.png', true);
+		$data[$index['template']] .= html_print_image ('images/zoom.png', true);
 		$data[$index['template']] .= '</a> ';
 		$actionDefault = db_get_value_sql("SELECT id_alert_action
 			FROM talert_templates WHERE id = " . $alert['id_alert_template']);
@@ -580,10 +580,10 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	$data[$index['status']] = ui_print_status_image($status, $title, true);
 	
 	if ($compound) {
-		$data[$index['validate']] = print_checkbox ("validate_compound[]", $alert["id"], false, true);
+		$data[$index['validate']] = html_print_checkbox ("validate_compound[]", $alert["id"], false, true);
 	}
 	else {
-		$data[$index['validate']] = print_checkbox ("validate[]", $alert["id"], false, true);
+		$data[$index['validate']] = html_print_checkbox ("validate[]", $alert["id"], false, true);
 	}
 	
 	return $data;
@@ -632,7 +632,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false) {
 function ui_print_alert_template_example ($id_alert_template, $return = false, $print_values = true) {
 	$output = '';
 	
-	$output .= print_image("images/information.png", true);
+	$output .= html_print_image("images/information.png", true);
 	$output .= '<span id="example">';
 	$template = alerts_get_alert_template ($id_alert_template);
 	
@@ -705,7 +705,7 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @return string The help tip
  */
 function ui_print_help_icon ($help_id, $return = false) {
-	$output = '&nbsp;'.print_image ("images/help.png", true, 
+	$output = '&nbsp;'.html_print_image ("images/help.png", true, 
 		array ("class" => "img_help",
 			"title" => __('Help'),
 			"onclick" => "open_help ('".$help_id."')"));
@@ -1090,13 +1090,13 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	
 	$output = '<div class="pagination">';
 	// Show GOTO FIRST button
-	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	// Show PREVIOUS button
 	if ($index_page > 0) {
 		$index_page_prev = ($index_page - (floor ($block_limit / 2))) * $pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
 	}
 	$output .= "&nbsp;&nbsp;";
 	// Draw blocks markers
@@ -1127,7 +1127,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $pagination;
-		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.html_print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -1136,7 +1136,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	// as painted in last block (last integer block).	
 	if (($count - $pagination) > 0) {
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
-		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
 	}
 	// End div and layout
 	$output .= "</div>";
@@ -1255,7 +1255,7 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false) {
 	if (! file_exists ($config['homedir'].'/'.$imagepath))
 		$imagepath = ENTERPRISE_DIR.'/'.$imagepath;
 	
-	return print_image ($imagepath, $return,
+	return html_print_image ($imagepath, $return,
 		array ("border" => 0,
 			"title" => $type["descripcion"]));
 }
@@ -1341,7 +1341,7 @@ function ui_print_status_image ($type, $title = "", $return = false, $options = 
 	
 	$options['title'] = $title;
 	
-	return print_image ($imagepath, $return, $options);
+	return html_print_image ($imagepath, $return, $options);
 }
 
 /**
@@ -1462,7 +1462,7 @@ if($hidde_default) {
 	$image_b = "images/go.png";
 }
 // Link to toggle
-echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
+echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
 
 // Code into a div
 echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
@@ -1644,7 +1644,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 
 
-	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= $title;
 	if ($help != "")
 		$buffer .= "&nbsp;&nbsp;" . ui_print_help_icon ($help, true);

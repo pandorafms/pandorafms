@@ -157,10 +157,10 @@ $agents[0] = __('All agents');
 
 echo '<form action="index.php?sec=gdbman&sec2=godmode/db/db_purge" method="post">';
 echo '<div style="width:100%;">';
-print_select ($agents, "agent", $id_agent, "this.form.submit();", "", "", false, false, false);
+html_print_select ($agents, "agent", $id_agent, "this.form.submit();", "", "", false, false, false);
 ui_print_help_tip (__("Select the agent you want information about"));
 echo '<noscript>';
-print_submit_button (__('Get data'), 'purgedb_ag', false, 'class="sub upd"');
+html_print_submit_button (__('Get data'), 'purgedb_ag', false, 'class="sub upd"');
 ui_print_help_tip (__("Click here to get the data from the agent specified in the select box")); 
 echo '</noscript><br />';
 
@@ -233,7 +233,7 @@ $table->data[5][1] = format_numeric($data["1day"]);
 $table->data[6][0] = '<strong>'.__('Total number of packets').'</strong>';
 $table->data[6][1] = '<strong>'.format_numeric($data["total"]).'</strong>';
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<br />';
 echo '<h3>'.__('Purge data').'</h3>';
@@ -249,12 +249,12 @@ $times[$time["3day"]] = __('Purge data over 3 days');
 $times[$time["1day"]] = __('Purge data over 1 day');
 $times[$time["all"]] = __('All data until now');
 
-$table->data[0][0] = print_select ($times, 'date_purge', '', '', '', '',
+$table->data[0][0] = html_print_select ($times, 'date_purge', '', '', '', '',
 	true, false, false);
-$table->data[0][1] = print_submit_button (__('Purge'), "purgedb", false,
+$table->data[0][1] = html_print_submit_button (__('Purge'), "purgedb", false,
 	'class="sub wand"', true);
 
-print_table ($table);
+html_print_table ($table);
 
 echo '</form>';
 ?>

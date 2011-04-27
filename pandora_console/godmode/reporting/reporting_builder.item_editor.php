@@ -282,7 +282,7 @@ $intervals[2592000] = human_time_description_raw (2592000);
 $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
-print_input_hidden('id_item', $idItem);
+html_print_input_hidden('id_item', $idItem);
 ?>
 <table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="95%">
 	<tbody>
@@ -291,7 +291,7 @@ print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				if ($action == 'new') { 
-					print_select(get_report_types(), 'type', $type, 'chooseType();', '', '');
+					html_print_select(get_report_types(), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
 					echo get_report_name($type);
@@ -302,36 +302,36 @@ print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_description" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Description'); ?></td>
-			<td style=""><?php echo print_textarea('description', 3, 25, $description); ?></td>
+			<td style=""><?php echo html_print_textarea('description', 3, 25, $description); ?></td>
 		</tr>
 		<tr id="row_period" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
-			<td style=""><?php print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
+			<td style=""><?php html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
 		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
-			<td><?php print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);?></td>
+			<td><?php html_print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);?></td>
 		</tr>
 		<tr id="row_working_time">
 			<td style="vertical-align: top;"><?php echo __('Working time');?></td>
 			<td>
 				<table border="0">
 					<tr>
-						<td><?php echo __('Monday'); print_checkbox('monday', 1, $monday);?></td>
-						<td><?php echo __('Tuesday'); print_checkbox('tuesday', 1, $tuesday);?></td>
-						<td><?php echo __('Wednesday'); print_checkbox('wednesday', 1, $wednesday);?></td>
-						<td><?php echo __('Thursday'); print_checkbox('thursday', 1, $thursday);?></td>
-						<td><?php echo __('Friday'); print_checkbox('friday', 1, $friday);?></td>
-						<td><?php echo __('Saturday'); print_checkbox('saturday', 1, $saturday);?></td>
-						<td><?php echo __('Sunday'); print_checkbox('sunday', 1, $sunday);?></td>
+						<td><?php echo __('Monday'); html_print_checkbox('monday', 1, $monday);?></td>
+						<td><?php echo __('Tuesday'); html_print_checkbox('tuesday', 1, $tuesday);?></td>
+						<td><?php echo __('Wednesday'); html_print_checkbox('wednesday', 1, $wednesday);?></td>
+						<td><?php echo __('Thursday'); html_print_checkbox('thursday', 1, $thursday);?></td>
+						<td><?php echo __('Friday'); html_print_checkbox('friday', 1, $friday);?></td>
+						<td><?php echo __('Saturday'); html_print_checkbox('saturday', 1, $saturday);?></td>
+						<td><?php echo __('Sunday'); html_print_checkbox('sunday', 1, $sunday);?></td>
 					</tr>
 					<tr>
 						<td><?php echo __('Time from');?></td>
-						<td colspan="6"><?php print_input_text ('time_from', $time_from, '', 7, 7);?></td>
+						<td colspan="6"><?php html_print_input_text ('time_from', $time_from, '', 7, 7);?></td>
 					</tr>
 					<tr>
 						<td><?php echo __('Time to');?></td>
-						<td colspan="6"><?php print_input_text ('time_to', $time_to, '', 7, 7);?></td>
+						<td colspan="6"><?php html_print_input_text ('time_to', $time_to, '', 7, 7);?></td>
 					</tr>
 				</table>
 			</td>
@@ -339,13 +339,13 @@ print_input_hidden('id_item', $idItem);
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
-				<?php print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, 'extract_group_agents()');?>
+				<?php html_print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, 'extract_group_agents()');?>
 			</td>
 		</tr>
 		<tr id="row_module_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Module group');?></td>
 			<td style="">
-				<?php print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+				<?php html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 				'combo_modulegroup', $modulegroup, '',__('All'));?>
 			</td>
 		</tr>
@@ -353,8 +353,8 @@ print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
 			<td style="">
 				<?php
-				print_input_hidden('id_agent', $idAgent) .
-					print_input_text_extended ('agent', get_agent_name ($idAgent), 'text-agent', '', 30, 100, false, '',
+				html_print_input_hidden('id_agent', $idAgent) .
+					html_print_input_text_extended ('agent', get_agent_name ($idAgent), 'text-agent', '', 30, 100, false, '',
 						array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 						. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 				?>
@@ -366,7 +366,7 @@ print_input_hidden('id_item', $idItem);
 				<?php
 				if($idAgent) {
 					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent;
-					print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');
+					html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');
 				}
 				else {	
 					?>
@@ -391,25 +391,25 @@ print_input_hidden('id_item', $idItem);
 						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
 						break;
 				}
-				print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
+				html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
 				?>
 			</td>
 		</tr>
 		<tr id="row_text" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Text'); ?></td>
-			<td style=""><?php print_textarea('text', 5, 25, $text); ?></td>
+			<td style=""><?php html_print_textarea('text', 5, 25, $text); ?></td>
 		</tr>
 		<tr id="row_query" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Query SQL'); ?></td>
-			<td style=""><?php print_textarea('sql', 5, 25, $sql); ?></td>
+			<td style=""><?php html_print_textarea('sql', 5, 25, $sql); ?></td>
 		</tr>
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . '<a href="#" class="tip">&nbsp;<span>' . __("The separator character is | .") . '</span></a>';?></td>
-			<td style=""><?php print_input_text('header', $header, '', 40, 90); ?></td>
+			<td style=""><?php html_print_input_text('header', $header, '', 40, 90); ?></td>
 		</tr>
 		<tr id="row_custom" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Custom SQL template'); ?></td>
-			<td style=""><?php print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
+			<td style=""><?php html_print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
 		</tr>
 		<tr id="row_custom_example">
 			<td style="vertical-align: top;"><?php echo __('SQL preview'); ?></td>
@@ -417,82 +417,82 @@ print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_url" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('URL'); ?></td>
-			<td style=""><?php print_input_text('url', $url, '', 40, 90); ?></td>
+			<td style=""><?php html_print_input_text('url', $url, '', 40, 90); ?></td>
 		</tr>
 		<tr id="row_field_separator" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Field separator'); ?></td>
-			<td style=""><?php print_input_text('field', $field, '', 2, 4); ?></td>
+			<td style=""><?php html_print_input_text('field', $field, '', 2, 4); ?></td>
 		</tr>
 		<tr id="row_line_separator" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Line separator'); ?></td>
-			<td style=""><?php print_input_text('line', $line, '', 2, 4); ?></td>
+			<td style=""><?php html_print_input_text('line', $line, '', 2, 4); ?></td>
 		</tr>
 		<tr id="row_group_by_agent" style="" class="datos">
 			<td><?php echo __('Group by agent');?></td>
-			<td><?php print_checkbox('checkbox_row_group_by_agent', 1, $group_by_agent);?></td>
+			<td><?php html_print_checkbox('checkbox_row_group_by_agent', 1, $group_by_agent);?></td>
 		</tr>
 		<tr id="row_order_uptodown" style="" class="datos">
 			<td><?php echo __('Order');?></td>
 			<td><?php
 				echo __('Ascending');
-				print_radio_button ('radiobutton_order_uptodown', 2, '', $order_uptodown);
+				html_print_radio_button ('radiobutton_order_uptodown', 2, '', $order_uptodown);
 				echo __('Descending');
-				print_radio_button ('radiobutton_order_uptodown', 1, '', $order_uptodown);
+				html_print_radio_button ('radiobutton_order_uptodown', 1, '', $order_uptodown);
 				echo __('By agent name');
-				print_radio_button ('radiobutton_order_uptodown', 3, '', $order_uptodown);
+				html_print_radio_button ('radiobutton_order_uptodown', 3, '', $order_uptodown);
 				?></td>
 		</tr>
 		<tr id="row_quantity" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
-			<td style=""><?php print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
+			<td style=""><?php html_print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
 		</tr>
 		<tr id="row_max_min_avg" style="" class="datos">
 			<td><?php echo __('Display');?></td>
 			<td><?php
 				echo __('Max');
-				print_radio_button ('radiobutton_max_min_avg', 1, '', $top_n);
+				html_print_radio_button ('radiobutton_max_min_avg', 1, '', $top_n);
 				echo __('Min');
-				print_radio_button ('radiobutton_max_min_avg', 2, '', $top_n);
+				html_print_radio_button ('radiobutton_max_min_avg', 2, '', $top_n);
 				echo __('Avg');
-				print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
+				html_print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
 				?></td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
-			<td style=""><?php print_input_text('exception_condition_value', $exception_condition_value, '', 5, 5); ?></td>
+			<td style=""><?php html_print_input_text('exception_condition_value', $exception_condition_value, '', 5, 5); ?></td>
 		</tr>
 		<tr id="row_exception_condition" style="" class="datos">
 			<td><?php echo __('Condition');?></td>
 			<td><?php
 				echo __('Everything');
-				print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
+				html_print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
 				echo __('>=');
-				print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
+				html_print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
 				echo __('<');
-				print_radio_button ('radiobutton_exception_condition', 2, '', $exception_condition);
+				html_print_radio_button ('radiobutton_exception_condition', 2, '', $exception_condition);
 				echo __('OK');
-				print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
+				html_print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
 				echo __('Not OK');
-				print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
+				html_print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
 				?></td>
 		</tr>
 		<tr id="row_show_graph" style="" class="datos">
 			<td><?php echo __('Show graph');?></td>
-			<td><?php print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
+			<td><?php html_print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
 			
 		</tr>
 		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume');?></td>
-			<td><?php print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
+			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
 		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">
 			<td><?php echo __('Show in two columns');?></td>
-			<td><?php print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
+			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
 				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
 		</tr>
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td><?php echo __('Show in landscape');?></td>
-			<td><?php print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
+			<td><?php html_print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
 				'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');?></td>
 		</tr>
 	</tbody>
@@ -502,10 +502,10 @@ print_SLA_list('95%', $action, $idItem);
 print_General_list('95%', $action, $idItem);
 echo '<div class="action-buttons" style="width: 95%">';
 if ($action == 'new') {
-	print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
+	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
 }
 else {
-	print_submit_button(__('Edit item'), 'edit_item', false, 'class="sub upd"');
+	html_print_submit_button(__('Edit item'), 'edit_item', false, 'class="sub upd"');
 }
 echo '</div>';
 echo '</form>';
@@ -559,7 +559,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 								<td>' . $item['sla_max'] . '</td>
 								<td>' . $item['sla_limit'] . '</td>
 								<td style="text-align: center;">
-									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
+									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
 					}
@@ -572,7 +572,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td class="sla_min"></td>
 							<td class="sla_max"></td>
 							<td class="sla_limit"></td>
-							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteSLARow(0);"><?php print_image("images/cross.png", false); ?></a></td>
+							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteSLARow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<tbody>
@@ -584,7 +584,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
-							<td style="text-align: center;"><a href="javascript: addSLARow();"><?php print_image("images/disk.png", false); ?></a></td>
+							<td style="text-align: center;"><a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<?php
@@ -634,7 +634,7 @@ function print_General_list($width, $action, $idItem = null) {
 								<td>' . printSmallFont($nameAgent) . '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
 								<td style="text-align: center;">
-									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
+									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
 					}
@@ -644,7 +644,7 @@ function print_General_list($width, $action, $idItem = null) {
 						<tr id="row" style="display: none;" class="datos">
 							<td class="agent_name"></td>
 							<td class="module_name"></td>
-							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php print_image("images/cross.png", false); ?></a></td>
+							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<tbody>
@@ -653,7 +653,7 @@ function print_General_list($width, $action, $idItem = null) {
 								<input id="hidden-id_agent_general" name="id_agent_general" value="" type="hidden">
 								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_general" id="text-agent_general" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
 							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
-							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php print_image("images/disk.png", false); ?></a></td>
+							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<?php

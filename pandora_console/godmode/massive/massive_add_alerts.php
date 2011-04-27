@@ -117,36 +117,36 @@ $table->size[3] = '40%';
 $table->data = array ();
 	
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', 0,
+$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', 0,
 	'', 'Select', -1, true, false, true, '', false);
 $table->data[0][2] = '';
 $table->data[0][3] = '';
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= print_image('images/spinner.png', true);
+$table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 $agents = agents_get_agents();
-$table->data[1][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
+$table->data[1][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', false);
 $table->data[1][2] = __('Modules');
-$table->data[1][3] = print_select (array(), 'module[]',	'', false, '', '', true, true, false);
+$table->data[1][3] = html_print_select (array(), 'module[]',	'', false, '', '', true, true, false);
 
 $templates = alerts_get_alert_templates (false, array ('id', 'name'));
 $table->data[2][0] = __('Alert template');
-$table->data[2][1] = print_select (index_array ($templates, 'id', 'name'),
+$table->data[2][1] = html_print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
 $table->data[2][2] = '';
 $table->data[2][3] = '';
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('add', 1);
-print_submit_button (__('Add'), 'go', false, 'class="sub add"');
+html_print_input_hidden ('add', 1);
+html_print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 

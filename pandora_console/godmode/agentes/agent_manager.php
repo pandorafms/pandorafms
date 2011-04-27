@@ -99,11 +99,11 @@ $table->data = array ();
 
 $table->data[0][0] = __('Agent name') . 
 	ui_print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
-$table->data[0][1] = print_input_text ('agente', $nombre_agente, '', 30, 100,true); 
+$table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 30, 100,true); 
 
 if ($id_agente) {
 	$table->data[0][1] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-	$table->data[0][1] .= print_image ("images/lupa.png", true, array ("border" => 0, "title" => __('Agent detail')));
+	$table->data[0][1] .= html_print_image ("images/lupa.png", true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
 }
 
@@ -111,35 +111,35 @@ if ($id_agente) {
 if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
 		$table->data[0][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
-		$table->data[0][1] .= print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
+		$table->data[0][1] .= html_print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
 		$table->data[0][1] .= '</a>'.ui_print_help_tip (__('You can remotely edit this agent configuration'), true);
 	}
 }
 
 $table->data[1][0] = __('IP Address');
-$table->data[1][1] = print_input_text ('direccion', $direccion_agente, '', 16, 100, true);
+$table->data[1][1] = html_print_input_text ('direccion', $direccion_agente, '', 16, 100, true);
 
 if ($id_agente) {
 	$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 	
 	$ip_all = get_agent_addresses ($id_agente);
 		
-	$table->data[1][1] .= print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
-	$table->data[1][1] .= "&nbsp;". print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
+	$table->data[1][1] .= html_print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
+	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
 }
 
 $groups = get_user_groups ($config["id_user"], "AR",false);
 $agents = get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');
-$table->data[2][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
+$table->data[2][1] = html_print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
-$table->data[2][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+$table->data[2][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
 
 $table->data[3][0] = __('Group');
-$table->data[3][1] = print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
+$table->data[3][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
 
 $table->data[4][0] = __('Interval');
 
@@ -152,11 +152,11 @@ $intervals[1200] = human_time_description_raw (1200);
 $intervals[1800] = human_time_description_raw (1800);
 $intervals[3600] = human_time_description_raw (3600);
 $intervals[7200] = human_time_description_raw (7200);
-$table->data[4][1] = print_extended_select_for_time ($intervals, 'intervalo', $intervalo, '', '', '0', 10, true) . __(" seconds.");
-//$table->data[4][1] = print_input_text ('intervalo', $intervalo, '', 16, 100, true);
+$table->data[4][1] = html_print_extended_select_for_time ($intervals, 'intervalo', $intervalo, '', '', '0', 10, true) . __(" seconds.");
+//$table->data[4][1] = html_print_input_text ('intervalo', $intervalo, '', 16, 100, true);
 
 $table->data[5][0] = __('OS');
-$table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
+$table->data[5][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
 	'id_os', $id_os, '', '', '0', true);
 $table->data[5][1] .= ' <span id="os_preview">';
 $table->data[5][1] .= ui_print_os_icon ($id_os, false, true);
@@ -167,14 +167,14 @@ $none = '';
 if ($server_name == '' && $id_agente)
 	$none = __('None');
 $table->data[6][0] = __('Server');
-$table->data[6][1] = print_select (get_server_names (),
+$table->data[6][1] = html_print_select (get_server_names (),
 	'server_name', $server_name, '', $none, 0, true);
 
 // Description
 $table->data[7][0] = __('Description');
-$table->data[7][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
+$table->data[7][1] = html_print_input_text ('comentarios', $comentarios, '', 45, 255, true);
 
-print_table ($table);
+html_print_table ($table);
 unset($table);
 
 $table->width = '95%';
@@ -187,17 +187,17 @@ $table->data = array ();
 
 // Custom ID
 $table->data[0][0] = __('Custom ID');
-$table->data[0][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
 $table->data[1][0] = __('Module definition').ui_print_help_icon("module_definition", true);
-$table->data[1][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] = __('Learning mode').' '.html_print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] = __('Disabled').' '.html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
 $table->data[3][0] = __('Remote configuration');
@@ -207,7 +207,7 @@ if (!$new_agent) {
 		$table->data[3][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 		// Delete remote configuration
 		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
-		$table->data[3][1] .= print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
+		$table->data[3][1] .= html_print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
 		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
@@ -216,7 +216,7 @@ if (!$new_agent) {
 else
 	$table->data[3][1] = '<em>'.__('Not available').'</em>';
 	
-$listIcons = getArrayListIcons();
+$listIcons = gis_get_array_list_icons();
 
 $arraySelectIcon = array();
 foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
@@ -224,22 +224,22 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[4][0] = __('Agent icon');
-$table->data[4][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': ' . print_image($path . $icon_path . "default.png", true, array("id" => "icon_without_status", "style" => "display:none;")) .
-	'&nbsp;' . __('Default') . ': ' . print_image($path . $icon_path . "default.png", true, array("id" => "icon_default", "style" => "display:none;")) .
-	'&nbsp;' . __('Ok') . ': ' . print_image($path . $icon_path . "ok.png", true, array("id" => "icon_ok", "style" => "display:none;")) .
+$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
+	'&nbsp;' . __('Without status') . ': ' . html_print_image($path . $icon_path . "default.png", true, array("id" => "icon_without_status", "style" => "display:none;")) .
+	'&nbsp;' . __('Default') . ': ' . html_print_image($path . $icon_path . "default.png", true, array("id" => "icon_default", "style" => "display:none;")) .
+	'&nbsp;' . __('Ok') . ': ' . html_print_image($path . $icon_path . "ok.png", true, array("id" => "icon_ok", "style" => "display:none;")) .
 
-	'&nbsp;' . __('Bad') . ': ' . print_image($path . $icon_path . "bad.png", true, array("id" => "icon_bad", "style" => "display:none;")) .
+	'&nbsp;' . __('Bad') . ': ' . html_print_image($path . $icon_path . "bad.png", true, array("id" => "icon_bad", "style" => "display:none;")) .
 
-	'&nbsp;' . __('Warning') . ': ' . print_image($path . $icon_path . "warning.png", true, array("id" => "icon_warning", "style" => "display:none;"));
+	'&nbsp;' . __('Warning') . ': ' . html_print_image($path . $icon_path . "warning.png", true, array("id" => "icon_warning", "style" => "display:none;"));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');
-	$table->data[5][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] = __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('Active').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-ui_toggle(print_table ($table, true), __('Advanced options'));
+ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
 $table->width = '95%';
@@ -264,23 +264,23 @@ foreach ($fields as $field) {
 		$custom_value = '';
 	}
 	
-	$data[1] = print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
 	
 	array_push ($table->data, $data);
 }
 
 if(!empty($fields)) {
-	ui_toggle(print_table ($table, true), __('Custom fields'));
+	ui_toggle(html_print_table ($table, true), __('Custom fields'));
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_agente) {
-	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-	print_input_hidden ('update_agent', 1);
-	print_input_hidden ('id_agente', $id_agente);
+	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+	html_print_input_hidden ('update_agent', 1);
+	html_print_input_hidden ('id_agente', $id_agente);
 } else {
-	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
-	print_input_hidden ('create_agent', 1);
+	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_input_hidden ('create_agent', 1);
 }
 echo '</div></form>';
 

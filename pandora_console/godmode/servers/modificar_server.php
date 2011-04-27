@@ -34,7 +34,7 @@ if (isset($_GET["server"])) {
 	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
 	$row = db_get_row_sql ($sql);
 	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
-	print_input_hidden ("server",$id_server);
+	html_print_input_hidden ("server",$id_server);
 	
 	$table->cellpadding=4;
 	$table->cellspacing=4;
@@ -42,9 +42,9 @@ if (isset($_GET["server"])) {
 	$table->class="databox_color";
 	
 	$table->data[] = array (__('Name'),$row["name"]);
-	$table->data[] = array (__('IP Address'),print_input_text ('address',$row["ip_address"],'',50,0,true));
-	$table->data[] = array (__('Description'),print_input_text ('description',$row["description"],'',50,0,true));
-	print_table ($table);
+	$table->data[] = array (__('IP Address'),html_print_input_text ('address',$row["ip_address"],'',50,0,true));
+	$table->data[] = array (__('Description'),html_print_input_text ('description',$row["description"],'',50,0,true));
+	html_print_table ($table);
 
 
 	echo '<div class="action-buttons" style="width: 450px">';
@@ -123,12 +123,12 @@ else {
 			$data[4] = human_time_comparation ($server["laststart"]);
 			$data[5] = human_time_comparation ($server["keepalive"]);
 			$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
-			$data[6] .= print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
+			$data[6] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
 			$data[6] .= '</a>';
 			
 			array_push ($table->data, $data);
 		}
-		print_table ($table);
+		html_print_table ($table);
 		
 		//Legend
 		echo "<table>";

@@ -55,18 +55,18 @@ if (! check_acl ($config["id_user"], $id_group, "AR")) {
 $options = array();
 
 if (check_acl ($config["id_user"], $id_group, "AW")) {
-	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=edit&id_visual_console='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }
 
 if ($config["pure"] == 0) {
 	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">'
-		. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+		. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
 }
 else {
 	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
-		. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";
 }
 $options['pure']['active'] = false;
@@ -88,8 +88,8 @@ $values[1800] = human_time_description_raw (1800);
 $table->width = 500;
 $table->data = array ();
 $table->data[0][0] = __('Autorefresh time');
-$table->data[0][1] = print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
-$table->data[0][2] = print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
+$table->data[0][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
+$table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 
 echo '<div style="height:30px">&nbsp;</div>';
 
@@ -100,9 +100,9 @@ if ($config['pure'] && $config["refr"] != 0) {
 echo '<div style="height:30px">&nbsp;</div>';
 
 echo '<form method="post" action="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view">';
-print_input_hidden ('pure', $config["pure"]);
-print_input_hidden ('id', $id_layout);
-print_table ($table);
+html_print_input_hidden ('pure', $config["pure"]);
+html_print_input_hidden ('id', $id_layout);
+html_print_table ($table);
 echo '</form>';
 
 if ($config["pure"] && $config["refr"] != 0) {

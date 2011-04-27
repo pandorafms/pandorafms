@@ -25,7 +25,7 @@ ui_require_javascript_file('openlayers.pandora');
 
 ui_print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_web.png", false, "");
 
-$maps = getMaps();
+$maps = gis_get_maps();
 
 $table->width = "70%";
 $table->data = array ();
@@ -61,7 +61,7 @@ if ($maps !== false) {
 }
 
 if (!empty ($table->data)) {
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo '<div class="nf">'.__('No maps found').'</div>';
 }

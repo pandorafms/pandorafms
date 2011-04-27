@@ -23,8 +23,8 @@ include_once($config['homedir'] . "/include/functions_agents.php");
  * 
  * @return None
  */
-function addParentLines() {
-	makeLayer(__('Hierarchy of agents'));
+function gis_add_parent_lines() {
+	gis_make_layer(__('Hierarchy of agents'));
 	
 	echo "<script type='text/javascript'>";
 	echo "$(document).ready (function () {
@@ -46,7 +46,7 @@ function addParentLines() {
  * @param boolean $returnEmptyArrayInFail The set return a empty array when fail and true.
  * @return Array The row of agent in tgis_data_status, and it's a associative array.
  */
-function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
+function gis_get_data_last_position_agent($idAgent, $returnEmptyArrayInFail = false) {
 	$returnVar = db_get_row('tgis_data_status', 'tagente_id_agente', $idAgent);
 	
 	if (($returnVar === false) && ($returnEmptyArrayInFail)) {
@@ -68,7 +68,7 @@ function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
  * 
  * @return None
  */
-function printMap($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $controls = null) {
+function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $controls = null) {
 	ui_require_javascript_file('OpenLayers/OpenLayers');
 	
 	echo "<script type='text/javascript'>";
@@ -129,7 +129,7 @@ function printMap($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $contro
 	echo "</script>";
 }
 
-function makeLayer($name, $visible = true, $dot = null, $idLayer = null) {
+function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 	if ($dot == null) {
 		$dot['url'] = 'images/dot_green.png';
 		$dot['width'] = 20; //11;
@@ -219,7 +219,7 @@ function makeLayer($name, $visible = true, $dot = null, $idLayer = null) {
 	<?php
 }
 
-function activateSelectControl($layers=null) {
+function gis_activate_select_control($layers=null) {
 ?>
 	<script type="text/javascript">
 	$(document).ready (
@@ -242,7 +242,7 @@ function activateSelectControl($layers=null) {
  * 
  * @return None
  */
-function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
+function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 	if ($lastTimeOfData === null) $lastTimeOfData = time();
 	
 	ui_require_jquery_file ('json');
@@ -356,7 +356,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	<?php
 }
 
-function addAgentPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
+function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 	$height = 20, $point_id = '', $status = -1, $type_string = '', $idParent = 0) {
 	?>
 	<script type="text/javascript">
@@ -386,7 +386,7 @@ function addAgentPoint($layerName, $pointName, $lat, $lon, $icon = null, $width 
  * 
  * @return array The array rows of tagente of agents in the layer.
  */
-function getAgentsLayer($idLayer, $fields = null) {
+function gis_get_agents_layer($idLayer, $fields = null) {
 	
 	if ($fields === null) {
 		$select = '*';
@@ -415,7 +415,7 @@ function getAgentsLayer($idLayer, $fields = null) {
 	return $agents;
 }
 
-function addPointPath($layerName, $lat, $lon, $color, $manual = 1, $id) {
+function gis_add_point_path($layerName, $lat, $lon, $color, $manual = 1, $id) {
 	?>
 	<script type="text/javascript">
 	$(document).ready (
@@ -427,7 +427,7 @@ function addPointPath($layerName, $lat, $lon, $color, $manual = 1, $id) {
 	<?php
 }
 
-function getMaps() {
+function gis_get_maps() {
 	return db_get_all_rows_in_table ('tgis_map', 'map_name');
 }
 /**
@@ -437,7 +437,7 @@ function getMaps() {
  *
  * @return An array of arrays of configuration parameters
  */
-function getMapConf($idMap) {
+function gis_get_map_conf($idMap) {
 	$mapConfs= db_get_all_rows_sql('SELECT tconn.*, trel.default_map_connection
 		FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
 		WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection
@@ -445,11 +445,11 @@ function getMapConf($idMap) {
 	return $mapConfs;
 }
 
-function getMapConnection($idMapConnection) {
+function gis_get_map_connection($idMapConnection) {
 	return db_get_row('tgis_map_connection', 'id_tmap_connection', $idMapConnection);
 }
 
-function getLayers($idMap) {
+function gis_get_layers($idMap) {
 	$layers = db_get_all_rows_sql('SELECT *
 		FROM tgis_map_layer
 		WHERE tgis_map_id_tgis_map = ' . $idMap);
@@ -457,11 +457,11 @@ function getLayers($idMap) {
 	return $layers;
 }
 
-function get_agent_icon_map($idAgent, $state = false, $status = null) {
+function gis_get_agent_icon_map($idAgent, $state = false, $status = null) {
 	$row = db_get_row_sql('SELECT id_grupo, icon_path FROM tagente WHERE id_agente = ' . $idAgent);
 	
 	if (($row['icon_path'] === null) || (strlen($row['icon_path']) == 0)) {
-		$icon = "images/groups_small/" . get_group_icon($row['id_grupo']);
+		$icon = "images/groups_small/" . groups_get_icon($row['id_grupo']);
 	}
 	else {
 		$icon = "images/gis_map/icons/" . $row['icon_path'];
@@ -512,7 +512,7 @@ function get_agent_icon_map($idAgent, $state = false, $status = null) {
  * 
  * @return None
  */
-function addPath($layerName, $idAgent, $lastPosition = null, $history_time = null) {
+function gis_add_path($layerName, $idAgent, $lastPosition = null, $history_time = null) {
 	global $config;
 	
 	if ($history_time === null) {
@@ -579,19 +579,19 @@ function addPath($layerName, $idAgent, $lastPosition = null, $history_time = nul
 	if ($listPoints != false) {
 		foreach($listPoints as $point) {
 			if ((end($listPoints) != $point) || (($lastPosition !== null)))
-				addPointPath($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placement'], $point['id_tgis_data']);
+				gis_add_point_path($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placement'], $point['id_tgis_data']);
 		}
 	}
 }
 
-function deleteMapConnection($idConectionMap) {
+function gis_delete_map_connection($idConectionMap) {
 	
 	db_process_sql_delete ('tgis_map_connection', array('id_tmap_connection' => $idConectionMap));
 	
 	//TODO DELETE IN OTHER TABLES
 }
 
-function saveMapConnection($mapConnection_name, $mapConnection_group,
+function gis_save_map_connection($mapConnection_name, $mapConnection_group,
 			$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
 			$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,
 			$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
@@ -645,7 +645,7 @@ function saveMapConnection($mapConnection_name, $mapConnection_group,
  * @param $idMap integer The id of map.
  * @return None
  */
-function deleteMap($idMap) {
+function gis_delete_map($idMap) {
 	$listIdLayers = db_get_all_rows_sql("SELECT id_tmap_layer FROM tgis_map_layer WHERE tgis_map_id_tgis_map = " . $idMap);
 	
 	if ($listIdLayers !== false) {
@@ -681,7 +681,7 @@ function deleteMap($idMap) {
  * @param $map_connection_list
  * @param $arrayLayers
  */
-function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
+function gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 	$map_initial_altitude, $map_zoom_level, $map_background,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
 	$map_group_id, $map_connection_list, $arrayLayers) {
@@ -738,7 +738,7 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 	}
 }
 
-function updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
+function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
 	$map_initial_altitude, $map_zoom_level, $map_background,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
 	$map_group_id, $map_connection_list, $arrayLayers) {
@@ -811,7 +811,7 @@ function updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latit
  *
  * @result: An array with all the configuration parameters
  */
-function getConectionConf($idConnection) {
+function gis_get_conection_conf($idConnection) {
 	$confParameters = db_get_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
 	return $confParameters;
 }
@@ -828,7 +828,7 @@ function getConectionConf($idConnection) {
  *
  * @return boolean True ok and false fail. 
  */
-function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = 86400) {
+function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = 86400) {
 	$defaultMap = db_get_all_rows_sql("
 		SELECT t1.*, t3.conection_name, t3.connection_type, t3.conection_data, t3.num_zoom_levels
 		FROM tgis_map AS t1, 
@@ -843,7 +843,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	
 	$defaultMap = $defaultMap[0];
 	
-	$agent_position = getDataLastPositionAgent($agent_id);
+	$agent_position = gis_get_data_last_position_agent($agent_id);
 	if ($agent_position === false) {
 		$agentPositionLongitude = $defaultMap['default_longitude'];
 		$agentPositionLatitude = $defaultMap['default_latitude'];
@@ -893,22 +893,22 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		<?php
 	}
 	
-	printMap($agent_name."_agent_map", $defaultMap['zoom_level'],
+	gis_print_map($agent_name."_agent_map", $defaultMap['zoom_level'],
 		$defaultMap['initial_latitude'],
 		$defaultMap['initial_longitude'], $baselayers, $controls);
 		
-	makeLayer("layer_for_agent_".$agent_name);
+	gis_make_layer("layer_for_agent_".$agent_name);
 	
-	$agent_icon = get_agent_icon_map($agent_id, true);
+	$agent_icon = gis_get_agent_icon_map($agent_id, true);
 	$status = get_agent_status($agent_id);
 	
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {
 		$lastPosition = array('longitude' => $agentPositionLongitude, 'latitude' => $agentPositionLatitude);
-		addPath("layer_for_agent_".$agent_name,$agent_id, $lastPosition, $history_time);
+		gis_add_path("layer_for_agent_".$agent_name,$agent_id, $lastPosition, $history_time);
 	}
 	
-	addAgentPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');
+	gis_add_agent_point("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');
 	
 	if ($centerInAgent) {
 		?>
@@ -933,7 +933,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
  * 
  * @return Array The array is [N][3], where the N index is name base of icon and [N]['ok'] ok image, [N]['bad'] bad image, [N]['warning'] warning image and [N]['default] default image 
  */
-function getArrayListIcons($fullpath = true) {
+function gis_get_array_list_icons($fullpath = true) {
 	$return = array();
 	$validExtensions = array('jpg', 'jpeg', 'gif', 'png');
 	
@@ -968,7 +968,7 @@ function getArrayListIcons($fullpath = true) {
 	return $return;
 }
 
-function validateMapData($map_name, $map_zoom_level,
+function gis_validate_map_data($map_name, $map_zoom_level,
 	$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
 	$map_connection_list, $map_levels_zoom) {
@@ -1041,7 +1041,7 @@ function validateMapData($map_name, $map_zoom_level,
  * 
  * @return Array Return a asociative array whith the items 'map', 'connections' and 'layers'. And in 'layers' has data and item 'agents'.
  */
-function getMapData($idMap) {
+function gis_get_map_data($idMap) {
 	global $config;
 	
 	$returnVar = array();
@@ -1104,24 +1104,24 @@ function getMapData($idMap) {
  * 
  * @return String The html source code.
  */
-function addConectionMapsInForm($map_connection_list) {
+function gis_add_conection_maps_in_form($map_connection_list) {
 	$returnVar = '';
 	
 	foreach ($map_connection_list as $mapConnection) {
-		$mapConnectionRowDB = getMapConnection($mapConnection['id_conection']);
+		$mapConnectionRowDB = gis_get_map_connection($mapConnection['id_conection']);
 		
 		if ($mapConnection['default']) {
-			$radioButton = print_radio_button_extended('map_connection_default', $mapConnection['id_conection'], '', $mapConnection['id_conection'], false, 'changeDefaultConection(this.value)', '', true);
+			$radioButton = html_print_radio_button_extended('map_connection_default', $mapConnection['id_conection'], '', $mapConnection['id_conection'], false, 'changeDefaultConection(this.value)', '', true);
 		}
 		else
-			$radioButton = print_radio_button_extended('map_connection_default', $mapConnection['id_conection'], '', null, false, 'changeDefaultConection(this.value)', '', true);
+			$radioButton = html_print_radio_button_extended('map_connection_default', $mapConnection['id_conection'], '', null, false, 'changeDefaultConection(this.value)', '', true);
 		
 		$returnVar .= '
 			<tbody id="map_connection_' . $mapConnection['id_conection'] . '">
 				<tr class="row_0">
-					<td>' . print_input_text ('map_connection_name_' . $mapConnection['id_conection'], $mapConnectionRowDB['conection_name'], '', 20, 40, true, true) . '</td>
+					<td>' . html_print_input_text ('map_connection_name_' . $mapConnection['id_conection'], $mapConnectionRowDB['conection_name'], '', 20, 40, true, true) . '</td>
 					<td>' . $radioButton . '</td>
-					<td><a id="delete_row" href="javascript: deleteConnectionMap(\'' . $mapConnection['id_conection'] . '\')">' . print_image("images/cross.png", true, array("alt" => "")) . '</a></td>
+					<td><a id="delete_row" href="javascript: deleteConnectionMap(\'' . $mapConnection['id_conection'] . '\')">' . html_print_image("images/cross.png", true, array("alt" => "")) . '</a></td>
 				</tr>
 			</tbody>
 			<script type="text/javascript">
@@ -1140,7 +1140,7 @@ function addConectionMapsInForm($map_connection_list) {
  * 
  * @return integer The num zoom levels.
  */
-function getNumZoomLevelsOfConnectionDefault($map_connection_list) {
+function gis_get_num_zoom_levels_connection_default($map_connection_list) {
 	foreach ($map_connection_list as $connection) {
 		if ($connection['default']) {
 			return $connection['num_zoom_levels'];
@@ -1157,7 +1157,7 @@ function getNumZoomLevelsOfConnectionDefault($map_connection_list) {
  * 
  * @return String The html source code.
  */
-function addLayerList($layer_list) {
+function gis_add_layer_list($layer_list) {
 	$returnVar = '';
 	
 	$count = 0;
@@ -1179,14 +1179,14 @@ function addLayerList($layer_list) {
 			<tbody id="layer_item_' . $count . '">
 				<tr>
 					<td class="col1">' . $layer['layer_name'] . '</td>
-					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');">' . print_image("images/up.png", true, array("alt" => "")) . '</a></td>
-					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');">' . print_image("images/down.png", true, array("alt" => "")) . '</a></td>
+					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');">' . html_print_image("images/up.png", true, array("alt" => "")) . '</a></td>
+					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');">' . html_print_image("images/down.png", true, array("alt" => "")) . '</a></td>
 					<td class="col3">
-						<a id="edit_layer" href="javascript: editLayer(' . $count . ');">' . print_image("images/config.png", true, array("alt" => "")) . '</a>
+						<a id="edit_layer" href="javascript: editLayer(' . $count . ');">' . html_print_image("images/config.png", true, array("alt" => "")) . '</a>
 					</td>
 					<td class="col4">
 						<input type="hidden" name="layer_values_' . $count . '" value=\'' . $layerDataJSON . '\' id="layer_values_' . $count . '" />
-						<a id="delete_row" href="javascript: deleteLayer(' . $count . ')">' . print_image("images/cross.png", true, array("alt" => "")) . '</a>
+						<a id="delete_row" href="javascript: deleteLayer(' . $count . ')">' . html_print_image("images/cross.png", true, array("alt" => "")) . '</a>
 					</td>
 				</tr>
 			</tbody>

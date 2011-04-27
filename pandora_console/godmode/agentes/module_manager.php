@@ -64,8 +64,8 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	unset($modules['predictionserver']);
 }
 
-print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
-print_input_hidden ('edit_module', 1);
+html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
+html_print_input_hidden ('edit_module', 1);
 echo '</td>';
 echo '<td class="datos">';
 echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
@@ -272,19 +272,19 @@ if ($modules === false) {
 $table->width = '95%';
 $table->head = array ();
 $table->head[0] = __('Name') . ' ' .
-	'<a href="' . $url . '&sort_field=name&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 $table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>" . ' ' .
-	'<a href="' . $url . '&sort_field=server&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectServerUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=server&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectServerDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=server&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectServerUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=server&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectServerDown)) . '</a>';
 $table->head[3] = __('Type') . ' ' .
-	'<a href="' . $url . '&sort_field=type&sort=up">' .  print_image("images/sort_up.png", true, array("style" => $selectTypeUp)) .'</a>' .
-	'<a href="' . $url . '&sort_field=type&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTypeDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=type&sort=up">' .  html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp)) .'</a>' .
+	'<a href="' . $url . '&sort_field=type&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown)) . '</a>';
 $table->head[4] = __('Interval') . ' ' .
-	'<a href="' . $url . '&sort_field=interval&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=interval&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=interval&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=interval&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
 $table->head[5] = __('Description');
 $table->head[6] = __('Max/Min');
 $table->head[7] = __('Action');
@@ -377,7 +377,7 @@ foreach ($modules as $module) {
 			}
 				
 			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
-				print_image($img,true, array('title' => $title)) .
+				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 	}
@@ -391,7 +391,7 @@ foreach ($modules as $module) {
 	// This module is initialized ? (has real data)
 	$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
 	if ($module_init == 0)
-		$data[2] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
+		$data[2] .= html_print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
 	$data[3] = '';
@@ -413,15 +413,15 @@ foreach ($modules as $module) {
 	$data[6] .= ' / '.($module["min"] != $module['max']? $module["min"] : __('N/A'));
 
 	// Delete module
-	$data[7] = print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
+	$data[7] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
 	$data[7] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[7] .= print_image ('images/cross.png', true,
+	$data[7] .= html_print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
 	$data[7] .= '</a> ';
 	$data[7] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[7] .= print_image ('images/copy.png', true,
+	$data[7] .= html_print_image ('images/copy.png', true,
 		array ('title' => __('Duplicate')));
 	$data[7] .= '</a> ';
 	
@@ -430,7 +430,7 @@ foreach ($modules as $module) {
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
 			$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			$data[7] .= print_image ('images/chart_curve.png', true,
+			$data[7] .= html_print_image ('images/chart_curve.png', true,
 				array ('title' => __('Normalize')));
 			$data[7] .= '</a>';
 		}
@@ -441,10 +441,10 @@ foreach ($modules as $module) {
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
 	onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
-print_table ($table);
+html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('multiple_delete', 1);
-print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');
+html_print_input_hidden ('multiple_delete', 1);
+html_print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');
 echo '</div>';
 echo '</form>'
 ?>

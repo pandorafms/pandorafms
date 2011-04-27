@@ -136,7 +136,7 @@ $intervals[3600] = human_time_description_raw (3600); // 1 hour
 $intervals[86400] = human_time_description_raw (86400); // 1 day 
 $intervals[604800] = human_time_description_raw (604800); // 1 week
 $intervals[2592000] = human_time_description_raw (2592000); // 1 month
-echo print_extended_select_for_time ($intervals, 'period', $period, 'this.form.submit();', '', '0', 10) . __(" seconds.");
+echo html_print_extended_select_for_time ($intervals, 'period', $period, 'this.form.submit();', '', '0', 10) . __(" seconds.");
 echo "</form><br />";
 
 //
@@ -169,7 +169,7 @@ if (empty ($table->data)) {
 }
 else {
 	ui_pagination($count);
-	print_table ($table);
+	html_print_table ($table);
 	unset ($table);
 }
 

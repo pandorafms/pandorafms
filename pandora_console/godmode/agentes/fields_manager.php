@@ -109,24 +109,24 @@ foreach ($fields as $field) {
 	$data[0] = '<b>'.$field['name'].'</b>';
 
 	if($field['display_on_front']) {
-		$data[1] = print_image('images/tick.png', true);
+		$data[1] = html_print_image('images/tick.png', true);
 	}
 	else {
-		$data[1] = print_image('images/delete.png', true);
+		$data[1] = html_print_image('images/delete.png', true);
 	}
 		
-	$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">' . print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0')) . '</a>';
-	$data[2] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("alt" => __('Delete'), "title" => __('Delete'), "border" => '0')) . '</a>';
+	$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0')) . '</a>';
+	$data[2] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "title" => __('Delete'), "border" => '0')) . '</a>';
 	
 	array_push ($table->data, $data);
 }
 
 if($fields)
-	print_table ($table);
+	html_print_table ($table);
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Create field'), 'crt', false, 'class="sub next"');
+html_print_submit_button (__('Create field'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 

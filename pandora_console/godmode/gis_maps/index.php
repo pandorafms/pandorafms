@@ -58,7 +58,7 @@ else
 switch ($action) {
 	case 'delete_map':
 		$idMap = get_parameter('map_id');
-		deleteMap($idMap);
+		gis_delete_map($idMap);
 		break;
 }
 
@@ -101,22 +101,22 @@ if (!$maps) {
 		
 		$table_info = array('<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
 			ui_print_group_icon ($map['group_id'], true),
-			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>');
+			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . html_print_image ("images/eye.png", true).'</a>');
 		if ($display_default_column) {
-			$default_button = print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true);
+			$default_button = html_print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true);
 			array_push($table_info, $default_button);
 		}
-		$delete_button = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . print_image ("images/cross.png", true).'</a>';
+		$delete_button = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . html_print_image ("images/cross.png", true).'</a>';
 		array_push ($table_info, $delete_button);
 		$table->data[] = $table_info;
 	}
-	print_table($table);
+	html_print_table($table);
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form action="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map" method="post">';
-print_input_hidden ('action','new_map');
-print_submit_button (__('Create'), '', false, 'class="sub next"');
+html_print_input_hidden ('action','new_map');
+html_print_submit_button (__('Create'), '', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
 ?>

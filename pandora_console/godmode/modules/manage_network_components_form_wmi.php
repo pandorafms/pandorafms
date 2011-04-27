@@ -32,31 +32,31 @@ echo "<h3>".__('WMI component management').'</h3>';
 
 $data = array ();
 $data[0] = __('WMI query');
-$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 25, 255, true);
+$data[1] = html_print_input_text ('snmp_oid', $snmp_oid, '', 25, 255, true);
 $data[2] = __('Key string') . ' ' . ui_print_help_icon ('wmikey', true);
-$data[3] = print_input_text ('snmp_community', $snmp_community, '', 25, 255, true);
+$data[3] = html_print_input_text ('snmp_community', $snmp_community, '', 25, 255, true);
 
 push_table_row ($data, 'wmi_1');
 
 $data = array ();
 $data[0] = __('Field number') . ' ' . ui_print_help_icon ('wmifield', true);
-$data[1] = print_input_text ('tcp_port', $tcp_port, '', 5, 25, true);
+$data[1] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 25, true);
 $data[2] = __('Namespace') . ' ' . ui_print_help_icon ('wminamespace', true);
-$data[3] = print_input_text ('tcp_send', $tcp_send, '', 25, 255, true);
+$data[3] = html_print_input_text ('tcp_send', $tcp_send, '', 25, 255, true);
 
 push_table_row ($data, 'wmi_2');
 
 $data = array ();
 $data[0] = __('Username');
-$data[1] = print_input_text ('plugin_user', $plugin_user, '', 15, 255, true);
+$data[1] = html_print_input_text ('plugin_user', $plugin_user, '', 15, 255, true);
 $data[2] = __('Password');
-$data[3] = print_input_password ('plugin_pass', $plugin_pass, '', 25, 255, true);
+$data[3] = html_print_input_password ('plugin_pass', $plugin_pass, '', 25, 255, true);
 
 push_table_row ($data, 'wmi_3');
 
 $data = array();
 $data[0] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true);
-$data[1] = print_input_text ('post_process', $post_process, '', 12, 25, true);
+$data[1] = html_print_input_text ('post_process', $post_process, '', 12, 25, true);
 $data[2] = $data[3] = '';
 push_table_row($data, 'field_process');
 
@@ -108,7 +108,7 @@ echo '<tr>';
 // Component group
 echo '<td class="datos">' . __('Group') . '</td>';
 echo '<td class="datos">';
-print_select (get_network_component_groups (),
+html_print_select (get_network_component_groups (),
 	'id_group', $id_group, '', '', '', false, false, false);
 
 // Module group
@@ -206,18 +206,18 @@ echo '</textarea>';
 echo '</td></tr>';
 echo '</table>';
 
-print_input_hidden ('id_modulo', $id_component_type);
+html_print_input_hidden ('id_modulo', $id_component_type);
 
 // Update/Add buttons
 echo '<div class="action-buttons" style="width: 95%">';
 if ($id) {
-	print_input_hidden ('update_component', 1);
-	print_input_hidden ('id', $id);
-	print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
+	html_print_input_hidden ('update_component', 1);
+	html_print_input_hidden ('id', $id);
+	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
 }
 else {
-	print_input_hidden ('create_component', 1);
-	print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+	html_print_input_hidden ('create_component', 1);
+	html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 }
 echo '</div>';
 echo '</form>';

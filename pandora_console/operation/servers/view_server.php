@@ -88,5 +88,5 @@ foreach ($servers as $server) {
 	array_push ($table->data, $data);
 }
 
-print_table ($table);	
+html_print_table ($table);	
 ?>

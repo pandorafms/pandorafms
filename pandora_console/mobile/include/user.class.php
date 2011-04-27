@@ -74,7 +74,7 @@ class User {
 		global $pandora_version;
 		
 		echo "<form action='index.php' method='post'>";
-		print_input_hidden('action', 'login');
+		html_print_input_hidden('action', 'login');
 		?>
 		<div id="center_div">
 			<div id="table_version_negative_position_div">
@@ -86,17 +86,17 @@ class User {
 									<td style="color: #036A3A; height: 20px;" colspan="2" valign="top" align="left"><?php echo $pandora_version;?> <?php echo $text;?></td>
 									<td style="width: 80px; height: 80px;" valign="bottom" align="left" rowspan="4">
 										<?php
-										print_submit_button('', 'login', false, 'class="login_button" alt="' . __('Login') . '" title="' . __('Login') . '"');
+										html_print_submit_button('', 'login', false, 'class="login_button" alt="' . __('Login') . '" title="' . __('Login') . '"');
 										?>
 									</td>
 								</tr>
 								<tr>
 									<td style="width: 20px; height: 25px;">&nbsp;</td>
-									<td valign="top" align="left"><?php print_input_text('user', $this->user, __('User'), 10, 20);?></td>
+									<td valign="top" align="left"><?php html_print_input_text('user', $this->user, __('User'), 10, 20);?></td>
 								</tr>
 								<tr>
 									<td style="width: 20px; height: 15px;">&nbsp;</td>
-									<td valign="top" align="left"><?php print_input_password('password', '', __('Password'), 10, 20);?></td>
+									<td valign="top" align="left"><?php html_print_input_password('password', '', __('Password'), 10, 20);?></td>
 								</tr>
 								<tr>
 									<td style="height: 20px;">&nbsp;</td>
@@ -146,10 +146,10 @@ class User {
 					<?php
 					echo "<form id='login_box' method='post' style=''>";
 					echo "<div id='version'>" . $pandora_version . "</div>";
-					print_input_hidden('action', 'login');
-					print_input_text('user', $this->user, __('User'), 10, 20);
-					print_input_password('password', '', __('Password'), 10, 20);
-					print_submit_button(__(''), 'login', false, 'onclick="javascript: click();" class="login_button" alt="' . __('Login') . '" title="' . __('Login') . '"');
+					html_print_input_hidden('action', 'login');
+					html_print_input_text('user', $this->user, __('User'), 10, 20);
+					html_print_input_password('password', '', __('Password'), 10, 20);
+					html_print_submit_button(__(''), 'login', false, 'onclick="javascript: click();" class="login_button" alt="' . __('Login') . '" title="' . __('Login') . '"');
 					echo "</form>";
 					?>
 				</div>

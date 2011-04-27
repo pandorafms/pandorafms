@@ -60,7 +60,7 @@ $table->data[1][1] = $row["first_date"];
 $table->data[2][0] = '<b>'.__('Latest data').':</b>';
 $table->data[2][1] = $row["latest_date"];
 
-print_table ($table);
+html_print_table ($table);
 unset ($table);
 
 echo '<h3>'.__('Purge data').'</h3>';
@@ -79,9 +79,9 @@ $fields[$time - 259200] = __('Purge event data over 3 days');
 $fields[$time - 86400] = __('Purge event data over 1 day');
 $fields[$time] = __('Purge all event data');
 
-print_select ($fields, "date_purge", '', '', '', '0', false, false, false, "w255");
+html_print_select ($fields, "date_purge", '', '', '', '0', false, false, false, "w255");
 
 echo '</td><td class="datos">';
-print_submit_button (__('Do it!'),'purgedb', false, 'class="sub wand" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"');
+html_print_submit_button (__('Do it!'),'purgedb', false, 'class="sub wand" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"');
 echo '</td></tr></table></form>';
 ?>

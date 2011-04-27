@@ -111,7 +111,7 @@ if (isset ($id)) {
  * 2 - network component
  * 
  * You can see this values in file godmode/modules/manage_network_components.php
- * in the last lines (in the call function "print_select").
+ * in the last lines (in the call function "html_print_select").
  */
 
 if ($id_component_type == 6) {
@@ -139,20 +139,20 @@ echo '<form name="component" method="post">';
 $table->colspan['description'][1] = 3;
 $data = array ();
 $data[0] = __('Description');
-$data[1] = print_textarea ('description', 2, 65, $description, '', true);
+$data[1] = html_print_textarea ('description', 2, 65, $description, '', true);
 push_table_row ($data, 'description');
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('id_component_type', $id_component_type);
+html_print_input_hidden ('id_component_type', $id_component_type);
 if ($id) {
-	print_input_hidden ('update_component', 1);
-	print_input_hidden ('id', $id);
-	print_submit_button (__('Update'), 'upd', false, 'class="sub upd"');
+	html_print_input_hidden ('update_component', 1);
+	html_print_input_hidden ('id', $id);
+	html_print_submit_button (__('Update'), 'upd', false, 'class="sub upd"');
 } else {
-	print_input_hidden ('create_component', 1);
-	print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
+	html_print_input_hidden ('create_component', 1);
+	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';

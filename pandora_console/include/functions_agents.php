@@ -729,7 +729,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 
 
 	if (!$noACL) {
-		$id_group = safe_acl_group($config["id_user"], $id_group, "AR");
+		$id_group = groups_safe_acl($config["id_user"], $id_group, "AR");
 
 		if (empty ($id_group)) {
 			//An empty array means the user doesn't have access

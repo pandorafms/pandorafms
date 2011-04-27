@@ -44,7 +44,7 @@ $form_filter .= "<input type='hidden' name='search' value='1' />\n";
 $form_filter .= '<table style="width: 90%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 $form_filter .= "<tr>\n";
 $form_filter .= "<td>".__('Template name')."</td><td>";
-$form_filter .= print_input_text ('template_name', $templateName, '', 12, 255, true);
+$form_filter .= html_print_input_text ('template_name', $templateName, '', 12, 255, true);
 $form_filter .= "</td>\n";
 $temp = agents_get_agents();
 $arrayAgents = array();
@@ -57,14 +57,14 @@ if ($temp){
 }
 
 $form_filter .= "<td>".__('Agents')."</td><td>";
-$form_filter .= print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
+$form_filter .= html_print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
 array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);
 $form_filter .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 $form_filter .= "</td>\n";
 
 
 $form_filter .= "<td>".__('Module name')."</td><td>";
-$form_filter .= print_input_text ('module_name', $moduleName, '', 12, 255, true);
+$form_filter .= html_print_input_text ('module_name', $moduleName, '', 12, 255, true);
 $form_filter .= "</td>\n";
 $form_filter .= "</tr>\n";
 
@@ -86,13 +86,13 @@ if (is_array($temp)) {
 	}
 }
 $form_filter .= "<td>".__('Actions')."</td><td>";
-$form_filter .= print_select ($arrayActions, "action_id", $actionID,  '', __('All'), -1, true);
+$form_filter .= html_print_select ($arrayActions, "action_id", $actionID,  '', __('All'), -1, true);
 $form_filter .= "</td>\n";
 $form_filter .= "<td>".__('Field content')."</td><td>";
-$form_filter .= print_input_text ('field_content', $fieldContent, '', 12, 255, true);
+$form_filter .= html_print_input_text ('field_content', $fieldContent, '', 12, 255, true);
 $form_filter .= "</td>\n";
 $form_filter .= "<td>".__('Priority')."</td><td>";
-$form_filter .= print_select (get_priorities (), 'priority',$priority, '', __('All'), -1, true);
+$form_filter .= html_print_select (get_priorities (), 'priority',$priority, '', __('All'), -1, true);
 $form_filter .= "</td>";
 $form_filter .= "</tr>\n";
 
@@ -101,17 +101,17 @@ $form_filter .= "<td>".__('Enabled / Disabled')."</td><td>";
 $ed_list = array ();
 $ed_list[0] = __('Enable');
 $ed_list[1] = __('Disable');
-$form_filter .= print_select ($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1, true);
+$form_filter .= html_print_select ($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1, true);
 $form_filter .= "</td><td>".__('Standby')."</td><td>";
 $sb_list = array ();
 $sb_list[1] = __('Standby on');
 $sb_list[0] = __('Standby off');
-$form_filter .= print_select ($sb_list, 'standby', $standby, '', __('All'), -1, true);
+$form_filter .= html_print_select ($sb_list, 'standby', $standby, '', __('All'), -1, true);
 $form_filter .= "</td></tr>\n";
 
 $form_filter .= "<tr>\n";
 $form_filter .= "<td colspan='6' align='right'>";
-$form_filter .= print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
+$form_filter .= html_print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
 $form_filter .= "</td>";
 $form_filter .= "</tr>\n";
 $form_filter .= "</table>\n";
@@ -302,17 +302,17 @@ $table->align[1] = 'center';
 
 $table->head = array ();
 $table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span><br>" .
-	'<a href="' . $url . '&sort_field=disabled&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectDisabledUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=disabled&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectDisabledDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=disabled&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDisabledUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=disabled&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDisabledDown)) . '</a>';
 $table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span><br>" .
-	'<a href="' . $url . '&sort_field=standby&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectStandbyUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=standby&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectStandbyDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=standby&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStandbyUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=standby&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStandbyDown)) . '</a>';
 if (! $id_agente) {
 	$table->style = array ();
 	$table->style[2] = 'font-weight: bold';
 	$table->head[2] = __('Agent') . '<br>' .
-		'<a href="' . $url . '&sort_field=agent&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-		'<a href="' . $url . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+		'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+		'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 	$table->size[0] = '6%';
 	$table->size[1] = '6%';
 	$table->size[2] = '20%';
@@ -338,11 +338,11 @@ else {
 }
 
 $table->head[3] = __('Module') . '<br>' .
-	'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 $table->head[4] = __('Template') . '<br>' .
-	'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[5] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }
@@ -389,26 +389,26 @@ foreach ($simple_alerts as $alert) {
 	
 	$data[0] = '<form class="disable_alert_form" method="post" style="display: inline;">';
 	if ($alert['disabled']) {
-		$data[0] .= print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
-		$data[0] .= print_input_hidden ('enable_alert', 1, true);
+		$data[0] .= html_print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
+		$data[0] .= html_print_input_hidden ('enable_alert', 1, true);
 	}
 	else {
-		$data[0] .= print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
-		$data[0] .= print_input_hidden ('disable_alert', 1, true);
+		$data[0] .= html_print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
+		$data[0] .= html_print_input_hidden ('disable_alert', 1, true);
 	}
-	$data[0] .= print_input_hidden ('id_alert', $alert['id'], true);
+	$data[0] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 	$data[0] .= '</form>';
 	
 	$data[1] = '<form class="standby_alert_form" method="post" style="display: inline;">';
 	if (!$alert['standby']) {
-		$data[1] .= print_input_image ('standby_off', 'images/bell.png', 1, '', true);
-		$data[1] .= print_input_hidden ('standbyon_alert', 1, true);
+		$data[1] .= html_print_input_image ('standby_off', 'images/bell.png', 1, '', true);
+		$data[1] .= html_print_input_hidden ('standbyon_alert', 1, true);
 	}
 	else {
-		$data[1] .= print_input_image ('standby_on', 'images/bell_pause.png', 1, '', true);
-		$data[1] .= print_input_hidden ('standbyoff_alert', 1, true);
+		$data[1] .= html_print_input_image ('standby_on', 'images/bell_pause.png', 1, '', true);
+		$data[1] .= html_print_input_hidden ('standbyoff_alert', 1, true);
 	}
-	$data[1] .= print_input_hidden ('id_alert', $alert['id'], true);
+	$data[1] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 	$data[1] .= '</form>';
 	
 	if (! $id_agente) {
@@ -424,7 +424,7 @@ foreach ($simple_alerts as $alert) {
 	$data[3] = ui_print_truncate_text(get_agentmodule_name ($alert['id_agent_module']), 25, false);
 	$data[4] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
-		print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
+		html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
 
 	$data[4] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
 	$data[4] .= ui_print_truncate_text(alerts_get_alert_template_name ($alert['id_alert_template']), 15, false);
@@ -438,7 +438,7 @@ foreach ($simple_alerts as $alert) {
 			$img = 'images/policies.png';
 				
 			$data[5] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id'] . '">' . 
-				print_image($img,true, array('title' => $policyInfo['name'])) .
+				html_print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
 		}
 	}
@@ -481,10 +481,10 @@ foreach ($simple_alerts as $alert) {
 			$data[6] .= '</font>';
 //			$data[6] .= ' <span class="delete" style="clear:right">';
 			$data[6] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
-			$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
-			$data[6] .= print_input_hidden ('delete_action', 1, true);
-			$data[6] .= print_input_hidden ('id_alert', $alert['id'], true);
-			$data[6] .= print_input_hidden ('id_action', $action_id, true);
+			$data[6] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
+			$data[6] .= html_print_input_hidden ('delete_action', 1, true);
+			$data[6] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+			$data[6] .= html_print_input_hidden ('id_action', $action_id, true);
 			$data[6] .= '</form>';
 //			$data[6] .= '</span>';
 			$data[6] .= '</li>';
@@ -494,7 +494,7 @@ foreach ($simple_alerts as $alert) {
 
 	
 	$data[6] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
-	$data[6] .= print_image ('images/add.png', true);
+	$data[6] .= html_print_image ('images/add.png', true);
 	if ($alert['disabled'])
 		$data[6] .= ' '. '<span style="font-style: italic; color: #aaaaaa;">' .__('Add action') . '</span>';
 	else
@@ -502,27 +502,27 @@ foreach ($simple_alerts as $alert) {
 	$data[6] .= '</a>';
 	
 	$data[6] .= '<form id="add_action_form-'.$alert['id'].'" method="post" class="invisible">';
-	$data[6] .= print_input_hidden ('add_action', 1, true);
-	$data[6] .= print_input_hidden ('id_alert_module', $alert['id'], true);
+	$data[6] .= html_print_input_hidden ('add_action', 1, true);
+	$data[6] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
 	$own_info = get_user_info($config['id_user']);
 	$own_groups = get_user_groups($config['id_user'], 'LW', $own_info['is_admin']);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($own_groups));
 	$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
-	$data[6] .= print_select ($actions, 'action', '', '', __('None'), 0, true);
+	$data[6] .= html_print_select ($actions, 'action', '', '', __('None'), 0, true);
 	$data[6] .= '<br />';
 	$data[6] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
 	$data[6] .= '<span class="advanced_actions invisible">';
 	$data[6] .= __('Number of alerts match from').' ';
-	$data[6] .= print_input_text ('fires_min', -1, '', 4, 10, true);
+	$data[6] .= html_print_input_text ('fires_min', -1, '', 4, 10, true);
 	$data[6] .= ' '.__('to').' ';
-	$data[6] .= print_input_text ('fires_max', -1, '', 4, 10, true);
+	$data[6] .= html_print_input_text ('fires_max', -1, '', 4, 10, true);
 	$data[6] .= ui_print_help_icon ("alert-matches", true);
 	$data[6] .= '<br />' . __('Threshold');
-	$data[6] .= print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
+	$data[6] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
 	$data[6] .= '</span>';
 	$data[6] .= '<div class="right">';
-	$data[6] .= print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
+	$data[6] .= html_print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
 	$data[6] .= '</div>';
 	$data[6] .= '</form>';
 	
@@ -546,15 +546,15 @@ foreach ($simple_alerts as $alert) {
 	
 	$data[8] = '<form class="delete_alert_form" method="post" style="display: inline;">';
 	
-	$data[8] .= print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
-	$data[8] .= print_input_hidden ('delete_alert', 1, true);
-	$data[8] .= print_input_hidden ('id_alert', $alert['id'], true);
+	$data[8] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
+	$data[8] .= html_print_input_hidden ('delete_alert', 1, true);
+	$data[8] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 	$data[8] .= '</form>';
 	array_push ($table->data, $data);
 }
 
 if (isset($data)){
-	print_table ($table);
+	html_print_table ($table);
 }
 else {
 	echo "<div class='nf'>".__('No alerts defined')."</div>";
@@ -563,7 +563,7 @@ else {
 // Create alert button
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">';
-print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
+html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
 

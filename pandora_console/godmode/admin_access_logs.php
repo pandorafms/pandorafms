@@ -62,18 +62,18 @@ $table = null;
 $table->width = '100%';
 $table->data = array();
 $table->data[0][0] = __('Action');
-$table->data[0][1] = print_select ($actions, 'tipo_log', $tipo_log, '', __('All'), 'all', true);
+$table->data[0][1] = html_print_select ($actions, 'tipo_log', $tipo_log, '', __('All'), 'all', true);
 $table->data[1][0] = __('User');
-$table->data[1][1] = print_select_from_sql('SELECT id_user, id_user AS text FROM tusuario', 'user', $user_filter, '', __('All'), 0, true);
+$table->data[1][1] = html_print_select_from_sql('SELECT id_user, id_user AS text FROM tusuario', 'user', $user_filter, '', __('All'), 0, true);
 $table->data[2][0] = __('Free text for search (*)');
-$table->data[2][1] = print_input_text('filter_text', $filter_text, __('Free text for search (*)'), 20, 40, true);
+$table->data[2][1] = html_print_input_text('filter_text', $filter_text, __('Free text for search (*)'), 20, 40, true);
 $table->data[3][0] = __('Max. hours old');
-$table->data[3][1] = print_input_text('filter_hours_old', $filter_hours_old, __('Max. hours old'), 3, 6, true);
+$table->data[3][1] = html_print_input_text('filter_hours_old', $filter_hours_old, __('Max. hours old'), 3, 6, true);
 $table->data[4][0] = __('IP');
-$table->data[4][1] = print_input_text('filter_ip', $filter_ip, __('IP'), 15, 15, true);
+$table->data[4][1] = html_print_input_text('filter_ip', $filter_ip, __('IP'), 15, 15, true);
 $table->data[5][0] = '';
-$table->data[5][1] = print_submit_button(__('Filter'), 'filter', false, 'class="sub search" style="float: right;"', true);
-print_table($table);
+$table->data[5][1] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search" style="float: right;"', true);
+html_print_table($table);
 echo '</form>';
 echo '</div>';
 echo '<div style="float: right; width: 250px;">';
@@ -284,7 +284,7 @@ foreach ($result as $row) {
 	}
 }
 
-print_table ($table);
+html_print_table ($table);
 
 if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
 	enterprise_hook('enterpriseAuditFooter');

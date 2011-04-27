@@ -29,12 +29,12 @@ $groups = get_user_groups ();
 
 switch ($action) {
 	case 'new':
-		$actionButtonHtml = print_submit_button(__('Save'), 'add', false, 'class="sub wand"', true);
+		$actionButtonHtml = html_print_submit_button(__('Save'), 'add', false, 'class="sub wand"', true);
 		$hiddenFieldAction = 'save'; 
 		break;
 	case 'update':
 	case 'edit':
-		$actionButtonHtml = print_submit_button(__('Update'), 'edit', false, 'class="sub upd"', true);
+		$actionButtonHtml = html_print_submit_button(__('Update'), 'edit', false, 'class="sub upd"', true);
 		$hiddenFieldAction = 'update'; 
 		break;
 }
@@ -51,7 +51,7 @@ $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data['name'][0] = __('Name');
-$table->data['name'][1] = print_input_text('name', $reportName, __('Name'), 20, 40, true);
+$table->data['name'][1] = html_print_input_text('name', $reportName, __('Name'), 20, 40, true);
 
 $table->data['group'][0] = __('Group');
 $own_info = get_user_info ($config['id_user']);
@@ -59,17 +59,17 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_groups = true;
 else	
 	$return_all_groups = false;
-$table->data['group'][1] = print_select_groups(false, "AR", $return_all_groups, 'id_group', $idGroupReport, false, '', '', true);
+$table->data['group'][1] = html_print_select_groups(false, "AR", $return_all_groups, 'id_group', $idGroupReport, false, '', '', true);
 
 $table->data['description'][0] = __('Description');
-$table->data['description'][1] = print_textarea('description', 5, 15, $description, '', true);
+$table->data['description'][1] = html_print_textarea('description', 5, 15, $description, '', true);
 
 echo '<form class="" method="post">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo $actionButtonHtml;
-print_input_hidden('action', $hiddenFieldAction);
-print_input_hidden('id_report', $idReport);
+html_print_input_hidden('action', $hiddenFieldAction);
+html_print_input_hidden('id_report', $idReport);
 echo '</div></form>';
 ?>

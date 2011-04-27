@@ -23,7 +23,7 @@ require_once ($config['homedir'].'/include/functions_users.php');
  * 
  * @return bool Return false if the group is unused in the Pandora, else true.
  */
-function checkUsedGroup($idGroup) {
+function groups_check_used($idGroup) {
 	global $config;
 
 	$return = array();
@@ -232,7 +232,7 @@ function checkUsedGroup($idGroup) {
  * @param integer $parent The id_group parent to search the childrens.
  * @param array $groups The groups, its for optimize the querys to DB.
  */
-function get_childrens($parent, $groups = null) {
+function groups_get_childrens($parent, $groups = null) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');
 	}
@@ -244,7 +244,7 @@ function get_childrens($parent, $groups = null) {
 			continue;
 		}
 		if ($group['parent'] == $parent) {
-			$return = $return + array($group['id_grupo'] => $group) + get_childrens($group['id_grupo'], $groups);
+			$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups);
 		}
 	}
 
@@ -258,7 +258,7 @@ function get_childrens($parent, $groups = null) {
  * @param boolean $onlyPropagate Flag to search only parents that true to propagate.
  * @param array $groups The groups, its for optimize the querys to DB.
  */
-function get_parents($parent, $onlyPropagate = false, $groups = null) {
+function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');
 	}
@@ -270,7 +270,7 @@ function get_parents($parent, $onlyPropagate = false, $groups = null) {
 			continue;
 		}
 		if (($group['id_grupo'] == $parent) && ($group['propagate'] || !$onlyPropagate)) {
-			$return = $return + array($group['id_grupo'] => $group) + get_parents($group['parent'], $groups);
+			$return = $return + array($group['id_grupo'] => $group) + groups_get_parents($group['parent'], $groups);
 		}
 	}
 
@@ -298,7 +298,7 @@ function get_parents($parent, $onlyPropagate = false, $groups = null) {
  *
  * @return array Groups the user DOES have acces to (or an empty array)
  */
-function safe_acl_group ($id_user, $id_groups, $access) {
+function groups_safe_acl ($id_user, $id_groups, $access) {
 	if (!is_array ($id_groups) && check_acl ($id_user, $id_groups, $access)) {
 		/* Return all the user groups if it's the group All */
 		if ($id_groups == 0)
@@ -326,7 +326,7 @@ function safe_acl_group ($id_user, $id_groups, $access) {
  *
  * @return bool Disabled field of given group
  */
-function give_disabled_group ($id_group) {
+function groups_give_disabled_group ($id_group) {
 	return (bool) db_get_value ('disabled', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
@@ -337,7 +337,7 @@ function give_disabled_group ($id_group) {
  *
  * @return bool It's true when the array is all groups in db.
  */
-function isAllGroups($idGroups) {
+function groups_is_all_group($idGroups) {
 	if (!is_array($idGroups))
 	$arrayGroups = array($idGroups);
 	else
@@ -363,7 +363,7 @@ function isAllGroups($idGroups) {
  *
  * @return string Icon path of the given group
  */
-function get_group_icon ($id_group) {
+function groups_get_icon ($id_group) {
 	if ($id_group == 0) {
 		return 'world';
 	}
@@ -379,7 +379,7 @@ function get_group_icon ($id_group) {
  *
  * @return Array with all groups selected
  */
-function get_all_groups($groupWithAgents = false) {
+function groups_get_all($groupWithAgents = false) {
 	global $config;
 
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
@@ -418,7 +418,7 @@ function get_all_groups($groupWithAgents = false) {
  *
  * @return Array with all result groups
  */
-function get_id_groups_recursive($id_parent, $all = false) {
+function groups_get_id_recursive($id_parent, $all = false) {
 	$return = array();
 
 	$return = array_merge($return, array($id_parent));
@@ -440,7 +440,7 @@ function get_id_groups_recursive($id_parent, $all = false) {
 		}
 
 		foreach ($children as $id_children) {
-			$return = array_merge($return, get_id_groups_recursive($id_children, $all));
+			$return = array_merge($return, groups_get_id_recursive($id_children, $all));
 		}
 	}
 
@@ -456,7 +456,7 @@ function get_id_groups_recursive($id_parent, $all = false) {
  *
  * @return array The treefield list of groups.
  */
-function get_user_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
+function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 	$return = array();
 
 	foreach ($groups as $key => $group) {
@@ -468,7 +468,7 @@ function get_user_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 		}
 		else if ($group['parent'] == $parent) {
 			$group['deep'] = $deep;
-			$branch = get_user_groups_tree_recursive($groups, $key, $deep + 1);
+			$branch = groups_get_groups_tree_recursive($groups, $key, $deep + 1);
 			if (empty($branch)) {
 				$group['hash_branch'] = false;
 			}
@@ -489,7 +489,7 @@ function get_user_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
  *
  * @return int Status of the agents.
  */
-function get_group_status ($id_group = 0) {
+function groups_get_status ($id_group = 0) {
 	$agents = get_group_agents($id_group);
 
 	$agents_status = array();
@@ -497,10 +497,10 @@ function get_group_status ($id_group = 0) {
 		$agents_status[] = get_agent_status($key);
 	}
 
-	$childrens = get_childrens($id_group);
+	$childrens = groups_get_childrens($id_group);
 
 	foreach($childrens as $key => $child){
-		$agents_status[] = get_group_status($key);
+		$agents_status[] = groups_get_status($key);
 	}
 
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3/-1 for unknown. 4 for fired alerts
@@ -540,7 +540,7 @@ function get_group_status ($id_group = 0) {
  *
  * @return string The group name
  */
-function get_group_name ($id_group, $returnAllGroup = false) {
+function groups_get_name ($id_group, $returnAllGroup = false) {
 	if($id_group > 0)
 	return (string) db_get_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 	elseif($returnAllGroup)
@@ -554,7 +554,7 @@ function get_group_name ($id_group, $returnAllGroup = false) {
  *
  * @return array An array with all the users or an empty array
  */
-function get_group_users ($id_group, $filter = false) {
+function groups_get_users ($id_group, $filter = false) {
 	if (! is_array ($filter))
 		$filter = array ();
 	

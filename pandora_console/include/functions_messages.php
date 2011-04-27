@@ -69,7 +69,7 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
  */
 function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje) {
 	$users = get_users_info ();
-	$group_users = get_group_users ($dest_group);
+	$group_users = groups_get_users ($dest_group);
 	
 	if (! array_key_exists ($usuario_origen, $users)) {
 		//Users don't exist in the system

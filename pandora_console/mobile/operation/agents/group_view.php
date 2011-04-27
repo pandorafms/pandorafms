@@ -65,7 +65,7 @@ class GroupView {
 			
 			$data = array();
 			
-			$groupName = get_group_name($idGroup);
+			$groupName = groups_get_name($idGroup);
 			
 			$data[] = '<a href="index.php?page=agents&filter_group=' . $idGroup . '">' . $groupName . '</a>';
 //			$data[] = $groupData['total_agents'];
@@ -80,7 +80,7 @@ class GroupView {
 			$table->data[] = $data;
 		}
 		
-		print_table($table);
+		html_print_table($table);
 	}
 }
 ?>

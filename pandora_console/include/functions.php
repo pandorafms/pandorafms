@@ -115,7 +115,7 @@ function safe_url_extraclean ($string, $default_string = '') {
 function no_permission () {
 	require ("config.php");
 	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
-	echo print_image('images/noaccess.png', true, array("alt" => 'No access', "width" => '120')) . "<br /><br />";
+	echo html_print_image('images/noaccess.png', true, array("alt" => 'No access', "width" => '120')) . "<br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('You don\'t have enough permission to access this resource');
@@ -134,7 +134,7 @@ function no_permission () {
 function unmanaged_error ($error = "") {
 	require_once ("config.php");
 	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
-	echo print_image('images/error.png', true, array("alt" => 'error')) . "<br /><br />";
+	echo html_print_image('images/error.png', true, array("alt" => 'error')) . "<br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('Unmanaged error');
@@ -1014,7 +1014,7 @@ function is_ajax () {
  * Transform an array of database result into an indexed array.
  *
  * This function is useful when the results of a database needs to be used
- * in a print_select() function.
+ * in a html_print_select() function.
  *
  * @param array Array with the results.
  * @param string Field of each row in the given array that will act as index. False
@@ -1150,10 +1150,10 @@ function string2image($string, $width, $height, $fontsize = 3,
 	global $config;
 				
 	$im = ImageCreate($width,$height);
-	$bgrgb = html2rgb($bgcolor);
+	$bgrgb = html_html2rgb($bgcolor);
 	$bgc = ImageColorAllocate($im,$bgrgb[0],$bgrgb[1],$bgrgb[2]);
 	// Set the string
-	$textrgb = html2rgb($textcolor);
+	$textrgb = html_html2rgb($textcolor);
 	imagestring($im, $fontsize, $padding_left, $padding_top, $string, ImageColorAllocate($im,$textrgb[0],$textrgb[1],$textrgb[2]));
 	// Rotates the image
 	$rotated = imagerotate($im, $degrees, 0) ; 
@@ -1265,7 +1265,7 @@ function check_acl($id_user, $id_group, $access) {
 	$parents_id = array($id_group);
 	if ($id_group != 0) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
-		$parents = get_parents($group['parent'], true);
+		$parents = groups_get_parents($group['parent'], true);
 
 		foreach ($parents as $parent) {
 			$parents_id[] = $parent['id_grupo'];

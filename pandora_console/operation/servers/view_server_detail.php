@@ -25,7 +25,7 @@ require_once ($config['homedir'] . "/include/functions_network_profiles.php");
 
 $id_server = (int) get_parameter ("server_id", -1);
 
-$options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>" . print_image("images/refresh.png", true) . "</a></li>";
+$options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>" . html_print_image("images/refresh.png", true) . "</a></li>";
 
 ui_print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
 
@@ -100,7 +100,7 @@ foreach ($recon_tasks as $task) {
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'&amp;force='.$task["id_rt"].'">';
-	$data[0] .= print_image ("images/target.png", true, array ("title" => __('Force')));
+	$data[0] .= html_print_image ("images/target.png", true, array ("title" => __('Force')));
 	$data[0] .= '</a>';
 	
 	$data[1] = '<b>'. $task["name"].'</b>';
@@ -123,12 +123,12 @@ foreach ($recon_tasks as $task) {
 
 	if ($task["id_recon_script"] == 0){
 		// Network recon task
-		$data[5] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
+		$data[5] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
 		$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
 	}
 	else {
 		// APP recon task
-		$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
+		$data[5] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
 		$data[5] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
 	}
 		
@@ -142,7 +142,7 @@ foreach ($recon_tasks as $task) {
 	$data[7] = ui_print_timestamp ($task["utimestamp"], true);
 
 	if (check_acl ($config["id_user"], $task["id_group"], "PM")) {
-		$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';
+		$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.html_print_image ("images/wrench_orange.png", true).'</a>';
 	}
 	else {
 		$data[8] = '';
@@ -155,7 +155,7 @@ if (empty ($table->data)) {
 	echo '<div class="nf">'.__("This server has no recon tasks assigned").'</div>';
 }
 else {
-	print_table ($table);
+	html_print_table ($table);
 }
 unset ($table);
 ?>

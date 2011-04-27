@@ -27,7 +27,7 @@ ui_print_page_header (__('Update manager'), "images/extensions.png", false, "", 
 
 if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';
-	echo print_image("images/information.png", true) . '&nbsp;'; 
+	echo html_print_image("images/information.png", true) . '&nbsp;'; 
 	/* Translators: Do not translade Update Manager, it's the name of the program */
 	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS 3.0. It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.');
 	echo '<p />';
@@ -169,14 +169,14 @@ if (check_acl ($config['id_user'], 0, 'PM')) {
 		$table->data[2][0] = '<strong>'.__('Description').'</strong>';
 		$table->data[2][1] = html_entity_decode ($package->description);
 	
-		print_table ($table);
+		html_print_table ($table);
 		echo '<div class="action-buttons" style="width: '.$table->width.'">';
 		echo '<form method="post">';
 		echo __('Overwrite local changes');
-		print_checkbox ('force_update', '1', false);
+		html_print_checkbox ('force_update', '1', false);
 		echo '<p />';
-		print_input_hidden ('update_package', 1);
-		print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
+		html_print_input_hidden ('update_package', 1);
+		html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 		echo '</form>';
 		echo '</div>';
 	}
@@ -197,7 +197,7 @@ if (check_acl ($config['id_user'], 0, 'PM')) {
 	$table->data[1][1] = '<input type="submit" name="upload_button" value="'.__('Upload').'">';
 	
 	echo '<form method="post" enctype="multipart/form-data">';
-	print_table($table);
+	html_print_table($table);
 	echo '</form>';
 
 } 

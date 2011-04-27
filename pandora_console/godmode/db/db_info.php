@@ -58,7 +58,7 @@ echo '<h3>'.__('Packets per agent').'</h3>';
 echo grafico_db_agentes_paquetes2(700, 300);
 
 echo '</table>';
-echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;"><b>'.__('Press here to get database information as text').'</b>&nbsp;' . print_image("images/down.png", true, array("alt" => "down", "title" => "down")) . '</a></div>';
+echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;"><b>'.__('Press here to get database information as text').'</b>&nbsp;' . html_print_image("images/down.png", true, array("alt" => "down", "title" => "down")) . '</a></div>';
 echo '<div id="db_info_data" style="display:none">';
 
 //Merged from db_info_data.php because the queries are the same, so the cache
@@ -89,7 +89,7 @@ foreach ($count as $agent_id => $value) {
 	
 	array_unshift ($table->data, $data);
 }
-print_table ($table);
+html_print_table ($table);
 
 echo '<a href="#" onClick="toggleDiv(\'db_info_graph\'); toggleDiv(\'db_info_data\'); return false;">'.__('Press here to get database information as a graph').'</a></div>';
 ?>

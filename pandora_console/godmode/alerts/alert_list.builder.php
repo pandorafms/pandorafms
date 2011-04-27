@@ -47,7 +47,7 @@ if (! $id_agente) {
 	
 	$table->data['agent'][0] = __('Agent');
 	
-	$table->data['agent'][1] = print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
+	$table->data['agent'][1] = html_print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 }
@@ -57,12 +57,12 @@ $modules = array ();
 if ($id_agente)
 	$modules = get_agent_modules ($id_agente, false, array("delete_pending" => 0));
 
-$table->data[0][1] = print_select ($modules, 'id_agent_module', 0, true,
+$table->data[0][1] = html_print_select ($modules, 'id_agent_module', 0, true,
 	__('Select'), 0, true, false, true, '', ($id_agente == 0));
 $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
 $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
-$table->data[0][1] .= print_image('images/spinner.png', true) . '</span>';
+$table->data[0][1] .= html_print_image('images/spinner.png', true) . '</span>';
 
 $table->data[1][0] = __('Template');
 
@@ -77,12 +77,12 @@ else{
 	$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
 }	
 
-$table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
+$table->data[1][1] = html_print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);
 $table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
-	print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
+	html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[1][1] .= print_image ('images/add.png', true);
+	$table->data[1][1] .= html_print_image ('images/add.png', true);
 	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
 	$table->data[1][1] .= __('Create Template');
 	$table->data[1][1] .= '</a>';
@@ -93,33 +93,33 @@ $table->data[2][0] = __('Actions');
 $actions = array ('0' => __('None'));
 
 $table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] = print_select($actions,'action_select','','','','',true);
+$table->data[2][1] = html_print_select($actions,'action_select','','','','',true);
 $table->data[2][1] .= ' <span id="action_loading" class="invisible">';
-$table->data[2][1] .= print_image('images/spinner.png', true) . '</span>';
+$table->data[2][1] .= html_print_image('images/spinner.png', true) . '</span>';
 $table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
 $table->data[2][1] .= __('Number of alerts match from').' ';
-$table->data[2][1] .= print_input_text ('fires_min', '', '', 4, 10, true);
+$table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
 $table->data[2][1] .= ' '.__('to').' ';
-$table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
+$table->data[2][1] .= html_print_input_text ('fires_max', '', '', 4, 10, true);
 $table->data[2][1] .= ui_print_help_icon ("alert-matches", true);
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[2][1] .= print_image ('images/add.png', true);
+	$table->data[2][1] .= html_print_image ('images/add.png', true);
 	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
 	$table->data[2][1] .= __('Create Action');
 	$table->data[2][1] .= '</a>';
 }
 $table->data[3][0] = __('Threshold');
-$table->data[3][1] = print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
+$table->data[3][1] = html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
 
 echo '<form class="add_alert_form" method="post">';
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Add alert'), 'add', false, 'class="sub wand"');
-print_input_hidden ('create_alert', 1);
+html_print_submit_button (__('Add alert'), 'add', false, 'class="sub wand"');
+html_print_input_hidden ('create_alert', 1);
 echo '</div></form>';
 
 ui_require_css_file ('cluetip');

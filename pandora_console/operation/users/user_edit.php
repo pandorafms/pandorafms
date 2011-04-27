@@ -99,49 +99,49 @@ echo "</td>";
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 echo "<td rowspan=4>";
 if (is_user_admin ($id)) {
-	echo print_image('images/people_1.png', true); 
+	echo html_print_image('images/people_1.png', true); 
 } 
 else {
-	echo print_image('images/people_2.png', true); 
+	echo html_print_image('images/people_2.png', true); 
 }
 
 echo '</td></tr><tr><td class="datos2">'.__('Full (display) name').'</td><td class="datos2">';
-print_input_text_extended ("fullname", $user_info["fullname"], '', '', 35, 100, $view_mode, '', 'class="input"');
+html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 35, 100, $view_mode, '', 'class="input"');
 
 // Not used anymore. In 3.0 database schema continues storing it, but will be removed in the future, or we will 'reuse'
 // the database fields for anything more useful.
 
 /*
 echo '</td></tr><tr><td class="datos">'.__('First name').'</td><td class="datos">';
-print_input_text_extended ("firstname", $user_info["firstname"], '', '', 25, 100, $view_mode, '', 'class="input"');
+html_print_input_text_extended ("firstname", $user_info["firstname"], '', '', 25, 100, $view_mode, '', 'class="input"');
 
 echo '</td></tr><tr><td class="datos2">'.__('Last name').'</td><td class="datos2">';
-print_input_text_extended ("lastname", $user_info["lastname"], '', '', 25, 100, $view_mode, '', 'class="input"');
+html_print_input_text_extended ("lastname", $user_info["lastname"], '', '', 25, 100, $view_mode, '', 'class="input"');
 
 */
 if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		echo '</td></tr><tr><td class="datos">'.__('New Password').'</td><td class="datos">';
-		print_input_text_extended ("password_new", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
+		html_print_input_text_extended ("password_new", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
 		echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
-		print_input_text_extended ("password_conf", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
+		html_print_input_text_extended ("password_conf", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
 	} else {
 		echo '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
 	}
 }
 
 echo '</td></tr><tr><td class="datos2">'.__('E-mail').'</td><td class="datos2">';
-print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"');
+html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"');
 
 echo '</td></tr><tr><td class="datos">'.__('Phone number').'</td><td class="datos">';
-print_input_text_extended ("phone", $user_info["phone"], '', '', '10', '30', $view_mode, '', 'class="input"');
+html_print_input_text_extended ("phone", $user_info["phone"], '', '', '10', '30', $view_mode, '', 'class="input"');
 
 echo '</td></tr><tr><td class="datos">'.__('Language').'</td><td class="datos2">';
-echo print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+echo html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info["language"], '', '', '', true);
 
 echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos">';
-print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
+html_print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
    
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
@@ -164,9 +164,9 @@ if (count($usr_groups) > 1){
 
 echo '</td></tr><tr><td class="datos">'.__('Flash charts').'</td><td class="datos2">';
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
-echo print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
+echo html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 echo '</td></tr><tr><td class="datos">'.__('Block size for pagination').'</td><td class="datos2">';
-echo print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
+echo html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 
 echo '</td></tr></table>';
 
@@ -174,7 +174,7 @@ echo '<div style="width:90%; text-align:right;">';
 if (!$config["user_can_update_info"]) {
 	echo '<i>'.__('You can not change your user info from Pandora FMS under the current authentication scheme').'</i>';
 } else {
-	print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
+	html_print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
 echo '</div></form>';
 
@@ -199,12 +199,12 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data[0] = '<b>'.get_profile_name ($profile["id_perfil"]).'</b>';
-	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.get_group_name ($profile["id_grupo"], true).'</a>';
+	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.groups_get_name ($profile["id_grupo"], true).'</a>';
 	array_push ($table->data, $data);
 }
 
 if (!empty ($table->data)) {
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
 }

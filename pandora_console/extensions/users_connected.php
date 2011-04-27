@@ -85,7 +85,7 @@ function users_extension_main_god ($god = true) {
 			array_push ($table->data, $data);
 		}
 
-		print_table ($table);
+		html_print_table ($table);
 	}
 }
 add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"users/icon.png");

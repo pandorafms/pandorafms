@@ -127,14 +127,14 @@ $table->align = array ();
 $table->size = array ();
 
 $table->head[0] = __('User ID') . ' ' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectUserIDDown)) . '</a>';
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectUserIDDown)) . '</a>';
 $table->head[1] = __('Name') . ' ' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectFullnameUp )) . '</a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectFullnameDown)) . '</a>';
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectFullnameUp )) . '</a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectFullnameDown)) . '</a>';
 $table->head[2] = __('Last contact') . ' ' . 
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
 $table->head[3] = __('Profile');
 $table->head[4] = __('Description');
 $table->head[5] = __('Delete');
@@ -190,11 +190,11 @@ foreach ($info as $user_id => $user_info) {
 	$data[2] = ui_print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
-		$data[3] = print_image ("images/user_suit.png", true,
+		$data[3] = html_print_image ("images/user_suit.png", true,
 			array ("alt" => __('Admin'),
 				"title" => __('Administrator'))).'&nbsp;';
 	} else {
-		$data[3] = print_image ("images/user_green.png", true,
+		$data[3] = html_print_image ("images/user_green.png", true,
 			array ("alt" => __('User'),
 				"title" => __('Standard User'))).'&nbsp;';
 	}
@@ -205,7 +205,7 @@ foreach ($info as $user_id => $user_info) {
 		foreach ($result as $row) {
 			$data[3] .= get_profile_name ($row["id_perfil"]);
 			$data[3] .= " / ";
-			$data[3] .= get_group_name ($row["id_grupo"]);
+			$data[3] .= groups_get_name ($row["id_grupo"]);
 			$data[3] .= "<br />";
 		}
 	} else {
@@ -216,21 +216,21 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
 
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
-		$data[5] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
+		$data[5] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 	} else {
 		$data[5] = ''; //Delete button not in this mode
 	}
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 unset ($table);
 if ($config["admin_can_add_user"] !== false) {
 	echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user">';
-	print_input_hidden ('new_user', 1);
-	print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
+	html_print_input_hidden ('new_user', 1);
+	html_print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
 	echo '</form>';
 }
 else {
@@ -269,7 +269,7 @@ $table->size = array_fill (1, 10, 40);
 
 $profiles = db_get_all_rows_in_table ("tperfil");
 
-$img = print_image ("images/ok.png", true, array ("border" => 0)); 
+$img = html_print_image ("images/ok.png", true, array ("border" => 0)); 
 
 foreach ($profiles as $profile) {
 	$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'.$profile["name"].'</b></a>';
@@ -283,15 +283,15 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = '<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. print_image("images/cross.png", true) . '</a>';	
+	$data[11] = '<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 	
 	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
-	print_table ($table);
+	html_print_table ($table);
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	print_input_hidden ('new_profile', 1);
-	print_submit_button (__('Create'), "crt", false, 'class="sub next"');
+	html_print_input_hidden ('new_profile', 1);
+	html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');
 	echo "</div>";
 	echo '</form>';
 	unset ($table);

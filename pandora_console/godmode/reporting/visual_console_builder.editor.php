@@ -75,7 +75,7 @@ echo '</div>';
 echo '<div style="clear: right; margin-bottom: 10px;"></div>';
 
 echo "<form id='form_visual_map' method='post' action='index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab . "&id_visual_console=" . $idVisualConsole . "'>";
-print_input_hidden('action', 'update');
+html_print_input_hidden('action', 'update');
 $background = $visualConsole['background'];
 $widthBackground = $visualConsole['width'];
 $heightBackground = $visualConsole['height'];
@@ -118,45 +118,45 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 	<tbody>
 		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value label datos">
 			<td style=""><?php echo __('Label');?></td>
-			<td style=""><?php print_input_text ('label', '', '', 20, 200); ?></td>
+			<td style=""><?php html_print_input_text ('label', '', '', 20, 200); ?></td>
 		</tr>
 		<tr id="image_row" style="" class="static_graph icon datos">
 			<td><?php echo __('Image');?></td>
-			<td><?php print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '');?></td>
+			<td><?php html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '');?></td>
 		</tr>
 		<tr id="preview_row" style="" class="static_graph datos icon">
 			<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>
 		</tr>
 		<tr id="agent_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>';?></td>
-			<td><?php print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
+			<td><?php html_print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
 				array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), false);?></td>
 		</tr>
 		<tr id="module_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Module');?></td>
-			<td><?php print_select (array (), 'module', '', '', __('Any'), 0);?></td>
+			<td><?php html_print_select (array (), 'module', '', '', __('Any'), 0);?></td>
 		</tr>
 		<tr id="background_row_1" class="background datos">
 			<td><?php echo __('Background');?></td>
-			<td><?php print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>
+			<td><?php html_print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>
 		</tr>
 		<tr id="background_row_2" class="background datos">
 			<td><?php echo __('Original Size');?></td>
-			<td><?php print_button(__('Apply'), 'original_false', false, 'setOriginalSizeBackground()', 'class="sub"');?></td>
+			<td><?php html_print_button(__('Apply'), 'original_false', false, 'setOriginalSizeBackground()', 'class="sub"');?></td>
 		</tr>
 		<tr id="background_row_3" class="background datos">
 			<td><?php echo __('Aspect ratio');?></td>
-			<td><?php print_button(__('Width proportional'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub"');?></td>
+			<td><?php html_print_button(__('Width proportional'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub"');?></td>
 		</tr>
 		<tr id="background_row_4" class="background datos">
 			<td></td>
-			<td><?php print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub"');?></td>
+			<td><?php html_print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub"');?></td>
 		</tr>
 		<tr id="percentile_bar_row_1" class="percentile_bar datos">
 			<td><?php echo __('Width');?></td>
 			<td>
 				<?php
-				print_input_text('width_percentile', 0, '', 3, 5);
+				html_print_input_text('width_percentile', 0, '', 3, 5);
 				?>
 			</td>
 		</tr>
@@ -164,37 +164,37 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Max value');?></td>
 			<td>
 				<?php
-				print_input_text('max_percentile', 0, '', 3, 5);
+				html_print_input_text('max_percentile', 0, '', 3, 5);
 				?>
 			</td>
 		</tr>
 		<tr id="period_row" class="module_graph datos">
 			<td><?php echo __('Period');?></td>
-			<td><?php print_select ($intervals, 'period', '', '', '--', 0, false, false, false);?></td>
+			<td><?php html_print_select ($intervals, 'period', '', '', '--', 0, false, false, false);?></td>
 		</tr>
 		<tr id="module_graph_size_row" class="module_graph datos">
 			<td><?php echo __('Size');?></td>
 			<td>
 				<?php
-				print_input_text('width_module_graph', 300, '', 3, 5);
+				html_print_input_text('width_module_graph', 300, '', 3, 5);
 				echo ' X ';
-				print_input_text('height_module_graph', 180, '', 3, 5);
+				html_print_input_text('height_module_graph', 180, '', 3, 5);
 				?>
 			</td>
 		</tr>
 		<tr id="button_update_row" class="datos">
 			<td colspan="2" style="text-align: right;">
 			<?php
-			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
-			print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub upd"');
+			html_print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
+			html_print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub upd"');
 			?>
 			</td>
 		</tr>
 		<tr id="button_create_row" class="datos">
 			<td colspan="2" style="text-align: right;">
 			<?php
-			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
-			print_button(__('Create'), 'create_button', false, 'createAction();', 'class="sub wand"');
+			html_print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
+			html_print_button(__('Create'), 'create_button', false, 'createAction();', 'class="sub wand"');
 			?>
 			</td>
 		</tr>
@@ -210,9 +210,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td>
 				<?php
 				echo '(';
-				print_input_text('left', '0', '', 3, 5);
+				html_print_input_text('left', '0', '', 3, 5);
 				echo ' , ';
-				print_input_text('top', '0', '', 3, 5);
+				html_print_input_text('top', '0', '', 3, 5);
 				echo ')';
 				?>
 			</td>
@@ -221,9 +221,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Size') . '<a href="#" class="tip">&nbsp;<span>' . __("For use the original image file size, set 0 width and 0 height.") . '</span></a>';?></td>
 			<td>
 				<?php
-				print_input_text('width', 0, '', 3, 5);
+				html_print_input_text('width', 0, '', 3, 5);
 				echo ' X ';
-				print_input_text('height', 0, '', 3, 5);
+				html_print_input_text('height', 0, '', 3, 5);
 				?>
 			</td>
 		</tr>
@@ -232,7 +232,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td>
 				<?php
 				$parents = get_items_parents($visualConsole['id']);
-				print_select($parents, 'parent', '', '', __('None'), 0);
+				html_print_select($parents, 'parent', '', '', __('None'), 0);
 				?>
 			</td>
 		</tr>
@@ -240,13 +240,13 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
-				print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole, 'map_linked', '', '', 'None', '0');
+				html_print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole, 'map_linked', '', '', 'None', '0');
 				?>
 			</td>
 		</tr>
 		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value label datos">
 			<td><?php echo __('Label color');?></td>
-			<td><?php print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
+			<td><?php html_print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
 		</tr>				
 	</tbody>
 </table>
@@ -270,19 +270,19 @@ foreach ($layoutDatas as $layoutData) {
 		continue;
 	
 	printItemInVisualConsole($layoutData);
-	print_input_hidden('status_'.$layoutData['id'], getStatusElement($layoutData));
+	html_print_input_hidden('status_'.$layoutData['id'], getStatusElement($layoutData));
 }
 
 echo '</div>';
 echo '</div>';
 
-print_input_hidden('background_width', $widthBackground);
-print_input_hidden('background_height', $heightBackground);
+html_print_input_hidden('background_width', $widthBackground);
+html_print_input_hidden('background_height', $heightBackground);
 
 $backgroundSizes = getimagesize('images/console/background/' . $background);
 
-print_input_hidden('background_original_width', $backgroundSizes[0]);
-print_input_hidden('background_original_height', $backgroundSizes[1]);
+html_print_input_hidden('background_original_width', $backgroundSizes[0]);
+html_print_input_hidden('background_original_height', $backgroundSizes[1]);
 echo "</form>";
 
 //Hack to translate messages in javascript

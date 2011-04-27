@@ -96,7 +96,7 @@ if (($create != "") OR ($view != "")){
 	echo '<td class="datos2">';
 	$fields[0]= __("Standard");
 	$fields[1]= __("Nagios");
-	print_select ($fields, "form_plugin_type", $form_plugin_type);
+	html_print_select ($fields, "form_plugin_type", $form_plugin_type);
 	
 	echo '<tr><td class="datos">'.__('Max. timeout');
 	echo '<td class="datos">';
@@ -256,7 +256,7 @@ else {
 			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
 			echo "</td><td class=$tdcolor>";
-			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'>" . print_image("images/cross.png", true, array("border" => '0')) . "</a>";
+			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";

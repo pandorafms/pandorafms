@@ -162,7 +162,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	// http://us3.php.net/manual/en/function.imagefilledrectangle.php
 	// With some adds from sdonie at lgc dot com
 	// Get from official documentation PHP.net website. Thanks guys :-)
-	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode) {
+	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize) {
 		global $config;
 		global $REMOTE_ADDR;
 		
@@ -236,7 +236,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
    	switch ($mode)
    	{
    		case 0:
-   			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode);
+   			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize);
    			/*
 if ($mode == 0) {
 		$engine->background_color = '#E6E6D2';
@@ -267,7 +267,7 @@ if ($mode == 0) {
 				imagePng($imgPng); 
 		   	}
 		   	else 
-		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode);
+		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize);
    			break;
    	}
 }

@@ -1,3 +1,8 @@
+2011-04-27 Sancho Lerena <slerena@artica.es>
+
+    * include/graphs/functions_gd.php: Fontsize was not being passed
+    as parameter in drawRating(), now is passed.
+
 2011-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/setup/setup_visuals.php

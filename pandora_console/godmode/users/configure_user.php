@@ -329,7 +329,7 @@ if (count($usr_groups) > 1){
 
 $table->data[11][0] = __('Flash charts');
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
-$table->data[11][1] = print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false); 
+$table->data[11][1] = html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false); 
 $table->data[12][0] = __('Block size for pagination');
 $table->data[12][1] = html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 

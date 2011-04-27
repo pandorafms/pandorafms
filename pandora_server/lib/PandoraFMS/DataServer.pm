@@ -454,6 +454,12 @@ sub process_module_data ($$$$$$$$$) {
 	$module_conf->{'descripcion'} = get_tag_value ($data, 'description', undef);
 	$module_conf->{'post_process'} = get_tag_value ($data, 'post_process', undef);
 	$module_conf->{'module_interval'} = get_tag_value ($data, 'module_interval', undef);
+	$module_conf->{'min_critical'} = get_tag_value ($data, 'min_critical', undef);
+	$module_conf->{'max_critical'} = get_tag_value ($data, 'max_critical', undef);
+	$module_conf->{'min_warning'} = get_tag_value ($data, 'min_warning', undef);
+	$module_conf->{'max_warning'} = get_tag_value ($data, 'max_warning', undef);
+	$module_conf->{'disabled'} = get_tag_value ($data, 'disabled', undef);
+	$module_conf->{'min_ff_event'} = get_tag_value ($data, 'min_ff_event', undef);
 	
 	# Calculate the module interval in seconds
 	$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
@@ -493,6 +499,12 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
 		$module_conf->{'post_process'} = 0 unless defined ($module_conf->{'post_process'});
 		$module_conf->{'module_interval'} = $interval unless defined ($module_conf->{'module_interval'}); # 1 * $interval
+		$module_conf->{'min_critical'} = 0 unless defined ($module_conf->{'min_critical'});
+		$module_conf->{'max_critical'} = 0 unless defined ($module_conf->{'max_critical'});
+		$module_conf->{'min_warning'} = 0 unless defined ($module_conf->{'min_warning'});
+		$module_conf->{'max_warning'} = 0 unless defined ($module_conf->{'max_warning'});
+		$module_conf->{'disabled'} = 0 unless defined ($module_conf->{'disabled'});
+		$module_conf->{'min_ff_event'} = 0 unless defined ($module_conf->{'min_ff_event'});
 
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
@@ -515,11 +527,24 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'descripcion'} = $module->{'descripcion'} unless defined ($module_conf->{'descripcion'});
 		$module_conf->{'post_process'} = $module->{'post_process'} unless defined ($module_conf->{'post_process'});
 		$module_conf->{'module_interval'} = $module->{'module_interval'} unless defined ($module_conf->{'module_interval'});
+		$module_conf->{'min_critical'} = $module->{'min_critical'} unless defined ($module_conf->{'min_critical'});
+		$module_conf->{'max_critical'} = $module->{'max_critical'} unless defined ($module_conf->{'max_critical'});
+		$module_conf->{'min_warning'} = $module->{'min_warning'} unless defined ($module_conf->{'min_warning'});
+		$module_conf->{'max_warning'} = $module->{'max_warning'} unless defined ($module_conf->{'max_warning'});
+		$module_conf->{'disabled'} = $module->{'disabled'} unless defined ($module_conf->{'disabled'});
+		$module_conf->{'min_ff_event'} = $module->{'min_ff_event'} unless defined ($module_conf->{'min_ff_event'});
 
-		# Update module configuration if in learning mode
-		if ($agent->{'modo'} eq '1') {
-			update_module_configuration ($pa_config, $dbh, $module, $module_conf);
+		# The group name has to be translated to a group ID
+		my $conf_group_id = -1;
+		if (defined $module_conf->{'group'}) {
+			my $conf_group_id = get_group_id ($dbh, $module_conf->{'group'});
 		}
+		$module_conf->{'id_module_group'} = ($conf_group_id == -1) ? $module->{'id_module_group'} : $conf_group_id;
+	}
+
+	# Update module configuration if in learning mode
+	if ($agent->{'modo'} eq '1') {
+		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
 
 	$ModuleSem->up ();
@@ -598,14 +623,14 @@ sub update_module_configuration ($$$$) {
 	my ($pa_config, $dbh, $module, $module_conf) = @_;
 
 	# Update if at least one of the configuration tokens has changed
-	if ($module->{'min'} != $module_conf->{'min'} || $module->{'max'} != $module_conf->{'max'} ||
-		$module->{'descripcion'} ne $module_conf->{'descripcion'} || $module->{'post_process'} != $module_conf->{'post_process'} ||
-		$module->{'module_interval'} != $module_conf->{'module_interval'}) {
-			logger($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
-			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?
+	foreach my $conf_token ('min', 'max', 'descripcion', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event') {
+		if ($module->{$conf_token} ne $module_conf->{$conf_token}) {
+			logger ($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
+			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?, min_critical = ?, max_critical = ?, min_warning = ?, max_warning = ?, disabled = ?, min_ff_event = ?
 				WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
-				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
+				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module_conf->{'min_critical'}, $module_conf->{'max_critical'}, $module_conf->{'min_warning'}, $module_conf->{'max_warning'}, $module_conf->{'disabled'}, $module_conf->{'min_ff_event'}, $module->{'id_agente_modulo'});
 			return;
+		}
 	}
 }
 

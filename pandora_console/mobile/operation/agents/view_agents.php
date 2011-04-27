@@ -36,11 +36,11 @@ class ViewAgents {
 	
 	private function showForm() {
 		echo "<form>";
-		print_input_hidden('page', 'agents');
+		html_print_input_hidden('page', 'agents');
 		global $config;
 		$config['text_char_long'] = 12;
-		print_select_groups($this->user->getIdUser(), "AR", true, 'filter_group', $this->filterGroup);
-		print_input_text('filter_text', $this->filterText, __('Free text search'), 5, 20);
+		html_print_select_groups($this->user->getIdUser(), "AR", true, 'filter_group', $this->filterGroup);
+		html_print_input_text('filter_text', $this->filterText, __('Free text search'), 5, 20);
 		echo "<input type='submit' class='button_filter' name='submit_button' value='' alt='" . __('Filter') . "' title='" . __('Filter') . "' />";
 		echo "<form>";
 	}
@@ -135,7 +135,7 @@ class ViewAgents {
 			$table->data[] = $data;
 		}
 		
-		print_table($table);
+		html_print_table($table);
 		
 		$pagination = pagination ($total_agents,
 			ui_get_url_refresh (array ('filter_group' => $this->filterGroup, 'filter_group' => $this->filterGroup)),
@@ -195,7 +195,7 @@ class ViewAgent {
 		$table->data[3][0] = __('Last contact');
 		$table->data[3][1] = $this->agent['ultimo_contacto'];
 		
-		print_table($table);
+		html_print_table($table);
 		
 		$sql = sprintf ("
 			SELECT *
@@ -318,7 +318,7 @@ class ViewAgent {
 			$table->data[] = $data;
 		}
 		
-		print_table($table);
+		html_print_table($table);
 		
 		$table->head = array();
 		$table->head[0] = __('Module');
@@ -375,7 +375,7 @@ class ViewAgent {
 			
 			$table->data[] = $data;
 		}
-		print_table($table);
+		html_print_table($table);
 	}
 }
 
@@ -422,7 +422,7 @@ class viewGraph {
 		$intervals[86400] = human_time_description_raw (86400); // 1 day 
 		$intervals[604800] = human_time_description_raw (604800); // 1 week
 		$intervals[2592000] = human_time_description_raw (2592000); // 1 month
-		echo print_extended_select_for_time ($intervals, 'period', $this->period, 'this.form.submit();', '', '0', 5) . __(" secs");
+		echo html_print_extended_select_for_time ($intervals, 'period', $this->period, 'this.form.submit();', '', '0', 5) . __(" secs");
 		echo "</form><br />";
 		
 		$moduletype_name = get_moduletype_name (get_agentmodule_type ($this->idAgentModule));
@@ -524,7 +524,7 @@ class viewGraph {
 			array_push ($table->data, $data);
 		}
 		
-		print_table($table);
+		html_print_table($table);
 		
 		$pagination = ui_pagination ($count,
 			ui_get_url_refresh (array ('period' => $this->period)),

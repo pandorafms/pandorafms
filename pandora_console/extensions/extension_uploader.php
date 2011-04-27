@@ -55,14 +55,14 @@ function extension_uploader_extensions() {
 	$table->width = '50%';
 	$table->data = array();
 	$table->data[0][0] = __('Upload extension');
-	$table->data[0][1] = print_input_file('extension', true) .
+	$table->data[0][1] = html_print_input_file('extension', true) .
 		ui_print_help_tip (__("Upload the extension as a zip file."), true);
 	
 	echo "<form method='post' enctype='multipart/form-data'>";
-	print_table($table);
+	html_print_table($table);
 	echo "<div style='text-align: right; width: " . $table->width . "'>";
-	print_input_hidden('upload', 1);
-	print_submit_button(__('Upload'), 'submit', false, 'class="sub add"');
+	html_print_input_hidden('upload', 1);
+	html_print_submit_button(__('Upload'), 'submit', false, 'class="sub add"');
 	echo "</div>";
 	echo "</form>";
 }

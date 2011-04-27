@@ -1455,7 +1455,7 @@ function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
 function fs_error_image2 () {
 	global $config;
 
-	return print_image("images/image_problem.png", true, array("border" => '0'));
+	return html_print_image("images/image_problem.png", true, array("border" => '0'));
 }
 
 

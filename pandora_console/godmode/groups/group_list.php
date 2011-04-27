@@ -169,7 +169,7 @@ if ($update_group) {
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
 
-	$usedGroup = checkUsedGroup($id_group);
+	$usedGroup = groups_check_used($id_group);
 	
 	if (!$usedGroup['return']) {
 		
@@ -289,8 +289,8 @@ foreach ($groups as $id_group => $group) {
 		$data[3] = '';
 	}
 	else {
-		$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
-		$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+		$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+		$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 	}
 	
 	array_push ($table->data, $data);
@@ -318,11 +318,11 @@ function showBranch(parent) {
 </script>
 <?php
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 

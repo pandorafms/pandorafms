@@ -154,17 +154,17 @@ foreach ($commands as $command) {
 	if (! $command['internal'])
 		$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-			print_image("images/cross.png", true) . '</a>';
+			html_print_image("images/cross.png", true) . '</a>';
 	
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
-print_submit_button (__('Create'), 'create', false, 'class="sub next"');
-print_input_hidden ('create_alert', 1);
+html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+html_print_input_hidden ('create_alert', 1);
 echo '</form>';
 echo '</div>';
 ?>

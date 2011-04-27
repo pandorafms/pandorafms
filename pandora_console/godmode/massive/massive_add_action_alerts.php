@@ -145,14 +145,14 @@ $table->size[1] = '85%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= print_image('images/spinner.png', true);
+$table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
+$table->data[1][1] = html_print_select (get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
 if (empty($id_agents)) {
@@ -163,9 +163,9 @@ else {
 }
 $table->data[2][0] = __('Alert templates');
 $table->data[2][0] .= '<span id="template_loading" class="invisible">';
-$table->data[2][0] .= print_image('images/spinner.png', true);
+$table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
-$table->data[2][1] = print_select (index_array ($alert_templates, 'id_alert_template', 'template_name'), 'id_alert_templates[]', '', '', '', '', true, true, true, '', $alert_templates == 0);
+$table->data[2][1] = html_print_select (index_array ($alert_templates, 'id_alert_template', 'template_name'), 'id_alert_templates[]', '', '', '', '', true, true, true, '', $alert_templates == 0);
 
 if (empty($id_agents)) {
 	$alert_compounds = '';
@@ -182,28 +182,28 @@ else {
 }
 $table->data[3][0] = __('Alert compounds');
 $table->data[3][0] .= '<span id="compound_loading" class="invisible">';
-$table->data[3][0] .= print_image('images/spinner.png', true);
+$table->data[3][0] .= html_print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
-$table->data[3][1] = print_select (index_array ($alert_compounds, 'id', 'name'), 'id_alert_compounds[]', '', false, '', '', true, true, true, '', $alert_compounds == 0);
+$table->data[3][1] = html_print_select (index_array ($alert_compounds, 'id', 'name'), 'id_alert_compounds[]', '', false, '', '', true, true, true, '', $alert_compounds == 0);
 	
 $actions = alerts_get_alert_actions ();
 $table->data[4][0] = __('Action');
-$table->data[4][1] = print_select ($actions, 'action', '', '', __('None'), 0, true);	
+$table->data[4][1] = html_print_select ($actions, 'action', '', '', __('None'), 0, true);	
 $table->data[4][1] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
 $table->data[4][1] .= '<span id="advanced_actions" class="advanced_actions invisible">';
 $table->data[4][1] .= __('Number of alerts match from').' ';
-$table->data[4][1] .= print_input_text ('fires_min', 0, '', 4, 10, true);
+$table->data[4][1] .= html_print_input_text ('fires_min', 0, '', 4, 10, true);
 $table->data[4][1] .= ' '.__('to').' ';
-$table->data[4][1] .= print_input_text ('fires_max', 0, '', 4, 10, true);
+$table->data[4][1] .= html_print_input_text ('fires_max', 0, '', 4, 10, true);
 $table->data[4][1] .= ui_print_help_icon ("alert-matches", true);
 $table->data[4][1] .= '</span>';
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('add', 1);
-print_submit_button (__('Add'), 'go', false, 'class="sub add"');
+html_print_input_hidden ('add', 1);
+html_print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 

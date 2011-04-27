@@ -182,11 +182,11 @@ $table->data = array();
 foreach ($extensions as $file => $extension) {
 	$data = array();
 	
-	$on = print_image("images/dot_green.png", true);
-	$off = print_image("images/dot_red.png", true); 
+	$on = html_print_image("images/dot_green.png", true);
+	$off = html_print_image("images/dot_red.png", true); 
 	if (!$extension['enabled']) {
-		$on = print_image("images/dot_green.disabled.png", true); 
-		$off = print_image("images/dot_red.disabled.png", true);
+		$on = html_print_image("images/dot_green.disabled.png", true); 
+		$off = html_print_image("images/dot_red.disabled.png", true);
 		$data[] = '<i style="color: grey;">' . $file . '</i>';
 	}
 	else {
@@ -250,15 +250,15 @@ foreach ($extensions as $file => $extension) {
 	}
 	
 	if (!$extension['enabled']) {
-		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . print_image("images/cross.disabled.png", true) . '</a>' .
-			' <a title="' . __('Enable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&enabled='.$file.'" class="mn">' . print_image("images/lightbulb_off.png", true) . '</a>';
+		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.disabled.png", true) . '</a>' .
+			' <a title="' . __('Enable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&enabled='.$file.'" class="mn">' . html_print_image("images/lightbulb_off.png", true) . '</a>';
 	}
 	else {
-		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . print_image("images/cross.png", true) . '</a>' .
-			' <a title="' . __('Disable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . print_image("images/lightbulb.png", true) . '</a>';
+		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.png", true) . '</a>' .
+			' <a title="' . __('Disable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . html_print_image("images/lightbulb.png", true) . '</a>';
 	}
 	
 	$table->data[] = $data;
 }
-print_table ($table);
+html_print_table ($table);
 ?>

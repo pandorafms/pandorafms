@@ -249,14 +249,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[3] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 		$table->head[4] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" =>$selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[5] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" =>$selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
@@ -279,11 +279,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[3] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[4] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
@@ -308,14 +308,14 @@ else
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up">'. print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=agent&sort=up">'. html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 		$table->head[3] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[4] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
@@ -336,11 +336,11 @@ else
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[3] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
@@ -372,7 +372,7 @@ echo '<form method="post" action="'.$url.'">';
 
 if (!empty ($table->data)) {
 	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';
 }
@@ -402,12 +402,12 @@ foreach ($alerts['alerts_combined'] as $alert) {
 
 if (!empty ($table->data)) {
 	ui_pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');
-	print_table ($table);
+	html_print_table ($table);
 }
 
 if (count($alerts['alerts_simple']) > 0 || count($alerts['alerts_combined']) > 0) {
 	echo '<div class="action-buttons" style="width: '.$table->width.';">';
-	print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);
+	html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);
 	echo '</div>';
 }
 

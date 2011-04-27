@@ -148,52 +148,52 @@ function get_server_info ($id_server = -1) {
 	foreach ($result as $server) {
 		switch ($server['server_type']) {
 			case 0:
-				$server["img"] = print_image ("images/data.png", true, array ("title" => __('Data server')));
+				$server["img"] = html_print_image ("images/data.png", true, array ("title" => __('Data server')));
 				$server["type"] = "data";
 				$id_modulo = 1;
 				break;
 			case 1:
-				$server["img"] = print_image ("images/network.png", true, array ("title" => __('Network server')));
+				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Network server')));
 				$server["type"] = "network";
 				$id_modulo = 2;
 				break;
 			case 2:
-				$server["img"] = print_image ("images/snmp.png", true, array ("title" => __('SNMP server')));
+				$server["img"] = html_print_image ("images/snmp.png", true, array ("title" => __('SNMP server')));
 				$server["type"] = "snmp";
 				$id_modulo = 0;
 				break;
 			case 3:
-				$server["img"] = print_image ("images/recon.png", true, array ("title" => __('Recon server')));
+				$server["img"] = html_print_image ("images/recon.png", true, array ("title" => __('Recon server')));
 				$server["type"] = "recon";
 				$id_modulo = 0;
 				break;
 			case 4:
-				$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin server')));
+				$server["img"] = html_print_image ("images/plugin.png", true, array ("title" => __('Plugin server')));
 				$server["type"] = "plugin";
 				$id_modulo = 4;
 				break;
 			case 5:
-				$server["img"] = print_image ("images/chart_bar.png", true, array ("title" => __('Prediction server')));
+				$server["img"] = html_print_image ("images/chart_bar.png", true, array ("title" => __('Prediction server')));
 				$server["type"] = "prediction";
 				$id_modulo = 5;
 				break;
 			case 6:
-				$server["img"] = print_image ("images/wmi.png", true, array ("title" => __('WMI server')));
+				$server["img"] = html_print_image ("images/wmi.png", true, array ("title" => __('WMI server')));
 				$server["type"] = "wmi";
 				$id_modulo = 6;
 				break;
 			case 7:
-				$server["img"] = print_image ("images/server_export.png", true, array ("title" => __('Export server')));
+				$server["img"] = html_print_image ("images/server_export.png", true, array ("title" => __('Export server')));
 				$server["type"] = "export";
 				$id_modulo = 0;
 				break;
 			case 8:
-				$server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory server')));
+				$server["img"] = html_print_image ("images/page_white_text.png", true, array ("title" => __('Inventory server')));
 				$server["type"] = "inventory";
 				$id_modulo = 0;
 				break;
 			case 9:
-				$server["img"] = print_image ("images/world.png", true, array ("title" => __('Web server')));
+				$server["img"] = html_print_image ("images/world.png", true, array ("title" => __('Web server')));
 				$server["type"] = "web";
 				$id_modulo = 0;
 				break;
@@ -402,22 +402,22 @@ function show_server_type ($id) {
 
 	switch ($id) {
 		case 1:
-			return print_image("images/database.png", true, array("title" => "Pandora FMS Data server"));
+			return html_print_image("images/database.png", true, array("title" => "Pandora FMS Data server"));
 			break;
 		case 2:
-			return print_image("images/network.png", true, array("title" => "Pandora FMS Network server"));
+			return html_print_image("images/network.png", true, array("title" => "Pandora FMS Network server"));
 			break;
 		case 4:
-			return print_image("images/plugin.png", true, array("title" => "Pandora FMS Plugin server"));
+			return html_print_image("images/plugin.png", true, array("title" => "Pandora FMS Plugin server"));
 			break;
 		case 5:
-			return print_image("images/chart_bar.png", true, array("title" => "Pandora FMS Prediction server"));
+			return html_print_image("images/chart_bar.png", true, array("title" => "Pandora FMS Prediction server"));
 			break;
 		case 6:
-			return print_image("images/wmi.png", true, array("title" => "Pandora FMS WMI server"));
+			return html_print_image("images/wmi.png", true, array("title" => "Pandora FMS WMI server"));
 			break;
 		case 7:
-			return print_image("images/server_web.png", true, array("title" => "Pandora FMS WEB server"));
+			return html_print_image("images/server_web.png", true, array("title" => "Pandora FMS WEB server"));
 			break;
 		default:
 			return "--";

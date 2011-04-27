@@ -257,23 +257,23 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: top';
 
 $table->data[0][0] = __('User ID');
-$table->data[0][1] = print_input_text_extended ('id_user', $id, '', '', 20, 60,
+$table->data[0][1] = html_print_input_text_extended ('id_user', $id, '', '', 20, 60,
 	!$new_user || $view_mode, '', '', true);
 
 $table->data[1][0] = __('Full (display) name');
-$table->data[1][1] = print_input_text_extended ('fullname', $user_info['fullname'],
+$table->data[1][1] = html_print_input_text_extended ('fullname', $user_info['fullname'],
 	'', '', 30, 255, $view_mode, '', '', true);
 
 $table->data[2][0] = __('Language');
-$table->data[2][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+$table->data[2][1] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info["language"], '', '', '', true);
 
 if ($config['user_can_update_password']) {
 	$table->data[4][0] = __('Password');
-	$table->data[4][1] = print_input_text_extended ('password_new', '', '', '',
+	$table->data[4][1] = html_print_input_text_extended ('password_new', '', '', '',
 		15, 255, $view_mode, '', '', true, true);
 	$table->data[5][0] = __('Password confirmation');
-	$table->data[5][1] = print_input_text_extended ('password_confirm', '', '',
+	$table->data[5][1] = html_print_input_text_extended ('password_confirm', '', '',
 		'', 15, 255, $view_mode, '', '', true, true);
 }
 
@@ -282,26 +282,26 @@ if ($config['admin_can_make_admin']) {
 	$table->data[6][0] = __('Global Profile');
 	$table->data[6][1] = '';
 	if ($own_info['is_admin'] || $user_info['is_admin']){
-		$table->data[6][1] = print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
+		$table->data[6][1] = html_print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
 		$table->data[6][1] .= __('Administrator');
 		$table->data[6][1] .= ui_print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
 		$table->data[6][1] .= '<br />';
 	}
-	$table->data[6][1] .= print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);
+	$table->data[6][1] .= html_print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);
 	$table->data[6][1] .= __('Standard User');
 	$table->data[6][1] .= ui_print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"), true);
 }
 
 $table->data[7][0] = __('E-mail');
-$table->data[7][1] = print_input_text_extended ("email", $user_info['email'],
+$table->data[7][1] = html_print_input_text_extended ("email", $user_info['email'],
 	'', '', 20, 100, $view_mode, '', '', true);
 
 $table->data[8][0] = __('Phone number');
-$table->data[8][1] = print_input_text_extended ("phone", $user_info['phone'],
+$table->data[8][1] = html_print_input_text_extended ("phone", $user_info['phone'],
 	'', '', 10, 30, $view_mode, '', '', true);
 
 $table->data[9][0] = __('Comments');
-$table->data[9][1] = print_textarea ("comments", 2, 65, $user_info['comments'],
+$table->data[9][1] = html_print_textarea ("comments", 2, 65, $user_info['comments'],
 	($view_mode ? 'readonly="readonly"' : ''), true);
 
 // If we want to create a new user, skins displayed are the skins of the creator's group. If we want to update, skins displayed are the skins of the modified user.  
@@ -331,22 +331,22 @@ $table->data[11][0] = __('Flash charts');
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
 $table->data[11][1] = print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false); 
 $table->data[12][0] = __('Block size for pagination');
-$table->data[12][1] = print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
+$table->data[12][1] = html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 
 echo '<form method="post">';
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 if ($new_user) {
 	if ($config['admin_can_add_user']){
-		print_input_hidden ('create_user', 1);
-		print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+		html_print_input_hidden ('create_user', 1);
+		html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	}
 } else {
 	if ($config['user_can_update_info']) {
-		print_input_hidden ('update_user', 1);
-		print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
+		html_print_input_hidden ('update_user', 1);
+		html_print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
 	}
 }
 echo '</div>';
@@ -380,12 +380,12 @@ foreach ($result as $profile) {
 	$data = array ();
 
 	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
-	$data[1] = ui_print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' . ui_print_truncate_text(get_group_name ($profile['id_grupo'], True), 35).'</a>';
+	$data[1] = ui_print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), 35).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-	$data[2] .= print_input_hidden ('delete_profile', 1, true);
-	$data[2] .= print_input_hidden ('id_user_profile', $profile['id_up'], true);
-	$data[2] .= print_input_hidden ('id_user', $id, true);
-	$data[2] .= print_input_image ('del', 'images/cross.png', 1, '', true);
+	$data[2] .= html_print_input_hidden ('delete_profile', 1, true);
+	$data[2] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);
+	$data[2] .= html_print_input_hidden ('id_user', $id, true);
+	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true);
 	$data[2] .= '</form>';
 	
 	array_push ($table->data, $data);
@@ -394,23 +394,23 @@ foreach ($result as $profile) {
 $data = array ();
 $data[0] = '<form method="post">';
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
+	$data[0] .= html_print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 		0, true, false, false);
 }
 else {
-	$data[0] .= print_select (get_profiles (array ('pandora_management' => '<> 1', 'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'),
+	$data[0] .= html_print_select (get_profiles (array ('pandora_management' => '<> 1', 'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'),
 		0, true, false, false);
 }
-$data[1] = print_select_groups($config['id_user'], "UM", $own_info['is_admin'],
+$data[1] = html_print_select_groups($config['id_user'], "UM", $own_info['is_admin'],
 	'assign_group', -1, '', __('None'), -1, true, false, false);
-$data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
-$data[2] .= print_input_hidden ('id', $id, true);
-$data[2] .= print_input_hidden ('add_profile', 1, true);
+$data[2] = html_print_input_image ('add', 'images/add.png', 1, '', true);
+$data[2] .= html_print_input_hidden ('id', $id, true);
+$data[2] .= html_print_input_hidden ('add_profile', 1, true);
 $data[2] .= '</form>';
 
 array_push ($table->data, $data);
 
-print_table ($table);
+html_print_table ($table);
 echo '</form>';
 
 unset ($table);

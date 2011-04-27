@@ -60,16 +60,16 @@ echo "<b>".__('Group')."</b>";
 echo '</td>';
 echo '</tr><tr>';
 echo '<td>';
-print_input_text('search_string', $search_string, '');
+html_print_input_text('search_string', $search_string, '');
 echo '</td>';
 echo '<td>';
-print_select ($status, 'search_status', $search_status, '', '', 0, false);
+html_print_select ($status, 'search_status', $search_status, '', '', 0, false);
 echo '</td>';
 echo '<td>';
-print_select ($groups, 'search_group', $search_group, '', '', 0, false, false, false);
+html_print_select ($groups, 'search_group', $search_group, '', '', 0, false, false, false);
 echo '</td>';
 echo '<td>';
-print_submit_button (__('Search'));
+html_print_submit_button (__('Search'));
 echo '</td>';
 echo '</tr></table>';
 
@@ -130,10 +130,10 @@ foreach ($incidents as $row) {
 	$data[7] = $row["workunits_hours"]." ".__('Hours')."<br/>".$row["workunits_count"]." ".__('Workunits');
 	$data[8] = $row["id_creator"];
 	$data[9] = $row["id_usuario"];
-	$data[10] = "<a href='index.php?sec=incidencias&sec2=operation/integria_incidents/incident&delete_incident=".$row['id_incidencia']."'>".print_image("images/cross.png", true, array('title' => __('Delete incident')))."</a><a href='index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident=".$row["id_incidencia"]."'>".print_image("images/config.png", true, array('title' => __('View incident details')))."</a>";
+	$data[10] = "<a href='index.php?sec=incidencias&sec2=operation/integria_incidents/incident&delete_incident=".$row['id_incidencia']."'>".html_print_image("images/cross.png", true, array('title' => __('Delete incident')))."</a><a href='index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident=".$row["id_incidencia"]."'>".html_print_image("images/config.png", true, array('title' => __('View incident details')))."</a>";
 
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+html_print_table ($table);
 ?>

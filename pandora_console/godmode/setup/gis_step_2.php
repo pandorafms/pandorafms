@@ -51,7 +51,7 @@ switch ($action) {
 		$mapConnection_centerAltitude = '0';
 		$mapConnectionData = null;
 		
-		print_input_hidden('action', 'save_map_connection');
+		html_print_input_hidden('action', 'save_map_connection');
 		break;
 	case 'edit_connection_map':
 		// Header
@@ -73,8 +73,8 @@ switch ($action) {
 		$mapConnection_centerAltitude = $mapConnection['initial_altitude'];
 		$mapConnectionData = json_decode($mapConnection['conection_data'], true);
 		
-		print_input_hidden('id_connection_map', $idConnectionMap);
-		print_input_hidden('action', 'save_edit_map_connection');
+		html_print_input_hidden('id_connection_map', $idConnectionMap);
+		html_print_input_hidden('action', 'save_edit_map_connection');
 		break;
 	case 'save_map_connection':
 	case 'save_edit_map_connection':
@@ -127,7 +127,7 @@ switch ($action) {
 				
 		//TODO VALIDATE PARAMETERS
 		if ($mapConnection_name != "" && $mapConnection_type != ""){
-			saveMapConnection($mapConnection_name, $mapConnection_group,
+			gis_save_map_connection($mapConnection_name, $mapConnection_group,
 				$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
 				$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,
 				$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
@@ -147,20 +147,20 @@ $table->width = '90%';
 
 $table->data = array();
 $table->data[0][0] = __('Connection Name') . ui_print_help_tip (__('Descriptive name for the connection'), true). ":";
-$table->data[0][1] = print_input_text ('name', $mapConnection_name, '', 30, 60, true);
+$table->data[0][1] = html_print_input_text ('name', $mapConnection_name, '', 30, 60, true);
 
 $table->data[1][0] = __("Group") . ui_print_help_tip (__('Group that owns the connection'), true) . ":";
-$table->data[1][1] = print_select_groups(false, false, false, 'group', $mapConnection_group, '', __('All'), '0', true);
+$table->data[1][1] = html_print_select_groups(false, false, false, 'group', $mapConnection_group, '', __('All'), '0', true);
 
 $table->data[2][0] = __('Number of zoom levels') . ":";
-$table->data[2][1] = print_input_text ('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);
+$table->data[2][1] = html_print_input_text ('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);
 
 
 $table->data[3][0] = __('Default zoom level') . ui_print_help_tip (__('Zoom level used when the map is opened'), true). ":";
-$table->data[3][1] = print_input_text ('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
+$table->data[3][1] = html_print_input_text ('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
 
 echo "<h3>" . __('Basic configuration') . "</h3>";
-print_table($table);
+html_print_table($table);
 
 $table->width = '60%';
 $table->data = array();
@@ -168,10 +168,10 @@ $types["OSM"] = __('Open Street Maps');
 $types["Gmap"] = __('Google Maps');
 $types["Static_Image"] = __('Static Image');
 $table->data[0][0] = __('Type') . ":";
-$table->data[0][1] = print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", __('Please select the connection type'), 0, true);
+$table->data[0][1] = html_print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", __('Please select the connection type'), 0, true);
 
 echo "<h3>" . __('Map connection type') . "</h3>";
-print_table ($table);
+html_print_table ($table);
 
 $optionsConnectionTypeTable = '';
 $mapConnectionDataUrl = '';
@@ -207,7 +207,7 @@ if ($mapConnectionData != null) {
 $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
 			'<td>'  . htmlentities(__("Tile Server URL"), ENT_QUOTES, "UTF-8") . ':</td>' .
-			'<td><input id="type" type="hidden" name="type" value="OSM" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
+			'<td><input id="type" type="hidden" name="type" value="OSM" />' . html_print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
 
@@ -219,44 +219,44 @@ $gmaps_types["G_SATELITE_MAP"] = __('Google Satelite');
 $optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="90%">' .
 		'<tr class="row_0">' .
 			'<td>'  . __("Google Map Type") . ':</td>' .
-			'<td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(print_select($gmaps_types,'gmap_type', $gmap_type, "", '', 0, true)) . '</td>' .
+			'<td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(html_print_select($gmaps_types,'gmap_type', $gmap_type, "", '', 0, true)) . '</td>' .
 		'</tr>' . 
 		'<tr class="row_2">' .
 			'<td>'  . __("Google Maps Key") . ':</td>' .
 		'</tr>' . 
 		'<tr class="row_3">' .
-			'<td colspan="2">' . print_input_text ('gmap_key', $gmap_key, '', 90, 128, true) . '</td>' .
+			'<td colspan="2">' . html_print_input_text ('gmap_key', $gmap_key, '', 90, 128, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
 // Image Map Connection
 $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
 			'<td>'  . __("Image URL") . ':</td>' .
-			'<td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
+			'<td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />' . html_print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
 		'</tr>' . 
 		'<tr class="row_1">' .
 			'<td colspan="4"><strong>'  . __("Corners of the area of the image") . ':</strong></td>' .
 		'</tr>' . 
 		'<tr class="row_2">' .
 			'<td>'  . __("Left") . ':</td>' .
-			'<td>'. print_input_text ('bb_left', $bb_left, '', 25, 25, true) . '</td>' .
+			'<td>'. html_print_input_text ('bb_left', $bb_left, '', 25, 25, true) . '</td>' .
 			'<td>'  . __("Bottom") . ':</td>' .
-			'<td>'. print_input_text ('bb_bottom', $bb_bottom, '',25 , 25, true) . '</td>' .
+			'<td>'. html_print_input_text ('bb_bottom', $bb_bottom, '',25 , 25, true) . '</td>' .
 		'</tr>' . 
 		'<tr class="row_3">' .
 			'<td>'  . __("Right") . ':</td>' .
-			'<td>'. print_input_text ('bb_right', $bb_right, '', 25, 25, true) . '</td>' .
+			'<td>'. html_print_input_text ('bb_right', $bb_right, '', 25, 25, true) . '</td>' .
 			'<td>'  . __("Top") . ':</td>' .
-			'<td>'. print_input_text ('bb_top', $bb_top, '', 25, 25, true) . '</td>' .
+			'<td>'. html_print_input_text ('bb_top', $bb_top, '', 25, 25, true) . '</td>' .
 		'</tr>' . 
 		'<tr class="row_4">' .
 			'<td colspan="4"><strong>'  . __("Image Size") . ':</strong></td>' .
 		'</tr>' . 
 		'<tr class="row_5">' .
 			'<td>'  . __("Width") . ':</td>' .
-			'<td>'. print_input_text ('image_width', $image_width, '', 25, 25, true) . '</td>' .
+			'<td>'. html_print_input_text ('image_width', $image_width, '', 25, 25, true) . '</td>' .
 			'<td>'  . __("Height") . ':</td>' .
-			'<td>'. print_input_text ('image_height', $image_height, '', 25, 25, true) . '</td>' .
+			'<td>'. html_print_input_text ('image_height', $image_height, '', 25, 25, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
 if ($mapConnectionData != null) {
@@ -276,7 +276,7 @@ if ($mapConnectionData != null) {
 echo "<div id='form_map_connection_type'>" . $optionsConnectionTypeTable . "</div>";
 
 echo "<h3>" . __('Preview to select the center of the map and the default position of an agent without gis data') . "</h3>";
-print_button(__("Load preview map"),'button_refresh', false, 'refreshMapView();', 'class="sub"');
+html_print_button(__("Load preview map"),'button_refresh', false, 'refreshMapView();', 'class="sub"');
 echo "<br /><br />";
 echo "<div id='map' style='width: 300px; height: 300px; border: 1px solid black; float: left'></div>";
 
@@ -289,24 +289,24 @@ $table->data[0][1] = __('Map Center') . ui_print_help_tip (__('Position to cente
 $table->data[0][2] = __("Default position for agents without GIS data");
 
 $table->data[1][0] = __('Change in the map'). ui_print_help_tip (__('This selects what to change by clicking on the map'), true);
-$table->data[1][1] = print_radio_button_extended('radio_button', 1, '', 1, false, "changeSetManualPosition(true, false)", '', true);
-$table->data[1][2] = print_radio_button_extended('radio_button', 2, '', 0, false, "changeSetManualPosition(false, true)", '', true);
+$table->data[1][1] = html_print_radio_button_extended('radio_button', 1, '', 1, false, "changeSetManualPosition(true, false)", '', true);
+$table->data[1][2] = html_print_radio_button_extended('radio_button', 2, '', 0, false, "changeSetManualPosition(false, true)", '', true);
 
 $table->data[2][0] = __('Latitude') . ":";
-$table->data[2][1] = print_input_text ('center_latitude', $mapConnection_centerLatitude, '', 10, 10, true);
-$table->data[2][2] = print_input_text ('default_latitude', $mapConnection_defaultLatitude, '', 10, 10, true);
+$table->data[2][1] = html_print_input_text ('center_latitude', $mapConnection_centerLatitude, '', 10, 10, true);
+$table->data[2][2] = html_print_input_text ('default_latitude', $mapConnection_defaultLatitude, '', 10, 10, true);
 
 $table->data[3][0] = __('Longitude') . ":";
-$table->data[3][1] = print_input_text ('center_longitude', $mapConnection_centerLongitude, '', 10, 10, true);
-$table->data[3][2] = print_input_text ('default_longitude', $mapConnection_defaultLongitude, '', 10, 10, true);
+$table->data[3][1] = html_print_input_text ('center_longitude', $mapConnection_centerLongitude, '', 10, 10, true);
+$table->data[3][2] = html_print_input_text ('default_longitude', $mapConnection_defaultLongitude, '', 10, 10, true);
 
 $table->data[4][0] = __('Altitude') . ":";
-$table->data[4][1] = print_input_text ('center_altitude', $mapConnection_centerAltitude, '', 10, 10, true);
-$table->data[4][2] = print_input_text ('default_altitude', $mapConnection_defaultAltitude, '', 10, 10, true);
-print_table($table);
+$table->data[4][1] = html_print_input_text ('center_altitude', $mapConnection_centerAltitude, '', 10, 10, true);
+$table->data[4][2] = html_print_input_text ('default_altitude', $mapConnection_defaultAltitude, '', 10, 10, true);
+html_print_table($table);
 
 echo '<div class="action-buttons" style="clear: left; width: 90%; float: left;">';
-print_submit_button (__('Save'), '', false, 'class="sub save wand"');
+html_print_submit_button (__('Save'), '', false, 'class="sub save wand"');
 echo '</div>';
 echo "</form>";
 

@@ -89,8 +89,8 @@ else {
 		$data = array(
 			$reportstring,
 			$report['description'],
-			'<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' . print_image("images/reporting.png", true) . '</a>',
-			'<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . print_image("images/database_lightning.png", true) . '</a>'
+			'<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' . html_print_image("images/reporting.png", true) . '</a>',
+			'<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'
 		);
 		enterprise_hook ('load_custom_reporting_2');
 		
@@ -98,7 +98,7 @@ else {
 	}
 		
 	echo "<br />";ui_pagination ($totalReports);
-	print_table ($table); unset($table);
+	html_print_table ($table); unset($table);
 	ui_pagination ($totalReports);
 }
 ?>

@@ -49,11 +49,11 @@ $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id
 
 if ($config["pure"] == 0) {
 	$options[] = "<a href='$url&pure=1'>"
-		. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+		. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
 } else {
 	$options[] = "<a href='$url&pure=0'>"
-		. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";
 }
 
@@ -64,24 +64,24 @@ $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '50px';
 $table->data = array ();
-$table->data[0][0] = print_image("images/reporting.png", true, array("width" => '32', "height" => '32'));
+$table->data[0][0] = html_print_image("images/reporting.png", true, array("width" => '32', "height" => '32'));
 if ($report['description'] != '') {
 	$table->data[0][1] = $report['description'];
 } else {
 	$table->data[0][1] = $report['name'];
 }
 $table->data[1][0] = __('Date');
-$table->data[1][1] = print_input_text ('date', $date, '', 12, 10, true). ' ';
-$table->data[1][1] .= print_input_text ('time', $time, '', 7, 7, true). ' ';
-$table->data[1][1] .= print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
+$table->data[1][1] = html_print_input_text ('date', $date, '', 12, 10, true). ' ';
+$table->data[1][1] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';
+$table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 
 echo '<form method="post" action="">';
-print_table ($table);
-print_input_hidden ('id_report', $id_report);
+html_print_table ($table);
+html_print_input_hidden ('id_report', $id_report);
 echo '</form>';
 
 echo '<div id="loading">';
-echo print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
+echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
 echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';
 
@@ -122,7 +122,7 @@ $table->class = 'databox report_table';
 $table->rowclass = array ();
 $table->rowclass[0] = 'datos3';
 
-$report["group_name"] = get_group_name ($report['id_group']);
+$report["group_name"] = groups_get_name ($report['id_group']);
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -147,7 +147,7 @@ foreach ($contents as $content) {
 	
     render_report_html_item ($content, $table, $report);
 	echo '<div style = "overflow:auto;">';
-	print_table ($table);
+	html_print_table ($table);
 	echo "</div>";
 	flush ();
 }

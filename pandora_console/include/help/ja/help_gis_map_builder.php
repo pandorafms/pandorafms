@@ -21,11 +21,11 @@
 <dl>
 <dt>マップ名</dt>
 <dd><strong>マップ名</strong>をクリックすると、そのマップを編集できます。</dd>
-<dt><?php print_image("images/eye.png", false, array("alt" => "View")); ?> View</dt>
+<dt><?php html_print_image("images/eye.png", false, array("alt" => "View")); ?> View</dt>
 <dd>表示アイコンをクリックすると、マップを<strong>参照</strong>できます。</dd>
 <dt>デフォルトラジオボタン</dt>
 <dd><strong>ラジオボタン</strong>をクリックすると、そのマップが<strong>デフォルトマップ</strong>に設定されます。</dd>
-<dt><?php print_image("images/cross.png", false, array("alt" => "Delete")); ?> 削除</dt>
+<dt><?php html_print_image("images/cross.png", false, array("alt" => "Delete")); ?> 削除</dt>
 <dd>削除アイコンをクリックすると、そのマップを<strong>削除</strong>します。</dd>
 <dt>作成ボタン</dt>
 <dd>作成ボタンをクリックすると、新しいマップを<strong>作成</strong>できます。</dd>

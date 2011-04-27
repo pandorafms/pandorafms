@@ -145,7 +145,7 @@ if ($datetime === false || $datetime == -1) {
 	exit;
 }
 
-$group_name = get_group_name ($report['id_group']);
+$group_name = groups_get_name ($report['id_group']);
 switch ($config["dbtype"]) {
 	case "mysql":
 		$contents = db_get_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
@@ -417,7 +417,7 @@ foreach ($contents as $content) {
 			break;
 		case 'event_report_group':
 			$data["title"] = __('Group detailed event');
-			$data['group'] = get_group_name($content['id_agent']);
+			$data['group'] = groups_get_name($content['id_agent']);
 			$data["objdata"]["event_report_group"] = array();
 			
 			$events = get_group_detailed_event_reporting($content['id_agent'], $content['period'], $report["datetime"], true, false);

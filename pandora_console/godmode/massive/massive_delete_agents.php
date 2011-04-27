@@ -95,22 +95,22 @@ $table->size[1] = '85%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= print_image('images/spinner.png', true);
+$table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
+$table->data[1][1] = html_print_select (get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('delete', 1);
-print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
+html_print_input_hidden ('delete', 1);
+html_print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
 echo '</div>';
 echo '</form>';
 

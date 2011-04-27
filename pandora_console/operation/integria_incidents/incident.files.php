@@ -20,16 +20,16 @@ $table->class = "databox";
 $table->data = array();
 
 $profiles = array();
-$table->data[0][0] = "<b>".__('File')."</b><br/>".print_input_file ('new_file', true, array('size' => "50%"));
+$table->data[0][0] = "<b>".__('File')."</b><br/>".html_print_input_file ('new_file', true, array('size' => "50%"));
 
-$table->data[1][0] = "<b>".__('Description')."</b><br/>".print_textarea('description', 3, 6, '' , '', true);
+$table->data[1][0] = "<b>".__('Description')."</b><br/>".html_print_textarea('description', 3, 6, '' , '', true);
 
 $form = "<form method='post' action='' enctype='multipart/form-data'>";
-$form .= print_table($table, true);
-$form .= print_submit_button(__('Add'), 'submit_button', false, '', true);
-$form .= print_input_hidden('tab', 'files', true);
-$form .= print_input_hidden('attach_file', '1', true);
-$form .= print_input_hidden('id_incident', $id_incident, true);
+$form .= html_print_table($table, true);
+$form .= html_print_submit_button(__('Add'), 'submit_button', false, '', true);
+$form .= html_print_input_hidden('tab', 'files', true);
+$form .= html_print_input_hidden('attach_file', '1', true);
+$form .= html_print_input_hidden('id_incident', $id_incident, true);
 $form .= "</form>";
 
 ui_toggle($form, __('Add a file'));
@@ -63,10 +63,10 @@ foreach($files as $value) {
 	}
 	$table->data[$row][2] = $value['description'];
 	$table->data[$row][3] = $value['size'];
-	$table->data[$row][4] = "<a href='index.php?sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident=".$value['id_incidencia']."&delete_file=".$value['id_attachment']."'>".print_image("images/cross.png", true, array('title' => __('Delete file')))."</a>";
+	$table->data[$row][4] = "<a href='index.php?sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident=".$value['id_incidencia']."&delete_file=".$value['id_attachment']."'>".html_print_image("images/cross.png", true, array('title' => __('Delete file')))."</a>";
 	$row++;
 }
 
-print_table($table);
+html_print_table($table);
 
 ?>

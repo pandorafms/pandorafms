@@ -69,14 +69,14 @@ else {
 $table->width = '450px';
 $table->data = array ();
 $table->data[0][0] = __('Name');
-$table->data[0][1] = print_input_text ('name', $name, '', 35, 100, true);
+$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 
 $table->data[1][0] = __('Icon');
 $files = list_files ('images/groups_small/', "png", 1, 0);
-$table->data[1][1] = print_select ($files, 'icon', $icon, '', 'None', '', true);
+$table->data[1][1] = html_print_select ($files, 'icon', $icon, '', 'None', '', true);
 $table->data[1][1] .= ' <span id="icon_preview">';
 if ($icon) {
-	$table->data[1][1] .= print_image("images/groups_small/".$icon, true); 
+	$table->data[1][1] .= html_print_image("images/groups_small/".$icon, true); 
 }
 $table->data[1][1] .= '</span>';
 
@@ -86,24 +86,24 @@ if ($id_group)
 	$sql .= sprintf ('WHERE id_grupo != %d', $id_group);
 $groups = get_user_groups();
 if ($id_group) {
-	$table->data[2][1] = print_select_groups(false, "AR", true, 'id_parent', $id_parent,
+	$table->data[2][1] = html_print_select_groups(false, "AR", true, 'id_parent', $id_parent,
 		'', '', '', true, false, true, '', false, false, false, $id_group);
 }
 else {
-	$table->data[2][1] = print_select_groups(false, "AR", true, 'id_parent', $id_parent, '', '', '', true);
+	$table->data[2][1] = html_print_select_groups(false, "AR", true, 'id_parent', $id_parent, '', '', '', true);
 }
 $table->data[2][1] .= ' <span id="parent_preview">';
-$table->data[2][1] .= print_image("images/groups_small/".get_group_icon ($id_parent).".png", true); 
+$table->data[2][1] .= html_print_image("images/groups_small/".groups_get_icon ($id_parent).".png", true); 
 $table->data[2][1] .= '</span>';
 
 $table->data[3][0] = __('Alerts');
-$table->data[3][1] = print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
+$table->data[3][1] = html_print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
 
 $table->data[4][0] = __('Propagate ACL') . ui_print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
-$table->data[4][1] = print_checkbox('propagate', 1, $propagate, true);
+$table->data[4][1] = html_print_checkbox('propagate', 1, $propagate, true);
 
 $table->data[5][0] = __('Custom ID');
-$table->data[5][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -112,16 +112,16 @@ if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 }
 
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';
-print_table ($table);
+html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {
-	print_input_hidden ('update_group', 1);
-	print_input_hidden ('id_group', $id_group);
-	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+	html_print_input_hidden ('update_group', 1);
+	html_print_input_hidden ('id_group', $id_group);
+	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 }
 else {
-	print_input_hidden ('create_group', 1);
-	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_input_hidden ('create_group', 1);
+	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';

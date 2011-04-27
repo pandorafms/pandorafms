@@ -115,24 +115,24 @@ $table->size[2] = '15%';
 $table->size[3] = '35%';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(0, "LM", true, 'id_group', $id_group, false, '',
+$table->data[0][1] = html_print_select_groups(0, "LM", true, 'id_group', $id_group, false, '',
 	'', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="agent_loading" class="invisible">';
-$table->data[0][2] .= print_image("images/spinner.png", true);
+$table->data[0][2] .= html_print_image("images/spinner.png", true);
 $table->data[0][2] .= '</span>';
-$table->data[0][3] = print_select ($agents, 'id_agent', $id_agent, false,
+$table->data[0][3] = html_print_select ($agents, 'id_agent', $id_agent, false,
 	__('All'), 0, true);
 
 $table->data[1][0] = __('Free search');
-$table->data[1][1] = print_input_text ('search', $search, '', 20, 40, true);
+$table->data[1][1] = html_print_input_text ('search', $search, '', 20, 40, true);
 $table->colspan[1][1] = 3;
 
 echo '<form id="filter_form" method="post" action="index.php?galertas&sec2=godmode/alerts/alert_compounds">';
-print_table ($table);
+html_print_table ($table);
 echo '<div class="action-buttons" style="width: 90%">';
-print_input_hidden ('do_search', 1);
-print_submit_button (__('Search'), 'search_btn', false, 'class="sub search"');
+html_print_input_hidden ('do_search', 1);
+html_print_submit_button (__('Search'), 'search_btn', false, 'class="sub search"');
 echo '</div>';
 echo '</form>';
 unset ($table);
@@ -221,13 +221,13 @@ foreach ($id_alerts as $alert) {
 	
 	$data[0] = '<form class="disable_alert_form" action="'.$url.'" method="post" style="display: inline;">';
 	if ($alert['disabled']) {
-		$data[0] .= print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
-		$data[0] .= print_input_hidden ('enable_alert', 1, true);
+		$data[0] .= html_print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
+		$data[0] .= html_print_input_hidden ('enable_alert', 1, true);
 	} else {
-		$data[0] .= print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
-		$data[0] .= print_input_hidden ('disable_alert', 1, true);
+		$data[0] .= html_print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
+		$data[0] .= html_print_input_hidden ('disable_alert', 1, true);
 	}
-	$data[0] .= print_input_hidden ('id', $alert['id'], true);
+	$data[0] .= html_print_input_hidden ('id', $alert['id'], true);
 	$data[0] .= '</form>';
 	
 	$data[1] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_compound&id='.$alert['id'].'">';
@@ -236,22 +236,22 @@ foreach ($id_alerts as $alert) {
 	$data[2] = get_agent_name ($alert['id_agent']);
 	$data[3] = '<a href="'.$url.'&delete_alert=1&id='.$alert['id'].'"
 		onClick="javascript:confirm(\''.__('Are you sure?').'\')">';
-	$data[3] .= print_image("images/cross.png", true, array("title" => __('Delete'))); 
+	$data[3] .= html_print_image("images/cross.png", true, array("title" => __('Delete'))); 
 	$data[3] .= '</a>';
 	
 	array_push ($table->data, $data);
 }
 
 if (isset($data)){
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo "<div class='nf'>".__('No alerts found')."</div>";
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_compound">';
-print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
-print_input_hidden ('new_compound', 1);
+html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
+html_print_input_hidden ('new_compound', 1);
 echo '</form>';
 echo '</div>';
 

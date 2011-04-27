@@ -114,7 +114,7 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	echo ",";
 	echo get_agent_name($event["id_agente"]);
 	echo ",";
-	echo get_group_name($event["id_grupo"]);
+	echo groups_get_name($event["id_grupo"]);
 	echo ",";
 	echo $event["evento"];
 	echo ",";

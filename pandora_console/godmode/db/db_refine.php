@@ -70,11 +70,11 @@ echo '<b>'.__('Source agent').'</b><br /><br />';
 $agent_selected = get_parameter_post ("origen", 0);
 $agents = get_group_agents (array_keys (get_user_groups ($config["id_user"], "AW")));
 
-print_select ($agents, "origen", $agent_selected, 'javascript:this.form.update_agent.click();', __('No agent selected'), '0', false, false, false, 'w130');
+html_print_select ($agents, "origen", $agent_selected, 'javascript:this.form.update_agent.click();', __('No agent selected'), '0', false, false, false, 'w130');
 
 echo '&nbsp;&nbsp;';
 
-print_submit_button (__('Get Info'), 'update_agent', false, 'style="display:none;"');
+html_print_submit_button (__('Get Info'), 'update_agent', false, 'style="display:none;"');
 
 echo '<br /><br />';
 echo '<b>'.__('Modules').'</b><br /><br />';
@@ -82,7 +82,7 @@ echo '<b>'.__('Modules').'</b><br /><br />';
 $module_selected = get_parameter_post ("origen", array ());
 $modules = get_agent_modules ($module_selected, false, 'delete_pending != 1');
 
-print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', false, true, false, 'w130');
+html_print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', false, true, false, 'w130');
 
 echo '</div>'; //Left div
 
@@ -90,17 +90,17 @@ echo '<div style="float:left; width:250px;"><b>'.__('Purge data out of these lim
 echo '<table><tr><td>';
 echo __('Minimum').': ';
 echo '</td><td>';
-print_input_text ("min", 0, __('Minimum'), 4, 0, false);
+html_print_input_text ("min", 0, __('Minimum'), 4, 0, false);
 echo '</td></tr>';
 echo '<tr><td>';
 echo __('Maximum').': 	';
 echo '</td><td>';
-print_input_text ("max", 0, __('Maximum'), 4, 0, false);
+html_print_input_text ("max", 0, __('Maximum'), 4, 0, false);
 echo '</td></tr>';
 echo '</table>';
 echo '</div>';
 echo '<div style="clear:both;">&nbsp;</div>';
-print_submit_button (__('Delete'), 'eliminar', false, 'class="sub delete" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"');
+html_print_submit_button (__('Delete'), 'eliminar', false, 'class="sub delete" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"');
 echo '</td></tr></table>';
 
 ?>

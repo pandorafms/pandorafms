@@ -86,7 +86,7 @@ $table->data[4][0] = '<b>'.__('Alert level').'</b>';
 $table->data[5][0] =
 	progress_bar2($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
 
-print_table ($table);
+html_print_table ($table);
 unset ($table);
 
 echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
@@ -214,7 +214,7 @@ foreach ($sessions as $session) {
 	array_push ($table->data, $data);
 }
 echo "<div style='width:100%; overflow-x:scroll;'>";
-print_table ($table);
+html_print_table ($table);
 echo "</div>";
 echo "</div>"; // activity
 ?>

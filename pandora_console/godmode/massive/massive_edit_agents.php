@@ -188,21 +188,21 @@ $table->size[1] = '85%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= print_image('images/spinner.png', true);
+$table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $enabled_agents = get_group_agents ($id_group, array('disabled' => 0), "none");
 $all_agents = get_group_agents ($id_group, array('disabled' => 1), "none") + $enabled_agents;
 
-$table->data[1][1] = print_select ($all_agents,
+$table->data[1][1] = html_print_select ($all_agents,
 	'id_agents[]', 0, false, '', '', true, true);
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 $nombre_agente = "";
 $direccion_agente = "";
@@ -229,14 +229,14 @@ $groups = get_user_groups ($config["id_user"], "AR",false);
 $agents = get_group_agents (array_keys ($groups));
 
 $table->data[0][0] = __('Parent');
-$table->data[0][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
+$table->data[0][1] = html_print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
-$table->data[0][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+$table->data[0][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
 
 $table->data[1][0] = __('Group');
-$table->data[1][1] = print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
+$table->data[1][1] = html_print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
 
 $table->data[2][0] = __('Interval');
 
@@ -249,10 +249,10 @@ $intervals[1200] = human_time_description_raw (1200);
 $intervals[1800] = human_time_description_raw (1800);
 $intervals[3600] = human_time_description_raw (3600);
 $intervals[7200] = human_time_description_raw (7200);
-$table->data[2][1] = print_extended_select_for_time ($intervals, 'interval', $interval, '', '', '0', 10, true, 'width: 150px') . __(" seconds.");
+$table->data[2][1] = html_print_extended_select_for_time ($intervals, 'interval', $interval, '', '', '0', 10, true, 'width: 150px') . __(" seconds.");
 
 $table->data[3][0] = __('OS');
-$table->data[3][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
+$table->data[3][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
 	'id_os', $id_os, '', __('No change'), -1, true, false, true, false, 'width: 105px;');
 $table->data[3][1] .= ' <span id="os_preview">';
 $table->data[3][1] .= ui_print_os_icon ($id_os, false, true);
@@ -263,14 +263,14 @@ $none = '';
 if ($server_name == '' && $id_agente)
 	$none = __('None');
 $table->data[4][0] = __('Server');
-$table->data[4][1] = print_select (get_server_names (),
+$table->data[4][1] = html_print_select (get_server_names (),
 	'server_name', $server_name, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
 
 // Description
 $table->data[5][0] = __('Description');
-$table->data[5][1] = print_input_text ('description', $description, '', 45, 255, true);
+$table->data[5][1] = html_print_input_text ('description', $description, '', 45, 255, true);
 
-print_table ($table);
+html_print_table ($table);
 unset($table);
 
 $custom_id = '';
@@ -291,19 +291,19 @@ $table->data = array ();
 
 // Custom ID
 $table->data[0][0] = __('Custom ID');
-$table->data[0][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
 $table->data[1][0] = __('Module definition') . ui_print_help_icon("module_definition", true);
-$table->data[1][1] = __('No change').' '.print_radio_button_extended ("mode", -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Learning mode').' '.print_radio_button_extended ("mode", 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Normal mode').' '.print_radio_button_extended ("mode", 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] = __('No change').' '.html_print_radio_button_extended ("mode", -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended ("mode", 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended ("mode", 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('No change').' '.print_radio_button_extended ("disabled", -1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] = __('No change').' '.html_print_radio_button_extended ("disabled", -1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Disabled').' '.html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
 $table->data[3][0] = __('Remote configuration');
@@ -311,11 +311,11 @@ $table->data[3][0] = __('Remote configuration');
 // Delete remote configuration
 $table->data[3][1] = '<div id="delete_configurations" style="display: none">'. __('Delete available remote configurations').' (';
 $table->data[3][1] .= '<span id="n_configurations"></span>';
-$table->data[3][1] .= ') '.print_radio_button_extended ("delete_conf", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true).'</div>';
+$table->data[3][1] .= ') '.html_print_radio_button_extended ("delete_conf", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true).'</div>';
 
 $table->data[3][1] .= '<div id="not_available_configurations" style="display: none"><em>'.__('Not available').'</em></div>';		
 	
-$listIcons = getArrayListIcons();
+$listIcons = gis_get_array_list_icons();
 
 $arraySelectIcon = array();
 foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
@@ -323,20 +323,20 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[4][0] = __('Agent icon');
-$table->data[4][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': ' . print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_without_status',"style" => 'display:none;')) .
-	'&nbsp;' . __('Default') . ': ' . print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_default',"style" => 'display:none;')) .
-	'&nbsp;' . __('Ok') . ': ' .  print_image($path . $icon_path . 'ok.png', true, array("id" => 'icon_ok',"style" => 'display:none;')) .
-	'&nbsp;' . __('Bad') . ': ' . print_image($path . $icon_path . 'bad.png', true, array("id" => 'icon_bad',"style" => 'display:none;')) . 		'&nbsp;' . __('Warning') . ': ' .  print_image($path . $icon_path . 'warning.png', true, array("id" => 'icon_warning',"style" => 'display:none;'));
+$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
+	'&nbsp;' . __('Without status') . ': ' . html_print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_without_status',"style" => 'display:none;')) .
+	'&nbsp;' . __('Default') . ': ' . html_print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_default',"style" => 'display:none;')) .
+	'&nbsp;' . __('Ok') . ': ' .  html_print_image($path . $icon_path . 'ok.png', true, array("id" => 'icon_ok',"style" => 'display:none;')) .
+	'&nbsp;' . __('Bad') . ': ' . html_print_image($path . $icon_path . 'bad.png', true, array("id" => 'icon_bad',"style" => 'display:none;')) . 		'&nbsp;' . __('Warning') . ': ' .  html_print_image($path . $icon_path . 'warning.png', true, array("id" => 'icon_warning',"style" => 'display:none;'));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');
-	$table->data[5][1] = __('No change').' '.print_radio_button_extended ("update_gis_data", -1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('Disabled').' '.print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] = __('No change').' '.html_print_radio_button_extended ("update_gis_data", -1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('Active').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-ui_toggle(print_table ($table, true), __('Advanced options'));
+ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
 $table->width = '95%';
@@ -361,13 +361,13 @@ foreach ($fields as $field) {
 		$custom_value = '';
 	}
 	
-	$data[1] = print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
 	
 	array_push ($table->data, $data);
 }
 
 if (!empty($fields)) {
-	ui_toggle(print_table ($table, true), __('Custom fields'));
+	ui_toggle(html_print_table ($table, true), __('Custom fields'));
 }
 
 
@@ -375,9 +375,9 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-print_input_hidden ('update_agents', 1);
-print_input_hidden ('id_agente', $id_agente);
+html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+html_print_input_hidden ('update_agents', 1);
+html_print_input_hidden ('id_agente', $id_agente);
 
 echo "</div>"; // Shown and hide div
 

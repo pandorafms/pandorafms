@@ -23,9 +23,9 @@ $extension_file = '';
 
 
 /**
- * TODO: Document extensions
+ * Callback function for extensions in the console 
  *
- * @param string $filename
+ * @param string $filename with contents of the extension
  */
 function extension_call_main_function ($filename) {
 	global $config;
@@ -38,9 +38,9 @@ function extension_call_main_function ($filename) {
 }
 
 /**
- * TODO: Document extensions
+ * Callback function for godmode extensions
  *
- * @param string $filename
+ * @param string $filename File with extension contents
  */
 function extension_call_godmode_function ($filename) {
 	global $config;
@@ -53,7 +53,7 @@ function extension_call_godmode_function ($filename) {
 }
 
 /**
- * TODO: Document extensions
+ * Callback login function for extensions
  */
 function extensions_call_login_function () {
 	global $config;
@@ -67,9 +67,9 @@ function extensions_call_login_function () {
 }
 
 /**
- * TODO: Document extensions
+ * Checks if the current page is an extension 
  *
- * @param string $page
+ * @param string $page To check
  */
 function is_extension ($page) {
 	global $config;
@@ -128,6 +128,9 @@ function get_extensions ($enterprise = false) {
 	return $extensions;
 }
 
+/**
+ * Get disabled open and enterprise extensions 
+ */
 function get_disabled_extensions() {
 	global $config;
 	
@@ -214,6 +217,9 @@ function get_disabled_extensions() {
 	return $extensions;	
 }
 
+/**
+ * Get info of all extensions (enabled/disabled)
+ */
 function getExtensionInfo() {
 	global $config;
 	
@@ -269,7 +275,7 @@ function getExtensionInfo() {
 }
 
 /**
- * TODO: Document extensions
+ * Load all extensions 
  *
  * @param array $extensions
  */
@@ -284,11 +290,11 @@ function load_extensions ($extensions) {
 }
 
 /**
- * TODO: Document extensions
+ * This function adds a link to the extension with the given name in Operation menu.
  *
- * @param string name
- * @param string fatherId
- * @param string icon
+ * @param string name Name of the extension in the Operation menu  
+ * @param string fatherId Id of the parent menu item for the current extension 
+ * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
 function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
 	global $config;
@@ -307,12 +313,12 @@ function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
 }
 
 /**
- * TODO: Document extensions
+ * This function adds a link to the extension with the given name in Godmode menu.
  *
- * @param string name
- * @param string acl
- * @param string fatherId
- * @param string icon
+ * @param string name Name of the extension in the Godmode menu  
+ * @param string acl User ACL level required to see this extension in the godmode menu 
+ * @param string fatherId Id of the parent menu item for the current extension 
+ * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
 function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
 	global $config;
@@ -331,12 +337,12 @@ function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
 }
 
 /**
- * Add in the header tabs in godmode agent the extension tab.
+ * Add in the header tabs in Godmode agent menu the extension tab. 
  * 
- * @param $tabId
- * @param $tabName
- * @param $tabIcon
- * @param $tabFunction
+ * @param tabId Id of the extension tab   
+ * @param tabName Name of the extension tab
+ * @param tabIcon Path to the image icon 
+ * @param tabFunction Name of the function to execute when this extension is called
  */
 function add_extension_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
 	global $config;
@@ -351,12 +357,12 @@ function add_extension_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunctio
 }
 
 /**
- * Add in the header tabs in operation agent the extension tab.
+ * Add in the header tabs in Operation agent menu the extension tab.
  * 
- * @param unknown_type $tabId
- * @param unknown_type $tabName
- * @param unknown_type $tabIcon
- * @param unknown_type $tabFunction
+ * @param tabId Id of the extension tab
+ * @param tabName Name of the extension tab
+ * @param tabIcon Path to the image icon 
+ * @param tabFunction Name of the function to execute when this extension is called
  */
 function add_extension_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
 	global $config;
@@ -371,9 +377,9 @@ function add_extension_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunctio
 }
 
 /**
- * Add the function to call in OPERATION
+ * Add the function to call when user clicks on the Operation menu link
  *
- * @param string $function_name
+ * @param string $function_name Callback function name
  */
 function add_extension_main_function ($function_name) {
 	global $config;
@@ -384,9 +390,9 @@ function add_extension_main_function ($function_name) {
 }
 
 /**
- * TODO: Document extensions
+ * Add the function to call when user clicks on the Godmode menu link
  *
- * @param string $function_name
+ * @param string $function_name Callback function name
  */
 function add_extension_godmode_function ($function_name) {
 	global $config;
@@ -397,9 +403,9 @@ function add_extension_godmode_function ($function_name) {
 }
 
 /**
- * TODO: Document extensions
+ * Adds extension function when user login on Pandora console
  *
- * @param string $function_name
+ * @param string $function_name Callback function name
  */
 function add_extension_login_function ($function_name) {
 	global $config;

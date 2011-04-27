@@ -158,17 +158,17 @@ else {
 	$table->head[0] = __('Module') . ' ' .
 		'<a href="index.php?search_category=modules&keywords=' . 
 			$config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . 
-			'&sort_field=module_name&sort=up">'. print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp)) . '</a>' .
+			'&sort_field=module_name&sort=up">'. html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp)) . '</a>' .
 		'<a href="index.php?search_category=modules&keywords=' .
 			$config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . 
-			'&sort_field=module_name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown)) . '</a>';	
+			'&sort_field=module_name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown)) . '</a>';	
 	$table->head[1] = __('Agent') . ' ' .
 		'<a href="index.php?search_category=modules&keywords=' . 
 			$config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . 
-			'&sort_field=agent_name&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp)) . '</a>' .
+			'&sort_field=agent_name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp)) . '</a>' .
 		'<a href="index.php?search_category=modules&keywords=' .
 			$config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . 
-			'&sort_field=agent_name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown)) .'</a>';
+			'&sort_field=agent_name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown)) .'</a>';
 	$table->head[2] = __('Type');
 	$table->head[3] = __('Interval');
 	$table->head[4] = __('Status');
@@ -237,8 +237,8 @@ else {
 	
 			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".base64_encode($module["module_name"])."&refresh=600','day_".$win_handle."')";
 	
-			$graphCell = '<a href="javascript:'.$link.'">' . print_image("images/chart_curve.png", true, array("border" => 0, "alt" => "")) . '</a>';
-			$graphCell .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$module["id_agente"]."&amp;tab=data_view&period=86400&amp;id=".$module["id_agente_modulo"]."'>" . print_image('images/binary.png', true, array("border" => "0", "alt" => "")) . "</a>";
+			$graphCell = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => 0, "alt" => "")) . '</a>';
+			$graphCell .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$module["id_agente"]."&amp;tab=data_view&period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => "0", "alt" => "")) . "</a>";
 		}
 		
 		if (is_numeric($module["datos"]))
@@ -267,7 +267,7 @@ else {
 	
 	echo "<br />";
 	ui_pagination ($totalModules);
-	print_table ($table);
+	html_print_table ($table);
 	unset($table);
 	ui_pagination ($totalModules);
 }	

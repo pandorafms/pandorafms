@@ -107,11 +107,11 @@ if ($view_graph) {
 
 	if ($config["pure"] == 0) {
 		$options['screen'] = "<a href='$url&pure=1'>"
-			. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	} else {
 		$options['screen'] = "<a href='$url&pure=0'>"
-			. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 	}
 
@@ -130,17 +130,17 @@ if ($view_graph) {
 	echo "<b>".__('Date')."</b>"." ";
 	echo "</td>";
 	echo "<td>";
-	echo print_input_text ('date', $date, '', 12, 10, true). ' ';
+	echo html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 	echo "</td>";
 	echo "<td>";
-	echo print_input_text ('time', $time, '', 7, 7, true). ' ';
+	echo html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 	echo "</td>";
 	echo "<td class='datos'>";
 	echo "<b>".__('Period')."</b>";
 	echo "</td>";
 	echo "<td class='datos'>";
 	
-	print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
+	html_print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
 		'', '', 0, false, false, false);
 
 	echo "</td>";
@@ -151,7 +151,7 @@ if ($view_graph) {
 	$stackeds[1] = __('Stacked area');
 	$stackeds[2] = __('Line');
 	$stackeds[3] = __('Stacked line');
-	print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
+	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 
 	echo "</td>";
 	echo "<td class='datos'>";
@@ -160,7 +160,7 @@ if ($view_graph) {
 	$zooms[1] = __('Zoom x1');
 	$zooms[2] = __('Zoom x2');
 	$zooms[3] = __('Zoom x3');
-	print_select ($zooms, 'zoom', $zoom , '', '', 0);
+	html_print_select ($zooms, 'zoom', $zoom , '', '', 0);
 
 	echo "</td>";
 	echo "<td class='datos'>";
@@ -222,7 +222,7 @@ if (! empty ($graphs)) {
 		
 		array_push ($table->data, $data);
 	}
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }

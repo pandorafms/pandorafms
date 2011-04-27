@@ -99,14 +99,14 @@ if(count($module_array) > 0){
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<table><tr>";
 		$new_weight = $weight_array[$a]-0.125;
-		echo "<td align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".print_image('images/down.png', true, array ('title' => __('Decrease Weight')))."</a></td>";
+		echo "<td align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/down.png', true, array ('title' => __('Decrease Weight')))."</a></td>";
 		echo "<td align='center'>$weight_array[$a]</td>";
 		$new_weight = $weight_array[$a]+0.125;
-		echo "<td align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a></td>";
+		echo "<td align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a></td>";
 		echo "</tr></table>";
 		echo "</td>";
 		echo "<td class='$tdcolor' align='center'>";
-		echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id ."&delete=" . $idgs_array[$a] . "'>".print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
+		echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
 
 		echo "</td></tr>";
 	}
@@ -122,15 +122,15 @@ echo "<table width='500' cellpadding='4' cellpadding='4' class='databox_color'>"
 echo "<tr>";
 echo "<td colspan='3'>".__('Filter group')."</td>";
 echo "</tr><tr>";
-echo "<td colspan='3'>".print_select(get_all_groups(), 'group', '', "filterByGroup($('#group').val());", __('All'), '0', true)."</td>";
+echo "<td colspan='3'>".html_print_select(groups_get_all(), 'group', '', "filterByGroup($('#group').val());", __('All'), '0', true)."</td>";
 echo "</tr><tr>";
 echo "<td style='vertical-align: top;'>".__('Agents')."</td>";
 echo "<td></td>";
 echo "<td style='vertical-align: top;'>".__('Modules')."</td>";
 echo "</tr><tr>";
-echo "<td>".print_select (get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
-echo "<td style='vertical-align: center; text-align: center;'>" . print_image("images/darrowright.png", true) . "</td>";
-echo "<td>".print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;')."</td>";
+echo "<td>".html_print_select (get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
+echo "<td style='vertical-align: center; text-align: center;'>" . html_print_image("images/darrowright.png", true) . "</td>";
+echo "<td>".html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;')."</td>";
 echo "</tr><tr>";
 echo "<td colspan='3'>";
 echo "<table cellpadding='4'><tr>";

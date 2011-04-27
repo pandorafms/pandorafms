@@ -68,52 +68,52 @@ $table->colspan[0][0] = 3;
 $table->colspan[3][0] = 3;
 $table->colspan[4][0] = 3;
 
-$table->data[0][0] = "<b>".__('Title')."</b><br/>".print_input_text("title", $result['titulo'], '', 50, 255, true);
+$table->data[0][0] = "<b>".__('Title')."</b><br/>".html_print_input_text("title", $result['titulo'], '', 50, 255, true);
 if(isset($result['id_incidencia'])) {
-	$table->data[1][2] = "<b>".__('Assigned user')."</b><br/>".print_select ($users, 'id_user', $result['id_usuario'], '', '', 0, true, false, false);
+	$table->data[1][2] = "<b>".__('Assigned user')."</b><br/>".html_print_select ($users, 'id_user', $result['id_usuario'], '', '', 0, true, false, false);
 }
 else {
 	$table->data[1][2] = "";
 }
 
-$table->data[1][0] = "<b>".__('Group')."</b><br/>".print_select ($groups, 'group', $result['id_grupo'], '', '', 0, true, false, false);
-$table->data[1][1] = "<b>".__('Priority')."</b><br/>".print_select (get_incidents_priorities (), 'priority', $result['prioridad'], '', '', 0, true, false, false);
+$table->data[1][0] = "<b>".__('Group')."</b><br/>".html_print_select ($groups, 'group', $result['id_grupo'], '', '', 0, true, false, false);
+$table->data[1][1] = "<b>".__('Priority')."</b><br/>".html_print_select (get_incidents_priorities (), 'priority', $result['prioridad'], '', '', 0, true, false, false);
 $table->data[1][2] = "<b>".__('Creator')."</b><br/>".$result['id_creator'];
 
 if(isset($result['id_incidencia'])) {
-	$table->data[2][0] = "<b>".__('Source')."</b><br/>".print_select ($sources, 'source', $result['origen'], '', '', 0, true, false, false);
-	$table->data[2][1] = "<b>".__('Resolution')."</b><br/>".print_select ($resolutions, 'resolution', $result['resolution'], '', '', 0, true, false, false);
-	$table->data[2][2] = "<b>".__('Status')."</b><br/>".print_select ($status, 'status', $result['estado'], '', '', 0, true, false, false);
+	$table->data[2][0] = "<b>".__('Source')."</b><br/>".html_print_select ($sources, 'source', $result['origen'], '', '', 0, true, false, false);
+	$table->data[2][1] = "<b>".__('Resolution')."</b><br/>".html_print_select ($resolutions, 'resolution', $result['resolution'], '', '', 0, true, false, false);
+	$table->data[2][2] = "<b>".__('Status')."</b><br/>".html_print_select ($status, 'status', $result['estado'], '', '', 0, true, false, false);
 }
 
 if(is_array($result['descripcion'])) {
 	$result['descripcion'] = "";
 }
 
-$table->data[3][0] = "<b>".__('Description')."</b><br/>".print_textarea("description", 10, 6, $result['descripcion'] , '', true);
+$table->data[3][0] = "<b>".__('Description')."</b><br/>".html_print_textarea("description", 10, 6, $result['descripcion'] , '', true);
 
 if(isset($result['id_incidencia'])) {
 if(is_array($result['epilog'])) {
 	$result['epilog'] = implode(',', $result['epilog']);
 }
-$table->data[4][0] = "<b>".__('Resolution epilog')."</b><br/>".print_textarea("epilog", 10, 6, $result['epilog'] , '', true);
+$table->data[4][0] = "<b>".__('Resolution epilog')."</b><br/>".html_print_textarea("epilog", 10, 6, $result['epilog'] , '', true);
 }
 
 if(isset($result['id_incidencia'])) {
 	echo "<form method='post' action=''>";
-	print_table($table);
-	print_submit_button(__('Update'), 'submit_button');
-	print_input_hidden('tab', 'incident');
-	print_input_hidden('update_incident', '1');
-	print_input_hidden('id_incident', $result['id_incidencia']);
+	html_print_table($table);
+	html_print_submit_button(__('Update'), 'submit_button');
+	html_print_input_hidden('tab', 'incident');
+	html_print_input_hidden('update_incident', '1');
+	html_print_input_hidden('id_incident', $result['id_incidencia']);
 	echo "</form>";
 }
 else {
 	echo "<form method='post' action=''>";
-	print_table($table);
-	print_submit_button(__('Create'), 'submit_button');
-	print_input_hidden('tab', 'incident');
-	print_input_hidden('create_incident', '1');
+	html_print_table($table);
+	html_print_submit_button(__('Create'), 'submit_button');
+	html_print_input_hidden('tab', 'incident');
+	html_print_input_hidden('create_incident', '1');
 	echo "</form>";
 }
 ?>

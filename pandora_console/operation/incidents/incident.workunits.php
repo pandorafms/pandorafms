@@ -24,19 +24,19 @@ $table->colspan[1][0] = 3;
 
 $profiles = array();
 $default_time = "0.25";
-$table->data[0][0] = "<b>".__('Time used')."</b><br/>".print_input_text ('time_used', $default_time, '', 10, 255, true);
-$table->data[0][1] = "<b>".__('Have cost')."</b><br/>".print_checkbox ('have_cost', '', false, true);
-$table->data[0][2] = "<b>".__('Public')."</b><br/>".print_checkbox ('public', '', true, true);
+$table->data[0][0] = "<b>".__('Time used')."</b><br/>".html_print_input_text ('time_used', $default_time, '', 10, 255, true);
+$table->data[0][1] = "<b>".__('Have cost')."</b><br/>".html_print_checkbox ('have_cost', '', false, true);
+$table->data[0][2] = "<b>".__('Public')."</b><br/>".html_print_checkbox ('public', '', true, true);
 
-$table->data[1][0] = "<b>".__('Description')."</b><br/>".print_textarea('description', 3, 6, '' , '', true);
+$table->data[1][0] = "<b>".__('Description')."</b><br/>".html_print_textarea('description', 3, 6, '' , '', true);
 
 $form = "<form method='post' action=''>";
-$form .= print_table($table, true);
-$form .= print_submit_button(__('Add'), 'submit_button', false, '', true);
-$form .= print_input_hidden('tab', 'workunits', true);
-$form .= print_input_hidden('create_workunit', '1', true);
-$form .= print_input_hidden('id_incident', $id_incident, true);
-$form .= print_input_hidden('profile', '0', true);
+$form .= html_print_table($table, true);
+$form .= html_print_submit_button(__('Add'), 'submit_button', false, '', true);
+$form .= html_print_input_hidden('tab', 'workunits', true);
+$form .= html_print_input_hidden('create_workunit', '1', true);
+$form .= html_print_input_hidden('id_incident', $id_incident, true);
+$form .= html_print_input_hidden('profile', '0', true);
 $form .= "</form>";
 
 ui_toggle($form, __('Add workunit'));
@@ -62,6 +62,6 @@ foreach($workunits as $value) {
 	
 	$table->data[1][0] = $value['description'];
 
-	print_table($table);
+	html_print_table($table);
 }
 ?>

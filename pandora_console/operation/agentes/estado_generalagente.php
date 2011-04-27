@@ -70,8 +70,8 @@ else {
 	$cellName = ui_print_agent_name ($agent["id_agente"], true, 35, "upper", true);
 }
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
-echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
-echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . print_image("images/target.png", true, array("border" => '0', "title" => __('Flag'), "alt" => "")) . '</a></td></tr>';
+echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
+echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Flag'), "alt" => "")) . '</a></td></tr>';
 
 //Addresses
 echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
@@ -90,7 +90,7 @@ if (!empty($address)) {
 
 $ips = array_unique($ips);
 
-print_select($ips, "not_used", get_agent_address ($id_agente));
+html_print_select($ips, "not_used", get_agent_address ($id_agente));
 echo '</td></tr>';
 
 //OS
@@ -124,7 +124,7 @@ echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
 echo ui_print_group_icon ($agent["id_grupo"], true);
 echo '&nbsp;(<b>';
-echo ui_print_truncate_text(get_group_name ($agent["id_grupo"]));
+echo ui_print_truncate_text(groups_get_name ($agent["id_grupo"]));
 echo '</b>)</td></tr>';
 
 // Agent version
@@ -133,7 +133,7 @@ echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
 
 // Position Information
 if ($config['activate_gis']) {
-	$dataPositionAgent = getDataLastPositionAgent($agent['id_agente']);
+	$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
 	
 	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
     echo '<td class="datos2" colspan="2">';

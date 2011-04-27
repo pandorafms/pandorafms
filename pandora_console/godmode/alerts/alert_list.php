@@ -251,11 +251,11 @@ else {
 		'list' => array(
 			'active' => false,
 			'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list">' . 
-				print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
+				html_print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
 		'builder' => array(
 			'active' => false,
 			'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">' . 
-				print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
+				html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
 	
 	$buttons[$tab]['active'] = true;
 

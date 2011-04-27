@@ -102,10 +102,10 @@ function dbmgr_extension_main () {
 
 	echo "<br /><br />";
 	echo "<form method='post' action=''>";
-	print_textarea ('sql', 5, 40, html_entity_decode($sql, ENT_QUOTES));
+	html_print_textarea ('sql', 5, 40, html_entity_decode($sql, ENT_QUOTES));
 	echo '<br />';
 	echo '<div class="action-buttons" style="width: 96%">';
-	print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
+	html_print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
 	echo '</div>';
 	echo "</form>";
 
@@ -143,7 +143,7 @@ function dbmgr_extension_main () {
 	
 	$table->data = $result;
 	
-	print_table ($table);
+	html_print_table ($table);
 }
 
 /* This adds a option in the operation menu */

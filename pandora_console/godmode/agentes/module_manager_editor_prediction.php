@@ -57,23 +57,23 @@ if ($module_service_selector !== ENTERPRISE_NOT_HOOK) {
 	$data[1] = $module_service_selector;
 }
 $data[1] .= '<div id="module_data" style="top:1em; float:left; width:50%;">';
-$data[1] .= print_label(__("Agent"),'agent_name', true)."<br/>";
+$data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
 $sql = "SELECT id_agente, nombre FROM tagente";
 // TODO: ACL Filter
-$data[1] .= print_input_text_extended ('agent_name',$agent_name, 'text_agent_name', '', 30, 100, $is_service, '',
+$data[1] .= html_print_input_text_extended ('agent_name',$agent_name, 'text_agent_name', '', 30, 100, $is_service, '',
                             array('style' => 'background: url(images/lightning.png) no-repeat right;'), true, false);
 $data[1] .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp; <br/>';
-$data[1] .= print_label(__("Module"),'prediction_module',true);
+$data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
 		WHERE history_data = 1 AND id_agente =  ".$id_agente;
-    $data[1] .= print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true, false, true, $is_service);
+    $data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true, false, true, $is_service);
 }
 else {
 	$data[1] .= '<select id="prediction_module" name="prediction_module" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
-$data[1] .= print_input_hidden ('id_agente', $id_agente, true);
+$data[1] .= html_print_input_hidden ('id_agente', $id_agente, true);
 $data[1] .= '</div>';
 
 // Services are an Enterprise feature.

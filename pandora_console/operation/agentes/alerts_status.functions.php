@@ -43,7 +43,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->style = array ();
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = print_select_groups(false, "AR", true, "ag_group", $id_group,
+	$table->data[0][1] = html_print_select_groups(false, "AR", true, "ag_group", $id_group,
 		'javascript:this.form.submit();', '', '', true);
 		
 	$alert_status_filter = array();
@@ -59,17 +59,17 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$alert_standby['standby_off'] = __('Standby off');
 		
 	$table->data[0][2] = __('Status');
-	$table->data[0][3] = print_select ($alert_status_filter, "filter", $filter, 'javascript:this.form.submit();', '', '', true);
+	$table->data[0][3] = html_print_select ($alert_status_filter, "filter", $filter, 'javascript:this.form.submit();', '', '', true);
 	$table->data[0][4] = '';
 	$table->data[1][0] = __('Free text for search')
 		. '<a href="#" class="tip">&nbsp;<span>' . __("Filter by agent name, module name, template name or action name") . '</span></a>';
-	$table->data[1][1] = print_input_text('free_search', $free_search, '', 20, 40, true);
+	$table->data[1][1] = html_print_input_text('free_search', $free_search, '', 20, 40, true);
 	$table->data[1][2] = __('Standby');
-	$table->data[1][3] = print_select ($alert_standby, "filter_standby", $filter_standby, 'javascript:this.form.submit();', '', '', true);
-	$table->data[1][4] = print_submit_button(__('Filter'), 'filter_button', false, 'class="sub search"', true);
+	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, 'javascript:this.form.submit();', '', '', true);
+	$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub search"', true);
 	
 	$data = '<form method="post" action="'.$url.'">';
-	$data .= print_table ($table, true);
+	$data .= html_print_table ($table, true);
 	$data .= '</form>';
 	
 	if($return) {

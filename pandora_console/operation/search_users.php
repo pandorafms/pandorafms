@@ -181,20 +181,20 @@ else {
 	
 	$table->head = array ();
 	$table->head[0] = __('User ID') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=down">' . print_image("images/sort_down.png", true, array("style"=> $selectUserIDDown)) . '</a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=down">' . html_print_image("images/sort_down.png", true, array("style"=> $selectUserIDDown)) . '</a>';
 	$table->head[1] = __('Name') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	$table->head[2] = __('Email') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectEmailUp)) . '</a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectEmailDown)) . '</a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectEmailUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectEmailDown)) . '</a>';
 	$table->head[3] = __('Last contact') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastContactUp)) . '</a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastContactDown)) . '</a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown)) . '</a>';
 	$table->head[4] = __('Profile') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectProfileUp)) . '</a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectProfileDown)) . '</a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectProfileUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectProfileDown)) . '</a>';
 	$table->head[5] = __('Description');
 
 	$table->data = array ();
@@ -204,12 +204,12 @@ else {
 				$user['id_user'] . "'>" . $user['id_user'] . "</a>";
 		
 		if ($user["is_admin"]) {
-			$profileCell = print_image ("images/user_suit.png", true,
+			$profileCell = html_print_image ("images/user_suit.png", true,
 			array ("alt" => __('Admin'),
 				"title" => __('Administrator'))).'&nbsp;';
 		}
 		else {
-			$profileCell = print_image ("images/user_green.png", true,
+			$profileCell = html_print_image ("images/user_green.png", true,
 			array ("alt" => __('User'),
 				"title" => __('Standard User'))).'&nbsp;';
 		}
@@ -219,7 +219,7 @@ else {
 			foreach ($result as $row) {
 				$profileCell .= get_profile_name ($row["id_perfil"]);
 				$profileCell .= " / ";
-				$profileCell .= get_group_name ($row["id_grupo"]);
+				$profileCell .= groups_get_name ($row["id_grupo"]);
 				$profileCell .= "<br />";
 			}
 		}
@@ -238,7 +238,7 @@ else {
 	}
 
 	echo "<br />";ui_pagination ($totalUsers);
-	print_table ($table); unset($table);
+	html_print_table ($table); unset($table);
 	ui_pagination ($totalUsers);
 }
 ?>

@@ -384,7 +384,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					break;
 			}
 	
-			$data[0] = print_image ($img, true, 
+			$data[0] = html_print_image ($img, true, 
 				array ("class" => "image_status",
 					"width" => 16,
 					"height" => 16,
@@ -409,7 +409,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					break;
 			}
 			
-			$data[1] = print_image ($img, true, 
+			$data[1] = html_print_image ($img, true, 
 				array ("class" => "image_status",
 					"width" => 12,
 					"height" => 12,
@@ -452,7 +452,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			array_push ($table->data, $data);
 		}
 		
-		$return = print_table ($table, $return);
+		$return = html_print_table ($table, $return);
 		unset ($table);
 		return $return;
 	}
@@ -472,50 +472,50 @@ function events_print_type_img ($type, $return = false) {
 	
 	switch ($type) {
 	case "alert_recovered": 
-		$output .= print_image ("images/error.png", true,
+		$output .= html_print_image ("images/error.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "alert_manual_validation": 
-		$output .= print_image ("images/eye.png", true,
+		$output .= html_print_image ("images/eye.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_up_warning":
-		$output .= print_image ("images/b_yellow.png", true,
+		$output .= html_print_image ("images/b_yellow.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_down_critical":
 	case "going_up_critical": //This is to be backwards compatible
-		$output .= print_image ("images/b_red.png", true,
+		$output .= html_print_image ("images/b_red.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_up_normal":
 	case "going_down_normal": //This is to be backwards compatible
-		$output .= print_image ("images/b_green.png", true,
+		$output .= html_print_image ("images/b_green.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "going_down_warning":
-		$output .= print_image ("images/b_yellow.png", true,
+		$output .= html_print_image ("images/b_yellow.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "alert_fired":
-		$output .= print_image ("images/bell.png", true,
+		$output .= html_print_image ("images/bell.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "system";
-		$output .= print_image ("images/cog.png", true,
+		$output .= html_print_image ("images/cog.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "recon_host_detected";
-		$output .= print_image ("images/network.png", true,
+		$output .= html_print_image ("images/network.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "new_agent";
-		$output .= print_image ("images/wand.png", true,
+		$output .= html_print_image ("images/wand.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	case "unknown": 
 	default:
-		$output .= print_image ("images/err.png", true,
+		$output .= html_print_image ("images/err.png", true,
 			array ("title" => events_print_type_description($type, true)));
 		break;
 	}
@@ -594,7 +594,7 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date) {
 	global $config;
 
-	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
+	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
 
 	if (empty ($id_group)) {
 		//An empty array means the user doesn't have access

@@ -120,8 +120,8 @@ foreach ($nps as $row) {
 }
 
 echo '<div>'.__('Template');
-print_select ($select, "template_id");
-print_submit_button (__('Assign'), 'crt', false, 'class="sub next"');
+html_print_select ($select, "template_id");
+html_print_submit_button (__('Assign'), 'crt', false, 'class="sub next"');
 echo '</div></form>';
 
 // ==========================
@@ -164,21 +164,21 @@ foreach ($result as $row) {
 	
 	$data[0] = $row["nombre"];
 	if ($row["id_tipo_modulo"] > 0) {
-		$data[1] = print_image("images/" . show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
+		$data[1] = html_print_image("images/" . show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
 	} else {
 		$data[1] = '';
 	}
 	$data[2] = mb_substr ($row["descripcion"], 0, 60);
 	
-	$data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'">' . print_image("images/cross.png", true, array("border" => "0", "alt" => __('Delete'), "onclick" => "if (!confirm('".__('Are you sure?') . "')) return false;")) . '</a>&nbsp;';
+	$data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'">' . html_print_image("images/cross.png", true, array("border" => "0", "alt" => __('Delete'), "onclick" => "if (!confirm('".__('Are you sure?') . "')) return false;")) . '</a>&nbsp;';
 	
-	$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row["id_agente_modulo"].'">' . print_image("images/config.png", true, array("border" => '0', "alt" => __('Update')))  . '</a>';
+	$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row["id_agente_modulo"].'">' . html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update')))  . '</a>';
 	
 	array_push ($table->data, $data);
 }
 
 if (!empty ($table->data)) {
-	print_table ($table);
+	html_print_table ($table);
 	unset ($table);
 } else {
 	echo '<div class="nf">No modules</div>';

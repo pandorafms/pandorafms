@@ -56,10 +56,10 @@ function updateArrowLayers() {
 				$('.up_arrow', layerObj).html('');
 			}
 			else {
-				$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php print_image ("images/up.png"); ?></a>');
+				$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php html_print_image ("images/up.png"); ?></a>');
 			}
 
-			$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php print_image ("images/down.png"); ?></a>');
+			$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php html_print_image ("images/down.png"); ?></a>');
 
 			
 			count++;
@@ -141,20 +141,20 @@ switch ($action) {
 			$arrayLayers[] = JSON_decode($layer, true);
 		}
 		
-		$invalidFields = validateMapData($map_name, $map_zoom_level,
+		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
 			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
 			$map_connection_list, $map_levels_zoom);
 		
 		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
-			saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
+			gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 				$map_initial_altitude, $map_zoom_level, $map_background,
 				$map_default_longitude, $map_default_latitude, $map_default_altitude,
 				$map_group_id, $map_connection_list, $arrayLayers);
 			$mapCreatedOk = true;
 		}
 		else {
-			print_input_hidden('action', 'save_new');
+			html_print_input_hidden('action', 'save_new');
 			$mapCreatedOk = false;
 		}
 		$layer_list = $arrayLayers;
@@ -163,7 +163,7 @@ switch ($action) {
 			__('Map could not be created'));
 		break;
 	case 'new_map':
-		print_input_hidden('action', 'save_new');
+		html_print_input_hidden('action', 'save_new');
 		
 		$map_name = '';
 		$map_initial_longitude = '';
@@ -182,10 +182,10 @@ switch ($action) {
 	case 'edit_map':
 		$idMap = get_parameter('map_id');
 		
-		print_input_hidden('action', 'update_saved');
-		print_input_hidden('map_id', $idMap);
+		html_print_input_hidden('action', 'update_saved');
+		html_print_input_hidden('map_id', $idMap);
 		
-		$mapData = getMapData($idMap);
+		$mapData = gis_get_map_data($idMap);
 
 		$map_name = $mapData['map']['map_name'];
 		$map_group_id = $mapData['map']['group_id'];
@@ -199,7 +199,7 @@ switch ($action) {
 		$map_default_altitude = $mapData['map']['default_altitude'];
 		
 		$map_connection_list = $mapData['connections'];
-		$map_levels_zoom = getNumZoomLevelsOfConnectionDefault($map_connection_list);
+		$map_levels_zoom = gis_get_num_zoom_levels_connection_default($map_connection_list);
 		
 		//$map_levels_zoom = get_parameter('map_levels_zoom');
 		
@@ -269,14 +269,14 @@ switch ($action) {
 			$arrayLayers[] = JSON_decode($layer, true);
 		}
 		
-		$invalidFields = validateMapData($map_name, $map_zoom_level,
+		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
 			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
 			$map_connection_list, $map_levels_zoom);
 			
 		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
 			//TODO
-			updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
+			gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
 				$map_initial_altitude, $map_zoom_level, $map_background,
 				$map_default_longitude, $map_default_latitude, $map_default_altitude,
 				$map_group_id, $map_connection_list, $arrayLayers);
@@ -284,7 +284,7 @@ switch ($action) {
 		}
 		else {
 			
-			print_input_hidden('action', 'update_saved');
+			html_print_input_hidden('action', 'update_saved');
 			$mapCreatedOk = false;
 		}
 		$layer_list = $arrayLayers;
@@ -292,8 +292,8 @@ switch ($action) {
 		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
 			__('Map could not be update'));
 		
-		print_input_hidden('action', 'update_saved');
-		print_input_hidden('map_id', $idMap);
+		html_print_input_hidden('action', 'update_saved');
+		html_print_input_hidden('map_id', $idMap);
 		break;
 }
 
@@ -302,13 +302,13 @@ $table->data = array ();
 $table->valign[0] = 'top';
 
 $table->data[0][0] = __('Map Name') . ui_print_help_tip (__('Descriptive name for the map'), true). ':';
-$table->data[0][1] = print_input_text ('map_name', $map_name, '', 30, 60, true);
+$table->data[0][1] = html_print_input_text ('map_name', $map_name, '', 30, 60, true);
 $table->rowspan[0][2] = 9;
 
 $iconError = '';
 if (isset($invalidFields['map_connection_list'])) {
 	if ($invalidFields['map_connection_list']) {
-		$iconError = print_image("images/dot_red.png", true);
+		$iconError = html_print_image("images/dot_red.png", true);
 	}
 }
 
@@ -324,14 +324,14 @@ $table->data[1][0] = __("Add Map connection") . ui_print_help_tip (__('At least 
 $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
 		<td>
-			" . print_select($listConnection, 'map_connection', '', '', '', '0', true) ."
+			" . html_print_select($listConnection, 'map_connection', '', '', '', '0', true) ."
 		</td>
 		<td>
-			<a href='javascript: addConnectionMap();'>" . print_image ("images/add.png", true) . "</a>
+			<a href='javascript: addConnectionMap();'>" . html_print_image ("images/add.png", true) . "</a>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
 		</td>
-	</tr> " . addConectionMapsInForm($map_connection_list) . "
+	</tr> " . gis_add_conection_maps_in_form($map_connection_list) . "
 </table>";
 $own_info = get_user_info($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
@@ -339,30 +339,30 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$display_all_group = false;
 $table->data[2][0] = __('Group') . ui_print_help_tip (__('Group that owns the map'), true). ':';
-$table->data[2][1] = print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
+$table->data[2][1] = html_print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
 
 $table->data[3][0] = __('Default zoom') . ui_print_help_tip (__('Default zoom level when opening the map'), true). ':';
-$table->data[3][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
+$table->data[3][1] = html_print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
 
 $table->data[4][0] = __('Center Longitude') . ':';
-$table->data[4][1] = print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
+$table->data[4][1] = html_print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
 
 $table->data[5][0] = __('Center Latitude') . ':';
-$table->data[5][1] = print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
+$table->data[5][1] = html_print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
 
 $table->data[6][0] = __('Center Altitude') . ':';
-$table->data[6][1] = print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
+$table->data[6][1] = html_print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
 
 $table->data[7][0] = __('Default Longitude') . ':';
-$table->data[7][1] = print_input_text ('map_default_longitude', $map_default_longitude, '', 4, 8, true);
+$table->data[7][1] = html_print_input_text ('map_default_longitude', $map_default_longitude, '', 4, 8, true);
 
 $table->data[8][0] = __('Default Latitude') . ':';
-$table->data[8][1] = print_input_text ('map_default_latitude', $map_default_latitude, '', 4, 8, true);
+$table->data[8][1] = html_print_input_text ('map_default_latitude', $map_default_latitude, '', 4, 8, true);
 
 $table->data[9][0] = __('Default Altitude') . ':';
-$table->data[9][1] = print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
+$table->data[9][1] = html_print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
 
-print_table($table);
+html_print_table($table);
 
 echo "<h3>" . __('Layers') . ui_print_help_tip (__('Each layer can show agents from one group or the agents added to that layer or both.'), true). "</h3>";
 
@@ -372,22 +372,22 @@ $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 
 $table->data[0][0] = "<h4>" .__('List of layers') . ui_print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true) . "</h4>";
-$table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true) . '</div>';
+$table->data[0][1] = '<div style="text-align: right;">' . html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true) . '</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">' .
-	addLayerList($layer_list) . 
+	gis_add_layer_list($layer_list) . 
 	'</table>';
 $table->data[1][1] = '<div id="form_layer">
 		<table id="form_layer_table" class="databox" border="0" cellpadding="4" cellspacing="4" style="visibility: hidden;">
 			<tr>
 				<td>' . __('Layer name') . ':</td>
-				<td>' . print_input_text ('layer_name_form', '', '', 20, 40, true) . '</td>
+				<td>' . html_print_input_text ('layer_name_form', '', '', 20, 40, true) . '</td>
 				<td>' . __('Visible') . ':</td>
-				<td>' . print_checkbox('layer_visible_form', 1, true, true) . '</td>
+				<td>' . html_print_checkbox('layer_visible_form', 1, true, true) . '</td>
 			</tr>
 			<tr>
 				<td>' . __('Show agents from group') . ':</td>
-				<td colspan="3">' . print_select_groups(false, 'IW', $display_all_group, 'layer_group_form', '-1', '', __('None'), '-1', true) . '</td>
+				<td colspan="3">' . html_print_select_groups(false, 'IW', $display_all_group, 'layer_group_form', '-1', '', __('None'), '-1', true) . '</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>
@@ -395,10 +395,10 @@ $table->data[1][1] = '<div id="form_layer">
 			<tr>
 				<td>' . __('Agent') . ':</td>
 				<td colspan="3">
-					' . print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
+					' . html_print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 					array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 					. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp;' . 
-					print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub add"', true) .'
+					html_print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub add"', true) .'
 				</td>
 			</tr>
 			<tr>
@@ -410,14 +410,14 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td align="right" colspan="4">' . 
-					print_button(__('Save Layer'), 'save_layer', false, 'saveLayer();', 'class="sub wand"', true) . '
-					' . print_input_hidden('layer_edit_id_form', '', true) . '
+					html_print_button(__('Save Layer'), 'save_layer', false, 'saveLayer();', 'class="sub wand"', true) . '
+					' . html_print_input_hidden('layer_edit_id_form', '', true) . '
 				</td>
 			</tr>
 		</table>
 	</div>';
 
-print_table($table);
+html_print_table($table);
 
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -426,14 +426,14 @@ switch ($action) {
 	case 'edit_map':
 	case 'update_saved':
 		if (!empty($invalidFields)) {
-			print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+			html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
 		}
 		else {
-			print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
+			html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
 		}
 		break;
 	case 'new_map':
-		print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+		html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
 		break;
 }
 echo '</div>';
@@ -447,9 +447,9 @@ echo "</form>";
 <table style="visibility: hidden;">
 	<tbody id="chunk_map_connection">
 		<tr class="row_0">
-			<td><?php print_input_text ('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
-			<td><?php print_radio_button_extended('map_connection_default', '', '', true, false, 'changeDefaultConection(this.value)', '');?></td>
-			<td><a id="delete_row" href="none"><?php print_image("images/cross.png", false, array("alt" => ""));?></a></td>
+			<td><?php html_print_input_text ('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
+			<td><?php html_print_radio_button_extended('map_connection_default', '', '', true, false, 'changeDefaultConection(this.value)', '');?></td>
+			<td><a id="delete_row" href="none"><?php html_print_image("images/cross.png", false, array("alt" => ""));?></a></td>
 		</tr>
 	</tbody>
 </table>
@@ -460,7 +460,7 @@ echo "</form>";
 			<td class="col1">XXXX</td>
 			<td class="col2">
 				<input type="hidden" id="name_agent" name="name_agent" value="" />
-				<a id="delete_row" href="none"><?php print_image("images/cross.png", false, array("alt" => ""));?></a>
+				<a id="delete_row" href="none"><?php html_print_image("images/cross.png", false, array("alt" => ""));?></a>
 			</td>
 		</tr>
 	</tbody>
@@ -470,14 +470,14 @@ echo "</form>";
 		<tbody id="chuck_layer_item">
 			<tr>
 				<td class="col1">XXXXXXXXXXXXXXXXXX</td>
-				<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><?php print_image("images/up.png", false, array("alt" => ""));?></a></td>
-				<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><?php print_image("images/down.png", false, array("alt" => ""));?></a></td>
+				<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><?php html_print_image("images/up.png", false, array("alt" => ""));?></a></td>
+				<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><?php html_print_image("images/down.png", false, array("alt" => ""));?></a></td>
 				<td class="col3">
-					<a id="edit_layer" href="javascript: editLayer(none);"><?php print_image("images/config.png", false, array("alt" => ""));?></a>
+					<a id="edit_layer" href="javascript: editLayer(none);"><?php html_print_image("images/config.png", false, array("alt" => ""));?></a>
 				</td>
 				<td class="col4">
 					<input type="hidden" name="layer_values" id="layer_values" />
-					<a id="delete_row" href="none"><?php print_image("images/cross.png", false, array("alt" => ""));?></a>
+					<a id="delete_row" href="none"><?php html_print_image("images/cross.png", false, array("alt" => ""));?></a>
 				</td>
 			</tr>
 		</tbody>

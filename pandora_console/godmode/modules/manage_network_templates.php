@@ -154,23 +154,23 @@ foreach ($result as $row) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. safe_output($row["name"]).'</a>';
 	$data[1] = ui_print_truncate_text(safe_output($row["description"]), 70, true, true, true, true);
-	$data[2] = print_input_image ("delete_profile", "images/cross.png",
+	$data[2] = html_print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));
-	$data[2] .= print_input_image ("export_profile", "images/lightning_go.png",
+	$data[2] .= html_print_input_image ("export_profile", "images/lightning_go.png",
 		$row["id_np"], '', true);
 	$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
 		'&delete_profile=1&delete_profile=' . $row['id_np'] . '" ' .
-		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true) . '</a>';
+		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a>';
 	$data[2] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
-		'&export_profile=' . $row['id_np'] . '">' . print_image("images/lightning_go.png", true) . '</a>';
+		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/lightning_go.png", true) . '</a>';
 	
 	array_push ($table->data, $data);
 }
 
 if (!empty ($table->data)) {
 	echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates">';
-	print_table ($table);
+	html_print_table ($table);
 	echo '</form>';
 } else {
 	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';	
@@ -178,7 +178,7 @@ if (!empty ($table->data)) {
 
 echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
-print_submit_button (__('Create'), "crt", '', 'class="sub next"'); 
+html_print_submit_button (__('Create'), "crt", '', 'class="sub next"'); 
 echo '</div></form>';
 
 ?>

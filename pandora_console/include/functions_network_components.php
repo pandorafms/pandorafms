@@ -116,8 +116,8 @@ function get_network_component_group ($id_network_component_group, $filter = fal
 /**
  * Get a list of network component groups.
  * 
- * The values returned can be passed directly to print_select(). Child groups
- * are indented, so ordering on print_select() is NOT recommendable.
+ * The values returned can be passed directly to html_print_select(). Child groups
+ * are indented, so ordering on html_print_select() is NOT recommendable.
  * 
  * @param int id_module_components If provided, groups must have at least one component
  * of the module provided. Parents will be included in that case even if they don't have

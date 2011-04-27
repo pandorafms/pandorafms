@@ -230,21 +230,21 @@ $snmp_versions['3'] = 'v. 3';
 $table->data = array ();
 	
 $table->data[0][0] = __('Selection mode');
-$table->data[0][1] = __('Select modules first').' '.print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[0][1] = __('Select modules first').' '.html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[0][2] = '';
-$table->data[0][3] = __('Select agents first').' '.print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[0][3] = __('Select agents first').' '.html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
 $table->rowclass[1] = 'select_modules_row';
 $table->data[1][0] = __('Module type');
 $table->data[1][0] .= '<span id="module_loading" class="invisible">';
-$table->data[1][0] .= print_image('images/spinner.png', true);
+$table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $types[0] = __('All');
 $table->colspan[1][1] = 2;
-$table->data[1][1] = print_select ($types,
+$table->data[1][1] = html_print_select ($types,
 	'module_type', '', false, __('Select'), -1, true, false, true);
 
-$table->data[1][3] = __('Select all modules of this type').' '.print_checkbox_extended ("force_type", 'type', '', '', false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][3] = __('Select all modules of this type').' '.html_print_checkbox_extended ("force_type", 'type', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $modules = array ();
 if ($module_type != '') {
@@ -262,91 +262,91 @@ foreach ($names as $name) {
 
 $table->rowclass[2] = 'select_agents_row';
 $table->data[2][0] = __('Agent group');
-$groups = get_all_groups(true);
+$groups = groups_get_all(true);
 $groups[0] = __('All');
 $table->colspan[2][1] = 2;
-$table->data[2][1] = print_select ($groups, 'groups_select',
+$table->data[2][1] = html_print_select ($groups, 'groups_select',
 	'', true, __('Select'), -1, true, false, true);
-$table->data[2][3] = __('Select all modules of this group').' '.print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][3] = __('Select all modules of this group').' '.html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $table->rowstyle[3] = 'vertical-align: top;';
 $table->rowclass[3] = 'select_modules_row select_modules_row_2';
 $table->data[3][0] = __('Modules');
-$table->data[3][1] = print_select ($modules, 'module_name[]',
+$table->data[3][1] = html_print_select ($modules, 'module_name[]',
 	$module_name, false, __('Select'), -1, true, true, true);
 
 $table->data[3][2] = __('Agents');
-$table->data[3][3] = print_select (array(), 'agents[]',
+$table->data[3][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
 	
 $table->rowstyle[4] = 'vertical-align: top;';
 $table->rowclass[4] = 'select_agents_row select_agents_row_2';
 $table->data[4][0] = __('Agents');
-$table->data[4][1] = print_select ($agents, 'id_agents[]',
+$table->data[4][1] = html_print_select ($agents, 'id_agents[]',
 	$agents_id, false, '', '', true, true, false);
 	
 $table->data[4][2] = __('Modules');
-$table->data[4][3] = print_select (array(), 'module[]',
+$table->data[4][3] = html_print_select (array(), 'module[]',
 	$modules_select, false, '', '', true, true, false);
 
 
 $table->data['edit1'][0] = __('Warning status');
 $table->data['edit1'][1] = '<em>'.__('Min.').'</em>';
-$table->data['edit1'][1] .= print_input_text ('min_warning', '', '', 5, 15, true);
+$table->data['edit1'][1] .= html_print_input_text ('min_warning', '', '', 5, 15, true);
 $table->data['edit1'][1] .= '<br /><em>'.__('Max.').'</em>';
-$table->data['edit1'][1] .= print_input_text ('max_warning', '', '', 5, 15, true);
+$table->data['edit1'][1] .= html_print_input_text ('max_warning', '', '', 5, 15, true);
 $table->data['edit1'][2] = __('Critical status');
 $table->data['edit1'][3] = '<em>'.__('Min.').'</em>';
-$table->data['edit1'][3] .= print_input_text ('min_critical', '', '', 5, 15, true);
+$table->data['edit1'][3] .= html_print_input_text ('min_critical', '', '', 5, 15, true);
 $table->data['edit1'][3] .= '<br /><em>'.__('Max.').'</em>';
-$table->data['edit1'][3] .= print_input_text ('max_critical', '', '', 5, 15, true);
+$table->data['edit1'][3] .= html_print_input_text ('max_critical', '', '', 5, 15, true);
 
 $table->data['edit2'][0] = __('Interval');
-$table->data['edit2'][1] = print_input_text ('module_interval', '', '', 5, 15, true);
+$table->data['edit2'][1] = html_print_input_text ('module_interval', '', '', 5, 15, true);
 $table->data['edit2'][2] = __('Disabled');
-//$table->data['edit2'][3] = print_checkbox ("disabled", 1, '', true);
-$table->data['edit2'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
+//$table->data['edit2'][3] = html_print_checkbox ("disabled", 1, '', true);
+$table->data['edit2'][3] = html_print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
 
 $table->data['edit3'][0] = __('Post process');
-$table->data['edit3'][1] = print_input_text ('post_process', '', '', 10, 15, true);
+$table->data['edit3'][1] = html_print_input_text ('post_process', '', '', 10, 15, true);
 $table->data['edit3'][2] = __('SMNP community');
-$table->data['edit3'][3] = print_input_text ('snmp_community', '', '', 10, 15, true);
+$table->data['edit3'][3] = html_print_input_text ('snmp_community', '', '', 10, 15, true);
 $table->data['edit35'][0] = '';
 $table->data['edit35'][1] = '';
 $table->data['edit35'][2] = __('SNMP version');
-$table->data['edit35'][3] = print_select ($snmp_versions, 'tcp_send', '', '', __('Select'), '', true, false, false, '');
+$table->data['edit35'][3] = html_print_select ($snmp_versions, 'tcp_send', '', '', __('Select'), '', true, false, false, '');
 
 $table->data['edit4'][0] = __('Value');
 $table->data['edit4'][1] = '<em>'.__('Min.').'</em>';
-$table->data['edit4'][1] .= print_input_text ('min', '', '', 5, 15, true);
+$table->data['edit4'][1] .= html_print_input_text ('min', '', '', 5, 15, true);
 $table->data['edit4'][1] .= '<br /><em>'.__('Max.').'</em>';
-$table->data['edit4'][1] .= print_input_text ('max', '', '', 5, 15, true);
+$table->data['edit4'][1] .= html_print_input_text ('max', '', '', 5, 15, true);
 $table->data['edit4'][2] = __('Module group');
-$table->data['edit4'][3] = print_select (get_modulegroups(),
+$table->data['edit4'][3] = html_print_select (get_modulegroups(),
 	'id_module_group', '', '', __('Select'), 0, true, false, false);
 
 $table->data['edit5'][0] = __('Username');
-$table->data['edit5'][1] = print_input_text ('plugin_user', '', '', 15, 60, true);
+$table->data['edit5'][1] = html_print_input_text ('plugin_user', '', '', 15, 60, true);
 $table->data['edit5'][2] = __('Password');
-$table->data['edit5'][3] = print_input_password ('plugin_pass', '', '', 15, 60, true);
+$table->data['edit5'][3] = html_print_input_password ('plugin_pass', '', '', 15, 60, true);
 
 $table->data['edit6'][0] = __('Export target');
-$table->data['edit6'][1] = print_select_from_sql ('SELECT id, name
+$table->data['edit6'][1] = html_print_select_from_sql ('SELECT id, name
 	FROM tserver_export ORDER BY name',
 	'id_export', '', '',__('None'),'0', true, false, false);
 
 /* FF stands for Flip-flop */
 $table->data['edit7'][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
-$table->data['edit7'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true);
+$table->data['edit7'][1] = html_print_input_text ('min_ff_event', '', '', 5, 15, true);
 $table->data['edit7'][2] = __('Historical data');
-$table->data['edit7'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
+$table->data['edit7'][3] = html_print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('update', 1);
-print_submit_button (__('Update'), 'go', false, 'class="sub upd"');
+html_print_input_hidden ('update', 1);
+html_print_submit_button (__('Update'), 'go', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
 

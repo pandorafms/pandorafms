@@ -364,7 +364,7 @@ function clean_flash_string ($string) {
 function fs_error_image () {
 	global $config;
 
-	return print_image("images/image_problem.png", true, array("border" => '0'));
+	return html_print_image("images/image_problem.png", true, array("border" => '0'));
 }
 
 ?>

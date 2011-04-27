@@ -76,7 +76,7 @@ class Tactical {
 		$table->data[8][2] = '<a href="index.php?page=events&event_type=alert_fired" class="tactical_link" style="color: #ff8800;">' . __('Alerts fired') . '</a>';
 		$table->data[8][3] = '<a href="index.php?page=events&event_type=alert_fired" class="tactical_link" style="color: #ff8800;">' . $data["monitor_alerts_fired"] . '</a>';
 		
-		print_table($table);
+		html_print_table($table);
 		
 		echo "<h3 class='title_h3_server'>" . __('Server performance') . "</h3>";
 		
@@ -99,7 +99,7 @@ class Tactical {
 		$table->data[4][0] = '<span style="color: #000;">' . __('Total running modules') . '</span>';
 		$table->data[4][1] = '<span style="color: #000;">' . format_numeric($server_performance ["total_modules"]) . '</span>';
 		
-		print_table($table);
+		html_print_table($table);
 		
 		echo "<h3 class='title_h3_server'>" . __('Summary') . "</h3>";
 		
@@ -113,7 +113,7 @@ class Tactical {
 		$table->data[2][0] = '<span style="color: #aaa;">' . __('Agents unknown') . '</span>';
 		$table->data[2][1] = '<span style="color: #aaa;">' . $data["agents_unknown"] . '</span>';
 		
-		print_table($table);
+		html_print_table($table);
 	}
 }
 ?>

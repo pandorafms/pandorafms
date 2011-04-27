@@ -45,7 +45,7 @@ foreach ($osList as $os) {
 	$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os=' . $os['id_os'] . '">' . safe_output($os['name']) . '</a>';
 	$data[] = ui_print_truncate_text(safe_output($os['description']), 25, true, true);
 	if ($os['id_os'] > 13) {
-		$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os=' . $os['id_os'] . '">' . print_image("images/cross.png", true) . '</a>';
+		$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os=' . $os['id_os'] . '">' . html_print_image("images/cross.png", true) . '</a>';
 	}
 	else {
 		//The original icons of pandora don't delete.
@@ -55,5 +55,5 @@ foreach ($osList as $os) {
 	$table->data[] = $data;
 }
 
-print_table($table);
+html_print_table($table);
 ?>

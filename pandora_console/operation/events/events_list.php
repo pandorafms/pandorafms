@@ -140,7 +140,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;offset=" . $offset;
 
 //Link to toggle filter
-echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
+echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
 
 //Start div
 echo '<div id="event_control" style="display:none">';
@@ -151,7 +151,7 @@ echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" cla
 
 // Group combo
 echo "<td>".__('Group')."</td><td>";
-print_select_groups($config["id_user"], "IR", true, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
+html_print_select_groups($config["id_user"], "IR", true, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
 echo "</td>";
 
 // Event type
@@ -159,14 +159,14 @@ echo "<td>".__('Event type')."</td><td>";
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types["not_normal"] = __("Not normal");
-print_select ($types, 'event_type', $event_type, '', __('All'), '');
+html_print_select ($types, 'event_type', $event_type, '', __('All'), '');
 
 
 echo "</td></tr><tr>";
 
 // Severity
 echo "<td>".__('Severity')."</td><td>";
-print_select (get_priorities (), "severity", $severity, '', __('All'), '-1');
+html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1');
 echo '</td>';
 
 // Status
@@ -178,19 +178,19 @@ $fields[1] = __('Only validated');
 $fields[2] = __('Only in process');
 $fields[3] = __('Only not validated');
 
-print_select ($fields, 'status', $status, '', '', '');
+html_print_select ($fields, 'status', $status, '', '', '');
 
 //NEW LINE
 echo "</td></tr><tr>";
 
 // Free search
 echo "<td>".__('Free search')."</td><td>";
-print_input_text ('search', $search, '', 15);
+html_print_input_text ('search', $search, '', 15);
 echo '</td>';
 
 //Agent search
 echo "<td>".__('Agent search')."</td><td>";
-print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
+html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
@@ -208,12 +208,12 @@ $lpagination[200] = 200;
 $lpagination[500] = 500;
 
 echo "<td>";
-print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
+html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
 echo "</td>";
 
 echo "<td>".__('Max. hours old')."</td>";
 echo "<td>";
-print_input_text ('event_view_hr', $event_view_hr, '', 5);
+html_print_input_text ('event_view_hr', $event_view_hr, '', 5);
 echo "</td>";
 
 
@@ -221,7 +221,7 @@ echo "</tr><tr>";
 echo "<td>".__('User ack.')."</td>";
 echo "<td>";
 $users = get_users_info ();
-print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
+html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 
 echo "<td>";
@@ -230,12 +230,12 @@ echo "</td><td>";
 
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
-print_select ($repeated_sel, "group_rep", $group_rep, '');
+html_print_select ($repeated_sel, "group_rep", $group_rep, '');
 echo "</td></tr>";
 
 echo '<tr><td colspan="4" style="text-align:right">';
 //The buttons
-print_submit_button (__('Update'), '', false, 'class="sub upd"');
+html_print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
@@ -352,7 +352,7 @@ $table->head[4] = __('Action');
 $table->align[4] = 'center';
 $table->size[4] = '80px';
 
-$table->head[5] = print_checkbox ("allbox", "1", false, true);
+$table->head[5] = html_print_checkbox ("allbox", "1", false, true);
 $table->align[5] = 'center';
 
 $idx = 0;
@@ -379,7 +379,7 @@ foreach ($result as $event) {
 			break;
 	}
 
-	$data[0] = print_image ($img_st, true, 
+	$data[0] = html_print_image ($img_st, true, 
 		array ("class" => "image_status",
 			"width" => 16,
 			"height" => 16,
@@ -440,44 +440,44 @@ foreach ($result as $event) {
 	// Validate event
 	if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
 		$data[4] .= '<a href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
-		$data[4] .= print_image ("images/ok.png", true,
+		$data[4] .= html_print_image ("images/ok.png", true,
 			array ("title" => __('Validate event')));
 		$data[4] .= '</a>&nbsp;';
 	}
 	else {
-		$data[4] .= print_image ("images/tick.png", true,
+		$data[4] .= html_print_image ("images/tick.png", true,
 			array ("title" => __('Event validated'))).'&nbsp;';
 	}
 	// Delete event
 	if (check_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
 		if($event['estado'] != 2) {
 			$data[4] .= '<a class="delete_event" href="#"  onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;" id="delete-'.$event['id_evento'].'">';
-			$data[4] .= print_image ("images/cross.png", true,
+			$data[4] .= html_print_image ("images/cross.png", true,
 				array ("title" => __('Delete event')));
 			$data[4] .= '</a>&nbsp;';
 		}
 		else {
-			$data[4] .= print_image ("images/cross.disabled.png", true,
+			$data[4] .= html_print_image ("images/cross.disabled.png", true,
 				array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
 		}
 	}
 	
 	$data[4] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
-	$data[4] .= print_image ("images/eye.png", true,
+	$data[4] .= html_print_image ("images/eye.png", true,
 			array ("title" => __('Show more')));	
 	$data[4] .= '</a>&nbsp;';
 	
 	// Create incident from this event
 	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 		$data[4] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event='.$event["id_evento"].'">';
-		$data[4] .= print_image ("images/page_lightning.png", true,
+		$data[4] .= html_print_image ("images/page_lightning.png", true,
 			array ("title" => __('Create incident from event')));
 		$data[4] .= '</a>';
 	}
 	
 	//Checkbox
 	if($event["estado"] != 1) {
-		$data[5] = print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+		$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
 	}
 	else {
 		$data[5] = '';
@@ -488,22 +488,22 @@ foreach ($result as $event) {
 	$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
 	$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
 	$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
-	$string .=  '<td align="left" width="450px"><b>' . print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
+	$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 	$string .= '<td align="left" width="200px">'; 
 	$string .= '<div style="text-align:center;">';
 	if($event["estado"] == 0) {
-		$string .= print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+		$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 	}
 	$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
 	if($event["estado"] == 2) {
-		$string .= print_button (__('Validate'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+		$string .= html_print_button (__('Validate'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
 	}else {
-		$string .= print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+		$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
 	}
 	$string .= '</a>';
 	$string .= '</td><td width="400px">';
 	if($event["id_alert_am"] != 0) {
-		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
+		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
 	}
 	$string .= '</td></tr></table>'; //</form>';	
 	
@@ -524,7 +524,7 @@ foreach ($result as $event) {
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Severity') . ':</b></td><td align="left">';
-	$string .= print_image ($img_sev, true, 
+	$string .= html_print_image ($img_sev, true, 
 		array ("class" => "image_status",
 			"width" => 12,
 			"height" => 12,
@@ -555,11 +555,11 @@ foreach ($result as $event) {
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
 		$standby = db_get_value('standby', 'talert_template_modules', 'id', $event["id_alert_am"]);
 		if(!$standby) {
-			$string .= print_image ("images/bell.png", true,
+			$string .= html_print_image ("images/bell.png", true,
 				array ("title" => __('Go to data overview')));
 		}
 		else {
-			$string .= print_image ("images/bell_pause.png", true,
+			$string .= html_print_image ("images/bell_pause.png", true,
 				array ("title" => __('Go to data overview')));
 		}
 		
@@ -579,7 +579,7 @@ foreach ($result as $event) {
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Group') . ':</b></td><td align="left">';
 	$string .= ui_print_group_icon ($event["id_grupo"], true);
-	$string .= ' '. get_group_name ($event["id_grupo"], true);
+	$string .= ' '. groups_get_name ($event["id_grupo"], true);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	if ($group_rep == 0) {
@@ -634,15 +634,15 @@ if (!empty ($table->data)) {
 	echo '<form method="post" id="form_events" action="'.$url.'&amp;section=validate">';
 	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 
-	print_table ($table);
+	html_print_table ($table);
 
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
-		print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
+		html_print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
 
-		print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
+		html_print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
 		?>
 		<script type="text/javascript">
 		function submit_delete() {

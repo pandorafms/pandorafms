@@ -36,7 +36,7 @@ require_once ($config['homedir'].'/include/functions_groups.php');
 /**
  * Prints the print_r with < pre > tags
  */
-function debugPrint ($var, $file = '') {
+function html_debug_print ($var, $file = '') {
 	if ($file === true)
 		$file = '/tmp/logDebug';
 	if (strlen($file) > 0) {
@@ -54,7 +54,7 @@ function debugPrint ($var, $file = '') {
 	}
 }
 
-function f2str($function, $params) {
+function html_f2str($function, $params) {
 	ob_start();
 	
 	call_user_func_array($function, $params);
@@ -81,7 +81,7 @@ function f2str($function, $params) {
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select_style ($fields, $name, $selected = '', $style='', $script = '', $nothing = '', $nothing_value = 0, $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
+function html_print_select_style ($fields, $name, $selected = '', $style='', $script = '', $nothing = '', $nothing_value = 0, $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
 	$output = "\n";
 	
 	static $idcounter = array ();
@@ -178,7 +178,7 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
+function html_print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
 	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
 	global $config;
@@ -186,14 +186,14 @@ function print_select_groups($id_user = false, $privilege = "AR", $returnAllGrou
 	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
 	
 	if ($id_group !== false) {
-		$childrens = get_childrens($id_group);
+		$childrens = groups_get_childrens($id_group);
 		foreach ($childrens as $child) {
 			unset($user_groups[$child['id_grupo']]);
 		}
 		unset($user_groups[$id_group]);
 	}
 	
-	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
+	$user_groups_tree = groups_get_groups_tree_recursive($user_groups);
 	
 	$fields = array();
 	foreach ($user_groups_tree as $group) {
@@ -207,7 +207,7 @@ function print_select_groups($id_user = false, $privilege = "AR", $returnAllGrou
 		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
 	
-	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
+	$output = html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
 		$return, $multiple, false, $class, $disabled, $style, $option_style);
 		
 	if ($return) {
@@ -234,7 +234,7 @@ function print_select_groups($id_user = false, $privilege = "AR", $returnAllGrou
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
+function html_print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false) {
 	
 	$output = "\n";
@@ -358,7 +358,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
+function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
 	$multiple = false, $sort = true, $disabled = false, $style = false) {
 	global $config;
 	
@@ -378,7 +378,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		}
 	}
 	
-	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style);
+	return html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style);
 }
 
 /**
@@ -397,7 +397,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
  * @return string HTML code if return parameter is true.
  */
 
-function print_extended_select_for_time ($fields, $name, $selected = '', $script = '', $nothing = '',
+function html_print_extended_select_for_time ($fields, $name, $selected = '', $script = '', $nothing = '',
 	$nothing_value = '0', $size = false, $return = false, $select_style = false) {
 	
 	if (($selected !== false) && (!isset($fields[$selected]))) {
@@ -406,9 +406,9 @@ function print_extended_select_for_time ($fields, $name, $selected = '', $script
 	
 	ob_start();
 	
-	print_select ($fields, $name . '_select', $selected,"javascript: $('#text-" . $name . "').val($('#" . $name . "_select').val());" . $script,
+	html_print_select ($fields, $name . '_select', $selected,"javascript: $('#text-" . $name . "').val($('#" . $name . "_select').val());" . $script,
 		$nothing, $nothing_value, false, false, false, '', false, $select_style);
-	print_input_text ($name, $selected, '', $size);
+	html_print_input_text ($name, $selected, '', $size);
 	
 	$returnString = ob_get_clean();
 	
@@ -419,12 +419,12 @@ function print_extended_select_for_time ($fields, $name, $selected = '', $script
 }
 
 /**
- * Render an input text element. Extended version, use print_input_text() to simplify.
+ * Render an input text element. Extended version, use html_print_input_text() to simplify.
  * 
  * @param string $name Input name.
  * @param string $value Input value.
  * @param string $id Input HTML id.
- * @param string $alt Do not use, invalid for text and password. Use print_input_image
+ * @param string $alt Do not use, invalid for text and password. Use html_print_input_image
  * @param int $size Size of the input.
  * @param int $maxlength Maximum length allowed.
  * @param bool $disabled Disable the button (optional, button enabled by default).
@@ -435,7 +435,7 @@ function print_extended_select_for_time ($fields, $name, $selected = '', $script
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
+function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
 	static $idcounter = 0;
 	
 	if ($maxlength == 0)
@@ -520,8 +520,8 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
-	$output = print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', '', true, true);
+function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
+	$output = html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', '', true, true);
 
 	if ($return)
 		return $output;
@@ -543,14 +543,14 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
 	if ($maxlength == 0)
 		$maxlength = 255;
 	
 	if ($size == 0)
 		$size = 10;
 		
-	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, $disabled, '', '', $return);
+	return html_print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, $disabled, '', '', $return);
 }
 
 /**
@@ -566,7 +566,7 @@ function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 25
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_image ($name, $src, $value, $style = '', $return = false, $options = false) {
+function html_print_input_image ($name, $src, $value, $style = '', $return = false, $options = false) {
 	global $config;
 	static $idcounter = 0;
 	
@@ -616,7 +616,7 @@ function print_input_image ($name, $src, $value, $style = '', $return = false, $
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_hidden ($name, $value, $return = false, $class = false) {
+function html_print_input_hidden ($name, $value, $return = false, $class = false) {
 	if ($class !== false) {
 		$classText = 'class="' . $class . '"';
 	}
@@ -644,7 +644,7 @@ function print_input_hidden ($name, $value, $return = false, $class = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function print_submit_button ($label = 'OK', $name = '', $disabled = false, $attributes = '', $return = false) {
+function html_print_submit_button ($label = 'OK', $name = '', $disabled = false, $attributes = '', $return = false) {
 	if (!$name) {
 		$name="unnamed";
 	}
@@ -682,7 +682,7 @@ function print_submit_button ($label = 'OK', $name = '', $disabled = false, $att
  *
  * @return string HTML code if return parameter is true.
  */
-function print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false) {
+function html_print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false) {
 	$output = '';
 
 	$alt = $title = '';
@@ -715,7 +715,7 @@ function print_button ($label = 'OK', $name = '', $disabled = false, $script = '
  *
  * @return string HTML code if return parameter is true.
  */
-function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
+function html_print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
 	static $idcounter = array ();
 	
 	//If duplicate names exist, it will start numbering. Otherwise it won't
@@ -768,7 +768,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_table (&$table, $return = false) {
+function html_print_table (&$table, $return = false) {
 	$output = '';
 	static $table_count = 0;
 
@@ -976,7 +976,7 @@ function print_table (&$table, $return = false) {
 
 
 /**
- * Render a radio button input. Extended version, use print_radio_button() to simplify.
+ * Render a radio button input. Extended version, use html_print_radio_button() to simplify.
  *
  * @param string Input name.
  * @param string Input value.
@@ -989,7 +989,7 @@ function print_table (&$table, $return = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false) {
+function html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false) {
 	static $idcounter = 0;
 
 	$output = '';
@@ -1031,8 +1031,8 @@ function print_radio_button_extended ($name, $value, $label, $checkedvalue, $dis
  *
  * @return string HTML code if return parameter is true.
  */
-function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false) {
-	$output = print_radio_button_extended ($name, $value, $label, $checkedvalue, false, '', '', true);
+function html_print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false) {
+	$output = html_print_radio_button_extended ($name, $value, $label, $checkedvalue, false, '', '', true);
 	
 	if ($return)
 		return $output;
@@ -1041,7 +1041,7 @@ function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $re
 }
 
 /**
- * Render a checkbox button input. Extended version, use print_checkbox() to simplify.
+ * Render a checkbox button input. Extended version, use html_print_checkbox() to simplify.
  *
  * @param string Input name.
  * @param string Input value.
@@ -1054,7 +1054,7 @@ function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $re
  *
  * @return string HTML code if return parameter is true.
  */
-function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false) {
+function html_print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false) {
 	static $idcounter = array ();
 	
 	//If duplicate names exist, it will start numbering. Otherwise it won't
@@ -1098,8 +1098,8 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
  *
  * @return string HTML code if return parameter is true.
  */
-function print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '') {
-	$output = print_checkbox_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
+function html_print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '') {
+	$output = html_print_checkbox_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
 
 	if ($return === false)
 		echo $output;
@@ -1118,7 +1118,7 @@ function print_checkbox ($name, $value, $checked = false, $return = false, $disa
  *
  * @return string HTML code if return parameter is true.
  */
-function print_image ($src, $return = false, $options = false, $return_src = false) {
+function html_print_image ($src, $return = false, $options = false, $return_src = false) {
 	global $config;
 
 	/* Checks if user's skin is available */
@@ -1207,7 +1207,7 @@ function print_image ($src, $return = false, $options = false, $return_src = fal
 }
 
 /**
- * Render an input text element. Extended version, use print_input_text() to simplify.
+ * Render an input text element. Extended version, use html_print_input_text() to simplify.
  *
  * @param string Input name.
  * @param bool Whether to return an output string or echo now (optional, echo by default).
@@ -1216,7 +1216,7 @@ function print_image ($src, $return = false, $options = false, $return_src = fal
  *	Key disabled: Whether to disable the input or not.
  *	Key class: HTML class
  */
-function print_input_file ($name, $return = false, $options = false) {
+function html_print_input_file ($name, $return = false, $options = false) {
 	$output = '';
 	
 	$output .= '<input type="file" value="" name="'.$name.'" id="file-'.$name.'" ';
@@ -1249,7 +1249,7 @@ function print_input_file ($name, $return = false, $options = false) {
  *	Key html: Extra HTML to add after the label.
  *	Key class: HTML class
  */
-function print_label ($text, $id, $return = false, $options = false) {
+function html_print_label ($text, $id, $return = false, $options = false) {
 	$output = '';
 	
 	$output .= '<label id="label-'.$id.'" ';
@@ -1279,7 +1279,7 @@ function print_label ($text, $id, $return = false, $options = false) {
  *
  * @param string color in format #FFFFFF, FFFFFF, #FFF or FFF
  */
-function html2rgb($htmlcolor)
+function html_html2rgb($htmlcolor)
 {
 	if ($htmlcolor[0] == '#') {
 		$htmlcolor = substr($htmlcolor, 1);
@@ -1322,7 +1322,7 @@ function html2rgb($htmlcolor)
  * 
  * @return mixed If the $return is true, return the output as string.
  */
-function print_autocomplete_modules($name = 'module', $default = '', $id_agents = false, $ACL = true, $scriptResult = '', $filter = array(), $return = false) {
+function html_print_autocomplete_modules($name = 'module', $default = '', $id_agents = false, $ACL = true, $scriptResult = '', $filter = array(), $return = false) {
 	global $config;
 	
 	if ($id_agents === false) {
@@ -1412,7 +1412,7 @@ function print_autocomplete_modules($name = 'module', $default = '', $id_agents 
 	</script>
 	<?php
 	
-	print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
+	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
 	echo '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search the module.") . '</span></a>';
 

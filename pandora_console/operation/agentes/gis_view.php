@@ -34,7 +34,7 @@ ui_require_javascript_file('openlayers.pandora');
 $period = get_parameter ("period", 86400);
 $agentId = get_parameter('id_agente');
 $agent_name = get_agent_name($agentId); 
-$agentData = getDataLastPositionAgent($id_agente);
+$agentData = gis_get_data_last_position_agent($id_agente);
 
 $url = '';
 //These variables come from index.php
@@ -46,7 +46,7 @@ echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
 echo "<div id=\"".$agent_name."_agent_map\" style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
-if (!getAgentMap($agentId, "500px", "98%", true, true, $period)) {
+if (!gis_get_agent_map($agentId, "500px", "98%", true, true, $period)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
 } 
 
@@ -62,8 +62,8 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-activateAjaxRefresh(null, $timestampLastOperation);
-activateSelectControl();
+gis_activate_ajax_refresh(null, $timestampLastOperation);
+gis_activate_select_control();
 
 if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
@@ -83,7 +83,7 @@ $intervals[172800] = human_time_description_raw (172800);
 $intervals[604800] = human_time_description_raw (604800);
 
 echo "<br />";
-$dataLastPosition = getDataLastPositionAgent($agentId);
+$dataLastPosition = gis_get_data_last_position_agent($agentId);
 if ($dataLastPosition !== false) {
 	echo "<b>" . __("Last position in ") . $dataLastPosition['start_timestamp'] . ":</b> " .
 		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
@@ -91,9 +91,9 @@ if ($dataLastPosition !== false) {
 echo "<br />";
 echo "<form action='index.php?" . $url . "' method='POST'>";
 echo __("Period to show data as path") . ": ";
-print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
+html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
 echo __(" seconds.") . "&nbsp;";
-print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
+html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
 echo "</form>";
 
 echo "<h3>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h3>";
@@ -124,7 +124,7 @@ else {
 	$table->id = $agent_name.'_position_data_table';
 	$table->title = $agent_name." ". __("positional data");
 	$table->titlestyle = "background-color:#799E48;";
-	print_table($table); unset($table);
+	html_print_table($table); unset($table);
 
 	ui_pagination ($countData, false) ;
 	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";

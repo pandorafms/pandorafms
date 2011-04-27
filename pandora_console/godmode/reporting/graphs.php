@@ -95,7 +95,7 @@ if (! empty ($graphs)) {
 		$data = array ();
 		
 		$data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.
-			$graph['id_graph'].'">' . print_image('images/eye.png', true) . "</a>" . '</a>';
+			$graph['id_graph'].'">' . html_print_image('images/eye.png', true) . "</a>" . '</a>';
 		$data[1] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.$graph['name'].'</a>';
 		$data[2] = $graph["description"];
@@ -106,12 +106,12 @@ if (! empty ($graphs)) {
 		if (check_acl ($config['id_user'], 0, "AW")) {
 			$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">' . print_image("images/cross.png", true) . '</a>';
+					return false;">' . html_print_image("images/cross.png", true) . '</a>';
 		}
 		
 		array_push ($table->data, $data);
 	}
-	print_table ($table);
+	html_print_table ($table);
 }
 else {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
@@ -119,7 +119,7 @@ else {
 
 echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/graph_builder">';
 echo '<div class="action-buttons" style="width: 720px;">';
-print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
+html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
 echo "</div>";
 echo "</form>";
 ?>

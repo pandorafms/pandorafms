@@ -88,25 +88,25 @@ if (($agentFilter == 0) && ($moduleFilter == 0) && ($typeFilter == 0)) {
 
 $urlFilter = '&agent_filter=' . $agentFilter . '&module_filter=' . $moduleFilter . '&type_filter=' . $typeFilter;
 
-echo '<a href="javascript: toggleFormFilter();"><b>'.__('Items filter').'</b> ' . print_image("images/down.png", true, array("title" => __('Toggle filter(s)'), "id" => 'image_form_filter')) . '</a>';
+echo '<a href="javascript: toggleFormFilter();"><b>'.__('Items filter').'</b> ' . html_print_image("images/down.png", true, array("title" => __('Toggle filter(s)'), "id" => 'image_form_filter')) . '</a>';
 
 $table = null;
 $table->width = '80%';
 $table->data[0][0] = __('Agents');
-$table->data[0][1] = print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
+$table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
 $table->data[0][2] = __('Modules');
-$table->data[0][3] = print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
+$table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
 $table->data[1][0] = __('Type');
-$table->data[1][1] = print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+$table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
 
 echo '<div id="form_filter" style="display: none;">';
 echo '<form method="post" action ="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&&id_report=' . $idReport . '">';
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
-print_input_hidden('action', 'filter');
+html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
+html_print_input_hidden('action', 'filter');
 echo '</div>';
 echo '</form>';
 echo '</div>';
@@ -156,18 +156,18 @@ if ($items){
 	$table->head[0] = '<span title="' . __('Sort') . '">' . __('S.') . '</span>';
 	$table->head[1] = __('Type');
 	if (!$filterEnable) {
-		$table->head[1] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '">' . print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[1] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[2] = __('Agent');
 	if (!$filterEnable) {
-		$table->head[2] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '">' . print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '">' . print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[2] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[3] = __('Module');
 	if (!$filterEnable) {
-		$table->head[3] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '">' . print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '">' . print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[3] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
@@ -204,14 +204,14 @@ foreach ($items as $item) {
 		$row[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
 	}
 	else {
-		$row[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
+		$row[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
 	}
 	
 	if ((end($items) == $item) && $lastPage) {
 		$row[0] .= '<span style="width: 16px;">&nbsp;</span>';
 	}
 	else {
-		$row[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
+		$row[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
 	}
 	
 	if ($filterEnable) {
@@ -250,15 +250,15 @@ foreach ($items as $item) {
 		$row[5] = ui_print_truncate_text($item['description'], 25, true, true);
 	}
 	
-	$row[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
+	$row[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;';
-	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	
 	$table->data[] = $row;
 	$count++;
 }
 ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
-print_table($table);
+html_print_table($table);
 ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 ?>
 <script type="text/javascript">

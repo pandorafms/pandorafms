@@ -67,5 +67,5 @@ foreach ($config['extensions'] as $extension) {
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+html_print_table ($table);
 ?>

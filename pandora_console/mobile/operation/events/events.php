@@ -50,16 +50,16 @@ class EventsView {
 		$table->colspan[1][2] = 2;
 		
 		$table->data[0][0] = '<span alt="' . __('Group') . '" title="' . __('Group') . '"><b>' . __('G') . '</b></span>';
-		$table->data[0][1] = print_select_groups($this->system->getConfig("id_user"), "IR", true, 'ev_group', $ev_group, '', '', 0, true, false, false, 'w130');
+		$table->data[0][1] = html_print_select_groups($this->system->getConfig("id_user"), "IR", true, 'ev_group', $ev_group, '', '', 0, true, false, false, 'w130');
 		$table->data[0][2] = '<span alt="' . __('Event type') . '" title="' . __('Event type') . '"><b>' . __('E') . '</b></span>';
-		$table->data[0][3] = print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
+		$table->data[0][3] = html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 		$table->data[1][0] = '<span alt="' . __('Severity') . '" title="' . __('Severity') . '"><b>' . __('S') . '</b></span>';
-		$table->data[1][1] = print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
-		$table->data[1][2] = print_input_text('search', $search, '', 5, 20, true);
+		$table->data[1][1] = html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
+		$table->data[1][2] = html_print_input_text('search', $search, '', 5, 20, true);
 		$table->data[1][2] .= "<input type='submit' class='button_filter' name='submit_button' value='' alt='" . __('Filter') . "' title='" . __('Filter') . "' />";
 		
 		echo "<form method='post'>";
-		print_table($table);
+		html_print_table($table);
 		echo "</form>";
 		
 		
@@ -197,7 +197,7 @@ class EventsView {
 			$table->data[] = $data;
 		}
 		
-		print_table($table);
+		html_print_table($table);
 		
 		$pagination = ui_pagination ($count,
 			ui_get_url_refresh(array("offset" => $offset, "ev_group" => $ev_group,

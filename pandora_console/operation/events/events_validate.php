@@ -73,7 +73,7 @@ foreach($ids as $key => $id) {
 			break;
 	}
 
-	$icon = print_image ($img_st, true, 
+	$icon = html_print_image ($img_st, true, 
 		array ("class" => "image_status",
 			"width" => 16,
 			"height" => 16,
@@ -94,24 +94,24 @@ foreach($ids as $key => $id) {
 $string = '<form  method="post" action="'.$url_val.'">';
 $string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
 $string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
-$string .= print_input_hidden('eventid', implode(',',$ids), true);
-$string .=  '<td align="left" width="450px"><b>' . print_textarea("comment", 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
+$string .= html_print_input_hidden('eventid', implode(',',$ids), true);
+$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment", 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 $string .= '<td align="left" width="200px">'; 
 $string .= '<div style="text-align:center;">';
 if(!$any_inprocess) {
-	$string .= print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
-	$string .= print_submit_button (__('Change status'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
+	$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+	$string .= html_print_submit_button (__('Change status'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
 }else {
-	$string .= print_submit_button (__('Validate'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
+	$string .= html_print_submit_button (__('Validate'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
 }
 $string .= '</td><td width="400px">';
 if($any_alert) {
-	$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.print_checkbox('standby-alert', 'ff2', false, true).'</div>';
+	$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert', 'ff2', false, true).'</div>';
 }
 $string .= '</td></tr></table></form>';	
 
 echo $string;
 
-print_table($table);
+html_print_table($table);
 
 ?>

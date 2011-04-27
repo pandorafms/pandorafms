@@ -72,7 +72,7 @@ else {
 	}
 	
 	echo "<br />";ui_pagination ($totalGraphs);
-	print_table ($table); unset($table);
+	html_print_table ($table); unset($table);
 	ui_pagination ($totalGraphs);
 }
 

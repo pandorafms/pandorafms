@@ -172,26 +172,26 @@ switch ($graph_type) {
 //z-index is 1 because 2 made the calendar show under the divmenu.
 echo '<div id="divmenu" class="menu" style="z-index:1;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
 echo '<form method="get" action="stat_win.php">';
-print_input_hidden ("id", $id);
-print_input_hidden ("label", $label);
+html_print_input_hidden ("id", $id);
+html_print_input_hidden ("label", $label);
 
 if (isset($_GET["type"])) {
 	$type = get_parameter_get ("type");
-	print_input_hidden ("type", $type);
+	html_print_input_hidden ("type", $type);
 }
 echo '<table class="databox_frame" cellspacing="5">';
 echo '<tr><td>'.__('Refresh time').'</td><td colspan="2">';
 
-print_input_text ("refresh", $refresh, '', 5);
+html_print_input_text ("refresh", $refresh, '', 5);
 
 echo '&nbsp;&nbsp;&nbsp;'.__('Avg. Only');
 
-print_checkbox ("avg_only", 1, (bool) $avg_only);
+html_print_checkbox ("avg_only", 1, (bool) $avg_only);
 
 echo '<tr><td>'.__('Begin date').'</td><td>';
 
-print_input_text ("start_date", substr ($start_date, 0, 10),'', 10);
-print_image ("images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10);
+html_print_image ("images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
 
 echo '</td></tr><tr><td>'.__('Zoom factor').'</td>';
 echo '<td>';
@@ -203,7 +203,7 @@ $options[2] = 'x2';
 $options[3] = 'x3';
 $options[4] = 'x4';
 
-print_select ($options, "zoom", $zoom);
+html_print_select ($options, "zoom", $zoom);
 
 echo '</td></tr><tr><td>'.__('Time range').'</td><td>';
 
@@ -221,26 +221,26 @@ $options[2592000] = human_time_description_raw (2592000);
 $options[5184000] = human_time_description_raw (5184000);
 $options[15552000] = human_time_description_raw (15552000);
 
-print_extended_select_for_time($options, 'period', $period, '', '', 0, 7);
-//print_select ($options, "period_select", $period,"javascript: $('#text-period').val($('#period_select').val());");
-//print_input_text ("period", $period, '', 10);
+html_print_extended_select_for_time($options, 'period', $period, '', '', 0, 7);
+//html_print_select ($options, "period_select", $period,"javascript: $('#text-period').val($('#period_select').val());");
+//html_print_input_text ("period", $period, '', 10);
 echo ' '.__('secs.');
 echo '</td></tr><tr><td>'.__('Show events').'</td><td>';
 
-print_checkbox ("draw_events", 1, (bool) $draw_events);
+html_print_checkbox ("draw_events", 1, (bool) $draw_events);
 
 echo '</td></tr><tr><td>'.__('Show alerts').'</td><td>';
 
-print_checkbox ("draw_alerts", 1, (bool) $draw_alerts);
+html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts);
 
 if ($config['enterprise_installed'] && $graph_type == "sparse") {
 	echo '</td></tr><tr><td>'.__('Draw baseline').'</td><td>';
-	print_checkbox ("baseline", 1, (bool) $baseline);
+	html_print_checkbox ("baseline", 1, (bool) $baseline);
 }
 
 echo '</td><td>';
 
-print_submit_button ('GO', "submit", false, 'class="sub next"');
+html_print_submit_button ('GO', "submit", false, 'class="sub next"');
 
 echo '</td></tr></table></form></div></body></html>';
 ?>

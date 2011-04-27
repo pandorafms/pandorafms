@@ -109,7 +109,7 @@ $table->style[7] = "padding-top:4px; padding-bottom:4px;";
 $table->data[7][0] =
 	progress_bar2($data["alert_level"], 140, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
 	
-print_table ($table);
+html_print_table ($table);
 unset ($table);
 
 echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
@@ -291,7 +291,7 @@ if($is_admin) {
 	}
 
 	if (!empty ($table->data)) {
-		print_table ($table);
+		html_print_table ($table);
 	} else {
 		echo '<div class="nf">'.__('There are no servers configured in the database').'</div>';
 	}

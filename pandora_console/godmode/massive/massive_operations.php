@@ -101,20 +101,20 @@ if ($option == '') {
 }
 
 $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
-		. print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
+		. html_print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
 		. '</a>', 'active' => $tab == 'massive_alerts');
 		
 
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-		. print_image ('images/group.png', true, array ('title' => __('Users operations')))
+		. html_print_image ('images/group.png', true, array ('title' => __('Users operations')))
 		. '</a>', 'active' => $tab == 'massive_users');
 		
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
-		. print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
+		. html_print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
 		. '</a>', 'active' => $tab == 'massive_agents');
 			
 $modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
-		. print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
+		. html_print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
 		. '</a>', 'active' => $tab == 'massive_modules');
 	
 /* Collection */
@@ -134,7 +134,7 @@ echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=
 echo '<table border="0"><tr><td>';
 echo '<h3>'.__('Massive options').':</h3>';
 echo '</td><td>';
-print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
+html_print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
 if($option == 'edit_agents' || $option == 'edit_modules') 
 	echo '<a href="#" class="tip">&nbsp;<span>' . __("The blank fields will not be updated") . '</span></a>';
 echo '</td></tr></table>';

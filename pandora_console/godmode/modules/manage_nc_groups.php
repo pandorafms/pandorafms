@@ -121,21 +121,21 @@ foreach ($groups as $group) {
 	$data[1] = get_network_component_group_name ($group['parent']);
 	
 	$data[2] = '<form method="post" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
-	$data[2] .= print_input_hidden ('delete', 1, true);
-	$data[2] .= print_input_hidden ('id', $group['id_sg'], true);
-	$data[2] .= print_input_image ('del', 'images/cross.png', 1, '', true,
+	$data[2] .= html_print_input_hidden ('delete', 1, true);
+	$data[2] .= html_print_input_hidden ('id', $group['id_sg'], true);
+	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true,
 		array ('title' => __('Delete')));
 	$data[2] .= '</form>';
 	
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<form method="post">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('new', 1);
-print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+html_print_input_hidden ('new', 1);
+html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 ?>

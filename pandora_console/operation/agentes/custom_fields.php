@@ -58,9 +58,9 @@ if($fields === false) {
 		$data[0] = '<b>'.$field['name'].'</b>';
 
 		if($field['display_on_front']) {
-			$data[1] = print_image('images/tick.png', true);
+			$data[1] = html_print_image('images/tick.png', true);
 		}else {
-			$data[1] = print_image('images/delete.png', true);
+			$data[1] = html_print_image('images/delete.png', true);
 		}
 		
 		$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
@@ -74,6 +74,6 @@ if($fields === false) {
 		array_push ($table->data, $data);
 	}
 
-	print_table ($table);
+	html_print_table ($table);
 }
 ?>

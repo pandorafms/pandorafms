@@ -843,7 +843,7 @@ function resource_registration_extension_main() {
 			echo "<tr>";
 				echo "<td>" . __('Group filter: ') . "</td>";
 				echo "<td>";
-					print_select_groups(false, "AW", true, 'group');
+					html_print_select_groups(false, "AW", true, 'group');
 				echo "</td>";
 				echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
 			echo "</tr>";

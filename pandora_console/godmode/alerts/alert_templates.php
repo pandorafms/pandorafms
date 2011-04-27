@@ -199,18 +199,18 @@ $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
 $table->data[0][0] = __('Type');
-$table->data[0][1] = print_select (alerts_get_alert_templates_types (), 'search_type',
+$table->data[0][1] = html_print_select (alerts_get_alert_templates_types (), 'search_type',
 	$search_type, '', __('All'), '', true, false, false);
 $table->data[0][2] = __('Search');
-$table->data[0][3] = print_input_text ('search_string', $search_string, '', 25,
+$table->data[0][3] = html_print_input_text ('search_string', $search_string, '', 25,
 	255, true);
 $table->data[0][4] = '<div class="action-buttons">';
-$table->data[0][4] .= print_submit_button (__('Search'), 'search', false,
+$table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
 echo '<form method="post" action="'.$url.'">';
-print_table ($table);
+html_print_table ($table);
 echo '</form>';
 
 unset ($table);
@@ -259,19 +259,19 @@ foreach ($templates as $template) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
 
-	$data[1] = ui_print_group_icon ($template["id_group"], true) .'&nbsp;'. ui_print_truncate_text(get_group_name ($template['id_group'], true));
+	$data[1] = ui_print_group_icon ($template["id_group"], true) .'&nbsp;'. ui_print_truncate_text(groups_get_name ($template['id_group'], true));
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
 
 	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
-	$data[4] .= print_input_hidden ('duplicate_template', 1, true);
-	$data[4] .= print_input_hidden ('source_id', $template['id'], true);
-	$data[4] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+	$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
+	$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
+	$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
 	$data[4] .= '</form> ';
 	
 	$data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-	$data[4] .= print_input_hidden ('delete_template', 1, true);
-	$data[4] .= print_input_hidden ('id', $template['id'], true);
-	$data[4] .= print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
+	$data[4] .= html_print_input_hidden ('delete_template', 1, true);
+	$data[4] .= html_print_input_hidden ('id', $template['id'], true);
+	$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
 	$data[4] .= '</form> ';
 	
 	array_push ($table->data, $data);
@@ -279,14 +279,14 @@ foreach ($templates as $template) {
 
 ui_pagination ($total_templates, $url);
 if (isset($data)){
-	print_table ($table);
+	html_print_table ($table);
 } else {
 	echo "<div class='nf'>".__('No alert templates defined')."</div>";
 }
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
-print_submit_button (__('Create'), 'create', false, 'class="sub next"');
-print_input_hidden ('create_alert', 1);
+html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+html_print_input_hidden ('create_alert', 1);
 echo '</form>';
 echo '</div>';
 

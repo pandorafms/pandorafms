@@ -36,34 +36,34 @@ if($tab == 'list' || $tab == 'editor') {
 			'list' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
-					print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+					html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
 			'editor' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=editor">' . 
-					print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
+					html_print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
 }
 else {
 	$buttons = array(
 			'list' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
-					print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+					html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
 			'incident' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
-					print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
+					html_print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
 			'workunits' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
-					print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
+					html_print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
 			'files' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
-					print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
+					html_print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
 			'tracking' => array(
 				'active' => false,
 				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
-					print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
+					html_print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
 }
 	
 $buttons[$tab]['active'] = true;

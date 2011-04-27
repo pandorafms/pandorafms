@@ -188,20 +188,20 @@ if ($config["pure"] == 0) {
 	$buttons = array(
 		'fullscreen' => array('active' => false,
 			'text' => '<a href="'.$url.'&amp;pure=1">' . 
-				print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
+				html_print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
 		'rss' => array('active' => false,
 			'text' => '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
 				'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
-				print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
+				html_print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
 		'marquee' => array('active' => false,
 			'text' => '<a href="operation/events/events_marquee.php">' . 
-				print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
+				html_print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
 		'csv' => array('active' => false,
 			'text' => '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
 				'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
-				print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>'),
+				html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>'),
 		'sound_event' => array('active' => false,
-			'text' => '<a href="javascript: openSoundEventWindow();">' . print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')
+			'text' => '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')
 		);
 	
 	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
@@ -223,7 +223,7 @@ else {
 	echo "&nbsp;";
 
 	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
-	print_image ("images/normalscreen.png", false, array ("title" => __('Back to normal mode')));
+	html_print_image ("images/normalscreen.png", false, array ("title" => __('Back to normal mode')));
 	echo '</a>';
 	echo "</h2>";
 }

@@ -84,10 +84,10 @@ $table->data = array();
 //Background
 $table->data[0]['icon'] = '';
 $table->data[0][0] = __('Background');
-$table->data[0][1] = print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 100px;');
-$table->data[0][2] = print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
+$table->data[0][1] = html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 100px;');
+$table->data[0][2] = html_print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
 	'x' .
-	print_input_text('height', $visualConsole['height'], '', 3, 5, true);
+	html_print_input_text('height', $visualConsole['height'], '', 3, 5, true);
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
 $i = 1;
@@ -105,22 +105,22 @@ foreach ($layoutDatas as $layoutData) {
 	
 	switch ($layoutData['type']) {
 		case STATIC_GRAPH:
-			$table->data[$i + 1]['icon'] = print_image('images/camera.png', true, array('title' => __('Static Graph')));
+			$table->data[$i + 1]['icon'] = html_print_image('images/camera.png', true, array('title' => __('Static Graph')));
 			break;
 		case PERCENTILE_BAR:
-			$table->data[$i + 1]['icon'] = print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
+			$table->data[$i + 1]['icon'] = html_print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
 			break;
 		case MODULE_GRAPH:
-			$table->data[$i + 1]['icon'] = print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
+			$table->data[$i + 1]['icon'] = html_print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
 			break;
 		case SIMPLE_VALUE:
-			$table->data[$i + 1]['icon'] = print_image('images/binary.png', true, array('title' => __('Simple Value')));
+			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value')));
 			break;
 		case LABEL:
-			$table->data[$i + 1]['icon'] = print_image('images/tag_red.png', true, array('title' => __('Label')));
+			$table->data[$i + 1]['icon'] = html_print_image('images/tag_red.png', true, array('title' => __('Label')));
 			break;
 		case ICON:
-			$table->data[$i + 1]['icon'] = print_image('images/photo.png', true, array('title' => __('Icon')));
+			$table->data[$i + 1]['icon'] = html_print_image('images/photo.png', true, array('title' => __('Icon')));
 			break;
 		default:
 			$table->data[$i + 1]['icon'] = '';
@@ -132,8 +132,8 @@ foreach ($layoutDatas as $layoutData) {
 	//Label and color label
 	if ($layoutData['type'] != ICON) {
 		$table->data[$i + 1][0] = '<span style="width: 130px; display: block;">' .
-			print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
-			print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
+			html_print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
+			html_print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
 			'</span>';
 	}
 	else {
@@ -143,30 +143,30 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Image
 	if (($layoutData['type'] == STATIC_GRAPH) || ($layoutData['type'] == ICON)) {
-		$table->data[$i + 1][1] = print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true);
+		$table->data[$i + 1][1] = html_print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true);
 	}
 	else {
 		$table->data[$i + 1][1] = '';
 	}
 	
 	//Width and height
-	$table->data[$i + 1][2] = print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 3, 5, true) .
+	$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 3, 5, true) .
 		'x' .
-		print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 3, 5, true);
+		html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 3, 5, true);
 	
 	//Position
-	$table->data[$i + 1][3] = '(' . print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 3, 5, true) .
-		',' . print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 3, 5, true) .
+	$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 3, 5, true) .
+		',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 3, 5, true) .
 		')';
 	
 	//Parent
-	$table->data[$i + 1][4] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
+	$table->data[$i + 1][4] = html_print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
 		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
 	
 	//Delete row button
 	$table->data[$i + 1][5] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' .
 		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
-		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . print_image('images/cross.png', true) . '</a>';
+		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
 	
 	//Second row
 		
@@ -175,7 +175,7 @@ foreach ($layoutDatas as $layoutData) {
 	//Agent
 	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
 		$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
-			print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
+			html_print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
 			array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
 	}
 	else {
@@ -185,7 +185,7 @@ foreach ($layoutDatas as $layoutData) {
 	//Modules
 	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
 		$sql = 'SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE disabled = 0 AND id_agente = ' . $layoutData['id_agent'];
-		$table->data[$i + 2][1] = print_select_from_sql($sql,
+		$table->data[$i + 2][1] = html_print_select_from_sql($sql,
 			'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
 	}
 	else {
@@ -197,14 +197,14 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Period
 	if ($layoutData['type'] == MODULE_GRAPH) {
-		$table->data[$i + 2][3] = print_select ($intervals, 'period_' . $idLayoutData, $layoutData['period'], '', '--', 0, true);
+		$table->data[$i + 2][3] = html_print_select ($intervals, 'period_' . $idLayoutData, $layoutData['period'], '', '--', 0, true);
 	}
 	else {
 		$table->data[$i + 2][3] = '';
 	}
 	
 	//Map linked
-	$table->data[$i + 2][4] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
+	$table->data[$i + 2][4] = html_print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
 					'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true);
 	$table->data[$i + 2][5] = '';
 	
@@ -224,14 +224,14 @@ foreach ($layoutDatas as $layoutData) {
 
 echo '<form method="post" action="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('action', 'update');
-print_input_hidden ('id_visual_console', $visualConsole["id"]);
-print_submit_button (__('Update'), 'go', false, 'class="sub next"');
+html_print_input_hidden ('action', 'update');
+html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
+html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
 echo '</div>';
-print_table($table);
+html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Update'), 'go', false, 'class="sub next"');
+html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 

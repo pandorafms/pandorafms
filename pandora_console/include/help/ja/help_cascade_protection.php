@@ -1,7 +1,7 @@
 <h1>関連障害検知抑制</h1>
 
 
-<?php print_image("images/help/cascade_protection_ilustration.png", false); ?>
+<?php html_print_image("images/help/cascade_protection_ilustration.png", false); ?>
 <br>
 <p>
 このオプションは、あるエージェントの障害により他のエージェントの状態が確認できなくなった時に、大量のアラートが上がるのを避けるために利用します。

@@ -80,7 +80,7 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 		//Get recursive id groups
 		$list_id_groups = array();
 		foreach ((array)$id_groups as $id_group) {
-			$list_id_groups = array_merge($list_id_groups, get_id_groups_recursive($id_group));
+			$list_id_groups = array_merge($list_id_groups, groups_get_id_recursive($id_group));
 		}
 
 		$list_id_groups = array_unique($list_id_groups);
@@ -144,7 +144,7 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 function get_user_groups_tree($id_user = false, $privilege = "AR", $returnAllGroup = true) {
 	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
 
-	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
+	$user_groups_tree = groups_get_groups_tree_recursive($user_groups);
 
 	return $user_groups_tree;
 }

@@ -233,7 +233,7 @@ function show_array($title, $anchor, $array = array()) {
 	
 	echo "<h1><a name='" . $anchor . "'>" . $title . "</a></h1>";
 	
-	print_table($table);
+	html_print_table($table);
 }
 
 function mainSystemInfo() {
@@ -272,27 +272,27 @@ function mainSystemInfo() {
 	else {
 		$table->data[0][0] = __('Pandora Diagnostic info');
 	}
-	$table->data[0][1] = print_checkbox('pandora_diag', 1, $pandora_diag, true);
+	$table->data[0][1] = html_print_checkbox('pandora_diag', 1, $pandora_diag, true);
 	if ($system_info) {
 		$table->data[1][0] = '<a href="#system_info">' . __('System info') . '</a>';
 	}
 	else {
 		$table->data[1][0] = __('System info');
 	}
-	$table->data[1][1] = print_checkbox('system_info', 1, $system_info, true);
+	$table->data[1][1] = html_print_checkbox('system_info', 1, $system_info, true);
 	if ($log_info) {
 		$table->data[2][0] = '<a href="#log_info">' . __('Log Info') . '</a>';
 	}
 	else {
 		$table->data[2][0] = __('Log Info');
 	}
-	$table->data[2][1] = print_checkbox('log_info', 1, $log_info, true);
+	$table->data[2][1] = html_print_checkbox('log_info', 1, $log_info, true);
 	$table->data[3][0] = __('Number lines of log');
-	$table->data[3][1] = print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
-	print_table($table);
+	$table->data[3][1] = html_print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
+	html_print_table($table);
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
-	//print_submit_button(__('Show'), 'show', false, 'class="sub next"');
-		print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
+	//html_print_submit_button(__('Show'), 'show', false, 'class="sub next"');
+		html_print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
 	echo "</div>";
 	echo "</form>";
 	

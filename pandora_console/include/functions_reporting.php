@@ -928,9 +928,9 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	foreach ($events as $event) {
 		$data = array ();
 		if ($event["estado"] == 0)
-			$data[0] = print_image("images/dot_red.png", true);
+			$data[0] = html_print_image("images/dot_red.png", true);
 		else
-			$data[0] = print_image("images/dot_green.png", true);
+			$data[0] = html_print_image("images/dot_green.png", true);
 		$data[1] = $event['evento'];
 		$data[2] = $event['id_usuario'] != '0' ? $event['id_usuario'] : '';
 		$data[3] = $event["timestamp"];
@@ -938,7 +938,7 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	}
 
 	if (empty ($return))
-		print_table ($table);
+		html_print_table ($table);
 	return $table;
 }
 
@@ -1081,7 +1081,7 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
 	}
 	
 	if ($html) {
-		return print_table ($table, $return);
+		return html_print_table ($table, $return);
 	}
 	else {
 		return $table;
@@ -1167,7 +1167,7 @@ function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $retu
 	}
 	
 	if ($html) {
-		return print_table ($table, $return);
+		return html_print_table ($table, $return);
 	}
 	else {
 		return $table;
@@ -1223,7 +1223,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
 	
-	$output .= print_table ($table, true);
+	$output .= html_print_table ($table, true);
 	
 	if (!$return)
 		echo $output;
@@ -1271,7 +1271,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$table->size = array ();
 	$table->size[0] = '100px';
 	
-	$output .= print_table ($table, true);
+	$output .= html_print_table ($table, true);
 	
 	$data = array();
 	$data[__('Monitors OK')] = $down_percentage;
@@ -1507,14 +1507,14 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	$output .= '<h4>'.__('Modules').'</h3>';
 	$table_modules = get_agent_modules_reporting_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';
-	$output .= print_table ($table_modules, true);
+	$output .= html_print_table ($table_modules, true);
 	
 	/* Show alerts in agent */
 	$table_alerts = get_agent_alerts_reporting_table ($id_agent, $period, $date);
 	$table_alerts->width = '99%';
 	if (sizeof ($table_alerts->data)) {
 		$output .= '<h4>'.__('Alerts').'</h4>';
-		$output .= print_table ($table_alerts, true);
+		$output .= html_print_table ($table_alerts, true);
 	}
 	
 	/* Show monitor status in agent (if any) */
@@ -1531,7 +1531,7 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	$table_monitors->size = array ();
 	$table_monitors->align[1] = '10%';
 	$output .= '<h4>'.__('Monitors').'</h4>';
-	$output .= print_table ($table_monitors, true);
+	$output .= html_print_table ($table_monitors, true);
 	
 	$output .= '</div>';
 	
@@ -1624,7 +1624,7 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 	}
 
 	if ($events)	
-		return print_table ($table, $return);
+		return html_print_table ($table, $return);
 }
 
 /**
@@ -1668,7 +1668,7 @@ function get_group_detailed_event_reporting ($id_group, $period = 0, $date = 0, 
 		}
 		
 		if ($html) {
-			return print_table ($table, $return);
+			return html_print_table ($table, $return);
 		}
 		else {
 			return $table;
@@ -1739,7 +1739,7 @@ function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 
 		}
 	
 		if ($html) {
-			return print_table ($table, $return);
+			return html_print_table ($table, $return);
 		}
 		else {
 			return $table;
@@ -1847,7 +1847,7 @@ function get_agent_module_info ($id_agent, $filter = false) {
 		$return["alert_img"] = ui_print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
 		$return["alert_value"] = STATUS_ALERT_FIRED;
 	}
-	elseif (give_disabled_group ($return["agent_group"])) {
+	elseif (groups_give_disabled_group ($return["agent_group"])) {
 		$return["alert_status"] = "disabled";
 		$return["alert_value"] = STATUS_ALERT_DISABLED;
 		$return["alert_img"] = ui_print_status_image (STATUS_ALERT_DISABLED, __('Alert disabled'), true);
@@ -2120,7 +2120,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
-				$data[0] = print_table($table1, true);
+				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
 			}
 
@@ -2156,7 +2156,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				}
 				$table->colspan[4][0] = 3;
 				$data = array();
-				$data[0] = print_table($table2, true);
+				$data[0] = html_print_table($table2, true);
 				array_push ($table->data, $data);
 			}
 			break;
@@ -2185,12 +2185,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$monitor_value = format_numeric ($monitor_value);
 			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-			$data[0] .= $monitor_value.' % ' . print_image("images/b_green.png", true, array("height" => "32", "width" => "32")) . '</p>';
+			$data[0] .= $monitor_value.' % ' . html_print_image("images/b_green.png", true, array("height" => "32", "width" => "32")) . '</p>';
 			if ($monitor_value !== __('Unknown')) {
 				$monitor_value = format_numeric (100 - $monitor_value, 2) ;
 			}
 			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
-			$data[1] .= $monitor_value.' % ' . print_image("images/b_red.png", true, array("height" => "32", "width" => "32")) . '</p>';
+			$data[1] .= $monitor_value.' % ' . html_print_image("images/b_red.png", true, array("height" => "32", "width" => "32")) . '</p>';
 			array_push ($table->data, $data);
 			
 			break;
@@ -2411,7 +2411,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				': *, delete, drop, alter, modify, union, password, pass, insert '.__('or')." update.</div>"));
 			}
 			
-			$cellContent = print_table($table2, true);
+			$cellContent = html_print_table($table2, true);
 			array_push($table->data, array($cellContent));
 			break;
 
@@ -2450,7 +2450,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		case 'event_report_group':
 			$data = array ();
 			$data[0] = $sizh . __('Group detailed event') . $sizhfin;
-			$data[1] = $sizh . ui_print_truncate_text(get_group_name($content['id_group']), 60, false) . $sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text(groups_get_name($content['id_group']), 60, false) . $sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2595,7 +2595,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				} 
 			}
 			
-			$cellContent = print_table($table2, true);
+			$cellContent = html_print_table($table2, true);
 			array_push($table->data, array($cellContent));
 			$table->colspan[1][0] = 2;
 			break;
@@ -2800,7 +2800,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					
 					$table->colspan[2][0] = 3;
 					$data = array();
-					$data[0] = print_table($table1, true);
+					$data[0] = html_print_table($table1, true);
 					array_push ($table->data, $data);
 					break;
 				//1 means group by agent
@@ -2875,7 +2875,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					
 					$table->colspan[2][0] = 3;
 					$data = array();
-					$data[0] = print_table($table2, true);
+					$data[0] = html_print_table($table2, true);
 					array_push ($table->data, $data);
 					break;
 			}
@@ -3077,7 +3077,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
-				$data[0] = print_table($table1, true);
+				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
 			}
 			
@@ -3326,7 +3326,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
-				$data[0] = print_table($table1, true);
+				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
 			}
 			
@@ -3440,7 +3440,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				}
 				
 				$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
-				$table_data .= '<th width="22px">'.print_image($file_name, true, array('title' => $module['name']))."</th>";
+				$table_data .= '<th width="22px">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 			}
 			
 			if ($block < $nmodules) {
@@ -3487,7 +3487,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$table_data .= "<tr style='height: 35px;'>";
 				
 				$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
-				$table_data .= "<td style='background-color: ".$rowcolor.";'>".print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
+				$table_data .= "<td style='background-color: ".$rowcolor.";'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
 				$agent_modules = get_agent_modules($agent['id_agente']);
 				
 				$nmodules = 0;

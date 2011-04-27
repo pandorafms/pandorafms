@@ -49,7 +49,7 @@ switch ($action) {
 	case 'delete_connection':
 		$idConnectionMap = get_parameter('id_connection_map');
 	
-		$result = deleteMapConnection($idConnectionMap);
+		$result = gis_delete_map_connection($idConnectionMap);
 		
 		if($result === false)
 			echo '<h3 class="error">'.__('Could not be deleted').'</h3>';
@@ -79,16 +79,16 @@ if ($mapsConnections !== false) {
 			ui_print_group_icon ($mapsConnection['group_id'], true),
 			'<a href="index.php?sec=gsetup&sec2=godmode/setup/gis&amp;id_connection_map=' . 
 				$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
-				onClick="javascript: if (!confirm(\'' . __('Do you wan delete this connection?') . '\')) return false;">' . print_image ("images/cross.png", true).'</a>'); 
+				onClick="javascript: if (!confirm(\'' . __('Do you wan delete this connection?') . '\')) return false;">' . html_print_image ("images/cross.png", true).'</a>'); 
 	}
 }
 
-print_table($table);
+html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="post">';
-print_input_hidden ('action','create_connection_map');
-print_submit_button (__('Create'), '', false, 'class="sub next"');
+html_print_input_hidden ('action','create_connection_map');
+html_print_submit_button (__('Create'), '', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
 ?>

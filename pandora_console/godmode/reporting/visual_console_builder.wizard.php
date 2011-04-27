@@ -51,29 +51,29 @@ foreach ($all_images as $image_file) {
 }
 
 $table->data[0][0] = __('Image');
-$table->data[0][1] = print_select ($images_list, 'image', '', '', '', '', true);
+$table->data[0][1] = html_print_select ($images_list, 'image', '', '', '', '', true);
 
 $table->data[1][0] = __('Image range (px)');
-$table->data[1][1] = print_input_text ('range', 50, '', 5, 5, true);
+$table->data[1][1] = html_print_input_text ('range', 50, '', 5, 5, true);
 
 $table->data[2][0] = __('Image size (px)');
-$table->data[2][1] = __('Width').': '.print_input_text ('width', 0, '', 5, 5, true);
-$table->data[2][1] .= '<br />'.__('Height').': '.print_input_text ('height', 0, '', 5, 5, true);
+$table->data[2][1] = __('Width').': '.html_print_input_text ('width', 0, '', 5, 5, true);
+$table->data[2][1] .= '<br />'.__('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
 $table->data[3][0] = __('Agents');
-$table->data[3][1] = print_select (get_group_agents ($visualConsole['id_group'], false, "none", false, true),
+$table->data[3][1] = html_print_select (get_group_agents ($visualConsole['id_group'], false, "none", false, true),
 	'id_agents[]', 0, false, '', '', true, true);
 	
 $table->data[4][0] = __('Modules');
-$table->data[4][1] = print_select (array (), 'module[]', 0, false, '', '', true, true);
+$table->data[4][1] = html_print_select (array (), 'module[]', 0, false, '', '', true, true);
 
 echo '<form method="post" action="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '" onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false;">';
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('action', 'update');
-print_input_hidden ('id_visual_console', $visualConsole["id"]);
-print_submit_button (__('Add'), 'go', false, 'class="sub wizard wand"');
+html_print_input_hidden ('action', 'update');
+html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
+html_print_submit_button (__('Add'), 'go', false, 'class="sub wizard wand"');
 echo '</div>';
 echo '</form>';
 

@@ -123,19 +123,19 @@ else {
 echo '<table width="550" cellpadding="4" cellspacing="4" class="databox_color">';
 
 echo '<tr><td class="datos">'.__('Name').'</td><td class="datos">';
-print_input_text ("name", $name, '', 63);
+html_print_input_text ("name", $name, '', 63);
 echo '</td></tr>';
 
 echo '<tr><td class="datos2">'.__('Description').'</td>';
 echo '<td class="datos2">';
-print_textarea ("description", 2, 60, $description);
+html_print_textarea ("description", 2, 60, $description);
 echo "</td></tr>";
 echo '<tr><td></td><td style="text-align:right;">';
 if ($id_np > 0) {
-	print_submit_button (__("Update"), "updbutton", false, 'class="sub upd"');
+	html_print_submit_button (__("Update"), "updbutton", false, 'class="sub upd"');
 }
 else {
-	print_submit_button (__("Create"), "crtbutton", false, 'class="sub wand"');
+	html_print_submit_button (__("Create"), "crtbutton", false, 'class="sub wand"');
 }
 echo "</td></tr></table></form>";
 
@@ -180,24 +180,24 @@ if ($id_np > 0) {
 	$table->head[2] = __('Description');
 	$table->head[3] = __('Group');
 	$table->align[3] = "center";
-	$table->head[4] = print_checkbox_extended ('allbox', '', false, false, 'CheckAll();', '', true);
+	$table->head[4] = html_print_checkbox_extended ('allbox', '', false, false, 'CheckAll();', '', true);
 	$table->align[4] = "center";
 	
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = $row["name"];
-		$data[1] = print_image("images/".show_icon_type($row["type"]), true, array("border" => '0'));
+		$data[1] = html_print_image("images/".show_icon_type($row["type"]), true, array("border" => '0'));
 		$data[2] = mb_strimwidth($row["description"],0,30,"...");
 		$data[3] = get_network_component_group_name ($row["group"]);
-		$data[4] = print_checkbox ("components[]", $row["component_id"], false, true);
+		$data[4] = html_print_checkbox ("components[]", $row["component_id"], false, true);
 		array_push ($table->data, $data);
 	}
 
 	if (!empty ($table->data)) {
 		echo '<form name="component_delete" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&delete_module=1">';
-		print_table ($table);
+		html_print_table ($table);
 		echo '<div style="width:540px; text-align:right">';
-		print_submit_button (__('Delete'), "delbutton", false, 'class="sub delete" onClick="if (!confirm(\'Are you sure?\')) return false;"');
+		html_print_submit_button (__('Delete'), "delbutton", false, 'class="sub delete" onClick="if (!confirm(\'Are you sure?\')) return false;"');
 		echo '</div></form>';
 	}
 	unset ($table);
@@ -226,9 +226,9 @@ if ($id_np > 0) {
 		$groups_compound[$row["id_sg"]] .= $row["name"];
 	}
 	
-	print_select ($groups_compound, "ncgroup", $ncgroup, 'javascript:this.form.submit();', __('Group')." - ".__('All'), -1, false, false, true, '" style="width:350px');
+	html_print_select ($groups_compound, "ncgroup", $ncgroup, 'javascript:this.form.submit();', __('Group')." - ".__('All'), -1, false, false, true, '" style="width:350px');
 	echo '<noscript>';
-	print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"');
+	html_print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"');
 	echo '</noscript></div></form>';
 	
 	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
@@ -249,9 +249,9 @@ if ($id_np > 0) {
 		$components[$row["id_nc"]] = $row["name"];
 	}
 
-	print_select ($components, "components[]", $id_nc, '', '', -1, false, true, false, '" style="width:350px');
+	html_print_select ($components, "components[]", $id_nc, '', '', -1, false, true, false, '" style="width:350px');
 	echo "&nbsp;&nbsp;";
-	print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
+	html_print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
 	echo "</div></form>";
 }
 

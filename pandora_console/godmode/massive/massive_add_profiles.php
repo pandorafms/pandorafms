@@ -73,7 +73,7 @@ if ($create_profiles) {
 		__('Profiles cannot be added'));
 }
 
-print_table ($table);
+html_print_table ($table);
 
 unset($table);
 
@@ -94,26 +94,26 @@ $table->size[2] = '33%';
 
 $data = array ();
 $data[0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
-$data[0] .= print_select (get_profiles (), 'profiles_id[]', '', '', '',
+$data[0] .= html_print_select (get_profiles (), 'profiles_id[]', '', '', '',
 	'', true, true, false, '', false, 'width: 100%');
-$data[1] = print_select_groups($config['id_user'], "UM", true,
+$data[1] = html_print_select_groups($config['id_user'], "UM", true,
 	'groups_id[]', '', '', '', '', true, true, false, '', false, 'width: 100%');
 $data[2] = '<span id="alerts_loading" class="invisible">';
-$data[2] .= print_image('images/spinner.png', true);
+$data[2] .= html_print_image('images/spinner.png', true);
 $data[2] .= '</span>';
 $users_profiles = "";
 
-$data[2] .= print_select (get_users_info(), 'users_id[]', '', '', '', 
+$data[2] .= html_print_select (get_users_info(), 'users_id[]', '', '', '', 
     '', true, true, true, '', false, 'width: 100%');
 
 
 array_push ($table->data, $data);
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('create_profiles', 1);
-print_submit_button (__('Create'), 'go', false, 'class="sub add"');
+html_print_input_hidden ('create_profiles', 1);
+html_print_submit_button (__('Create'), 'go', false, 'class="sub add"');
 echo '</div>';
 
 echo '</form>';

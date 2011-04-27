@@ -31,22 +31,22 @@ $table->width = '50%';
 $table->style[0] = 'font-weight: bolder; vertical-align: top;';
 
 $table->data[0][0] = __('Name:');
-$table->data[0][1] = print_input_text('name', $name, __('Name'), 20, 30, true);
+$table->data[0][1] = html_print_input_text('name', $name, __('Name'), 20, 30, true);
 $table->data[1][0] = __('Description');
-$table->data[1][1] = print_textarea('description', 5, 10, $description, '', true);
+$table->data[1][1] = html_print_textarea('description', 5, 10, $description, '', true);
 $icons = get_list_os_icons_dir();
 $table->data[2][0] = __('Icon');
-$table->data[2][1] = print_select($icons, 'icon',  $icon, 'show_icon_OS();', __('None'), 0, true);
+$table->data[2][1] = html_print_select($icons, 'icon',  $icon, 'show_icon_OS();', __('None'), 0, true);
 $table->data[2][1] .= ' <span id="icon_image">' . ui_print_os_icon($idOS, false, true) . '</span>';
 
 echo '<form action="post">';
-print_table($table);
+html_print_table($table);
 
-print_input_hidden('id_os', $idOS);
-print_input_hidden ('action', $actionHidden);
+html_print_input_hidden('id_os', $idOS);
+html_print_input_hidden ('action', $actionHidden);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button ($textButton, 'update_button', false, $classButton);
+html_print_submit_button ($textButton, 'update_button', false, $classButton);
 echo '</div>';
 echo '</form>';
 

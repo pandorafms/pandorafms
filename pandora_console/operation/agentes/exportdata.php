@@ -304,7 +304,7 @@ $table->data[0][0] = '<b>'.__('Group').'</b>';
 	
 $groups = get_user_groups ($config['id_user'], "AR");
 	
-$table->data[0][1] = print_select_groups($config['id_user'], "AR", true, "group", $group, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
+$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "group", $group, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
 	
 //Agent selector
 $table->data[1][0] = '<b>'.__('Source agent').'</b>';
@@ -326,8 +326,8 @@ if (!in_array ($agent, array_keys ($agents))) {
 	$agent = current (array_keys ($agents));
 }
 
-//$table->data[1][1] = print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
-$table->data[1][1] = print_input_text_extended ('agent', get_agent_name ($agent), 'text-agent', '', 30, 100, false, '',
+//$table->data[1][1] = html_print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
+$table->data[1][1] = html_print_input_text_extended ('agent', get_agent_name ($agent), 'text-agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	
@@ -340,20 +340,20 @@ if ($agent > 0) {
 	$modules = array ();
 }
 
-$table->data[2][1] = print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w130', false);
+$table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w130', false);
 
 //Start date selector
 $table->data[3][0] = '<b>'.__('Begin date').'</b>';
 
-$table->data[3][1] = print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
-$table->data[3][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
-$table->data[3][1] .= print_input_text ('start_time', date ("H:m", get_system_time () - 86400), false, 10, 5, true);
+$table->data[3][1] = html_print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
+$table->data[3][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
+$table->data[3][1] .= html_print_input_text ('start_time', date ("H:m", get_system_time () - 86400), false, 10, 5, true);
 	
 //End date selector
 $table->data[4][0] = '<b>'.__('End date').'</b>';
-$table->data[4][1] = print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
-$table->data[4][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
-$table->data[4][1] .= print_input_text ('end_time', date ("H:m", get_system_time ()), false, 10, 5, true);
+$table->data[4][1] = html_print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
+$table->data[4][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
+$table->data[4][1] .= html_print_input_text ('end_time', date ("H:m", get_system_time ()), false, 10, 5, true);
 	
 //Export type
 $table->data[5][0] = '<b>'.__('Export type').'</b>';
@@ -364,13 +364,13 @@ $export_types["csv"] = __('CSV');
 $export_types["excel"] = __('MS Excel');
 $export_types["avg"] = __('Average per hour/day');
 
-$table->data[5][1] = print_select ($export_types, "export_type", $export_type, '', '', 0, true, false, true, 'w130', false);
+$table->data[5][1] = html_print_select ($export_types, "export_type", $export_type, '', '', 0, true, false, true, 'w130', false);
 
-print_table ($table);
+html_print_table ($table);
 
 // Submit button
 echo '<div class="action-buttons" style="width:550px;">';
-	print_submit_button (__('Export'), 'export_btn', false, 'class="sub wand"');
+	html_print_submit_button (__('Export'), 'export_btn', false, 'class="sub wand"');
 echo '</div></form>';
 
 ui_require_jquery_file ('pandora.controls');

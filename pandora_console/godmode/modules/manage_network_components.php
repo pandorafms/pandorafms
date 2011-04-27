@@ -259,18 +259,18 @@ $table->style[2] = 'font-weight: bold';
 $table->data = array ();
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select (get_network_component_groups (),
+$table->data[0][1] = html_print_select (get_network_component_groups (),
 	'search_id_group', $search_id_group, '', __('All'), 0, true, false, false);
 $table->data[0][2] = __('Search');
-$table->data[0][3] = print_input_text ('search_string', $search_string, '', 25,
+$table->data[0][3] = html_print_input_text ('search_string', $search_string, '', 25,
 	255, true);
 $table->data[0][4] = '<div class="action-buttons">';
-$table->data[0][4] .= print_submit_button (__('Search'), 'search', false,
+$table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
 echo '<form method="post" action="'.$url.'">';
-print_table ($table);
+html_print_table ($table);
 echo '</form>';
 
 $filter = array ();
@@ -323,25 +323,25 @@ foreach ($components as $component) {
 	
 	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . '&duplicate_network_component=1&source_id=' . $component['id_nc'] . '">' . 
-		print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>';
+		html_print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>';
 	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . 
 		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
-		print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>';
+		html_print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>';
 	
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+html_print_table ($table);
 
 echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_input_hidden ('new_component', 1);
-print_select (array (2 => __('Create a new network component'),
+html_print_input_hidden ('new_component', 1);
+html_print_select (array (2 => __('Create a new network component'),
 	4 => __('Create a new plugin component'),
 	6 => __('Create a new WMI component')),
 	'id_component_type', '', '', '', '', '');
-print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>'
 ?>

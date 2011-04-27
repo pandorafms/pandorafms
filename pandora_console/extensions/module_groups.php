@@ -134,7 +134,7 @@ function mainModuleGroups() {
 	$head = $modelGroups;
 	array_unshift($head, '&nbsp;');
 	
-	//Metaobject use in print_table
+	//Metaobject use in html_print_table
 	$table = null;
 	$table->align[0] = 'right'; //Align to right the first column.
 	$table->style[0] = 'color: #ffffff; background-color: #778866; font-weight: bolder;';
@@ -231,7 +231,7 @@ function mainModuleGroups() {
 	}
 	$table->data = $tableData;
 	echo "<div style='width:98%; overflow-x:scroll;'>";
-	print_table($table);
+	html_print_table($table);
 	echo "</div>";
 	
 	echo "<p>" . __("The colours meaning:") .

@@ -59,7 +59,7 @@ function mainAgentsModules() {
 		$updated_info = __("Updated at realtime");
 	}
 	
-	$updated_time = print_image ("images/information.png", true, array ("title" => __('Last update'), "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
+	$updated_time = html_print_image ("images/information.png", true, array ("title" => __('Last update'), "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
 
 	$modulegroup = get_parameter('modulegroup', 0);
 	$refr = get_parameter('refr', 30); // By default 30 seconds
@@ -73,28 +73,28 @@ function mainAgentsModules() {
 
 	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$filter_module_groups .= '<b>'.__('Module group').'</b>';
-	$filter_module_groups .= print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+	$filter_module_groups .= html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 		'modulegroup', $modulegroup, 'this.form.submit()',__('All'), 0, true, false, true, false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$filter_module_groups .= '</form>';
 	
 	$filter_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$filter_groups .= '<b>'.__('Group').'</b>';
-	$filter_groups .= print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: 100px; margin-right: 10px;; margin-top: 5px;');
+	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: 100px; margin-right: 10px;; margin-top: 5px;');
 	$filter_groups .= '</form>';
 	
 	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$comborefr .= '<b>'.__('Refresh').'</b>';
-	$comborefr .= print_select (array('30' => '30 '.__('seconds'), '60' => '1 '.__('minute'), '120' => '2 '.__('minutes'), '300' => '5 '.__('minutes'), '600' => '10 '.__('minutes')) , 'refr', $config['refr'], $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
+	$comborefr .= html_print_select (array('30' => '30 '.__('seconds'), '60' => '1 '.__('minute'), '120' => '2 '.__('minutes'), '300' => '5 '.__('minutes'), '600' => '10 '.__('minutes')) , 'refr', $config['refr'], $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {
 		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
-			. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
 		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
-			. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 		$config['refr'] = $refr;
 	}
@@ -168,7 +168,7 @@ function mainAgentsModules() {
 
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
+		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
 	}
 	$nmodules = 0;
 	foreach($modules_by_name as $module) {
@@ -179,12 +179,12 @@ function mainAgentsModules() {
 		}
 		
 		$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
-		echo '<th width="22px">'.print_image($file_name, true, array('title' => $module['name']))."</th>";
+		echo '<th width="22px">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 	}
 	
 	if(($hor_offset + $block) < $nmodules) {
 		$new_hor_offset = $hor_offset+$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
+		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
 	}
 
 	$filter_agents = false;
@@ -227,7 +227,7 @@ function mainAgentsModules() {
 		echo "<tr style='height: 35px;'>";
 		
 		$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
-		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".print_image($file_name, true, array('title' => $agent['nombre']))."</a></td>";
+		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</a></td>";
 		$agent_modules = get_agent_modules($agent['id_agente']);
 		
 		$nmodules = 0;

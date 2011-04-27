@@ -57,7 +57,7 @@ if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 	$return = create_message_group ($config["id_user"], $dest_group, $subject, $message);
 	ui_print_result_message ($return,
 		__('Message successfully sent'),
-		__('Error sending message to group %s', get_group_name ($dest_group)));
+		__('Error sending message to group %s', groups_get_name ($dest_group)));
 }
 
 if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
@@ -86,7 +86,7 @@ if (isset ($_GET["new_msg"])) { //create message
 		<td class="datos2">'.__('Message to').':</td>
 		<td class="datos2">';
 	
-	$users_full = get_group_users(array_keys(get_user_groups()));
+	$users_full = groups_get_users(array_keys(get_user_groups()));
 
 	$users = array();
 	foreach ($users_full as $user_id => $user_info) {
@@ -95,20 +95,20 @@ if (isset ($_GET["new_msg"])) { //create message
 		
 	$groups = get_user_groups ($config["id_user"], "AR"); //Get a list of all groups
 		
-	print_select ($users, "dest_user", $dest_user, '', __('-Select user-'), false, false, false, '', false);
+	html_print_select ($users, "dest_user", $dest_user, '', __('-Select user-'), false, false, false, '', false);
 	echo ' - '.__('OR').' - ';
-	print_select_groups($config["id_user"], "AR", true, "dest_group", $dest_group, '', __('-Select group-'), false, false, false, '', false);
+	html_print_select_groups($config["id_user"], "AR", true, "dest_group", $dest_group, '', __('-Select group-'), false, false, false, '', false);
 	
 	echo '</td></tr><tr><td class="datos">'.__('Subject').':</td><td class="datos">';
-	print_input_text ("subject", $subject, '', 50, 70, false);
+	html_print_input_text ("subject", $subject, '', 50, 70, false);
 	
 	echo '</td></tr><tr><td class="datos2">'.__('Message').':</td><td class="datos">';
 	
-	print_textarea ("mensaje", 15, 70, $message, '', false);
+	html_print_textarea ("mensaje", 15, 70, $message, '', false);
 	
 	echo '</td></tr><tr><td></td><td colspan="3">';
 	
-	print_submit_button (__('Send message'), 'send_mes', false, 'class="sub wand"', false);
+	html_print_submit_button (__('Send message'), 'send_mes', false, 'class="sub wand"', false);
 	
 	echo '</td></tr></table></form>';
 
@@ -155,12 +155,12 @@ if (isset ($_GET["new_msg"])) { //create message
 	//Start the message much like an e-mail reply 
 	$new_msg = "\n\n\nOn ".date ($config["date_format"], $message["timestamp"]).' '.get_user_fullname ($message["sender"]).' '.__('wrote').":\n\n".$message["message"];
 	
-	print_input_hidden ("dest_user", $message["sender"]);
-	print_input_hidden ("subject", urlencode ($new_subj));
-	print_input_hidden ("message", urlencode ($new_msg));
+	html_print_input_hidden ("dest_user", $message["sender"]);
+	html_print_input_hidden ("subject", urlencode ($new_subj));
+	html_print_input_hidden ("message", urlencode ($new_msg));
 	
 	echo '<div style="text-align:right; width:600px;">';
-	print_submit_button (__('Reply'), "reply_btn", false, 'class="sub next"'); 
+	html_print_submit_button (__('Reply'), "reply_btn", false, 'class="sub next"'); 
 	echo '</div></form>';
 	return;
 } 
@@ -179,7 +179,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 	$messages = get_message_overview ($order, $order_dir);
 	
 	if ($num_messages > 0 && empty ($config["pure"]) && !is_ajax ()) {
-		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.print_image ("images/email.png", true).' '.__('unread message(s)').'.</p>';
+		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.html_print_image ("images/email.png", true).' '.__('unread message(s)').'.</p>';
 	}
 	
 	if (empty ($messages)) {
@@ -216,11 +216,11 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 			$data[0] = '';
 			if ($message["status"] == 1) {
 				$data[0] .= '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&amp;mark_unread='.$message_id.'">';
-				$data[0] .= print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Mark as unread')));
+				$data[0] .= html_print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Mark as unread')));
 				$data[0] .= '</a>';
 			} else {
 				$data[0] .= '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&amp;read_message='.$message_id.'">';
-				$data[0] .= print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
+				$data[0] .= html_print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
 				$data[0] .= '</a>';
 			}
 			
@@ -236,17 +236,17 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 			
 			$data[3] = ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
 			
-			$data[4] = print_input_image ("delete_message", "images/cross.png", $message_id, 'border:0px;', true);
+			$data[4] = html_print_input_image ("delete_message", "images/cross.png", $message_id, 'border:0px;', true);
 			array_push ($table->data, $data);
 		}
 
 		echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message">';
-		print_table ($table);
+		html_print_table ($table);
 		echo '</form>';
 	}
 	echo '<div class="action-buttons" style="width:85%">';
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">';
-	print_submit_button (__('New message'), "send_mes", false, 'class="sub next"');
+	html_print_submit_button (__('New message'), "send_mes", false, 'class="sub next"');
 	echo '</form></div>';
 }
 ?>

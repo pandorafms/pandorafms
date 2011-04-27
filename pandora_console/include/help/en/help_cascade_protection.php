@@ -1,7 +1,7 @@
 <h1>Cascade protection</h1>
 
 
-<?php print_image("images/help/cascade_protection_ilustration.png", false); ?>
+<?php html_print_image("images/help/cascade_protection_ilustration.png", false); ?>
 <br>
 <p>
 This option is designed to avoid a "storm" of alerts coming because a group of agents are unreachable. This kind of behaviour happen when an intermediate device, as for example a router, is down, and all devices behind it are just not reachable, probably that devices are not down and even that devices are working behind another router, in HA mode, but if you don't do nothing probably Pandora FMS thinks they are down because cannot remotely test it with a Remote ICMP Proc test (a ping).

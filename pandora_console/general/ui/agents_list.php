@@ -67,7 +67,7 @@ if ($show_filter_form) {
 			$data = array ();
 		$data = array ();
 		$data[] = __('Group');
-		$data[] = print_select_groups(false, $access, true,
+		$data[] = html_print_select_groups(false, $access, true,
 			'id_group', '', '', '', '', true);
 		if (! $odd)
 			array_push ($table->data, $data);
@@ -78,18 +78,18 @@ if ($show_filter_form) {
 		if ($odd) 
 			$data = array ();
 		$data[] = __('Search');
-		$data[] = print_input_text ('search_string', '', '', 15, 255, true);
+		$data[] = html_print_input_text ('search_string', '', '', 15, 255, true);
 		if (! $odd)
 			array_push ($table->data, $data);
 		$odd = !$odd;
 	}
 	
 	echo '<form id="agent_search" method="post">';
-	print_table ($table);
+	html_print_table ($table);
 	
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	print_submit_button (__('Search'), 'search', false, 'class="sub search"');
-	print_input_hidden ('search_agents', 1);
+	html_print_submit_button (__('Search'), 'search', false, 'class="sub search"');
+	html_print_input_hidden ('search_agents', 1);
 	echo '</div>';
 	echo '</form>';
 	
@@ -117,7 +117,7 @@ unset ($filter['offset']);
 
 if (! is_ajax ()) {
 	echo '<div id="agents_loading" class="loading invisible">';
-	echo print_image('images/spinner.png', true);
+	echo html_print_image('images/spinner.png', true);
 	echo __('Loading').'&hellip;';
 	echo '</div>';
 }
@@ -149,7 +149,7 @@ if ($agents !== false) {
 }
 echo '<div id="agents"'.($agents === false ? ' class="invisible"' : '').'>';
 ui_pagination ($total_agents, '#');
-print_table ($table);
+html_print_table ($table);
 echo '</div>';
 echo '</div>';
 

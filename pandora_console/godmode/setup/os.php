@@ -119,11 +119,11 @@ $buttons = array(
 	'list' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">' . 
-			print_image ("images/god6.png", true, array ("title" => __('List OS'))) .'</a>'),
+			html_print_image ("images/god6.png", true, array ("title" => __('List OS'))) .'</a>'),
 	'builder' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">' . 
-			print_image ("images/config.png", true, array ("title" => __('Builder OS'))) .'</a>'));
+			html_print_image ("images/config.png", true, array ("title" => __('Builder OS'))) .'</a>'));
 
 			
 $buttons[$tab]['active'] = true;

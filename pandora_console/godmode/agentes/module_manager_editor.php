@@ -314,27 +314,27 @@ if($config['enterprise_installed'] && $id_agent_module) {
 echo '<h3 id="message" class="error invisible"></h3>';
 
 echo '<form method="post" id="module_form">';
-print_table ($table_simple);
+html_print_table ($table_simple);
 
 echo '<b><a href="#" id="show_advanced" onclick="$(\'div#advanced\').show ();$(this).remove (); return false">';
-echo __('Advanced options').'&nbsp;' .print_image ("images/down.png", true, array ("title" => __('Advanced options')));
+echo __('Advanced options').'&nbsp;' .html_print_image ("images/down.png", true, array ("title" => __('Advanced options')));
 echo '</a></b>';
 
 echo '<div id="advanced" style="display: none">';
-print_table ($table_advanced);
+html_print_table ($table_advanced);
 echo '</div>';
 
 // Submit
 echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
 if ($id_agent_module) {
-	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-	print_input_hidden ('update_module', 1);
-	print_input_hidden ('id_agent_module', $id_agent_module);
-	print_input_hidden ('id_module_type', $id_module_type);
+	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+	html_print_input_hidden ('update_module', 1);
+	html_print_input_hidden ('id_agent_module', $id_agent_module);
+	html_print_input_hidden ('id_module_type', $id_module_type);
 } else {
-	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
-	print_input_hidden ('id_module', $moduletype);
-	print_input_hidden ('create_module', 1);
+	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_input_hidden ('id_module', $moduletype);
+	html_print_input_hidden ('create_module', 1);
 }
 echo '</div>';
 echo '</form>';

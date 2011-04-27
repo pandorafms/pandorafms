@@ -83,7 +83,7 @@ if ($result !== false) {
 		echo "<br /><br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
 		return;
 	}
-	print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	html_print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	require ($filename_map);
 } else {
 	ui_print_error_message (__('Map could not be generated'));

@@ -145,34 +145,34 @@ if($recenter_networkmap) {
 if ($pure == 1) {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab='.$activeTab.'">' . 
-				print_image("images/normalscreen.png", true, array ('title' => __('Normal screen'))) .'</a>');
+				html_print_image("images/normalscreen.png", true, array ('title' => __('Normal screen'))) .'</a>');
 			
 } else {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1&amp;tab='.$activeTab.'">' . 
-				print_image("images/fullscreen.png", true, array ('title' => __('Full screen'))) .'</a>');
+				html_print_image("images/fullscreen.png", true, array ('title' => __('Full screen'))) .'</a>');
 }
 if($config['enterprise_installed']) {
 	$buttons['policies'] = array('active' => $activeTab == 'policies',
 		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
-				print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
+				html_print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
 }
 			
 $buttons['groups'] = array('active' => $activeTab == 'groups',
 	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=groups&amp;pure='.$pure.'">' . 
-			print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');
+			html_print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');
 			
 $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
-			print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
+			html_print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
 			
 $buttons['separator'] = array('separator' => '');
 
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=estado&sec2=operation/agentes/networkmap">';
 
-$combolist .= print_select($networkmaps, 'id_networkmap', $id_networkmap, 'onchange:this.form.submit()', __('No selected'), 0, true, false, false, '', false, 'margin-top:4px; margin-left:3px; width:150px;');
+$combolist .= html_print_select($networkmaps, 'id_networkmap', $id_networkmap, 'onchange:this.form.submit()', __('No selected'), 0, true, false, false, '', false, 'margin-top:4px; margin-left:3px; width:150px;');
 
-$combolist .= print_input_hidden('hidden_options',$hidden_options, true);
+$combolist .= html_print_input_hidden('hidden_options',$hidden_options, true);
 
 $combolist .= '</form>';
 
@@ -180,12 +180,12 @@ $buttons['combolist'] = $combolist;
 
 $buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
-			print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
+			html_print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
 
 if(!$nomaps && $id_networkmap != 0) {			
 	$buttons['deletemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
-				print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
+				html_print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
 
 	$buttons['savemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
@@ -194,7 +194,7 @@ if(!$nomaps && $id_networkmap != 0) {
 					&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
 					&amp;modwithalerts='.$modwithalerts.'&amp;hidepolicymodules='.$hidepolicymodules.'
 					&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'">' . 
-				print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
+				html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
 }
 
 switch($activeTab){
@@ -241,31 +241,31 @@ $options_form .= '<table cellpadding="0" cellspacing="0" border="0" width="100%"
 $options_form .= '<tr>';
 $options_form .= '<td>';
 $options_form .= __('Name') . '<br />';
-$options_form .= print_input_text ('name', $name, '', 10, 25, true);
+$options_form .= html_print_input_text ('name', $name, '', 10, 25, true);
 $options_form .= '</td>';
 $options_form .= '<td valign="top">' . __('Group') . '<br />';
-$options_form .= print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
+$options_form .= html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
 $options_form .= '</td>';
 if($activeTab == 'groups' || $activeTab == 'policies'){
 	$options_form .= '<td valign="top">' . __('Module group') . '<br />';
-	$options_form .= print_select_from_sql ('SELECT id_mg, name FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
+	$options_form .= html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
 	$options_form .= '</td>';
 }
 $options_form .= '<td valign="top">' . __('Layout') . '<br />';
-$options_form .= print_select ($layout_array, 'layout', $layout, '', '', '', true);
+$options_form .= html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
 $options_form .= '</td>';
 
 if($activeTab == 'groups'){
 	$options_form .= '<td valign="top">' . __('Depth') . '<br />';
 	$depth_levels = array('all' => __('All'), 'agent' => __('Agents'), 'group' => __('Groups'));
-	$options_form .= print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
+	$options_form .= html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 	$options_form .= '</td>';
 }
 
 if($activeTab == 'policies'){
 	$options_form .= '<td valign="top">' . __('Depth') . '<br />';
 	$depth_levels = array('all' => __('All'), 'agent' => __('Agents'), 'policy' => __('Policies'));
-	$options_form .= print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
+	$options_form .= html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 	$options_form .= '</td>';
 }
 
@@ -273,29 +273,29 @@ $options_form .= '</tr></table>';
 $options_form .= '</td></tr><tr><td>';
 $options_form .= '<table cellpadding="0" cellspacing="0" border="0" width="100%">';
 $options_form .= '<tr><td valign="top">' . __('No Overlap') . '<br />';
-$options_form .= print_checkbox ('nooverlap', '1', $nooverlap, true);
+$options_form .= html_print_checkbox ('nooverlap', '1', $nooverlap, true);
 $options_form .= '</td>';
 
 if(($activeTab == 'groups' || $activeTab == 'policies') && $depth == 'all') {
 	$options_form .= '<td valign="top">' . __('Only modules with alerts') . '<br />';
-	$options_form .= print_checkbox ('modwithalerts', '1', $modwithalerts, true);
+	$options_form .= html_print_checkbox ('modwithalerts', '1', $modwithalerts, true);
 	$options_form .= '</td>';
 
 	if($activeTab == 'groups') {
 		if($config['enterprise_installed']) {
 			$options_form .= '<td valign="top">' . __('Hide policy modules') . '<br />';
-			$options_form .= print_checkbox ('hidepolicymodules', '1', $hidepolicymodules, true);
+			$options_form .= html_print_checkbox ('hidepolicymodules', '1', $hidepolicymodules, true);
 			$options_form .= '</td>';
 		}
 	}
 }
 
 $options_form .= '<td valign="top">' . __('Simple') . '<br />';
-$options_form .= print_checkbox ('simple', '1', $simple, true);
+$options_form .= html_print_checkbox ('simple', '1', $simple, true);
 $options_form .= '</td>';
 
 $options_form .= '<td valign="top">' . __('Regenerate') . '<br />';
-$options_form .= print_checkbox ('regen', '1', $regen, true);
+$options_form .= html_print_checkbox ('regen', '1', $regen, true);
 $options_form .= '</td>';
 
 if ($pure == "1") {
@@ -310,7 +310,7 @@ if ($pure == "1") {
 	);
 
 	$options_form .= '<td valign="top">' . __('Zoom') . '<br />';
-	$options_form .= print_select ($zoom_array, 'zoom', $zoom, '', '', '', true, false, false, false);
+	$options_form .= html_print_select ($zoom_array, 'zoom', $zoom, '', '', '', true, false, false, false);
 	$options_form .= '</td>';
 	
 }
@@ -318,19 +318,19 @@ if ($pure == "1") {
 if ($nooverlap == 1){
 	$options_form .= "<td>";
 	$options_form .= __('Distance between nodes') . '<br />';
-	$options_form .= print_input_text ('ranksep', $ranksep, __('Separation between elements in the map (in Non-overlap mode)'), 3, 4, true);
+	$options_form .= html_print_input_text ('ranksep', $ranksep, __('Separation between elements in the map (in Non-overlap mode)'), 3, 4, true);
 	$options_form .= "</td>";
 }
 
 $options_form .= "<td>";
 $options_form .= __('Font') . '<br />';
-$options_form .= print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
+$options_form .= html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
 $options_form .= "</td>";
 
 $options_form .= '<td>';
-$options_form .= print_input_hidden('update_networkmap',1, true);
-$options_form .= print_input_hidden('hidden_options',0, true);
-$options_form .= print_submit_button (__('Update'), "updbutton", false, 'class="sub upd"', true);
+$options_form .= html_print_input_hidden('update_networkmap',1, true);
+$options_form .= html_print_input_hidden('hidden_options',0, true);
+$options_form .= html_print_submit_button (__('Update'), "updbutton", false, 'class="sub upd"', true);
 $options_form .= '</td></tr>';
 $options_form .= '</table></table></form>';
 

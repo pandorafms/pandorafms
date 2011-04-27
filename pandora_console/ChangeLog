@@ -1,5 +1,11 @@
 2011-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/setup/setup_visuals.php
+	godmode/users/configure_user.php: Fixed some mistakes of my last 
+	commit.
+
+2011-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	include/functions_users.php
 	include/functions_events.php

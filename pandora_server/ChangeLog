@@ -1,3 +1,10 @@
+2011-04-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Added the dbengine configuration token.
+
+	* lib/PandoraFMS/DataServer.pm: Read aditional module parameters from
+	  the XML data file.
+
 2011-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm,

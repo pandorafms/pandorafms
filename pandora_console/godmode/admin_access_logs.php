@@ -133,7 +133,7 @@ if ($filter_hours_old != 0) {
 
 $sql = "SELECT COUNT(*) FROM tsesion " . $filter;
 $count = db_get_sql ($sql);
-$url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
+$url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log."&user_filter=".$user_filter."&filter_text=".$filter_text."&filter_hours_old=".$filter_hours_old."&filter_ip=".$filter_ip;
 
 ui_pagination ($count, $url);
 

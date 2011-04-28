@@ -2,7 +2,7 @@
 
 # **********************************************************************
 # Pandora FMS Agent package builder for Solaris
-# (c) 2010 Junichi Satoh <junichi@rworks.jp>
+# (c) 2010-2011 Junichi Satoh <junichi@rworks.jp>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the  GNU Lesser General Public License
@@ -41,6 +41,7 @@ mkdir -p /tmp/pandora/usr/share/pandora_agent/plugins
 # copy executables
 cp ../../pandora_agent /tmp/pandora/usr/bin
 cp ../../tentacle_client /tmp/pandora/usr/bin
+cp ../../tentacle_server /tmp/pandora/usr/bin
 cp ../../pandora_agent_daemon /tmp/pandora/etc/init.d
 cp ../../pandora_agent_exec /tmp/pandora/usr/bin
 

@@ -1,3 +1,8 @@
+2011-04-28  Raul Mateos <raulofpandora@gmail.com>
+
+	* conf/pandora_server.conf, pandora_server_installer,
+	PandoraFMS/Config.pm: Updated year and build.
+
 2011-04-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Added the dbengine configuration token.

@@ -26,6 +26,9 @@ use Time::HiRes qw(gettimeofday);
 
 use POSIX qw (strftime ceil);
 
+use Data::Dumper;
+use Math::Trig;
+
 # Global variables used for statistics
 my $Agents :shared = 0;
 my $Modules :shared = 0;
@@ -136,17 +139,69 @@ sub generate_xml_files ($$$$$) {
 				# Read module configuration
 				my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
 				my $module_description = get_conf_token ($module, 'module_description', '');
-				my $module_min = get_conf_token ($module, 'module_min', '0');
-				my $module_max = get_conf_token ($module, 'module_max', '255');
-				my $module_variation = get_conf_token ($module, 'module_variation', '100');
-				my $module_data = get_conf_token ($module, 'module_data', '');
-
+				#my $module_min = get_conf_token ($module, 'module_min', '0');
+				#my $module_max = get_conf_token ($module, 'module_max', '255');
+				#my $module_variation = get_conf_token ($module, 'module_variation', '100');
+				#my $module_data = get_conf_token ($module, 'module_data', '');
+				
+				# Extract the data config for the generator.
+				my $generation_type = get_generation_parameter($module, 'type', 'RANDOM');
+				my $module_variation = get_generation_parameter($module, 'variation', '100');
+				my $module_min = get_generation_parameter($module, 'min', '0');
+				my $module_max = get_generation_parameter($module, 'max', '255');
+				my $module_data = get_generation_parameter($module, 'data', '');
+				my $module_prob = get_generation_parameter($module, 'prob', '50');
+				my $module_avg = get_generation_parameter($module, 'avg', '127');
+				my $module_time_wave_length = get_generation_parameter($module, 'time_wave_length', '0');
+				my $module_time_offset = get_generation_parameter($module, 'time_offset', '0');
+				
 				# Generate module data
 				$xml_data .= "\t<module>\n";
 				$xml_data .= "\t\t<name>$module_name</name>\n";
 				$xml_data .= "\t\t<description>$module_description</description>\n";			
 				$xml_data .= "\t\t<type>$module_type</type>\n";
-				my $rnd_data = generate_random_data ($module_type, $module_data, $module_min, $module_max, $module_variation);
+				
+				
+				
+				# Generate data
+				my $rnd_data = $module->{'module_data'};
+				
+				if ($generation_type eq 'RANDOM') {
+					$rnd_data = generate_random_data ($module_type, $module_data,
+						$module_min, $module_max, $module_variation);
+				}
+				elsif ($generation_type eq 'SCATTER') {
+					if (($module_type eq 'generic_data_string') ||
+						($module_type eq 'async_string')) {
+							
+							printf "\n";
+							
+							log_message ($conf, "\tERROR:\tTry to generate scatter data in string module '$module_name' in agent '$agent_name'\n");
+							
+							$rnd_data = $module_data;
+					}
+					else {
+						$rnd_data = generate_scatter_data ($module_type, $module_data, 
+							$module_min, $module_max, $module_prob, $module_avg);
+					}
+				}
+				elsif ($generation_type eq 'CURVE') {
+					if (($module_type eq 'generic_data_string') ||
+						($module_type eq 'async_string')) {
+							
+							printf "\n";
+							
+							log_message ($conf, "\tERROR:\tTry to generate curve data in string module '$module_name' in agent '$agent_name'\n");
+							
+							$rnd_data = $module_data;
+					}
+					else {
+						$rnd_data = generate_curve_data ($utimestamp, $module_min, $module_max,
+							$module_time_wave_length, $module_time_offset);
+					}
+				}
+				
+				# Save previous data
 				$module->{'module_data'} = $rnd_data;
 				$xml_data .= "\t\t<data>$rnd_data</data>\n";
 				$xml_data .= "\t</module>\n";
@@ -203,6 +258,55 @@ sub generate_random_data ($$$$$) {
 }
 
 ################################################################################
+# Generates curve data.
+################################################################################
+sub generate_curve_data ($$$$$$) {
+	my ($utimestamp, $module_min, $module_max, $module_time_wave_length,
+		$module_time_offset) = @_;
+	
+	#f(x) = (max - min) * Sin( (t * pi) / (wave_length)   +   (pi * (offset / wave_length))) + min
+	
+	######################################################
+	#    GRAPHICAL EXPLAIN
+	#
+	#                 offset
+	#                   |
+	# (max - min) -> |-----  . .             . .
+	#                |V   V.     .         .     .
+	# ---------------|---------------------------------
+	#                |   .         .     . ^     ^
+	#         min -> | .             . .   |     |
+	#                                      -------
+	#                                         |
+	#                                      wave_length
+	#                                     
+	######################################################
+	
+	my $return = ($module_max - $module_min)/2 *
+		sin( ($utimestamp * pi) / $module_time_wave_length + 
+		(pi * ($module_time_offset / $module_time_wave_length))) + ($module_min + $module_max) / 2;
+		
+	return $return;
+}
+
+################################################################################
+# Generates scatter data.
+################################################################################
+sub generate_scatter_data ($$$$$$) {
+	my ($module_type, $current_data, $min, $max, $prob, $avg) = @_;
+	
+	# And check the probability now
+	my $other_rnd = int rand(100);
+		
+	if ( $prob >= $other_rnd) {		
+		return int (rand ($max - $min + 1) + $min);
+	}
+	else {
+		return $avg;
+	}
+}
+
+################################################################################
 # Returns the value of a configuration token.
 ################################################################################
 sub copy_xml_file ($$) {
@@ -228,6 +332,23 @@ sub get_conf_token ($$$) {
 	
 	return $def_value unless ref ($hash_ref) and defined ($hash_ref->{$token});
 	return $hash_ref->{$token};
+}
+
+################################################################################
+# Returns the parameter of a generator configuration of module.
+################################################################################
+sub get_generation_parameter($$$) {
+	my ($hash_ref, $token, $def_value) = @_;
+	
+	return $def_value unless ref ($hash_ref) and defined ($hash_ref->{'module_exec'});
+	
+	my $configuration = $hash_ref->{'module_exec'};
+	
+	my $value = $def_value;
+	
+	$value = $1 if ($configuration =~ /$token=([^;]+)/);
+	
+	return $value;
 }
 
 ################################################################################
@@ -269,7 +390,8 @@ if ($#ARGV != 0) {
 load_config ($ARGV[0], %conf, @modules);
 
 die ("[error] No agent file specified in configuration file.\n\n") unless defined ($conf{'agent_file'});
-open (FILE, "<", $conf{'agent_file'}) || die ("[error] Could not open agent configuration file '" . $conf{'agent_file'} . "': $!.\n\n");
+open (FILE, "<", $conf{'agent_file'}) || 
+	die ("[error] Could not open agent configuration file '" . $conf{'agent_file'} . "': $!.\n\n");
 
 # Read agent names
 my @agents;
@@ -281,8 +403,8 @@ while (my $agent_name = <FILE>) {
 close (FILE);
 
 # Get the maximum number of threads and the number of agents per thread
-my $max_threads = get_conf_token (\%conf, 'max_threads', '10');
-$max_threads = 10 unless ($max_threads > 0);
+my $max_threads = 0 + get_conf_token (\%conf, 'max_threadss', '10');
+
 my $step = ceil ($Agents / $max_threads);
 
 my $t0 = gettimeofday ();

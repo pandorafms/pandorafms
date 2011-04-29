@@ -1,3 +1,10 @@
+2011-04-29 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* util/pandora_xml_stress.pl: added the generate scatter and curve data
+	and change the method to create fake modules.
+	
+	* util/pandora_xml_stress.README: change the description of fake modules.
+
 2011-04-28  Raul Mateos <raulofpandora@gmail.com>
 
 	* conf/pandora_server.conf, pandora_server_installer,

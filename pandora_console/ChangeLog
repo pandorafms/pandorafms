@@ -1,3 +1,9 @@
+2011-04-29 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php: back to previous version of Juan Manuel, because
+	he update old version of trunk.
+
 2011-04-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/admin_access_logs.php: Fixed filter parameters are not

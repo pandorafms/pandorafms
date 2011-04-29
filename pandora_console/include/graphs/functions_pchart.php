@@ -42,7 +42,6 @@ $yaxisname = '';
 $legend = null;
 $colors = null;
 $font_size = 8;
-$force_steps = true; 
 
 $graph_type = get_parameter('graph_type', '');
 
@@ -62,16 +61,18 @@ if (!isset($graph)) {
 $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
-
-if (isset($graph['color'])) {
+$colors = null;
+$force_steps = true; 
+if (isset($graph['color']))
 	$colors = $graph['color'];
-}
-if (isset($graph['legend'])) {
+$legend = null;
+if (isset($graph['legend']))
 	$legend = $graph['legend'];
-}
+$xaxisname = '';
 if(isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
 }
+$yaxisname = '';
 if(isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }
@@ -376,6 +377,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	 
 	 $water_mark_height = 0;
 	 $water_mark_width = 0;
+	 
 	 if (!empty($water_mark)) {
 		$size_water_mark = getimagesize($water_mark);
 		$water_mark_height = $size_water_mark[1];
@@ -410,6 +412,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 				$max_chars = $len; 
 			}
 		}
+		
 		$legend_with_aprox = 32 + (7 * $max_chars);
 
 	 $PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
@@ -551,7 +554,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 					"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
 				$margin_left = 40;
 				$margin_top = 10;
-				$margin_bottom = 10 * $max_chars;
+				$margin_bottom = 8 * $max_chars;
 				break;
 		case "hbar":
 				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,

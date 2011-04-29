@@ -92,7 +92,8 @@ function progressbar($progress, $width, $height, $title, $font, $mode = 1, $out_
 }
 
 
-function slicesbar_graph($chart_data, $width, $height, $colors, $font, $round_corner) {
+function slicesbar_graph($chart_data, $width, $height, $colors, $font,
+	$round_corner, $home_url = '') {
 	$graph = array();
 	$graph['data'] = $chart_data;
 	$graph['width'] = $width;
@@ -103,7 +104,7 @@ function slicesbar_graph($chart_data, $width, $height, $colors, $font, $round_co
 
 	$id_graph = serialize_in_temp($graph);
 		
-	return "<img src='include/graphs/functions_pchart.php?graph_type=slicebar&id_graph=".$id_graph."'>";
+	return "<img src='".$home_url."include/graphs/functions_pchart.php?graph_type=slicebar&id_graph=".$id_graph."'>";
 }
 
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),

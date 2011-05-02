@@ -1,3 +1,9 @@
+2011-05-02 SAncho Lerena <slerena@artica.es>
+
+	*  include/help/en/help_reporting_advanced_tab.php,
+	include/help/es/help_reporting_advanced_tab.php: Missing help
+	files.
+
 2011-05-02  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/styles/pandora_width.css: Fixed a typo.

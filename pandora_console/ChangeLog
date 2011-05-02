@@ -1,3 +1,8 @@
+2011-05-01 SAncho Lerena <slerena@artica.es>
+
+	*  include/help/en/help_reporting_advanced_tab.php,
+	include/help/es/help_reporting_advanced_tab.php: MIssing help files.
+
 2011-04-25 Javier Lanz <javier.lanz@artica.es>
 
 	* operation/agentes/tactical.php: Fixed a style problem on Internet

@@ -177,15 +177,33 @@ sub pandora_manage_init ($) {
 ##########################################################################
 ## Create a template module.
 ##########################################################################
-sub pandora_create_template_module ($$$$;$) {
-	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts) = @_;
+sub pandora_create_template_module ($$$$;$$) {
+	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts, $disabled) = @_;
 	
 	$id_policy_alerts = 0 unless defined $id_policy_alerts;
+	$disabled = 0 unless defined $disabled;
 	
 	my $module_name = get_module_name($dbh, $id_agent_module);
  	logger($pa_config, "Creating alert of template '$id_alert_template' on agent module '$module_name'.", 10);
 
-	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts)");
+	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts, $disabled)");
+	return $dbh->{'mysql_insertid'};
+}
+
+##########################################################################
+## Update a template module.
+##########################################################################
+
+sub pandora_update_template_module ($$$;$$) {
+	my ($pa_config, $id_alert, $dbh, $id_policy_alerts, $disabled) = @_;
+	
+	$id_policy_alerts = 0 unless defined $id_policy_alerts;
+	$disabled = 0 unless defined $disabled;
+	
+	#my $module_name = get_module_name($dbh, $id_agent_module);
+ 	#logger($pa_config, "Update alert of template '$id_alert_template' on agent module '$module_name'.", 10);
+
+	$dbh->do("UPDATE talert_template_modules SET `id_policy_alerts` = '$id_policy_alerts', `disabled` =  '$disabled' WHERE id = $id_alert");
 	return $dbh->{'mysql_insertid'};
 }
 
@@ -495,6 +513,7 @@ sub help_screen{
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
+    help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
     help_screen_line('--force_unblock_policies', '', 'Force unblock the policies');
     print "\n";
 	exit;
@@ -1345,9 +1364,12 @@ sub pandora_manage_main ($$$) {
 					foreach my $alert (@{$array_pointer_ale}) {
 						my $id_alert_template_module = get_alert_template_module_id($dbh, $id_module, $alert->{'id_alert_template'});
 
-						# Only if the template doesnt exist we create it
+						# Only if the template doesnt exist we create it. If exists we update it
 						if($id_alert_template_module == -1) {
-							$id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh, $alert->{'id'});
+							$id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh, $alert->{'id'}, $alert->{'disabled'});
+						}
+						else {
+							pandora_update_template_module ($conf, $id_alert_template_module, $dbh, $alert->{'id'}, $alert->{'disabled'});
 						}
 
 						# Get policy alert actions and create it on modules created
@@ -1426,6 +1448,27 @@ sub pandora_manage_main ($$$) {
 			enterprise_hook('pandora_unblock_policies', [$dbh]);
 		}
 		elsif ($param eq '--force_unblock_policies') {			
+			enterprise_hook('pandora_unblock_policies', [$dbh]);
+		}
+		elsif ($param eq '--disable_policy_alerts') {
+			param_check($ltotal, 1);
+			my $policy_name = @ARGV[2];
+			
+			my $configuration_data = "";
+
+			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
+			exist_check($policy_id,'policy',$policy_name);
+			
+			my $blocked_policies = enterprise_hook('pandora_block_policies', [$dbh]);
+									
+			if($blocked_policies eq '0E0') {
+				print "[ERROR] The policies are blocked in other terminal.\n\n";
+				exit;
+			}
+			
+			# Flag as disabled the policy alerts
+			my $array_pointer_ag = enterprise_hook('pandora_disable_policy_alerts',[$dbh, $policy_id]);
+			
 			enterprise_hook('pandora_unblock_policies', [$dbh]);
 		}
 		else {

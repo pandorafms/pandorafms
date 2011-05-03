@@ -1,3 +1,10 @@
+2011-05-03  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added option to disable all the
+	alerts of one policy. 
+	Updated apply_policy option to use disabled flag
+	on the creation and update
+
 2011-05-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm, lib/PandoraFMS/DataServer.pm: Check that a group

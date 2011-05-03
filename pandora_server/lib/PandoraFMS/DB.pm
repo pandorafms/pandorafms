@@ -152,7 +152,7 @@ sub get_server_id ($$$) {
 sub get_group_id ($$) {
 	my ($dbh, $group_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id_grupo FROM tgrupo WHERE nombre = ?", safe_input($group_name));
+	my $rc = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE ' . db_text ('nombre') . ' = ?', safe_input($group_name));
 	return defined ($rc) ? $rc : -1;
 }
 

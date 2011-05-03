@@ -314,9 +314,17 @@ sub process_xml_data ($$$$$) {
 		
 		# Get OS, group and description
 		my $os = pandora_get_os ($data->{'os_name'});
-		my $group_id = undef;
-		$group_id = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE ' . db_text ('nombre') . ' = ?', $data->{'group'}) if (defined ($data->{'group'}));
-		$group_id = $pa_config->{'autocreate_group'} unless defined ($group_id);
+		my $group_id = -1;
+		$group_id = get_group_id ($dbh, $data->{'group'}) if (defined ($data->{'group'}));
+		if ($group_id == -1) {
+			$group_id = $pa_config->{'autocreate_group'};
+			if (! defined (get_group_name ($dbh, $group_id))) {
+				logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token)", 3);
+				$AgentSem->up ();
+				return;
+			}
+		}
+
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 

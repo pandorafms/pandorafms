@@ -1,3 +1,8 @@
+2011-05-04  Sancho Lerena <slerena@artica.es>
+
+	* scripts/mail_transfer: Added new script to send/receive XML data
+	files by SMTP/POP3.
+
 2011-02-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_src.sh: Updated to work with the current directory structure.

@@ -1,3 +1,7 @@
+2011-05-04 Vanessa Gil <vanessa.gil@artica.es>
+
+	*  operation/agentes/estado_agente.php: Fixed error on list of agents
+
 2011-05-01 SAncho Lerena <slerena@artica.es>
 
 	*  include/help/en/help_reporting_advanced_tab.php,

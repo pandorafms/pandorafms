@@ -214,22 +214,31 @@ if ($group_id > 0) {
 }
 else {
 	// Not selected any specific group
-	
-	$user_group = get_user_groups($config["id_user"], "AR");
-	$groups = array_keys($user_group);
-	$agent_names = get_group_agents(array_keys ($user_group), $filter, "upper");
+	if (check_acl ($config['id_user'], 0, "PM")){
+		$agent_names = get_group_agents(0, $filter, "upper", true);
+	}else{
+		$user_group = get_user_groups($config["id_user"], "AR");
+		$groups = array_keys($user_group);
+		$agent_names = get_group_agents(array_keys ($user_group), $filter, "upper");
+	}
 }
-
 $total_agents = 0;
 $agents = false;
 if (! empty ($agent_names)) {
-	$total_agents = get_agents (array ('id_agente' => array_keys ($agent_names),
-		'order' => 'nombre ASC',
-		'disabled' => 0,
-		'id_grupo' => $groups),
-		array ('COUNT(*) as total'));
-	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
-	$agents = get_agents (array ('id_agente' => array_keys ($agent_names),
+	if (check_acl ($config['id_user'], 0, "PM")){
+		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
+		$total_agents = get_db_sql ($sql);
+		$sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+		$agents = get_db_all_rows_sql ($sql);
+
+	}else{
+		$total_agents = get_agents (array ('id_agente' => array_keys ($agent_names),
+			'order' => 'nombre ASC',
+			'disabled' => 0,
+			'id_grupo' => $groups),
+			array ('COUNT(*) as total'));
+		$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+		$agents = get_agents (array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'id_grupo' => $groups,
 			'offset' => (int) get_parameter ('offset'),
@@ -241,6 +250,7 @@ if (! empty ($agent_names)) {
 			'intervalo'),
 		'AR',
 		$order);
+	}
 }
 
 if (empty ($agents)) {

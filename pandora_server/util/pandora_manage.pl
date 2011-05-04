@@ -177,16 +177,17 @@ sub pandora_manage_init ($) {
 ##########################################################################
 ## Create a template module.
 ##########################################################################
-sub pandora_create_template_module ($$$$;$$) {
-	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts, $disabled) = @_;
+sub pandora_create_template_module ($$$$;$$$) {
+	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
 	
 	$id_policy_alerts = 0 unless defined $id_policy_alerts;
 	$disabled = 0 unless defined $disabled;
+	$standby = 0 unless defined $standby;
 	
 	my $module_name = get_module_name($dbh, $id_agent_module);
  	logger($pa_config, "Creating alert of template '$id_alert_template' on agent module '$module_name'.", 10);
 
-	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts, $disabled)");
+	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby)");
 	return $dbh->{'mysql_insertid'};
 }
 
@@ -194,16 +195,17 @@ sub pandora_create_template_module ($$$$;$$) {
 ## Update a template module.
 ##########################################################################
 
-sub pandora_update_template_module ($$$;$$) {
-	my ($pa_config, $id_alert, $dbh, $id_policy_alerts, $disabled) = @_;
+sub pandora_update_template_module ($$$;$$$) {
+	my ($pa_config, $id_alert, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
 	
 	$id_policy_alerts = 0 unless defined $id_policy_alerts;
 	$disabled = 0 unless defined $disabled;
+	$standby = 0 unless defined $standby;
 	
 	#my $module_name = get_module_name($dbh, $id_agent_module);
  	#logger($pa_config, "Update alert of template '$id_alert_template' on agent module '$module_name'.", 10);
 
-	$dbh->do("UPDATE talert_template_modules SET `id_policy_alerts` = '$id_policy_alerts', `disabled` =  '$disabled' WHERE id = $id_alert");
+	$dbh->do("UPDATE talert_template_modules SET `id_policy_alerts` = '$id_policy_alerts', `disabled` =  '$disabled', `standby` =  '$standby' WHERE id = $id_alert");
 	return $dbh->{'mysql_insertid'};
 }
 
@@ -1366,10 +1368,10 @@ sub pandora_manage_main ($$$) {
 
 						# Only if the template doesnt exist we create it. If exists we update it
 						if($id_alert_template_module == -1) {
-							$id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh, $alert->{'id'}, $alert->{'disabled'});
+							$id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh, $alert->{'id'}, $alert->{'disabled'}, $alert->{'standby'});
 						}
 						else {
-							pandora_update_template_module ($conf, $id_alert_template_module, $dbh, $alert->{'id'}, $alert->{'disabled'});
+							pandora_update_template_module ($conf, $id_alert_template_module, $dbh, $alert->{'id'}, $alert->{'disabled'}, $alert->{'standby'});
 						}
 
 						# Get policy alert actions and create it on modules created

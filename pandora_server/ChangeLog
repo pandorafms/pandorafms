@@ -1,3 +1,11 @@
+2011-05-04 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* util/pandora_xml_stress.pl: changed the source code to generate local conf
+	for each agent. And in next executions you can change in remote conf in
+	Pandora Console Enteprise as real agent.
+	
+	* util/pandora_xml_stress.README: added confs for the generate local conf.
+
 2011-05-04  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added standby field to be propagated

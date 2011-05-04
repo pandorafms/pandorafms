@@ -51,6 +51,14 @@ time_from 2009-06-01 00:00:00
 # Data file generation end date, by default now.
 time_to 2009-06-05 00:00:00
 
+# Get and send the conf of agent from Pandora
+get_and_send_agent_conf 1
+
+# Directory of fake confs.
+directory_confs .
+# Directory of fake temp.
+directory_temp /tmp
+
 # Delay after generating the first data file for each agent to avoid
 # race conditions when auto-creating the agent, by default 2.
 startup_delay 2
@@ -80,10 +88,13 @@ altitude_base 0
 position_radius 10
 
 # Address of the Tentacle server where XML files will be sent (optional).
-# server_ip 192.168.50.1
+#server_ip 127.0.0.1
 
 # Port of the Tentacle server, by default 41121.
 # server_port 41121
+
+# Tentacle options.
+#tentacle_options
 
 # Module definitions. Similar to pandora_agent.conf.
 

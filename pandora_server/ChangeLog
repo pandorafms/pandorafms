@@ -1,3 +1,8 @@
+2011-05-04  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added standby field to be propagated
+	in apply policy option
+
 2011-05-03  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added option to disable all the

@@ -129,7 +129,6 @@ if ($create_agent) {
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
-
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if($fields === false) $fields = array();
@@ -560,6 +559,8 @@ if ($update_module || $create_module) {
 	$tcp_send = (string) get_parameter ('tcp_send');
 	$tcp_rcv = (string) get_parameter ('tcp_rcv');
 	$tcp_port = (int) get_parameter ('tcp_port');
+	$configuration_data = (string) get_parameter ('configuration_data');
+	$old_configuration_data = (string) get_parameter ('old_configuration_data');
 
 	$custom_string_1 = (string) get_parameter ('custom_string_1');
 	$custom_string_2 = (string) get_parameter ('custom_string_2');
@@ -616,6 +617,10 @@ if ($update_module || $create_module) {
 	if ($active_snmp_v3) {
 	//
 	}
+	
+	// Make changes in the conf file if necessary
+	enterprise_include_once('include/functions_config_agents.php');
+	enterprise_hook('write_module_in_conf', array($id_agente, safe_output($old_configuration_data), safe_output($configuration_data)));
 }
 
 // MODULE UPDATE
@@ -906,20 +911,17 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
-
 switch ($tab) {
 	case "main":
 		require ("agent_manager.php");
 		break;
 	case "module":
-		
 		if ($id_agent_module || $edit_module) {
 			require ("module_manager_editor.php");
 		}
 		else {
 			require ("module_manager.php");
 		}
-		
 		break;
 	case "alert":
 		/* Because $id_agente is set, it will show only agent alerts */

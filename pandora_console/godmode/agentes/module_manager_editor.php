@@ -246,12 +246,22 @@ switch ($moduletype) {
 	case "dataserver":
 	case 1:
 		$moduletype = 1;
+		// Has remote configuration ?
+		$agent_md5 = md5 (get_agent_name($id_agente), false);
+		$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
 		
 		/* Categories is an array containing the allowed module types
 		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
 		$categories = array (0, 1, 2, 6, 7, 8, -1);
 		require ('module_manager_editor_common.php');
 		require ('module_manager_editor_data.php');
+		if ($config['enterprise_installed'] && $remote_conf) {
+			if($id_agent_module) {
+				enterprise_include_once('include/functions_config_agents.php');
+				$configuration_data = enterprise_hook('get_module_from_conf', array($id_agente, get_agentmodule_name($id_agent_module)));
+			}
+			enterprise_include ('godmode/agentes/module_manager_editor_data.php');
+		}
 		break;
 	case "networkserver":
 	case 2:

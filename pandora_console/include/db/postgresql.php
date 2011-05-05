@@ -381,18 +381,37 @@ function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 
 	/* Avoid limit and offset if given */
 	unset ($filter['limit']);
 	unset ($filter['offset']);
-
-	$sql = sprintf ("SELECT \"%s\" FROM \"%s\" WHERE %s LIMIT 1",
+	
+	
+	if (strstr($field, "(") === false) {
+		//It is a field.
+		$field = '"' . $field . '"';
+		$is_a_function = false;
+	}
+	else {
+		//It is a function.
+		$is_a_function = true;
+	}
+	
+	$sql = sprintf ("SELECT %s FROM \"%s\" WHERE %s LIMIT 1",
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
 	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if ($result === false)
 		return false;
 
-	$fieldClean = str_replace('`', '', $field);
-
+	if (!$is_a_function) {
+		$fieldClean = str_replace('"', '', $field);
+		$fieldClean = str_replace('`', '', $fieldClean);
+	}
+	else {
+		//Extract the name of function.
+		$temp = explode('(', $field);
+		$fieldClean = strtolower(trim($temp[0]));
+	}
+	
 	return $result[0][$fieldClean];
 }
 

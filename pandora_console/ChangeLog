@@ -1,3 +1,21 @@
+2011-05-05 Miguel de Dios  <miguel.dedios@artica.es>
+	* pandoradb.sql, pandoradb.postgreSQL.sql,
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: changed the default value for
+	zero/null date "0000-00-00 00:00:00" to "01-01-1970 00:00:00".
+
+	* include/functions_graph.php,include/db/postgresql.php,
+	include/functions_modules.php, include/functions_agents.php,
+	operation/agentes/alerts_status.php,
+	operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_agente.php, operation/agentes/exportdata.php,
+	operation/agentes/ver_agente.php, operation/servers/view_server.php,
+	operation/gis_maps/ajax.php, godmode/db/db_sanity.php,
+	godmode/agentes/agent_template.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/configurar_agente.php, godmode/servers/plugin.php,
+	godmode/snmpconsole/snmp_alert.php: small fixeds for the support the
+	PostgreSQL engine.
+
 2011-05-04 Vanessa Gil <vanessa.gil@artica.es>
 
 	*  operation/agentes/estado_agente.php: Fixed error on list of agents

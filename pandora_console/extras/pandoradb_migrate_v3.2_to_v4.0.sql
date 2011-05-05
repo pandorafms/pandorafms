@@ -88,3 +88,20 @@ ALTER TABLE `tsesion` CHANGE `ID_sesion` `id_sesion` bigint(20) unsigned NOT NUL
 ALTER TABLE `tsesion` CHANGE `ID_usuario` `id_usuario` varchar(60) NOT NULL default '0';
 ALTER TABLE `tsesion` CHANGE `IP_origen` `ip_origen` varchar(100) NOT NULL default '';
 
+-- -----------------------------------------------------
+-- Change the value "0000-00-00 00:00:00" that Pandora use as zero or null date value
+-- for the value "01-01-1970 00:00:00".
+-- -----------------------------------------------------
+UPDATE `tagente` SET `ultimo_contacto` = "01-01-1970 00:00:00" WHERE `ultimo_contacto` = "0000-00-00 00:00:00";
+UPDATE `tagente` SET `ultimo_contacto_remoto` = "01-01-1970 00:00:00" WHERE `ultimo_contacto_remoto` = "0000-00-00 00:00:00";
+UPDATE `tagente_estado` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
+UPDATE `tagente_estado` SET `last_try` = "01-01-1970 00:00:00" WHERE `last_try` = "0000-00-00 00:00:00";
+UPDATE `talert_snmp` SET `last_fired` = "01-01-1970 00:00:00" WHERE `last_fired` = "0000-00-00 00:00:00";
+UPDATE `tevento` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
+UPDATE `tincidencia` SET `inicio` = "01-01-1970 00:00:00" WHERE `inicio` = "0000-00-00 00:00:00";
+UPDATE `tincidencia` SET `cierre` = "01-01-1970 00:00:00" WHERE `cierre` = "0000-00-00 00:00:00";
+UPDATE `tserver` SET `laststart` = "01-01-1970 00:00:00" WHERE `laststart` = "0000-00-00 00:00:00";
+UPDATE `tserver` SET `keepalive` = "01-01-1970 00:00:00" WHERE `keepalive` = "0000-00-00 00:00:00";
+UPDATE `ttrap` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
+UPDATE `tnews` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
+UPDATE `tserver_export` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";

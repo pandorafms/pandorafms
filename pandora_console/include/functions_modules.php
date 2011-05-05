@@ -225,36 +225,48 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
 		return false;
 
 	switch ($config["dbtype"]) {
-		case "mysql":	
-		case "postgresql":	
+		case "mysql":
 			$result = db_process_sql_insert ('tagente_estado',
-					array ('id_agente_modulo' => $id_agent_module,
-						'datos' => 0,
-						'timestamp' => '0000-00-00 00:00:00',
-						'estado' => 0,
-						'id_agente' => (int) $id_agent,
-						'utimestamp' => 0,
-						'status_changes' => 0,
-						'last_status' => 0
-					));
+				array ('id_agente_modulo' => $id_agent_module,
+					'datos' => 0,
+					'timestamp' => '01-01-1970 00:00:00',
+					'estado' => 0,
+					'id_agente' => (int) $id_agent,
+					'utimestamp' => 0,
+					'status_changes' => 0,
+					'last_status' => 0
+				));
+			break;
+		case "postgresql":
+			$result = db_process_sql_insert ('tagente_estado',
+				array ('id_agente_modulo' => $id_agent_module,
+					'datos' => 0,
+					'timestamp' => null,
+					'estado' => 0,
+					'id_agente' => (int) $id_agent,
+					'utimestamp' => 0,
+					'status_changes' => 0,
+					'last_status' => 0
+				));
 			break;
 		case "oracle":
 			$result = db_process_sql_insert ('tagente_estado',
-					array ('id_agente_modulo' => $id_agent_module,
-						'datos' => 0,
-						'timestamp' => 'to_date(0000-00-00 00:00:00, \'YYYY-MM-DD HH24:MI:SS\')',
-						'estado' => 0,
-						'id_agente' => (int) $id_agent,
-						'utimestamp' => 0,
-						'status_changes' => 0,
-						'last_status' => 0
-					));
+				array ('id_agente_modulo' => $id_agent_module,
+					'datos' => 0,
+					'timestamp' => 'to_date(01-01-1970 00:00:00, \'YYYY-MM-DD HH24:MI:SS\')',
+					'estado' => 0,
+					'id_agente' => (int) $id_agent,
+					'utimestamp' => 0,
+					'status_changes' => 0,
+					'last_status' => 0
+				));
 			break;
 	}
 	
 	if ($result === false) {
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
+		
 		return false;
 	}
 	

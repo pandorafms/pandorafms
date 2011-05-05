@@ -733,7 +733,8 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 		FROM tevento, tagente_modulo
 		WHERE id_agentmodule = id_agente_modulo
 			AND disabled = 0 AND tevento.id_agente = %d
-		GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
+		GROUP BY id_agentmodule, nombre LIMIT %d', $id_agent, $max_items);
+	
 	$events = db_get_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {

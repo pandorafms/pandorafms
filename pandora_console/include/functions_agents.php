@@ -171,6 +171,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	else {
 		$id_agent = (array) $id_agent;
 		$id_modules = array_keys (get_agent_modules ($id_agent, false, array('delete_pending' => 0)));
+		
 		if (empty ($id_modules))
 			return array ();
 			
@@ -217,6 +218,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			WHERE id_agent_module in (%s) %s %s %s",
 			$selectText, $subQuery, $where, $filter, $orderbyText);
 	}
+	
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -770,7 +772,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
 					break;
 				case "postgresql":
-					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
+					$search_sql .= ' AND (nombre LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
 					break;
 				case "oracle":
 					$search_sql .= ' AND (UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
@@ -787,7 +789,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE "' . $name . '" ';
 					break;
 				case "postgresql":
-					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
+					$search_sql .= ' AND nombre LIKE \'' . $name . '\' ';
 					break;
 				case "oracle":
 					$search_sql .= ' AND nombre LIKE UPPER("' . $name . '") ';
@@ -917,7 +919,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 	}
 
 	$where .= ' AND delete_pending = 0 ';
-
+	
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
@@ -943,8 +945,10 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 				else {
 					switch ($config["dbtype"]) {
 						case "mysql":
-						case "postgresql":
 							array_push ($fields, $field.' = "'.$value.'"');
+							break;
+						case "postgresql":
+							array_push ($fields, $field.' = \''.$value.'\'');
 							break;
 						case "oracle":					
 							if (is_int ($value) ||is_float ($value)||is_double ($value))
@@ -990,9 +994,10 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 				$where);
 			break;
 	}
-
+	
+	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if (empty ($result)) {
 		return array ();
 	}

@@ -548,7 +548,7 @@ if ($update_module || $create_module) {
 	// where are very big and PHP uses scientific notation, p.e:
 	// 1.23E-10 is 0.000000000123
 	
-	$post_process = (string) get_parameter ('post_process');
+	$post_process = (string) get_parameter ('post_process', 0.0);
 	$prediction_module = (int) get_parameter ('prediction_module');
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$min = (int) get_parameter_post ("min");
@@ -906,17 +906,20 @@ if ($updateGIS) {
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
+
 switch ($tab) {
 	case "main":
 		require ("agent_manager.php");
 		break;
 	case "module":
+		
 		if ($id_agent_module || $edit_module) {
 			require ("module_manager_editor.php");
 		}
 		else {
 			require ("module_manager.php");
 		}
+		
 		break;
 	case "alert":
 		/* Because $id_agente is set, it will show only agent alerts */

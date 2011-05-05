@@ -224,7 +224,7 @@ else {
 	}
 
 	// If not edition or insert, then list available plugins
-	$rows = db_get_sql('SELECT * FROM tplugin ORDER BY name');
+	$rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 	
 	if ($rows !== false) {
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';

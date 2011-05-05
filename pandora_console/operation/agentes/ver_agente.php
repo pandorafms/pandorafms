@@ -187,7 +187,7 @@ if (is_ajax ()) {
 		$agent_modules = get_agent_modules ($id_agent,
 			($fields != '' ? explode (',', $fields) : "*"),
 			($filter != '' ? $filter : false), $indexed);
-			
+		
 		foreach($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = safe_output($module['nombre']);
 		}

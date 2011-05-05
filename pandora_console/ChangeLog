@@ -1,3 +1,10 @@
+2011-05-05  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php: Added the feature of
+	edit the modules from the agent config or create a module from
+	a local component or manually
+
 2011-05-05 Miguel de Dios  <miguel.dedios@artica.es>
 	* pandoradb.sql, pandoradb.postgreSQL.sql,
 	extras/pandoradb_migrate_v3.2_to_v4.0.sql: changed the default value for

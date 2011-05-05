@@ -180,7 +180,7 @@ switch ($opt) {
 		$returnJSON['content'] .= __('Group').': ' . ui_print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.groups_get_name ($row["id_grupo"]).'</strong>)<br />';
 		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
 		$returnJSON['content'] .= __('Last contact') . ": ";
-		if ($row["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {
+		if ($row["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
     		$returnJSON['content'] .=__('Never') ." <br />";
 		}
 		else {

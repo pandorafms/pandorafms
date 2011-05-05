@@ -84,7 +84,7 @@ if (isset ($_POST["template_id"])) {
 				$values = array(
 					'id_agente_modulo' => $id_agente_modulo,
 					'datos' => 0,
-					'timestamp' => '0000-00-00 00:00:00',
+					'timestamp' => '01-01-1970 00:00:00',
 					'estado' => 0,
 					'id_agente' => $id_agente,
 					'utimestamp' => 0);

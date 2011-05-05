@@ -42,7 +42,7 @@ $alert_validate = (bool) get_parameter ('alert_validate', 0);
 $tab = get_parameter_get ("tab", null);
 
 $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&filter_standby='.$filter_standby.'&ag_group='.$id_group;
-	
+
 if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
 }
@@ -212,11 +212,14 @@ if($filter_standby == 'standby_on') {
 }else {
 	$filter_alert['disabled'] = $filter;
 }
+
 $alerts['alerts_simple'] = agents_get_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+
 $countAlertsSimple = agents_get_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
 
 $alerts['alerts_combined'] = agents_get_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
 $countAlertsCombined = agents_get_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
+
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
 }

@@ -49,13 +49,13 @@ CREATE TABLE "tagente" (
 	"direccion" varchar(100) default NULL,
 	"comentarios" varchar(255) default '',
 	"id_grupo" INTEGER NOT NULL default 0,
-	"ultimo_contacto" TIMESTAMP without time zone default NULL,
+	"ultimo_contacto" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"modo" SMALLINT NOT NULL default 0,
 	"intervalo" INTEGER NOT NULL default 300,
 	"id_os" INTEGER default 0,
 	"os_version" varchar(100) default '',
 	"agent_version" varchar(100) default '',
-	"ultimo_contacto_remoto" TIMESTAMP without time zone default NULL,
+	"ultimo_contacto_remoto" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"disabled" SMALLINT NOT NULL default 0,
 	"id_parent" INTEGER default 0,
 	"custom_id" varchar(255) default '',
@@ -113,10 +113,10 @@ CREATE TABLE "tagente_estado" (
 	"id_agente_estado" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" text NOT NULL default '',
-	"timestamp" TIMESTAMP without time zone default NULL,
+	"timestamp" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"estado" INTEGER NOT NULL default 0,
 	"id_agente" INTEGER NOT NULL default 0,
-	"last_try" TIMESTAMP without time zone default NULL,
+	"last_try" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"utimestamp" BIGINT NOT NULL default 0,
 	"current_interval" INTEGER NOT NULL default 0,
 	"running_by" INTEGER default 0,
@@ -212,7 +212,7 @@ CREATE TABLE "talert_snmp" (
 	"oid" varchar(255) NOT NULL default '',
 	"time_threshold" INTEGER NOT NULL default 0,
 	"times_fired" SMALLINT NOT NULL default 0,
-	"last_fired" TIMESTAMP without time zone default NULL,
+	"last_fired" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"max_alerts" INTEGER NOT NULL default 1,
 	"min_alerts" INTEGER NOT NULL default 1,
 	"internal_counter" INTEGER NOT NULL default 0,
@@ -375,7 +375,7 @@ CREATE TABLE "tevento" (
 	"id_usuario" varchar(100) NOT NULL default '0',
 	"id_grupo" INTEGER NOT NULL default 0,
 	"estado" INTEGER NOT NULL default 0,
-	"timestamp" TIMESTAMP without time zone default NULL,
+	"timestamp" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"evento" text NOT NULL default '',
 	"utimestamp" BIGINT NOT NULL default 0,
 	"event_type" type_tevento_event default 'unknown',
@@ -405,8 +405,8 @@ CREATE TABLE "tgrupo" (
 
 CREATE TABLE "tincidencia" (
 	"id_incidencia" BIGSERIAL NOT NULL PRIMARY KEY,
-	"inicio" TIMESTAMP without time zone default NULL,
-	"cierre" TIMESTAMP without time zone default NULL,
+	"inicio" TIMESTAMP without time zone default '01-01-1970 00:00:00',
+	"cierre" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"titulo" text NOT NULL default '',
 	"descripcion" text NOT NULL,
 	"id_usuario" varchar(60) NOT NULL default '',
@@ -569,8 +569,8 @@ CREATE TABLE "tserver" (
 	"name" varchar(100) NOT NULL default '',
 	"ip_address" varchar(100) NOT NULL default '',
 	"status" INTEGER NOT NULL default 0,
-	"laststart" TIMESTAMP without time zone default NULL,
-	"keepalive" TIMESTAMP without time zone default NULL,
+	"laststart" TIMESTAMP without time zone default '01-01-1970 00:00:00',
+	"keepalive" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"snmp_server" INTEGER NOT NULL default 0,
 	"network_server" INTEGER NOT NULL default 0,
 	"data_server" INTEGER NOT NULL default 0,
@@ -615,7 +615,7 @@ CREATE TABLE "tsesion" (
 	"ip_origen" varchar(100) NOT NULL default '',
 	"accion" varchar(100) NOT NULL default '',
 	"descripcion" text NOT NULL default '',
-	"fecha" TIMESTAMP without time zone default NULL,
+	"fecha" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"utimestamp" BIGINT NOT NULL default 0
 );
 CREATE INDEX "tsesion_utimestamp_idx" ON "tsesion"("utimestamp");
@@ -641,7 +641,7 @@ CREATE TABLE "ttrap" (
 	"alerted" SMALLINT NOT NULL default 0,
 	"status" SMALLINT NOT NULL default 0,
 	"id_usuario" varchar(150) default '',
-	"timestamp" TIMESTAMP without time zone default NULL,
+	"timestamp" TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	"priority" INTEGER NOT NULL default 2
 );
 
@@ -677,7 +677,7 @@ CREATE TABLE "tnews" (
 	"author" varchar(255)  NOT NULL DEFAULT '',
 	"subject" varchar(255)  NOT NULL DEFAULT '',
 	"text" TEXT NOT NULL,
-	"timestamp" TIMESTAMP without time zone default NULL
+	"timestamp" TIMESTAMP without time zone default '01-01-1970 00:00:00'
 );
 
 CREATE TABLE "tgraph" (
@@ -852,7 +852,7 @@ CREATE TABLE "tserver_export_data" (
 	"module_name" varchar(100) NOT NULL default '',
 	"module_type" varchar(100) NOT NULL default '',
 	"data" varchar(255) default NULL, 
-	"timestamp" TIMESTAMP without time zone default NULL
+	"timestamp" TIMESTAMP without time zone default '01-01-1970 00:00:00'
 );
 
 CREATE TABLE "tplanned_downtime" (
@@ -886,7 +886,7 @@ CREATE TABLE "tgis_data_history" (
 	--timestamp on wich the agente started to be in this position
 	"start_timestamp"  TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
 	--timestamp on wich the agent was placed for last time on this position
-	"end_timestamp"  TIMESTAMP without time zone default NULL,
+	"end_timestamp"  TIMESTAMP without time zone default '01-01-1970 00:00:00',
 	--description of the region correoponding to this placemnt
 	"description" TEXT DEFAULT NULL,
 	-- 0 to show that the position cames from the agent, 1 to show that the position was established manualy

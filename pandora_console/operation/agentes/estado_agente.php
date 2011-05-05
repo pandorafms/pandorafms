@@ -48,15 +48,30 @@ if (is_ajax ()) {
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($usr_groups));		
 
-		$sql = sprintf ("SELECT t1.id, t1.name,
-				(SELECT COUNT(t2.id) 
-					FROM talert_templates AS t2 
-					WHERE t2.id =  %d 
-						AND t2.id_alert_action = t1.id) as 'sort_order'
-			FROM talert_actions AS t1
-			WHERE id_group IN (%s) 
-			ORDER BY sort_order DESC", $id_template, $filter_groups);
-			
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = sprintf ("SELECT t1.id, t1.name,
+						(SELECT COUNT(t2.id) 
+							FROM talert_templates AS t2 
+							WHERE t2.id =  %d 
+								AND t2.id_alert_action = t1.id) as 'sort_order'
+					FROM talert_actions AS t1
+					WHERE id_group IN (%s) 
+					ORDER BY sort_order DESC", $id_template, $filter_groups);
+				break;
+			case "oracle":
+			case "postgresql":
+				$sql = sprintf ("SELECT t1.id, t1.name,
+						(SELECT COUNT(t2.id) 
+							FROM talert_templates AS t2 
+							WHERE t2.id =  %d 
+								AND t2.id_alert_action = t1.id) as sort_order
+					FROM talert_actions AS t1
+					WHERE id_group IN (%s) 
+					ORDER BY sort_order DESC", $id_template, $filter_groups);
+				break;
+		}
+		
 		$rows = db_get_all_rows_sql($sql);
 		
 		

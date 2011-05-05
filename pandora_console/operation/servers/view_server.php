@@ -61,6 +61,7 @@ $table->head[6] = __('T/Q') . ui_print_help_tip (__("Threads / Queued modules cu
 $table->head[7] = __('Updated');
 $table->data = array ();
 
+
 foreach ($servers as $server) {
 	$data = array ();
 	$data[0] = '<span title="'.$server['version'].'">'.$server['name'].'</span>';

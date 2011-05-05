@@ -19,8 +19,11 @@ $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
-	if ($config['enterprise_installed'])
+	if ($config['enterprise_installed']) {
+		
 		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module) && isModuleLinked($id_agent_module);
+		
+	}
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)
@@ -32,7 +35,8 @@ define ('ID_NETWORK_COMPONENT_TYPE', 2);
 if (empty ($update_module_id)) {
 	/* Function in module_manager_editor_common.php */
 	add_component_selection (ID_NETWORK_COMPONENT_TYPE);
-} else {
+}
+else {
 	/* TODO: Print network component if available */
 }
 
@@ -55,7 +59,9 @@ $data = array ();
 $data[0] = __('SNMP community');
 $adopt = false;
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
+	
 	$adopt = isModuleAdopt($id_agent_module);
+	
 }
 if (!$adopt) {
 	$data[1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
@@ -137,6 +143,15 @@ elseif (empty ($update_module_id)) {
 
 //For a policy
 if (!isset($id_agent_module)) {
+	$snmp3_auth_user = '';
+	$snmp3_auth_pass = '';
+	$snmp_version = 1;
+	$snmp3_privacy_method = '';
+	$snmp3_privacy_pass = '';
+	$snmp3_auth_method = '';
+	$snmp3_security_level = '';
+}
+else if ($id_agent_module === false) {
 	$snmp3_auth_user = '';
 	$snmp3_auth_pass = '';
 	$snmp_version = 1;

@@ -158,7 +158,7 @@ ui_print_timestamp ($agent["ultimo_contacto"]);
 
 echo " / ";
 
-if ($agent["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") { 
+if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
 	echo __('Never');
 } else {
 	echo $agent["ultimo_contacto_remoto"];

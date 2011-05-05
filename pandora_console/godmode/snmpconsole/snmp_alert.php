@@ -304,7 +304,7 @@ if (isset ($_GET["update_alert"])) {
 		$data[4] = $row["description"];
 		$data[5] = $row["times_fired"];
 		
-		if ($row["last_fired"] != "0000-00-00 00:00:00") {
+		if ($row["last_fired"] != "01-01-1970 00:00:00") {
 			$data[6] = $row["last_fired"];
 		} else {
 			$data[6] = __('Never');

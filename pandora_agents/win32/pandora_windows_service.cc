@@ -1194,6 +1194,7 @@ Pandora_Windows_Service::pandora_run () {
 
 			if (module->checkCron () == 1) {
 				module->run ();
+				Sleep(10);
 			}
 			
 			/* Save module data to an environment variable */

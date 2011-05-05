@@ -45,7 +45,7 @@ void
 Pandora_Module_Exec::run () {
 	STARTUPINFO         si;
 	PROCESS_INFORMATION pi;
-	DWORD               retval;
+	DWORD               retval, dwRet;
 	SECURITY_ATTRIBUTES attributes;
 	HANDLE              out, new_stdout, out_read, job;
 	string              working_dir;
@@ -121,41 +121,45 @@ Pandora_Module_Exec::run () {
 		}
 		ResumeThread (pi.hThread);
 	
-		/* Wait until process exits. */
-		WaitForSingleObject (pi.hProcess, this->getTimeout ());
-	
+		string output;
+		int tickbase = GetTickCount();
+		while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
+			PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
+			if (avail > 0) {
+				ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
+				buffer[read] = '\0';
+				output += (char *) buffer;
+			}
+
+			if (dwRet == WAIT_OBJECT_0) { 
+				break;
+			} else if(this->getTimeout() < GetTickCount() - tickbase) {
+				/* STILL_ACTIVE */
+				TerminateProcess(pi.hThread, STILL_ACTIVE);
+				pandoraLog ("Pandora_Module_Exec: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
+				break;
+			}
+		}
+
 		GetExitCodeProcess (pi.hProcess, &retval);
+
 		if (retval != 0) {
 			if (! TerminateJobObject (job, 0)) {
 				pandoraLog ("TerminateJobObject failed. (error %d)",
 					    GetLastError ());
 			}
-			
-			/* STILL_ACTIVE */
-			if (retval == 259) {
-				pandoraLog ("Pandora_Module_Exec: %s timed out (retcode: 259)",
-						this->module_name.c_str ());
-			} else {
-				pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
-						this->module_name.c_str (), retval);
-			}
-			this->has_output = false;
+                        if (retval != STILL_ACTIVE) {
+                          pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
+                                      this->module_name.c_str (), retval);
+                        }
+                        this->has_output = false;
 		}
-	
-		PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
-		/* Read from the stdout */
-		if (read != 0) {
-			string output;
-			do {
-				ReadFile (out_read, buffer, BUFSIZE, &read,
-					  NULL);
-				buffer[read] = '\0';
-				output += (char *) buffer;
-			} while (read >= BUFSIZE);
-			this->setOutput (output);
-		} else {
-			this->setOutput ("");
-		}
+
+                if (!output.empty()) {
+                  this->setOutput (output);
+                } else {
+                  this->setOutput ("");
+                }
 	
 		/* Close job, process and thread handles. */
 		CloseHandle (job);

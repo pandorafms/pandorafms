@@ -1,3 +1,7 @@
+2011-05-06  Vanessa Gil <vanessa.gil@artica.es>
+
+	* win32/pandora.cc: Fixed: Windows agent log and system time are unsynchronized.
+
 2011-03-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_regexp.cc: Added support for extended regular

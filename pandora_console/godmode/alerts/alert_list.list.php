@@ -112,7 +112,7 @@ $total = 0;
 $where = '';
 
 if ($searchFlag) {
-	if ($priority != -1 )
+	if ($priority != -1 && $priority != '')
 		$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = " . $priority . ")";
 	if (strlen(trim($templateName)) > 0)
 		$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%" . trim($templateName) . "%')";
@@ -130,11 +130,11 @@ if ($searchFlag) {
 		$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
 			FROM tagente AS t1 INNER JOIN tagente_modulo AS t2 ON t1.id_agente = t2.id_agente
 			WHERE t1.nombre LIKE '" . trim($agentName) . "')";
-	if ($actionID != -1)
+	if ($actionID != -1 && $actionID != '')
 		$where .= " AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
-	if ($enabledisable != -1)
+	if ($enabledisable != -1 && $enabledisable != '')
 		$where .= " AND talert_template_modules.disabled =" . $enabledisable;
-	if ($standby != -1)
+	if ($standby != -1 && $standby != '')
 		$where .= " AND talert_template_modules.standby =" . $standby;
 }
 
@@ -254,7 +254,7 @@ if ($id_agente) {
 	pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
 }
 else {
-	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+	pagination ($total, 'index.php?sec=galertas&sec2=godmode/alerts/alert_list&search=1' . '&template_name=' . $templateName . '&agent_name=' . $agentName . '&module_name=' . $moduleName . '&action_id=' . $actionID . '&field_content=' . $fieldContent. '&priority=' . $priority . '&enabledisable=' . $enabledisable . '&standby=' . $standby);
 }
 $simple_alerts = get_agent_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),

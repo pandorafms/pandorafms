@@ -1,5 +1,10 @@
 2011-05-06  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/alerts/alert_list.list.php: Fixed filter parameters are not
+	taken over with offset selection.
+
+2011-05-06  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/help/ja/help_reporting_advanced_tab.php: Added a missing
 	help file.
 

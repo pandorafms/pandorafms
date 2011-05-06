@@ -226,6 +226,18 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				else
 					ImageTTFText($image, $fontsize, 0, ($width/2)-($width/10), ($height/2)+($height/5), $text, $font, $rating."%");
 				break;
+			case 2:
+				if ($rating > 70)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $other_red);
+				elseif ($rating > 50)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_red);
+				elseif ($rating > 30)
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_yellow);
+				else
+					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_green);
+					
+				ImageRectangle($image,0,0,$width-1,$height-1,$border);
+				break;
 		}
 		imagePNG($image);
 		imagedestroy($image);
@@ -269,6 +281,18 @@ if ($mode == 0) {
 		   	else 
 		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize);
    			break;
+   		case 2:
+			if ($progress > 100 || $progress < 0) {
+				// HACK: This report a static image... will increase render in about 200% :-) useful for
+				// high number of realtime statusbar images creation (in main all agents view, for example
+				$imgPng = imageCreateFromPng($out_of_lim_image);
+				imageAlphaBlending($imgPng, true);
+				imageSaveAlpha($imgPng, true);
+				imagePng($imgPng); 
+		   	}
+		   	else 
+		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize);
+   			break;   			
    	}
 }
 

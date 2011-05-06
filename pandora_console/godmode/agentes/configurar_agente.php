@@ -129,6 +129,7 @@ if ($create_agent) {
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
+
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if($fields === false) $fields = array();

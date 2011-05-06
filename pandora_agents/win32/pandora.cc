@@ -103,7 +103,7 @@ pandoraWriteLog (string filename, string line) {
 	string     filepath;
 	SYSTEMTIME st;
 		
-	GetSystemTime(&st);
+	GetLocalTime(&st);
 	sprintf (str_time, "%d-%02d-%02d %02d:%02d:%02d ", st.wYear, st.wMonth, st.wDay,
 		st.wHour, st.wMinute, st.wSecond);
 

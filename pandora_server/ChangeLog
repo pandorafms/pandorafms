@@ -1,5 +1,11 @@
 2011-05-05 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/search_agents.php: changed the SQL query for PostgreSQL.
+	
+	* godmode/agentes/configurar_agente.php: cleaned source code style.
+
+2011-05-05 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php: fixed the include the new
 	graph engine in the ajax calls.

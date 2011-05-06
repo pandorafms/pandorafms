@@ -20,8 +20,13 @@
  */
 
 global $config;
-	
-require_once ('functions_graph.php');
+
+//Fix ajax include this file.
+global $ajax;
+
+if (!isset($ajax)) {
+	require_once ('functions_graph.php');
+}
 require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');

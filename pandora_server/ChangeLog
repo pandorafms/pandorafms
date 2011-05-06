@@ -1,3 +1,9 @@
+2011-05-05 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: fixed the include the new
+	graph engine in the ajax calls.
+
 2011-05-04 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* util/pandora_xml_stress.pl: changed the source code to generate local conf

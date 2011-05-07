@@ -1,3 +1,8 @@
+2011-05-07 Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Ported changes from 3.2 on Recon.
+	Full topology recursive discovery and resolution, os_type conditional.
+
 2011-05-05 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/search_agents.php: changed the SQL query for PostgreSQL.

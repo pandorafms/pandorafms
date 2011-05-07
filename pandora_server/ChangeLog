@@ -1,3 +1,10 @@
+2011-05-07  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Implemented full-depth topology
+	detection (recursive). Added checks for disable name resolution
+	os detection and set a max. depth recursion. This produces
+	amazing network maps ! :-)
+
 2011-04-13  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Fixed bug #3273910. HPUX detection.

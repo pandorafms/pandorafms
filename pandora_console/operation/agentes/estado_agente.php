@@ -265,7 +265,7 @@ if (! empty ($agent_names)) {
 		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
 		$total_agents = db_get_sql ($sql);
 		$sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
-		$agents = get_db_all_rows_sql ($sql);
+		$agents = db_get_all_rows_sql ($sql);
 
 	}else{
 		$total_agents = get_agents (array ('id_agente' => array_keys ($agent_names),

@@ -1,3 +1,7 @@
+2011-05-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/estado_agente.php: Replaced a call to the old
+	  get_db_all_rows_sql with db_get_all_rows_sql.
 
 2011-05-09 Vanessa Gil <vanessa.gil@artica.es>
 

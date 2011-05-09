@@ -1,5 +1,15 @@
 2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: changed in the function
+	"grafico_modulo_sparse2" the order to include the javascripts for flash.
+	
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.js: some fixes in the show
+	new graphs.
+
+2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/functions_fsgraph.php: fixed the call to
 	"clean_flash_string", renamed to "clean_flash_string2".
 	

@@ -89,13 +89,17 @@ CREATE TABLE "tagente_datos_inc" (
 );
 CREATE INDEX "tagente_datos_inc_id_agente_modulo_idx" ON "tagente_datos_inc"("id_agente_modulo");
 
+
+
 CREATE TABLE "tagente_datos_string" (
-	"id_agente_modulo" INTEGER NOT NULL PRIMARY KEY,
+	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" TEXT NOT NULL,
 	"utimestamp" INTEGER NOT NULL default 0
 );
 CREATE INDEX "tagente_datos_string_id_agente_modulo_idx" ON "tagente_datos_string"("id_agente_modulo");
 CREATE INDEX "tagente_datos_string_utimestamp_idx" ON "tagente_datos_string"("utimestamp");
+
+
 
 CREATE TABLE "tagente_datos_log4x" (
 	"id_tagente_datos_log4x" BIGSERIAL NOT NULL PRIMARY KEY,

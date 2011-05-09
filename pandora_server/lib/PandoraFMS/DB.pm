@@ -42,6 +42,7 @@ our @EXPORT = qw(
 		get_agent_id
 		get_agent_name
 		get_agent_module_id
+		get_alert_template_module_id
 		get_db_rows
 		get_db_single_row
 		get_db_value
@@ -396,6 +397,16 @@ sub db_update ($$;@) {
 	my $rows = $dbh->do($query, undef, @values);
 	
 	return $rows;
+}
+
+##########################################################################
+## Return alert template-module ID given the module and template ids.
+##########################################################################
+sub get_alert_template_module_id ($$$) {
+	my ($dbh, $id_module, $id_template) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ?", $id_module, $id_template);
+	return defined ($rc) ? $rc : -1;
 }
 
 ##########################################################################

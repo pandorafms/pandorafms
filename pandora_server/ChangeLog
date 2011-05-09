@@ -1,3 +1,10 @@
+2011-05-09  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/Core.pm
+	util/pandora_manage.pl: Moved some functions from CLI to common
+	files
+
 2011-05-07 Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Ported changes from 3.2 on Recon.

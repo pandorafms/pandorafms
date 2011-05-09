@@ -1,5 +1,12 @@
 2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/graphs/functions_fsgraph.php: fixed the call to
+	"clean_flash_string", renamed to "clean_flash_string2".
+	
+	* include/functions_reporting.php: disabled the include old fsgraph.
+
+2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb.postgreSQL.sql: fixed the type of cell "id_agente_modulo" in the
 	table "tagente_datos_string".
 

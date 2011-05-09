@@ -492,7 +492,7 @@ function fs_3d_pie_chart2 ($data, $names, $width, $height, $background = "EEEEEE
   	$chart->setChartParams($params);
 
 	for ($i = 0; $i < sizeof ($data); $i++) {
-		$chart->addChartData($data[$i], 'name=' . clean_flash_string($names[$i]));
+		$chart->addChartData($data[$i], 'name=' . clean_flash_string2($names[$i]));
 	}
 
 	// Return the code
@@ -512,7 +512,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
   	$chart->setChartParams($params);
 
 	for ($i = 0; $i < sizeof ($data); $i++) {
-		$chart->addChartData($data[$i], 'name=' . clean_flash_string($names[$i]));
+		$chart->addChartData($data[$i], 'name=' . clean_flash_string2($names[$i]));
 	}
 
 	// Return the code
@@ -583,7 +583,7 @@ function fs_2d_column_chart ($data, $width, $height) {
 			if ($value > 0) {
 				$empty = 0;
 			}
-			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
+			$chart->addChartData($value, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name . ';color=95BB04');
 		}
 	}
 
@@ -658,7 +658,7 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
 			if ($value > 0) {
 				$empty = 0;
 			}
-			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
+			$chart->addChartData($value, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
 		}
 	}
 
@@ -695,7 +695,7 @@ function fs_3d_column_chart ($data, $width, $height) {
 		if ($value > 0) {
 			$empty = 0;
 		}
-		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
+		$chart->addChartData($value, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name . ';color=95BB04');
 	}
 
     $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
@@ -828,7 +828,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 
 	// Tasks
 	foreach ($tasks as $task) {
-		$chart->addGanttProcess (clean_flash_string($task['name']), 'id=' . $task['id'] . ';link=' . urlencode($task['link']));
+		$chart->addGanttProcess (clean_flash_string2($task['name']), 'id=' . $task['id'] . ';link=' . urlencode($task['link']));
 
 		$chart->addGanttTask (__('Planned'), 'start=' . $task['start'] . ';end=' . $task['end'] . ';id=' . $task['id'] . ';processId=' . $task['id'] . ';color=4b3cff;height=5;topPadding=10;animation=0');
 
@@ -849,7 +849,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 	if ($milestones !== '') {
 		$chart->addGanttProcess (__('Milestones'), 'id=0');
 		foreach ($milestones as $milestone) {
-			$chart->addGanttTask (clean_flash_string($milestone['name']), 'start=' . $milestone['date'] . ';end=' . $milestone['date'] . ';id=ms-' . $milestone['id'] . ';processId=0;color=ffffff;alpha=0;height=60;topPadding=0;animation=0');
+			$chart->addGanttTask (clean_flash_string2($milestone['name']), 'start=' . $milestone['date'] . ';end=' . $milestone['date'] . ';id=ms-' . $milestone['id'] . ';processId=0;color=ffffff;alpha=0;height=60;topPadding=0;animation=0');
 			$chart->addGanttMilestone ('ms-' . $milestone['id'], 'date=' . $milestone['date'] . ';radius=8;color=efbb07;shape=star;numSides=3;borderThickness=1');
 		}
 	}

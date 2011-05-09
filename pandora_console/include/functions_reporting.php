@@ -25,7 +25,7 @@
 require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
-include_once ($config["homedir"]."/include/fgraph.php");
+//include_once ($config["homedir"]."/include/fgraph.php");
 include_once($config["homedir"] . "/include/functions_groups.php");
 require_once ('functions_graph.php');
 include_once($config['homedir'] . "/include/functions_modules.php");

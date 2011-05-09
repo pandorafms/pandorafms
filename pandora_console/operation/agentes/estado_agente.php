@@ -237,6 +237,11 @@ switch ($sortField) {
 		break;
 }
 
+$search_sql = '';
+if ($search != ""){
+	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
+}
+
 // Show only selected groups	
 if ($group_id > 0) {
 	$groups = $group_id;

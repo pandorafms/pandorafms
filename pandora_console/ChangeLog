@@ -1,5 +1,10 @@
 2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb.sql, pandoradb.postgreSQL.sql: fixed the default value for
+	timestamp, there was a own mistake in the order of date, sorry.
+
+2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_graph.php: changed in the function
 	"grafico_modulo_sparse2" the order to include the javascripts for flash.
 	

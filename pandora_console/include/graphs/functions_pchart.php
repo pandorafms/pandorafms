@@ -95,6 +95,9 @@ $force_height = true;
 if(isset($graph['force_height'])) { 
 	$force_height = $graph['force_height'];
 }
+if(isset($graph['period'])) { 
+	$period = $graph['period'];
+}
 
 if (!$force_height) {
 	if ($height < (count($graph['data']) * 14)) {
@@ -266,7 +269,7 @@ switch($graph_type) {
 				$width, $height, $font, $water_mark, $font_size);
 			break;
 	case 'slicebar':
-			pch_slicebar_graph($graph_type, $data, $width, $height, $colors, $font, $round_corner, $font_size);
+			pch_slicebar_graph($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size);
 			break;
 	case 'polar':
 	case 'radar':
@@ -293,7 +296,7 @@ switch($graph_type) {
 			break;
 }
 
-function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font, $round_corner, $font_size) {
+function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size) {
 	 /* CAT:Slicebar charts */
 
 	set_time_limit (0);
@@ -311,8 +314,8 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 		$radius = ($height > 18) ? 8 : 0;
 	else
 		$radius = 0;
-
-	$ratio = $width / count($data);
+	
+	$thinest_slice = $width / $period;
 	
 	/* Color stuff */
 	$colorsrgb = array();
@@ -325,7 +328,9 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 	
 	$i = 0;
 	foreach ($data as $d) {
-		$color = $colorsrgb[$d];
+		$color = $d['data'];
+		$color = $colorsrgb[$color]; 
+		$ratio = $thinest_slice * $d['utimestamp'];
 		$myPicture->drawRoundedFilledRectangle ($i, 0, $ratio+$i, 
 				$height, $radius, array('R' => $color['R'], 'G' => $color['G'], 'B' => $color['B']));
 		$i+=$ratio;
@@ -335,7 +340,7 @@ function pch_slicebar_graph ($graph_type, $data, $width, $height, $colors, $font
 	
 	if ($round_corner) {
 		/* Under this value, the rounded rectangle is painted great */
-		if ($ratio <= 16) {
+		if ($thinest_slice <= 16) {
 			/* Clean a bit of pixels */
 			for ($i = 0; $i < 7; $i++) {
 				$myPicture->drawLine (0, $i, 6 - $i, $i, array('R' => 255, 'G' => 255, 'B' => 255));

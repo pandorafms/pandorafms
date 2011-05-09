@@ -448,12 +448,11 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
 	}
 	
-	if (!empty($timeFrom)) {
-		$sql .= ' AND TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '"';
+	if ($timeFrom < $timeTo) {
+		$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" AND TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
 	}
-	
-	if (!empty($timeTo)) {
-		$sql .= ' AND TIME(FROM_UNIXTIME(utimestamp)) <= "' . $timeTo . '"';
+	elseif ($timeFrom > $timeTo) {
+		$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
 	}
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, true);
@@ -535,50 +534,163 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
  * @return Array with values either 1, 2, 3 or 4 depending if the SLA percentage for this subperiod
  * is within the sla limits, on the edge, outside or with an unknown value.
  */
-function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $sla_limit = 0, $days = null, $timeFrom = null, $timeTo = null) {
+function get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
-	// Get date
-	$date = (string) get_parameter ('date', date ('Y-m-j'));
-	$time = (string) get_parameter ('time', date ('h:iA'));
-	$datetime = strtotime ($date.' '.$time);
 	
-	//Get the module_interval
-	$interval = get_module_interval ($id_agent_module);
+	// Initialize variables
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if ((empty ($period)) OR ($period == 0)) {
+		$period = $config["sla_period"];
+	}
+	if ($daysWeek === null) {
+		$daysWeek = array();
+	}
+	// Limit date to start searching data
+	$datelimit = $date - $period;
 	
-	if ($period < 3600) {
-		$k = 6;
-	} elseif ($period < 86400) {
-		$k = 24;
-	} elseif ($period < 172800) {
-		$k = 48;
-	} else {
-		$k = 100;
-	}
-	$slices = $config["graph_res"] * $k;
-	$sub_period = $period / $slices;
-	if ($sub_period < $interval) {
-		$sub_period = $interval;
-	}
-	$final_time = $datetime - $period + $sub_period;
+	// Get interval data
+	$sql = sprintf ('SELECT * FROM tagente_datos
+		WHERE id_agente_modulo = %d
+			AND utimestamp > %d AND utimestamp <= %d',
+		$id_agent_module, $datelimit, $date);
+	
+	//Add the working times (mon - tue - wed ...) and from time to time
+	$days = array();
+	//Translate to mysql week days
 
-	$data = array();
-	$i = 0;
-	while ($final_time <= $datetime) {
-		$sla_value = get_agentmodule_sla ($id_agent_module, $sub_period, $min_value, $max_value, $final_time,
-			$days, $timeFrom, $timeTo);
-		if ($sla_value === false || $sla_value < 0) {// 4 for the Unknown value
-			$data[$i] = 4;
-		} elseif (($sla_value >= ($sla_limit - 10)) && ($sla_value <= ($sla_limit + 10))) {//2 when value is within the edges
-			$data[$i] = 2;
-		} elseif ($sla_value > ($sla_limit + 10)) { //1 when value is OK
-			$data[$i] = 1; 
-		} elseif ($sla_value < ($sla_limit - 10)) { //3 when value is Wrong
-			$data[$i] = 3;
+	if ($daysWeek) {
+		foreach ($daysWeek as $key => $value) {
+			if (!$value) {
+				if ($key == 'monday') {
+					$days[] = 2;
+				}
+				if ($key == 'tuesday') {
+					$days[] = 3;
+				}
+				if ($key == 'wednesday') {
+					$days[] = 4;
+				}
+				if ($key == 'thursday') {
+					$days[] = 5;
+				}
+				if ($key == 'friday') {
+					$days[] = 6;
+				}
+				if ($key == 'saturday') {
+					$days[] = 7;
+				}
+				if ($key == 'sunday') {
+					$days[] = 1;
+				}
+			}
 		}
-		$final_time += $sub_period;
-		$i++;
 	}
-	return $data;
+
+	if (count($days) > 0) {
+		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
+	}
+	
+	if ($timeFrom != $timeTo) {
+		if ($timeFrom < $timeTo) {
+			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" AND TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
+		}
+		elseif ($timeFrom > $timeTo) {
+			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
+		}
+	}
+
+	$sql .= ' ORDER BY utimestamp ASC';
+	$interval_data = db_get_all_rows_sql ($sql, true);
+
+	if ($interval_data === false) {
+		$interval_data = array ();
+	}
+	
+	// Get previous data
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($interval_data, $previous_data);
+	}
+
+	// Get next data
+	$next_data = get_next_data ($id_agent_module, $date);
+	if ($next_data !== false) {
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	else if (count ($interval_data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$next_data = array_pop ($interval_data);
+		array_push ($interval_data, $next_data);
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+
+	if (count ($interval_data) < 2) {
+		return false;
+	}
+
+	//Get the percentage for the limits
+	$diff = $max_value - $min_value; 
+	//Getting 10% of $diff --> $percent = ($diff/100)*10, so...
+	$percent = $diff / 10;
+	
+	//Set initial conditions
+	$first_data = array_shift ($interval_data);
+	$previous_utimestamp = $date - $period;
+	
+	if ($previous_utimestamp == $first_data['utimestamp']) {
+		$previous_value = $first_data ['datos'];
+		$previous_status = 0;
+		
+		if ($previous_value < 0) {// 4 for the Unknown value
+				$previous_status = 4;
+		} elseif ((($previous_value >= ($min_value - $percent)) && ($previous_value <= ($min_value + $percent))) || 
+				(($previous_value >= ($max_value - $percent)) && ($previous_value <= ($max_value + $percent)))) {//2 when value is within the edges
+			$previous_status = 2;
+		} elseif (($previous_value > ($min_value + $percent)) && ($previous_value < ($max_value - $percent))) { //1 when value is OK
+			$previous_status = 1;
+		} elseif (($previous_value < ($min_value - $percent)) || ($previous_value > ($max_value + $percent))) { //3 when value is Wrong
+			$previous_status = 3;
+		}
+	}
+	else {
+		$previous_status = 1;
+	}
+
+	$data_colors = array();
+	$i = 0;
+	foreach ($interval_data as $data) {
+		$change = false;
+		$value = $data['datos'];
+		if ($value < 0) {// 4 for the Unknown value
+			$status = 4;
+		} elseif ((($value >= ($min_value - $percent)) && ($value <= ($min_value + $percent))) || 
+				(($value >= ($max_value - $percent)) && ($value <= ($max_value + $percent)))) {//2 when value is within the edges
+			$status = 2;
+		} elseif (($value > ($min_value + $percent)) && ($value < ($max_value - $percent))) { //1 when value is OK
+			$status = 1;
+		} elseif (($value < ($min_value - $percent)) || ($value > ($max_value + $percent))) { //3 when value is Wrong
+			$status = 3;
+		}
+		if ($status != $previous_status) {
+			$change = true;
+			$data_colors[$i]['data'] = $previous_status;
+			$data_colors[$i]['utimestamp'] = $data['utimestamp'] - $previous_utimestamp;
+			$i++;
+			$previous_status = $status;
+			$previous_utimestamp = $data['utimestamp'];
+		}
+	}
+	if ($change == false) {
+		$data_colors[$i]['data'] = $previous_status;
+		$data_colors[$i]['utimestamp'] = $data['utimestamp'] - $previous_utimestamp;
+	}
+	
+	return $data_colors;
 }
 
 /** 
@@ -2110,7 +2222,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
 							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 						}
-						$data[4] .= format_numeric ($sla_value). "%";
+						$data[4] .= format_numeric ($sla_value, 2). "%";
 					}
 					$data[4] .= "</span>";
 					
@@ -2149,8 +2261,8 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 					$data[0] .= printSmallFont(get_agentmodule_name ($sla['id_agent_module']));
 					
 					$data[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
-						$sla['sla_min'], $sla['sla_max'], $daysWeek, $content['time_from'],
-						$content['time_to'], $sla['sla_limit'], 550, 25);
+						$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
+						$content['time_to'], 550, 25,'');
 					
 					array_push ($table2->data, $data);
 				}
@@ -2165,7 +2277,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Monitor report').$sizhfin;
-			$data[1] = $sizh . ui_print_truncate_text($agent_name, 70, false).' <br> '.printTruncateText($module_name, 70, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
@@ -2199,7 +2311,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Avg. Value').$sizhfin;
-			$data[1] = $sizh.printTruncateText($agent_name, 75, false).' <br> '.printTruncateText($module_name, 75, false).$sizhfin;
+			$data[1] = $sizh.ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			

@@ -1,3 +1,14 @@
+2011-05-09 Javier Lanz <javier.lanz@artica.es>
+
+	* include/graphs/fgraph.php: Added 'period' parameter to slicesbar_graph
+	function
+	* include/graphs/functions_pchart.php: Added 'period' variable and fixed
+	pch_slicebar_graph function
+	* include/functions_graph.php: Added 'date' to function graph_sla_slicebar
+	* include/functions_reporting.php: Fixed get_agentmodule_sla_array
+	function, and get_agentmodule_sla, updated some deprecated
+	printTrucateText calls, and the decimal data for displaying the SLA number
+
 2011-05-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.sql, pandoradb.postgreSQL.sql: fixed the default value for

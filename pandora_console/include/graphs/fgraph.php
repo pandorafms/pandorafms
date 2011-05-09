@@ -92,10 +92,10 @@ function progressbar($progress, $width, $height, $title, $font, $mode = 1, $out_
 }
 
 
-function slicesbar_graph($chart_data, $width, $height, $colors, $font,
-	$round_corner, $home_url = '') {
+function slicesbar_graph($chart_data, $period, $width, $height, $colors, $font, $round_corner, $home_url = '') {
 	$graph = array();
 	$graph['data'] = $chart_data;
+	$graph['period'] = $period;
 	$graph['width'] = $width;
 	$graph['height'] = $height;
 	$graph['font'] = $font;

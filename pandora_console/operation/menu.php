@@ -110,7 +110,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
 			continue;
 		}
-		$name = safe_output($layout['name']);
+		$name = io_safe_output($layout['name']);
 		if (empty($name)) {
 			$firstLetter = '';
 		}
@@ -303,5 +303,5 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 }
 
 
-print_menu ($menu);
+menu_print_menu ($menu);
 ?>

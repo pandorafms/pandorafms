@@ -77,7 +77,7 @@ else {
 }
 
 $table->data[1][0] = "<b>".__('Group')."</b><br/>".html_print_select ($groups, 'group', $result['id_grupo'], '', '', 0, true, false, false);
-$table->data[1][1] = "<b>".__('Priority')."</b><br/>".html_print_select (get_incidents_priorities (), 'priority', $result['prioridad'], '', '', 0, true, false, false);
+$table->data[1][1] = "<b>".__('Priority')."</b><br/>".html_print_select (incidents_get_priorities (), 'priority', $result['prioridad'], '', '', 0, true, false, false);
 $table->data[1][2] = "<b>".__('Creator')."</b><br/>".$result['id_creator'];
 
 if(isset($result['id_incidencia'])) {

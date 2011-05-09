@@ -95,7 +95,7 @@ if(count($module_array) > 0){
 
 		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
 		echo "<td class='$tdcolor'>";
-		echo get_agentmodule_name ($module_array[$a])."</td>";
+		echo modules_get_agentmodule_name ($module_array[$a])."</td>";
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<table><tr>";
 		$new_weight = $weight_array[$a]-0.125;

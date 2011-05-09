@@ -39,12 +39,12 @@ if (is_ajax ()) {
 						echo '<strong>' . __('Number fired of alerts').': </strong> ' . $alert["times_fired"] . '<br />';
 						$agent = db_get_row('tagente', 'id_agente', $module['id_agente']);
 						echo '<strong>' . __('Agent').': </strong>';
-						echo safe_output($agent['nombre']) . '<br />';
+						echo io_safe_output($agent['nombre']) . '<br />';
 						echo '<strong>' . __('Module') . ': </strong>';
-						echo safe_output($module['nombre']) . '<br />';
+						echo io_safe_output($module['nombre']) . '<br />';
 						$template = db_get_row('talert_templates', 'id' , $alert['id_alert_template']);
 						echo '<strong>' . __('Alert template') . ': </strong>';
-						echo safe_output($template['name']) . '<br />';
+						echo io_safe_output($template['name']) . '<br />';
 						
 						$sql = 'SELECT *
 							FROM talert_template_module_actions AS t1

@@ -54,7 +54,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			$exist = true;
 			$loops = 30; //Loops to exit or tries
 			while ($exist && $loops > 0) {
-				$exist = (bool)db_get_row_filter('treport', array('name' => safe_input($posible_name)));
+				$exist = (bool)db_get_row_filter('treport', array('name' => io_safe_input($posible_name)));
 				
 				if ($exist) {
 					$loops--;
@@ -76,7 +76,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 						$reportElement->name, $posible_name));
 			}
 			
-			$values['name'] = safe_input($posible_name);
+			$values['name'] = io_safe_input($posible_name);
 		}
 		else {
 			ui_print_error_message(__("Error the report haven't name."));
@@ -112,11 +112,11 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			$values = array();
 			$values['id_report'] = $id_report;
 			if (isset($item['description']))
-				$values['description'] = safe_input($item['description']);
+				$values['description'] = io_safe_input($item['description']);
 			if (isset($item['period']))
-				$values['period'] = safe_input($item['period']);
+				$values['period'] = io_safe_input($item['period']);
 			if (isset($item['type']))
-				$values['type'] = safe_input($item['type']);
+				$values['type'] = io_safe_input($item['type']);
 			
 			$agents_item= array();
 			if (isset($item['agent'])) {
@@ -127,12 +127,12 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				
 				foreach ($agents as $agent) {
 					if ($regular_expresion) {
-						if ((bool)preg_match("/" . $agent_clean . "/", safe_output($agent['nombre']))) {
+						if ((bool)preg_match("/" . $agent_clean . "/", io_safe_output($agent['nombre']))) {
 							$agents_item[$agent['id_agente']]['name'] = $agent['nombre']; 
 						}
 					}
 					else {
-						if ($agent_clean == safe_output($agent['nombre'])) {
+						if ($agent_clean == io_safe_output($agent['nombre'])) {
 							$agents_item[$agent['id_agente']]['name'] = $agent['nombre'];
 						}
 					}
@@ -150,13 +150,13 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					
 					foreach ($modules as $module) {
 						if ($regular_expresion) {
-							if ((bool)preg_match("/" . $module_clean . "/", safe_output($module['nombre']))) {
+							if ((bool)preg_match("/" . $module_clean . "/", io_safe_output($module['nombre']))) {
 								$agents_item[$id]['modules'][$module['id_agente_modulo']]['name'] = 
 									$module['nombre']; 
 							}
 						}
 						else {
-							if ($module_clean == safe_output($module['nombre'])) {
+							if ($module_clean == io_safe_output($module['nombre'])) {
 								$agents_item[$id]['modules'][$module['id_agente_modulo']]['name'] = 
 									$module['nombre']; 
 							}
@@ -173,7 +173,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					break;
 				case 2:
 				case 'custom_graph':
-					$group = db_get_value('id_grupo', 'tgrupo', 'nombre', safe_input($item['graph']));
+					$group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($item['graph']));
 					$values['id_gs'] = $group;
 					break;
 				case 3:
@@ -213,11 +213,11 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 							foreach ($agents as $agent) {
 								$id_agent = false;
 								if ($regular_expresion) {
-									if ((bool)preg_match("/" . $agent_clean . "/", safe_output($agent['nombre']))) {
+									if ((bool)preg_match("/" . $agent_clean . "/", io_safe_output($agent['nombre']))) {
 										$id_agent = $agent['id_agente'];
 									}
 									else {
-										if ($agent_clean == safe_output($agent['nombre'])) {
+										if ($agent_clean == io_safe_output($agent['nombre'])) {
 											$id_agent = $agent['id_agente'];
 										}
 									}
@@ -233,7 +233,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 											
 										foreach ($modules as $module) {
 											if ($regular_expresion) {
-												if ((bool)preg_match("/" . $module_clean . "/", safe_output($module['nombre']))) {
+												if ((bool)preg_match("/" . $module_clean . "/", io_safe_output($module['nombre']))) {
 													$slas[] = array(
 														'id_agent_module' => $module['id_agente_modulo'],
 														'sla_max' => (string)$sla_xml->sla_max,
@@ -243,7 +243,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 												}
 											}
 											else {
-												if ($module_clean == safe_output($module['nombre'])) {
+												if ($module_clean == io_safe_output($module['nombre'])) {
 													 $slas[] = array(
 														'id_agent_module' => $module['id_agente_modulo'],
 														'sla_max' => (string)$sla_xml->sla_max,
@@ -278,20 +278,20 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				case 'event_report_agent':
 					break;
 				case 'text':
-					$values['text'] = safe_input($item['text']);
+					$values['text'] = io_safe_input($item['text']);
 					break;
 				case 'sql':
-					$values['header_definition'] = safe_input($item['header_definition']);
-					$values['external_source'] = safe_input($item['sql']);
+					$values['header_definition'] = io_safe_input($item['header_definition']);
+					$values['external_source'] = io_safe_input($item['sql']);
 					break;
 				case 'sql_graph_pie':
 				case 'sql_graph_vbar':
 				case 'sql_graph_hbar':
-					$values['header_definition'] = safe_input($item['header_definition']);
-					$values['external_source'] = safe_input($item['sql']);
+					$values['header_definition'] = io_safe_input($item['header_definition']);
+					$values['external_source'] = io_safe_input($item['sql']);
 					break;
 				case 'event_report_group':
-					$values['id_agent'] = db_get_value('id_grupo', 'tgrupo', 'nombre', safe_input($item->group));
+					$values['id_agent'] = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($item->group));
 					break;
 				case 'event_report_module':
 					break;
@@ -300,12 +300,12 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				case 'alert_report_agent':
 					break;
 				case 'url':
-					$values["external_source"] = safe_input($item['url']);
+					$values["external_source"] = io_safe_input($item['url']);
 					break;
 				case 'database_serialized':
-					$values['header_definition'] = safe_input($item['header_definition']);
-					$values['line_separator'] = safe_input($item['line_separator']);
-					$values['column_separator'] = safe_input($item['column_separator']);
+					$values['header_definition'] = io_safe_input($item['header_definition']);
+					$values['line_separator'] = io_safe_input($item['line_separator']);
+					$values['column_separator'] = io_safe_input($item['column_separator']);
 					break;
 				case 'TTRT':
 					break;
@@ -376,7 +376,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		
 		$values['id_group'] = 0;
 		if (isset($visual_map->group)) {
-			$id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', safe_input($visual_map->group));
+			$id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($visual_map->group));
 			if ($id_group !== false) $values['id_group'] = $id_group;
 		}
 		
@@ -395,7 +395,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		$exist = true;
 		$loops = 30; //Loops to exit or tries
 		while ($exist && $loops > 0) {
-			$exist = (bool)db_get_row_filter('tlayout', array('name' => safe_input($posible_name)));
+			$exist = (bool)db_get_row_filter('tlayout', array('name' => io_safe_input($posible_name)));
 			
 			if ($exist) {
 				$loops--;
@@ -417,7 +417,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 					$values['name'], $posible_name));
 		}
 		
-		$values['name'] = safe_input($posible_name);
+		$values['name'] = io_safe_input($posible_name);
 		$id_visual_map = db_process_sql_insert('tlayout', $values);
 			
 		ui_print_result_message((bool)$id_visual_map,
@@ -451,13 +451,13 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$agents_in_item = array();
 				foreach ($agents as $id => $agent) {
 					if ($regular_expresion) {
-						if ((bool)preg_match("/" . $agent_clean . "/", safe_input($agent))) {
+						if ((bool)preg_match("/" . $agent_clean . "/", io_safe_input($agent))) {
 							$agents_in_item[$id]['name'] = $agent;
 							$no_agents = false;
 						}
 					}
 					else {
-						if ($agent_clean == safe_input($agent)) {
+						if ($agent_clean == io_safe_input($agent)) {
 							$agents_in_item[$id]['name'] = $agent;
 							$no_agents = false;
 							break;
@@ -478,13 +478,13 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 					$modules_in_item = array();
 					foreach ($modules as $module) {
 						if ($regular_expresion) {
-							if ((bool)preg_match("/" . $module_clean . "/", safe_input($module['nombre']))) {
+							if ((bool)preg_match("/" . $module_clean . "/", io_safe_input($module['nombre']))) {
 								$modules_in_item[$module['id_agente_modulo']] = $module['nombre'];
 								$no_modules = false;
 							}
 						}
 						else {
-							if ($module_clean == safe_input($module['nombre'])) {
+							if ($module_clean == io_safe_input($module['nombre'])) {
 								$modules_in_item[$module['id_agente_modulo']] = $module['nombre'];
 								$no_modules = false;
 								break;
@@ -500,7 +500,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 			
 			$values['id_layout'] = $id_visual_map;
 			if (isset($item->label))
-				$values['label'] = safe_input($item->label);
+				$values['label'] = io_safe_input($item->label);
 			if (isset($item->x))
 				$values['pos_x'] = (string)$item->x;
 			if (isset($item->y))
@@ -582,27 +582,27 @@ function process_upload_xml_component($xml) {
 	//Extract components
 	$components = array();
 	foreach ($xml->xpath('/component') as $componentElement) {
-		$name = safe_input((string)$componentElement->name);
+		$name = io_safe_input((string)$componentElement->name);
 		$id_os = (int)$componentElement->id_os;
-		$os_version = safe_input((string)$componentElement->os_version);
-		$data = safe_input((string)$componentElement->data);
+		$os_version = io_safe_input((string)$componentElement->os_version);
+		$data = io_safe_input((string)$componentElement->data);
 		$type = (int)$componentElement->type;
 		$group = (int)$componentElement->group;
-		$description = safe_input((string)$componentElement->description);
+		$description = io_safe_input((string)$componentElement->description);
 		$module_interval = (int)$componentElement->module_interval;
 		$max = (float)$componentElement->max;
 		$min = (float)$componentElement->min;
-		$tcp_send = safe_input((string)$componentElement->tcp_send);
-		$tcp_rcv_text = safe_input((string)$componentElement->tcp_rcv_text);
+		$tcp_send = io_safe_input((string)$componentElement->tcp_send);
+		$tcp_rcv_text = io_safe_input((string)$componentElement->tcp_rcv_text);
 		$tcp_port = (int)$componentElement->tcp_port;
-		$snmp_oid = safe_input((string)$componentElement->snmp_oid);
-		$snmp_community = safe_input((string)$componentElement->snmp_community);
+		$snmp_oid = io_safe_input((string)$componentElement->snmp_oid);
+		$snmp_community = io_safe_input((string)$componentElement->snmp_community);
 		$id_module_group = (int)$componentElement->id_module_group;
 		$module_source = (int)$componentElement->module_source;
 		$plugin = (int)$componentElement->plugin;
-		$plugin_username = safe_input((string)$componentElement->plugin_username);
-		$plugin_password = safe_input((string)$componentElement->plugin_password);
-		$plugin_parameters = safe_input((string)$componentElement->plugin_parameters);
+		$plugin_username = io_safe_input((string)$componentElement->plugin_username);
+		$plugin_password = io_safe_input((string)$componentElement->plugin_password);
+		$plugin_parameters = io_safe_input((string)$componentElement->plugin_parameters);
 		$max_timeout = (int)$componentElement->max_timeout;
 		$historical_data = (int)$componentElement->historical_data;
 		$min_war = (float)$componentElement->min_war;
@@ -611,19 +611,19 @@ function process_upload_xml_component($xml) {
 		$max_cri = (float)$componentElement->max_cri;
 		$ff_treshold = (int)$componentElement->ff_treshold;
 		$snmp_version = (int)$componentElement->snmp_version;
-		$auth_user = safe_input((string)$componentElement->auth_user);
-		$auth_password = safe_input((string)$componentElement->auth_password);
-		$auth_method = safe_input((string)$componentElement->auth_method);
-		$privacy_method = safe_input((string)$componentElement->privacy_method);
-		$privacy_pass = safe_input((string)$componentElement->privacy_pass);
-		$security_level = safe_input((string)$componentElement->security_level);
-		$wmi_query = safe_input((string)$componentElement->wmi_query);
-		$key_string = safe_input((string)$componentElement->key_string);
+		$auth_user = io_safe_input((string)$componentElement->auth_user);
+		$auth_password = io_safe_input((string)$componentElement->auth_password);
+		$auth_method = io_safe_input((string)$componentElement->auth_method);
+		$privacy_method = io_safe_input((string)$componentElement->privacy_method);
+		$privacy_pass = io_safe_input((string)$componentElement->privacy_pass);
+		$security_level = io_safe_input((string)$componentElement->security_level);
+		$wmi_query = io_safe_input((string)$componentElement->wmi_query);
+		$key_string = io_safe_input((string)$componentElement->key_string);
 		$field_number = (int)$componentElement->field_number;
-		$namespace = safe_input((string)$componentElement->namespace);
-		$wmi_user = safe_input((string)$componentElement->wmi_user);
-		$wmi_password = safe_input((string)$componentElement->wmi_password);
-		$post_process = safe_input((float)$componentElement->post_process);
+		$namespace = io_safe_input((string)$componentElement->namespace);
+		$wmi_user = io_safe_input((string)$componentElement->wmi_user);
+		$wmi_password = io_safe_input((string)$componentElement->wmi_password);
+		$post_process = io_safe_input((float)$componentElement->post_process);
 		
 		$idComponent = false;
 		switch ((int)$componentElement->module_source) {
@@ -655,7 +655,7 @@ function process_upload_xml_component($xml) {
 					$custom_string_3 = $security_level;
 				}
 				
-				$idComponent = create_network_component ($name,
+				$idComponent = network_components_create_network_component ($name,
 					$type, $group, 
 					array ('description' => $description,
 						'module_interval' => $module_interval,
@@ -688,7 +688,7 @@ function process_upload_xml_component($xml) {
 				}
 				break;
 			case 4: //Plugin component
-				$idComponent = create_network_component ($name,
+				$idComponent = network_components_create_network_component ($name,
 					$type, $group, 
 					array ('description' => $description,
 						'module_interval' => $module_interval,
@@ -723,7 +723,7 @@ function process_upload_xml_component($xml) {
 			case 5: //Prediction component
 				break;
 			case 6: //WMI component
-				$idComponent = create_network_component ($name,
+				$idComponent = network_components_create_network_component ($name,
 					$type, $group, 
 					array ('description' => $description,
 						'module_interval' => $module_interval,

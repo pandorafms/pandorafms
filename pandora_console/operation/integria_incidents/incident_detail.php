@@ -63,7 +63,7 @@ if (isset ($_GET["id"])) {
 		$id_nota = db_process_sql_insert('tnota', $values);
 
 		if ($id_nota !== false) {
-			process_incidents_touch ($id_inc);
+			incidents_process_touch ($id_inc);
 		}
 		ui_print_result_message ($id_nota,
 			__('Successfully added'),
@@ -73,15 +73,15 @@ if (isset ($_GET["id"])) {
 	// Delete note
 	if (isset ($_POST["delete_nota"])) {
 		$id_nota = get_parameter_post ("delete_nota", 0);
-		$note_user = get_incidents_notes_author ($id_nota);
+		$note_user = incidents_get_notes_author ($id_nota);
 		if (((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($note_user == $config["id_user"])) OR ($id_owner == $config["id_user"])) { 
 		// Only admins (manage incident) or owners can modify
 		// incidents notes. note authors are 
 		// able to delete their own notes
-			$result = delete_incidents_note ($id_nota);
+			$result = incidents_delete_note ($id_nota);
 
 			if (!empty ($result)) {
-				process_incidents_touch ($id_inc);
+				incidents_process_touch ($id_inc);
 			}
 			ui_print_result_message ($id_nota,
 				__('Successfully deleted'),
@@ -98,7 +98,7 @@ if (isset ($_GET["id"])) {
 		
 		if (!empty ($result)) {
 			unlink ($config["attachment_store"]."/pand".$file_id."_".$filename);
-			process_incidents_touch ($id_inc);
+			incidents_process_touch ($id_inc);
 		}
 		
 		ui_print_result_message ($result,
@@ -111,8 +111,8 @@ if (isset ($_GET["id"])) {
 		$description = get_parameter_post ("file_description", __('No description available'));
 		
 		// Insert into database
-		$filename = safe_input ($_FILES['userfile']['name']);
-		$filesize = safe_input ($_FILES['userfile']['size']);
+		$filename = io_safe_input ($_FILES['userfile']['name']);
+		$filesize = io_safe_input ($_FILES['userfile']['size']);
 
 		//The following is if you have clamavlib installed
 		//(php5-clamavlib) and enabled in php.ini
@@ -146,7 +146,7 @@ if (isset ($_GET["id"])) {
 
 		if ($result !== false) {
 			unlink ($_FILES['userfile']['tmp_name']);
-			process_incidents_touch ($id_inc);
+			incidents_process_touch ($id_inc);
 		}
 		else {
 			db_process_sql_delete('tattachment', array('id_attachment' => $id_attachment));
@@ -241,10 +241,10 @@ if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $conf
 echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	html_print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
+	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
 }
 else {
-	html_print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
+	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td></tr>';
 
@@ -278,9 +278,9 @@ if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $conf
 echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	html_print_select (get_incidents_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
+	html_print_select (incidents_get_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
 } else {
-	html_print_select (get_incidents_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
+	html_print_select (incidents_get_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
 }
 
 echo '</td><td class="datos"><b>'.__('Creator').'</b></td><td class="datos">';
@@ -329,7 +329,7 @@ if (isset ($id_inc)) {
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
 		</table></form></div><div>';
 
-	$result = get_incidents_notes ($id_inc);
+	$result = incidents_get_notes ($id_inc);
 	
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
@@ -366,7 +366,7 @@ if (isset ($id_inc)) {
 	// Files attached to this incident
 	// ************************************************************
 
-	$result = get_incidents_attach ($id_inc);
+	$result = incidents_get_attach ($id_inc);
 
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;

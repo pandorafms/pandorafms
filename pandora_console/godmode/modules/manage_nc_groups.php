@@ -118,7 +118,7 @@ foreach ($groups as $group) {
 	
 	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
 	
-	$data[1] = get_network_component_group_name ($group['parent']);
+	$data[1] = network_components_get_group_name ($group['parent']);
 	
 	$data[2] = '<form method="post" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= html_print_input_hidden ('delete', 1, true);

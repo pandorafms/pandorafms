@@ -67,7 +67,7 @@ function add_component_selection ($id_network_component_type) {
 	$data[0] = __('Using module component').' ';
 	$data[0] .= ui_print_help_icon ('network_component', true);
 	
-	$component_groups = get_network_component_groups ($id_network_component_type);
+	$component_groups = network_components_get_groups ($id_network_component_type);
 	$data[1] = '<span id="component_group" class="left">';
 	$data[1] .= html_print_select ($component_groups,
 		'network_component_group', '', '', '--'.__('Manual setup').'--', 0,
@@ -143,7 +143,7 @@ else
 }
 
 if (!$edit) {
-	$table_simple->data[1][1] = '<em>'.get_moduletype_description ($id_module_type).'</em>';
+	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).'</em>';
 }
 else {
 	if (isset($id_module_type)) {

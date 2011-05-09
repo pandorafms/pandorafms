@@ -58,7 +58,7 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	
 	foreach($module_names as $module){
 		foreach($id_agents as $id_agent) {
-			 $module_id = get_agentmodule_id($module, $id_agent);
+			 $module_id = modules_get_agentmodule_id($module, $id_agent);
 			 $modules_id[] = $module_id['id_agente_modulo'];
 		}
 	}

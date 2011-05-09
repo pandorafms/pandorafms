@@ -1112,7 +1112,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module) {
 	
 	foreach ($alerts as $id) {
 		$alert = alerts_get_alert_agent_module ($id);
-		$agent_id = get_agentmodule_agent ($alert["id_agent_module"]);
+		$agent_id = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		$group_id = get_agentmodule_group ($agent_id);
 		
 		if (! check_acl ($config['id_user'], $group_id, "AW")) {

@@ -24,7 +24,7 @@ class ViewServers {
 	}
 	
 	public function show() {
-		$servers = get_server_info ();
+		$servers = servers_get_info ();
 		
 		if ($servers === false) $servers = array();
 		

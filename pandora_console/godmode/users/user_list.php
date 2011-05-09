@@ -99,7 +99,7 @@ if (isset ($_GET["user_del"])) { //delete user
 		$result = delete_user ($id_user);
 
 		db_pandora_audit("User management",
-			"Deleted user ".safe_input($id_user));
+			"Deleted user ".io_safe_input($id_user));
 
 		ui_print_result_message ($result,
 			__('Successfully deleted'),

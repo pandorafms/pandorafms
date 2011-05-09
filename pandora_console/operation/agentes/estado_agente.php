@@ -92,7 +92,7 @@ if (is_ajax ()) {
 			echo json_encode (false);
 			return;
 		}
-		echo json_encode (get_agent_module_last_value ($id_module));
+		echo json_encode (modules_get_last_value ($id_module));
 		return;
 	}
 	
@@ -107,7 +107,7 @@ while ($row = db_get_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo
 
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
-$search = safe_output(get_parameter ("search", ""));
+$search = io_safe_output(get_parameter ("search", ""));
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 
@@ -343,7 +343,7 @@ foreach ($agents as $agent) {
 	$rowPair = !$rowPair;
 	$iterator++;
 		
-	$agent_info = get_agent_module_info ($agent["id_agente"]);
+	$agent_info = reporting_get_agent_module_info ($agent["id_agente"]);
 	
 	$data = array ();
 	

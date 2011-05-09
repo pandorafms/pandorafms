@@ -91,17 +91,17 @@ function output_xml_report($id) {
 	
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 
 	echo "<report>\n";
-	echo "<name><![CDATA[" . safe_output($report['name']) . "]]></name>\n";
+	echo "<name><![CDATA[" . io_safe_output($report['name']) . "]]></name>\n";
 	if (isset($report['description']))
-		echo "<description><![CDATA[" . safe_output($report['description']) . "]]></description>\n";
+		echo "<description><![CDATA[" . io_safe_output($report['description']) . "]]></description>\n";
 	$group = db_get_value('nombre', 'tgrupo', 'id_grupo', $report['id_group']);
-	echo "<group><![CDATA[" . safe_output($group) . "]]></group>\n";
+	echo "<group><![CDATA[" . io_safe_output($group) . "]]></group>\n";
 	$items = db_get_all_rows_field_filter('treport_content', 'id_report', $report['id_report']);
 	foreach ($items as $item) {
 		echo "<item>\n";
-			echo "<type>" . safe_output($item['type']) . "</type>\n";
-			echo "<description>" . safe_output($item['description']) . "</description>\n";
-			echo "<period>" . safe_output($item['period']) . "</period>\n";
+			echo "<type>" . io_safe_output($item['type']) . "</type>\n";
+			echo "<description>" . io_safe_output($item['description']) . "</description>\n";
+			echo "<period>" . io_safe_output($item['period']) . "</period>\n";
 			if ($item['id_agent'] != 0) {
 				$agent = get_agent_name($item['id_agent']);			
 			}
@@ -110,12 +110,12 @@ function output_xml_report($id) {
 				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
 				$agent = get_agent_name($item['id_agent']);
 				
-				echo "<module><![CDATA[" . safe_output($module) . "]]></module>\n";
+				echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 			}
 			if (isset($agent))
 				echo "<agent><![CDATA[" . $agent . "]]></agent>\n";
 			$agent = null;
-			switch (safe_output($item['type'])) {
+			switch (io_safe_output($item['type'])) {
 				case 1:
 				case 'simple_graph':
 					break;	
@@ -124,7 +124,7 @@ function output_xml_report($id) {
 				case 2:
 				case 'custom_graph':
 					$graph = db_get_value('name', 'tgraph', 'id_graph', $item['id_gs']);
-					echo "<graph><![CDATA[" . safe_output($graph) . "]]></graph>\n";
+					echo "<graph><![CDATA[" . io_safe_output($graph) . "]]></graph>\n";
 					break;
 				case 3:
 				case 'SLA':
@@ -148,7 +148,7 @@ function output_xml_report($id) {
 						$agent = get_agent_name($item['id_agent']);
 						echo "<sla>";
 							echo "<agent><![CDATA[" . $agent . "]]></agent>\n";
-							echo "<module><![CDATA[" . safe_output($module) . "]]></module>\n";
+							echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 							echo "<sla_max>" . $sla['sla_max'] . "</sla_max>\n";
 							echo "<sla_min>" . $sla['sla_min'] . "</sla_min>\n";
 							echo "<sla_limit>" . $sla['sla_limit'] . "</sla_limit>\n";
@@ -174,33 +174,33 @@ function output_xml_report($id) {
 				case 'event_report_agent':
 					break;
 				case 'text':
-					echo "<text><![CDATA[" . safe_output($item['text']) . "]]></text>\n";
+					echo "<text><![CDATA[" . io_safe_output($item['text']) . "]]></text>\n";
 					break;
 				case 'sql':
-					echo "<header_definition><![CDATA[" . safe_output($item['header_definition']) . "]]></header_definition>\n";
+					echo "<header_definition><![CDATA[" . io_safe_output($item['header_definition']) . "]]></header_definition>\n";
 					if (!empty($item['external_source'])) {
-						echo "<sql><![CDATA[" . safe_output($item['external_source']) . "]]></sql>\n";
+						echo "<sql><![CDATA[" . io_safe_output($item['external_source']) . "]]></sql>\n";
 					}
 					else {
 						$sql = db_get_value('sql', 'treport_custom_sql', 'id', $item['treport_custom_sql_id']);
-						echo "<sql>" . safe_output($sql) . "</sql>\n";
+						echo "<sql>" . io_safe_output($sql) . "</sql>\n";
 					}
 					break;
 				case 'sql_graph_pie':
 				case 'sql_graph_vbar':
 				case 'sql_graph_hbar':
-					echo "<header_definition>" . safe_output($item['header_definition']) . "</header_definition>\n";
+					echo "<header_definition>" . io_safe_output($item['header_definition']) . "</header_definition>\n";
 					if (!empty($item['external_source'])) {
-						echo "<sql>" . safe_output($item['external_source']) . "</sql>\n";
+						echo "<sql>" . io_safe_output($item['external_source']) . "</sql>\n";
 					}
 					else {
 						$sql = db_get_value('sql', 'treport_custom_sql', 'id', $item['treport_custom_sql_id']);
-						echo "<sql>" . safe_output($sql) . "</sql>\n";
+						echo "<sql>" . io_safe_output($sql) . "</sql>\n";
 					}
 					break;
 				case 'event_report_group':
 					$group = db_get_value('nombre', 'tgrupo', 'id_grupo', $item['id_agent']);
-					echo "<group><![CDATA[" . safe_output($group) . "]]></group>\n";
+					echo "<group><![CDATA[" . io_safe_output($group) . "]]></group>\n";
 					break;
 				case 'event_report_module':
 					break;
@@ -209,12 +209,12 @@ function output_xml_report($id) {
 				case 'alert_report_agent':
 					break;
 				case 'url':
-					echo "<url><![CDATA[" . safe_output($values["external_source"]) . "]]></url>";
+					echo "<url><![CDATA[" . io_safe_output($values["external_source"]) . "]]></url>";
 					break;
 				case 'database_serialized':
-					echo "<header_definition><![CDATA[" . safe_output($item["header_definition"]) . "]]></header_definition>";
-					echo "<line_separator><![CDATA[" . safe_output($item["line_separator"]) . "]]></line_separator>";
-					echo "<column_separator><![CDATA[" . safe_output($item["header_definition"]) . "]]></column_separator>";
+					echo "<header_definition><![CDATA[" . io_safe_output($item["header_definition"]) . "]]></header_definition>";
+					echo "<line_separator><![CDATA[" . io_safe_output($item["line_separator"]) . "]]></line_separator>";
+					echo "<column_separator><![CDATA[" . io_safe_output($item["header_definition"]) . "]]></column_separator>";
 					break;
 				case 'TTRT':
 					break;
@@ -235,21 +235,21 @@ function output_xml_visual_console($id) {
 	
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 
 	echo "<visual_map>\n";
-	echo "<name><![CDATA[" . safe_output($visual_map['name']) . "]]></name>\n";
+	echo "<name><![CDATA[" . io_safe_output($visual_map['name']) . "]]></name>\n";
 	if ($visual_map['id_group'] != 0) {
 		$group = db_get_value('nombre', 'tgrupo', 'id_grupo', $visual_map['id_group']);
-		echo "<group><![CDATA[" . safe_output($group) . "]]></group>\n";
+		echo "<group><![CDATA[" . io_safe_output($group) . "]]></group>\n";
 	}
-	echo "<background><![CDATA[" . safe_output($visual_map['background']) . "]]></background>\n";
-	echo "<height>" . safe_output($visual_map['height']) . "</height>\n";
-	echo "<width>" . safe_output($visual_map['width']) . "</width>\n";
+	echo "<background><![CDATA[" . io_safe_output($visual_map['background']) . "]]></background>\n";
+	echo "<height>" . io_safe_output($visual_map['height']) . "</height>\n";
+	echo "<width>" . io_safe_output($visual_map['width']) . "</width>\n";
 	$items = db_get_all_rows_field_filter('tlayout_data', 'id_layout', $visual_map['id']);
 	if ($items === false) $items = array();
 	foreach ($items as $item){
 		echo "<item>\n";
 		echo "<other_id>" . $item['id'] . "</other_id>\n"; //OLD ID USE FOR parent item 
 		if (!empty($item['label'])) {
-			echo "<label><![CDATA[" . safe_output($item['label']) . "]]></label>\n";
+			echo "<label><![CDATA[" . io_safe_output($item['label']) . "]]></label>\n";
 		}
 		echo "<x>" . $item['pos_x'] . "</x>\n";
 		echo "<y>" . $item['pos_y'] . "</y>\n";
@@ -276,7 +276,7 @@ function output_xml_visual_console($id) {
 				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
 				$agent = get_agent_name($id_agent);
 				
-				echo "<module><![CDATA[" . safe_output($module) . "]]></module>\n";
+				echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 			}
 		}
 		if (!empty($agent)) {

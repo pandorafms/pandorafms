@@ -53,7 +53,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	}
 }
 
-$server_name = get_server_name ($id_server);
+$server_name = servers_get_name ($id_server);
 $recon_tasks = db_get_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
 
 // Show network tasks for Recon Server
@@ -124,7 +124,7 @@ foreach ($recon_tasks as $task) {
 	if ($task["id_recon_script"] == 0){
 		// Network recon task
 		$data[5] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
-		$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
+		$data[5] .= network_profiles_get_name ($task["id_network_profile"]);
 	}
 	else {
 		// APP recon task

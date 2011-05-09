@@ -412,7 +412,7 @@ foreach ($simple_alerts as $alert) {
 	$data[1] .= '</form>';
 	
 	if (! $id_agente) {
-		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
+		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
 		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
 		if ($alert['disabled'])
 			$data[2] .= '<span style="font-style: italic; color: #aaaaaa;">';
@@ -421,7 +421,7 @@ foreach ($simple_alerts as $alert) {
 			$data[2] .= '</span>';
 		$data[2] .= '</a>';
 	}
-	$data[3] = ui_print_truncate_text(get_agentmodule_name ($alert['id_agent_module']), 25, false);
+	$data[3] = ui_print_truncate_text(modules_get_agentmodule_name ($alert['id_agent_module']), 25, false);
 	$data[4] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
 		html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';

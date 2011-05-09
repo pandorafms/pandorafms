@@ -211,7 +211,7 @@ else {
 			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$module["datos"], true);
 		}
 		else {
-			$last_status = get_agentmodule_last_status($module['id_agente_modulo']);
+			$last_status = modules_get_agentmodule_last_status($module['id_agente_modulo']);
 			switch($last_status) {
 				case 0:
 					$statusCell = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$module["datos"], true);
@@ -230,7 +230,7 @@ else {
 	
 			$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 	
-			$name_module_type = get_moduletype_name ($module["id_tipo_modulo"]);
+			$name_module_type = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 			$handle = "stat" . $name_module_type . "_" . $module["id_agente_modulo"];
 			$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
 			$win_handle = dechex(crc32($module["id_agente_modulo"] . $module["module_name"]));
@@ -244,7 +244,7 @@ else {
 		if (is_numeric($module["datos"]))
 			$dataCell = format_numeric($module["datos"]);
 		else
-			$dataCell = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
+			$dataCell = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($module["datos"]),0,12)."</span>";
 		
 		if ($module['estado'] == 3){
 			$option = array ("html_attr" => 'class="redb"');

@@ -172,7 +172,7 @@ if($searchAlerts) {
 	foreach($alertsraw as $key => $alert){
 		$finded = false;
 		$alerts[$key]['disabled'] = $alert['disabled'];
-		$alerts[$key]['id_agente'] = get_agentmodule_agent($alert['id_agent_module']);
+		$alerts[$key]['id_agente'] = modules_get_agentmodule_agent($alert['id_agent_module']);
 		$alerts[$key]['agent_name'] = $alert['agent_name'];
 		$alerts[$key]['module_name'] = $alert['agent_module_name'];
 		$alerts[$key]['template_name'] = $alert['template_name'];

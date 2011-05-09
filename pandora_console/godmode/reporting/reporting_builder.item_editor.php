@@ -72,7 +72,7 @@ switch ($action) {
 		$actionParameter = 'update';
 		$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
 		
-		$style = json_decode(safe_output($item['style']), true);
+		$style = json_decode(io_safe_output($item['style']), true);
 		$show_in_two_columns = $style['show_in_two_columns'];
 		$show_in_landscape = $style['show_in_landscape'];
 		

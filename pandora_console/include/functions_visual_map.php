@@ -253,13 +253,13 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 			$pos_y = $pos_y + $range;
 		}
 		
-		$id_agent = get_agentmodule_agent ($id_module);
+		$id_agent = modules_get_agentmodule_agent ($id_module);
 		
 		db_process_sql_insert ('tlayout_data',
 			array ('id_layout' => $id_layout,
 			   'pos_x' => $pos_x,
 			   'pos_y' => $pos_y,
-			   'label' => get_agentmodule_name ($id_module),
+			   'label' => modules_get_agentmodule_name ($id_module),
 			   'image' => $image,
 			   'id_agent' => $id_agent,
 			   'id_agente_modulo' => $id_module,
@@ -368,7 +368,7 @@ function getStatusElement($layoutData) {
 	else if ($layoutData["type"] == 0) { //Single object
 		//Status for a simple module
 		if ($layoutData['id_agente_modulo'] != 0) {
-			$status = get_agentmodule_status ($layoutData['id_agente_modulo']);
+			$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
 
 		//Status for a whole agent, if agente_modulo was == 0
 		}
@@ -417,12 +417,12 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			$mapHeight = $proportion * $layout["height"];
 		}
 		$backgroundImage = 'include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
-			$config['homeurl'] . '/' . 'images/console/background/'.safe_input ($layout["background"]);
+			$config['homeurl'] . '/' . 'images/console/background/'.io_safe_input ($layout["background"]);
 	}
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
-		$backgroundImage = 'images/console/background/'.safe_input ($layout["background"]);
+		$backgroundImage = 'images/console/background/'.io_safe_input ($layout["background"]);
 	}
 	
 	echo '<div id="layout_map"
@@ -433,7 +433,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	
 	if ($layout_datas !== false) {
 		foreach ($layout_datas as $layout_data) {
-			$layout_data['label'] = safe_output($layout_data['label']);
+			$layout_data['label'] = io_safe_output($layout_data['label']);
 			// ****************************************************************
 			// Get parent status (Could be an agent, module, map, others doesnt have parent info)
 			// ****************************************************************
@@ -452,7 +452,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				
 				// Module
 				if ($id_agent_module_parent != 0) {
-					$status_parent = get_agentmodule_status ($id_agent_module_parent);
+					$status_parent = modules_get_agentmodule_status ($id_agent_module_parent);
 				// Agent
 				} 
 				elseif ($id_agent_parent  != 0) {
@@ -485,7 +485,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			} elseif ($layout_data["type"] == 0) {
 				// Status for a simple module
 				if ($layout_data['id_agente_modulo'] != 0) {
-					$status = get_agentmodule_status ($layout_data['id_agente_modulo']);
+					$status = modules_get_agentmodule_status ($layout_data['id_agente_modulo']);
 					$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
 
 				// Status for a whole agent, if agente_modulo was == 0
@@ -944,7 +944,7 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
 			$status = get_layout_status ($data["id_layout_linked"], $depth);
 		// Module
 		} elseif ($data["id_agente_modulo"] != 0) {
-			$status = get_agentmodule_status ($data["id_agente_modulo"]);
+			$status = modules_get_agentmodule_status ($data["id_agente_modulo"]);
 		// Agent
 		} else {
 			$status = get_agent_status ($data["id_agent"]);
@@ -1009,7 +1009,7 @@ function createInternalNameItem($label = null, $type, $image, $agent = null, $id
 		if (!empty($agent)) {
 			$text .= " (" . ui_print_truncate_text($agent, 10, false);
 			
-			$moduleName = safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
+			$moduleName = io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
 			if (!empty($moduleName)) {
 				$text .= " - " . ui_print_truncate_text($moduleName, 10, false);
 			}
@@ -1035,7 +1035,7 @@ function get_items_parents($idVisual) {
 	foreach ($items as $item) {
 		$agent = null;
 		if ($item['id_agent'] != 0) {
-			$agent = safe_output(get_agent_name($item['id_agent']));
+			$agent = io_safe_output(get_agent_name($item['id_agent']));
 		}
 		
 		$return[$item['id']] = createInternalNameItem($item['label'],

@@ -355,7 +355,7 @@ if ($create_agent) {
 if (isset( $_GET["fix_module"])) { 
 	$id_module = get_parameter_get ("fix_module",0);
 	// get info about this module
-	$media = get_agentmodule_data_average ($id_module, 30758400); //Get average over the year
+	$media = reporting_get_agentmodule_data_average ($id_module, 30758400); //Get average over the year
 	$media *= 1.3;
 	$error = "";
 	//If the value of media is 0 or something went wrong, don't delete
@@ -663,7 +663,7 @@ if ($update_module) {
 			'custom_integer_2' => $custom_integer_2,
 			'min_ff_event' => $ff_event);
 	
-	$result = update_agent_module ($id_agent_module,
+	$result = modules_update_agent_module ($id_agent_module,
 		$values);
 	
 	if ($result === false) {
@@ -741,7 +741,7 @@ if ($create_module) {
 			'min_ff_event' => $ff_event
 		);
 	
-	$id_agent_module = create_agent_module ($id_agente, $name, $values);
+	$id_agent_module = modules_create_agent_module ($id_agente, $name, $values);
 	
 	if ($id_agent_module === false) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
@@ -785,7 +785,7 @@ if ($delete_module) { // DELETE agent module !
 	}
 	
 	enterprise_include_once('include/functions_config_agents.php');
-	enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_borrar_modulo), get_agentmodule_name($id_borrar_modulo)));
+	enterprise_hook('deleteLocalModuleInConf', array(modules_get_agentmodule_agent($id_borrar_modulo), modules_get_agentmodule_name($id_borrar_modulo)));
 	
 	//Init transaction
 	$error = 0;
@@ -834,9 +834,9 @@ if ($delete_module) { // DELETE agent module !
 // =================
 if ($duplicate_module) { // DUPLICATE agent module !
 	$id_duplicate_module = (int) get_parameter_get ("duplicate_module",0);
-	$result = copy_agent_module_to_agent ($id_duplicate_module,
-				get_agentmodule_agent($id_duplicate_module),
-				__('copy of').' '.get_agentmodule_name($id_duplicate_module));
+	$result = modules_copy_agent_module_to_agent ($id_duplicate_module,
+				modules_get_agentmodule_agent($id_duplicate_module),
+				__('copy of').' '.modules_get_agentmodule_name($id_duplicate_module));
 	
 	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	

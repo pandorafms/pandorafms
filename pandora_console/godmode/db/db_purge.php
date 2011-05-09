@@ -91,7 +91,7 @@ if (isset($_POST["purgedb"])) {
 		$errors = 0;
 		$affected = 0;
 		foreach ($result as $row) {
-			echo __('Deleting records for module')." ".get_agentmodule_name ($row["id_agente_modulo"]);
+			echo __('Deleting records for module')." ".modules_get_agentmodule_name ($row["id_agente_modulo"]);
 			echo "<br />";
 			flush (); //Flush here in case there are errors and the script dies, at least we know where we ended
 			set_time_limit (); //Reset the time limit just in case

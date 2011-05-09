@@ -130,7 +130,7 @@ if($config["integria_enabled"]) {
 	$table->data[20][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
 	
 	require_once('include/functions_incidents.php');
-	$invent = call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories");
+	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories");
 	$invent = explode("\n",$invent);
 	$inventories = array();
 	foreach($invent as $inv) {

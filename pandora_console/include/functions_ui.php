@@ -47,7 +47,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 		}
 	} 
 	
-	$text = safe_output($text);
+	$text = io_safe_output($text);
 	if ((strlen($text)) > ($numChars)) {
 		$half_lenght = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
 		$truncateText2 = mb_strimwidth($text, (strlen($text) - $half_lenght), strlen($text));
@@ -474,9 +474,9 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		$description = $alert['description'];
 	} 
 	else {
-		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
+		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
 		$template = alerts_get_alert_template ($alert['id_alert_template']);
-		$description = safe_output($template['name']);
+		$description = io_safe_output($template['name']);
 	}
 	$data = array ();
 	
@@ -519,11 +519,11 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled);
 	} 
 	elseif ($agent == 0) {
-		$data[$index['module_name']] .= mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
+		$data[$index['module_name']] .= mb_substr (modules_get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	} 
 	else {
-		$data[$index['agent_name']] .= ui_print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
-		$data[$index['module_name']] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
+		$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
+		$data[$index['module_name']] = mb_substr (modules_get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
@@ -538,7 +538,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	else {
 		$actionDefault = db_get_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
 	}
-	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
+	$data[$index['description']] .= $disabledHtmlStart . mb_substr (io_safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $compound);
 
@@ -603,7 +603,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false) {
 		return "";
 	}
 
-	$string2 = safe_output ($string);
+	$string2 = io_safe_output ($string);
 	if (mb_strlen($string2, "UTF-8") >  $cutoff){
 		$string3 = "...";
 	} else {
@@ -611,7 +611,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false) {
 	}
 
 	
-	$string = '<span title="'.safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
+	$string = '<span title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
 
 	if ($return === false) {
 		echo $string;
@@ -1620,7 +1620,7 @@ function ui_get_full_url ($url = false) {
  */
 
 function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
-	$title = safe_input_html($title);
+	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)){
 		$icon = "images/setup.png";
 	}

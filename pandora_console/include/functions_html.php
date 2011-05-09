@@ -593,7 +593,7 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 	
 	foreach ($attrs as $attribute) {
 		if (isset ($options[$attribute])) {
-			$output .= ' '.$attribute.'="'.safe_input_html ($options[$attribute]).'"';
+			$output .= ' '.$attribute.'="'.io_safe_input_html ($options[$attribute]).'"';
 		}
 	}
 	
@@ -727,7 +727,7 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
 	}
 	
 	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
-	//$output .= safe_input ($value);
+	//$output .= io_safe_input ($value);
 	$output .= ($value);
 	$output .= '</textarea>';
 	
@@ -1136,13 +1136,13 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	// Only return src field of image
 	if ($return_src){
 		if (!$return){ 
-			echo safe_input($src); 
+			echo io_safe_input($src); 
 			return; 
 		}
-		return safe_input($src);
+		return io_safe_input($src);
 	}
 
-	$output = '<img src="'.safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
+	$output = '<img src="'.io_safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
 	$style = '';
 	
 	if (!empty ($options)) {
@@ -1180,7 +1180,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 		foreach ($attrs as $attribute) {
 			if (isset ($options[$attribute])) {
-				$output .= $attribute.'="'.safe_input_html ($options[$attribute]).'" ';
+				$output .= $attribute.'="'.io_safe_input_html ($options[$attribute]).'" ';
 			}
 		}
 	} else {
@@ -1188,7 +1188,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	}
 	
 	if (!isset ($options["alt"]) && isset ($options["title"])) {
-		$options["alt"] = safe_input_html($options["title"]); //Set alt to title if it's not set
+		$options["alt"] = io_safe_input_html($options["title"]); //Set alt to title if it's not set
 	} elseif (!isset ($options["alt"])) {
 		$options["alt"] = "";
 	}
@@ -1197,7 +1197,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		$output .= 'style="'.$style.'" ';
 	}
 	
-	$output .= 'alt="'.safe_input_html ($options['alt']).'" />';
+	$output .= 'alt="'.io_safe_input_html ($options['alt']).'" />';
 	
 	if (!$return) {
 		echo $output;

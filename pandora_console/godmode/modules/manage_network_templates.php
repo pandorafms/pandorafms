@@ -38,7 +38,7 @@ $export_profile = (bool) get_parameter ('export_profile');
 if ($delete_profile) { // if delete
 	$id = (int) get_parameter ('delete_profile');
 	
-	$result = delete_network_profile ($id);
+	$result = network_profiles_delete_network_profile ($id);
 	ui_print_result_message ($result,
 		__('Template successfully deleted'),
 		__('Error deleting template'));
@@ -46,7 +46,7 @@ if ($delete_profile) { // if delete
 
 if ($export_profile) {
 	$id = (int) get_parameter("export_profile");
-	$profile_info = get_network_profile ($id);
+	$profile_info = network_profiles_get_network_profile ($id);
 	
 	if (empty ($profile_info)) {
 		ui_print_error_message (__('This template does not exist'));
@@ -152,8 +152,8 @@ $table->data = array ();
 
 foreach ($result as $row) {
 	$data = array ();
-	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. safe_output($row["name"]).'</a>';
-	$data[1] = ui_print_truncate_text(safe_output($row["description"]), 70, true, true, true, true);
+	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. io_safe_output($row["name"]).'</a>';
+	$data[1] = ui_print_truncate_text(io_safe_output($row["description"]), 70, true, true, true, true);
 	$data[2] = html_print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));

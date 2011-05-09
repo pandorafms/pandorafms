@@ -27,7 +27,7 @@ $searchMaps = $searchReports = $searchGraphs = check_acl($config["id_user"], 0, 
 $arrayKeywords = explode(' ', $config['search_keywords']);
 $temp = array();
 foreach ($arrayKeywords as $keyword)
-	array_push($temp, "%" . safe_input($keyword) . "%");
+	array_push($temp, "%" . io_safe_input($keyword) . "%");
 $stringSearchSQL = implode(" ",$temp);
 
 if ($config['search_category'] == "all") 

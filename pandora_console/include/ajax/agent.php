@@ -57,7 +57,7 @@ if ($search_agents) {
         return;
 
     foreach ($agents as $agent) {
-        echo safe_output($agent['nombre']) . "|" . safe_output($agent['id_agente']) . "|" . safe_output($agent['direccion']) . "\n";
+        echo io_safe_output($agent['nombre']) . "|" . io_safe_output($agent['id_agente']) . "|" . io_safe_output($agent['direccion']) . "\n";
     }
 
     return;

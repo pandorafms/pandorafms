@@ -35,7 +35,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		$module_name = (string) get_parameter ('module_name');
 		
-		$agents_modules = get_agents_with_module_name ($module_name, $id_group,
+		$agents_modules = modules_get_agents_with_module_name ($module_name, $id_group,
 			array ('delete_pending' => 0,
 				'tagente_modulo.disabled' => 0),
 			array ('tagente.id_agente', 'tagente.nombre'));
@@ -60,7 +60,7 @@ function process_manage_delete ($module_name, $id_agents) {
 	db_process_sql_begin ();
 	$modules = get_agent_modules ($id_agents, 'id_agente_modulo',
 		array ('nombre' => $module_name), true);
-	$success = delete_agent_module ($modules);
+	$success = modules_delete_agent_module ($modules);
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the modules, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete modules').'</h4>';
@@ -126,7 +126,7 @@ $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
-$agents = get_agents_with_module_name ($module_name, $id_group,
+$agents = modules_get_agents_with_module_name ($module_name, $id_group,
 	array ('delete_pending' => 0,
 		'tagente_modulo.disabled' => 0),
 	array ('tagente.id_agente', 'tagente.nombre'));

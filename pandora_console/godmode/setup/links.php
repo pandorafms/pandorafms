@@ -42,9 +42,9 @@ if (isset($_POST["create"])){ // If create
 }
 
 if (isset($_POST["update"])){ // if update
-	$id_link = safe_input($_POST["id_link"]);
-	$name = safe_input($_POST["name"]);
-	$link = safe_input($_POST["link"]);
+	$id_link = io_safe_input($_POST["id_link"]);
+	$name = io_safe_input($_POST["name"]);
+	$link = io_safe_input($_POST["link"]);
 	
 	$result = db_process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
 	
@@ -55,7 +55,7 @@ if (isset($_POST["update"])){ // if update
 }
 	
 if (isset($_GET["borrar"])){ // if delete
-	$id_link = safe_input($_GET["borrar"]);
+	$id_link = io_safe_input($_GET["borrar"]);
 	
 	$result = db_process_sql_delete("tlink", array("id_link" => $id_link));
 	
@@ -70,7 +70,7 @@ if (isset($_GET["borrar"])){ // if delete
 if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	if (isset($_GET["form_edit"])){
 		$creation_mode = 0;
-			$id_link = safe_input($_GET["id_link"]);
+			$id_link = io_safe_input($_GET["id_link"]);
 			
 			$row = db_get_row("tlink", "id_link", $id_link);
 			

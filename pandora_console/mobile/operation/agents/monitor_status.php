@@ -200,7 +200,7 @@ class MonitorStatus {
 				$statusImg = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
 			}
 			else {
-				$last_status =  get_agentmodule_last_status($row['id_agente_modulo']);
+				$last_status =  modules_get_agentmodule_last_status($row['id_agente_modulo']);
 				switch($last_status) {
 					case 0:
 						$statusImg = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
@@ -222,7 +222,7 @@ class MonitorStatus {
 			if (is_numeric($row["datos"]))
 				$data[] = format_numeric($row["datos"]);
 			else
-				$data[] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(safe_output($row["datos"]),0,12)."</span>";
+				$data[] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
 				
 			$data[] = ui_print_timestamp ($row["utimestamp"], true, array('units' => 'tiny'));
 			

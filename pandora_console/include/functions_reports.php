@@ -30,7 +30,7 @@ require_once ($config['homedir'].'/include/functions_users.php');
  *
  * @return Report with the given id. False if not available or readable.
  */
-function get_report ($id_report, $filter = false, $fields = false) {
+function reports_get_report ($id_report, $filter = false, $fields = false) {
 	global $config;
 	
 	$id_report = safe_int ($id_report);
@@ -64,7 +64,7 @@ function get_report ($id_report, $filter = false, $fields = false) {
  *
  * @return array An array with all the reports the user can view.
  */
-function get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'IR') {
+function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'IR') {
 	global $config;
 	
 	if (! is_array ($filter))
@@ -102,7 +102,7 @@ function get_reports ($filter = false, $fields = false, $returnAllGroup = true, 
  * 
  * @return mixed New report id if created. False if it could not be created.
  */
-function create_report ($name, $id_group, $values = false) {
+function reports_create_report ($name, $id_group, $values = false) {
 	global $config;
 	
 	if (! is_array ($values))
@@ -123,8 +123,8 @@ function create_report ($name, $id_group, $values = false) {
  * 
  * @return bool True if the report was updated. False otherwise.
  */
-function update_report ($id_report, $values) {
-	$report = get_report ($id_report, false, array ('id_report'));
+function reports_update_report ($id_report, $values) {
+	$report = reports_get_report ($id_report, false, array ('id_report'));
 	if ($report === false)
 		return false;
 	return (@db_process_sql_update ('treport',
@@ -139,11 +139,11 @@ function update_report ($id_report, $values) {
  *
  * @return bool True if deleted, false otherwise.
  */
-function delete_report ($id_report) {
+function reports_delete_report ($id_report) {
 	$id_report = safe_int ($id_report);
 	if (empty ($id_report))
 		return false;
-	$report = get_report ($id_report);
+	$report = reports_get_report ($id_report);
 	if ($report === false)
 		return false;
 	@db_process_sql_delete ('treport_content', array ('id_report' => $id_report));
@@ -157,7 +157,7 @@ function delete_report ($id_report) {
  *
  * @return bool True if deleted, false otherwise.
  */
-function get_report_content ($id_report_content, $filter = false, $fields = false) {
+function reports_get_content ($id_report_content, $filter = false, $fields = false) {
 	$id_report_content = safe_int ($id_report_content);
 	if (empty ($id_report_content))
 		return false;
@@ -170,7 +170,7 @@ function get_report_content ($id_report_content, $filter = false, $fields = fals
 	$content = @db_get_row_filter ('treport_content', $filter, $fields);
 	if ($content === false)
 		return false;
-	$report = get_report ($content['id_report']);
+	$report = reports_get_report ($content['id_report']);
 	if ($report === false)
 		return false;
 	return $content;
@@ -185,13 +185,13 @@ function get_report_content ($id_report_content, $filter = false, $fields = fals
  *
  * @return array All the contents of a report. 
  */
-function create_report_content ($id_report, $values) {
+function reports_create_content ($id_report, $values) {
 	global $config;
 	
 	$id_report = safe_int ($id_report);
 	if (empty ($id_report))
 		return false;
-	$report = get_report ($id_report);
+	$report = reports_get_report ($id_report);
 	if ($report === false)
 		return false;
 	if (! is_array ($values))
@@ -226,12 +226,12 @@ function create_report_content ($id_report, $values) {
  *
  * @return array All the contents of a report. 
  */
-function get_report_contents ($id_report, $filter = false, $fields = false) {
+function reports_get_contents ($id_report, $filter = false, $fields = false) {
 	$id_report = safe_int ($id_report);
 	if (empty ($id_report))
 		return array ();
 	
-	$report = get_report ($id_report);
+	$report = reports_get_report ($id_report);
 	if ($report === false)
 		return array ();
 	if (! is_array ($filter))
@@ -252,13 +252,13 @@ function get_report_contents ($id_report, $filter = false, $fields = false) {
  *
  * @return bool True if moved, false otherwise.
  */
-function move_report_content_up ($id_report_content) {
+function reports_move_content_up ($id_report_content) {
 	global $config;
 	
 	if (empty ($id_report_content))
 		return false;
 	
-	$content = get_report_content ($id_report_content);
+	$content = reports_get_content ($id_report_content);
 	if ($content === false)
 		return false;
 	
@@ -298,13 +298,13 @@ function move_report_content_up ($id_report_content) {
  *
  * @return bool True if moved, false otherwise.
  */
-function move_report_content_down ($id_report_content) {
+function reports_move_content_down ($id_report_content) {
 	global $config;
 	
 	if (empty ($id_report_content))
 		return false;
 	
-	$content = get_report_content ($id_report_content);
+	$content = reports_get_content ($id_report_content);
 	if ($content === false)
 		return false;
 	
@@ -342,11 +342,11 @@ function move_report_content_down ($id_report_content) {
  *
  * @return bool True if deleted, false otherwise.
  */
-function delete_report_content ($id_report_content) {
+function reports_delete_content ($id_report_content) {
 	if (empty ($id_report_content))
 		return false;
 	
-	$content = get_report_content ($id_report_content);
+	$content = reports_get_content ($id_report_content);
 	if ($content === false)
 		return false;
 	

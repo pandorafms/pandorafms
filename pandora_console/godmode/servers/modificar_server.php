@@ -82,7 +82,7 @@ else {
 		}
 	}
 	
-	$servers = get_server_info ();
+	$servers = servers_get_info ();
 	if ($servers !== false) {
 		$table->width = "90%";
 		$table->class = "databox";

@@ -15,7 +15,7 @@
 
 /**
  * @package Include
- * @subpackage Modules
+ * @subpackage Network components
  */
 
 /**
@@ -33,15 +33,15 @@ require_once ('include/functions_users.php');
  * (keys would be the field name and value the expected value, and would be
  * joined with an AND operator). Examples:
  * <code>
- * $components = get_network_components ($id_module, array ('id_module_group', 10));
- * $components = get_network_components ($id_module, 'id_module_group = 10'));
+ * $components = network_components_get_network_components ($id_module, array ('id_module_group', 10));
+ * $components = network_components_get_network_components ($id_module, 'id_module_group = 10'));
  * </code>
  * @param mixed Fields to retrieve on each component.
  * 
  * @return array A list of network components matching. Empty array is returned
  * if none matches.
  */
-function get_network_components ($id_module, $filter = false, $fields = false) {
+function network_components_get_network_components ($id_module, $filter = false, $fields = false) {
 	global $config;
 
 	if (! is_array ($filter))
@@ -87,7 +87,7 @@ function get_network_components ($id_module, $filter = false, $fields = false) {
  * 
  * @return string The name of the components group. 
  */
-function get_network_component_group_name ($id_network_component_group) {
+function network_components_get_group_name ($id_network_component_group) {
 	if (empty ($id_network_component_group))
 		return false;
 	
@@ -103,7 +103,7 @@ function get_network_component_group_name ($id_network_component_group) {
  *
  * @return array A network component group matching id and filter.
  */
-function get_network_component_group ($id_network_component_group, $filter = false, $fields = false) {
+function network_components_get_group ($id_network_component_group, $filter = false, $fields = false) {
 	if (empty ($id_network_component_group))
 		return false;
 	if (! is_array ($filter))
@@ -127,7 +127,7 @@ function get_network_component_group ($id_network_component_group, $filter = fal
  *
  * @return array An ordered list of component groups with childs indented.
  */
-function get_network_component_groups ($id_module_components = 0, $localComponent = false) {
+function network_components_get_groups ($id_module_components = 0, $localComponent = false) {
 	/* Special vars to keep track of indentation level */
 	static $level = 0;
 	static $id_parent = 0;
@@ -145,7 +145,7 @@ function get_network_component_groups ($id_module_components = 0, $localComponen
 		$level++;
 		$tmp = $id_parent;
 		$id_parent = (int) $group['id_sg'];
-		$childs = get_network_component_groups ($id_module_components, $localComponent);
+		$childs = network_components_get_groups ($id_module_components, $localComponent);
 		$id_parent = $tmp;
 		$level--;
 		
@@ -194,7 +194,7 @@ function get_network_component_groups ($id_module_components = 0, $localComponen
  *
  * @return array A network component matching id and filter.
  */
-function get_network_component ($id_network_component, $filter = false, $fields = false) {
+function network_components_get_network_component ($id_network_component, $filter = false, $fields = false) {
 	if (empty ($id_network_component))
 		return false;
 	if (! is_array ($filter))
@@ -214,7 +214,7 @@ function get_network_component ($id_network_component, $filter = false, $fields 
  *
  * @return int New component id. False on error.
  */
-function create_network_component ($name, $type, $id_group, $values = false) {
+function network_components_create_network_component ($name, $type, $id_group, $values = false) {
 	global $config;
 
 	switch ($config['dbtype']) {
@@ -246,10 +246,10 @@ function create_network_component ($name, $type, $id_group, $values = false) {
  *
  * @return bool True if updated. False on error.
  */
-function update_network_component ($id_network_component, $values = false) {
+function network_components_update_network_component ($id_network_component, $values = false) {
 	if (empty ($id_network_component))
 		return false;
-	$component = get_network_component ($id_network_component);
+	$component = network_components_get_network_component ($id_network_component);
 	if (empty ($component))
 		return false;
 	if (! is_array ($values))
@@ -268,7 +268,7 @@ function update_network_component ($id_network_component, $values = false) {
  *
  * @return bool True if deleted. False on error.
  */
-function delete_network_component ($id_network_component) {
+function network_components_delete_network_component ($id_network_component) {
 	if (empty ($id_network_component))
 		return false;
 	$filter = array ();
@@ -288,10 +288,10 @@ function delete_network_component ($id_network_component) {
  *
  * @return array New agent module id if created. False if could not be created
  */
-function create_agent_module_from_network_component ($id_network_component, $id_agent) {
+function network_components_create_module_from_network_component ($id_network_component, $id_agent) {
 	if (! user_access_to_agent ($id_agent, 'AW'))
 		return false;
-	$component = get_network_component ($id_network_component,
+	$component = network_components_get_network_component ($id_network_component,
 		false,
 		array ('name',
 			'description AS descripcion',
@@ -326,7 +326,7 @@ function create_agent_module_from_network_component ($id_network_component, $id_
 	unset ($values['name']);
 	$values['ip_target'] = get_agent_address ($id_agent);
 	
-	return create_agent_module ($id_agent, $name, $values);
+	return modules_create_agent_module ($id_agent, $name, $values);
 }
 
 /**
@@ -336,7 +336,7 @@ function create_agent_module_from_network_component ($id_network_component, $id_
  *
  * @return Component name with the given id. False if not available or readable.
  */
-function get_network_component_name ($id_network_component) {
+function network_components_get_name ($id_network_component) {
 	if (empty ($id_network_component))
 		return false;
 	return @db_get_value ('name', 'tnetwork_component', 'id', $id_network_component);
@@ -346,8 +346,8 @@ function get_network_component_name ($id_network_component) {
  * Duplicate local compoment.
  * @param integer id_local_component Id of localc component for duplicate.
  */
-function duplicate_network_component ($id_local_component) {	
-	$network = get_network_component ($id_local_component);
+function network_components_duplicate_network_component ($id_local_component) {	
+	$network = network_components_get_network_component ($id_local_component);
 	
 	if ($network === false)
 		return false;
@@ -377,6 +377,6 @@ function duplicate_network_component ($id_local_component) {
     $networkCopy['max_critical'] = $network['max_critical'];
     $networkCopy['min_ff_event'] = $network['min_ff_event'];
 	
-	return create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);
+	return network_components_create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);
 }
 ?>

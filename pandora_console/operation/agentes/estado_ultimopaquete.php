@@ -236,7 +236,7 @@ foreach ($modules as $module) {
 
 	if ($module["id_module_group"] != $last_modulegroup ){
 		// Render module group names (fixed code)
-		$nombre_grupomodulo = get_modulegroup_name ($module["id_module_group"]);
+		$nombre_grupomodulo = modules_get_modulegroup_name ($module["id_module_group"]);
 		$last_modulegroup = $module["id_module_group"];
 		$colspan = 9 + (int)$isFunctionPolicies;
 		echo "<tr><td class='datos3' align='center' colspan='".$colspan."'>
@@ -303,7 +303,7 @@ foreach ($modules as $module) {
 			echo "<td></td>";
 		}
 	}
-	$nombre_grupomodulo = get_modulegroup_name ($module["id_module_group"]);
+	$nombre_grupomodulo = modules_get_modulegroup_name ($module["id_module_group"]);
 	if ($nombre_grupomodulo != ""){
 		if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
 			$label_group = -1;
@@ -313,8 +313,8 @@ foreach ($modules as $module) {
 			<b>".$nombre_grupomodulo."</b></td>";
 		}
 	}
-	$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
-	echo "<td class='".$tdcolor."_id' title='".safe_output($module["nombre"])."'>";
+	$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
+	echo "<td class='".$tdcolor."_id' title='".io_safe_output($module["nombre"])."'>";
 	ui_print_string_substr ($module["nombre"]);
 	echo "</td><td class='".$tdcolor."'> ";
 	
@@ -334,8 +334,8 @@ foreach ($modules as $module) {
 	AND ($module["id_tipo_modulo"] != 10)
 	AND ($module["id_tipo_modulo"] != 17)
 	AND ($module["id_tipo_modulo"] != 23)) {
-		echo "</td><td class='".$tdcolor."f9' title='".safe_output($module["descripcion"])."'>"; 
-		echo safe_output(substr($module["descripcion"],0,32));
+		echo "</td><td class='".$tdcolor."f9' title='".io_safe_output($module["descripcion"])."'>"; 
+		echo io_safe_output(substr($module["descripcion"],0,32));
 		if (strlen($module["descripcion"]) > 32){
 			echo "...";
 		}
@@ -358,7 +358,7 @@ foreach ($modules as $module) {
 	}
 	else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
-		echo substr(safe_output($module["datos"]),0,12);
+		echo substr(io_safe_output($module["datos"]),0,12);
 	}
 	else {
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
@@ -372,8 +372,8 @@ foreach ($modules as $module) {
 			if (strlen($module["datos"]) > 0 ) $colspan = 2;
 			else $colspan= 1;
 			
-			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
-			echo substr(safe_output($module["datos"]),0,42);
+			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".io_safe_output($module["datos"])."'>";
+			echo substr(io_safe_output($module["datos"]),0,42);
 		}
 		echo "</td>";
 			
@@ -381,7 +381,7 @@ foreach ($modules as $module) {
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 		echo "<td class=".$tdcolor." width='78'>";
-		$graph_label = safe_output($module["nombre"]);
+		$graph_label = io_safe_output($module["nombre"]);
 		
 		echo "<a href='javascript:winopeng(\"operation/agentes/stat_win.php?type=$graph_type&period=2419200&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=180000\", \"month_".$win_handle."\")'>" . html_print_image('images/grafica_m.png' , true, array("border" => '0', "alt" => '')) . "</a>&nbsp;";
 		

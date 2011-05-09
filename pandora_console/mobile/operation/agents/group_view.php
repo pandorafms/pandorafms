@@ -59,7 +59,7 @@ class GroupView {
 			$iterator++;
 			
 			if ($idGroup == 0) continue; //avoid the all group
-			$groupData = get_group_stats($idGroup);
+			$groupData = reporting_get_group_stats($idGroup);
 			
 			if ($groupData['total_agents'] == 0) continue; //avoid the empty groups
 			

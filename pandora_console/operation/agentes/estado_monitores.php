@@ -260,7 +260,7 @@ foreach ($modules as $module) {
 		}	
 	}
 
-	$data[2] = show_server_type ($module['id_modulo']);
+	$data[2] = servers_show_type ($module['id_modulo']);
 
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
@@ -284,7 +284,7 @@ foreach ($modules as $module) {
 		$title = __('NORMAL');
 	}
 	elseif ($module["estado"] == 3) {
-		$last_status =  get_agentmodule_last_status($module['id_agente_modulo']);
+		$last_status =  modules_get_agentmodule_last_status($module['id_agente_modulo']);
 		switch($last_status) {
 			case 0:
 				$status = STATUS_MODULE_OK;
@@ -305,7 +305,7 @@ foreach ($modules as $module) {
 		$title .= ": " . format_for_graph($module["datos"]);
 	}
 	else {
-		$title .= ": " . substr(safe_output($module["datos"]),0,42);
+		$title .= ": " . substr(io_safe_output($module["datos"]),0,42);
 	}
 
 	$data[5] = ui_print_status_image($status, $title, true);
@@ -326,8 +326,8 @@ foreach ($modules as $module) {
 			$salida = format_numeric($module["datos"]);
 		}
 		else {
-			$module_value = safe_output($module["datos"]);
-			$sub_string = substr(safe_output($module["datos"]),0, 12);
+			$module_value = io_safe_output($module["datos"]);
+			$sub_string = substr(io_safe_output($module["datos"]),0, 12);
 			
 			if ($module_value == $sub_string) {
 				$salida = $module_value;
@@ -346,7 +346,7 @@ foreach ($modules as $module) {
 
 	$data[7] = " ";
 	if ($module['history_data'] == 1){
-		$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
+		$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));

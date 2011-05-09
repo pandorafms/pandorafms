@@ -44,7 +44,7 @@ switch ($action) {
 		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting_edit.png", false, "", true);
 		
 		if ($action == 'delete_report') {
-			$result = delete_report ($idReport);
+			$result = reports_delete_report ($idReport);
 			ui_print_result_message ($result,
 				__('Successfully deleted'),
 				__('Could not be deleted'));
@@ -56,7 +56,7 @@ switch ($action) {
 		else
 			$return_all_group = false;
 		
-		$reports = get_reports (array ('order' => 'name'),
+		$reports = reports_get_reports (array ('order' => 'name'),
 			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IW');
 		$table->width = '0px';
 		if (sizeof ($reports)) {
@@ -218,7 +218,7 @@ switch ($action) {
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
-						$values['style'] = safe_input(json_encode($style));
+						$values['style'] = io_safe_input(json_encode($style));
 						
 						$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						break;
@@ -274,7 +274,7 @@ switch ($action) {
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
-						$values['style'] = safe_input(json_encode($style));
+						$values['style'] = io_safe_input(json_encode($style));
 						
 						$result = db_process_sql_insert('treport_content', $values);
 						

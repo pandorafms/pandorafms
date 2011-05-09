@@ -34,10 +34,10 @@ include_once($config['homedir'] . '/include/functions_users.php');
  * @return New agent module id on success. Existing module id if it already exists.
  * False on error.
  */
-function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $forced_name = false) {
+function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $forced_name = false) {
 	global $config;
 
-	$module = get_agentmodule ($id_agent_module);
+	$module = modules_get_agentmodule ($id_agent_module);
 	if ($module === false)
 		return false;
 	
@@ -145,13 +145,13 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
  *
  * @return True if the module was deleted. False if not.
  */
-function delete_agent_module ($id_agent_module) {
+function modules_delete_agent_module ($id_agent_module) {
 	if(!$id_agent_module) 
 		return false;
 		
 	$where = array ('id_agent_module' => $id_agent_module);
 	
-	enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_agent_module), get_agentmodule_name($id_agent_module)));
+	enterprise_hook('deleteLocalModuleInConf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
 	
 	db_process_sql_delete ('talert_template_modules', $where);
 	db_process_sql_delete ('tgraph_source', $where);
@@ -175,7 +175,7 @@ function delete_agent_module ($id_agent_module) {
  *
  * @return True if the module was updated. False if not.
  */
-function update_agent_module ($id, $values, $onlyNoDeletePending = false) {
+function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false) {
 	if (! is_array ($values) || empty ($values))
 		return false;
 		
@@ -204,7 +204,7 @@ function update_agent_module ($id, $values, $onlyNoDeletePending = false) {
  *
  * @return New module id if the module was created. False if not.
  */
-function create_agent_module ($id_agent, $name, $values = false, $disableACL = false) {
+function modules_create_agent_module ($id_agent, $name, $values = false, $disableACL = false) {
 	global $config;
 
 	if (!$disableACL) {
@@ -283,7 +283,7 @@ function create_agent_module ($id_agent, $name, $values = false, $disableACL = f
  *
  * @return array All the agents which have a module with the name given.
  */
-function get_agents_with_module_name ($module_name, $id_group, $filter = false, $fields = 'tagente.*') {
+function modules_get_agents_with_module_name ($module_name, $id_group, $filter = false, $fields = 'tagente.*') {
 	if (empty ($module_name))
 		return false;
 	
@@ -301,29 +301,57 @@ function get_agents_with_module_name ($module_name, $id_group, $filter = false, 
 // This are functions to format the data
 //
 
-function format_time($ts)
+/**
+ * Formats time data to tiemstamp format.
+ *
+ * @param numeric Numeric data.
+ *
+ * @return string HTML Code with data time with timestamp format.
+ */
+function modules_format_time($ts)
 {
 	return ui_print_timestamp ($ts, true, array("prominent" => "comparation"));
 }
 
-function format_data($data)
+/**
+ * Formats module data.
+ *
+ * @param variant Numeric or string data.
+ *
+ * @return variant Module data formated.
+ */
+function modules_format_data($data)
 {
 	if (is_numeric ($data)) {
 		$data = format_numeric($data, 2);
 	} else {
-		$data = safe_input ($data);
+		$data = io_safe_input ($data);
 	}
 	return $data;
 }
 
-function format_verbatim($data){
+/**
+ * Formats verbatim to string data.
+ *
+ * @param string String data.
+ *
+ * @return string HTML string data with verbatim format.
+ */
+function modules_format_verbatim($data){
 	// We need to replace \n by <br> to create a "similar" output to
 	// information recolected in logs.
 	$data2 = preg_replace ("/\\n/", "<br>", $data);
 	return "<span style='font-size:10px;'>" . $data2 . "</span>";
 }
 
-function format_timestamp($ts)
+/**
+ * Formats data time to timestamp format.
+ *
+ * @param int Data time.
+ *
+ * @return int Data time with timestamp format.
+ */
+function modules_format_timestamp($ts)
 {
 	global $config;
 
@@ -333,7 +361,14 @@ function format_timestamp($ts)
 	return date ($config["date_format"], $ts);
 }
 
-function format_delete($id)
+/**
+ * Writes HTML code to perform delete module action for a particular module.
+ *
+ * @param int Id of the module.
+ *
+ * @return string HTML code to perform delete action.
+ */
+function modules_format_delete($id)
 {
 	global $period, $module_id, $config, $group;
 
@@ -345,7 +380,14 @@ function format_delete($id)
 	return $txt;
 }
 
-function format_delete_string($id)
+/**
+ * Writes HTML code to perform delete string module action for a particular module.
+ *
+ * @param int Id of the module.
+ *
+ * @return string HTML code to perform delete action.
+ */
+function modules_format_delete_string($id)
 {
 	global $period, $module_id, $config, $group;
 
@@ -357,7 +399,14 @@ function format_delete_string($id)
 	return $txt;
 }
 
-function format_delete_log4x($id)
+/**
+ * Writes HTML code to perform delete log4x module action for a particular module.
+ *
+ * @param int Id of the module.
+ *
+ * @return string HTML code to perform delete action.
+ */
+function modules_format_delete_log4x($id)
 {
 	global $period, $module_id, $config, $group;
 
@@ -376,7 +425,7 @@ function format_delete_log4x($id)
  *
  * @return array An array with module information
  */
-function get_agentmodule ($id_agentmodule) {
+function modules_get_agentmodule ($id_agentmodule) {
 	return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
@@ -388,7 +437,7 @@ function get_agentmodule ($id_agentmodule) {
  *
  * @return int the agentmodule id
  */
-function get_agentmodule_id ($agentmodule_name, $agent_id) {
+function modules_get_agentmodule_id ($agentmodule_name, $agent_id) {
 	return db_get_row_filter ('tagente_modulo', array('nombre' => $agentmodule_name, 'id_agente' => $agent_id, 'delete_pending' => 0));
 }
 
@@ -399,7 +448,7 @@ function get_agentmodule_id ($agentmodule_name, $agent_id) {
  *
  * @return bool true if is init and false if is not init
  */
-function get_agentmodule_is_init ($id_agentmodule) {
+function modules_get_agentmodule_is_init ($id_agentmodule) {
 	$result = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $id_agentmodule), 'utimestamp');
 	return (bool)$result['utimestamp'];
 }
@@ -412,7 +461,7 @@ function get_agentmodule_is_init ($id_agentmodule) {
  *
  * @return int The number of agent modules
  */
-function get_agent_modules_count ($id_agent = 0) {
+function modules_get_agent_modules_count ($id_agent = 0) {
 	//Make sure we're all int's and filter out bad stuff
 	$id_agent = safe_int ($id_agent, 1);
 
@@ -434,7 +483,7 @@ function get_agent_modules_count ($id_agent = 0) {
  *
  * @return string The name of the given type.
  */
-function get_module_type_name ($id_type) {
+function modules_get_type_name ($id_type) {
 	return (string) db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
@@ -445,7 +494,7 @@ function get_module_type_name ($id_type) {
  *
  * @return string The name of the icon.
  */
-function get_module_type_icon ($id_type) {
+function modules_get_type_icon ($id_type) {
 	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
@@ -456,7 +505,7 @@ function get_module_type_icon ($id_type) {
  *
  * @return int The id of the agent of given agent module
  */
-function get_agentmodule_agent ($id_agentmodule) {
+function modules_get_agentmodule_agent ($id_agentmodule) {
 	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
@@ -467,9 +516,9 @@ function get_agentmodule_agent ($id_agentmodule) {
  *
  * @return string The name of the given agent module.
  */
-function get_agentmodule_agent_name ($id_agentmodule) {
+function modules_get_agentmodule_agent_name ($id_agentmodule) {
 	// Since this is a helper function we don't need to do casting
-	return (string) get_agent_name (get_agentmodule_agent ($id_agentmodule));
+	return (string) get_agent_name (modules_get_agentmodule_agent ($id_agentmodule));
 }
 
 /**
@@ -479,7 +528,7 @@ function get_agentmodule_agent_name ($id_agentmodule) {
  *
  * @return string Name of the given agent module.
  */
-function get_agentmodule_name ($id_agente_modulo) {
+function modules_get_agentmodule_name ($id_agente_modulo) {
 	return (string) db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
@@ -490,7 +539,7 @@ function get_agentmodule_name ($id_agente_modulo) {
  *
  * @return string Module type of the given agent module.
  */
-function get_agentmodule_type ($id_agentmodule) {
+function modules_get_agentmodule_type ($id_agentmodule) {
 	return (int) db_get_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
@@ -503,7 +552,7 @@ function get_agentmodule_type ($id_agentmodule) {
  *
  * @return int The number of times a monitor went down.
  */
-function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
+function modules_get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
 	global $config;
 	
 	if ($date == 0) {
@@ -550,7 +599,7 @@ function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
  *
  * @return int The last time a monitor went down.
  */
-function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
+function modules_get_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
 	global $config;	
 
 	if ($date == 0) {
@@ -595,7 +644,7 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
  *
  * @return array An array with all the monitors defined in the group (tagente_modulo).
  */
-function get_monitors_in_group ($id_group) {
+function modules_get_monitors_in_group ($id_group) {
 	global $config;
 	
 	if ($id_group <= 0) {
@@ -636,7 +685,7 @@ function get_monitors_in_group ($id_group) {
  *
  * @return array An array with all the monitors defined (tagente_modulo).
  */
-function get_monitors_in_agent ($id_agent) {
+function modules_get_monitors_in_agent ($id_agent) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
@@ -673,13 +722,13 @@ function get_monitors_in_agent ($id_agent) {
  * @return array An array with all the monitors that went down in that
  * period of time.
  */
-function get_monitors_down ($monitors, $period = 0, $date = 0) {
+function modules_get_monitors_down ($monitors, $period = 0, $date = 0) {
 	$monitors_down = array ();
 	if (empty ($monitors))
 	return $monitors_down;
 
 	foreach ($monitors as $monitor) {
-		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
+		$down = modules_get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
 		if ($down > 0)
 		array_push ($monitors_down, $monitor);
 	}
@@ -693,7 +742,7 @@ function get_monitors_down ($monitors, $period = 0, $date = 0) {
  *
  * @return string Name of the given type.
  */
-function get_moduletype_name ($id_type) {
+function modules_get_moduletype_name ($id_type) {
 	return (string) db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
@@ -704,7 +753,7 @@ function get_moduletype_name ($id_type) {
  *
  * @return string Description of the given type.
  */
-function get_moduletype_description ($id_type) {
+function modules_get_moduletype_description ($id_type) {
 	return (string) db_get_value ('descripcion', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
@@ -718,7 +767,7 @@ function get_moduletype_description ($id_type) {
  *
  * @return array Either the full table or if a type is specified, an array with id's
  */
-function get_moduletypes ($type = "all", $rows = "nombre") {
+function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 	$return = array ();
 	$rows = (array) $rows; //Cast as array
 	$row_cnt = count ($rows);
@@ -755,12 +804,12 @@ function get_moduletypes ($type = "all", $rows = "nombre") {
  *
  * @return int Module interval or agent interval if no module interval
  */
-function get_module_interval ($id_agent_module) {
+function modules_get_interval ($id_agent_module) {
 	$interval = (int) db_get_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
 	if ($interval > 0)
 	return $interval;
 
-	$id_agent = give_agent_id_from_module_id ($id_agent_module);
+	$id_agent = modules_give_agent_id_from_module_id ($id_agent_module);
 	return (int) get_agent_interval ($id_agent);
 }
 
@@ -774,7 +823,7 @@ function get_module_interval ($id_agent_module) {
  *
  * @return string Icon filename of the given group
  */
-function show_icon_type ($id_type) {
+function modules_show_icon_type ($id_type) {
 	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo', $id_type);
 }
 
@@ -785,7 +834,7 @@ function show_icon_type ($id_type) {
  *
  * @return Name of the given category
  */
-function give_modulecategory_name ($id_category) {
+function modules_give_modulecategory_name ($id_category) {
 	switch ($id_category) {
 		case 0:
 			return __('Software agent data');
@@ -811,7 +860,7 @@ function give_modulecategory_name ($id_category) {
  *
  * @return int The agent id of the given module.
  */
-function give_agent_id_from_module_id ($id_agent_module) {
+function modules_give_agent_id_from_module_id ($id_agent_module) {
 	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
@@ -824,7 +873,7 @@ function give_agent_id_from_module_id ($id_agent_module) {
  * @return int Module status. Value 4 means that some alerts assigned to the
  * module were fired.
  */
-function get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
+function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
 	$current_timestamp = get_system_time ();
 
 	if (!$without_alerts) {
@@ -846,7 +895,7 @@ function get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
  *
  * @return int Module last status.
  */
-function get_agentmodule_last_status($id_agentmodule = 0) {
+function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 
 	return $status_row['last_status'];
@@ -860,7 +909,7 @@ function get_agentmodule_last_status($id_agentmodule = 0) {
  * @return int Worst status of a module for all of its agents.
  * The value -1 is returned in case the agent has exceed its interval. <-- DISABLED
  */
-function get_module_status ($id_module = 0) {
+function modules_get_status ($id_module = 0) {
 	$time = get_system_time ();
 
 	$status = db_get_sql ("SELECT estado
@@ -882,7 +931,7 @@ function get_module_status ($id_module = 0) {
  *
  * @return int a numerically formatted value
  */
-function get_agent_module_last_value ($id_agentmodule) {
+function modules_get_last_value ($id_agentmodule) {
 	return db_get_value ('datos', 'tagente_estado',
 		'id_agente_modulo', $id_agentmodule);
 }
@@ -901,7 +950,7 @@ function get_agent_module_last_value ($id_agentmodule) {
  *
  * @return mixed The row of tagente_datos of the last period. False if there were no data.
  */
-function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
+function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
 		$utimestamp = time ();
 
@@ -933,7 +982,7 @@ function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
  *
  * @return mixed The row of tagente_datos of the last period. False if there were no data.
  */
-function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
+function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
 		$utimestamp = time ();
 
@@ -944,7 +993,7 @@ function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 		$table = 'tagente_datos';
 	}
 
-	$interval = get_module_interval ($id_agent_module);
+	$interval = modules_get_interval ($id_agent_module);
 	$sql = sprintf ('SELECT *
 		FROM tagente_datos
 		WHERE id_agente_modulo = %d 
@@ -965,7 +1014,7 @@ function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
  *
  * @return array The module value and the timestamp
  */
-function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
+function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 	if ($date < 1) {
 		$date = get_system_time ();
 	}
@@ -985,9 +1034,9 @@ function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 		return array ();
 	}
 
-	$module_name = get_agentmodule_name ($id_agent_module);
-	$agent_id = get_agentmodule_agent ($id_agent_module);
-	$agent_name = get_agentmodule_agent_name ($id_agent_module);
+	$module_name = modules_get_agentmodule_name ($id_agent_module);
+	$agent_id = modules_get_agentmodule_agent ($id_agent_module);
+	$agent_name = modules_get_agentmodule_agent_name ($id_agent_module);
 
 	foreach ($values as $key => $data) {
 		$values[$key]["module_name"] = $module_name;
@@ -1005,7 +1054,7 @@ function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
  *
  * @return int The modulegroup id
  */
-function get_agentmodule_modulegroup ($id_module) {
+function modules_get_agentmodule_modulegroup ($id_module) {
 	return (int) db_get_value ('id_module_group', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
 }
 
@@ -1016,7 +1065,7 @@ function get_agentmodule_modulegroup ($id_module) {
  *
  * @return array All module groups
  */
-function get_modulegroups () {
+function modules_get_modulegroups () {
 	$result = db_get_all_fields_in_table ("tmodule_group");
 	$return = array ();
 
@@ -1038,7 +1087,7 @@ function get_modulegroups () {
  *
  * @return string The modulegroup name
  */
-function get_modulegroup_name ($modulegroup_id) {
+function modules_get_modulegroup_name ($modulegroup_id) {
 	if($modulegroup_id == 0)
 		return false;
 	else

@@ -29,10 +29,10 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 require_once ('include/functions_networkmap.php');
 
 // Set filter
-$filter = get_filter ($layout);
+$filter = networkmap_get_filter ($layout);
 
 // Generate dot file
-$graph = generate_dot (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $id_networkmap);
+$graph = networkmap_generate_dot (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $id_networkmap);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));

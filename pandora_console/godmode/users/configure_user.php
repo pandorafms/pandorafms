@@ -136,7 +136,7 @@ if ($create_user) {
 		$result = create_user($id, $password_new, $values);
 
 		db_pandora_audit("User management",
-			"Created user ".safe_input($id), false, false, $info);
+			"Created user ".io_safe_input($id), false, false, $info);
 
 		ui_print_result_message ($result,
 			__('Successfully created'),
@@ -201,7 +201,7 @@ if ($update_user) {
 				$info .= ' Skin: ' . $values['id_skin'];
 			}
 			
-			db_pandora_audit("User management", "Updated user ".safe_input($id),
+			db_pandora_audit("User management", "Updated user ".io_safe_input($id),
 				false, false, $info);
 		
 			ui_print_result_message ($res1,
@@ -223,7 +223,7 @@ if ($add_profile) {
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
 	db_pandora_audit("User management",
-		"Added profile for user ".safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
+		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
 	$return = create_user_profile ($id2, $profile2, $group2);
 	ui_print_result_message ($return,
 		__('Profile added successfully'),
@@ -239,7 +239,7 @@ if ($delete_profile) {
 	$perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
 		
 	db_pandora_audit("User management",
-		"Deleted profile for user ".safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
+		"Deleted profile for user ".io_safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 
 	$return = delete_user_profile ($id2, $id_up);
 	ui_print_result_message ($return,

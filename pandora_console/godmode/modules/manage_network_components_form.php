@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 
 $id_component_type = (int) get_parameter ('id_component_type');
 if (isset ($id)) {
-	$component = get_network_component ((int) $id);
+	$component = network_components_get_network_component ((int) $id);
 	if ($component !== false) {
 		$id_component_type = $component['id_modulo'];
 		$name = $component["name"];

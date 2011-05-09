@@ -28,12 +28,12 @@ require_once ($config['homedir'].'/include/functions_groups.php');
  * @param string $usuario_origen The sender of the message
  * @param string $usuario_destino The receiver of the message
  * @param string $subject Subject of the message (much like E-Mail)
- * @param string $mensaje The actual message. This message will be cleaned by safe_input 
+ * @param string $mensaje The actual message. This message will be cleaned by io_safe_input 
  * (html is allowed but loose html chars will be translated)
  *
  * @return bool true when delivered, false in case of error
  */
-function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) {
+function messages_create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) {
 	$users = get_users_info ();
 	
 	if (!array_key_exists ($usuario_origen, $users) || !array_key_exists ($usuario_destino, $users)) {
@@ -62,12 +62,12 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
  * @param string The sender of the message
  * @param string The receivers (group) of the message
  * @param string Subject of the message (much like E-Mail)
- * @param string The actual message. This message will be cleaned by safe_input 
+ * @param string The actual message. This message will be cleaned by io_safe_input 
  * (html is allowed but loose html chars will be translated)
  *
  * @return bool true when delivered, false in case of error
  */
-function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje) {
+function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje) {
 	$users = get_users_info ();
 	$group_users = groups_get_users ($dest_group);
 	
@@ -83,7 +83,7 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
 	db_process_sql_begin ();
 	
 	foreach ($group_users as $user) {
-		$return = create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
+		$return = messages_create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {
 			//Error sending message, rollback and return false
 			db_process_sql_rollback ();
@@ -104,7 +104,7 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
  *
  * @return bool true when deleted, false in case of error
  */
-function delete_message ($id_message) {
+function messages_delete_message ($id_message) {
 	global $config;
 	
 	$where = array(
@@ -121,7 +121,7 @@ function delete_message ($id_message) {
  *
  * @return bool true when marked, false in case of error
  */
-function process_message_read ($message_id, $read = true) {
+function messages_process_read ($message_id, $read = true) {
 	if (empty ($read)) {
 		$read = 0;
 	}
@@ -141,7 +141,7 @@ function process_message_read ($message_id, $read = true) {
  *
  * @return mixed False if it doesn't exist or a filled array otherwise
  */
-function get_message ($message_id) {
+function messages_get_message ($message_id) {
 	global $config;
 
 	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje, timestamp
@@ -169,7 +169,7 @@ function get_message ($message_id) {
  *
  * @return int The number of messages this user has
  */
-function get_message_count ($user = false, $incl_read = false) {
+function messages_get_count ($user = false, $incl_read = false) {
 	if (empty ($user)) {
 		global $config;
 		$user = $config["id_user"];
@@ -194,7 +194,7 @@ function get_message_count ($user = false, $incl_read = false) {
  *
  * @return int The number of messages this user has
  */
-function get_message_overview ($order = "status", $order_dir = "ASC") {
+function messages_get_overview ($order = "status", $order_dir = "ASC") {
 	global $config;
 	
 	switch ($order) {

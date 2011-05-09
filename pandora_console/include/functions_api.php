@@ -745,7 +745,7 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'descripcion' => $other['data'][19],
 	);
 	
-	$idModule = create_agent_module($idAgent, $name, $values, true);
+	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
 	
 	if ($idModule === false)
 		returnError('error_create_network_module', 'Error in creation network module.');
@@ -991,14 +991,14 @@ function set_module_data($id, $thrash2, $other, $trash1) {
 					</module>
 				</agent_data>";
 		
-			$xml = sprintf($xmlTemplate, safe_output(get_os_name($agent['id_os'])),
-				safe_output($agent['os_version']), $agent['intervalo'],
-				safe_output($agent['agent_version']), date('Y/m/d h:i:s', $time),
-				safe_output($agent['nombre']), $agent['timezone_offset'],
-				safe_output($agentModule['nombre']), safe_output($agentModule['descripcion']), get_module_type_name($agentModule['id_tipo_modulo']), $data);
+			$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
+				io_safe_output($agent['os_version']), $agent['intervalo'],
+				io_safe_output($agent['agent_version']), date('Y/m/d h:i:s', $time),
+				io_safe_output($agent['nombre']), $agent['timezone_offset'],
+				io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
 		
 				
-			if (false === @file_put_contents($config['remote_config'] . '/' . safe_output($agent['nombre']) . '.' . $time . '.data', $xml)) {
+			if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . $time . '.data', $xml)) {
 				returnError('error_file', 'Can save agent data xml.');
 			}
 			else {

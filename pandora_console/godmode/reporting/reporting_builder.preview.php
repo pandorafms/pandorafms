@@ -145,7 +145,7 @@ foreach ($contents as $content) {
 	$table->colspan = array ();
 	$table->rowstyle = array ();
 	
-    render_report_html_item ($content, $table, $report);
+    reporting_render_report_html_item ($content, $table, $report);
 	echo '<div style = "overflow:auto;">';
 	html_print_table ($table);
 	echo "</div>";

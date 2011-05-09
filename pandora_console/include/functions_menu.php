@@ -24,7 +24,7 @@
  *
  * @param array Menu structure to print.
  */
-function print_menu (&$menu) {
+function menu_print_menu (&$menu) {
 	global $config;
 	static $idcounter = 0;
 	

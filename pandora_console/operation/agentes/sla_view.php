@@ -76,17 +76,17 @@ foreach ($modules as $module_id => $module) {
 	}
 	$data = array ();
 	$data[0] = ui_print_moduletype_icon ($module["id_tipo_modulo"], true);
-	$data[1] = print_string_substr ($module["nombre"], 25, true);
+	$data[1] = ui_print_string_substr ($module["nombre"], 25, true);
 	if ($module["min_critical"] != 0){
 		$sla_min = $module["min_critical"];
-		$data[2] = format_numeric (get_agentmodule_sla ($module_id, $config["sla_period"], $sla_min));
+		$data[2] = format_numeric (reporting_get_agentmodule_sla ($module_id, $config["sla_period"], $sla_min));
 		$data[2] = 100 - $data[2]. "%";
 	} else {
-		$data[2] = format_numeric (get_agentmodule_sla ($module_id, $config["sla_period"], 1)).'%';
+		$data[2] = format_numeric (reporting_get_agentmodule_sla ($module_id, $config["sla_period"], 1)).'%';
 	}
 
 	//TODO: Make this work for all new status
-	$status = get_agentmodule_status ($module_id);
+	$status = modules_get_agentmodule_status ($module_id);
 	if ($status == 1){
 		$data[3] = html_print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
 	} else {
@@ -128,8 +128,8 @@ if ($result !== false) {
 		$data[0] = ui_print_moduletype_icon ($modules[$sla_data["id_agent_module"]]["id_tipo_modulo"], true);
 		$data[1] = print_string_substr ($modules[$sla_data["id_agent_module"]]["nombre"], 25, true);
 		$data[1] .= "(".$sla_data["sla_min"]." / ".$sla_data["sla_max"]." / ".$sla_data["sla_limit"].")";
-		$data[2] = format_numeric (get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';
-		$status = get_agentmodule_status ($sla_data["id_agent_module"]);
+		$data[2] = format_numeric (reporting_get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';
+		$status = modules_get_agentmodule_status ($sla_data["id_agent_module"]);
 		if ($status == 1){
 			$data[3] = html_print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
 		} else {

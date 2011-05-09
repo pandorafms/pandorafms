@@ -1,4 +1,24 @@
 <?php
+
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the  GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+/**
+ * @package Include
+ * @subpackage Io
+ */
+
 /**
  * Safe input function for array.
  * 
@@ -6,8 +26,8 @@
  * 
  * @return void
  */
-function safe_input_array(&$item) {
-	$item = safe_input($item);
+function io_safe_input_array(&$item) {
+	$item = io_safe_input($item);
 }
 
 /** 
@@ -19,7 +39,7 @@ function safe_input_array(&$item) {
  * 
  * @return mixed The cleaned string or array.
  */
-function safe_input($value) {
+function io_safe_input($value) {
 	//Stop!! Are you sure to modify this critical code? Because the older
 	//versions are serius headache in many places of Pandora.
 	
@@ -27,7 +47,7 @@ function safe_input($value) {
 		return $value;
 		
 	if (is_array($value)) {
-		array_walk($value, "safe_input_array");
+		array_walk($value, "io_safe_input_array");
 		return $value;
 	}
 	
@@ -57,7 +77,7 @@ function safe_input($value) {
 	
 	//Replace some characteres for html entities
 	for ($i=0;$i<33;$i++) {
-		$valueHtmlEncode = str_ireplace(chr($i),ascii_to_html($i), $valueHtmlEncode);			
+		$valueHtmlEncode = str_ireplace(chr($i),io_ascii_to_html($i), $valueHtmlEncode);			
 	}
 
 	return $valueHtmlEncode;
@@ -72,7 +92,7 @@ function safe_input($value) {
  * 
  * @return mixed The cleaned string or array.
  */
-function safe_input_html($value) {
+function io_safe_input_html($value) {
 	//Stop!! Are you sure to modify this critical code? Because the older
 	//versions are serius headache in many places of Pandora.
 
@@ -80,7 +100,7 @@ function safe_input_html($value) {
 		return $value;
 		
 	if (is_array($value)) {
-		array_walk($value, "safe_input");
+		array_walk($value, "io_safe_input");
 		return $value;
 	}
 	
@@ -102,7 +122,7 @@ function safe_input_html($value) {
  * 
  * @return string String of html entitie
  */
-function ascii_to_html($num) {
+function io_ascii_to_html($num) {
 	
 	if ($num <= 15) {
 		return "&#x0".dechex($num).";";
@@ -118,7 +138,7 @@ function ascii_to_html($num) {
  * 
  * @return string String with char
  */
-function html_to_ascii($hex) {
+function io_html_to_ascii($hex) {
 		
 	$dec = hexdec($hex);
 	
@@ -136,13 +156,13 @@ function html_to_ascii($hex) {
  * 
  * @return unknown_type
  */
-function safe_output($value, $utf8 = true)
+function io_safe_output($value, $utf8 = true)
 {
 	if (is_numeric($value))
 		return $value;
 		
 	if (is_array($value)) {
-		array_walk($value, "safe_output");
+		array_walk($value, "io_safe_output");
 		return $value;
 	}
 	
@@ -170,7 +190,7 @@ function safe_output($value, $utf8 = true)
 	
 	//Revert html entities to chars
 	for ($i=0;$i<33;$i++) {
-		$valueHtmlEncode = str_ireplace("&#x".dechex($i).";",html_to_ascii(dechex($i)), $valueHtmlEncode);			
+		$valueHtmlEncode = str_ireplace("&#x".dechex($i).";",io_html_to_ascii(dechex($i)), $valueHtmlEncode);			
 	}	
 	
 	return $valueHtmlEncode;	
@@ -187,13 +207,13 @@ function safe_output($value, $utf8 = true)
  * 
  * @return unknown_type
  */
-function safe_output_html($value, $utf8 = true)
+function io_safe_output_html($value, $utf8 = true)
 {
 	if (is_numeric($value))
 		return $value;
 		
 	if (is_array($value)) {
-		array_walk($value, "safe_output");
+		array_walk($value, "io_safe_output");
 		return $value;
 	}
 		
@@ -211,20 +231,20 @@ function safe_output_html($value, $utf8 = true)
 	
 	//Revert html entities to chars
 	for ($i=0;$i<33;$i++) {
-		$value = str_ireplace("&#x".dechex($i).";",html_to_ascii(dechex($i)), $value);			
+		$value = str_ireplace("&#x".dechex($i).";",io_html_to_ascii(dechex($i)), $value);			
 	}	
 	
 	return $value;	
 }
 
 /** 
- * Use to clean HTML entities when get_parameter or safe_input functions dont work
+ * Use to clean HTML entities when get_parameter or io_safe_input functions dont work
  * 
  * @param string String to be cleaned
  * 
  * @return string Cleaned string
  */
-function salida_limpia ($string) {
+function io_salida_limpia ($string) {
 	$quote_style = ENT_QUOTES;
 	static $trans;
 	if (! isset ($trans)) {
@@ -247,12 +267,12 @@ function salida_limpia ($string) {
  * 
  * @return mixed The cleaned string or array.
  */	
-function safe_output_xml ($string) {
+function io_safe_output_xml ($string) {
 	if (is_numeric ($string))
 		return $string;
 	
 	if (is_array ($string)) {
-		array_walk ($string, 'safe_output_xml');
+		array_walk ($string, 'io_safe_output_xml');
 		return $string;
 	}
 	
@@ -280,7 +300,7 @@ function safe_output_xml ($string) {
  *
  * @param string Text string to be stripped of magic_quotes protection
  */
-function unsafe_string ($string) {
+function io_unsafe_string ($string) {
 	if (get_magic_quotes_gpc ()) 
 		return stripslashes ($string);
 	return $string;

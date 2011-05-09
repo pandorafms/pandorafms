@@ -26,7 +26,7 @@ class Tactical {
 		
 		require_once ($config["homedir"] . '/include/functions_graph.php');
 		
-		$data = get_group_stats();
+		$data = reporting_get_group_stats();
 		
 		$table = null;
 		//$table->width = '100%';
@@ -80,7 +80,7 @@ class Tactical {
 		
 		echo "<h3 class='title_h3_server'>" . __('Server performance') . "</h3>";
 		
-		$server_performance = get_server_performance();
+		$server_performance = servers_get_performance();
 		
 		$table = null;
 		//$table->width = '100%';

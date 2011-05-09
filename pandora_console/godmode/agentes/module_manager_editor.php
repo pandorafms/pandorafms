@@ -38,7 +38,7 @@ if (is_ajax ()) {
 		$id_module_group = (int) get_parameter ('id_module_component_group');
 		$id_module_component = (int) get_parameter ('id_module_component_type');
 		
-		$components = get_network_components ($id_module_component,
+		$components = network_components_get_network_components ($id_module_component,
 			array ('id_group' => $id_module_group,
 				'order' => 'name ASC'),
 			array ('id_nc', 'name'));
@@ -120,7 +120,7 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 
 // Using network component to fill some fields
 if ($id_agent_module) {
-	$module = get_agentmodule ($id_agent_module);
+	$module = modules_get_agentmodule ($id_agent_module);
 	$moduletype = $module['id_modulo'];
 	$name = $module['nombre'];
 	$description = $module['descripcion'];

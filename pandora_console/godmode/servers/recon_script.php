@@ -20,7 +20,7 @@ if (is_ajax ()) {
 	
 	$description = db_get_value_filter('description', 'trecon_script', array('id_recon_script' => $id_reconscript));
 	
-	echo htmlentities (safe_output($description), ENT_QUOTES, "UTF-8", true);
+	echo htmlentities (io_safe_output($description), ENT_QUOTES, "UTF-8", true);
 	return;
 }
 

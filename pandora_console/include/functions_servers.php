@@ -28,7 +28,7 @@
  *
  * @return Server with the given id. False if not available.
  */
-function get_server ($id_server, $filter = false, $fields = false) {
+function servers_get_server ($id_server, $filter = false, $fields = false) {
 	if (empty ($id_server))
 		return false;
 	if (! is_array ($filter))
@@ -43,7 +43,7 @@ function get_server ($id_server, $filter = false, $fields = false) {
  *
  * @return All the servers available.
  */
-function get_server_names () {
+function servers_get_names () {
 	$all_servers = @db_get_all_rows_filter ('tserver', false, array ('DISTINCT(name) as name'));
 	if ($all_servers === false)
 		return array ();
@@ -60,7 +60,7 @@ function get_server_names () {
  * This function will get several metrics from the database to get info about server performance
  * @return array with several data 
  */
-function get_server_performance () {
+function servers_get_performance () {
 
 	global $config;
 
@@ -123,7 +123,7 @@ function get_server_performance () {
  *
  * @return mixed False in case the server doesn't exist or an array with info.
  */
-function get_server_info ($id_server = -1) {
+function servers_get_info ($id_server = -1) {
 	global $config;
 
 	if (is_array ($id_server)) {
@@ -383,7 +383,7 @@ function get_server_info ($id_server = -1) {
  *
  * @return string Name of the given server
  */
-function get_server_name ($id_server) {
+function servers_get_name ($id_server) {
 	return (string) db_get_value ('name', 'tserver', 'id_server', (int) $id_server);
 }
 
@@ -397,7 +397,7 @@ function get_server_name ($id_server) {
  *
  * @return string Fully formatted IMG HTML tag with icon
  */
-function show_server_type ($id) {
+function servers_show_type ($id) {
 	global $config;
 
 	switch ($id) {
@@ -432,7 +432,7 @@ function show_server_type ($id) {
  *
  * @return int The number of servers alive.
  */
-function check_server_status () {
+function servers_check_status () {
 	global $config;
 
 	switch ($config["dbtype"]) {
@@ -453,15 +453,15 @@ function check_server_status () {
 }
 
 /**
- * @deprecated use get_server_info instead
+ * @deprecated use servers_get_info instead
  * Get statistical information for a given server
  *
  * @param int Server id to get status.
  *
  * @return array Server info array
  */
-function server_status ($id_server) {
-	$serverinfo = get_server_info ($id_server);
+function servers_get_status ($id_server) {
+	$serverinfo = servers_get_info ($id_server);
 	return $serverinfo[$id_server];
 }
 

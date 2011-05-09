@@ -486,7 +486,7 @@ function get_parameter ($name, $default = '') {
  */
 function get_parameter_get ($name, $default = "") {
 	if ((isset ($_GET[$name])) && ($_GET[$name] != ""))
-		return safe_input ($_GET[$name]);
+		return io_safe_input ($_GET[$name]);
 
 	return $default;
 }
@@ -501,7 +501,7 @@ function get_parameter_get ($name, $default = "") {
  */
 function get_parameter_post ($name, $default = "") {
 	if ((isset ($_POST[$name])) && ($_POST[$name] != ""))
-		return safe_input ($_POST[$name]);
+		return io_safe_input ($_POST[$name]);
 
 	return $default;
 }

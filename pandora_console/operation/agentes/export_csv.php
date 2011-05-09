@@ -30,7 +30,7 @@ if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user']
 if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agentmodule = $_GET["agentmodule"];
 	$id_agent = $_GET["agent"];
-	$agentmodule_name = get_agentmodule_name ($id_agentmodule);
+	$agentmodule_name = modules_get_agentmodule_name ($id_agentmodule);
 	if (! check_acl ($config['id_user'], get_agent_group($id_agent), "AR")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Agent Export Data");
@@ -60,7 +60,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 
 	// Make the query
 	$sql1="SELECT * FROM tdatos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agentmodule";
-	$tipo = get_moduletype_name (get_agentmodule_type ($id_agentmodule));
+	$tipo = modules_get_moduletype_name (modules_get_agentmodule_type ($id_agentmodule));
 	if ($tipo == "generic_data_string")
 		$sql1 = "SELECT *
 			FROM tagente_datos_string

@@ -67,7 +67,7 @@ echo '</div>';
 // Site stats (global!)
 // ---------------------------------------------------------------------------
 echo '<div style="width:300px; float:left; padding-left: 30px;" id="rightcolumn">';
-$data = get_group_stats ();
+$data = reporting_get_group_stats ();
 
 $table->class = "databox";
 $table->cellpadding = 4;
@@ -209,7 +209,7 @@ foreach ($sessions as $session) {
 	$data[1] = $session['accion'];
 	$data[2] = $session['fecha'];
 	$data[3] = $session_ip_origen;
-	$data[4] = safe_output ($session['descripcion']);
+	$data[4] = io_safe_output ($session['descripcion']);
 	
 	array_push ($table->data, $data);
 }

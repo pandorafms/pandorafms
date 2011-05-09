@@ -479,7 +479,7 @@ if ($step == 2) {
 			$nameAgent = get_agent_name($idAgent);
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $idAgent . '">' . $nameAgent . '</a>';
 			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
-			$data[3] = get_agentmodule_name ($alert['id_agent_module']);
+			$data[3] = modules_get_agentmodule_name ($alert['id_agent_module']);
 			if ($condition['operation'] == 'NOP') {
 				$data[4] = html_print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
 			} else {
@@ -576,7 +576,7 @@ if ($step == 1) {
 			$data[0] = '<a href="#" class="add_alert" id="add-'.$alert['id'].'" />';
 			$data[0] .= html_print_image('images/add.png', true);
 			$data[0] .= '</a>';
-			$data[1] = get_agentmodule_name ($alert['id_agent_module']);
+			$data[1] = modules_get_agentmodule_name ($alert['id_agent_module']);
 			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
 			
 			array_push ($table_alerts->data, $data);

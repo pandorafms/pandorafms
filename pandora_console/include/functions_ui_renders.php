@@ -76,7 +76,7 @@ function render_agent_field ($agent, $field, $field_value = false, $return = fal
 			return ui_print_status_image (STATUS_AGENT_NO_DATA, '', $return);
 		
 		require_once ('include/functions_reporting.php');
-		$info = get_agent_module_info ($agent['id_agente']);
+		$info = reporting_get_agent_module_info ($agent['id_agente']);
 		$output = $info['status_img'];
 		
 		break;

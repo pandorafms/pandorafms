@@ -409,10 +409,10 @@ foreach ($result as $event) {
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
 	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.base64_encode ($event["evento"]).'">';
 	if (strlen ($event["evento"]) > 50) {
-		$data[1] .= mb_substr (safe_output($event["evento"]), 0, 50)."...";
+		$data[1] .= mb_substr (io_safe_output($event["evento"]), 0, 50)."...";
 	}
 	else {
-		$data[1] .= safe_output($event["evento"]);
+		$data[1] .= io_safe_output($event["evento"]);
 	}
 	$data[1] .= '</a></span>';
 
@@ -520,7 +520,7 @@ foreach ($result as $event) {
 	$string = '<table border="0" width="90%"><tr>';
 	$string .= '<td align="left" valign="top" width="25%">';
 	$string .= '<b>' . __('Event name') . ':</b></td><td align="left">';
-	$string .= safe_output($event["evento"]);
+	$string .= io_safe_output($event["evento"]);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Severity') . ':</b></td><td align="left">';

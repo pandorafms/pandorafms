@@ -608,6 +608,9 @@ function getModuleGraph(id_data) {
 		}
 	});
 
+	//Cleaned array
+	parameter = Array();
+	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_image_sparse"});
 	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
@@ -619,7 +622,7 @@ function getModuleGraph(id_data) {
 		url: "ajax.php",
 		data: parameter,
 		type: "POST",
-		dataType: 'json',
+		dataType: 'text', //The ajax return the data as text.
 		success: function (data)
 		{
 			img = data;
@@ -651,6 +654,7 @@ function getModuleValue(id_data) {
 
 function getPercentileBar(id_data) {
 	var parameter = Array();
+	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
@@ -668,12 +672,32 @@ function getPercentileBar(id_data) {
 		}
 	});
 	
+	
+	//Get the actual system font.
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_font"});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			font = data['font'];
+		}
+	});
+	
+	
+	
 	if ( max_percentile > 0)
 		var percentile = module_value / max_percentile * 100;
 	else
 		var percentile = 100;
 	
-	var img = 'include/graphs/fgraph.php?graph_type=progressbar&height=15&width=' + width_percentile + '&mode=1&progress=' + percentile;
+	var img = 'include/graphs/fgraph.php?graph_type=progressbar&height=15&' + 
+		'width=' + width_percentile + '&mode=1&progress=' + percentile + '&font=' + font;
 	
 	return img;
 }

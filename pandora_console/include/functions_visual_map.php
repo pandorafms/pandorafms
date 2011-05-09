@@ -118,7 +118,6 @@ function printItemInVisualConsole($layoutData) {
 			echo '<div id="' . $id . '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />';
 			echo progress_bar2($percentile, $width, 15);
-			echo $img;
 			echo '</div>';
 			
 			break;

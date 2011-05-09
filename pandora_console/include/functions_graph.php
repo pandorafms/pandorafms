@@ -33,8 +33,6 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	
-	include_flash_chart_script($homeurl);
-	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -301,6 +299,10 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
+	}
+	
+	if ($flash_chart) {
+		include_flash_chart_script($homeurl);
 	}
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,

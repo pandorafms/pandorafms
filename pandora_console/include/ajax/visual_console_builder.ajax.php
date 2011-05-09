@@ -30,6 +30,7 @@ $ajax = true;
 require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once('include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
+require_once($config['homedir'] . '/include/functions_graph.php');
 
 $action = get_parameter('action');
 $type = get_parameter('type');
@@ -61,6 +62,11 @@ $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
 
 switch ($action) {
+	case 'get_font':
+		$return = array();
+		$return['font'] = $config['fontpath'];
+		echo json_encode($return);
+		break;
 	case 'get_image_sparse':
 		$img = grafico_modulo_sparse2($id_agent_module,
 			$period, false, $width, $height, '', null, false, 0, false, 0, 0, 0,

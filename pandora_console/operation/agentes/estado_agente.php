@@ -263,7 +263,7 @@ $agents = false;
 if (! empty ($agent_names)) {
 	if (check_acl ($config['id_user'], 0, "PM")){
 		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
-		$total_agents = get_db_sql ($sql);
+		$total_agents = db_get_sql ($sql);
 		$sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
 		$agents = get_db_all_rows_sql ($sql);
 

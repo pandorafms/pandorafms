@@ -175,41 +175,6 @@ sub pandora_manage_init ($) {
 }
 
 ##########################################################################
-## Create a template module.
-##########################################################################
-sub pandora_create_template_module ($$$$;$$$) {
-	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
-	
-	$id_policy_alerts = 0 unless defined $id_policy_alerts;
-	$disabled = 0 unless defined $disabled;
-	$standby = 0 unless defined $standby;
-	
-	my $module_name = get_module_name($dbh, $id_agent_module);
- 	logger($pa_config, "Creating alert of template '$id_alert_template' on agent module '$module_name'.", 10);
-
-	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby)");
-	return $dbh->{'mysql_insertid'};
-}
-
-##########################################################################
-## Update a template module.
-##########################################################################
-
-sub pandora_update_template_module ($$$;$$$) {
-	my ($pa_config, $id_alert, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
-	
-	$id_policy_alerts = 0 unless defined $id_policy_alerts;
-	$disabled = 0 unless defined $disabled;
-	$standby = 0 unless defined $standby;
-	
-	#my $module_name = get_module_name($dbh, $id_agent_module);
- 	#logger($pa_config, "Update alert of template '$id_alert_template' on agent module '$module_name'.", 10);
-
-	$dbh->do("UPDATE talert_template_modules SET `id_policy_alerts` = '$id_policy_alerts', `disabled` =  '$disabled', `standby` =  '$standby' WHERE id = $id_alert");
-	return $dbh->{'mysql_insertid'};
-}
-
-##########################################################################
 ## Delete a template module.
 ##########################################################################
 sub pandora_delete_template_module ($$) {
@@ -229,15 +194,6 @@ sub pandora_delete_template_module_action ($$$) {
         my ($dbh, $template_module_id, $action_id) = @_;
 
         return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ? AND id_alert_action = ?', $template_module_id, $action_id);
-}
-
-##########################################################################
-## Delete all actions of policy template module
-##########################################################################
-sub pandora_delete_all_template_module_actions ($$) {
-        my ($dbh, $template_module_id) = @_;
-
-        return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
 }
 
 ##########################################################################
@@ -268,19 +224,6 @@ if($return eq '0E0') {
 else {
 	return 0;
 }
-}
-
-##########################################################################
-## Create a template action.
-##########################################################################
-sub pandora_create_template_module_action ($$$) {
-	my ($pa_config, $parameters, $dbh) = @_;
-			
- 	logger($pa_config, "Creating module alert action to alert '$parameters->{'id_alert_template_module'}'.", 10);
-	
-	my $action_id = db_process_insert($dbh, 'id', 'talert_template_module_actions', $parameters);
-	
-	return $action_id;
 }
 
 ##########################################################################
@@ -403,16 +346,6 @@ sub pandora_validate_event_filter ($$$$$$$$$) {
 
 	logger($pa_config, "Validating events", 10);
 	db_do ($dbh, "UPDATE tevento SET estado = 1 WHERE estado = 0".$filter);
-}
-
-##########################################################################
-## Return alert template-module ID given the module and template ids.
-##########################################################################
-sub get_alert_template_module_id ($$$) {
-	my ($dbh, $id_module, $id_template) = @_;
-
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ?", $id_module, $id_template);
-	return defined ($rc) ? $rc : -1;
 }
 
 ###############################################################################
@@ -1295,159 +1228,161 @@ sub pandora_manage_main ($$$) {
 			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
 			exist_check($policy_id,'policy',$policy_name);
 			
-			my $blocked_policies = enterprise_hook('pandora_block_policies', [$dbh]);
-									
-			if($blocked_policies eq '0E0') {
-				print "[ERROR] The policies are blocked in other terminal.\n\n";
-				exit;
-			}
+			enterprise_hook('pandora_apply_policy', [$dbh, $conf, $policy_id]);
 			
-			# Get the agents
-			my $array_pointer_ag = enterprise_hook('get_policy_agents',[$dbh, $policy_id]);
-			
-			if(!defined($array_pointer_ag)) {
-				print "[ERROR] This option is not available in OPEN version.\n\n";
-				exit;
-			}
-			
-			print "[INFO] Applying policy '$policy_name'\n\n";
-
-			foreach my $agent (@{$array_pointer_ag}) {
-				my $id_agent = $agent->{'id_agent'};
-				my $agent_name = get_agent_name($dbh, $id_agent);
-				
-				# Get the modules
-				my $array_pointer_mod = enterprise_hook('get_policy_modules',[$dbh, $policy_id]);
-				
-				if(!defined($array_pointer_mod)) {
-					print "[ERROR] This option is not available in OPEN version.\n\n";
-					exit;
-				}
-				
-				foreach my $module (@{$array_pointer_mod}) {
-					# Adapt the fields from tpolicy_modules to tagente_modulos
-					$module->{'id_agente'} = $id_agent;
-
-					$module->{'id_policy_module'} = $module->{'id'};
-					delete $module->{'id'};
-					
-					$module->{'descripcion'} = $module->{'description'};
-					delete $module->{'description'};
-					
-					$module->{'nombre'} = $module->{'name'};
-					delete $module->{'name'};
-					
-					$module->{'id_modulo'} = $module->{'id_module'};
-					delete $module->{'id_module'};
-
-					delete $module->{'id_policy'};
-					
-					#Store the conf data
-					$configuration_data .= safe_output("\n\n$module->{'configuration_data'}");
-
-					delete $module->{'configuration_data'};
-										
-					my $id_module = get_agent_module_id ($dbh, $module->{'nombre'}, $module->{'id_agente'});
-					
-					# If the module doesn't exist we create it, otherwise we update it
-					
-					if($id_module == -1) {
-						# Create module
-						$id_module = pandora_create_module_from_hash ($conf, $module, $dbh);
-					}
-					else {
-						# Update module
-						pandora_update_module_from_hash ($conf, $module, 'id_agente_modulo', $id_module, $dbh);
-					}
-
-					# Get policy alerts and create it on created modules
-					my $array_pointer_ale = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, $module->{'id_policy_module'}]);
-					
-					foreach my $alert (@{$array_pointer_ale}) {
-						my $id_alert_template_module = get_alert_template_module_id($dbh, $id_module, $alert->{'id_alert_template'});
-
-						# Only if the template doesnt exist we create it. If exists we update it
-						if($id_alert_template_module == -1) {
-							$id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh, $alert->{'id'}, $alert->{'disabled'}, $alert->{'standby'});
-						}
-						else {
-							pandora_update_template_module ($conf, $id_alert_template_module, $dbh, $alert->{'id'}, $alert->{'disabled'}, $alert->{'standby'});
-						}
-
-						# Get policy alert actions and create it on modules created
-						my $array_pointer_aleact = enterprise_hook('get_policy_alert_actions',[$dbh, $alert->{'id'}]);
-							
-						pandora_delete_all_template_module_actions ($dbh, $id_alert_template_module);
-						
-						foreach my $alert_action (@{$array_pointer_aleact}) {							
-							delete $alert_action->{'id_policy_alert'};
-							delete $alert_action->{'id'};
-							$alert_action->{'id_alert_template_module'} = $id_alert_template_module;
-
-							pandora_create_template_module_action ($conf, $alert_action, $dbh);
-
-						}
-					}
-				
-					#Add the conf information to the agent conf file
-					enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data, $agent_name, $dbh]);
-
-					# Flag applyed the agent
-					enterprise_hook('pandora_apply_agent_policy',[$policy_id, $id_agent, $dbh]);
-				
-				}
-
-				# Get policy collections and link it on created modules
-				my $array_pointer_col = enterprise_hook('get_policy_collections',[$dbh, $policy_id]);
-				
-				my $collection_data = '';
-				
-				foreach my $collection (@{$array_pointer_col}) {
-					my $collection_name = enterprise_hook('get_collection_name',[$dbh, $collection->{'id_collection'}]);
-
-					$collection_data = "\n#file_collection $collection_name\n"; 
-					$collection_data .= "\nfile_collection fc_$collection->{'id_collection'}\n\n"; 
-				}
-				
-				if($collection_data ne '') {
-					enterprise_hook('pandora_delete_collection_agent_from_info',[$conf, $agent_name, $policy_id]);
-					enterprise_hook('pandora_create_collection_conf_info',[$conf, $policy_name, $collection_data,$agent_name,$dbh]);
-				}
-				
-				$configuration_data = '';
-				$collection_data = '';
-			}
-
-			# Get extern policy alerts and create it on modules
-			my $array_pointer_ale_ext = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, 0]);
-
-			foreach my $alert (@{$array_pointer_ale_ext}) {
-
-				my $array_modules_id = enterprise_hook('get_policy_agents_modules_id',[$dbh, $policy_id, $alert->{'name_extern_module'}]);
-
-				foreach my $module_id (@{$array_modules_id}) {	
-					my $id_alert_template_module = get_alert_template_module_id($dbh, $module_id->{'id_agente_modulo'}, $alert->{'id_alert_template'});
-
-					if($id_alert_template_module == -1) {
-						$id_alert_template_module = pandora_create_template_module ($conf, $module_id->{'id_agente_modulo'}, $alert->{'id_alert_template'}, $dbh, $alert->{'id'});
-					}				
-
-					# Get policy alert actions and create it on modules created
-					my $array_pointer_aleact = enterprise_hook('get_policy_alert_actions',[$dbh, $alert->{'id'}]);
-					
-					pandora_delete_all_template_module_actions ($dbh, $id_alert_template_module);
-
-					foreach my $alert_action (@{$array_pointer_aleact}) {
-						delete $alert_action->{'id_policy_alert'};
-						delete $alert_action->{'id'};
-						
-						$alert_action->{'id_alert_template_module'} = $id_alert_template_module;
-						
-						pandora_create_template_module_action ($conf, $alert_action, $dbh);
-					}
-				}
-			}
-			enterprise_hook('pandora_unblock_policies', [$dbh]);
+			#~ my $blocked_policies = enterprise_hook('pandora_block_policies', [$dbh]);
+									#~ 
+			#~ if($blocked_policies eq '0E0') {
+				#~ print "[ERROR] The policies are blocked in other terminal.\n\n";
+				#~ exit;
+			#~ }
+			#~ 
+			#~ # Get the agents
+			#~ my $array_pointer_ag = enterprise_hook('get_policy_agents',[$dbh, $policy_id]);
+			#~ 
+			#~ if(!defined($array_pointer_ag)) {
+				#~ print "[ERROR] This option is not available in OPEN version.\n\n";
+				#~ exit;
+			#~ }
+			#~ 
+			#~ print "[INFO] Applying policy '$policy_name'\n\n";
+#~ 
+			#~ foreach my $agent (@{$array_pointer_ag}) {
+				#~ my $id_agent = $agent->{'id_agent'};
+				#~ my $agent_name = get_agent_name($dbh, $id_agent);
+				#~ 
+				#~ # Get the modules
+				#~ my $array_pointer_mod = enterprise_hook('get_policy_modules',[$dbh, $policy_id]);
+				#~ 
+				#~ if(!defined($array_pointer_mod)) {
+					#~ print "[ERROR] This option is not available in OPEN version.\n\n";
+					#~ exit;
+				#~ }
+				#~ 
+				#~ foreach my $module (@{$array_pointer_mod}) {
+					#~ # Adapt the fields from tpolicy_modules to tagente_modulos
+					#~ $module->{'id_agente'} = $id_agent;
+#~ 
+					#~ $module->{'id_policy_module'} = $module->{'id'};
+					#~ delete $module->{'id'};
+					#~ 
+					#~ $module->{'descripcion'} = $module->{'description'};
+					#~ delete $module->{'description'};
+					#~ 
+					#~ $module->{'nombre'} = $module->{'name'};
+					#~ delete $module->{'name'};
+					#~ 
+					#~ $module->{'id_modulo'} = $module->{'id_module'};
+					#~ delete $module->{'id_module'};
+#~ 
+					#~ delete $module->{'id_policy'};
+					#~ 
+					#~ #Store the conf data
+					#~ $configuration_data .= safe_output("\n\n$module->{'configuration_data'}");
+#~ 
+					#~ delete $module->{'configuration_data'};
+										#~ 
+					#~ my $id_module = get_agent_module_id ($dbh, $module->{'nombre'}, $module->{'id_agente'});
+					#~ 
+					#~ # If the module doesn't exist we create it, otherwise we update it
+					#~ 
+					#~ if($id_module == -1) {
+						#~ # Create module
+						#~ $id_module = pandora_create_module_from_hash ($conf, $module, $dbh);
+					#~ }
+					#~ else {
+						#~ # Update module
+						#~ pandora_update_module_from_hash ($conf, $module, 'id_agente_modulo', $id_module, $dbh);
+					#~ }
+#~ 
+					#~ # Get policy alerts and create it on created modules
+					#~ my $array_pointer_ale = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, $module->{'id_policy_module'}]);
+					#~ 
+					#~ foreach my $alert (@{$array_pointer_ale}) {
+						#~ my $id_alert_template_module = get_alert_template_module_id($dbh, $id_module, $alert->{'id_alert_template'});
+#~ 
+						#~ # Only if the template doesnt exist we create it. If exists we update it
+						#~ if($id_alert_template_module == -1) {
+							#~ $id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh, $alert->{'id'}, $alert->{'disabled'}, $alert->{'standby'});
+						#~ }
+						#~ else {
+							#~ pandora_update_template_module ($conf, $id_alert_template_module, $dbh, $alert->{'id'}, $alert->{'disabled'}, $alert->{'standby'});
+						#~ }
+#~ 
+						#~ # Get policy alert actions and create it on modules created
+						#~ my $array_pointer_aleact = enterprise_hook('get_policy_alert_actions',[$dbh, $alert->{'id'}]);
+							#~ 
+						#~ pandora_delete_all_template_module_actions ($dbh, $id_alert_template_module);
+						#~ 
+						#~ foreach my $alert_action (@{$array_pointer_aleact}) {							
+							#~ delete $alert_action->{'id_policy_alert'};
+							#~ delete $alert_action->{'id'};
+							#~ $alert_action->{'id_alert_template_module'} = $id_alert_template_module;
+#~ 
+							#~ pandora_create_template_module_action ($conf, $alert_action, $dbh);
+#~ 
+						#~ }
+					#~ }
+				#~ 
+					#~ #Add the conf information to the agent conf file
+					#~ enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data, $agent_name, $dbh]);
+#~ 
+					#~ # Flag applyed the agent
+					#~ enterprise_hook('pandora_apply_agent_policy',[$policy_id, $id_agent, $dbh]);
+				#~ 
+				#~ }
+#~ 
+				#~ # Get policy collections and link it on created modules
+				#~ my $array_pointer_col = enterprise_hook('get_policy_collections',[$dbh, $policy_id]);
+				#~ 
+				#~ my $collection_data = '';
+				#~ 
+				#~ foreach my $collection (@{$array_pointer_col}) {
+					#~ my $collection_name = enterprise_hook('get_collection_name',[$dbh, $collection->{'id_collection'}]);
+#~ 
+					#~ $collection_data = "\n#file_collection $collection_name\n"; 
+					#~ $collection_data .= "\nfile_collection fc_$collection->{'id_collection'}\n\n"; 
+				#~ }
+				#~ 
+				#~ if($collection_data ne '') {
+					#~ enterprise_hook('pandora_delete_collection_agent_from_info',[$conf, $agent_name, $policy_id]);
+					#~ enterprise_hook('pandora_create_collection_conf_info',[$conf, $policy_name, $collection_data,$agent_name,$dbh]);
+				#~ }
+				#~ 
+				#~ $configuration_data = '';
+				#~ $collection_data = '';
+			#~ }
+#~ 
+			#~ # Get extern policy alerts and create it on modules
+			#~ my $array_pointer_ale_ext = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, 0]);
+#~ 
+			#~ foreach my $alert (@{$array_pointer_ale_ext}) {
+#~ 
+				#~ my $array_modules_id = enterprise_hook('get_policy_agents_modules_id',[$dbh, $policy_id, $alert->{'name_extern_module'}]);
+#~ 
+				#~ foreach my $module_id (@{$array_modules_id}) {	
+					#~ my $id_alert_template_module = get_alert_template_module_id($dbh, $module_id->{'id_agente_modulo'}, $alert->{'id_alert_template'});
+#~ 
+					#~ if($id_alert_template_module == -1) {
+						#~ $id_alert_template_module = pandora_create_template_module ($conf, $module_id->{'id_agente_modulo'}, $alert->{'id_alert_template'}, $dbh, $alert->{'id'});
+					#~ }				
+#~ 
+					#~ # Get policy alert actions and create it on modules created
+					#~ my $array_pointer_aleact = enterprise_hook('get_policy_alert_actions',[$dbh, $alert->{'id'}]);
+					#~ 
+					#~ pandora_delete_all_template_module_actions ($dbh, $id_alert_template_module);
+#~ 
+					#~ foreach my $alert_action (@{$array_pointer_aleact}) {
+						#~ delete $alert_action->{'id_policy_alert'};
+						#~ delete $alert_action->{'id'};
+						#~ 
+						#~ $alert_action->{'id_alert_template_module'} = $id_alert_template_module;
+						#~ 
+						#~ pandora_create_template_module_action ($conf, $alert_action, $dbh);
+					#~ }
+				#~ }
+			#~ }
+			#~ enterprise_hook('pandora_unblock_policies', [$dbh]);
 		}
 		elsif ($param eq '--force_unblock_policies') {			
 			enterprise_hook('pandora_unblock_policies', [$dbh]);

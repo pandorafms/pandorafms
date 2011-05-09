@@ -132,7 +132,10 @@ our @EXPORT = qw(
 	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
+	pandora_create_template_module
+	pandora_create_template_module_action
 	pandora_delete_agent
+	pandora_delete_all_template_module_actions
 	pandora_delete_module
 	pandora_evaluate_alert
 	pandora_evaluate_compound_alert
@@ -156,6 +159,7 @@ our @EXPORT = qw(
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
 	pandora_update_server
+	pandora_update_template_module
 	pandora_group_statistics
 	pandora_server_statistics
 	pandora_self_monitoring
@@ -1028,6 +1032,79 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data = $update_gis_data)",10);
 	}
 
+}
+
+##########################################################################
+=head2 C<< pandora_create_template_module(I<$pa_config>, I<$id_agent_module>, I<$id_alert_template>, I<$dbh>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
+
+Create a template module.
+
+=cut
+##########################################################################
+sub pandora_create_template_module ($$$$;$$$) {
+	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
+	
+	$id_policy_alerts = 0 unless defined $id_policy_alerts;
+	$disabled = 0 unless defined $disabled;
+	$standby = 0 unless defined $standby;
+	
+	my $module_name = get_module_name($dbh, $id_agent_module);
+ 	logger($pa_config, "Creating alert of template '$id_alert_template' on agent module '$module_name'.", 10);
+
+	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby)");
+	return $dbh->{'mysql_insertid'};
+}
+
+##########################################################################
+=head2 C<< pandora_update_template_module(I<$pa_config>, I<$id_alert>, I<$dbh>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
+
+Update a template module.
+
+=cut
+##########################################################################
+
+sub pandora_update_template_module ($$$;$$$) {
+	my ($pa_config, $id_alert, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
+	
+	$id_policy_alerts = 0 unless defined $id_policy_alerts;
+	$disabled = 0 unless defined $disabled;
+	$standby = 0 unless defined $standby;
+	
+	#my $module_name = get_module_name($dbh, $id_agent_module);
+ 	#logger($pa_config, "Update alert of template '$id_alert_template' on agent module '$module_name'.", 10);
+
+	$dbh->do("UPDATE talert_template_modules SET `id_policy_alerts` = '$id_policy_alerts', `disabled` =  '$disabled', `standby` =  '$standby' WHERE id = $id_alert");
+	return $dbh->{'mysql_insertid'};
+}
+
+##########################################################################
+=head2 C<< pandora_create_template_module(I<$pa_config>, I<$parameters>, I<$dbh>) >>
+
+Create a template action.
+
+=cut
+##########################################################################
+sub pandora_create_template_module_action ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+			
+ 	logger($pa_config, "Creating module alert action to alert '$parameters->{'id_alert_template_module'}'.", 10);
+	
+	my $action_id = db_process_insert($dbh, 'id', 'talert_template_module_actions', $parameters);
+	
+	return $action_id;
+}
+
+##########################################################################
+=head2 C<< pandora_delete_all_template_module_actions(I<$dbh>, I<$template_module_id>) >>
+
+Delete all actions of policy template module.
+
+=cut
+##########################################################################
+sub pandora_delete_all_template_module_actions ($$) {
+        my ($dbh, $template_module_id) = @_;
+
+        return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
 }
 
 ##########################################################################

@@ -1,3 +1,10 @@
+
+2011-05-09 Vanessa Gil <vanessa.gil@artica.es>
+
+	*  operation/agentes/estado_agente.php: Fixed a mistake of my last 
+	commit.
+
+
 2011-05-09 Javier Lanz <javier.lanz@artica.es>
 
 	* include/graphs/fgraph.php: Added 'period' parameter to slicesbar_graph
@@ -36,6 +43,7 @@
 	* pandoradb.postgreSQL.sql: fixed the type of cell "id_agente_modulo" in the
 	table "tagente_datos_string".
 
+>>>>>>> .r4322
 2011-05-06  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/graphs/functions_gd.php: Added new parameter to function

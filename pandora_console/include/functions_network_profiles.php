@@ -16,7 +16,7 @@
 
 /**
  * @package Include
- * @subpackage Modules
+ * @subpackage Network profiles
  */
 
 /**
@@ -28,7 +28,7 @@
  *
  * @return Profile with the given id. False if not available or readable.
  */
-function get_network_profile ($id_network_profile, $filter = false, $fields = false) {
+function network_profiles_get_network_profile ($id_network_profile, $filter = false, $fields = false) {
 	global $config;
 	
 	$id_network_profile = safe_int ($id_network_profile);
@@ -48,11 +48,11 @@ function get_network_profile ($id_network_profile, $filter = false, $fields = fa
  *
  * @return bool True if deleted, false otherwise.
  */
-function delete_network_profile ($id_network_profile) {
+function network_profiles_delete_network_profile ($id_network_profile) {
 	$id_network_profile = safe_int ($id_network_profile);
 	if (empty ($id_network_profile))
 		return false;
-	$profile = get_network_profile ($id_network_profile);
+	$profile = network_profiles_get_network_profile ($id_network_profile);
 	if ($profile === false)
 		return false;
 	return @db_process_sql_delete ('tnetwork_profile',
@@ -66,7 +66,7 @@ function delete_network_profile ($id_network_profile) {
  *
  * @return string Name of the given network profile.
  */
-function get_networkprofile_name ($id_network_profile) {
+function network_profiles_get_name ($id_network_profile) {
 	return (string) db_get_value ('name', 'tnetwork_profile', 'id_np', $id_network_profile);
 }
 

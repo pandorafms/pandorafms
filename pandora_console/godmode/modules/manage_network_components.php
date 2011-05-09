@@ -76,9 +76,9 @@ $delete_multiple = (bool) get_parameter('delete_multiple');
 if ($duplicate_network_component) {
 	$source_id = (int) get_parameter ('source_id');
 	
-	$id = duplicate_network_component ($source_id);
+	$id = network_components_duplicate_network_component ($source_id);
 	ui_print_result_message ($id,
-		__('Successfully created from %s', get_network_component_name ($source_id)),
+		__('Successfully created from %s', network_components_get_name ($source_id)),
 		__('Could not be created'));
 	
 	//List unset for jump the bug in the pagination (TODO) that the make another
@@ -104,7 +104,7 @@ if ($create_component) {
 		$custom_string_3 = $snmp3_security_level;
 	}
 	
-	$id = create_network_component ($name, $type, $id_group, 
+	$id = network_components_create_network_component ($name, $type, $id_group, 
 		array ('description' => $description,
 			'module_interval' => $module_interval,
 			'max' => $max,
@@ -157,7 +157,7 @@ if ($update_component) {
 		$custom_string_3 = $snmp3_security_level;
 	}
 	
-	$result = update_network_component ($id,
+	$result = network_components_update_network_component ($id,
 		array ('type' => $type,
 			'name' => $name,
 			'id_group' => $id_group,
@@ -200,7 +200,7 @@ if ($update_component) {
 if ($delete_component) {
 	$id = (int) get_parameter ('id');
 	
-	$result = delete_network_component ($id);
+	$result = network_components_delete_network_component ($id);
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -259,7 +259,7 @@ $table->style[2] = 'font-weight: bold';
 $table->data = array ();
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select (get_network_component_groups (),
+$table->data[0][1] = html_print_select (network_components_get_groups (),
 	'search_id_group', $search_id_group, '', __('All'), 0, true, false, false);
 $table->data[0][2] = __('Search');
 $table->data[0][3] = html_print_input_text ('search_string', $search_string, '', 25,
@@ -279,12 +279,12 @@ if ($search_id_group)
 if ($search_string != '')
 	$filter[] = '(name LIKE "%'.$search_string.'%" OR description LIKE "%'.$search_string.'%" OR tcp_send LIKE "%'.$search_string.'%" OR tcp_rcv LIKE "%'.$search_string.'%")';
 
-$total_components = get_network_components (false, $filter, 'COUNT(*) AS total');
+$total_components = network_components_get_network_components (false, $filter, 'COUNT(*) AS total');
 $total_components = $total_components[0]['total'];
 ui_pagination ($total_components, $url);
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
-$components = get_network_components (false, $filter,
+$components = network_components_get_network_components (false, $filter,
 	array ('id_nc', 'name', 'description', 'id_group', 'type', 'max', 'min',
 		'module_interval'));
 if ($components === false)
@@ -318,7 +318,7 @@ foreach ($components as $component) {
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
 	$data[2] = $component['module_interval'] ? $component['module_interval'] : __('N/A	');
 	$data[3] = mb_strimwidth ($component['description'], 0, 30, "...");
-	$data[4] = get_network_component_group_name ($component['id_group']);
+	$data[4] = network_components_get_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	
 	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group=' . $search_id_group .

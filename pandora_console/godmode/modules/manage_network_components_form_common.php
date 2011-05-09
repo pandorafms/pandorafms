@@ -62,7 +62,7 @@ $table->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM tmodul
 	'id_module_group', $id_module_group, '', '', '', true, false, false);
 
 $table->data[2][0] = __('Group');
-$table->data[2][1] = html_print_select (get_network_component_groups (),
+$table->data[2][1] = html_print_select (network_components_get_groups (),
 	'id_group', $id_group, '', '', '', true, false, false);
 $table->data[2][2] = __('Interval');
 $table->data[2][3] = html_print_input_text ('module_interval', $module_interval, '',

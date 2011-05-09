@@ -59,7 +59,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		return false;
 		
 	foreach ($modules as $module) {
-		$result = update_agent_module ($module['id_agente_modulo'], $values, true);
+		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true);
 		
 		if ($result === false) {
 			db_process_sql_rollback ();
@@ -322,7 +322,7 @@ $table->data['edit4'][1] .= html_print_input_text ('min', '', '', 5, 15, true);
 $table->data['edit4'][1] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit4'][1] .= html_print_input_text ('max', '', '', 5, 15, true);
 $table->data['edit4'][2] = __('Module group');
-$table->data['edit4'][3] = html_print_select (get_modulegroups(),
+$table->data['edit4'][3] = html_print_select (modules_get_modulegroups(),
 	'id_module_group', '', '', __('Select'), 0, true, false, false);
 
 $table->data['edit5'][0] = __('Username');

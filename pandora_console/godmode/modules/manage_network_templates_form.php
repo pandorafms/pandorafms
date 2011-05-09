@@ -186,9 +186,9 @@ if ($id_np > 0) {
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = $row["name"];
-		$data[1] = html_print_image("images/".show_icon_type($row["type"]), true, array("border" => '0'));
+		$data[1] = html_print_image("images/".modules_show_icon_type($row["type"]), true, array("border" => '0'));
 		$data[2] = mb_strimwidth($row["description"],0,30,"...");
-		$data[3] = get_network_component_group_name ($row["group"]);
+		$data[3] = network_components_get_group_name ($row["group"]);
 		$data[4] = html_print_checkbox ("components[]", $row["component_id"], false, true);
 		array_push ($table->data, $data);
 	}

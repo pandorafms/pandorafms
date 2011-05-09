@@ -104,7 +104,7 @@ class ViewAgents {
 			$rowPair = !$rowPair;
 			$iterator++;
 			
-			$agent_info = get_agent_module_info ($agent["id_agente"]); //$this->system->debug($agent_info);
+			$agent_info = reporting_get_agent_module_info ($agent["id_agente"]); //$this->system->debug($agent_info);
 			
 			$data = array();
 			
@@ -257,7 +257,7 @@ class ViewAgent {
 				$title = __('NORMAL');
 			}
 			elseif ($module["estado"] == 3) {
-				$last_status =  get_agentmodule_last_status($module['id_agente_modulo']);
+				$last_status =  modules_get_agentmodule_last_status($module['id_agente_modulo']);
 				switch($last_status) {
 					case 0:
 						$status = STATUS_MODULE_OK;
@@ -278,7 +278,7 @@ class ViewAgent {
 				$title .= ": " . format_for_graph($module["datos"]);
 			}
 			else {
-				$title .= ": " . substr(safe_output($module["datos"]),0,42);
+				$title .= ": " . substr(io_safe_output($module["datos"]),0,42);
 			}
 		
 			$data[] = str_replace(array('images/status_sets', '<img'), 
@@ -300,7 +300,7 @@ class ViewAgent {
 					$salida = format_numeric($module["datos"]);
 				}
 				else {
-					$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
+					$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($module["datos"]),0,12)."</span>";
 				}
 			}
 			$data[] = $salida;
@@ -347,10 +347,10 @@ class ViewAgent {
 			
 			$data = array();
 			
-			$data[] = ui_print_truncate_text(get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
+			$data[] = ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
 			
-			$template = safe_output(alerts_get_alert_template ($alert['id_alert_template']));
-			$data[] = ui_print_truncate_text(safe_output($template['name']), 20, true, true);
+			$template = io_safe_output(alerts_get_alert_template ($alert['id_alert_template']));
+			$data[] = ui_print_truncate_text(io_safe_output($template['name']), 20, true, true);
 			
 			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
@@ -405,12 +405,12 @@ class viewGraph {
 			return;
 		}
 		
-		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . get_agentmodule_agent_name($this->idAgentModule)."</a> / ".safe_output($this->agentModule['nombre']) . "</h3>";
+		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . modules_get_agentmodule_agent_name($this->idAgentModule)."</a> / ".io_safe_output($this->agentModule['nombre']) . "</h3>";
 		
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
 
 		echo grafico_modulo_sparse2($this->idAgentModule, $this->period, 0, 240,
-			120, safe_output($this->agentModule['nombre']), null, true,
+			120, io_safe_output($this->agentModule['nombre']), null, true,
 			0, true, 0, true, true, true, true);
 		
 		echo "<h3 class='title_h3'>" . __('Data') . "</h3>";
@@ -425,7 +425,7 @@ class viewGraph {
 		echo html_print_extended_select_for_time ($intervals, 'period', $this->period, 'this.form.submit();', '', '0', 5) . __(" secs");
 		echo "</form><br />";
 		
-		$moduletype_name = get_moduletype_name (get_agentmodule_type ($this->idAgentModule));
+		$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($this->idAgentModule));
 		
 		if ($moduletype_name == "log4x") {
 			$sql_body = sprintf ("FROM tagente_datos_log4x
@@ -433,10 +433,10 @@ class viewGraph {
 			
 			$columns = array(
 				
-				//"Timestamp" => array("utimestamp",				"format_timestamp", 	"align" => "center" ),
+				//"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
 				"Sev" 		=> array("severity", 				"format_data", 			"align" => "center", "width" => "70px"),
-				"Message"	=> array("message", 				"format_verbatim",		"align" => "left", "width" => "45%"),
-				"StackTrace" 		=> array("stacktrace",				"format_verbatim", 			"align" => "left", "width" => "50%")
+				"Message"	=> array("message", 				"modules_format_verbatim",		"align" => "left", "width" => "45%"),
+				"StackTrace" 		=> array("stacktrace",				"modules_format_verbatim", 			"align" => "left", "width" => "50%")
 			);
 		}
 		else if (preg_match ("/string/", $moduletype_name)) {
@@ -444,9 +444,9 @@ class viewGraph {
 				WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
 			
 			$columns = array(
-				//"Timestamp"	=> array("utimestamp", 			"format_timestamp", 		"align" => "center"),
+				//"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "center"),
 				"Data" 		=> array("datos", 				"format_data", 				"align" => "center"),
-				"Time" 		=> array("utimestamp", 			"format_time", 				"align" => "center")
+				"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
 			);
 		}
 		else {
@@ -456,7 +456,7 @@ class viewGraph {
 			
 			$columns = array(
 				"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
-				"Time" 		=> array("utimestamp", 			"format_time", 			"align" => "center")
+				"Time" 		=> array("utimestamp", 			"modules_format_time", 			"align" => "center")
 			);
 		}
 		

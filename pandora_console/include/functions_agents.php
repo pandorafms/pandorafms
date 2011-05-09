@@ -439,7 +439,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			if ($alert === false)
 				continue;
 			/* Check if some alerts which doesn't belong to the agent was given */
-			if (get_agentmodule_agent ($alert['id_agent_module']) != $source_id_agent)
+			if (modules_get_agentmodule_agent ($alert['id_agent_module']) != $source_id_agent)
 				continue;
 			array_push ($target_modules, $alert['id_agent_module']);
 		}
@@ -459,7 +459,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	
 	foreach ($destiny_id_agents as $id_destiny_agent) {
 		foreach ($target_modules as $id_agent_module) {
-			$result = copy_agent_module_to_agent ($id_agent_module,
+			$result = modules_copy_agent_module_to_agent ($id_agent_module,
 				$id_destiny_agent);
 		
 			if ($result === false) {
@@ -631,7 +631,7 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 	
 	$modules = array ();
 	foreach ($result as $module) {
-		if($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+		if($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
 			$modules[$module['id_agente_modulo']] = $module['id_agente_modulo'];
 		}
 	}
@@ -708,7 +708,7 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
 	
 	$modules = array ();
 	foreach ($result as $module) {
-		if($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+		if($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
 			$modules[$module['id_agente_modulo']] = $module['id_agente_modulo'];
 		}
 	}
@@ -766,13 +766,13 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 		}
 		unset ($search["disabled"]);
 		if (isset ($search["string"])) {
-			$string = safe_input ($search["string"]);
+			$string = io_safe_input ($search["string"]);
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
 					break;
 				case "postgresql":
-					$search_sql .= ' AND (nombre LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
+					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
 					break;
 				case "oracle":
 					$search_sql .= ' AND (UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
@@ -783,13 +783,13 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 		}
 
 		if (isset ($search["name"])) {
-			$name = safe_input ($search["name"]);
+			$name = io_safe_input ($search["name"]);
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE "' . $name . '" ';
 					break;
 				case "postgresql":
-					$search_sql .= ' AND nombre LIKE \'' . $name . '\' ';
+					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
 					break;
 				case "oracle":
 					$search_sql .= ' AND nombre LIKE UPPER("' . $name . '") ';
@@ -970,7 +970,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 		$details = "nombre";
 	}
 	else {
-		$details = safe_input ($details);
+		$details = io_safe_input ($details);
 	}
 
 	switch ($config["dbtype"]) {
@@ -981,7 +981,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 				%s
 				ORDER BY nombre',
 				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-				safe_output(implode (",", (array) $details)),
+				io_safe_output(implode (",", (array) $details)),
 				$where);
 			break;
 		case "oracle":
@@ -990,7 +990,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 				%s
 				ORDER BY dbms_lob.substr(nombre, 4000, 1)',
 				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-				safe_output(implode (",", (array) $details)),
+				io_safe_output(implode (",", (array) $details)),
 				$where);
 			break;
 	}
@@ -1007,7 +1007,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 
 	$modules = array ();
 	foreach ($result as $module) {
-		if ($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
 			if (is_array ($details) || $details == '*') {
 				//Just stack the information in array by ID
 				$modules[$module['id_agente_modulo']] = $module;
@@ -1325,9 +1325,9 @@ function get_agent_status($id_agent = 0) {
 	$modules_status = array();
 	$modules_async = 0;
 	foreach($modules as $module) {
-		$modules_status[] = get_agentmodule_status($module);
+		$modules_status[] = modules_get_agentmodule_status($module);
 
-		$module_type = get_agentmodule_type($module);
+		$module_type = modules_get_agentmodule_type($module);
 		if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
 			$modules_async++;
 		}
@@ -1526,7 +1526,7 @@ function delete_agent ($id_agents, $disableACL = false) {
  * @return int The group id
  */
 function get_agentmodule_group ($id_module) {
-	$agent = (int) get_agentmodule_agent ((int) $id_module);
+	$agent = (int) modules_get_agentmodule_agent ((int) $id_module);
 	return (int) get_agent_group ($agent);
 }
 

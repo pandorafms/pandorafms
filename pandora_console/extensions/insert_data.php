@@ -34,13 +34,13 @@ function createXMLData($agent, $agentModule, $time, $data) {
 			</module>
 		</agent_data>";
 	
-	$xml = sprintf($xmlTemplate, safe_output(get_os_name($agent['id_os'])),
-		safe_output($agent['os_version']), $agent['intervalo'],
-		safe_output($agent['agent_version']), $time,
-		safe_output($agent['nombre']), $agent['timezone_offset'],
-		safe_output($agentModule['nombre']), safe_output($agentModule['descripcion']), get_module_type_name($agentModule['id_tipo_modulo']), $data);
+	$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
+		io_safe_output($agent['os_version']), $agent['intervalo'],
+		io_safe_output($agent['agent_version']), $time,
+		io_safe_output($agent['nombre']), $agent['timezone_offset'],
+		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
 		
-	if (false === @file_put_contents($config['remote_config'] . '/' . safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
+	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
 		ui_print_error_message(sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
 	}
 	else {

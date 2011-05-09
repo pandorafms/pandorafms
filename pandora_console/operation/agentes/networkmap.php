@@ -39,7 +39,7 @@ $recenter_networkmap = get_parameter ('recenter_networkmap', 0);
 $hidden_options = get_parameter ('hidden_options', 1);
 
 if($delete_networkmap) {
-	$result = delete_networkmap($id_networkmap);
+	$result = networkmap_delete_networkmap($id_networkmap);
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
@@ -64,7 +64,7 @@ if($add_networkmap) {
 	$center = 0;
 	$name = $activeTab;
 	
-	$id_networkmap = create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
+	$id_networkmap = networkmap_create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
 	$message = ui_print_result_message ($id_networkmap,
 		__('Network map created successfully'),
 		__('Could not create network map'), '', true);
@@ -88,7 +88,7 @@ if($save_networkmap || $update_networkmap) {
 	$name = (string) get_parameter ('name', $activeTab);
 		
 	if($save_networkmap){
-	$result = update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
+	$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
 							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
 							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
 							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center));
@@ -98,7 +98,7 @@ if($save_networkmap || $update_networkmap) {
 	}
 }
 
-$networkmaps = get_networkmaps();
+$networkmaps = networkmap_get_networkmaps();
 
 $nomaps = false;
 if($networkmaps === false) {
@@ -111,14 +111,14 @@ if($nomaps && $id_networkmap == 0) {
 
 // If the map id is not defined, we set the first id of the active type
 if(!$nomaps && $id_networkmap == 0) {
-		$networkmaps_of_type = get_networkmaps('', $activeTab);
+		$networkmaps_of_type = networkmap_get_networkmaps('', $activeTab);
 		if($networkmaps_of_type !== false){
 			$id_networkmap = reset(array_keys($networkmaps_of_type));
 		}
 }
 
 if(!$update_networkmap && !$save_networkmap && $id_networkmap != 0) {
-	$networkmap_data = get_networkmap($id_networkmap);
+	$networkmap_data = networkmap_get_networkmap($id_networkmap);
 	
 	$layout = $networkmap_data['layout'];
 	$depth = $networkmap_data['depth'];

@@ -87,7 +87,7 @@ foreach ($groups as $id_group => $group_name) {
 		continue; // Skip group 0
 
 	// Get stats for this group
-	$data = get_group_stats($id_group);
+	$data = reporting_get_group_stats($id_group);
 
 	if ($data["total_agents"] == 0)
 		continue; // Skip empty groups

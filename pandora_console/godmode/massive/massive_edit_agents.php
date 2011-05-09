@@ -263,7 +263,7 @@ $none = '';
 if ($server_name == '' && $id_agente)
 	$none = __('None');
 $table->data[4][0] = __('Server');
-$table->data[4][1] = html_print_select (get_server_names (),
+$table->data[4][1] = html_print_select (servers_get_names (),
 	'server_name', $server_name, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
 
 // Description

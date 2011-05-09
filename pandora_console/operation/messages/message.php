@@ -37,7 +37,7 @@ else
 	
 if (isset ($_POST["delete_message"])) {
 	$id = (int) get_parameter_post ("delete_message");
-	$result = delete_message ($id); //Delete message function will actually check the credentials
+	$result = messages_delete_message ($id); //Delete message function will actually check the credentials
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -46,7 +46,7 @@ if (isset ($_POST["delete_message"])) {
 
 if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 	// Create message
-	$return = create_message ($config["id_user"], $dest_user, $subject, $message);
+	$return = messages_create_message ($config["id_user"], $dest_user, $subject, $message);
 	ui_print_result_message ($return,
 		__('Message successfully sent to user %s', get_user_fullname ($dest_user)),
 		__('Error sending message to user %s', get_user_fullname ($dest_user)));
@@ -54,7 +54,7 @@ if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 
 if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 	// Create message to groups
-	$return = create_message_group ($config["id_user"], $dest_group, $subject, $message);
+	$return = messages_create_group ($config["id_user"], $dest_group, $subject, $message);
 	ui_print_result_message ($return,
 		__('Message successfully sent'),
 		__('Error sending message to group %s', groups_get_name ($dest_group)));
@@ -65,10 +65,10 @@ if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
 	$id_u = (int) get_parameter ("mark_unread");
 	if (!empty ($id_r)) {
 		//Set to read
-		process_message_read ($id_r);
+		messages_process_read ($id_r);
 	} elseif (!empty ($id_u)) {
 		//Set to unread
-		process_message_read ($id_u, 0);
+		messages_process_read ($id_u, 0);
 	}
 }
 
@@ -117,14 +117,14 @@ if (isset ($_GET["new_msg"])) { //create message
 //	ui_print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
 
 	$message_id = (int) get_parameter ("read_message");
-	$message = get_message ($message_id);
+	$message = messages_get_message ($message_id);
 	
 	if ($message == false) {
 		echo '<div>'.__('This message does not exist in the system').'</div>';
 		return; //Move out of this page and go processing other pages
 	}
 	
-	process_message_read ($message_id);
+	messages_process_read ($message_id);
 	
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">
 			<table class="databox_color" width="650" cellpadding="4" cellspacing="4">
@@ -171,12 +171,12 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 //	}
 
 	//Get number of messages
-	$num_messages = get_message_count ($config["id_user"]);
+	$num_messages = messages_get_count ($config["id_user"]);
 
 	$order = get_parameter ("msg_overview_order", "status");
 	$order_dir = get_parameter ("msg_overview_orddir", "ASC");
 	
-	$messages = get_message_overview ($order, $order_dir);
+	$messages = messages_get_overview ($order, $order_dir);
 	
 	if ($num_messages > 0 && empty ($config["pure"]) && !is_ajax ()) {
 		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.html_print_image ("images/email.png", true).' '.__('unread message(s)').'.</p>';

@@ -50,7 +50,7 @@ function print_cells_temp ($cells) {
 		}
 
 		if (isset($row["href"]))
-			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.safe_input ($row["href"]).'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.io_safe_input ($row["href"]).'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
 		else
 			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
 	}
@@ -67,7 +67,7 @@ else {
 
 // Header
 ui_print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
-$data = get_group_stats();
+$data = reporting_get_group_stats();
 
 echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
 // Monitor checks
@@ -162,7 +162,7 @@ print_cells_temp ($cells);
 // Server performance 
 // --------------------------------------------------------------------------
 if($is_admin) {
-	$server_performance = get_server_performance();
+	$server_performance = servers_get_performance();
 
 	echo '<tr><th colspan="2">'.__('Server performance').'</th></tr>';
 	$cells = array ();
@@ -233,7 +233,7 @@ events_print_event_table ("WHERE estado<>1 ", 10, "100%");
 // Server information
 // --------------------------------------------------------------------------
 if($is_admin) {
-	$serverinfo = get_server_info ();
+	$serverinfo = servers_get_info ();
 	$cells = array ();
 
 	if ($serverinfo === false) {

@@ -122,10 +122,10 @@ foreach ($incidents as $row) {
 
 	$data[0] = '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
 	//$data[1] = "";
-	$data[2] = '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.substr(safe_output($row["titulo"]),0,45).'</a>';
+	$data[2] = '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.substr(io_safe_output($row["titulo"]),0,45).'</a>';
 	$data[3] = $groups[$row["id_grupo"]];
 	$data[4] = $status[$row["estado"]]."<br/><i>".$resolutions[$row["resolution"]]."</i>";
-	$data[5] = print_incidents_priority_img ($row["prioridad"], true);
+	$data[5] = incidents_print_priority_img ($row["prioridad"], true);
 	$data[6] = ui_print_timestamp ($row["actualizacion"], true)."<br/><i>" . ui_print_timestamp ($row["inicio"], true)."</i>";
 	$data[7] = $row["workunits_hours"]." ".__('Hours')."<br/>".$row["workunits_count"]." ".__('Workunits');
 	$data[8] = $row["id_creator"];

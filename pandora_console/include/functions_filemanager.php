@@ -193,14 +193,14 @@ if ($create_text_file) {
 		return;
 	}
 	
-	$filename = safe_output(get_parameter('name_file'));
+	$filename = io_safe_output(get_parameter('name_file'));
 	
 	if ($filename != "") {
 
 		$real_directory = (string) get_parameter('real_directory');
-		$real_directory = safe_output($real_directory);
+		$real_directory = io_safe_output($real_directory);
 		$directory = (string) get_parameter ('directory');
-		$directory = safe_output($directory);
+		$directory = io_safe_output($directory);
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -298,7 +298,7 @@ if ($create_dir) {
 	$config['filemanager']['message'] = null;
 	
 	$directory = (string) get_parameter ('directory', "/");
-	$directory = safe_output($directory);
+	$directory = io_safe_output($directory);
 	$hash = get_parameter('hash', '');
 	$testHash = md5($directory . $config['dbpass']);
 	
@@ -307,7 +307,7 @@ if ($create_dir) {
 	}
 	else {
 		$dirname = (string) get_parameter ('dirname');
-		$dirname = safe_output($dirname);
+		$dirname = io_safe_output($dirname);
 		if ($dirname != '') {
 			@mkdir ($directory.'/'.$dirname);
 			$config['filemanager']['message'] = '<h4 class="suc">'.__('Created directory').'</h4>';
@@ -330,7 +330,7 @@ if ($delete_file) {
 	$config['filemanager']['message'] = null;
 	
 	$filename = (string) get_parameter ('filename');
-	$filename = safe_output($filename);
+	$filename = io_safe_output($filename);
 	$hash = get_parameter('hash', '');
 	$testHash = md5($filename . $config['dbpass']);
 	

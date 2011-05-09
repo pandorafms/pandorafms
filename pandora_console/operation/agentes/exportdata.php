@@ -60,7 +60,7 @@ if (is_ajax ()) {
 			return;
 			
 		foreach ($agents as $agent) {
-			echo safe_output($agent['nombre'])."|".safe_output($agent['direccion'])."\n";
+			echo io_safe_output($agent['nombre'])."|".io_safe_output($agent['direccion'])."\n";
 		}
 		
 		return;
@@ -216,17 +216,17 @@ if (!empty ($export_btn) && !empty ($module)) {
 					$data = array (); // Reinitialize array for each module chunk
 					if ($export_type == "avg") {
 						$arr = array ();
-						$arr["data"] = get_agentmodule_data_average ($selected, $work_period, $work_end);
+						$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
 						if ($arr["data"] === false) {
 							continue;
 						}	
-						$arr["module_name"] = get_agentmodule_name ($selected);
-						$arr["agent_name"] = get_agentmodule_agent_name ($selected);
-						$arr["agent_id"] = get_agentmodule_agent ($selected);
+						$arr["module_name"] = modules_get_agentmodule_name ($selected);
+						$arr["agent_name"] = modules_get_agentmodule_agent_name ($selected);
+						$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
 						$arr["utimestamp"] = $end;				
 						array_push ($data, $arr);
 					} else {
-						$data_single = get_agentmodule_data ($selected, $work_period, $work_end);
+						$data_single = modules_get_agentmodule_data ($selected, $work_period, $work_end);
 						if (!empty ($data_single)) {
 							$data = array_merge ($data, $data_single);
 						}
@@ -240,9 +240,9 @@ if (!empty ($export_btn) && !empty ($module)) {
 */
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
-						$output .= safe_output($module['agent_name']);
+						$output .= io_safe_output($module['agent_name']);
 						$output .= $divider;
-						$output .= safe_output($module['module_name']);
+						$output .= io_safe_output($module['module_name']);
 						$output .= $divider;
 						$output .= $module['data'];
 						$output .= $divider;

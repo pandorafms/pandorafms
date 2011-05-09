@@ -164,7 +164,7 @@ foreach ($result as $row) {
 	
 	$data[0] = $row["nombre"];
 	if ($row["id_tipo_modulo"] > 0) {
-		$data[1] = html_print_image("images/" . show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
+		$data[1] = html_print_image("images/" . modules_show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
 	} else {
 		$data[1] = '';
 	}

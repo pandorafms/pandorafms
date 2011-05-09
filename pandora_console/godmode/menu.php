@@ -246,5 +246,5 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	}
 }
 
-print_menu ($menu);
+menu_print_menu ($menu);
 ?>

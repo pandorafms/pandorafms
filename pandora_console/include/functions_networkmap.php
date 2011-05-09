@@ -29,7 +29,7 @@ ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 
 // Check if a node descends from a given node
-function is_descendant ($node, $ascendant, $parents) {
+function networkmap_is_descendant ($node, $ascendant, $parents) {
 	if (! isset ($parents[$node])) {
 		return false;
 	}
@@ -38,11 +38,11 @@ function is_descendant ($node, $ascendant, $parents) {
 		return true;
 	}
 	
-	return is_descendant ($parents[$node], $ascendant, $parents);
+	return networkmap_is_descendant ($parents[$node], $ascendant, $parents);
 }
 
 // Generate a dot graph definition for graphviz
-function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $id_networkmap = 0) {
+function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $id_networkmap = 0) {
 	$parents = array();
 	$orphans = array();
 
@@ -58,7 +58,7 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 		return false;
 	
 	// Open Graph
-	$graph = open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
+	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
 	
 	// Parse agents
 	$nodes = array ();
@@ -81,21 +81,21 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 	}
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
-		if ($center > 0 && ! is_descendant ($node_id, $center, $parents)) {
+		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
 			unset ($parents[$node_id]);
 			unset ($orphans[$node_id]);
 			unset ($nodes[$node_id]);
 			continue;
 		}
 
-		$graph .= create_agent_node ($node , $simple, $font_size)."\n\t\t";
+		$graph .= networkmap_create_agent_node ($node , $simple, $font_size)."\n\t\t";
 	}
 
 	// Define edges
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
-			$graph .= create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+			$graph .= networkmap_create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 		} else {
 			$orphans[$node] = 1;
 		}
@@ -103,22 +103,22 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
-		$graph .= create_pandora_node ($pandora_name, $font_size, $simple);
+		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple);
 	}
 
 	// Define edges for orphan nodes
 	foreach (array_keys($orphans) as $node) {
-		$graph .= create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 	}
 	
 	// Close graph
-	$graph .= close_graph ();
+	$graph .= networkmap_close_graph ();
 	
 	return $graph;
 }
 
 // Generate a dot graph definition for graphviz with groups
-function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0) {
+function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0) {
 	global $config;
 
 	$parents = array();
@@ -145,7 +145,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	}
 	
 	// Open Graph
-	$graph = open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
+	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
 	
 	$node_count = 0;
 	
@@ -206,7 +206,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				$node_count ++;
-				$agent_module = get_agentmodule($key);
+				$agent_module = modules_get_agentmodule($key);
 				$alerts_module = db_get_sql('SELECT count(*) as num
 					FROM talert_template_modules WHERE id_agent_module = '.$key);
 				
@@ -242,7 +242,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	}
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
-		if ($center > 0 && ! is_descendant ($node_id, $center, $parents)) {
+		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
 			unset ($parents[$node_id]);
 			unset ($orphans[$node_id]);
 			unset ($nodes[$node_id]);
@@ -251,13 +251,13 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 
 		switch($node['type']){
 			case 'group':
-				$graph .= create_group_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_group_node ($node , $simple, $font_size)."\n\t\t";
 				break;
 			case 'agent':
-				$graph .= create_agent_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_agent_node ($node , $simple, $font_size)."\n\t\t";
 				break;
 			case 'module':
-				$graph .= create_module_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
 				break;
 		}
 	}
@@ -266,7 +266,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
-			$graph .= create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
+			$graph .= networkmap_create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
 		} else {
 			$orphans[$node] = 1;
 		}
@@ -274,22 +274,22 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
-		$graph .= create_pandora_node ($pandora_name, $font_size, $simple);
+		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple);
 	}
 
 	// Define edges for orphan nodes
 	foreach (array_keys($orphans) as $node) {
-		$graph .= create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
+		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
 	}
 	
 	// Close graph
-	$graph .= close_graph ();
+	$graph .= networkmap_close_graph ();
 	
 	return $graph;
 }
 
 // Returns an edge definition
-function create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap', $tab = 'topology', $id_networkmap = 0) {
+function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap', $tab = 'topology', $id_networkmap = 0) {
 
 	// edgeURL allows node navigation
 	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false,
@@ -302,7 +302,7 @@ function create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep,
 }
 
 // Returns a group node definition
-function create_group_node ($group, $simple = 0, $font_size = 10) {
+function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 	$status = groups_get_status ($group['id_grupo']);
 	
 	// Set node status
@@ -347,7 +347,7 @@ function create_group_node ($group, $simple = 0, $font_size = 10) {
 }
 
 // Returns a node definition
-function create_agent_node ($agent, $simple = 0, $font_size = 10) {
+function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
 	$status = get_agent_status($agent['id_agente']);
 
 	// Set node status
@@ -393,8 +393,8 @@ function create_agent_node ($agent, $simple = 0, $font_size = 10) {
 }
 
 // Returns a module node definition
-function create_module_node ($module, $simple = 0, $font_size = 10) {
-	$status = get_agentmodule_status($module['id_agente_modulo']);
+function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
+	$status = modules_get_agentmodule_status($module['id_agente_modulo']);
 				
 	// Set node status
 	switch($status) {
@@ -428,7 +428,7 @@ function create_module_node ($module, $simple = 0, $font_size = 10) {
 }
 
 // Returns the definition of the central module
-function create_pandora_node ($name, $font_size = 10, $simple = 0) {
+function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0) {
 	$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true) . '</TD></TR>';
 	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
 	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
@@ -443,7 +443,7 @@ function create_pandora_node ($name, $font_size = 10, $simple = 0) {
 }
 
 // Opens a group definition
-function open_group ($id) {
+function networkmap_open_group ($id) {
 	$img = 'images/'.groups_get_icon ($id).'.png';
 	$name = groups_get_name ($id);
 	
@@ -458,12 +458,12 @@ function open_group ($id) {
 }
 
 // Closes a group definition
-function close_group () {
+function networkmap_close_group () {
 	return '}';
 }
 
 // Opens a graph definition
-function open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size) {
+function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size) {
 	$overlap = 'compress';
 	$size_x = 8;
 	$size_y = 5.4;
@@ -501,12 +501,12 @@ function open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size) {
 }
 
 // Closes a graph definition
-function close_graph () {
+function networkmap_close_graph () {
 	return '}';
 }
 
 // Returns the filter used to achieve the desired layout
-function get_filter ($layout) {
+function networkmap_get_filter ($layout) {
 	switch($layout) {
 	case 'flat':
 		return 'dot';
@@ -543,7 +543,7 @@ function get_filter ($layout) {
  * 
  * @return mixed New networkmap id if created. False if it could not be created.
  */
-function create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0) {
+function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0) {
 	
 	global $config;
 	
@@ -578,7 +578,7 @@ function create_networkmap ($name, $type = 'topology', $layout = 'radial', $noov
  *
  * @return Networkmap with the given id. False if not available or readable.
  */
-function get_networkmap ($id_networkmap, $filter = false, $fields = false) {
+function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = false) {
 	global $config;
 	
 	$id_networkmap = safe_int ($id_networkmap);
@@ -604,7 +604,7 @@ function get_networkmap ($id_networkmap, $filter = false, $fields = false) {
  *
  * @return Networkmap with the given id. False if not available or readable.
  */
-function get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
+function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
 	global $config;
 	
 	if($id_user == '') {
@@ -659,11 +659,11 @@ function get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
  *
  * @return bool True if the map was deleted, false otherwise.
  */
-function delete_networkmap ($id_networkmap) {
+function networkmap_delete_networkmap ($id_networkmap) {
 	$id_networkmap = safe_int ($id_networkmap);
 	if (empty ($id_networkmap))
 		return false;
-	$networkmap = get_networkmap ($id_networkmap);
+	$networkmap = networkmap_get_networkmap ($id_networkmap);
 	if ($networkmap === false)
 		return false;
 	return @db_process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap));
@@ -677,8 +677,8 @@ function delete_networkmap ($id_networkmap) {
  * 
  * @return bool True if the map was updated. False otherwise.
  */
-function update_networkmap ($id_networkmap, $values) {
-	$networkmap = get_networkmap ($id_networkmap);
+function networkmap_update_networkmap ($id_networkmap, $values) {
+	$networkmap = networkmap_get_networkmap ($id_networkmap);
 	if ($networkmap === false)
 		return false;
 	return (db_process_sql_update ('tnetwork_map',

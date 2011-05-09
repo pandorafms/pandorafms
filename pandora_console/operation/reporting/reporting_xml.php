@@ -162,10 +162,10 @@ echo '<generated><unix>'.$time.'</unix>';
 echo '<rfc2822>'.date ("r",$time).'</rfc2822></generated>';
 
 $xml["id"] = $id_report;
-$xml["name"] = safe_output_xml ($report['name']);
-$xml["description"] = safe_output_xml($report['description']);
+$xml["name"] = io_safe_output_xml ($report['name']);
+$xml["description"] = io_safe_output_xml($report['description']);
 $xml["group"]["id"] = $report['id_group'];
-$xml["group"]["name"] = safe_output_xml ($group_name);
+$xml["group"]["name"] = io_safe_output_xml ($group_name);
 
 if ($contents === false) {
 	$contents = array ();
@@ -179,8 +179,8 @@ $counter = 0;
 foreach ($contents as $content) {
 	echo '<object id="'.$counter.'">';
 	$data = array ();
-	$data["module"] = safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
-	$data["agent"] = safe_output_xml (get_agentmodule_agent_name ($content['id_agent_module']));
+	$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+	$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
@@ -267,11 +267,11 @@ foreach ($contents as $content) {
 			
 			foreach ($slas as $sla) {
 				$sla_data = array ();
-				$sla_data["agent"] = get_agentmodule_agent_name ($sla['id_agent_module']);
-				$sla_data["module"] = get_agentmodule_name ($sla['id_agent_module']);
+				$sla_data["agent"] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+				$sla_data["module"] = modules_get_agentmodule_name ($sla['id_agent_module']);
 				$sla_data["max"] = $sla['sla_max'];
 				$sla_data["min"] = $sla['sla_min'];
-				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime, $content, $content['time_from'], $content['time_to']);
+				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime, $content, $content['time_from'], $content['time_to']);
 				if ($sla_value === false) {
 					$sla_data["error"] = __('Unknown');
 				} else {
@@ -286,7 +286,7 @@ foreach ($contents as $content) {
 		case 6:
 		case 'monitor_report':
 			$data["title"] = __('Monitor report');
-			$monitor_value = get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime);
+			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime);
 			if ($monitor_value === false) {
 				$monitor_value = __('Unknown');
 			} else {
@@ -301,7 +301,7 @@ foreach ($contents as $content) {
 		case 7:
 		case 'avg_value':
 			$data["title"] = __('Avg. Value');
-			$data["objdata"] = get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime);
+			$data["objdata"] = reporting_get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
 			} else {
@@ -311,7 +311,7 @@ foreach ($contents as $content) {
 		case 8:
 		case 'max_value':
 			$data["title"] = __('Max. Value');
-			$data["objdata"] = get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime);
+			$data["objdata"] = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
 			} else {
@@ -321,7 +321,7 @@ foreach ($contents as $content) {
 		case 9:
 		case 'min_value':
 			$data["title"] = __('Min. Value');
-			$data["objdata"] = get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime);
+			$data["objdata"] = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
 			} else {
@@ -331,7 +331,7 @@ foreach ($contents as $content) {
 		case 10:
 		case 'sumatory':
 			$data["title"] = __('Sumatory');
-			$data["objdata"] = get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime);
+			$data["objdata"] = reporting_get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
 			} else {
@@ -364,7 +364,7 @@ foreach ($contents as $content) {
 		case 'text':
 			$data["title"] = __('Text');
 			$data["objdata"] = "<![CDATA[";
-			$data["objdata"] .= safe_output($content["text"]);
+			$data["objdata"] .= io_safe_output($content["text"]);
 			$data["objdata"] .= "]]>";
 			break;
 		case 'sql':
@@ -420,7 +420,7 @@ foreach ($contents as $content) {
 			$data['group'] = groups_get_name($content['id_agent']);
 			$data["objdata"]["event_report_group"] = array();
 			
-			$events = get_group_detailed_event_reporting($content['id_agent'], $content['period'], $report["datetime"], true, false);
+			$events = reporting_get_group_detailed_event($content['id_agent'], $content['period'], $report["datetime"], true, false);
 			
 			foreach ($events->data as $eventRow) {
 				$objdata = array();
@@ -436,7 +436,7 @@ foreach ($contents as $content) {
 			$data["title"] = __('Agents detailed event');
 			$data["objdata"]["event_report_module"] = array();
 			
-			$events = get_module_detailed_event_reporting($content['id_agent_module'], $content['period'], $report["datetime"], true, false);
+			$events = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true, false);
 			
 			foreach ($events->data as $eventRow) {
 				$objdata = array();
@@ -453,7 +453,7 @@ foreach ($contents as $content) {
 			$data["title"] = __('Alert report module');
 			$data["objdata"]["alert_report_module"] = array();
 		
-			$alerts = alert_reporting_module ($content['id_agent_module'], $content['period'], $report["datetime"], true, false);
+			$alerts = reporting_alert_reporting_module ($content['id_agent_module'], $content['period'], $report["datetime"], true, false);
 			
 			foreach ($alerts->data as $row) {
 				$objdata = array();
@@ -489,7 +489,7 @@ foreach ($contents as $content) {
 		case 'alert_report_agent':
 			$data["title"] = __('Alert report agent');
 			
-			$alerts = alert_reporting_agent ($content['id_agent'], $content['period'], $report["datetime"], true, false);
+			$alerts = reporting_alert_reporting_agent ($content['id_agent'], $content['period'], $report["datetime"], true, false);
 			$data["objdata"]["alert_report_agent"] = array();
 			
 			foreach ($alerts->data as $row) {
@@ -577,7 +577,7 @@ foreach ($contents as $content) {
 			}
 			break;
 		case 'TTRT':
-			$ttr = get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			$ttr = reporting_get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($ttr === false) {
 				$ttr = __('Unknown');
 			} else if ($ttr != 0) {
@@ -588,7 +588,7 @@ foreach ($contents as $content) {
 			$data["objdata"] = $ttr;
 			break;
 		case 'TTO':
-			$tto = get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			$tto = reporting_get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($tto === false) {
 				$tto = __('Unknown');
 			} else if ($tto != 0) {
@@ -599,7 +599,7 @@ foreach ($contents as $content) {
 			$data["objdata"] = $tto;
 			break;
 		case 'MTBF':
-			$mtbf = get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			$mtbf = reporting_get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mtbf === false) {
 				$mtbf = __('Unknown');
 			} else if ($mtbf != 0) {
@@ -610,7 +610,7 @@ foreach ($contents as $content) {
 			$data["objdata"] = $mtbf;
 			break;
 		case 'MTTR':
-			$mttr = get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			$mttr = reporting_get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mttr === false) {
 				$mttr = __('Unknown');
 			} else if ($mttr != 0) {

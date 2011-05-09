@@ -236,7 +236,7 @@ else {
 	$table->data = array ();
 	
 	foreach ($agents as $agent) {
-		$agent_info = get_agent_module_info ($agent["id_agente"]);
+		$agent_info = reporting_get_agent_module_info ($agent["id_agente"]);
 		
 		$modulesCell = '<b>'. $agent_info["modules"] . '</b>';
 		if ($agent_info["monitor_alertsfired"] > 0)

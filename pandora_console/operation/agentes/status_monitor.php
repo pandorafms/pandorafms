@@ -418,9 +418,9 @@ foreach ($result as $row) {
 	$data[1] .= substr ($row["agent_name"], 0, 25);
 	$data[1] .= '</a></strong>';
 	
-	$data[2] = html_print_image("images/" . show_icon_type ($row["module_type"]), true); 
+	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
-	$data[3] = mb_strimwidth (safe_output($row["module_name"]), 0, 30);
+	$data[3] = mb_strimwidth (io_safe_output($row["module_name"]), 0, 30);
 
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
 
@@ -437,7 +437,7 @@ foreach ($result as $row) {
 		$data[5] = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
 	}
 	else {
-		$last_status =  get_agentmodule_last_status($row['id_agente_modulo']);
+		$last_status =  modules_get_agentmodule_last_status($row['id_agente_modulo']);
 		switch($last_status) {
 			case 0:
 				$data[5] = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
@@ -457,7 +457,7 @@ foreach ($result as $row) {
 
 		$graph_type = return_graphtype ($row["module_type"]);
 
-		$nombre_tipo_modulo = get_moduletype_name ($row["module_type"]);
+		$nombre_tipo_modulo = modules_get_moduletype_name ($row["module_type"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$row["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
@@ -471,7 +471,7 @@ foreach ($result as $row) {
 	if (is_numeric($row["datos"]))
 		$data[7] = format_numeric($row["datos"]);
 	else
-		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(safe_output($row["datos"]),0,12)."</span>";
+		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
 	
 	if ($row["module_interval"] > 0)
 		$interval = $row["module_interval"];

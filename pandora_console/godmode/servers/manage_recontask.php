@@ -196,7 +196,7 @@ if ($result !== false) {
 		if ($row["id_recon_script"] == 0){
 		// Network recon task
 			$data[2] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
-			$data[2] .= get_networkprofile_name ($row["id_network_profile"]);
+			$data[2] .= network_profiles_get_name ($row["id_network_profile"]);
 		} else {
 			// APP recon task
 			$data[2] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";

@@ -76,9 +76,9 @@ $integria_api = $config['integria_url']."/include/api.php?return_type=xml&user="
 
 if($update_incident == 1) {				
 	$values[0] = $id_incident;
-	$values[1] = str_replace(" ", "%20", safe_output(get_parameter('title')));
-	$values[2] = str_replace(" ", "%20", safe_output(get_parameter('description')));
-	$values[3] = str_replace(" ", "%20", safe_output(get_parameter('epilog')));
+	$values[1] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
+	$values[2] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
+	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('epilog')));
 	$values[4] = get_parameter('group');
 	$values[5] = get_parameter('priority');
 	$values[6] = get_parameter('source');
@@ -90,16 +90,16 @@ if($update_incident == 1) {
 
 	$url = $integria_api."&op=update_incident&token=".$token."&params=".$params;
 	// Call the integria API
-	$result = call_api($url);
+	$result = incidents_call_api($url);
 }
 
 $create_incident = get_parameter('create_incident', 0);
 
 if($create_incident == 1) {
-	$values[0] = str_replace(" ", "%20", safe_output(get_parameter('title')));
+	$values[0] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
 	$values[1] = get_parameter('group');
 	$values[2] = get_parameter('priority');
-	$values[3] = str_replace(" ", "%20", safe_output(get_parameter('description')));
+	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
 	$values[4] = $config['integria_inventory'];
 	
 	$params = implode($token, $values);
@@ -107,7 +107,7 @@ if($create_incident == 1) {
 	$url = $integria_api."&op=create_incident&token=".$token."&params=".$params;
 
 	// Call the integria API
-	$result = call_api($url);
+	$result = incidents_call_api($url);
 }
 
 $attach_file = get_parameter('attach_file', 0);
@@ -119,7 +119,7 @@ if($attach_file == 1) {
 		$values[0] = $id_incident;
 		$values[1] = $_FILES['new_file']['name'];
 		$values[2] = $_FILES['new_file']['size'];
-		$values[3] = str_replace(" ", "%20", safe_output(get_parameter('description'), __('No description available')));
+		$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('description'), __('No description available')));
 		$values[4] = base64_encode($file_content);
 		
 		
@@ -128,7 +128,7 @@ if($attach_file == 1) {
 		$url = $integria_api."&op=attach_file&token=".$token;
 
 		// Call the integria API
-		$result = call_api($url, array('params' => $params));
+		$result = incidents_call_api($url, array('params' => $params));
 	}
 	else {
 		switch ($_FILES['new_file']['error']) {
@@ -153,7 +153,7 @@ if($delete_file != 0) {
 	$url = $integria_api."&op=delete_file&params=".$delete_file;
 
 	// Call the integria API
-	$result = call_api($url);
+	$result = incidents_call_api($url);
 }
 
 $delete_incident = get_parameter('delete_incident', 0);
@@ -162,14 +162,14 @@ if($delete_incident != 0) {
 	$url = $integria_api."&op=delete_incident&params=".$delete_incident;
 
 	// Call the integria API
-	$result = call_api($url);
+	$result = incidents_call_api($url);
 }
 
 $create_workunit = get_parameter('create_workunit', 0);
 
 if($create_workunit == 1) {
 	$values[0] = $id_incident;
-	$values[1] = str_replace(" ", "%20", safe_output(get_parameter('description')));
+	$values[1] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
 	$values[2] = get_parameter('time_used');
 	$values[3] = get_parameter('have_cost');
 	$values[4] = get_parameter('public');
@@ -180,7 +180,7 @@ if($create_workunit == 1) {
 	$url = $integria_api."&op=create_workunit&token=".$token."&params=".$params;
 
 	// Call the integria API
-	$result = call_api($url);
+	$result = incidents_call_api($url);
 }
 
 // Set the url with parameters to call the api
@@ -224,7 +224,7 @@ switch($tab) {
 
 if(isset($url)) {
 	// Call the integria API
-	$xml = call_api($url);
+	$xml = incidents_call_api($url);
 }
 else {
 	$xml = "<xml></xml>";
@@ -232,24 +232,24 @@ else {
 
 // If is a valid XML, parse it
 if(xml_parse(xml_parser_create(), $xml)) {
-	$result = xml_to_array($xml);
+	$result = incidents_xml_to_array($xml);
 	if($result == false) {
 		$result = array();
 	}
 	switch($tab) {
 		case 'list':
-			$result_resolutions = xml_to_array(call_api($url_resolutions));
-			$result_status = xml_to_array(call_api($url_status));
-			$result_groups = xml_to_array(call_api($url_groups));
+			$result_resolutions = incidents_xml_to_array(incidents_call_api($url_resolutions));
+			$result_status = incidents_xml_to_array(incidents_call_api($url_status));
+			$result_groups = incidents_xml_to_array(incidents_call_api($url_groups));
 			require_once('incident.list.php');
 			break;
 		case 'editor':
 		case 'incident':
-			$result_resolutions = xml_to_array(call_api($url_resolutions));
-			$result_status = xml_to_array(call_api($url_status));
-			$result_sources = xml_to_array(call_api($url_sources));
-			$result_groups = xml_to_array(call_api($url_groups));
-			$result_users = xml_to_array(call_api($url_users));
+			$result_resolutions = incidents_xml_to_array(incidents_call_api($url_resolutions));
+			$result_status = incidents_xml_to_array(incidents_call_api($url_status));
+			$result_sources = incidents_xml_to_array(incidents_call_api($url_sources));
+			$result_groups = incidents_xml_to_array(incidents_call_api($url_groups));
+			$result_users = incidents_xml_to_array(incidents_call_api($url_users));
 
 			require_once('incident.incident.php');
 			break;

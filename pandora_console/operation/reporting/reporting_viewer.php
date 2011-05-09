@@ -156,7 +156,7 @@ foreach ($contents as $content) {
 	$table->colspan = array ();
 	$table->rowstyle = array ();
 	
-	render_report_html_item ($content, $table, $report);
+	reporting_render_report_html_item ($content, $table, $report);
 
 	html_print_table ($table);
 	flush ();

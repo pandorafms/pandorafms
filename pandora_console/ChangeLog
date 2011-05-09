@@ -1,3 +1,135 @@
+2011-05-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	include/functions_html.php
+	include/functions_menu.php
+	include/graphs/fgraph.php
+	include/functions_messages.php
+	include/functions_modules.php
+	include/functions_reporting.php
+	include/functions_filemanager.php
+	include/functions_networkmap.php
+	include/functions_servers.php
+	include/functions_network_profiles.php
+	include/functions_network_components.php
+	include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php
+	include/ajax/agent.php
+	include/ajax/alert_list.ajax.php
+	include/ajax/module.php
+	include/functions_io.php
+	include/functions_api.php
+	include/functions_ui.php
+	include/fgraph.php
+	include/functions_incidents.php
+	include/functions.php
+	include/functions_agents.php
+	include/functions_db.php
+	include/functions_alerts.php
+	include/functions_reports.php
+	include/functions_ui_renders.php
+	extensions/insert_data.php
+	extensions/agents_modules.php
+	extensions/resource_registration.php
+	extensions/resource_exportation.php
+	extensions/module_groups.php
+	extensions/plugin_registration.php
+	operation/incidents/incident.incident.php
+	operation/incidents/incident.php
+	operation/incidents/incident_detail.php
+	operation/incidents/incident.download_file.php
+	operation/incidents/incident.list.php
+	operation/search_modules.php
+	operation/agentes/status_monitor.php
+	operation/agentes/export_csv.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/datos_agente.php
+	operation/agentes/estado_agente.php
+	operation/agentes/networkmap.topology.php
+	operation/agentes/networkmap.groups.php
+	operation/agentes/sla_view.php
+	operation/agentes/exportdata.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/ver_agente.php
+	operation/agentes/tactical.php
+	operation/agentes/group_view.php
+	operation/agentes/networkmap.php
+	operation/agentes/stat_win.php
+	operation/servers/view_server.php
+	operation/servers/view_server_detail.php
+	operation/menu.php
+	operation/search_agents.php
+	operation/integria_incidents/incident.incident.php
+	operation/integria_incidents/incident.php
+	operation/integria_incidents/incident_detail.php
+	operation/integria_incidents/incident.download_file.php
+	operation/integria_incidents/incident.list.php
+	operation/events/events_rss.php
+	operation/events/events_list.php
+	operation/search_alerts.php
+	operation/messages/message.php
+	operation/reporting/reporting_xml.php
+	operation/reporting/reporting_viewer.php
+	operation/reporting/custom_reporting.php
+	operation/search_reports.php
+	operation/search_results.php
+	mobile/operation/agents/monitor_status.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/agents/tactical.php
+	mobile/operation/agents/view_alerts.php
+	mobile/operation/agents/group_view.php
+	mobile/operation/servers/view_servers.php
+	general/logon_ok.php
+	general/header.php
+	godmode/admin_access_logs.php
+	godmode/db/db_refine.php
+	godmode/db/db_info.php
+	godmode/db/db_purge.php
+	godmode/agentes/agent_template.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php
+	godmode/agentes/agent_manager.php
+	godmode/servers/recon_script.php
+	godmode/servers/plugin.php
+	godmode/servers/manage_recontask.php
+	godmode/servers/modificar_server.php
+	godmode/menu.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/configure_alert_compound.php
+	godmode/alerts/configure_alert_action.php
+	godmode/setup/os.list.php
+	godmode/setup/links.php
+	godmode/setup/setup.php
+	godmode/users/user_list.php
+	godmode/users/configure_user.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_add_profiles.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_nc_groups_form.php
+	godmode/modules/manage_network_templates.php
+	godmode/modules/manage_network_components_form_common.php
+	godmode/modules/manage_network_templates_form.php
+	godmode/modules/manage_network_components_form_wmi.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_nc_groups.php
+	godmode/reporting/reporting_builder.preview.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Functions in 
+	functions_incidents.php, functions_io.php, functions_menu.php, functions_messages.php,
+	functions_modules.php, functions_network_components.php, functions_network_profiles.php,
+	functions_networkmap.php, functions_reporting.php, functions_reports.php, 
+	functions_servers.php have "incidents_", "io_", "menu_", "messages_", "modules_",
+	"network_profiles_", "network_components_", "networkmap_", "reporting_", "reports_",
+	"servers_" prefixes respectively.
+
 2011-05-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/estado_agente.php: Replaced a call to the old

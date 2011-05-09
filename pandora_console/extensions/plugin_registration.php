@@ -92,7 +92,7 @@ function pluginreg_extension_main () {
 
 	// Verify if a plugin with the same name is already registered
 
-	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . safe_input ($ini_array["plugin_definition"]["name"]) . "'";
+	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . io_safe_input ($ini_array["plugin_definition"]["name"]) . "'";
 	$result = db_get_sql ($sql0);
 	
 	
@@ -103,10 +103,10 @@ function pluginreg_extension_main () {
 	}
 
 	$values = array(
-		'name' => safe_input ($ini_array["plugin_definition"]["name"]),
-		'description' => safe_input ($ini_array["plugin_definition"]["description"]),
+		'name' => io_safe_input ($ini_array["plugin_definition"]["name"]),
+		'description' => io_safe_input ($ini_array["plugin_definition"]["description"]),
 		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
-		'execute' => safe_input ($exec_path),
+		'execute' => io_safe_input ($exec_path),
 		'net_dst_opt' => $ini_array["plugin_definition"]["ip_opt"],
 		'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
 		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
@@ -116,10 +116,10 @@ function pluginreg_extension_main () {
 	$create_id = db_process_sql_insert('tplugin', $values);
 	
 	$values = array(
-		'name' => safe_input ($ini_array["plugin_definition"]["name"]),
-		'description' => safe_input ($ini_array["plugin_definition"]["description"]),
+		'name' => io_safe_input ($ini_array["plugin_definition"]["name"]),
+		'description' => io_safe_input ($ini_array["plugin_definition"]["description"]),
 		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
-		'execute' => safe_input ($exec_path),
+		'execute' => io_safe_input ($exec_path),
 		'net_dst_opt' => $ini_array["plugin_definition"]["ip_opt"],
 		'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
 		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
@@ -131,8 +131,8 @@ function pluginreg_extension_main () {
 		$label = "module".$ax;
 		
 		$values = array(
-			'name' => safe_input ($ini_array[$label]["name"]),
-			'description' => safe_input ($ini_array[$label]["description"]),
+			'name' => io_safe_input ($ini_array[$label]["name"]),
+			'description' => io_safe_input ($ini_array[$label]["description"]),
 			'id_group' => $ini_array[$label]["id_group"],
 			'type' => $ini_array[$label]["type"],
 			'max' => $ini_array[$label]["max"],
@@ -140,9 +140,9 @@ function pluginreg_extension_main () {
 			'module_interval' => $ini_array[$label]["module_interval"],
 			'id_module_group' => $ini_array[$label]["id_module_group"],
 			'id_modulo' => $ini_array[$label]["id_modulo"], 
-			'plugin_user' => safe_input ($ini_array[$label]["plugin_user"]),
-			'plugin_pass' => safe_input ($ini_array[$label]["plugin_pass"]),
-			'plugin_parameter' => safe_input ($ini_array[$label]["plugin_parameter"]),
+			'plugin_user' => io_safe_input ($ini_array[$label]["plugin_user"]),
+			'plugin_pass' => io_safe_input ($ini_array[$label]["plugin_pass"]),
+			'plugin_parameter' => io_safe_input ($ini_array[$label]["plugin_parameter"]),
 			'max_timeout' => $ini_array[$label]["max_timeout"],
 			'history_data' => $ini_array[$label]["history_data"],
 			'min_warning' => $ini_array[$label]["min_warning"],

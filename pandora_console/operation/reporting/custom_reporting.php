@@ -26,7 +26,7 @@ enterprise_include ('operation/reporting/custom_reporting.php');
 // Header
 ui_print_page_header (__('Reporting'). " &raquo;  ".__('Custom reporting'), "images/reporting.png", false, "", false, "" );
 
-$reports = get_reports ();
+$reports = reports_get_reports ();
 
 if (sizeof ($reports) == 0) {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";

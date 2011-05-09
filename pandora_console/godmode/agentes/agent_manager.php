@@ -31,7 +31,7 @@ if (is_ajax ()) {
 			return;
 		
 		foreach ($agents as $agent) {
-			echo safe_output($agent['nombre']) . "|" . safe_output($agent['direccion'])  . "\n";
+			echo io_safe_output($agent['nombre']) . "|" . io_safe_output($agent['direccion'])  . "\n";
 		}
 		
 		return;
@@ -167,7 +167,7 @@ $none = '';
 if ($server_name == '' && $id_agente)
 	$none = __('None');
 $table->data[6][0] = __('Server');
-$table->data[6][1] = html_print_select (get_server_names (),
+$table->data[6][1] = html_print_select (servers_get_names (),
 	'server_name', $server_name, '', $none, 0, true);
 
 // Description

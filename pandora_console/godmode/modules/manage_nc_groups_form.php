@@ -30,7 +30,7 @@ require_once ('include/functions_network_components.php');
 $id = (int) get_parameter ('id');
 
 if ($id) {
-	$group = get_network_component_group ($id);
+	$group = network_components_get_group ($id);
 	$name = $group['name'];
 	$parent = $group['parent'];
 } else {
@@ -47,7 +47,7 @@ $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 15, 255, true);
 
 $table->data[1][0] = __('Parent');
-$table->data[1][1] = html_print_select (get_network_component_groups (),
+$table->data[1][1] = html_print_select (network_components_get_groups (),
 	'parent', $parent, false, __('None'), 0, true, false, false);
 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups">';

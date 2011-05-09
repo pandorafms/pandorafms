@@ -101,7 +101,7 @@ if ($multiple_delete) {
 		}
 		
 		enterprise_include_once('include/functions_config_agents.php');
-		enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_agent_module_del), get_agentmodule_name($id_agent_module_del)));
+		enterprise_hook('deleteLocalModuleInConf', array(modules_get_agentmodule_agent($id_agent_module_del), modules_get_agentmodule_name($id_agent_module_del)));
 		
 		//Init transaction
 		$error = 0;
@@ -325,7 +325,7 @@ foreach ($modules as $module) {
 	if ($module['id_module_group'] != $last_modulegroup) {
 		$last_modulegroup = $module['id_module_group'];
 		
-		$data[0] = '<strong>'.get_modulegroup_name ($last_modulegroup).'</strong>';
+		$data[0] = '<strong>'.modules_get_modulegroup_name ($last_modulegroup).'</strong>';
 		$i = array_push ($table->data, $data);
 		$table->rowclass[$i - 1] = 'datos3';
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
@@ -385,7 +385,7 @@ foreach ($modules as $module) {
 	// Module type (by server type )
 	$data[2] = '';
 	if ($module['id_modulo'] > 0) {
-		$data[2] = show_server_type ($module['id_modulo']);
+		$data[2] = servers_show_type ($module['id_modulo']);
 	}
 
 	// This module is initialized ? (has real data)

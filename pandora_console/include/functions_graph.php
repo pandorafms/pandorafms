@@ -40,11 +40,11 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$datelimit = $date - $period;
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
-	$agent_name = get_agentmodule_agent_name ($agent_module_id);
+	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = get_agent_id ($agent_name);
-	$module_name = get_agentmodule_name ($agent_module_id);
-	$id_module_type = get_agentmodule_type ($agent_module_id);
-	$module_type = get_moduletype_name ($id_module_type);
+	$module_name = modules_get_agentmodule_name ($agent_module_id);
+	$id_module_type = modules_get_agentmodule_type ($agent_module_id);
+	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
 	if ($uncompressed_module) {
 		$avg_only = 1;
@@ -82,14 +82,14 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	}
 	else {
 		// Get previous data
-		$previous_data = get_previous_data ($agent_module_id, $datelimit);
+		$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
 		if ($previous_data !== false) {
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($data, $previous_data);
 		}
 	
 		// Get next data
-		$nextData = get_next_data ($agent_module_id, $date);
+		$nextData = modules_get_next_data ($agent_module_id, $date);
 		if ($nextData !== false) {
 			array_push ($data, $nextData);
 		}
@@ -251,9 +251,9 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	}	
 	
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
-	$max_value = round(get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
-	$avg_value = round(get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
+	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
+	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
@@ -404,12 +404,12 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 	for ($i = 0; $i < $module_number; $i++) {
 
 		$agent_module_id = $module_list[$i];
-		$agent_name = get_agentmodule_agent_name ($agent_module_id);
+		$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 		$agent_id = get_agent_id ($agent_name);
-		$module_name = get_agentmodule_name ($agent_module_id);
+		$module_name = modules_get_agentmodule_name ($agent_module_id);
 		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 40);
-		$id_module_type = get_agentmodule_type ($agent_module_id);
-		$module_type = get_moduletype_name ($id_module_type);
+		$id_module_type = modules_get_agentmodule_type ($agent_module_id);
+		$module_type = modules_get_moduletype_name ($id_module_type);
 		$uncompressed_module = is_module_uncompressed ($module_type);
 		if ($uncompressed_module) {
 			$avg_only = 1;
@@ -446,14 +446,14 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		// Compressed module data
 		} else {
 			// Get previous data
-			$previous_data = get_previous_data ($agent_module_id, $datelimit);
+			$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
 			if ($previous_data !== false) {
 				$previous_data['utimestamp'] = $datelimit;
 				array_unshift ($data, $previous_data);
 			}
 		
 			// Get next data
-			$nextData = get_next_data ($agent_module_id, $date);
+			$nextData = modules_get_next_data ($agent_module_id, $date);
 			if ($nextData !== false) {
 				array_push ($data, $nextData);
 			} else if (count ($data) > 0) {
@@ -1308,11 +1308,11 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
 
     $report_content = db_get_row ('treport_content', 'id_rc', $id);
     if ($report_content["external_source"] != ""){
-        $sql = safe_output ($report_content["external_source"]);
+        $sql = io_safe_output ($report_content["external_source"]);
     }
     else {
     	$sql = db_get_row('treport_custom_sql', 'id', $report_content["treport_custom_sql_id"]);
-    	$sql = safe_output($sql['sql']);
+    	$sql = io_safe_output($sql['sql']);
     }
     
 	$data_result = db_get_all_rows_sql ($sql);
@@ -1478,11 +1478,11 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	$datelimit = $date - $period;
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
-	$agent_name = get_agentmodule_agent_name ($agent_module_id);
+	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = get_agent_id ($agent_name);
-	$module_name = get_agentmodule_name ($agent_module_id);
-	$id_module_type = get_agentmodule_type ($agent_module_id);
-	$module_type = get_moduletype_name ($id_module_type);
+	$module_name = modules_get_agentmodule_name ($agent_module_id);
+	$id_module_type = modules_get_agentmodule_type ($agent_module_id);
+	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
 	if ($uncompressed_module) {
 		$avg_only = 1;
@@ -1519,14 +1519,14 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	// Compressed module data
 	} else {
 		// Get previous data
-		$previous_data = get_previous_data ($agent_module_id, $datelimit);
+		$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
 		if ($previous_data !== false) {
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($data, $previous_data);
 		}
 	
 		// Get next data
-		$nextData = get_next_data ($agent_module_id, $date);
+		$nextData = modules_get_next_data ($agent_module_id, $date);
 		if ($nextData !== false) {
 			array_push ($data, $nextData);
 		} else if (count ($data) > 0) {
@@ -1682,9 +1682,9 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	}
 
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
-	$max_value = round(get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
-	$avg_value = round(get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
+	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
+	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
@@ -1792,11 +1792,11 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	$datelimit = $date - $period;
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
-	$agent_name = get_agentmodule_agent_name ($agent_module_id);
+	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = get_agent_id ($agent_name);
-	$module_name = get_agentmodule_name ($agent_module_id);
-	$id_module_type = get_agentmodule_type ($agent_module_id);
-	$module_type = get_moduletype_name ($id_module_type);
+	$module_name = modules_get_agentmodule_name ($agent_module_id);
+	$id_module_type = modules_get_agentmodule_type ($agent_module_id);
+	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
 	if ($uncompressed_module) {
 		$avg_only = 1;
@@ -1833,14 +1833,14 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	// Compressed module data
 	} else {
 		// Get previous data
-		$previous_data = get_previous_data ($agent_module_id, $datelimit, 1);
+		$previous_data = modules_get_previous_data ($agent_module_id, $datelimit, 1);
 		if ($previous_data !== false) {
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($data, $previous_data);
 		}
 	
 		// Get next data
-		$nextData = get_next_data ($agent_module_id, $date, 1);
+		$nextData = modules_get_next_data ($agent_module_id, $date, 1);
 		if ($nextData !== false) {
 			array_push ($data, $nextData);
 		} else if (count ($data) > 0) {
@@ -1950,9 +1950,9 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	}
 
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
-	$max_value = round(get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
-	$avg_value = round(get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
+	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
+	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
@@ -2011,8 +2011,8 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $fechatope = $now - $periodo; // limit date
 
-	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
+	$nombre_agente = modules_get_agentmodule_agent_name ($id_agente_modulo);
+	$nombre_modulo = modules_get_agentmodule_name ($id_agente_modulo);
 	$id_agente = get_agent_id ($nombre_agente);
 
 

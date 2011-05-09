@@ -25,7 +25,7 @@ $integria_api = $config['integria_url']."/include/api.php?return_type=csv&user="
 $url = $integria_api."&op=download_file&params=".$id_file;
 
 // Call the integria API
-$file = call_api($url);
+$file = incidents_call_api($url);
 	
 header("Content-type: binary");
 header("Content-Disposition: attachment; filename=\"".$filename."\"");

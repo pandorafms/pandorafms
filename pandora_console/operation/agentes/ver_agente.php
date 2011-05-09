@@ -159,7 +159,7 @@ if (is_ajax ()) {
 		
 		$result = array();
 		foreach($nameModules as $nameModule) {
-			$result[] = safe_output($nameModule['nombre']);
+			$result[] = io_safe_output($nameModule['nombre']);
 		}
 		
 		echo json_encode($result);
@@ -168,14 +168,14 @@ if (is_ajax ()) {
 
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$filter = safe_output((string) get_parameter ('filter'));
+		$filter = io_safe_output((string) get_parameter ('filter'));
 		$fields = (string) get_parameter ('fields');
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
 		
 		if ($agentName != null) {
 				$search = array();
-				$search['name'] = safe_output($agentName);
+				$search['name'] = io_safe_output($agentName);
 		}
 		else
 			$search = false;
@@ -189,7 +189,7 @@ if (is_ajax ()) {
 			($filter != '' ? $filter : false), $indexed);
 		
 		foreach($agent_modules as $key => $module) {
-			$agent_modules[$key]['nombre'] = safe_output($module['nombre']);
+			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
 			
 		//Hack to translate text "any" in PHP to javascript
@@ -284,11 +284,11 @@ if (is_ajax ()) {
 		echo html_print_image("images/brick.png", true) . '&nbsp;'; 
 		echo ui_print_truncate_text($module['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Type').':</strong> ';
-		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
-		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
-		echo html_print_image("images/" . get_module_type_icon ($agentmoduletype), true) . '<br />';
+		$agentmoduletype = modules_get_agentmodule_type ($module['id_agente_modulo']);
+		echo modules_get_moduletype_name ($agentmoduletype).'&nbsp;';
+		echo html_print_image("images/" . modules_get_type_icon ($agentmoduletype), true) . '<br />';
 		echo '<strong>'.__('Module group').':</strong> ';
-		$modulegroup =  get_modulegroup_name (get_agentmodule_modulegroup ($module['id_agente_modulo']));
+		$modulegroup =  modules_get_modulegroup_name (modules_get_agentmodule_modulegroup ($module['id_agente_modulo']));
 		if($modulegroup === false){
 			echo __('None').'<br />';
 		}
@@ -296,7 +296,7 @@ if (is_ajax ()) {
 			echo $modulegroup.'<br />';
 		}
 		echo '<strong>'.__('Agent').':</strong> ';
-		echo ui_print_truncate_text(get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
+		echo ui_print_truncate_text(modules_get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
 		
 		return;
 	}

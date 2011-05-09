@@ -90,7 +90,7 @@ echo '<td class="datos2"><input type="text" name="name" size="25" value="' . $na
 echo '<td class="datos2">' . __('Module type') . '</td>';
 echo '<td class="datos2">';
 echo '<select name="tipo">';
-echo '<option value="' . $type . '">' . get_moduletype_name ($type);
+echo '<option value="' . $type . '">' . modules_get_moduletype_name ($type);
 
 $rows = db_get_all_rows_sql('SELECT id_tipo, nombre
 	FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
@@ -108,7 +108,7 @@ echo '<tr>';
 // Component group
 echo '<td class="datos">' . __('Group') . '</td>';
 echo '<td class="datos">';
-html_print_select (get_network_component_groups (),
+html_print_select (network_components_get_groups (),
 	'id_group', $id_group, '', '', '', false, false, false);
 
 // Module group
@@ -116,7 +116,7 @@ echo '<td class="datos">' . __('Module group') . '</td>';
 echo '<td class="datos">';
 echo '<select name="id_module_group">';
 if ($id) {
-	echo '<option value="' . $id_module_group . '">' . get_modulegroup_name($id_module_group);
+	echo '<option value="' . $id_module_group . '">' . modules_get_modulegroup_name($id_module_group);
 }
 
 $rows = db_get_all_rows_in_table('tmodule_group');

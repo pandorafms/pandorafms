@@ -53,7 +53,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 		
 		// Copy
 		foreach ($origen_modulo as $id_agentemodulo) {
-			echo "<br /><br />".__('Filtering data module')."<b> [".get_agentmodule_name ($id_agentemodulo)."]</b>";
+			echo "<br /><br />".__('Filtering data module')."<b> [".modules_get_agentmodule_name ($id_agentemodulo)."]</b>";
 			$sql = sprintf ("DELETE FROM tagente_datos WHERE id_agente_modulo = %d AND (datos < '%s' OR datos > '%s')", $id_agentemodulo, $min, $max);
 			db_process_sql ($sql);
 		} 

@@ -42,8 +42,8 @@ $table->data = array();
 foreach ($osList as $os) {
 	$data = array();
 	$data[] = ui_print_os_icon($os['id_os'], false, true);
-	$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os=' . $os['id_os'] . '">' . safe_output($os['name']) . '</a>';
-	$data[] = ui_print_truncate_text(safe_output($os['description']), 25, true, true);
+	$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os=' . $os['id_os'] . '">' . io_safe_output($os['name']) . '</a>';
+	$data[] = ui_print_truncate_text(io_safe_output($os['description']), 25, true, true);
 	if ($os['id_os'] > 13) {
 		$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os=' . $os['id_os'] . '">' . html_print_image("images/cross.png", true) . '</a>';
 	}

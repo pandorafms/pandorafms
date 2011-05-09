@@ -124,8 +124,8 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 		$id = $config["id_user"];
 	}
 
-	$accion = safe_input($accion);
-	$descripcion = safe_input($descripcion);
+	$accion = io_safe_input($accion);
+	$descripcion = io_safe_input($descripcion);
 
 	$values = array('id_usuario' => $id,
 		'accion' => $accion,

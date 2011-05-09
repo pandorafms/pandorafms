@@ -34,7 +34,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 // Header
 ui_print_page_header (__("Pandora servers"), "images/server.png");
 
-$servers = get_server_info ();
+$servers = servers_get_info ();
 if ($servers === false) {
 	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 	return;

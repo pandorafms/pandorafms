@@ -24,7 +24,7 @@
  *
  * @return array The several priorities with their values
  */
-function get_incidents_priorities () {
+function incidents_get_priorities () {
 	$fields = array();
 	$fields[0] = __('Informative');
 	$fields[1] = __('Low');
@@ -43,7 +43,7 @@ function get_incidents_priorities () {
  *
  * @return string The string with the image tag
  */
-function print_incidents_priority_img ($id_priority, $return = false) {
+function incidents_print_priority_img ($id_priority, $return = false) {
 	switch ($id_priority) {
 	case 0:
 		$img = html_print_image ("images/dot_green.png", true, array('title' => __('Informative'))).html_print_image ("images/dot_green.png", true, array('title' => __('Informative'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Informative')));
@@ -77,7 +77,7 @@ function print_incidents_priority_img ($id_priority, $return = false) {
  *
  * @return array The several status with their values
  */
-function get_incidents_status () {
+function incidents_get_status () {
 	$fields = array ();
 	$fields[0] = __('Active incidents');
 	$fields[1] = __('Active incidents, with comments');
@@ -95,7 +95,7 @@ function get_incidents_status () {
  *
  * @return string The string with the image tag
  */
-function print_incidents_status_img ($id_status, $return = false) {
+function incidents_print_status_img ($id_status, $return = false) {
 	switch ($id_status) {
 		case 0:
 			$img = html_print_image ("images/dot_red.png", true, array('title' => __('Active incidents')));
@@ -128,7 +128,7 @@ function print_incidents_status_img ($id_status, $return = false) {
  *
  * @return bool True if it was done, false if it wasn't
  */
-function process_incidents_touch ($id_incident) {
+function incidents_process_touch ($id_incident) {
 	global $config;
 	
 	$id_incident = (array) safe_int ($id_incident, 1); //Make sure we have all positive int's
@@ -150,7 +150,7 @@ function process_incidents_touch ($id_incident) {
  *
  * @return bool True if it was done, false if it wasn't
  */
-function process_incidents_chown ($id_incident, $owner = false) {
+function incidents_process_chown ($id_incident, $owner = false) {
 	if ($owner === false) {
 		global $config;
 		$owner = $config["id_user"];
@@ -173,7 +173,7 @@ function process_incidents_chown ($id_incident, $owner = false) {
  * 
  * @return string The author of an incident
  */
-function get_incidents_author ($id_incident) {
+function incidents_get_author ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
@@ -187,7 +187,7 @@ function get_incidents_author ($id_incident) {
  * 
  * @return string The last updater of an incident
  */
-function get_incidents_owner ($id_incident) {
+function incidents_get_owner ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
@@ -201,7 +201,7 @@ function get_incidents_owner ($id_incident) {
  * 
  * @return string The last updater of an incident
  */
-function get_incidents_lastupdate ($id_incident) {
+function incidents_get_lastupdate ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
@@ -216,7 +216,7 @@ function get_incidents_lastupdate ($id_incident) {
  * 
  * @return int The group id of an incident
  */
-function get_incidents_group ($id_incident) {
+function incidents_get_group ($id_incident) {
 	if ($id_incident < 1) {
 		return 0;
 	}
@@ -230,7 +230,7 @@ function get_incidents_group ($id_incident) {
  *
  * @return bool True if incident was succesfully deleted, false if not
  */
-function delete_incidents ($id_incident) {
+function incidents_delete_incident ($id_incident) {
 	global $config;
 	$ids = (array) safe_int ($id_incident, 1); //Make the input an array
 	$notes = array ();
@@ -247,15 +247,15 @@ function delete_incidents ($id_incident) {
 			$errors++;
 		}
 		//We only need the ID's
-		$notes = array_merge ($notes, array_keys (get_incidents_notes ($id_inc)));
-		$attachments = array_merge ($attachments, array_keys (get_incidents_attach ($id_inc)));
+		$notes = array_merge ($notes, array_keys (incidents_get_notes ($id_inc)));
+		$attachments = array_merge ($attachments, array_keys (incidents_get_attach ($id_inc)));
 		
 		db_pandora_audit("Incident deleted", $config['id_user']." deleted incident #".$id_inc);
 	}
 	
 	//Delete notes
-	$note_err = delete_incidents_note ($notes, false);
-	$attach_err = delete_incidents_attach ($attachments, false);
+	$note_err = incidents_delete_note ($notes, false);
+	$attach_err = incidents_delete_attach ($attachments, false);
 	
 	if ($note_err === false || $attach_err === false) {
 		$errors++;
@@ -279,7 +279,7 @@ function delete_incidents ($id_incident) {
  *
  * @return bool True if note was succesfully deleted, false if not
  */
-function delete_incidents_note ($id_note, $transact = true) {
+function incidents_delete_note ($id_note, $transact = true) {
 	$id_note = (array) safe_int ($id_note, 1); //cast as array
 	$errors = 0;
 	
@@ -318,7 +318,7 @@ function delete_incidents_note ($id_note, $transact = true) {
  *
  * @return bool True if attachment was succesfully deleted, false if not
  */
-function delete_incidents_attach ($id_attach, $transact = true) {
+function incidents_delete_attach ($id_attach, $transact = true) {
 	global $config;
 	
 	$id_attach = (array) safe_int ($id_attach, 1); //cast as array
@@ -363,7 +363,7 @@ function delete_incidents_attach ($id_attach, $transact = true) {
  *
  * @return array An array of all the notes for that incident
  */
-function get_incidents_notes ($id_incident) {
+function incidents_get_notes ($id_incident) {
 	$return = db_get_all_rows_field_filter ("tnota", "id_incident", (int) $id_incident);
 	
 	if ($return === false) {
@@ -385,7 +385,7 @@ function get_incidents_notes ($id_incident) {
  *
  * @return array An array of all the notes for that incident
  */
-function get_incidents_attach ($id_incident) {
+function incidents_get_attach ($id_incident) {
 	$return = db_get_all_rows_field_filter ("tattachment", "id_incidencia", (int) $id_incident);
 	
 	if ($return === false) {
@@ -408,11 +408,19 @@ function get_incidents_attach ($id_incident) {
  * 
  * @return string User id of the given note.
  */
-function get_incidents_notes_author ($id_note) {
+function incidents_get_notes_author ($id_note) {
 	return (string) db_get_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
 
-function call_api($url, $postparameters = false) {
+/** 
+ * Interface to Integria API functionality.
+ * 
+ * @param string $url Url to Integria API with user, password and option (function to use).
+ * @param string $postparameters Additional parameters to pass.
+ *
+ * @return variant The function result called in the API.
+ */
+function incidents_call_api($url, $postparameters = false) {
 
 	$curlObj = curl_init();
 	curl_setopt($curlObj, CURLOPT_URL, $url);
@@ -426,7 +434,14 @@ function call_api($url, $postparameters = false) {
 	return $result;
 }
 
-function xml_to_array($xml) {
+/** 
+ * Converts Xml format file to an array datatype.
+ * 
+ * @param string $xml Xml file to convert.
+ * 
+ * @return array A Json encoded array with xml content.
+ */
+function incidents_xml_to_array($xml) {
 	$xmlObj = simplexml_load_string($xml);
 	return json_decode(json_encode($xmlObj), true);
 }

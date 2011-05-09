@@ -45,7 +45,7 @@ $table->align = array ();
 $table->size = array ();
 
 
-$moduletype_name = get_moduletype_name (get_agentmodule_type ($module_id));
+$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($module_id));
 
 $offset = (int) get_parameter("offset");
 $block_size = (int) $config["block_size"];
@@ -69,27 +69,27 @@ if ($moduletype_name == "log4x") {
 	
 	$columns = array(
 		
-		"Timestamp" => array("utimestamp",				"format_timestamp", 	"align" => "center" ),
+		"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
 		"Sev" 		=> array("severity", 				"format_data", 			"align" => "center", "width" => "70px"),
-		"Message"	=> array("message", 				"format_verbatim",		"align" => "left", "width" => "45%"),
-		"StackTrace" 		=> array("stacktrace",				"format_verbatim", 			"align" => "left", "width" => "50%")
+		"Message"	=> array("message", 				"modules_format_verbatim",		"align" => "left", "width" => "45%"),
+		"StackTrace" 		=> array("stacktrace",				"modules_format_verbatim", 			"align" => "left", "width" => "50%")
 	);
 
 } else if (preg_match ("/string/", $moduletype_name)) {
 	$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	
 	$columns = array(
-		"Timestamp"	=> array("utimestamp", 			"format_timestamp", 		"align" => "center"),
+		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "center"),
 		"Data" 		=> array("datos", 				"format_data", 				"align" => "center"),
-		"Time" 		=> array("utimestamp", 			"format_time", 				"align" => "center")
+		"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
 	);
 } else {
 	$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	
 	$columns = array(
-		"Timestamp"	=> array("utimestamp", 			"format_timestamp", 	"align" => "center"),
+		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "center"),
 		"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
-		"Time" 		=> array("utimestamp", 			"format_time", 			"align" => "center")
+		"Time" 		=> array("utimestamp", 			"modules_format_time", 			"align" => "center")
 	);
 }
 
@@ -124,7 +124,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	}
 }
 
-$header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id); 
+$header_title = __('Received data from')." ".modules_get_agentmodule_agent_name ($module_id)." / ".modules_get_agentmodule_name ($module_id); 
 $header_title .= "<br><br>" . __("From the last") . " " . human_time_description_raw ($period);
 
 echo "<h3>".$header_title. "</h3>";

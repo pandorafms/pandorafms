@@ -28,7 +28,7 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 $reports = false;
 
 //Check ACL
-$userreports = get_reports();
+$userreports = reports_get_reports();
 
 $userreports_id = array();
 foreach($userreports as $userreport) {

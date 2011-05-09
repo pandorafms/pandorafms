@@ -35,7 +35,7 @@ switch($graph_type) {
 				$width = get_parameter('width');
 				$height = get_parameter('height');
 				$font = get_parameter('font');
-				$data = json_decode(safe_output(get_parameter('data')), true);
+				$data = json_decode(io_safe_output(get_parameter('data')), true);
 
 				$max = get_parameter('max');
 				$title = get_parameter('title');

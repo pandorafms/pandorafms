@@ -60,7 +60,7 @@ if ($delete_profiles) {
 					$user = (string) db_get_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
 
 					db_pandora_audit("User management",
-						"Deleted profile for user ".safe_input($user));
+						"Deleted profile for user ".io_safe_input($user));
 
 					$result = delete_user_profile ($user, $id_up);
 				}

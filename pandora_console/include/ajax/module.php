@@ -19,9 +19,9 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 $search_modules = get_parameter('search_modules');
 
 if ($search_modules) {
-	$id_agents = json_decode(safe_output(get_parameter('id_agents')));
+	$id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
 	$filter = get_parameter('q', '') . '%';
-	$other_filter = json_decode(safe_output(get_parameter('other_filter')), true);
+	$other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
 	
 	$modules = get_agent_modules($id_agents, false, (array('nombre' => $filter) + $other_filter));
 	
@@ -29,7 +29,7 @@ if ($search_modules) {
 	$modules = array_unique($modules);
 	
 	foreach ($modules as $module) {
-		echo safe_output($module) . "\n";
+		echo io_safe_output($module) . "\n";
 	}
 }
 ?>

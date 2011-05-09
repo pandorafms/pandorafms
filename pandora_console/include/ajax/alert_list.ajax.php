@@ -61,8 +61,8 @@ if ($get_agent_alerts_simple) {
 	$retval = array ();
 	foreach ($alerts as $alert) {
 		$alert['template'] = alerts_get_alert_template ($alert['id_alert_template']);
-		$alert['module_name'] = get_agentmodule_name ($alert['id_agent_module']);
-		$alert['agent_name'] = get_agentmodule_agent_name ($alert['id_agent_module']);
+		$alert['module_name'] = modules_get_agentmodule_name ($alert['id_agent_module']);
+		$alert['agent_name'] = modules_get_agentmodule_agent_name ($alert['id_agent_module']);
 		$retval[$alert['id']] = $alert;
 	}
 	

@@ -46,7 +46,7 @@ $msg_cnt = 0;
 			<?php
 
 			if ($config["metaconsole"] == 0){
-				$msg_cnt = get_message_count ($config["id_user"]);
+				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
 					echo '<div id="dialog_messages" style="display: none"></div>';
 
@@ -71,7 +71,7 @@ $msg_cnt = 0;
 			echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
 
 			$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
-			$servers["up"] = (int) check_server_status ();
+			$servers["up"] = (int) servers_check_status ();
 			$servers["down"] = $servers["all"] - $servers["up"];
 			if ($servers["up"] == 0) {
 				//All Servers down or no servers at all

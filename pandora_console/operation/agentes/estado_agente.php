@@ -268,13 +268,13 @@ if (! empty ($agent_names)) {
 		$agents = db_get_all_rows_sql ($sql);
 
 	}else{
-		$total_agents = get_agents (array ('id_agente' => array_keys ($agent_names),
+		$total_agents = agents_get_agents (array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'disabled' => 0,
 			'id_grupo' => $groups),
 			array ('COUNT(*) as total'));
 		$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
-		$agents = get_agents (array ('id_agente' => array_keys ($agent_names),
+		$agents = agents_get_agents (array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'id_grupo' => $groups,
 			'offset' => (int) get_parameter ('offset'),

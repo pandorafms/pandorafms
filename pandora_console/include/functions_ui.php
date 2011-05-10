@@ -876,7 +876,7 @@ function ui_process_page_head ($string, $bitfield) {
 		$exists_skin = enterprise_hook('is_skin_path_set');
 		if ($exists_skin){
 			$skin_path = enterprise_hook('get_skin_path');
-			$skin_styles = get_css_themes ($skin_path . 'include/styles/');
+			$skin_styles = themes_get_css ($skin_path . 'include/styles/');
 			$exists_css = !empty($skin_styles);
 		}		
 	}

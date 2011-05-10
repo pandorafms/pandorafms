@@ -24,7 +24,7 @@ ui_print_page_header (__("Visual console"), "images/monitor.png", false, "operat
 require_once ('include/functions_visual_map.php');
 require_once ('include/functions_groups.php');
 
-$layouts = get_user_layouts ();	
+$layouts = visual_map_get_user_layouts ();	
 
 $table->width = "70%";
 $table->data = array ();

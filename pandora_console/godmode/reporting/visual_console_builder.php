@@ -166,7 +166,7 @@ switch ($activeTab) {
 				}
 				else {
 					if ($name_modules[0] == '0')
-						$message .= process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);
+						$message .= visual_map_process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);
 					else{
 						$id_modules = array();
 						$cont_dest = 1;
@@ -184,7 +184,7 @@ switch ($activeTab) {
 							}
 							$cont_mod = $cont_mod + 1;
 						}
-						$message .= process_wizard_add_modules ($id_modules, $image, $idVisualConsole, $range, $width, $height);
+						$message .= visual_map_process_wizard_add_modules ($id_modules, $image, $idVisualConsole, $range, $width, $height);
 					}
 					$statusProcessInDB = array('flag' => true, 'message' => $message);
 				}

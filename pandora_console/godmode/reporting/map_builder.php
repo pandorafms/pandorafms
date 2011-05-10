@@ -118,9 +118,9 @@ $table->align[4] = 'center';
 // Only display maps of "All" group if user is administrator or has "PM" privileges, otherwise show only maps of user group
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$maps = get_user_layouts ();	
+	$maps = visual_map_get_user_layouts ();	
 else
-	$maps = get_user_layouts ($config['id_user'], false, false, false);
+	$maps = visual_map_get_user_layouts ($config['id_user'], false, false, false);
 
 if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';

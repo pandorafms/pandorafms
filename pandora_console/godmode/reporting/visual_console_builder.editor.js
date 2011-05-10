@@ -725,7 +725,7 @@ function getImageElement(id_data) {
 	return img;
 }
 
-function getColorLineStatus(id) {
+function visual_map_get_color_line_status(id) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_color_line"});
@@ -879,7 +879,7 @@ function createItem(type, values, id_data) {
 		var line = {"id": id_data,
 				"node_begin":  values['parent'],
 				"node_end": id_data,
-				"color": getColorLineStatus(id_data) };
+				"color": visual_map_get_color_line_status(id_data) };
 		lines.push(line);
 		
 		refresh_lines(lines, 'background');

@@ -61,15 +61,15 @@ foreach ($all_images as $image_file) {
 
 echo '<div id="editor" style="margin-top: -10px;">';
 	echo '<div id="toolbox">';
-		printButtonEditorVisualConsole('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
-		printButtonEditorVisualConsole('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile_min', true);
-		printButtonEditorVisualConsole('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
-		printButtonEditorVisualConsole('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
-		printButtonEditorVisualConsole('label', __('Label'), 'left', false, 'label_min', true);
-		printButtonEditorVisualConsole('icon', __('Icon'), 'left', false, 'icon_min', true);
+		visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
+		visual_map_print_button_editor('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile_min', true);
+		visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
+		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
+		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
+		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
 		
-		printButtonEditorVisualConsole('edit_item', __('Edit item'), 'right', true, 'config_min', true);
-		printButtonEditorVisualConsole('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
+		visual_map_print_button_editor('edit_item', __('Edit item'), 'right', true, 'config_min', true);
+		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
 	echo '</div>';
 echo '</div>';
 echo '<div style="clear: right; margin-bottom: 10px;"></div>';
@@ -231,7 +231,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Parent');?></td>
 			<td>
 				<?php
-				$parents = get_items_parents($visualConsole['id']);
+				$parents = visual_map_get_items_parents($visualConsole['id']);
 				html_print_select($parents, 'parent', '', '', __('None'), 0);
 				?>
 			</td>
@@ -269,8 +269,8 @@ foreach ($layoutDatas as $layoutData) {
 	if($delete_pending_module == 1 || $disabled_module == 1)
 		continue;
 	
-	printItemInVisualConsole($layoutData);
-	html_print_input_hidden('status_'.$layoutData['id'], getStatusElement($layoutData));
+	visual_map_print_item($layoutData);
+	html_print_input_hidden('status_'.$layoutData['id'], visual_map_get_status_element($layoutData));
 }
 
 echo '</div>';

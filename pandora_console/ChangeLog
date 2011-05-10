@@ -1,3 +1,23 @@
+2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php
+	include/functions_ui.php
+	include/functions_themes.php
+	include/functions_ui_renders.php
+	operation/visual_console/render_view.php
+	operation/visual_console/index.php
+	general/ui/agents_list.php
+	godmode/setup/setup_visuals.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.elements.php
+	godmode/reporting/visual_console_builder.preview.php
+	godmode/reporting/visual_console_builder.editor.php
+	godmode/reporting/map_builder.php: Functions in functions_themes.php,
+	functions_ui_renders.php and functions_visual_map.php have "themes_",
+	"ui_renders_" and "visual_map_" prefixes respectively. 
+
 2011-05-10  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/estado_agente.php: Replaced get_agents() with

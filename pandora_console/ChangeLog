@@ -1,3 +1,8 @@
+2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Fixed mistake of my last 
+	commit.
+
 2011-05-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Do not count the empty start of an

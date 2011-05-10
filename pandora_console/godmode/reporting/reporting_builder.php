@@ -318,7 +318,7 @@ switch ($action) {
 				break;
 			default:
 				if ($enterpriseEnable) {
-					$resultOperationDB = enterprise_updateAction();
+					$resultOperationDB = reporting_enterprise_update_action();
 				}
 				break;
 		}
@@ -481,7 +481,7 @@ switch ($action) {
 }
 
 if ($enterpriseEnable) {
-	$result = enterprise_actionsDB($action, $activeTab, $idReport);
+	$result = reporting_enterprise_actions_DB($action, $activeTab, $idReport);
 	if ($result !== null) {
 		$resultOperationDB = $result;
 	}
@@ -500,7 +500,7 @@ $buttons = array(
 	);
 	
 if ($enterpriseEnable) {
-	$buttons = enterprise_addTabs($buttons, $idReport);
+	$buttons = reporting_enterprise_add_Tabs($buttons, $idReport);
 }
 
 $buttons['preview'] = array('active' => false,
@@ -540,7 +540,7 @@ switch ($activeTab) {
 		require_once('godmode/reporting/reporting_builder.preview.php');
 		break;
 	default:
-		enterprise_selectTab($activeTab);
+		reporting_enterprise_select_tab($activeTab);
 		break;
 }
 

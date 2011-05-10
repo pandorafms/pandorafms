@@ -202,7 +202,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			}
 			
 			// Get agent modules data
-			$modules = get_agent_modules ($agent['id_agente'], false, array('disabled' => 0), true, false);
+			$modules = agents_get_modules ($agent['id_agente'], false, array('disabled' => 0), true, false);
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				$node_count ++;
@@ -220,7 +220,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 				
 				if($hidepolicymodules && $config['enterprise_installed']){
 					enterprise_include_once('include/functions_policies.php');
-					if(isModuleInPolicy($key)) {
+					if(policies_is_module_in_policy($key)) {
 						continue;
 					}
 				}
@@ -348,7 +348,7 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 
 // Returns a node definition
 function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
-	$status = get_agent_status($agent['id_agente']);
+	$status = agents_get_status($agent['id_agente']);
 
 	// Set node status
 	switch($status) {

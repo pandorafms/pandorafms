@@ -34,7 +34,7 @@ require_once ($config['homedir'].'/include/functions_groups.php');
  * @return bool true when delivered, false in case of error
  */
 function messages_create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) {
-	$users = get_users_info ();
+	$users = users_get_info ();
 	
 	if (!array_key_exists ($usuario_origen, $users) || !array_key_exists ($usuario_destino, $users)) {
 		return false; //Users don't exist so don't send to them
@@ -68,7 +68,7 @@ function messages_create_message ($usuario_origen, $usuario_destino, $subject, $
  * @return bool true when delivered, false in case of error
  */
 function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje) {
-	$users = get_users_info ();
+	$users = users_get_info ();
 	$group_users = groups_get_users ($dest_group);
 	
 	if (! array_key_exists ($usuario_origen, $users)) {

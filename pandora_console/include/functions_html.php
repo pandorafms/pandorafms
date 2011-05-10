@@ -183,7 +183,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
 	global $config;
 		
-	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
+	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, true);
 	
 	if ($id_group !== false) {
 		$childrens = groups_get_childrens($id_group);
@@ -576,7 +576,7 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		$skin_path = enterprise_hook('get_image_skin_path',array($src));
+		$skin_path = enterprise_hook('skins_get_image_path',array($src));
 		if ($skin_path)
 			$src = $skin_path;		
 	}
@@ -1125,7 +1125,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		$skin_path = enterprise_hook('get_image_skin_path',array($src));
+		$skin_path = enterprise_hook('skins_get_image_path',array($src));
 		if ($skin_path)
 			$src = $skin_path;		
 	}
@@ -1328,7 +1328,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	if ($id_agents === false) {
 		$groups = array();
 		if ($ACL) {
-			$groups = get_user_groups($config['id_user'], "AW", false);
+			$groups = users_get_groups($config['id_user'], "AW", false);
 			$groups = array_keys($groups);
 			
 			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
@@ -1346,7 +1346,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	}
 	else {
 		if ($ACL) {
-			$groups = get_user_groups($config['id_user'], "AW", false);
+			$groups = users_get_groups($config['id_user'], "AW", false);
 			$groups = array_keys($groups);
 			
 			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');

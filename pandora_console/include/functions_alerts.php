@@ -50,7 +50,7 @@ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query =
 		$typeWhere = ' AND event_type IN (' . implode(',', $temp) . ')';
 	}
 	
-	$agents = get_group_agents($idGroup, false, "lower", false);
+	$agents = agents_get_group_agents($idGroup, false, "lower", false);
 	
 	$idAgents = array_keys($agents);
 	
@@ -290,7 +290,7 @@ function alerts_clone_alert_action ($id_alert_action) {
  * @return array The list of actions.
  */
 function alerts_get_alert_actions ($only_names = true, $acl = false) {
-	$groups = get_user_groups(false, "AR", true);
+	$groups = users_get_groups(false, "AR", true);
 	
 	if ($groups === false) {
 		$groups = array();
@@ -1113,7 +1113,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module) {
 	foreach ($alerts as $id) {
 		$alert = alerts_get_alert_agent_module ($id);
 		$agent_id = modules_get_agentmodule_agent ($alert["id_agent_module"]);
-		$group_id = get_agentmodule_group ($agent_id);
+		$group_id = agents_get_agentmodule_group ($agent_id);
 		
 		if (! check_acl ($config['id_user'], $group_id, "AW")) {
 			continue;
@@ -1469,7 +1469,7 @@ function alerts_validate_alert_compound ($id_alert_compound) {
 		$alert = alerts_get_alert_compound ($id);
 		
 		$agent_id = $alert["id_agent"];
-		$group_id = get_agent_group ($agent_id);
+		$group_id = agents_get_agent_group ($agent_id);
 		
 		if (! check_acl ($config['id_user'], $group_id, "AW")) {
 			continue;
@@ -1530,11 +1530,11 @@ function alerts_get_agents_with_alert_template ($id_alert_template, $id_group, $
 	if (empty ($id_agents)) {
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
+				$filter['`tagente`.id_agente'] = array_keys (agents_get_group_agents ($id_group, false, "none"));
 				break;
 			case "postgresql":
 			case "oracle":
-				$filter['tagente.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
+				$filter['tagente.id_agente'] = array_keys (agents_get_group_agents ($id_group, false, "none"));
 				break;
 		}
 	}
@@ -1682,7 +1682,7 @@ function get_group_alerts ($id_group) {
 	require_once ($config["homedir"].'/include/functions_agents.php');
 
 	$alerts = array ();
-	$agents = get_group_agents ($id_group, false, "none");
+	$agents = agents_get_group_agents ($id_group, false, "none");
 
 	foreach ($agents as $agent_id => $agent_name) {
 		$agent_alerts = agents_get_alerts ($agent_id);

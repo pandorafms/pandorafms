@@ -745,7 +745,7 @@ function reporting_get_group_stats ($id_group = 0) {
 	}
 	
 	if ($id_group == 0) {
-		$id_group = array_keys (get_user_groups ());
+		$id_group = array_keys (users_get_groups ());
 	}
 
 	// -------------------------------------------------------------------
@@ -1105,7 +1105,7 @@ function reporting_get_fired_alerts_table ($alerts_fired) {
 			$alert_module = $tuple[0];
 			$template = $tuple[1];
 			if (! isset ($data[0]))
-				$data[0] = get_agent_name ($id_agent);
+				$data[0] = agents_get_name ($id_agent);
 			else
 				$data[0] = '';
 			$data[1] = $template['name'];
@@ -1440,7 +1440,7 @@ function reporting_get_monitors_down_table ($monitors_down) {
 			$data = array ();
 			foreach ($monitors as $monitor) {
 				if (! isset ($data[0]))
-					$data[0] = get_agent_name ($id_agent);
+					$data[0] = agents_get_name ($id_agent);
 				else
 					$data[0] = '';
 				if ($monitor['descripcion'] != '') {
@@ -1466,7 +1466,7 @@ function reporting_get_monitors_down_table ($monitors_down) {
  * @return HTML string with group report
  */
 function reporting_print_group_reporting ($id_group, $return = false) {
-	$agents = get_group_agents ($id_group, false, "none");
+	$agents = agents_get_group_agents ($id_group, false, "none");
 	$output = '<strong>'.__('Agents in group').': '.count ($agents).'</strong><br />';
 	
 	if ($return === false)
@@ -1594,7 +1594,7 @@ function reporting_get_agent_monitors_table ($id_agent, $period = 0, $date = 0) 
 function reporting_get_agent_modules_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$n_a_string = __('N/A').'(*)';
-	$modules = get_agent_modules ($id_agent, array ("nombre", "descripcion"));
+	$modules = agents_get_modules ($id_agent, array ("nombre", "descripcion"));
 	if ($modules === false)
 		$modules = array();
 	$data = array ();
@@ -1626,7 +1626,7 @@ function reporting_get_agent_detailed ($id_agent, $period = 0, $date = 0, $retur
 	
 	/* Show modules in agent */
 	$output .= '<div class="agent_reporting">';
-	$output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.get_agent_name ($id_agent).'</h3>';
+	$output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.agents_get_name ($id_agent).'</h3>';
 	$output .= '<h4>'.__('Modules').'</h3>';
 	$table_modules = reporting_get_agent_modules_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';
@@ -1673,8 +1673,8 @@ function reporting_get_agent_detailed ($id_agent, $period = 0, $date = 0, $retur
  *
  * @return string
  */
-function reporting_get_group_agents_detailed ($id_group, $period = 0, $date = 0, $return = false) {
-	$agents = get_group_agents ($id_group, false, "none");
+function reporting_agents_get_group_agents_detailed ($id_group, $period = 0, $date = 0, $return = false) {
+	$agents = agents_get_group_agents ($id_group, false, "none");
 	
 	$output = '';
 	foreach ($agents as $agent_id => $agent_name) {
@@ -1900,7 +1900,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	$return["alert_status"] = "notfired";
 	$return["alert_value"] = STATUS_ALERT_NOT_FIRED;
 	$return["alert_img"] = ui_print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
-	$return["agent_group"] = get_agent_group ($id_agent);
+	$return["agent_group"] = agents_get_agent_group ($id_agent);
 	
 	if (!check_acl ($config["id_user"], $return["agent_group"], "AR")) {
 		return $return;
@@ -1912,7 +1912,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	
 	$filter = 'disabled = 0';
 	
-	$modules = get_agent_modules($id_agent, false, $filter, true, false);
+	$modules = agents_get_modules($id_agent, false, $filter, true, false);
 	
 	if ($modules === false) {
 		return $return;
@@ -2019,7 +2019,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$agent_name = modules_get_agentmodule_agent_name ($content['id_agent_module']);
 	}
 	else {
-		$agent_name = get_agent_name($content['id_agent']);
+		$agent_name = agents_get_name($content['id_agent']);
 	}
 	
 	switch ($content["type"]) {
@@ -2437,7 +2437,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//RUNNING
 			$data = array ();
 			$data[0] = $sizh.__('Agent detailed event').$sizhfin;
-			$data[1] = $sizh . ui_print_truncate_text(get_agent_name($content['id_agent']), 75, false).$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text(agents_get_name($content['id_agent']), 75, false).$sizhfin;
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -3505,7 +3505,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$agents = '';
 			if($id_group > 0) {
-				$agents = get_group_agents($id_group);
+				$agents = agents_get_group_agents($id_group);
 				$agents = array_keys($agents);
 			}
 			
@@ -3514,7 +3514,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_module_groups['id_module_group'] = $id_module_group;
 			}
 			
-			$all_modules = get_agent_modules ($agents, false, $filter_module_groups, true, false);
+			$all_modules = agents_get_modules ($agents, false, $filter_module_groups, true, false);
 			
 			$modules_by_name = array();
 			$name = '';
@@ -3583,7 +3583,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	
 			foreach ($agents as $agent) {
 				// Get stats for this group
-				$agent_status = get_agent_status($agent['id_agente']);
+				$agent_status = agents_get_status($agent['id_agente']);
 
 				switch($agent_status) {
 					case 4: // Alert fired status
@@ -3614,7 +3614,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
 				$table_data .= "<td style='background-color: ".$rowcolor.";'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
-				$agent_modules = get_agent_modules($agent['id_agente']);
+				$agent_modules = agents_get_modules($agent['id_agente']);
 				
 				$nmodules = 0;
 

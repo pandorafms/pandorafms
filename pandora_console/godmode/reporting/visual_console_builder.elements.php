@@ -175,7 +175,7 @@ foreach ($layoutDatas as $layoutData) {
 	//Agent
 	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
 		$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
-			html_print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
+			html_print_input_text_extended ('agent_' . $idLayoutData, agents_get_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
 			array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
 	}
 	else {

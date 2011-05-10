@@ -631,7 +631,7 @@ function process_upload_xml_component($xml) {
 				$values = array('description' => $description,
 					'id_network_component_group' => $group,
 					'os_version' => $os_version);
-				$return = enterprise_hook('create_local_component', array($name, $data, $id_os, $values));
+				$return = enterprise_hook('local_components_create_local_component', array($name, $data, $id_os, $values));
 				if ($return !== ENTERPRISE_NOT_HOOK) {
 					$idComponent = $return;
 				}

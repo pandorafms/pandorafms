@@ -27,7 +27,7 @@ class GroupView {
 	}
 	
 	public function show() {
-		$groups = get_user_groups ($this->system->getConfig('id_user'));
+		$groups = users_get_groups ($this->system->getConfig('id_user'));
 		
 		$table = null;
 		$table->width = '100%';

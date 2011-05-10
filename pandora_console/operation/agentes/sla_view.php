@@ -31,8 +31,8 @@ if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user']
 }
 
 $id_agent = get_parameter ("id_agente", 0);
-$interval = get_agent_interval ($id_agent);
-$modules = get_agent_modules ($id_agent, '*',
+$interval = agents_get_interval ($id_agent);
+$modules = agents_get_modules ($id_agent, '*',
 	array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
 if (empty ($modules)) {
 	echo "<div class='nf'>".__("There are no modules to evaluate the S.L.A. from")."</div>";

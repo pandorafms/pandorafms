@@ -45,7 +45,7 @@ if (isset ($_GET["update_netgroup"])) {
 }
 
 // Get group list that user has access
-$groups = get_user_groups ($config['id_user']);
+$groups = users_get_groups ($config['id_user']);
 
 
 if ($config["realtimestats"] == 0){
@@ -62,7 +62,7 @@ ui_print_page_header (__("Group view"), "images/bricks.png", false, "", false, $
 $groups_info = array ();
 $counter = 1;
 
-$agents = get_group_agents(array_keys($groups));
+$agents = agents_get_group_agents(array_keys($groups));
 
 if (count($agents) > 0) {
 

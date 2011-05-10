@@ -196,7 +196,7 @@ if ($id_profile || $new_profile) {
 			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
 			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
 			' Pandora Management: ' . $pandora_management;
-		enterprise_hook('pandora_audit_enterprise', array($id_audit, $info));
+		enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 		
 		
 		$page_title = __('Update profile');

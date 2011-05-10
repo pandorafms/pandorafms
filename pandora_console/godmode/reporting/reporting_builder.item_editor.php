@@ -354,7 +354,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				html_print_input_hidden('id_agent', $idAgent) .
-					html_print_input_text_extended ('agent', get_agent_name ($idAgent), 'text-agent', '', 30, 100, false, '',
+					html_print_input_text_extended ('agent', agents_get_name ($idAgent), 'text-agent', '', 30, 100, false, '',
 						array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 						. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 				?>
@@ -514,7 +514,7 @@ ui_require_jquery_file ('timeentry');
 ui_require_jquery_file ('autocomplete');
 ui_require_javascript_file('pandora');
 if ($enterpriseEnable) {
-	enterpriseTextBox();
+	reporting_enterprise_text_box();
 }
 
 function print_SLA_list($width, $action, $idItem = null) {
@@ -549,7 +549,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 					}
 					foreach ($itemsSLA as $item) {
 						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
-						$nameAgent = get_agent_name ($idAgent);
+						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
@@ -627,7 +627,7 @@ function print_General_list($width, $action, $idItem = null) {
 					}
 					foreach ($itemsGeneral as $item) {
 						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
-						$nameAgent = get_agent_name ($idAgent);
+						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">

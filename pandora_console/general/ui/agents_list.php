@@ -28,7 +28,7 @@ if (is_ajax ()) {
 	if ($id_group > 0 && check_acl ($config['id_user'], $id_group, $access))
 		$filter['id_grupo'] = $id_group;
 	else
-		$filter['id_grupo'] = array_keys (get_user_groups (false, $access));
+		$filter['id_grupo'] = array_keys (users_get_groups (false, $access));
 	
 	$fields = '';
 	if (isset ($_POST['fields']))

@@ -33,7 +33,7 @@ $isFunctionPolicies = enterprise_include ('include/functions_policies.php');
 $id_group = 0;
 /* Check if this page is included from a agent edition */
 if (isset ($id_agente)) {
-	$id_group = get_agent_group ($id_agente);
+	$id_group = agents_get_agent_group ($id_agente);
 }
 else {
 	$id_agente = 0;
@@ -78,7 +78,7 @@ if ($create_alert) {
 
 		$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 		$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-		$agent_name = get_agent_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
+		$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 		
 		// Audit the creation only when the alert creation is correct
 		if($id) {
@@ -114,7 +114,7 @@ if ($delete_alert) {
 	$id_agent_module = $temp["id_agent_module"];
 	$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 	$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-	$agent_name = get_agent_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
+	$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 
 	$result = alerts_delete_alert_agent_module ($id_alert_agent_module);
 	
@@ -231,10 +231,10 @@ if ($standbyoff_alert) {
 }
 
 if ($id_agente) {
-	$agents = array ($id_agente => get_agent_name ($id_agente));
+	$agents = array ($id_agente => agents_get_name ($id_agente));
 	
 	if ($group == 0) {
-		$groups = get_user_groups ();
+		$groups = users_get_groups ();
 	}
 	else {
 		$groups = array(0 => __('All'));
@@ -270,12 +270,12 @@ else {
 	switch ($tab) {
 		case 'list':
 			if ($group == 0) {
-				$groups = get_user_groups ();
+				$groups = users_get_groups ();
 			}
 			else {
 				$groups = array(0 => __('All'));
 			}
-			$agents = get_group_agents (array_keys ($groups), false, "none");
+			$agents = agents_get_group_agents (array_keys ($groups), false, "none");
 			
 			require_once('godmode/alerts/alert_list.list.php');
 
@@ -283,7 +283,7 @@ else {
 			break;
 		case 'builder':
 			if ($group == 0) {
-				$groups = get_user_groups ();
+				$groups = users_get_groups ();
 			}
 			else {
 				$groups = array(0 => __('All'));

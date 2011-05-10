@@ -62,7 +62,7 @@ if ($delete_profiles) {
 					db_pandora_audit("User management",
 						"Deleted profile for user ".io_safe_input($user));
 
-					$result = delete_user_profile ($user, $id_up);
+					$result = profile_delete_user_profile ($user, $id_up);
 				}
 			}
 		}
@@ -103,7 +103,7 @@ $table->size[2] = '33%';
 
 $data = array ();
 $data[0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=delete_profiles">';
-$data[0] .= html_print_select (get_profiles (), 'profiles_id[]', '', '', '',
+$data[0] .= html_print_select (profile_get_profiles (), 'profiles_id[]', '', '', '',
 	'', true, false, false, '', false, 'width: 100%');
 $data[1] = html_print_select_groups($config['id_user'], "UM", true,
 	'groups_id[]', '', '', '', '', true, false, false, '', false, 'width: 100%');

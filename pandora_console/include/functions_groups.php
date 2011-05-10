@@ -215,7 +215,7 @@ function groups_check_used($idGroup) {
 	
 	$hookEnterprise = enterprise_include_once('include/functions_groups.php');
 	if ($hookEnterprise !== ENTERPRISE_NOT_HOOK) {
-		$returnEnterprise = enterprise_hook('checkUsedGroupEnterprise', array($idGroup));
+		$returnEnterprise = enterprise_hook('groups_check_used_group_enterprise', array($idGroup));
 		
 		if ($returnEnterprise['return']) {
 			$return['return'] = true;
@@ -302,7 +302,7 @@ function groups_safe_acl ($id_user, $id_groups, $access) {
 	if (!is_array ($id_groups) && check_acl ($id_user, $id_groups, $access)) {
 		/* Return all the user groups if it's the group All */
 		if ($id_groups == 0)
-		return array_keys (get_user_groups ($id_user, $access));
+		return array_keys (users_get_groups ($id_user, $access));
 		return array ($id_groups);
 	}
 	elseif (!is_array ($id_groups)) {
@@ -490,11 +490,11 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
  * @return int Status of the agents.
  */
 function groups_get_status ($id_group = 0) {
-	$agents = get_group_agents($id_group);
+	$agents = agents_get_group_agents($id_group);
 
 	$agents_status = array();
 	foreach($agents as $key => $agent){
-		$agents_status[] = get_agent_status($key);
+		$agents_status[] = agents_get_status($key);
 	}
 
 	$childrens = groups_get_childrens($id_group);

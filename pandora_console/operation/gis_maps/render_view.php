@@ -143,14 +143,14 @@ if ($layers != false) {
 	foreach ($layers as $layer) {
 		gis_make_layer($layer['layer_name'], $layer['view_layer'], null, $layer['id_tmap_layer']);
 		
-		// calling get_group_agents with none to obtain the names in the same case as they are in the DB.	
-		$agentNamesByGroup = get_group_agents($layer['tgrupo_id_grupo'],false,'none', true);
+		// calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.	
+		$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],false,'none', true);
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'], array('nombre'));
 		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
 		
 		foreach ($agentNames as $agentName) {
-			$idAgent = get_agent_id($agentName);
+			$idAgent = agents_get_agent_id($agentName);
 			$coords = gis_get_data_last_position_agent($idAgent);
 			
 			if ($coords === false) {
@@ -164,7 +164,7 @@ if ($layers != false) {
 				}
 			}
 			$icon = gis_get_agent_icon_map($idAgent, true);
-			$status = get_agent_status($idAgent);
+			$status = agents_get_status($idAgent);
 			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
 			gis_add_agent_point($layer['layer_name'], $agentName, $coords['stored_latitude'],

@@ -153,9 +153,9 @@ if ($delete_template) {
 		}else{
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
 			else
-				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_template['id_group'], $own_groups);
 			// Then template group have to be is his own groups
 			if ($is_in_group)

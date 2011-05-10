@@ -137,7 +137,7 @@ switch ($action) {
 					$values['pos_y'] = $top;
 				}
 				if ($agent !== null) {
-					$id_agent = get_agent_id($agent);
+					$id_agent = agents_get_agent_id($agent);
 					$values['id_agent'] = $id_agent;
 				}
 				if ($id_module !== null) {
@@ -208,10 +208,10 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 				$elementFields = db_get_row_filter('tlayout_data', array('id' => $id_element));
-				$elementFields['agent_name'] = io_safe_output(get_agent_name($elementFields['id_agent']));
+				$elementFields['agent_name'] = io_safe_output(agents_get_name($elementFields['id_agent']));
 				//Make the html of select box of modules about id_agent.
 				if ($elementFields['id_agent'] != 0) {
-					$modules = get_agent_modules($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
+					$modules = agents_get_modules($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
 					
 					$elementFields['modules_html'] = '<option value="0">--</option>';
 					foreach ($modules as $id => $name) {
@@ -243,7 +243,7 @@ switch ($action) {
 		$values['pos_x'] = $left;
 		$values['pos_y'] = $top;
 		if ($agent != '')
-			$values['id_agent'] = get_agent_id($agent);
+			$values['id_agent'] = agents_get_agent_id($agent);
 		else
 			$values['id_agent'] = 0;
 		$values['id_agente_modulo'] = $id_module;

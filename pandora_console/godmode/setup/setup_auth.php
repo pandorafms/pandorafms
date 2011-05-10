@@ -46,7 +46,7 @@ $table->data[1][1] = __('Yes').'&nbsp;'.html_print_radio_button_extended ('autoc
 $table->data[1][1] .= __('No').'&nbsp;'.html_print_radio_button_extended ('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, 'enable_profile_options ();', '', true);
 $table->rowstyle[1] = $config['auth'] != 'mysql' ? '' : 'display: none;';
 $table->data[2][0] = __('Autocreate profile');
-$profile_list = get_profiles ();
+$profile_list = profile_get_profiles ();
 if ($profile_list === false) {
 	$profile_list = array ();
 }	

@@ -51,13 +51,13 @@ class ViewAgents {
 		// Show only selected groups	
 		if ($this->filterGroup > 0) {
 			$groups = $this->filterGroup;
-			$agent_names = get_group_agents ($this->filterGroup, array('string' => $this->filterText), "upper");
+			$agent_names = agents_get_group_agents ($this->filterGroup, array('string' => $this->filterText), "upper");
 		// Not selected any specific group
 		}
 		else {
-			$user_group = get_user_groups ($this->user->getIdUser(), "AR");
+			$user_group = users_get_groups ($this->user->getIdUser(), "AR");
 			$groups = array_keys ($user_group);
-			$agent_names = get_group_agents (array_keys ($user_group), array('string' => $this->filterText), "upper");
+			$agent_names = agents_get_group_agents (array_keys ($user_group), array('string' => $this->filterText), "upper");
 		}
 		
 		$total_agents = agents_get_agents (array('id_agente' => array_keys ($agent_names),
@@ -168,14 +168,14 @@ class ViewAgent {
 		$this->idAgent = $this->system->getRequest('id', 0);
 		$this->agent = db_get_row_filter('tagente', array('id_agente' => $this->idAgent));
 			
-		$this->ips = get_agent_addresses($this->idAgent);
+		$this->ips = agents_get_addresses($this->idAgent);
 	}
 	
 	public function show() {
 		$idGroup = $this->agent['id_grupo'];
 		if (! check_acl ($this->system->getConfig('id_user'), $idGroup, "AR")) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access (read) to agent ".get_agent_name($this->idAgent));
+				"Trying to access (read) to agent ".agents_get_name($this->idAgent));
 			include ("../general/noaccess.php");
 			return;
 		}
@@ -400,7 +400,7 @@ class viewGraph {
 		$idGroup = $this->agent['id_grupo'];
 		if (! check_acl ($this->system->getConfig('id_user'), $idGroup, "AR")) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access (read) to agent ".get_agent_name($this->idAgent));
+				"Trying to access (read) to agent ".agents_get_name($this->idAgent));
 			include ("../general/noaccess.php");
 			return;
 		}

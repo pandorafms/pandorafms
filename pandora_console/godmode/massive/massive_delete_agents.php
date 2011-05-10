@@ -43,14 +43,14 @@ function process_manage_delete ($id_agents) {
 	
 	$error = false;
 	foreach ($id_agents as $id_agent) {
-		$success = delete_agent ($id_agent);
+		$success = agents_delete_agent ($id_agent);
 		if (! $success)
 			break;
 	}
 	
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete agent').' '.get_agent_name ($id_agent).'</h4>';
+		echo '<h4>'.__('Could not delete agent').' '.agents_get_name ($id_agent).'</h4>';
 		db_process_sql_rollback ();
 		
 		return false;
@@ -81,7 +81,7 @@ if ($delete) {
 	}
 }
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->id = 'delete_table';
 $table->width = '95%';
@@ -102,7 +102,7 @@ $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = html_print_select (get_group_agents ($id_group, false, "none"),
+$table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';

@@ -35,7 +35,7 @@ if (is_ajax ()) {
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
 		
-		$agents_alerts = get_group_agents ($id_group);
+		$agents_alerts = agents_get_group_agents ($id_group);
 		
 		echo json_encode ($agents_alerts);
 		return;
@@ -100,7 +100,7 @@ if ($add) {
 	process_manage_add ($id_alert_template, $id_agents, $module_names);
 }
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->id = 'add_table';
 $table->width = '95%';

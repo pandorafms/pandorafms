@@ -60,7 +60,7 @@ switch ($sortField) {
 
 $modules = false;
 if ($searchModules) {
-	$userGroups = get_user_groups($config['id_user'], 'AR', false);
+	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	$id_userGroups = array_keys($userGroups);
 	
 	switch ($config["dbtype"]) {

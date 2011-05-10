@@ -20,7 +20,7 @@ $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 $page = get_parameter('page', '');
 $id_agente = get_parameter('id_agente', '');
-$agent_name = get_parameter('agent_name', get_agent_name($id_agente));
+$agent_name = get_parameter('agent_name', agents_get_name($id_agente));
 $id_agente_modulo= get_parameter('id_agent_module',0);
 $sql = 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_agente_modulo;
 $row = db_get_row_sql($sql);
@@ -38,7 +38,7 @@ else {
 }
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed'])
-		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module) && isModuleLinked($id_agent_module);
+		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)

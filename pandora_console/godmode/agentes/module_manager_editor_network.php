@@ -21,7 +21,7 @@ $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed']) {
 		
-		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module) && isModuleLinked($id_agent_module);
+		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
 		
 	}
 	else
@@ -60,7 +60,7 @@ $data[0] = __('SNMP community');
 $adopt = false;
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
 	
-	$adopt = isModuleAdopt($id_agent_module);
+	$adopt = policies_is_module_adopt($id_agent_module);
 	
 }
 if (!$adopt) {

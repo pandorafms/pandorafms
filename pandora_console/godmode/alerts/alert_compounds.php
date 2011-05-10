@@ -40,11 +40,11 @@ if ($id_agent)
 if ($search != '');
 	$url .= '&search='.$search;
 
-$groups = get_user_groups (0, 'LM');
+$groups = users_get_groups (0, 'LM');
 if ($id_group > 0 && isset ($groups[$id_group]))
-	$agents = get_group_agents ($id_group, false, "none");
+	$agents = agents_get_group_agents ($id_group, false, "none");
 else
-	$agents = get_group_agents (array_keys ($groups), false, "none");
+	$agents = agents_get_group_agents (array_keys ($groups), false, "none");
 
 $update_compound = (bool) get_parameter ('update_compound');
 $delete_alert = (int) get_parameter ('delete_alert');
@@ -233,7 +233,7 @@ foreach ($id_alerts as $alert) {
 	$data[1] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_compound&id='.$alert['id'].'">';
 	$data[1] .= $alert['name'];
 	$data[1] .= '</a>';
-	$data[2] = get_agent_name ($alert['id_agent']);
+	$data[2] = agents_get_name ($alert['id_agent']);
 	$data[3] = '<a href="'.$url.'&delete_alert=1&id='.$alert['id'].'"
 		onClick="javascript:confirm(\''.__('Are you sure?').'\')">';
 	$data[3] .= html_print_image("images/cross.png", true, array("title" => __('Delete'))); 

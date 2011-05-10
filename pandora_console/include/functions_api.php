@@ -152,7 +152,7 @@ function isInACL($ip) {
 
 function get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
 {
-	$idAgent = get_agent_id($agentName);
+	$idAgent = agents_get_agent_id($agentName);
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf('SELECT id_agente_modulo
@@ -647,7 +647,7 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 			break;
 	}
 	
-	if (get_agent_id ($name)) {
+	if (agents_get_agent_id ($name)) {
 		returnError('agent_name_exist', 'The name of agent yet exist in DB.');
 	}
 	else if (($idParent != 0) && 
@@ -693,8 +693,8 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
  */
 function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 	$agentName = $id;
-	$idAgent[0] = get_agent_id($agentName);
-	if (!delete_agent ($idAgent, true))
+	$idAgent[0] = agents_get_agent_id($agentName);
+	if (!agents_delete_agent ($idAgent, true))
 		returnError('error_delete', 'Error in delete operation.');
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
@@ -718,7 +718,7 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  */
 function set_create_network_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
-	$idAgent = get_agent_id($agentName);
+	$idAgent = agents_get_agent_id($agentName);
 
 	$name = $other['data'][0];
 	
@@ -827,7 +827,7 @@ function otherParameter2Filter($other) {
 	
 	$idAgent = null;
 	if ($other['data'][2] != '') {
-		$idAgent = get_agent_id($other['data'][2]);
+		$idAgent = agents_get_agent_id($other['data'][2]);
 		$filter['id_agente'] = $idAgent;
 	}
 	
@@ -888,7 +888,7 @@ function set_new_alert_template($id, $id2, $other, $trash1) {
 		return;
 	}
 	else if ($other['type'] == 'array') {
-		$idAgent = get_agent_id($id);
+		$idAgent = agents_get_agent_id($id);
 		
 		$row = db_get_row_filter('talert_templates', array('name' => $id2));
 		
@@ -932,7 +932,7 @@ function set_delete_module($id, $id2, $other, $trash1) {
 			$simulate = true;
 		}
 		
-		$idAgent = get_agent_id($id);
+		$idAgent = agents_get_agent_id($id);
 		
 		$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $id2));
 		
@@ -1020,7 +1020,7 @@ function set_new_module($id, $id2, $other, $trash1) {
 	}
 	else if ($other['type'] == 'array') {
 		$values = array();
-		$values['id_agente'] = get_agent_id($id);
+		$values['id_agente'] = agents_get_agent_id($id);
 		$values['nombre'] = $id2;
 		
 		$values['id_tipo_modulo'] = db_get_value_filter('id_tipo', 'ttipo_modulo', array('nombre' => $other['data'][0]));
@@ -1112,7 +1112,7 @@ function set_alert_actions($id, $id2, $other, $trash1) {
 		return;
 	}
 	else if ($other['type'] == 'array') {
-		$idAgent = get_agent_id($id);
+		$idAgent = agents_get_agent_id($id);
 		
 		$row = db_get_row_filter('talert_templates', array('name' => $id2));
 		if ($row === false) {
@@ -1219,7 +1219,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 			return;
 		}
 		else {
-			$values['id_agente'] = get_agent_id($other['data'][3]);
+			$values['id_agente'] = agents_get_agent_id($other['data'][3]);
 		}
 		
 		if (($other['data'][4] == null) && ($other['data'][4] == '')) {
@@ -1470,7 +1470,7 @@ function set_add_user_profile($id, $thrash1, $other, $thrash2) {
 	$group = $other['data'][0];
 	$profile = $other['data'][1];
 
-	if (!create_user_profile ($id, $profile, $group,'API'))
+	if (!profile_create_user_profile ($id, $profile, $group,'API'))
 		returnError('error_add_user_profile', 'Error add user profile.');
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Add user profile.')));

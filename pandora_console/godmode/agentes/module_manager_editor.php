@@ -51,7 +51,7 @@ if (is_ajax ()) {
 		require_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_local_components.php');
 		
 		$id_module_group = (int) get_parameter ('id_module_component_group');
-		$localComponents = get_local_components(array('id_network_component_group' => $id_module_group), array('id', 'name'));
+		$localComponents = local_components_get_local_components(array('id_network_component_group' => $id_module_group), array('id', 'name'));
 		
 		echo json_encode($localComponents);
 		return;
@@ -65,7 +65,7 @@ if (is_ajax ()) {
 			$component[$index] = html_entity_decode($element, ENT_QUOTES, "UTF-8");
 		}
 		
-		$typeName = parseLocalModuleExtractValue('module_type',$component['data']);
+		$typeName = local_components_parse_module_extract_value('module_type',$component['data']);
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -130,7 +130,7 @@ if ($id_agent_module) {
 	$min = $module['min'];
 	$interval = $module['module_interval'];
 	if ($interval == 0) {
-		$interval = get_agent_interval ($id_agente);
+		$interval = agents_get_interval ($id_agente);
 	}
 	$tcp_port = $module['tcp_port'];
 	$tcp_send = $module['tcp_send'];
@@ -155,7 +155,7 @@ if ($id_agent_module) {
 	
 	$ip_target = $module['ip_target'];
 	if (empty ($ip_target)) {
-		$ip_target = get_agent_address ($id_agente);
+		$ip_target = agents_get_address ($id_agente);
 	}
 	$disabled = $module['disabled'];
 	$id_export = $module['id_export'];
@@ -201,7 +201,7 @@ else {
 		else
 			$snmp_community = "public";
 		$snmp_oid = '';
-		$ip_target = get_agent_address ($id_agente);
+		$ip_target = agents_get_address ($id_agente);
 		$plugin_user = '';
 		$plugin_pass = '';
 		$plugin_parameter = '';
@@ -229,14 +229,14 @@ $relink_policy = get_parameter('relink_policy', 0);
 $unlink_policy = get_parameter('unlink_policy', 0);
 
 if($relink_policy) {
-	$result = relink_module_policy($id_agent_module);
+	$result = policies_relink_module($id_agent_module);
 	ui_print_result_message($result, 'Module relinked to the policy successful');
 	
 	db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 }
 
 if($unlink_policy) {
-	$result = unlink_module_policy($id_agent_module);
+	$result = policies_unlink_module($id_agent_module);
 	ui_print_result_message($result, 'Module unlinked from the policy successful');
 	
 	db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
@@ -247,7 +247,7 @@ switch ($moduletype) {
 	case 1:
 		$moduletype = 1;
 		// Has remote configuration ?
-		$agent_md5 = md5 (get_agent_name($id_agente), false);
+		$agent_md5 = md5 (agents_get_name($id_agente), false);
 		$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
 		
 		/* Categories is an array containing the allowed module types
@@ -258,7 +258,7 @@ switch ($moduletype) {
 		if ($config['enterprise_installed'] && $remote_conf) {
 			if($id_agent_module) {
 				enterprise_include_once('include/functions_config_agents.php');
-				$configuration_data = enterprise_hook('get_module_from_conf', array($id_agente, get_agentmodule_name($id_agent_module)));
+				$configuration_data = enterprise_hook('config_agents_get_module_from_conf', array($id_agente, get_agentmodule_name($id_agent_module)));
 			}
 			enterprise_include ('godmode/agentes/module_manager_editor_data.php');
 		}
@@ -316,8 +316,8 @@ if (isset ($extra_title))
 echo '</h3>';
 
 if($config['enterprise_installed'] && $id_agent_module) {
-	if (isModuleInPolicy($id_agent_module)) {
-		add_policy_linkation($id_agent_module);
+	if (policies_is_module_in_policy($id_agent_module)) {
+		policies_add_policy_linkation($id_agent_module);
 	}
 }
 

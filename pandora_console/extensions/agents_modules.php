@@ -69,7 +69,7 @@ function mainAgentsModules() {
 	$hor_offset = get_parameter('hor_offset', 0);
 	$block = 20;
 
-	$groups = get_user_groups ();
+	$groups = users_get_groups ();
 
 	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$filter_module_groups .= '<b>'.__('Module group').'</b>';
@@ -115,7 +115,7 @@ function mainAgentsModules() {
 
 	$agents = '';
 	if($group_id > 0) {
-		$agents = get_group_agents($group_id);
+		$agents = agents_get_group_agents($group_id);
 		$agents = array_keys($agents);
 	}
 	
@@ -125,7 +125,7 @@ function mainAgentsModules() {
 		$filter_module_groups['id_module_group'] = $modulegroup;
 	}
 	
-	$all_modules = get_agent_modules($agents, false, $filter_module_groups, true, false);
+	$all_modules = agents_get_modules($agents, false, $filter_module_groups, true, false);
 
 	$modules_by_name = array();
 	$name = '';
@@ -197,7 +197,7 @@ function mainAgentsModules() {
 
 	foreach ($agents as $agent) {
 		// Get stats for this group
-		$agent_status = get_agent_status($agent['id_agente']);
+		$agent_status = agents_get_status($agent['id_agente']);
 
 		switch($agent_status) {
 			case 4: // Alert fired status
@@ -228,7 +228,7 @@ function mainAgentsModules() {
 		
 		$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
 		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</a></td>";
-		$agent_modules = get_agent_modules($agent['id_agente']);
+		$agent_modules = agents_get_modules($agent['id_agente']);
 		
 		$nmodules = 0;
 		

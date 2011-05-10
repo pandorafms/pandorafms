@@ -304,7 +304,7 @@ $table->data = array ();
 //Group selector
 $table->data[0][0] = '<b>'.__('Group').'</b>';
 	
-$groups = get_user_groups ($config['id_user'], "AR");
+$groups = users_get_groups ($config['id_user'], "AR");
 	
 $table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "group", $group, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
 	
@@ -329,7 +329,7 @@ if (!in_array ($agent, array_keys ($agents))) {
 }
 
 //$table->data[1][1] = html_print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
-$table->data[1][1] = html_print_input_text_extended ('agent', get_agent_name ($agent), 'text-agent', '', 30, 100, false, '',
+$table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	
@@ -337,7 +337,7 @@ $table->data[1][1] = html_print_input_text_extended ('agent', get_agent_name ($a
 $table->data[2][0] = '<b>'.__('Modules').'</b>';
 
 if ($agent > 0) {
-	$modules = get_agent_modules ($agent);
+	$modules = agents_get_modules ($agent);
 } else {
 	$modules = array ();
 }

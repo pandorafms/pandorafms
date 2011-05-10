@@ -176,7 +176,7 @@ function process_user_login ($login, $pass) {
 			return false;
 		}
 
-		create_user_profile ($login, $config['default_remote_profile'], $config['default_remote_group']);	
+		profile_create_user_profile ($login, $config['default_remote_profile'], $config['default_remote_group']);	
 		return $login;
 	}
 

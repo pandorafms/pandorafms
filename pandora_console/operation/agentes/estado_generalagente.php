@@ -77,20 +77,20 @@ echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;fl
 echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
 echo '<td class="datos2" colspan="2">';
 $ips = array();
-$addresses = get_agent_addresses ($id_agente);
-$address = get_agent_address($id_agente);
+$addresses = agents_get_addresses ($id_agente);
+$address = agents_get_address($id_agente);
 
 if (!empty($addresses)) {
 	$ips = $addresses;
 }
 
 if (!empty($address)) {
-	$ips = array_merge((array)get_agent_address ($id_agente), $ips);
+	$ips = array_merge((array)agents_get_address ($id_agente), $ips);
 }
 
 $ips = array_unique($ips);
 
-html_print_select($ips, "not_used", get_agent_address ($id_agente));
+html_print_select($ips, "not_used", agents_get_address ($id_agente));
 echo '</td></tr>';
 
 //OS
@@ -109,7 +109,7 @@ echo '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_versio
 
 // Parent
 echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
-echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.get_agent_name ($agent["id_parent"]).'</a></td></tr>';
+echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a></td></tr>';
 
 // Agent Interval
 echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';

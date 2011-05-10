@@ -107,7 +107,7 @@ if ($delete) {
 	}
 }
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->id = 'delete_table';
 $table->width = '95%';

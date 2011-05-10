@@ -58,7 +58,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	}
 	
 	// Create address for this agent in taddress
-	agent_add_address ($id_agent, $ip_address);
+	agents_add_address ($id_agent, $ip_address);
 	
 	// Create special module agent_keepalive
 	$id_agent_module = db_process_sql_insert ('tagente_modulo', 
@@ -170,7 +170,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}
 	else {
 		$id_agent = (array) $id_agent;
-		$id_modules = array_keys (get_agent_modules ($id_agent, false, array('delete_pending' => 0)));
+		$id_modules = array_keys (agents_get_modules ($id_agent, false, array('delete_pending' => 0)));
 		
 		if (empty ($id_modules))
 			return array ();
@@ -332,7 +332,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 
 	//Get user groups
-	$groups = array_keys (get_user_groups ($config["id_user"], $access, false));
+	$groups = array_keys (users_get_groups ($config["id_user"], $access, false));
 
 	//If no group specified, get all user groups
 	if (empty ($filter['id_grupo'])) {
@@ -589,12 +589,12 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
  * Example:
 <code>
 Both are similars:
-$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
-$modules = get_agent_modules ($id_agent, false, 'disabled = 0');
+$modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
+$modules = agents_get_modules ($id_agent, false, 'disabled = 0');
 
 Both are similars:
-$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
-$modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+$modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+$modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
 </code>
  *
  * @return array An array with all modules in the agent.
@@ -665,12 +665,12 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
  * Example:
 <code>
 Both are similars:
-$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
-$modules = get_agent_modules ($id_agent, false, 'disabled = 0');
+$modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
+$modules = agents_get_modules ($id_agent, false, 'disabled = 0');
 
 Both are similars:
-$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
-$modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+$modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+$modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
 </code>
  *
  * @return array An array with all modules in the agent.
@@ -737,7 +737,7 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  *
  * @return array An array with all agents in the group or an empty array
  */
-function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
+function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
 	global $config;
 
 
@@ -751,7 +751,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	}
 
 	if ($childGroups) {
-		$id_group = array_keys(get_user_groups(false, "AR", true, false, (array)$id_group));
+		$id_group = array_keys(users_get_groups(false, "AR", true, false, (array)$id_group));
 	}
 
 	if (is_array($id_group)) {
@@ -866,23 +866,23 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
  * Example:
  <code>
  Both are similars:
- $modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
- $modules = get_agent_modules ($id_agent, false, 'disabled = 0');
+ $modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
+ $modules = agents_get_modules ($id_agent, false, 'disabled = 0');
 
  Both are similars:
- $modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
- $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+ $modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+ $modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
  </code>
  *
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agent_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
+function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
 
 	if ($id_agent === null) {
 		//Extract the agents of group user.
-		$groups = get_user_groups(false, 'AR', false);
+		$groups = users_get_groups(false, 'AR', false);
 		$id_groups = array_keys($groups);
 
 		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
@@ -897,7 +897,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 
 	$id_agent = safe_int ($id_agent, 1);
 
-	$userGroups = get_user_groups($config['id_user'], 'AR', false);
+	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	$id_userGroups = array_keys($userGroups);
 
 	$where = " WHERE (
@@ -1037,7 +1037,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
  *
  * @return int Id from the agent of the given id module.
  */
-function get_agent_module_id ($id_agente_modulo) {
+function agents_get_module_id ($id_agente_modulo) {
 	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
 }
 
@@ -1048,7 +1048,7 @@ function get_agent_module_id ($id_agente_modulo) {
  *
  * @return int Id from the agent of the given name.
  */
-function get_agent_id ($agent_name) {
+function agents_get_agent_id ($agent_name) {
 	return (int) db_get_value ('id_agente', 'tagente', 'nombre', $agent_name);
 }
 
@@ -1060,7 +1060,7 @@ function get_agent_id ($agent_name) {
  *
  * @return string Name of the given agent.
  */
-function get_agent_name ($id_agent, $case = "none") {
+function agents_get_name ($id_agent, $case = "none") {
 	$agent = (string) db_get_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
 	// Version 3.0 has enforced case sensitive agent names
 	// so we always should show real case names.
@@ -1087,7 +1087,7 @@ function get_agent_name ($id_agent, $case = "none") {
  *
  * @return mixed The number of data in the database
  */
-function get_agent_modules_data_count ($id_agent = 0) {
+function agents_get_modules_data_count ($id_agent = 0) {
 	$id_agent = safe_int ($id_agent, 1);
 
 	if (empty ($id_agent)) {
@@ -1105,7 +1105,7 @@ function get_agent_modules_data_count ($id_agent = 0) {
 	foreach ($id_agent as $agent_id) {
 		//Init value
 		$count[$agent_id] = 0;
-		$modules = array_keys (get_agent_modules ($agent_id));
+		$modules = array_keys (agents_get_modules ($agent_id));
 		foreach ($query as $sql) {
 			//Add up each table's data
 			$count[$agent_id] += (int) db_get_sql ($sql." WHERE id_agente_modulo IN (".implode (",", $modules).")", 0, true);
@@ -1134,7 +1134,7 @@ function get_agent_modules_data_count ($id_agent = 0) {
  *
  * @return bool True if the agent has fired alerts.
  */
-function check_alert_fired ($id_agent) {
+function agents_check_alert_fired ($id_agent) {
 	$sql = sprintf ("SELECT COUNT(*)
 		FROM talert_template_modules, tagente_modulo
 		WHERE talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
@@ -1155,7 +1155,7 @@ function check_alert_fired ($id_agent) {
  *
  * @return int The interval value of a given agent
  */
-function get_agent_interval ($id_agent) {
+function agents_get_interval ($id_agent) {
 	return (int) db_get_value ('intervalo', 'tagente', 'id_agente', $id_agent);
 }
 
@@ -1166,7 +1166,7 @@ function get_agent_interval ($id_agent) {
  *
  * @return int The interval value of a given agent
  */
-function get_agent_os ($id_agent) {
+function agents_get_os ($id_agent) {
 	return (int) db_get_value ('id_os', 'tagente', 'id_agente', $id_agent);
 }
 
@@ -1177,7 +1177,7 @@ function get_agent_os ($id_agent) {
  *
  * @return bool The flag value of an agent module.
  */
-function give_agentmodule_flag ($id_agent_module) {
+function agents_give_agentmodule_flag ($id_agent_module) {
 	return db_get_value ('flag', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
@@ -1187,7 +1187,7 @@ function give_agentmodule_flag ($id_agent_module) {
  * @param int Agent id
  * @param string IP address to assign
  */
-function agent_add_address ($id_agent, $ip_address) {
+function agents_add_address ($id_agent, $ip_address) {
 	global $config;	
 
 	// Check if already is attached to agent
@@ -1227,7 +1227,7 @@ function agent_add_address ($id_agent, $ip_address) {
  * @param int Agent id
  * @param string IP address to unassign
  */
-function agent_delete_address ($id_agent, $ip_address) {
+function agents_delete_address ($id_agent, $ip_address) {
 	global $config;
 
 	$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
@@ -1237,13 +1237,13 @@ function agent_delete_address ($id_agent, $ip_address) {
 	if ($id_ag !== false) {
 		db_process_sql_delete('taddress_agent', array('id_ag' => $id_ag));
 	}
-	$agent_name = get_agent_name($id_agent, "");
+	$agent_name = agents_get_name($id_agent, "");
 	db_pandora_audit("Agent management",
 		"Deleted IP $ip_address from agent '$agent_name'");
 
 	// Need to change main address?
-	if (get_agent_address ($id_agent) == $ip_address) {
-		$new_ips = get_agent_addresses ($id_agent);
+	if (agents_get_address ($id_agent) == $ip_address) {
+		$new_ips = agents_get_addresses ($id_agent);
 		// Change main address in agent to first one in the list
 		
 		db_process_sql_update('tagente', array('direccion' => current ($new_ips)),
@@ -1258,7 +1258,7 @@ function agent_delete_address ($id_agent, $ip_address) {
  *
  * @return string The address of the given agent
  */
-function get_agent_address ($id_agent) {
+function agents_get_address ($id_agent) {
 	return (string) db_get_value ('direccion', 'tagente', 'id_agente', (int) $id_agent);
 }
 
@@ -1269,7 +1269,7 @@ function get_agent_address ($id_agent) {
  *
  * @return mixed The agent that has the IP address given. False if none were found.
  */
-function get_agent_with_ip ($ip_address) {
+function agents_get_agent_with_ip ($ip_address) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
@@ -1300,7 +1300,7 @@ function get_agent_with_ip ($ip_address) {
  *
  * @return array Array with the IP address of the given agent or an empty array.
  */
-function get_agent_addresses ($id_agent) {
+function agents_get_addresses ($id_agent) {
 	$sql = sprintf ("SELECT ip
 		FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
@@ -1328,10 +1328,10 @@ function get_agent_addresses ($id_agent) {
  * @return int Worst status of an agent for all of its modules.
  * The value -1 is returned in case the agent has exceed its interval.
  */
-function get_agent_status($id_agent = 0) {
+function agents_get_status($id_agent = 0) {
 	global $config;
 	
-	$modules = get_agent_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
+	$modules = agents_get_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
 
 	$modules_status = array();
 	$modules_async = 0;
@@ -1404,7 +1404,7 @@ function get_agent_status($id_agent = 0) {
  *
  * @return bool False if error, true if success.
  */
-function delete_agent ($id_agents, $disableACL = false) {
+function agents_delete_agent ($id_agents, $disableACL = false) {
 	global $config;
 
 	$error = false;
@@ -1421,10 +1421,10 @@ function delete_agent ($id_agents, $disableACL = false) {
 		if ($id_agent < 1)
 		continue;
 
-		$agent_name = get_agent_name($id_agent, "");
+		$agent_name = agents_get_name($id_agent, "");
 
 		/* Check for deletion permissions */
-		$id_group = get_agent_group ($id_agent);
+		$id_group = agents_get_agent_group ($id_agent);
 		if ((! check_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
 			db_process_sql_rollback ();
 			return false;
@@ -1487,7 +1487,7 @@ function delete_agent ($id_agents, $disableACL = false) {
 		// db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
 
 		// Delete agent policies
-		enterprise_hook('delete_agent_policies', array($id_agent));
+		enterprise_hook('policies_delete_agent', array($id_agent));
 
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
@@ -1536,9 +1536,9 @@ function delete_agent ($id_agents, $disableACL = false) {
  *
  * @return int The group id
  */
-function get_agentmodule_group ($id_module) {
+function agents_get_agentmodule_group ($id_module) {
 	$agent = (int) modules_get_agentmodule_agent ((int) $id_module);
-	return (int) get_agent_group ($agent);
+	return (int) agents_get_agent_group ($agent);
 }
 
 /**
@@ -1548,7 +1548,7 @@ function get_agentmodule_group ($id_module) {
  *
  * @return int The group id
  */
-function get_agent_group ($id_agent) {
+function agents_get_agent_group ($id_agent) {
 	return (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
 }
 

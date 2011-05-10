@@ -24,7 +24,7 @@ require_once('include/functions_modules.php');
 
 $module_id = get_parameter_get ("id", 0);
 $period = get_parameter ("period", 86400);
-$group = get_agentmodule_group ($module_id);
+$group = agents_get_agentmodule_group ($module_id);
 $agentId = get_parameter("id_agente"); 
 
 

@@ -48,9 +48,9 @@ if ($al_action !== false){
 	}else{
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-			$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+			$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
 		else
-			$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 		$is_in_group = in_array($al_action['id_group'], $own_groups);
 		// Then action group have to be in his own groups
 		if ($is_in_group)
@@ -97,7 +97,7 @@ $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
 
 $table->data[1][0] = __('Group');
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 $own_info = get_user_info ($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))

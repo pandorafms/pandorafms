@@ -46,7 +46,7 @@ if ($id_agent == -2) {
 			$id_agent = 0;
 			break;
 		default:
-			$id_agent = get_agent_id($text_agent);
+			$id_agent = agents_get_agent_id($text_agent);
 			break;
 	}
 }
@@ -60,7 +60,7 @@ else {
 			$text_agent = __('Server');
 			break;
 		default:
-			$text_agent = get_agent_name($id_agent);
+			$text_agent = agents_get_name($id_agent);
 			break;
 	}
 }
@@ -220,7 +220,7 @@ echo "</td>";
 echo "</tr><tr>";
 echo "<td>".__('User ack.')."</td>";
 echo "<td>";
-$users = get_users_info ();
+$users = users_get_info ();
 html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 

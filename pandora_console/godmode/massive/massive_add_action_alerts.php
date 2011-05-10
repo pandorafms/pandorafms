@@ -131,7 +131,7 @@ if ($add) {
 
 }
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->id = 'delete_table';
 $table->width = '95%';
@@ -152,7 +152,7 @@ $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = html_print_select (get_group_agents ($id_group, false, "none"),
+$table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
 if (empty($id_agents)) {

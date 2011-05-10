@@ -20,7 +20,7 @@ require_once ("include/functions_agents.php");
 
 if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
 	db_pandora_audit("ACL Violation",
-		"Trying to access (read) to agent ".get_agent_name($id_agente));
+		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");
 	return;
 }
@@ -40,7 +40,7 @@ $zoom = get_parameter ("zoom", 1);
 $modulesChecked = get_parameter('modules', array());
 $filter = get_parameter('filter', 0);
 
-$modules = get_agent_modules($id_agente);
+$modules = agents_get_modules($id_agente);
 
 if (!$filter) {
 	foreach ($modules as $id => $module) {

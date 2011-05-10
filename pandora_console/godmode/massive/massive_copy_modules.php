@@ -49,7 +49,7 @@ if ($do_operation) {
 	}
 }
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->class = 'databox';
 $table->width = '95%';
@@ -72,7 +72,7 @@ $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';
 $table->data[0][2] .= html_print_image ("images/spinner.png", true);
 $table->data[0][2] .= '</span>';
-$table->data[0][3] = html_print_select (get_group_agents ($source_id_group, false, "none"),
+$table->data[0][3] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
 //$table->data[0][3] = html_print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
@@ -94,7 +94,7 @@ $table->data = array ();
 
 $modules = array ();
 if ($source_id_agent)
-	$modules = get_agent_modules ($source_id_agent, 'nombre');
+	$modules = agents_get_modules ($source_id_agent, 'nombre');
 
 $table->data['operations'][0] = __('Operations');
 $table->data['operations'][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
@@ -156,7 +156,7 @@ $table->data[1][0] = __('Agent');
 $table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image ("images/spinner.png", true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = html_print_select (get_group_agents ($destiny_id_group, false, "none"),
+$table->data[1][1] = html_print_select (agents_get_group_agents ($destiny_id_group, false, "none"),
 	'destiny_id_agent[]', 0, false, '', '', true, true);
 
 echo '<fieldset id="fieldset_destiny"'.($source_id_agent ? '' : ' class="invisible"').'>';

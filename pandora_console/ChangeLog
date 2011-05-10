@@ -1,3 +1,8 @@
+2011-05-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Do not count the empty start of an
+	  interval as 0 (affects AVG and SLA).
+
 2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_visual_map.php

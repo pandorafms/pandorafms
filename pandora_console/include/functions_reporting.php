@@ -102,6 +102,11 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 	$count = 0;
 	if (! $uncompressed_module) {
 		$previous_data = array_shift ($interval_data);
+		
+		// Do not count the empty start of an interval as 0
+		if ($previous_data['utimestamp'] != $datelimit) {
+			$period = $date - $previous_data['utimestamp'];
+		}
 	}
 	foreach ($interval_data as $data) {
 		if (! $uncompressed_module) {
@@ -488,6 +493,12 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	// Set initial conditions
 	$bad_period = 0;
 	$first_data = array_shift ($interval_data);
+	
+	// Do not count the empty start of an interval as 0
+	if ($first_data['utimestamp'] != $datelimit) {
+		$period = $date - $first_data['utimestamp'];
+	}
+
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
 		($max_value <= $min_value AND $first_data['datos'] < $min_value)) {

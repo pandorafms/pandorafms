@@ -251,7 +251,8 @@ else {
 	// Not selected any specific group
 	if (check_acl ($config['id_user'], 0, "PM")){
 		$agent_names = get_group_agents(0, $filter, "upper", true);
-	}else{
+	}
+	else{
 		$user_group = get_user_groups($config["id_user"], "AR");
 		$groups = array_keys($user_group);
 		$agent_names = get_group_agents(array_keys ($user_group), $filter, "upper");
@@ -264,28 +265,31 @@ if (! empty ($agent_names)) {
 	if (check_acl ($config['id_user'], 0, "PM")){
 		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
 		$total_agents = db_get_sql ($sql);
+		
 		$sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
 		$agents = db_get_all_rows_sql ($sql);
 
-	}else{
-		$total_agents = agents_get_agents (array ('id_agente' => array_keys ($agent_names),
+	}
+	else{
+		$total_agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'disabled' => 0,
 			'id_grupo' => $groups),
 			array ('COUNT(*) as total'));
 		$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
-		$agents = agents_get_agents (array ('id_agente' => array_keys ($agent_names),
+		
+		$agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'id_grupo' => $groups,
 			'offset' => (int) get_parameter ('offset'),
 			'limit' => (int) $config['block_size']),
-		array ('id_agente',
-			'id_grupo',
-			'id_os',
-			'ultimo_contacto',
-			'intervalo'),
-		'AR',
-		$order);
+			array ('id_agente',
+				'id_grupo',
+				'id_os',
+				'ultimo_contacto',
+				'intervalo'),
+			'AR',
+			$order);
 	}
 }
 

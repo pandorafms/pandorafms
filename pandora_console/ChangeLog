@@ -1,3 +1,18 @@
+2011-05-10 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_profile.php: modified the function "create_user_profile"
+	for to return the id of new user profile.
+	
+	* include/functions_agents.php: added in function "agents_get_agents" the
+	code to filter with enterprise ACL.
+	
+	* operation/agentes/estado_agente.php: cleaned source code style.
+	
+	* godmode/agentes/modificar_agente.php: added the filter for to
+	enterprise ACL.
+	
+	* godmode/users/configure_user.php: added hooks for to enterprise ACL.
+
 2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixed mistake of my last 

@@ -24,6 +24,12 @@ include_once ($config['homedir'] . '/include/functions_groups.php');
 
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 
+//Add the columns for the enterprise Pandora edition.
+$enterprise_include = false;
+if (ENTERPRISE_NOT_HOOK !== enterprise_include('include/functions_policies.php')) {
+	$enterprise_include = true;
+}
+
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 
@@ -225,6 +231,11 @@ if ($add_profile) {
 	db_pandora_audit("User management",
 		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
 	$return = create_user_profile ($id2, $profile2, $group2);
+	
+	if ($enterprise_include) {
+		add_enterprise_db_data_user_profile_form($return);
+	}
+	
 	ui_print_result_message ($return,
 		__('Profile added successfully'),
 		__('Profile cannot be added'));
@@ -359,7 +370,7 @@ if (empty ($id) || $new_user)
 
 echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 
-$table->width = '75%';
+$table->width = '85%';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();
@@ -370,6 +381,10 @@ $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Action');
 $table->align[2] = 'center';
+
+if ($enterprise_include) {
+	add_enterprise_column_user_profile_form($table);
+}
 
 $result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
 if ($result === false) {
@@ -388,25 +403,39 @@ foreach ($result as $profile) {
 	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true);
 	$data[2] .= '</form>';
 	
+	if ($enterprise_include) {
+		add_data_enterprise_column_user_profile_form($data, $profile['id_up']);
+	}
+	
 	array_push ($table->data, $data);
 }
 
-$data = array ();
-$data[0] = '<form method="post">';
-if (check_acl ($config['id_user'], 0, "PM")) {
-	$data[0] .= html_print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
-		0, true, false, false);
+if (!$enterprise_include) {
+	$data = array ();
+	
+	$data[0] = '<form method="post">';
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		$data[0] .= html_print_select (get_profiles (), 'assign_profile', 0, '',
+		 	__('None'), 0, true, false, false);
+	}
+	else {
+		$data[0] .= html_print_select (get_profiles (array ('pandora_management' => '<> 1',
+			'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'), 0,
+			true, false, false);
+	}
+	
+	$data[1] = html_print_select_groups($config['id_user'], "UM",
+		$own_info['is_admin'], 'assign_group', -1, '', __('None'), -1, true,
+		false, false);
+	
+	$data[2] = html_print_input_image ('add', 'images/add.png', 1, '', true);
+	$data[2] .= html_print_input_hidden ('id', $id, true);
+	$data[2] .= html_print_input_hidden ('add_profile', 1, true);
+	$data[2] .= '</form>';
 }
 else {
-	$data[0] .= html_print_select (get_profiles (array ('pandora_management' => '<> 1', 'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'),
-		0, true, false, false);
+	add_row_enterprise_form_user_profile_form($data, $own_info, $id);
 }
-$data[1] = html_print_select_groups($config['id_user'], "UM", $own_info['is_admin'],
-	'assign_group', -1, '', __('None'), -1, true, false, false);
-$data[2] = html_print_input_image ('add', 'images/add.png', 1, '', true);
-$data[2] .= html_print_input_hidden ('id', $id, true);
-$data[2] .= html_print_input_hidden ('add_profile', 1, true);
-$data[2] .= '</form>';
 
 array_push ($table->data, $data);
 
@@ -414,4 +443,8 @@ html_print_table ($table);
 echo '</form>';
 
 unset ($table);
+
+if ($enterprise_include) {
+	add_script_enterprise_profile_form();
+}
 ?>

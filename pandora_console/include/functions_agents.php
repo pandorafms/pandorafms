@@ -320,6 +320,12 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
  */
 function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
     global $config;
+    
+	//Add enterprise function to add other enterprise ACL.
+	$enterprise_include = false;
+	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+		$enterprise_include = true;
+	}
 
 	if (! is_array ($filter)) {
 		$filter = array ();
@@ -363,6 +369,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	$filter['order'] = $order['field'] . ' ' . $order['order'];
+	
+	if ($enterprise_include) {
+		add_enterprise_agents_get_agents_filter_acl($filter);
+	}
+	
 	return db_get_all_rows_filter ('tagente', $filter, $fields);
 }
 

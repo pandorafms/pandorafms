@@ -38,7 +38,7 @@ if ($get_agent_alerts_simple) {
 		echo json_encode (false);
 		return;
 	}
-	$id_group = get_agent_group ($id_agent);
+	$id_group = agents_get_agent_group ($id_agent);
 	
 	if (! check_acl ($config['id_user'], $id_group, "AR")) {
 		db_pandora_audit("ACL Violation",

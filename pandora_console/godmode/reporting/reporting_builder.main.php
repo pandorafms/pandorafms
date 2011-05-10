@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 
 require_once ($config['homedir'].'/include/functions_users.php');
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 switch ($action) {
 	case 'new':

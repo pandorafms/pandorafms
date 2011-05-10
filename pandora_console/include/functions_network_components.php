@@ -289,7 +289,7 @@ function network_components_delete_network_component ($id_network_component) {
  * @return array New agent module id if created. False if could not be created
  */
 function network_components_create_module_from_network_component ($id_network_component, $id_agent) {
-	if (! user_access_to_agent ($id_agent, 'AW'))
+	if (! users_access_to_agent ($id_agent, 'AW'))
 		return false;
 	$component = network_components_get_network_component ($id_network_component,
 		false,
@@ -324,7 +324,7 @@ function network_components_create_module_from_network_component ($id_network_co
 		unset ($values[$i]);
 	$name = $values['name'];
 	unset ($values['name']);
-	$values['ip_target'] = get_agent_address ($id_agent);
+	$values['ip_target'] = agents_get_address ($id_agent);
 	
 	return modules_create_agent_module ($id_agent, $name, $values);
 }

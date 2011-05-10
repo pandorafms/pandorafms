@@ -75,8 +75,8 @@ html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
-$user_groups = implode (",", array_keys (get_user_groups ()));
-//$user_agents = array_keys (get_group_agents($user_groups));
+$user_groups = implode (",", array_keys (users_get_groups ()));
+//$user_agents = array_keys (agents_get_group_agents($user_groups));
 
 //$modules = db_get_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
 
@@ -376,14 +376,14 @@ foreach ($result as $row) {
 	$data = array ();
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = infoModulePolicy($row['id_agente_modulo']);
+		$policyInfo = policies_info_module_policy($row['id_agente_modulo']);
 		if ($policyInfo === false)
 			$data[0] = '';
 		else {
-			$linked = isModuleLinked($row['id_agente_modulo']);
+			$linked = policies_is_module_linked($row['id_agente_modulo']);
 			
 			$adopt = false;
-			if (isModuleAdopt($row['id_agente_modulo'])) {
+			if (policies_is_module_adopt($row['id_agente_modulo'])) {
 				$adopt = true;
 			}
 			

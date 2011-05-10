@@ -76,7 +76,7 @@ class MonitorStatus {
 			$sqlGroup = sprintf (" AND tagente.id_grupo = %d", $ag_group);
 		}
 		else {
-			$user_groups_all = get_user_groups ($this->user->getIdUser(), "AR");
+			$user_groups_all = users_get_groups ($this->user->getIdUser(), "AR");
 			$user_groups = array_keys ($user_groups_all);
 			$user_groupsText = implode(',', $user_groups);
 			

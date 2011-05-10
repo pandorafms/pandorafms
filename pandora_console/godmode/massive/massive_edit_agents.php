@@ -38,7 +38,7 @@ if (is_ajax ()) {
 		$id_agents = get_parameter('id_agents');
 		$cont = 0;
 		foreach($id_agents as $id_agent) {
-			$name = get_agent_name($id_agent);
+			$name = agents_get_name($id_agent);
 			$agent_md5 = md5($name);
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5"))
 				$cont ++;
@@ -59,7 +59,7 @@ if ($update_agents) {
 	if (get_parameter ('id_os', '') != -1)
 		$values['id_os'] = get_parameter ('id_os');
 	if (get_parameter ('id_parent', '') != '')
-		$values['id_parent'] = get_agent_id(get_parameter ('id_parent'));
+		$values['id_parent'] = agents_get_agent_id(get_parameter ('id_parent'));
 	if (get_parameter ('server_name', '') != -1)
 		$values['server_name'] = get_parameter ('server_name');
 	if (get_parameter ('description', '') != '')
@@ -100,7 +100,7 @@ if ($update_agents) {
 		unset($values['delete_conf']);
 		$n_deleted = 0;
 		foreach ($id_agents as $id_agent) {
-			$agent_md5 = md5(get_agent_name($id_agent));
+			$agent_md5 = md5(agents_get_name($id_agent));
 			@unlink ($config["remote_config"]."/md5/".$agent_md5.".md5");
 			$result = @unlink ($config["remote_config"]."/conf/".$agent_md5.".conf");
 			
@@ -174,7 +174,7 @@ if ($update_agents) {
 }
 $id_group = 0;
 
-$groups = get_user_groups();
+$groups = users_get_groups();
 
 $table->id = 'delete_table';
 $table->width = '95%';
@@ -195,8 +195,8 @@ $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$enabled_agents = get_group_agents ($id_group, array('disabled' => 0), "none");
-$all_agents = get_group_agents ($id_group, array('disabled' => 1), "none") + $enabled_agents;
+$enabled_agents = agents_get_group_agents ($id_group, array('disabled' => 0), "none");
+$all_agents = agents_get_group_agents ($id_group, array('disabled' => 1), "none") + $enabled_agents;
 
 $table->data[1][1] = html_print_select ($all_agents,
 	'id_agents[]', 0, false, '', '', true, true);
@@ -225,11 +225,11 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$groups = get_user_groups ($config["id_user"], "AR",false);
-$agents = get_group_agents (array_keys ($groups));
+$groups = users_get_groups ($config["id_user"], "AR",false);
+$agents = agents_get_group_agents (array_keys ($groups));
 
 $table->data[0][0] = __('Parent');
-$table->data[0][1] = html_print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
+$table->data[0][1] = html_print_input_text_extended ('id_parent', agents_get_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 

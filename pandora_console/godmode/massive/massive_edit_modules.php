@@ -97,7 +97,7 @@ if ($update) {
 		}
 
 		foreach($agents_select as $agent_name) {
-			$agents_[] = get_agent_id($agent_name);
+			$agents_[] = agents_get_agent_id($agent_name);
 		}
 		$modules_ = $module_name;
 	}
@@ -139,7 +139,7 @@ if ($update) {
 			}
 		}
 		else if($force == 'group') {
-			$agents_ = array_keys (get_group_agents ($group_select, false, "none"));
+			$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
 			foreach($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
 				if($module_name == false) {
@@ -205,7 +205,7 @@ if (! $module_type) {
 	$table->rowstyle['edit6'] = 'display: none';
 	$table->rowstyle['edit7'] = 'display: none';
 }
-$agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
+$agents = agents_get_group_agents (array_keys (users_get_groups ()), false, "none");
 $module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
 	array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
 		'id_agente' => array_keys ($agents),
@@ -254,7 +254,7 @@ else {
 	$filter = false;
 }
 
-$names = get_agent_modules (array_keys ($agents),
+$names = agents_get_modules (array_keys ($agents),
 	'DISTINCT(nombre)', $filter, false);
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];

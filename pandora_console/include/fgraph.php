@@ -180,7 +180,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 
 		$agent_module_id = $module_list[$i];
 		$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
-		$agent_id = get_agent_id ($agent_name);
+		$agent_id = agents_get_agent_id ($agent_name);
 		$module_name = modules_get_agentmodule_name ($agent_module_id);
 		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 40);
 		$id_module_type = modules_get_agentmodule_type ($agent_module_id);
@@ -781,7 +781,7 @@ function graph_db_agentes_modulos ($width, $height) {
 		$modules = array ();
 	
 	foreach ($modules as $module) {
-		$agent_name = get_agent_name ($module['id_agente'], "none");
+		$agent_name = agents_get_name ($module['id_agente'], "none");
 		switch ($config['dbtype']){
 			case "mysql":
 			case "postgresql":
@@ -1003,7 +1003,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 			if ($row["id_agente"] == 0) {
 				$name = __('SYSTEM')." (".$row["count"].")";
 			} else {
-				$name = mb_substr (get_agent_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+				$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
 			}
 			$data[$name] = $row["count"];
 		}
@@ -1146,8 +1146,8 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	$data = array ();
 	$legend = array ();
 	
-	$agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
-	$count = get_agent_modules_data_count (array_keys ($agents));
+	$agents = agents_get_group_agents (array_keys (users_get_groups ()), false, "none");
+	$count = agents_get_modules_data_count (array_keys ($agents));
 	unset ($count["total"]);
 	arsort ($count, SORT_NUMERIC);
 	$count = array_slice ($count, 0, 8, true);
@@ -1178,7 +1178,7 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 		$id_agent = -1;
 		$query = "";
 	} else {
-		$modules = get_agent_modules ($id_agent);
+		$modules = agents_get_modules ($id_agent);
 		$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
 	}
 	
@@ -1279,7 +1279,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
-	$agent_id = get_agent_id ($agent_name);
+	$agent_id = agents_get_agent_id ($agent_name);
 	$module_name = modules_get_agentmodule_name ($agent_module_id);
 	$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1366,7 +1366,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	// Get baseline data
 	$baseline_data = array ();
 	if ($baseline == 1) {
-		$baseline_data = enterprise_hook ('enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
+		$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
 		if ($baseline_data === ENTERPRISE_NOT_HOOK) {
 			$baseline_data = array ();
 		}
@@ -1535,7 +1535,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
-	$agent_id = get_agent_id ($agent_name);
+	$agent_id = agents_get_agent_id ($agent_name);
 	$module_name = modules_get_agentmodule_name ($agent_module_id);
 	$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1796,7 +1796,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
-	$agent_id = get_agent_id ($agent_name);
+	$agent_id = agents_get_agent_id ($agent_name);
 	$module_name = modules_get_agentmodule_name ($agent_module_id);
 	$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -2013,7 +2013,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 
 	$nombre_agente = modules_get_agentmodule_agent_name ($id_agente_modulo);
 	$nombre_modulo = modules_get_agentmodule_name ($id_agente_modulo);
-	$id_agente = get_agent_id ($nombre_agente);
+	$id_agente = agents_get_agent_id ($nombre_agente);
 
 
         $one_second = 1;

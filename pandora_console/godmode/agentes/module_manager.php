@@ -84,7 +84,7 @@ if ($multiple_delete) {
 	$id_agent_modules_delete = (array)get_parameter('id_delete');
 	
 	foreach($id_agent_modules_delete as $id_agent_module_del) {
-		$id_grupo = (int) get_agent_group($id_agente);
+		$id_grupo = (int) agents_get_agent_group($id_agente);
 		
 		if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 			db_pandora_audit("ACL Violation",
@@ -101,7 +101,7 @@ if ($multiple_delete) {
 		}
 		
 		enterprise_include_once('include/functions_config_agents.php');
-		enterprise_hook('deleteLocalModuleInConf', array(modules_get_agentmodule_agent($id_agent_module_del), modules_get_agentmodule_name($id_agent_module_del)));
+		enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module_del), modules_get_agentmodule_name($id_agent_module_del)));
 		
 		//Init transaction
 		$error = 0;
@@ -299,7 +299,7 @@ $table->align[2] = 'center';
 $table->align[7] = 'left';
 $table->data = array ();
 
-$agent_interval = get_agent_interval ($id_agente);
+$agent_interval = agents_get_interval ($id_agente);
 $last_modulegroup = "0";
 
 //Extract the ids only numeric modules for after show the normalize link. 
@@ -344,14 +344,14 @@ foreach ($modules as $module) {
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = infoModulePolicy($module['id_agente_modulo']);
+		$policyInfo = policies_info_module_policy($module['id_agente_modulo']);
 		if ($policyInfo === false)
 			$data[1] = '';
 		else {
-			$linked = isModuleLinked($module['id_agente_modulo']);
+			$linked = policies_is_module_linked($module['id_agente_modulo']);
 			
 			$adopt = false;
-			if (isModuleAdopt($module['id_agente_modulo'])) {
+			if (policies_is_module_adopt($module['id_agente_modulo'])) {
 				$adopt = true;
 			}
 			

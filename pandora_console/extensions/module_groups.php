@@ -27,7 +27,7 @@ if (is_ajax ()) {
 	$id_agent_group = (int)get_parameter('id_agent_group');
 	
 	if ($get_info_alert_module_group) {
-		$agents = get_group_agents($id_agent_group);
+		$agents = agents_get_group_agents($id_agent_group);
 		if (!empty($agents)) {
 			$alerts = agents_get_alerts_simple($agents);
 			
@@ -123,8 +123,8 @@ function mainModuleGroups() {
 	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
 	
 	
-	$agentGroups = get_user_groups ($config['id_user'], "AR", false);
-	$modelGroups = get_all_model_groups();
+	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
+	$modelGroups = users_get_all_model_groups();
 	array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 
 	foreach ($modelGroups as $i => $n) {
@@ -159,7 +159,7 @@ function mainModuleGroups() {
 			$rowsDB = db_get_all_rows_sql ($query);
 			
 			
-			$agents = get_group_agents($idAgentGroup);
+			$agents = agents_get_group_agents($idAgentGroup);
 			if (!empty($agents)) {
 				$alerts = agents_get_alerts_simple($agents);
 				

@@ -85,7 +85,7 @@ function menu_print_menu (&$menu) {
 		foreach ($main["sub"] as $subsec2 => $sub) {
 
 			// Choose valid suboptions (sec2)
-			if (enterprise_hook ('acl_enterprise', array ($config['id_user'], $mainsec, $subsec2)) == false){
+			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false){
 				continue;
 			}
 
@@ -169,7 +169,7 @@ function menu_print_menu (&$menu) {
 		
 		// Choose valid section (sec)
 
-		if (enterprise_hook ('acl_enterprise', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
+		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
 			continue;
 		} 
 

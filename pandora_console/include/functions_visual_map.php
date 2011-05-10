@@ -207,7 +207,7 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, 
 			array ('id_layout' => $id_layout,
 			   'pos_x' => $pos_x,
 			   'pos_y' => $pos_y,
-			   'label' => get_agent_name ($id_agent),
+			   'label' => agents_get_name ($id_agent),
 			   'image' => $image,
 			   'id_agent' => $id_agent,
 			   'width' => $width,
@@ -373,8 +373,8 @@ function visual_map_get_status_element($layoutData) {
 		//Status for a whole agent, if agente_modulo was == 0
 		}
 		else if ($layoutData['id_agent'] != 0) {
-			$status = get_agent_status ($layoutData["id_agent"]);
-			if ($status == -1) // get_agent_status return -1 for unknown!
+			$status = agents_get_status ($layoutData["id_agent"]);
+			if ($status == -1) // agents_get_status return -1 for unknown!
 				$status = 3;
 		}
 		else {
@@ -456,7 +456,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				// Agent
 				} 
 				elseif ($id_agent_parent  != 0) {
-					$status_parent = get_agent_status ($id_agent_parent);
+					$status_parent = agents_get_status ($id_agent_parent);
 				}
 				// Another layout/map
 				elseif ($id_layout_linked != 0) {
@@ -490,8 +490,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 
 				// Status for a whole agent, if agente_modulo was == 0
 				} elseif ($layout_data['id_agent'] != 0) {
-					$status = get_agent_status ($layout_data["id_agent"]);
-					if ($status == -1) // get_agent_status return -1 for unknown!
+					$status = agents_get_status ($layout_data["id_agent"]);
+					if ($status == -1) // agents_get_status return -1 for unknown!
 						$status = 3; 
 					$id_agent = $layout_data["id_agent"];
 				} else {
@@ -885,9 +885,9 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$where .= ' AND ';
 	}
 	if ($returnAllGroup)
-		$groups = get_user_groups ($id_user);
+		$groups = users_get_groups ($id_user);
 	else
-		$groups = get_user_groups ($id_user, 'IR', false);
+		$groups = users_get_groups ($id_user, 'IR', false);
 	$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
 	
 	$layouts = db_get_all_rows_filter ('tlayout', $where);
@@ -947,7 +947,7 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 			$status = modules_get_agentmodule_status ($data["id_agente_modulo"]);
 		// Agent
 		} else {
-			$status = get_agent_status ($data["id_agent"]);
+			$status = agents_get_status ($data["id_agent"]);
 		}
 		if ($status == 1)
 			return 1;
@@ -1035,7 +1035,7 @@ function visual_map_get_items_parents($idVisual) {
 	foreach ($items as $item) {
 		$agent = null;
 		if ($item['id_agent'] != 0) {
-			$agent = io_safe_output(get_agent_name($item['id_agent']));
+			$agent = io_safe_output(agents_get_name($item['id_agent']));
 		}
 		
 		$return[$item['id']] = visual_map_create_internal_name_item($item['label'],

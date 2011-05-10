@@ -58,7 +58,7 @@ function process_manage_delete ($module_name, $id_agents) {
 	}
 	
 	db_process_sql_begin ();
-	$modules = get_agent_modules ($id_agents, 'id_agente_modulo',
+	$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 		array ('nombre' => $module_name), true);
 	$success = modules_delete_agent_module ($modules);
 	if (! $success) {
@@ -94,7 +94,7 @@ if ($delete) {
 	}
 }
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->id = 'delete_table';
 $table->width = '95%';
@@ -110,7 +110,7 @@ $table->data = array ();
 
 $table->data[0][0] = __('Modules');
 
-$modules = get_agent_modules();
+$modules = agents_get_modules();
 $modulesSelect = array();
 foreach ($modules as $module) {
 	$modulesSelect[$module] = $module;

@@ -26,7 +26,7 @@ check_login ();
 $id_agente = (int) get_parameter ("id_agente");
 $group = 0;
 if ($id_agente)
-	$group = get_agent_group ($id_agente);
+	$group = agents_get_agent_group ($id_agente);
 
 if (! check_acl ($config["id_user"], $group, "AW")) {
 	db_pandora_audit("ACL Violation",
@@ -121,7 +121,7 @@ if ($create_agent) {
 	$comentarios = (string) get_parameter_post ("comentarios", '');
 	$modo = (int) get_parameter_post ("modo");
 	$id_parent = (string) get_parameter_post ("id_parent",'');
-	$id_parent = (int) get_agent_id ($id_parent);
+	$id_parent = (int) agents_get_agent_id ($id_parent);
 	$server_name = (string) get_parameter_post ("server_name");
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
@@ -145,7 +145,7 @@ if ($create_agent) {
 		$agent_creation_error = __('No agent name specified');
 		$agent_created_ok = 0;
 	}
-	elseif (get_agent_id ($nombre_agente)) {
+	elseif (agents_get_agent_id ($nombre_agente)) {
 		$agent_creation_error = __('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
 	}
@@ -169,7 +169,7 @@ if ($create_agent) {
 				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 			}
 			// Create address for this agent in taddress
-			agent_add_address ($id_agente, $direccion_agente);
+			agents_add_address ($id_agente, $direccion_agente);
 			
 			$agent_created_ok = true;
 
@@ -310,7 +310,7 @@ if ($id_agente) {
 		}
 	}
 
-	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' . ui_print_truncate_text(get_agent_name ($id_agente), 25, false), "images/setup.png", false, "", true, $onheader);
+	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' . ui_print_truncate_text(agents_get_name ($id_agente), 25, false), "images/setup.png", false, "", true, $onheader);
 	
 }
 // Create agent 
@@ -326,7 +326,7 @@ if ($delete_conf_file) {
 	$correct = false;
 	// Delete remote configuration
 	if (isset ($config["remote_config"])) {
-		$agent_md5 = md5 (get_agent_name ($id_agente,'none'), FALSE);
+		$agent_md5 = md5 (agents_get_name ($id_agente,'none'), FALSE);
 		
 		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 			// Agent remote configuration editor
@@ -383,7 +383,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
 	$address_list = (string) get_parameter_post ("address_list", '');
-	if ($address_list != $direccion_agente && $direccion_agente == get_agent_address ($id_agente) && $address_list != get_agent_address ($id_agente)) {
+	if ($address_list != $direccion_agente && $direccion_agente == agents_get_address ($id_agente) && $address_list != agents_get_address ($id_agente)) {
 		//If we selected another IP in the drop down list to be 'primary': 
 		// a) field is not the same as selectbox
 		// b) field has not changed from current IP
@@ -399,7 +399,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$disabled = (bool) get_parameter_post ("disabled");
 	$server_name = (string) get_parameter_post ("server_name", "");
 	$id_parent = (string) get_parameter_post ("id_parent");
-	$id_parent = (int) get_agent_id ($id_parent);
+	$id_parent = (int) agents_get_agent_id ($id_parent);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
@@ -436,18 +436,18 @@ if ($update_agent) { // if modified some agent paramenter
 		echo '<h3 class="error">'.__('No agent name specified').'</h3>';	
 	//If there is an agent with the same name, but a different ID
 	}
-	elseif (get_agent_id ($nombre_agente) > 0 && get_agent_id ($nombre_agente) != $id_agente) {
+	elseif (agents_get_agent_id ($nombre_agente) > 0 && agents_get_agent_id ($nombre_agente) != $id_agente) {
 		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
 	}
 	else {
 		//If different IP is specified than previous, add the IP
-		if ($direccion_agente != '' && $direccion_agente != get_agent_address ($id_agente))
-			agent_add_address ($id_agente, $direccion_agente);
+		if ($direccion_agente != '' && $direccion_agente != agents_get_address ($id_agente))
+			agents_add_address ($id_agente, $direccion_agente);
 		
 		//If IP is set for deletion, delete first
 		if (isset ($_POST["delete_ip"])) {
 			$delete_ip = get_parameter_post ("address_list");
-			agent_delete_address ($id_agente, $delete_ip);
+			agents_delete_address ($id_agente, $delete_ip);
 		}
 	
 		$result = db_process_sql_update ('tagente', 
@@ -491,7 +491,7 @@ if ($update_agent) { // if modified some agent paramenter
 // This should be at the end of all operation checks, to read the changes - $id_agente doesn't have to be retrieved
 if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
-	$id_grupo = get_agent_group ($id_agente);
+	$id_grupo = agents_get_agent_group ($id_agente);
 	if (check_acl ($config["id_user"], $id_grupo, "AW") != 1) {
 		db_pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
@@ -530,7 +530,7 @@ $edit_module = (bool) get_parameter ('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
 if ($update_module || $create_module) {
-	$id_grupo = get_agent_group ($id_agente);
+	$id_grupo = agents_get_agent_group ($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 		db_pandora_audit("ACL Violation",
@@ -574,7 +574,7 @@ if ($update_module || $create_module) {
 
 	enterprise_hook ('get_service_parameters');
 	
-	$agent_name = (string) get_parameter('agent_name',get_agent_name ($id_agente));
+	$agent_name = (string) get_parameter('agent_name',agents_get_name ($id_agente));
 
 	$snmp_community = (string) get_parameter ('snmp_community');
 	$snmp_oid = (string) get_parameter ('snmp_oid');
@@ -621,7 +621,7 @@ if ($update_module || $create_module) {
 	
 	// Make changes in the conf file if necessary
 	enterprise_include_once('include/functions_config_agents.php');
-	enterprise_hook('write_module_in_conf', array($id_agente, io_safe_output($old_configuration_data), io_safe_output($configuration_data)));
+	enterprise_hook('config_agents_write_module_in_conf', array($id_agente, io_safe_output($old_configuration_data), io_safe_output($configuration_data)));
 }
 
 // MODULE UPDATE
@@ -768,7 +768,7 @@ if ($create_module) {
 if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
 	$module_data = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
-	$id_grupo = (int) get_agent_group($id_agente);
+	$id_grupo = (int) agents_get_agent_group($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 		db_pandora_audit("ACL Violation",
@@ -785,7 +785,7 @@ if ($delete_module) { // DELETE agent module !
 	}
 	
 	enterprise_include_once('include/functions_config_agents.php');
-	enterprise_hook('deleteLocalModuleInConf', array(modules_get_agentmodule_agent($id_borrar_modulo), modules_get_agentmodule_name($id_borrar_modulo)));
+	enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_borrar_modulo), modules_get_agentmodule_name($id_borrar_modulo)));
 	
 	//Init transaction
 	$error = 0;

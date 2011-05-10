@@ -76,7 +76,7 @@ $data["total"] = 0;
 if (isset($_POST["purgedb"])) {
 	$from_date = get_parameter_post ("date_purge", 0);
 	if ($id_agent > 0) {
-		echo __('Purge task launched for agent')." ".get_agent_name ($id_agent)." :: ".__('Data older than')." ".human_time_description_raw ($from_date);
+		echo __('Purge task launched for agent')." ".agents_get_name ($id_agent)." :: ".__('Data older than')." ".human_time_description_raw ($from_date);
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
 		
 		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d", $id_agent);
@@ -151,7 +151,7 @@ if (isset($_POST["purgedb"])) {
 }
 
 # Select Agent for further operations.
-$agents = get_group_agents (0, true);
+$agents = agents_get_group_agents (0, true);
 $agents[-1] = __('Choose agent');
 $agents[0] = __('All agents'); 
 
@@ -165,7 +165,7 @@ ui_print_help_tip (__("Click here to get the data from the agent specified in th
 echo '</noscript><br />';
 
 if ($id_agent > 0) {
-	$title = __('Information on agent %s in the database', get_agent_name ($id_agent));
+	$title = __('Information on agent %s in the database', agents_get_name ($id_agent));
 } else {
 	$title = __('Information on all agents in the database');
 }
@@ -175,7 +175,7 @@ echo '<h3>'.$title.'</h3>';
 flush ();
 
 if ($id_agent > 0) { //If the agent is not All or Not selected
-	$modules = get_agent_modules ($id_agent);
+	$modules = agents_get_modules ($id_agent);
 	$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
 }
 else {

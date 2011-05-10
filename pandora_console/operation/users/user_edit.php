@@ -31,14 +31,14 @@ if ($user_info["language"] == ""){
 
 $id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
 
-if ((!check_acl ($config["id_user"], get_user_groups ($id), "UM")) AND ($id != $config["id_user"])){
+if ((!check_acl ($config["id_user"], users_get_groups ($id), "UM")) AND ($id != $config["id_user"])){
 	db_pandora_audit("ACL Violation","Trying to view a user without privileges");
 	require ("general/noaccess.php");
 	exit;
 }
 
 //If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
-if (($config["id_user"] == $id || check_acl ($config["id_user"], get_user_groups ($id), "UM")) && $config["user_can_update_info"]) {
+if (($config["id_user"] == $id || check_acl ($config["id_user"], users_get_groups ($id), "UM")) && $config["user_can_update_info"]) {
 	$view_mode = false;
 } else {
 	$view_mode = true;
@@ -149,7 +149,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$display_all_group = false;		
 
-$usr_groups = (get_user_groups($config['id_user'], 'AR', $display_all_group));
+$usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
 // User only can change skins if has more than one group 
@@ -158,7 +158,7 @@ if (count($usr_groups) > 1){
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		echo '</td></tr><tr><td class="datos">' . __('Skin') . '</td><td class="datos2">';
-		echo print_select_skins($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+		echo skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 	}
 }
 
@@ -198,7 +198,7 @@ if ($result === false) {
 }
 
 foreach ($result as $profile) {
-	$data[0] = '<b>'.get_profile_name ($profile["id_perfil"]).'</b>';
+	$data[0] = '<b>'.profile_get_name ($profile["id_perfil"]).'</b>';
 	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.groups_get_name ($profile["id_grupo"], true).'</a>';
 	array_push ($table->data, $data);
 }

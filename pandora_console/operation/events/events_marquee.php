@@ -49,7 +49,7 @@ if(!isInACL($_SERVER['REMOTE_ADDR'])){
 	exit;
 }
 
-$groups = get_user_groups ($config["id_user"], "AR");
+$groups = users_get_groups ($config["id_user"], "AR");
 //Otherwise select all groups the user has rights to.
 $sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
 

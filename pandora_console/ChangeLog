@@ -1,3 +1,136 @@
+2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	include/functions_users.php
+	include/functions_html.php
+	include/functions_menu.php
+	include/functions_messages.php
+	include/functions_modules.php
+	include/functions_reporting.php
+	include/functions_groups.php
+	include/functions_gis.php
+	include/auth/ldap.php
+	include/auth/mysql.php
+	include/functions_networkmap.php
+	include/functions_network_components.php
+	include/functions_visual_map.php
+	include/functions_profile.php
+	include/ajax/visual_console_builder.ajax.php
+	include/ajax/alert_list.ajax.php
+	include/ajax/module.php
+	include/functions_config.php
+	include/functions_api.php
+	include/functions_ui.php
+	include/functions_custom_graphs.php
+	include/fgraph.php
+	include/functions_agents.php
+	include/functions_db.php
+	include/functions_alerts.php
+	include/functions_reports.php
+	index.php
+	extensions/insert_data.php
+	extensions/agents_modules.php
+	extensions/resource_registration.php
+	extensions/resource_exportation.php
+	extensions/module_groups.php
+	operation/incidents/incident_detail.php
+	operation/search_modules.php
+	operation/agentes/status_monitor.php
+	operation/agentes/export_csv.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/datos_agente.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_agente.php
+	operation/agentes/sla_view.php
+	operation/agentes/exportdata.php
+	operation/agentes/gis_view.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/ver_agente.php
+	operation/agentes/graphs.php
+	operation/agentes/group_view.php
+	operation/search_agents.php
+	operation/snmpconsole/snmp_view.php
+	operation/users/user_edit.php
+	operation/integria_incidents/incident_detail.php
+	operation/gis_maps/render_view.php
+	operation/gis_maps/ajax.php
+	operation/events/events_rss.php
+	operation/events/export_csv.php
+	operation/events/events_list.php
+	operation/events/events_marquee.php
+	operation/events/events.php
+	operation/search_alerts.php
+	operation/messages/message.php
+	operation/search_users.php
+	mobile/operation/agents/monitor_status.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/agents/view_alerts.php
+	mobile/operation/agents/group_view.php
+	mobile/operation/events/events.php
+	ajax.php
+	general/ui/agents_list.php
+	godmode/groups/configure_group.php
+	godmode/groups/group_list.php
+	godmode/db/db_refine.php
+	godmode/db/db_info.php
+	godmode/db/db_purge.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/module_manager_editor_network.php
+	godmode/agentes/module_manager_editor_wmi.php
+	godmode/agentes/module_manager_editor_plugin.php
+	godmode/agentes/module_manager_editor_prediction.php
+	godmode/agentes/agent_conf_gis.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php
+	godmode/agentes/planned_downtime.php
+	godmode/agentes/manage_config_remote.php
+	godmode/agentes/agent_manager.php
+	godmode/servers/manage_recontask_form.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/configure_alert_compound.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_list.php
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/configure_alert_action.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_list.builder.php
+	godmode/setup/setup_auth.php
+	godmode/users/user_list.php
+	godmode/users/configure_user.php
+	godmode/users/configure_profile.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_copy_modules.php
+	godmode/massive/massive_delete_agents.php
+	godmode/massive/massive_enable_disable_alerts.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_add_profiles.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/massive/massive_standby_alerts.php
+	godmode/massive/massive_add_action_alerts.php
+	godmode/reporting/visual_console_builder.wizard.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/reporting_builder.main.php
+	godmode/reporting/visual_console_builder.data.php
+	godmode/reporting/visual_console_builder.elements.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Functions in 
+	functions_profile.php, functions_agents.php, functions_users.php,
+  	functions_massive_policies.php, functions_audit.php, functions_backup.php,
+	functions_collection.php, functions_skins.php, functions_enterprise.php,
+	functions_groups.php, functions_local_components.php, functions_metaconsole.php,
+	functions_policies.php, functions_reporting.php, functions_reporting_csv.php,
+	functions_reporting_pdf2.php, functions_services.php have their own prefixes.  
+
 2011-05-10 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_profile.php: modified the function "create_user_profile"

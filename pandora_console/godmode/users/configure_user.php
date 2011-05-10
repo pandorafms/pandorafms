@@ -252,7 +252,7 @@ if ($delete_profile) {
 	db_pandora_audit("User management",
 		"Deleted profile for user ".io_safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 
-	$return = delete_user_profile ($id2, $id_up);
+	$return = profile_delete_user_profile ($id2, $id_up);
 	ui_print_result_message ($return,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
@@ -323,10 +323,10 @@ else
 	$display_all_group = false;
 
 if ($new_user){		
-	$usr_groups = (get_user_groups($config['id_user'], 'AR', $display_all_group));
+	$usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 	$id_usr = $config['id_user'];
 }else{
-	$usr_groups = (get_user_groups($id, 'AR', $display_all_group));
+	$usr_groups = (users_get_groups($id, 'AR', $display_all_group));
 	$id_usr = $id;
 }
 
@@ -334,7 +334,7 @@ if ($new_user){
 if (count($usr_groups) > 1){
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$table->data[10][0] = __('Skin');
-		$table->data[10][1] = print_select_skins($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+		$table->data[10][1] = skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 	}
 }
 
@@ -394,7 +394,7 @@ if ($result === false) {
 foreach ($result as $profile) {
 	$data = array ();
 
-	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
+	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.profile_get_name ($profile['id_perfil']).'</a>';
 	$data[1] = ui_print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), 35).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= html_print_input_hidden ('delete_profile', 1, true);
@@ -415,11 +415,11 @@ if (!$enterprise_include) {
 	
 	$data[0] = '<form method="post">';
 	if (check_acl ($config['id_user'], 0, "PM")) {
-		$data[0] .= html_print_select (get_profiles (), 'assign_profile', 0, '',
+		$data[0] .= html_print_select (profile_get_profiles (), 'assign_profile', 0, '',
 		 	__('None'), 0, true, false, false);
 	}
 	else {
-		$data[0] .= html_print_select (get_profiles (array ('pandora_management' => '<> 1',
+		$data[0] .= html_print_select (profile_get_profiles (array ('pandora_management' => '<> 1',
 			'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'), 0,
 			true, false, false);
 	}

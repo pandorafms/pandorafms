@@ -57,7 +57,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		$id_origen = get_parameter ("origen");
 
 		// Security check here
-		if (!user_access_to_agent ($id_origen)) {
+		if (!users_access_to_agent ($id_origen)) {
 			db_pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
 			require ("general/noaccess.php");
 			exit;
@@ -71,14 +71,14 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			$id_agente = $destino[$a];
 			
 			// Security check here
-			if (!user_access_to_agent ($id_agente)){
+			if (!users_access_to_agent ($id_agente)){
 				db_pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
 				require ("general/noaccess.php");
 				exit;
 			}			
 
-			$agent_name_src = get_agent_name($id_origen, "");
-			$agent_name_dst = get_agent_name($id_agente, "");
+			$agent_name_src = agents_get_name($id_origen, "");
+			$agent_name_dst = agents_get_name($id_agente, "");
 			echo "<br><br>".__('Making copy of configuration file for')." [<b>".$agent_name_src."</b>] ".__('to')." [<b>".$agent_name_dst."</b>]";
 			
 			$agent_md5_src = md5($agent_name_src);
@@ -104,7 +104,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		// Source group
 		echo '<tr><td class="datost"><b>'. __('Source group'). '</b><br><br>';
 
-		$group_select = get_user_groups ($config['id_user']);
+		$group_select = users_get_groups ($config['id_user']);
 		$grouplist = implode (',', array_keys ($group_select));
 		
 		echo html_print_select_groups($config['id_user'], "AR", true, 'id_group', $id_group, '', '', '', true);

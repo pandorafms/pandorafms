@@ -26,7 +26,7 @@
  *
  * @return string Profile name of the given id
  */
-function get_profile_name ($id_profile) {
+function profile_get_name ($id_profile) {
 	return (string) db_get_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
 }
 
@@ -37,7 +37,7 @@ function get_profile_name ($id_profile) {
  *
  * @return array List of all profiles
  */
-function get_profiles ($filter = false) {
+function profile_get_profiles ($filter = false) {
 	if ($filter === false) { 
 		$profiles = db_get_all_rows_in_table ("tperfil", "name");
 	}
@@ -66,7 +66,7 @@ function get_profiles ($filter = false) {
  *
  * @return mixed Number id if succesful, false if not
  */
-function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false) {
+function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false) {
 	global $config;
 
 	if (empty ($id_profile) || $id_group < 0)
@@ -100,7 +100,7 @@ function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignU
  *
  * @return bool Whether or not it's deleted
  */
-function delete_user_profile ($id_user, $id_profile) {
+function profile_delete_user_profile ($id_user, $id_profile) {
 	$where = array(
 		'id_usuario' => $id_user,
 		'id_up' => $id_profile);
@@ -114,7 +114,7 @@ function delete_user_profile ($id_user, $id_profile) {
  *
  * @return bool Whether or not it's deleted
  */
-function delete_profile ($id_profile) {
+function profile_delete_profile ($id_profile) {
 	return (bool)db_process_sql_delete('tperfil', array('id_perfil' => $id_profile));
 }
 

@@ -122,17 +122,17 @@ $table->data[1][1] = html_print_input_text ('direccion', $direccion_agente, '', 
 if ($id_agente) {
 	$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 	
-	$ip_all = get_agent_addresses ($id_agente);
+	$ip_all = agents_get_addresses ($id_agente);
 		
 	$table->data[1][1] .= html_print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
 	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
 }
 
-$groups = get_user_groups ($config["id_user"], "AR",false);
-$agents = get_group_agents (array_keys ($groups));
+$groups = users_get_groups ($config["id_user"], "AR",false);
+$agents = agents_get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');
-$table->data[2][1] = html_print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
+$table->data[2][1] = html_print_input_text_extended ('id_parent', agents_get_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 

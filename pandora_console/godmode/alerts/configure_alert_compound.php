@@ -228,7 +228,7 @@ if ($id && ! $create_compound) {
 	$field2_recovery = $compound['field2_recovery'];
 	$field3_recovery = $compound['field3_recovery'];
 	$id_agent = $compound['id_agent'];
-	$id_group = get_agent_group ($id_agent);
+	$id_group = agents_get_agent_group ($id_agent);
 	if (! check_acl ($config['id_user'], $id_group, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
@@ -278,7 +278,7 @@ if ($update_compound) {
 
 print_alert_compound_steps ($step, $id);
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 $table->id = 'compound';
 $table->width = '90%';
@@ -438,7 +438,7 @@ if ($step == 2) {
 	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
 	
 	$table->data[1][0] = __('Assigned to');
-	$table->data[1][1] = html_print_select (get_group_agents (array_keys ($groups)),
+	$table->data[1][1] = html_print_select (agents_get_group_agents (array_keys ($groups)),
 		'id_agent', $id_agent, '', __('Select'), 0, true);
 	$table->data[2][0] = __('Description');
 	$table->data[2][1] =  html_print_textarea ('description', 10, 30,
@@ -475,8 +475,8 @@ if ($step == 2) {
 			$data[0] = '<a href="#" class="remove_alert" id="alert-'.$alert['id'].'" />';
 			$data[0] .= html_print_image("images/delete.png", true);
 			$data[0] .= '</a>';
-			$idAgent = get_agent_module_id($alert['id_agent_module']);
-			$nameAgent = get_agent_name($idAgent);
+			$idAgent = agents_get_module_id($alert['id_agent_module']);
+			$nameAgent = agents_get_name($idAgent);
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $idAgent . '">' . $nameAgent . '</a>';
 			$data[2] = alerts_get_alert_template_name ($alert['id_alert_template']);
 			$data[3] = modules_get_agentmodule_name ($alert['id_agent_module']);
@@ -541,7 +541,7 @@ if ($step == 1) {
 	$table->data[0][1] = html_print_select_groups(false, "AR", true, 'search_id_group', $id_group,
 		false, '', '', true);
 	$table->data[0][2] = __('Agent');
-	$table->data[0][3] = html_print_select (get_group_agents ($id_group, false, "none"),
+	$table->data[0][3] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
 		'search_id_agent', $id_agent, false, __('Select'), 0, true);
 	$table->data[0][3] .= '<span id="agent_loading" class="invisible">';
 	$table->data[0][3] .= html_print_image('images/spinner.png', true);

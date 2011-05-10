@@ -53,7 +53,7 @@ if (is_ajax ()) {
 		}
 		elseif ($event["id_agente"] > 0) {
 			// Agent name
-			echo get_agent_name ($event["id_agente"]);
+			echo agents_get_name ($event["id_agente"]);
 		}
 		else {
 			echo __('Alert').__('SNMP');
@@ -168,7 +168,7 @@ $section = (string) get_parameter ("section", "list");
 $text_agent = (string)get_parameter('text_agent', __("All"));
 
 $search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurldecode (get_parameter ("search")));
-$groups = get_user_groups ($config["id_user"], "IR");
+$groups = users_get_groups ($config["id_user"], "IR");
 
 $ids = (array) get_parameter ("eventid", -1);
 

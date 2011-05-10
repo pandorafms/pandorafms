@@ -44,13 +44,13 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	if($forced_name !== false)
 		$module['nombre'] = $forced_name;
 		
-	$modules = get_agent_modules ($id_destiny_agent, false,
+	$modules = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => false));
 	
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
 		
-	$modulesDisabled = get_agent_modules ($id_destiny_agent, false,
+	$modulesDisabled = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => true));
 		
 	if (!empty($modulesDisabled)) {
@@ -78,7 +78,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		
 		/* Rewrite different values */
 		$new_module['id_agente'] = $id_destiny_agent;
-		$new_module['ip_target'] = get_agent_address ($id_destiny_agent);
+		$new_module['ip_target'] = agents_get_address ($id_destiny_agent);
 		
 		/* Unset numeric indexes or SQL would fail */
 		$len = count ($new_module) / 2;
@@ -95,7 +95,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		
 		/* Rewrite different values */
 		$new_module['id_agente'] = $id_destiny_agent;
-		$new_module['ip_target'] = get_agent_address ($id_destiny_agent);
+		$new_module['ip_target'] = agents_get_address ($id_destiny_agent);
 		
 		/* Unset numeric indexes or SQL would fail */
 		$len = count ($new_module) / 2;
@@ -151,7 +151,7 @@ function modules_delete_agent_module ($id_agent_module) {
 		
 	$where = array ('id_agent_module' => $id_agent_module);
 	
-	enterprise_hook('deleteLocalModuleInConf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
+	enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
 	
 	db_process_sql_delete ('talert_template_modules', $where);
 	db_process_sql_delete ('tgraph_source', $where);
@@ -208,7 +208,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	global $config;
 
 	if (!$disableACL) {
-		if (empty ($id_agent) || ! user_access_to_agent ($id_agent, 'AW'))
+		if (empty ($id_agent) || ! users_access_to_agent ($id_agent, 'AW'))
 			return false;
 	}
 
@@ -291,7 +291,7 @@ function modules_get_agents_with_module_name ($module_name, $id_group, $filter =
 		$filter = array ();
 	$filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
 	$filter['tagente_modulo.nombre'] = $module_name;
-	$filter['tagente.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
+	$filter['tagente.id_agente'] = array_keys (agents_get_group_agents ($id_group, false, "none"));
 	
 	return db_get_all_rows_filter ('tagente, tagente_modulo',
 		$filter, $fields);
@@ -518,7 +518,7 @@ function modules_get_agentmodule_agent ($id_agentmodule) {
  */
 function modules_get_agentmodule_agent_name ($id_agentmodule) {
 	// Since this is a helper function we don't need to do casting
-	return (string) get_agent_name (modules_get_agentmodule_agent ($id_agentmodule));
+	return (string) agents_get_name (modules_get_agentmodule_agent ($id_agentmodule));
 }
 
 /**
@@ -650,7 +650,7 @@ function modules_get_monitors_in_group ($id_group) {
 	if ($id_group <= 0) {
 		//We select all groups the user has access to if it's 0 or -1
 		global $config;
-		$id_group = array_keys (get_user_groups ($config['id_user']));
+		$id_group = array_keys (users_get_groups ($config['id_user']));
 	}
 
 	if (is_array ($id_group)) {
@@ -810,7 +810,7 @@ function modules_get_interval ($id_agent_module) {
 	return $interval;
 
 	$id_agent = modules_give_agent_id_from_module_id ($id_agent_module);
-	return (int) get_agent_interval ($id_agent);
+	return (int) agents_get_interval ($id_agent);
 }
 
 /**

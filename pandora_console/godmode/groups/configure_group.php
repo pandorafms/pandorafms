@@ -84,7 +84,7 @@ $table->data[2][0] = __('Parent');
 $sql = 'SELECT id_grupo, nombre FROM tgrupo ';
 if ($id_group)
 	$sql .= sprintf ('WHERE id_grupo != %d', $id_group);
-$groups = get_user_groups();
+$groups = users_get_groups();
 if ($id_group) {
 	$table->data[2][1] = html_print_select_groups(false, "AR", true, 'id_parent', $id_parent,
 		'', '', '', true, false, true, '', false, false, false, $id_group);
@@ -108,7 +108,7 @@ $table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 	$table->data[6][0] = __('Skin');
-	$table->data[6][1] = print_select_skins($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
+	$table->data[6][1] = skins_print_select($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
 }
 
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';

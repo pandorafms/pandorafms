@@ -86,14 +86,14 @@ if (isset ($_GET["new_msg"])) { //create message
 		<td class="datos2">'.__('Message to').':</td>
 		<td class="datos2">';
 	
-	$users_full = groups_get_users(array_keys(get_user_groups()));
+	$users_full = groups_get_users(array_keys(users_get_groups()));
 
 	$users = array();
 	foreach ($users_full as $user_id => $user_info) {
 		$users[$user_info['id_user']] = $user_info['fullname'];
 	}
 		
-	$groups = get_user_groups ($config["id_user"], "AR"); //Get a list of all groups
+	$groups = users_get_groups ($config["id_user"], "AR"); //Get a list of all groups
 		
 	html_print_select ($users, "dest_user", $dest_user, '', __('-Select user-'), false, false, false, '', false);
 	echo ' - '.__('OR').' - ';

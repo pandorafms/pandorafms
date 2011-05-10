@@ -98,7 +98,7 @@ switch ($sortField) {
 $alerts = false;
 
 if($searchAlerts) {
-	$agents = array_keys(get_group_agents(array_keys(get_user_groups($config["id_user"], 'AR', false))));
+	$agents = array_keys(agents_get_group_agents(array_keys(users_get_groups($config["id_user"], 'AR', false))));
 	
 	switch ($config["dbtype"]) {
 		case "mysql":

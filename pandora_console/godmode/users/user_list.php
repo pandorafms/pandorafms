@@ -111,7 +111,7 @@ if (isset ($_GET["user_del"])) { //delete user
 }
 elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
-	$result = delete_profile ($id_profile);
+	$result = profile_delete_profile ($id_profile);
 	ui_print_result_message ($result, 
 		__('Successfully deleted'),
 		__('There was a problem deleting the profile'));
@@ -151,7 +151,7 @@ $info1 = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
 
 $info = array();
 $own_info = get_user_info ($config['id_user']);	
-$own_groups = get_user_groups ($config['id_user'], 'AR', $own_info['is_admin']);
+$own_groups = users_get_groups ($config['id_user'], 'AR', $own_info['is_admin']);
 
 if ($own_info['is_admin'])
 	$info = $info1;
@@ -159,7 +159,7 @@ if ($own_info['is_admin'])
 else
 	foreach ($info1 as $key => $usr){
 		$u = get_user_info ($key);
-		$g = get_user_groups ($key, 'AR', $u['is_admin']);
+		$g = users_get_groups ($key, 'AR', $u['is_admin']);
 		$result = array_intersect($g, $own_groups);
 		if (!$usr['is_admin'] && !empty($result))
 			$info[$key] = $usr;
@@ -203,7 +203,7 @@ foreach ($info as $user_id => $user_info) {
 	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
 	if ($result !== false) {
 		foreach ($result as $row) {
-			$data[3] .= get_profile_name ($row["id_perfil"]);
+			$data[3] .= profile_get_name ($row["id_perfil"]);
 			$data[3] .= " / ";
 			$data[3] .= groups_get_name ($row["id_grupo"]);
 			$data[3] .= "<br />";

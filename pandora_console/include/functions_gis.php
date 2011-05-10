@@ -472,7 +472,7 @@ function gis_get_agent_icon_map($idAgent, $state = false, $status = null) {
 	}
 	else {
 		if ($status === null) {
-			$status = get_agent_status($idAgent);
+			$status = agents_get_status($idAgent);
 			if ($status === null) {
 				$status = -1;
 			}
@@ -730,7 +730,7 @@ function gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 				db_process_sql_insert('tgis_map_layer_has_tagente',
 					array(
 						'tgis_map_layer_id_tmap_layer' => $idLayer,
-						'tagente_id_agente' => get_agent_id($agent_name)
+						'tagente_id_agente' => agents_get_agent_id($agent_name)
 					)
 				);
 			}
@@ -795,7 +795,7 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 					db_process_sql_insert('tgis_map_layer_has_tagente',
 						array(
 							'tgis_map_layer_id_tmap_layer' => $idLayer,
-							'tagente_id_agente' => get_agent_id($agent_name)
+							'tagente_id_agente' => agents_get_agent_id($agent_name)
 						)
 					);
 				}
@@ -855,7 +855,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 		$agentPositionAltitude = $agent_position['stored_altitude'];
 	}
 	
-	$agent_name = get_agent_name($agent_id);
+	$agent_name = agents_get_name($agent_id);
 	
 	$baselayers[0]['name'] = $defaultMap['conection_name'];
 	$baselayers[0]['num_zoom_levels'] = $defaultMap['num_zoom_levels'];
@@ -900,7 +900,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	gis_make_layer("layer_for_agent_".$agent_name);
 	
 	$agent_icon = gis_get_agent_icon_map($agent_id, true);
-	$status = get_agent_status($agent_id);
+	$status = agents_get_status($agent_id);
 	
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {

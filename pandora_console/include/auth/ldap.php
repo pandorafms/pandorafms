@@ -129,7 +129,7 @@ function process_user_login ($login, $pass) {
 		$config["auth_error"] = "No profile"; //Error message, don't translate
 		return false; //User doesn't have a profile so doesn't have access
 	} elseif ($profile === false && !empty ($config["auth"]["create_user_undefined"])) {
-		$ret = create_user_profile ($login); //User doesn't have a profile but we are asked to create one
+		$ret = profile_create_user_profile ($login); //User doesn't have a profile but we are asked to create one
 		if ($ret === false) {
 			$config["auth_error"] = "Profile creation failed"; //Error message, don't translate
 			return false; //We couldn't create the profile for some or another reason

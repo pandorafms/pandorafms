@@ -153,7 +153,7 @@ $table->data[8][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined l
 
 // Group
 $table->data[9][0] = "<b>".__('Group');
-$groups = get_user_groups (false, "AR", false);
+$groups = users_get_groups (false, "AR", false);
 $table->data[9][1] = html_print_select_groups(false, "AR", false, 'id_group', $id_group, '', '', 0, true);
 
 // Incident

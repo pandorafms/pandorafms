@@ -137,7 +137,7 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 	$id_audit = db_process_sql_insert('tsesion', $values);
 
 	enterprise_include_once('include/functions_audit.php');
-	enterprise_hook('pandora_audit_enterprise', array($id_audit, $info));
+	enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 
 	return $id_audit;
 }

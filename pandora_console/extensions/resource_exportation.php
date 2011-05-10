@@ -103,12 +103,12 @@ function output_xml_report($id) {
 			echo "<description>" . io_safe_output($item['description']) . "</description>\n";
 			echo "<period>" . io_safe_output($item['period']) . "</period>\n";
 			if ($item['id_agent'] != 0) {
-				$agent = get_agent_name($item['id_agent']);			
+				$agent = agents_get_name($item['id_agent']);			
 			}
 			if ($item['id_agent_module'] != 0) {
 				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
 				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
-				$agent = get_agent_name($item['id_agent']);
+				$agent = agents_get_name($item['id_agent']);
 				
 				echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 			}
@@ -145,7 +145,7 @@ function output_xml_report($id) {
 					foreach ($slas as $sla) {
 						$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
 						$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $sla['id_agent_module']);
-						$agent = get_agent_name($item['id_agent']);
+						$agent = agents_get_name($item['id_agent']);
 						echo "<sla>";
 							echo "<agent><![CDATA[" . $agent . "]]></agent>\n";
 							echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
@@ -268,13 +268,13 @@ function output_xml_visual_console($id) {
 		}
 		$agent = '';
 		if ($item['id_agent'] != 0) {
-			$agent = get_agent_name($item['id_agent']);
+			$agent = agents_get_name($item['id_agent']);
 		}
 		if (isset($item['id_agente_modulo'])) {
 			if ($item['id_agente_modulo'] != 0) {
 				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
 				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
-				$agent = get_agent_name($id_agent);
+				$agent = agents_get_name($id_agent);
 				
 				echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 			}

@@ -49,7 +49,7 @@ if ($create_profiles) {
 					if ($profile_data === false) {
 						db_pandora_audit("User management",
 							"Added profile for user ".io_safe_input($user));
-						$return = create_user_profile ($user, $profile, $group);
+						$return = profile_create_user_profile ($user, $profile, $group);
 						if ($return !== false) {
 							$n_added ++;
 						}
@@ -94,7 +94,7 @@ $table->size[2] = '33%';
 
 $data = array ();
 $data[0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
-$data[0] .= html_print_select (get_profiles (), 'profiles_id[]', '', '', '',
+$data[0] .= html_print_select (profile_get_profiles (), 'profiles_id[]', '', '', '',
 	'', true, true, false, '', false, 'width: 100%');
 $data[1] = html_print_select_groups($config['id_user'], "UM", true,
 	'groups_id[]', '', '', '', '', true, true, false, '', false, 'width: 100%');
@@ -103,7 +103,7 @@ $data[2] .= html_print_image('images/spinner.png', true);
 $data[2] .= '</span>';
 $users_profiles = "";
 
-$data[2] .= html_print_select (get_users_info(), 'users_id[]', '', '', '', 
+$data[2] .= html_print_select (users_get_info(), 'users_id[]', '', '', '', 
     '', true, true, true, '', false, 'width: 100%');
 
 

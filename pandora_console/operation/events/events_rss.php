@@ -128,7 +128,7 @@ if ($id_agent == -2) {
 			$id_agent = 0;
 			break;
 		default:
-			$id_agent = get_agent_id($text_agent);
+			$id_agent = agents_get_agent_id($text_agent);
 			break;
 	}
 }
@@ -142,7 +142,7 @@ else {
 			$text_agent = __('Server');
 			break;
 		default:
-			$text_agent = get_agent_name($id_agent);
+			$text_agent = agents_get_name($id_agent);
 			break;
 	}
 }
@@ -236,7 +236,7 @@ foreach ($result as $row) {
 	}
 	elseif ($row["id_agent"] > 0) {
 		// Agent name
-		$agent_name = get_agent_name ($row["id_agent"]);
+		$agent_name = agents_get_name ($row["id_agent"]);
 	}
 	else {
 		$agent_name = __('Alert').__('SNMP');

@@ -393,7 +393,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false) {
  * @return string HTML with agent name and link
  */
 function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
-	$agent_name = (string) get_agent_name ($id_agent);
+	$agent_name = (string) agents_get_name ($id_agent);
 	$agent_name_full = $agent_name;
 	if ($cutname) {
 		$agent_name = ui_print_truncate_text($agent_name, $cutoff);
@@ -481,7 +481,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	$data = array ();
 	
 	if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && (!$compound)) {
-		$policyInfo = isAlertInPolicy2($alert['id'], false);
+		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
 		if ($policyInfo === false)
 			$data[$index['policy']] = '';
 		else {
@@ -873,9 +873,9 @@ function ui_process_page_head ($string, $bitfield) {
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		//Checks if user's skin is available 
-		$exists_skin = enterprise_hook('is_skin_path_set');
+		$exists_skin = enterprise_hook('skins_is_path_set');
 		if ($exists_skin){
-			$skin_path = enterprise_hook('get_skin_path');
+			$skin_path = enterprise_hook('skins_get_skin_path');
 			$skin_styles = themes_get_css ($skin_path . 'include/styles/');
 			$exists_css = !empty($skin_styles);
 		}		

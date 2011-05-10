@@ -44,9 +44,9 @@ class ViewAlerts {
 		$table->data = array();
 		$table->rowclass = array();
 		
-		$groups = get_user_groups($this->system->getConfig('id_user'));
+		$groups = users_get_groups($this->system->getConfig('id_user'));
 		$idGroups = array_keys($groups);
-		$agents = get_group_agents($idGroups); 
+		$agents = agents_get_group_agents($idGroups); 
 		
 		$alertsSimple = agents_get_alerts_simple($agents);
 		

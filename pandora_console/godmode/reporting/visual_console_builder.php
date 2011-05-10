@@ -125,7 +125,7 @@ switch ($activeTab) {
 					$values['pos_x'] = get_parameter('left_' . $id, 0);
 					$values['pos_y'] = get_parameter('top_' . $id, 0);
 					$agentName = get_parameter('agent_' .  $id, '');
-					$values['id_agent'] = get_agent_id($agentName);
+					$values['id_agent'] = agents_get_agent_id($agentName);
 					$values['id_agente_modulo'] = get_parameter('module_' . $id, 0);
 					$values['parent_item'] = get_parameter('parent_' . $id, 0);
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);

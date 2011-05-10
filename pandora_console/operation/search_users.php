@@ -139,7 +139,7 @@ if ($searchUsers) {
 		//Check ACLs
 		$users_id = array();
 		foreach($users as $key => $user){
-			if (!check_acl ($config["id_user"], get_user_groups ($user["id_user"]), "UM") && $config["id_user"] != $user["id_user"]) {
+			if (!check_acl ($config["id_user"], users_get_groups ($user["id_user"]), "UM") && $config["id_user"] != $user["id_user"]) {
 				unset($users[$key]);
 			}
 			else {
@@ -217,7 +217,7 @@ else {
 		$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user['id_user']);
 		if ($result !== false) {
 			foreach ($result as $row) {
-				$profileCell .= get_profile_name ($row["id_perfil"]);
+				$profileCell .= profile_get_name ($row["id_perfil"]);
 				$profileCell .= " / ";
 				$profileCell .= groups_get_name ($row["id_grupo"]);
 				$profileCell .= "<br />";

@@ -63,7 +63,7 @@ class EventsView {
 		echo "</form>";
 		
 		
-		$groups = get_user_groups ($this->system->getConfig("id_user"), "IR");
+		$groups = users_get_groups ($this->system->getConfig("id_user"), "IR");
 		$sqlGroups = '';
 		//Group selection
 		if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
@@ -188,7 +188,7 @@ class EventsView {
 			}
 			elseif ($row["id_agente"] > 0) {
 				// Agent name
-				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' . ui_print_truncate_text(get_agent_name($row["id_agente"]), 20, true, true) . '</a>';
+				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' . ui_print_truncate_text(agents_get_name($row["id_agente"]), 20, true, true) . '</a>';
 			}
 			else {
 				$data[] = ui_print_truncate_text(__('Alert SNMP'), 20, true, true);

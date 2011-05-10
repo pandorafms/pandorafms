@@ -33,7 +33,7 @@ ui_require_javascript_file('openlayers.pandora');
 /* Get the parameters */
 $period = get_parameter ("period", 86400);
 $agentId = get_parameter('id_agente');
-$agent_name = get_agent_name($agentId); 
+$agent_name = agents_get_name($agentId); 
 $agentData = gis_get_data_last_position_agent($id_agente);
 
 $url = '';

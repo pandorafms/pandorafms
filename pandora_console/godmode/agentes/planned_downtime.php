@@ -49,7 +49,7 @@ $id_downtime = (int) get_parameter ('id_downtime',0);
 $insert_downtime_agent = (int) get_parameter ("insert_downtime_agent", 0);
 $delete_downtime_agent = (int) get_parameter ("delete_downtime_agent", 0);
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 
 // Header
 ui_print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");

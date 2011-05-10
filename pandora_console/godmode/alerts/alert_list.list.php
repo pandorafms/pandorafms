@@ -416,7 +416,7 @@ foreach ($simple_alerts as $alert) {
 		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
 		if ($alert['disabled'])
 			$data[2] .= '<span style="font-style: italic; color: #aaaaaa;">';
-		$data[2] .= get_agent_name ($id_agent);
+		$data[2] .= agents_get_name ($id_agent);
 		if ($alert['disabled'])
 			$data[2] .= '</span>';
 		$data[2] .= '</a>';
@@ -431,7 +431,7 @@ foreach ($simple_alerts as $alert) {
 	$data[4] .= "</a>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = isAlertInPolicy2($alert['id'], false);
+		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
 		if ($policyInfo === false)
 			$data[5] = '';
 		else {
@@ -505,7 +505,7 @@ foreach ($simple_alerts as $alert) {
 	$data[6] .= html_print_input_hidden ('add_action', 1, true);
 	$data[6] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
 	$own_info = get_user_info($config['id_user']);
-	$own_groups = get_user_groups($config['id_user'], 'LW', $own_info['is_admin']);
+	$own_groups = users_get_groups($config['id_user'], 'LW', $own_info['is_admin']);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($own_groups));
 	$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');

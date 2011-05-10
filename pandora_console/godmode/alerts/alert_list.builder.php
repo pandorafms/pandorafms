@@ -55,7 +55,7 @@ if (! $id_agente) {
 $table->data[0][0] = __('Module');
 $modules = array ();
 if ($id_agente)
-	$modules = get_agent_modules ($id_agente, false, array("delete_pending" => 0));
+	$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
 
 $table->data[0][1] = html_print_select ($modules, 'id_agent_module', 0, true,
 	__('Select'), 0, true, false, true, '', ($id_agente == 0));
@@ -71,7 +71,7 @@ $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$templates = alerts_get_alert_templates (false, array ('id', 'name'));
 else{
-	$usr_groups = get_user_groups($config['id_user'], 'LW', true);
+	$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($usr_groups));
 	$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));

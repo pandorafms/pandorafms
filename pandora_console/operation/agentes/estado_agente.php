@@ -43,7 +43,7 @@ if (is_ajax ()) {
 
 		$own_info = get_user_info ($config['id_user']);
 		$usr_groups = array();
-		$usr_groups = get_user_groups($config['id_user'], 'LW', true);
+		$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 		
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($usr_groups));		
@@ -86,7 +86,7 @@ if (is_ajax ()) {
 	if ($get_agent_module_last_value) {
 		$id_module = (int) get_parameter ('id_agent_module');
 		
-		if (! check_acl ($config['id_user'], get_agentmodule_group ($id_module), "AR")) {
+		if (! check_acl ($config['id_user'], agents_get_agentmodule_group ($id_module), "AR")) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access agent main list view");
 			echo json_encode (false);
@@ -123,7 +123,7 @@ else {
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
 echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
 
-$groups = get_user_groups ();
+$groups = users_get_groups ();
 html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '');
 
 echo '</td><td style="white-space:nowrap;">';
@@ -245,17 +245,17 @@ if ($search != ""){
 // Show only selected groups	
 if ($group_id > 0) {
 	$groups = $group_id;
-	$agent_names = get_group_agents ($group_id, $filter, "upper");
+	$agent_names = agents_get_group_agents ($group_id, $filter, "upper");
 }
 else {
 	// Not selected any specific group
 	if (check_acl ($config['id_user'], 0, "PM")){
-		$agent_names = get_group_agents(0, $filter, "upper", true);
+		$agent_names = agents_get_group_agents(0, $filter, "upper", true);
 	}
 	else{
-		$user_group = get_user_groups($config["id_user"], "AR");
+		$user_group = users_get_groups($config["id_user"], "AR");
 		$groups = array_keys($user_group);
-		$agent_names = get_group_agents(array_keys ($user_group), $filter, "upper");
+		$agent_names = agents_get_group_agents(array_keys ($user_group), $filter, "upper");
 	}
 }
 

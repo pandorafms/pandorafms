@@ -76,7 +76,7 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 		$fields[] = 'id_user';
 	}
 	
-	$groups = get_user_groups ($config['id_user'], $privileges, $returnAllGroup);
+	$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
 
 	$reports = array ();
 	$all_reports = @db_get_all_rows_filter ('treport', $filter, $fields);

@@ -111,7 +111,7 @@ switch ($opt) {
 		
 		$agents = null;
 		foreach ($agentsGISStatus as $row) {
-			$status = get_agent_status($row['tagente_id_agente']);
+			$status = agents_get_status($row['tagente_id_agente']);
 			
 			$agents[$row['tagente_id_agente']] = array(
 				'icon_path' => gis_get_agent_icon_map($row['tagente_id_agente'], true, $status),
@@ -132,7 +132,7 @@ switch ($opt) {
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
-		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.get_agent_name($row['tagente_id_agente']).'</a><br />';
+		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.agents_get_name($row['tagente_id_agente']).'</a><br />';
 		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['longitude'] . ', ' . $row['latitude'] . ', ' . $row['altitude'] . ') <br />';		
 		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';
@@ -159,9 +159,9 @@ switch ($opt) {
 		{
 			$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
 		}		
-		$agent_ip_address = get_agent_address ($id_agente);
+		$agent_ip_address = agents_get_address ($id_agente);
 		if ($agent_ip_address || $agent_ip_address != '') {
-			$returnJSON['content'] .= __('IP Address').': '.get_agent_address ($id_agente).'<br />';
+			$returnJSON['content'] .= __('IP Address').': '.agents_get_address ($id_agente).'<br />';
 		}
 		$returnJSON['content'] .= __('OS').': ' . ui_print_os_icon($row['id_os'], true, true);
 

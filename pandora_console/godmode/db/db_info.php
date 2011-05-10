@@ -70,9 +70,9 @@ $table->head[0] = __('Agent name');
 $table->head[1] = __('Assigned modules');
 $table->head[2] = __('Total data');
 
-$agents = get_group_agents (0);
+$agents = agents_get_group_agents (0);
 
-$count = get_agent_modules_data_count (array_keys ($agents));
+$count = agents_get_modules_data_count (array_keys ($agents));
 
 unset ($count["total"]); //Not interested in total
 asort ($count, SORT_NUMERIC);

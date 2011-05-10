@@ -226,12 +226,12 @@ foreach ($items as $item) {
 			$row[3] = '-';
 		}
 		else {
-			$row[2] = ui_print_truncate_text(get_agent_name(get_agent_module_id($item['id_agent_module'])), 20);
+			$row[2] = ui_print_truncate_text(agents_get_name(agents_get_module_id($item['id_agent_module'])), 20);
 			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
 		}
 	}
 	else {
-		$row[2] = ui_print_truncate_text(get_agent_name($item['id_agent']), 20);
+		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 20);
 		
 		if ($item['id_agent_module'] == '') {
 			$row [3] = '-';

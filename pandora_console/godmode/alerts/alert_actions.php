@@ -71,9 +71,9 @@ if ($copy_action) {
 		}else{
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
 			else
-				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
 			if ($is_in_group)
@@ -215,9 +215,9 @@ if ($delete_action) {
 		else{
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
 			else
-				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
 			if ($is_in_group)

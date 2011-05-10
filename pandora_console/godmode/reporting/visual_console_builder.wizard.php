@@ -61,7 +61,7 @@ $table->data[2][1] = __('Width').': '.html_print_input_text ('width', 0, '', 5, 
 $table->data[2][1] .= '<br />'.__('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
 $table->data[3][0] = __('Agents');
-$table->data[3][1] = html_print_select (get_group_agents ($visualConsole['id_group'], false, "none", false, true),
+$table->data[3][1] = html_print_select (agents_get_group_agents ($visualConsole['id_group'], false, "none", false, true),
 	'id_agents[]', 0, false, '', '', true, true);
 	
 $table->data[4][0] = __('Modules');

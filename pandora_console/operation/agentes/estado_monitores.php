@@ -215,7 +215,7 @@ foreach ($modules as $module) {
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if ($module["id_policy_module"] != 0) {
-			$linked = isModuleLinked($module['id_agente_modulo']);
+			$linked = policies_is_module_linked($module['id_agente_modulo']);
 			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
 
             if ($id_policy != "")
@@ -223,10 +223,10 @@ foreach ($modules as $module) {
             else
                 $name_policy = __("Unknown");
 
-			$policyInfo = infoModulePolicy($module["id_policy_module"]);
+			$policyInfo = policies_info_module_policy($module["id_policy_module"]);
 			
 			$adopt = false;
-			if (isModuleAdopt($module['id_agente_modulo'])) {
+			if (policies_is_module_adopt($module['id_agente_modulo'])) {
 				$adopt = true;
 			}
 			

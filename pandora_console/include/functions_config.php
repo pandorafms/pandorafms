@@ -245,14 +245,14 @@ function config_update_config () {
 	
 	$enterprise = enterprise_include_once('include/functions_policies.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
-		$locked = enterprise_hook('semaphore_policy_test_and_set');
+		$locked = enterprise_hook('policies_semaphore_test_and_set');
 		if ($locked) {
 			db_pandora_audit("Policy management", "BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
 
 			config_update_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
 			
 			db_pandora_audit("Policy management", "UNBLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
-			enterprise_hook('semaphore_policy_unlock');
+			enterprise_hook('policies_semaphore_unlock');
 		}
 		else {
 			db_pandora_audit("Policy management", "Try to BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
@@ -644,9 +644,9 @@ function config_process_config () {
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {		
 			if(isset($config['id_user']))
-				$relative_path = enterprise_hook('set_image_skin_path',array($config['id_user']));
+				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 			else
-				$relative_path = enterprise_hook('set_image_skin_path',array($_POST['nick']));
+				$relative_path = enterprise_hook('skins_set_image_skin_path',array($_POST['nick']));
 			$config['relative_path'] = $relative_path;
 		}
 	}	

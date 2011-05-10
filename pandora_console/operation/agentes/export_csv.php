@@ -31,7 +31,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agentmodule = $_GET["agentmodule"];
 	$id_agent = $_GET["agent"];
 	$agentmodule_name = modules_get_agentmodule_name ($id_agentmodule);
-	if (! check_acl ($config['id_user'], get_agent_group($id_agent), "AR")) {
+	if (! check_acl ($config['id_user'], agents_get_agent_group($id_agent), "AR")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Agent Export Data");
 		require ("../../general/noaccess.php");

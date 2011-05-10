@@ -79,7 +79,7 @@ function mainInsertData() {
 	
 	
 	if ($save) {
-		if (!check_acl($config['id_user'], get_agent_group(get_agent_id($id_agent)), "AW")) {
+		if (!check_acl($config['id_user'], agents_get_agent_group(agents_get_agent_id($id_agent)), "AW")) {
 			ui_print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
 		else {
@@ -122,7 +122,7 @@ function mainInsertData() {
 	$table->data[1][0] = __('Module');
 	$modules = array ();
 	if ($id_agent)
-		$modules = get_agent_modules ($id_agent, false, array("delete_pending" => 0));
+		$modules = agents_get_modules ($id_agent, false, array("delete_pending" => 0));
 	$table->data[1][1] = html_print_select ($modules, 'id_agent_module', $id_agent_module, true,
 		__('Select'), 0, true, false, true, '', ($id_agent === ''));
 	$table->data[2][0] = __('Data');

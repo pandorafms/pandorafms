@@ -65,7 +65,7 @@ if ($id_agent == -2) {
 			$id_agent = 0;
 			break;
 		default:
-			$id_agent = get_agent_id($text_agent);
+			$id_agent = agents_get_agent_id($text_agent);
 			break;
 	}
 }
@@ -79,7 +79,7 @@ else {
 			$text_agent = __('Server');
 			break;
 		default:
-			$text_agent = get_agent_name($id_agent);
+			$text_agent = agents_get_name($id_agent);
 			break;
 	}
 }
@@ -112,7 +112,7 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	
 	echo $event["timestamp"];
 	echo ",";
-	echo get_agent_name($event["id_agente"]);
+	echo agents_get_name($event["id_agente"]);
 	echo ",";
 	echo groups_get_name($event["id_grupo"]);
 	echo ",";

@@ -48,7 +48,7 @@ if (is_ajax ()) {
 		if($id_group > 0)
 			$filter = sprintf(" WHERE id_grupo = %d", $id_group);
 		else {
-			$groups_orig = get_user_groups();
+			$groups_orig = users_get_groups();
 
 			$a = 0;
 			$groups = array_keys($groups_orig);
@@ -182,9 +182,9 @@ if (is_ajax ()) {
 		
 		/* Get all agents if no agent was given */
 		if ($id_agent == 0)
-			$id_agent = array_keys (get_group_agents (array_keys (get_user_groups ()), $search, "none"));
+			$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
 		
-		$agent_modules = get_agent_modules ($id_agent,
+		$agent_modules = agents_get_modules ($id_agent,
 			($fields != '' ? explode (',', $fields) : "*"),
 			($filter != '' ? $filter : false), $indexed);
 		
@@ -344,7 +344,7 @@ $agent = db_get_row ('tagente', 'id_agente', $id_agente);
 $id_grupo = $agent['id_grupo'];
 if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
 	db_pandora_audit("ACL Violation",
-		"Trying to access (read) to agent ".get_agent_name($id_agente));
+		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");
 	return;
 }
@@ -522,7 +522,7 @@ foreach($config['extensions'] as $extension) {
 	}
 }
 
-ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
+ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(agents_get_name($id_agente),0,25), $icon, false, "", false, $onheader);
 
 
 switch ($tab) {

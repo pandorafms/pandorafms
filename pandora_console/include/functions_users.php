@@ -29,7 +29,7 @@ require_once($config['homedir'] . "/include/functions_groups.php");
  *
  * @return array An array of users
  */
-function get_users_info ($order = "fullname", $info = "fullname") {
+function users_get_info ($order = "fullname", $info = "fullname") {
 	$users = get_users ($order);
 	$ret = array ();
 	foreach ($users as $user_id => $user_info) {
@@ -46,7 +46,7 @@ function get_users_info ($order = "fullname", $info = "fullname") {
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function get_all_model_groups () {
+function users_get_all_model_groups () {
 	$groups = db_get_all_rows_in_table ('tmodule_group');
 
 	$returnGroups = array();
@@ -70,7 +70,7 @@ function get_all_model_groups () {
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null) {
+function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null) {
 	if (empty ($id_user)) {
 		global $config;
 		$id_user = $config['id_user'];
@@ -141,8 +141,8 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
  *
  * @return array A treefield list of the groups the user has certain privileges.
  */
-function get_user_groups_tree($id_user = false, $privilege = "AR", $returnAllGroup = true) {
-	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
+function users_get_groups_tree($id_user = false, $privilege = "AR", $returnAllGroup = true) {
+	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, true);
 
 	$user_groups_tree = groups_get_groups_tree_recursive($user_groups);
 
@@ -159,8 +159,8 @@ function get_user_groups_tree($id_user = false, $privilege = "AR", $returnAllGro
  *
  * @return array The first group where the user has certain privileges.
  */
-function get_user_first_group ($id_user = false, $privilege = "AR") {
-	return array_shift (array_keys (get_user_groups ($id_user, $privilege)));
+function users_get_first_group ($id_user = false, $privilege = "AR") {
+	return array_shift (array_keys (users_get_groups ($id_user, $privilege)));
 }
 
 /**
@@ -172,7 +172,7 @@ function get_user_first_group ($id_user = false, $privilege = "AR") {
  *
  * @return bool Access to that agent (false not, true yes)
  */
-function user_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
+function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	if (empty ($id_agent))
 	return false;
 

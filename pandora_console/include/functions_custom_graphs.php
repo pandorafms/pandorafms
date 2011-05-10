@@ -49,7 +49,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 		$id_user = $config['id_user'];
 	}
 
- 	$groups = get_user_groups ($id_user, $privileges, $returnAllGroup);
+ 	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
 
 	$all_graphs = db_get_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)

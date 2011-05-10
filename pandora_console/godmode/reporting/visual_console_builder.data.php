@@ -49,7 +49,7 @@ $table->data[0][0] = __('Name:'). ui_print_help_tip (__("Use [ or ( as first cha
 
 $table->data[0][1] = html_print_input_text ('name', $visualConsoleName, '', 21, 30, true);
 $table->data[1][0] = __('Group:');
-$groups = get_user_groups ($config['id_user']);
+$groups = users_get_groups ($config['id_user']);
 
 $own_info = get_user_info($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges

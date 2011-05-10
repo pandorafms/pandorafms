@@ -1,3 +1,8 @@
+2011-05-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Merged from trunk. Do not count the
+	  empty start of an interval as 0 (affects AVG and SLA).
+
 2011-05-06  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/alerts/alert_list.list.php: Fixed filter parameters are not

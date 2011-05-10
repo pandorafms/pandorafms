@@ -23,7 +23,7 @@ require_once ($config['homedir'] . '/include/functions_groups.php');
 
 /**
  */
-function render_agent_field ($agent, $field, $field_value = false, $return = false) {
+function renders_agent_field ($agent, $field, $field_value = false, $return = false) {
 	global $config;
 	
 	if (empty ($agent))

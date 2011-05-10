@@ -97,14 +97,14 @@ switch ($action) {
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
 		$return = array();
-		$return['color_line'] = getColorLineStatus($layoutData);
+		$return['color_line'] = visual_map_get_color_line_status($layoutData);
 		echo json_encode($return);
 		break;
 	case 'get_image':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
 		$return = array();
-		$return['image'] = getImageStatusElement($layoutData);
+		$return['image'] = visual_map_get_image_status_element($layoutData);
 		echo json_encode($return);
 		break;
 	case 'update':
@@ -290,7 +290,7 @@ switch ($action) {
 			$return['correct'] = 0;
 		}
 		else {
-			$text = createInternalNameItem($label, $type, $image, $agent, $id_module, $idData);
+			$text = visual_map_create_internal_name_item($label, $type, $image, $agent, $id_module, $idData);
 			
 			$return['correct'] = 1;
 			$return['id_data'] = $idData;
@@ -313,7 +313,7 @@ switch ($action) {
 /* visual map element status check  */
 if ($get_element_status){
 
-	$res = getStatusElement($id_element);
+	$res = visual_map_get_status_element($id_element);
 
 	echo $res;	
 	return;

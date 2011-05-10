@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 
 require_once ('include/functions_visual_map.php');
 
-print_pandora_visual_map ($visualConsole['id']);
+visual_map_print_visual_map ($visualConsole['id']);
 
 ui_require_javascript_file ('wz_jsgraphics');
 ui_require_javascript_file ('pandora_visual_console');

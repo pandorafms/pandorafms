@@ -31,7 +31,7 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 
-function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
+function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
 	if ($float == 'left') {
 		$margin = 'margin-right';
 	}
@@ -60,7 +60,7 @@ function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabl
 	
 }
 
-function printItemInVisualConsole($layoutData) {
+function visual_map_print_item($layoutData) {
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -85,7 +85,7 @@ function printItemInVisualConsole($layoutData) {
 	switch ($type) {
 		case STATIC_GRAPH:
 			if ($layoutData['image'] != null) {
-				$img = getImageStatusElement($layoutData);
+				$img = visual_map_get_image_status_element($layoutData);
 				if(substr($img,0,1) == '4') {
 					$borderStyle ='border: 2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
@@ -144,7 +144,7 @@ function printItemInVisualConsole($layoutData) {
 			break;
 		case ICON:
 			if ($layoutData['image'] != null) {
-				$img = getImageStatusElement($layoutData);
+				$img = visual_map_get_image_status_element($layoutData);
 				$imgSizes = getimagesize($img);
 			}
 			if (($width != 0) && ($height != 0)) {
@@ -168,7 +168,7 @@ function printItemInVisualConsole($layoutData) {
 	if ($layoutData['parent_item'] != 0) {
 		echo '<script type="text/javascript">';
 		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . getColorLineStatus($layoutData) . '"});
+			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($layoutData) . '"});
 		});';
 		echo '</script>';
 	}
@@ -186,7 +186,7 @@ function printItemInVisualConsole($layoutData) {
  * 
  * @return string Return the message status to insert DB.
  */
-function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
+function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_agents)) {
 		print_error_message (__('No agents selected'));
 		return false;
@@ -235,7 +235,7 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0,
  * 
  * @return string Return the message status to insert DB.
  */
-function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
+function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_modules)) {
 		$return = print_error_message (__('No modules selected'), '', true);
 		return false;
@@ -283,13 +283,13 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
  * 
  * @return string The color as hexadecimal color in html.
  */
-function getColorLineStatus($layoutData) {
+function visual_map_get_color_line_status($layoutData) {
 	if (($layoutData['type'] == 5) || ($layoutData['type'] == 4)) {
 		//ICON ELEMENT OR LABEL ELEMENT
 		$color = "#cccccc";
 	}
 	else {
-		switch (getStatusElement($layoutData)) {
+		switch (visual_map_get_status_element($layoutData)) {
 			case 3:
 				$color = "#cccccc"; // Gray
 				break;
@@ -316,7 +316,7 @@ function getColorLineStatus($layoutData) {
  * 
  * @return string The image with the relative path to pandora console directory.
  */
-function getImageStatusElement($layoutData) {
+function visual_map_get_image_status_element($layoutData) {
 	$img = "images/console/icons/" . $layoutData["image"];
 	
 	if ($layoutData['type'] == 5) {
@@ -324,7 +324,7 @@ function getImageStatusElement($layoutData) {
 		$img .= ".png";
 	}
 	else {
-		switch (getStatusElement($layoutData)) {
+		switch (visual_map_get_status_element($layoutData)) {
 			case 1:
 				//Critical (BAD)
 				$img .= "_bad.png";
@@ -360,10 +360,10 @@ function getImageStatusElement($layoutData) {
  * 
  * @return integer 
  */
-function getStatusElement($layoutData) {
+function visual_map_get_status_element($layoutData) {
 	//Linked to other layout ?? - Only if not module defined
 	if ($layoutData['id_layout_linked'] != 0) {
-		$status = get_layout_status ($layoutData['id_layout_linked']);
+		$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
 	}
 	else if ($layoutData["type"] == 0) { //Single object
 		//Status for a simple module
@@ -398,7 +398,7 @@ function getStatusElement($layoutData) {
  * @param bool $show_links
  * @param bool $draw_lines
  */
-function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
+function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
 	global $config;
 	
 	$layout = db_get_row ('tlayout', 'id', $id_layout);
@@ -460,7 +460,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				}
 				// Another layout/map
 				elseif ($id_layout_linked != 0) {
-					$status_parent = get_layout_status ($id_layout_linked);
+					$status_parent = visual_map_get_layout_status ($id_layout_linked);
 				}
 
 				else { 
@@ -479,7 +479,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 
 			// Linked to other layout ?? - Only if not module defined
 			if ($layout_data['id_layout_linked'] != 0) {
-				$status = get_layout_status ($layout_data['id_layout_linked']);
+				$status = visual_map_get_layout_status ($layout_data['id_layout_linked']);
 
 			// Single object
 			} elseif ($layout_data["type"] == 0) {
@@ -855,7 +855,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 /**
  * @return array Layout data types
  */
-function get_layout_data_types () {
+function visual_map_get_layout_data_types () {
 	$types = array ();
 	$types[0] = __('Static graph');
 	$types[1] = __('Module graph');
@@ -876,7 +876,7 @@ function get_layout_data_types () {
  *
  * @return array A list of layouts the user can see.
  */
-function get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
+function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
 	if (! is_array ($filter))
 		$filter = array ();
 	
@@ -919,7 +919,7 @@ function get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $
  * 
  * @return bool The status of the given layout. True if it's OK, false if not.
  */
-function get_layout_status ($id_layout = 0, $depth = 0) {
+function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
 	$depth++; // For recursion depth checking
@@ -941,7 +941,7 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
 			continue;
 		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-			$status = get_layout_status ($data["id_layout_linked"], $depth);
+			$status = visual_map_get_layout_status ($data["id_layout_linked"], $depth);
 		// Module
 		} elseif ($data["id_agente_modulo"] != 0) {
 			$status = modules_get_agentmodule_status ($data["id_agente_modulo"]);
@@ -972,7 +972,7 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
  * 
  * @return string The text for the parent.
  */
-function createInternalNameItem($label = null, $type, $image, $agent = null, $id_module, $idData) {
+function visual_map_create_internal_name_item($label = null, $type, $image, $agent = null, $id_module, $idData) {
 	$text = '';
 	
 	if (empty($label))
@@ -1025,7 +1025,7 @@ function createInternalNameItem($label = null, $type, $image, $agent = null, $id
 	return $text;
 }
 
-function get_items_parents($idVisual) {
+function visual_map_get_items_parents($idVisual) {
 	$items = db_get_all_rows_filter('tlayout_data',array('id_layout' => $idVisual));
 	if ($items == false) {
 		$items = array();
@@ -1038,7 +1038,7 @@ function get_items_parents($idVisual) {
 			$agent = io_safe_output(get_agent_name($item['id_agent']));
 		}
 		
-		$return[$item['id']] = createInternalNameItem($item['label'],
+		$return[$item['id']] = visual_map_create_internal_name_item($item['label'],
 			$item['type'], $item['image'], $agent, $item['id_agente_modulo'],
 			$item['id']);
 	}
@@ -1053,7 +1053,7 @@ function get_items_parents($idVisual) {
  *
  * @return int The X axis coordinate value.
  */
-function get_layoutdata_x ($id_layoutdata) {
+function visual_map_get_layoutdata_x ($id_layoutdata) {
 	return (float) db_get_value ('pos_x', 'tlayout_data', 'id', (int) $id_layoutdata);
 }
 
@@ -1064,7 +1064,7 @@ function get_layoutdata_x ($id_layoutdata) {
  *
  * @return int The Y axis coordinate value.
  */
-function get_layoutdata_y ($id_layoutdata){
+function visual_map_get_layoutdata_y ($id_layoutdata){
 	return (float) db_get_value ('pos_y', 'tlayout_data', 'id', (int) $id_layoutdata);
 }
 

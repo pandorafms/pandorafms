@@ -45,7 +45,7 @@ foreach ($all_images as $image_file) {
 	$images_list[$image_file] = $image_file;
 }
 
-$layoutDataTypes = get_layout_data_types();
+$layoutDataTypes = visual_map_get_layout_data_types();
 
 /* Layout_data editor form */
 $intervals = array ();

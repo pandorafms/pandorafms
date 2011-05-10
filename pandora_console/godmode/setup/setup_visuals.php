@@ -61,7 +61,7 @@ $table->data[5][0] = __('Graphic resolution (1-low, 5-high)');
 $table->data[5][1] = html_print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
 
 $table->data[6][0] = __('Style template');
-$table->data[6][1] = html_print_select (get_css_themes (), 'style', $config["style"].'.css', '', '', '', true);
+$table->data[6][1] = html_print_select (themes_get_css (), 'style', $config["style"].'.css', '', '', '', true);
 
 $table->data[7][0] = __('Block size for pagination');
 $table->data[7][1] = html_print_input_text ('block_size', $config["block_size"], '', 5, 5, true);

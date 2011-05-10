@@ -74,7 +74,7 @@ $options['pure']['active'] = false;
 
 ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/monitor.png", false, '', false, $options);
 
-print_pandora_visual_map ($id_layout);
+visual_map_print_visual_map ($id_layout);
 
 $values = array ();
 $values[5] = human_time_description_raw (5);

@@ -27,7 +27,7 @@
  * @return array An indexed array with the file name in the index and the theme
  * name (if available) as the value.
  */
-function get_css_themes ($path = false) {
+function themes_get_css ($path = false) {
 	if ($path)
 		$theme_dir = $path;
 	else

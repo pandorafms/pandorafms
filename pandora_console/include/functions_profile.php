@@ -64,7 +64,7 @@ function get_profiles ($filter = false) {
  * @param int Group ID (default 1 => All)
  * @param string Assign User who assign the profile to user.
  *
- * @return bool True if succesful, false if not
+ * @return mixed Number id if succesful, false if not
  */
 function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false) {
 	global $config;
@@ -89,7 +89,7 @@ function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignU
 		"assigned_by" => $assign
 	);
 
-	return (bool) db_process_sql_insert ("tusuario_perfil", $insert);
+	return db_process_sql_insert ("tusuario_perfil", $insert);
 }
 
 /**

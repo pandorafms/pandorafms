@@ -858,6 +858,6 @@ function resource_registration_extension_main() {
 	process_upload_xml($xml);
 }
 
-add_godmode_menu_option (__('Resource registration'), 'PM','gservers','');
-add_extension_godmode_function('resource_registration_extension_main');
+extensions_add_godmode_menu_option (__('Resource registration'), 'PM','gservers','');
+extensions_add_godmode_function('resource_registration_extension_main');
 ?>

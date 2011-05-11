@@ -70,7 +70,7 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 /**
  * Load the basic configurations of extension and add extensions into menu.
  */
-load_extensions ($config['extensions']);
+extensions_load_extensions ($config['extensions']);
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = 'https://' . $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
@@ -258,14 +258,14 @@ else {
 			require ("general/noaccess.php");
 		} 
 		elseif (file_exists ($page)) {
-			if (! is_extension ($page)){
+			if (! extensions_is_extension ($page)){
 				require_once($page);
 			}
 			else {
 				if ($sec[0] == 'g')
-					extension_call_godmode_function (basename ($page));
+					extensions_call_godmode_function (basename ($page));
 				else
-					extension_call_main_function (basename ($page));
+					extensions_call_main_function (basename ($page));
 			}
 		} 
 		else echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';

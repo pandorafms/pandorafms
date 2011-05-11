@@ -126,7 +126,7 @@ if (file_exists ($config["homedir"]  . '/include/languages/'.$config["user_langu
 
 require_once ($ownDir . 'functions_extensions.php');
 
-$config['extensions'] = get_extensions ();
+$config['extensions'] = extensions_get_extensions ();
 
 // Detect if enterprise extension is installed
 // NOTICE: This variable (config[enterprise_installed] is used in several

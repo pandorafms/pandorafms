@@ -160,7 +160,7 @@ function pluginreg_extension_main () {
 
 }
 
-add_godmode_menu_option (__('Register plugin'), 'PM','gservers','');
-add_extension_godmode_function('pluginreg_extension_main');
+extensions_add_godmode_menu_option (__('Register plugin'), 'PM','gservers','');
+extensions_add_godmode_function('pluginreg_extension_main');
 
 ?>

@@ -322,7 +322,7 @@ function io_unsafe_string ($string) {
 function __ ($string /*, variable arguments */) {
 	global $l10n;
 
-	$extensions = get_extensions();
+	$extensions = extensions_get_extensions();
 	if (empty($extensions)) $extensions = array();
 
 	global $config;

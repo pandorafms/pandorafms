@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-add_extension_opemode_tab_agent ('ssh_console','SSH Console','extensions/ssh_console/ssh.png',"main_ssh_console");
+extensions_add_opemode_tab_agent ('ssh_console','SSH Console','extensions/ssh_console/ssh.png',"main_ssh_console");
 
 
 function main_ssh_console () {

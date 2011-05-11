@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 ui_print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
 
 if (sizeof ($config['extensions']) == 0) {
-	$extensions = getExtensionInfo();
+	$extensions = extensions_get_extension_info();
 	if (empty($extensions)) {
 		echo '<h3>'.__('There are no extensions defined').'</h3>';
 		return;
@@ -139,7 +139,7 @@ if ($disabled != '') {
 	<?php
 }
 
-$extensions = getExtensionInfo();
+$extensions = extensions_get_extension_info();
 
 $table->width = '95%';
 

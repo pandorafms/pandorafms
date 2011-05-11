@@ -1,3 +1,8 @@
+2011-05-11  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/agentes/module_manager_editor.php
+	include/javascript/pandora_modules.js: Fixed bug: Is possible to create a module plugin without module associated.
+
 2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_io.php

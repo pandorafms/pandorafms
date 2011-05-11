@@ -303,6 +303,12 @@ function configure_modules_form () {
 			return false;
 		}
 		
+		if ($("#id_plugin").attr ("value") == 0) {
+			$("#id_plugin").focus ();
+			$("#message").showMessage (no_plugin_lang);
+			return false;
+		}
+
 		moduletype = $("#hidden-moduletype").val ();
 		if (moduletype == 5) {
 			if ($("#prediction_module").val () == null) {

@@ -362,6 +362,7 @@ var no_name_lang = "<?php echo __('No module name provided') ?>";
 var no_target_lang = "<?php echo __('No target IP provided') ?>";
 var no_oid_lang = "<?php echo __('No SNMP OID provided') ?>";
 var no_prediction_module_lang = "<?php echo __('No module to predict') ?>";
+var no_plugin_lang = "<?php echo __('No plug-in provided') ?>";
 
 $(document).ready (function () {
 	configure_modules_form ();

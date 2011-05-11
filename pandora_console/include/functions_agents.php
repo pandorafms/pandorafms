@@ -817,7 +817,16 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	else {
 		$search_sql .= ' AND disabled = 0';
 	}
-
+	
+	//Add enterprise function to add other enterprise ACL.
+	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+		$operator = 'AND';
+		
+		if (empty($search_sql))
+			$operator = '';
+		$search_sql .= subquery_acl_enterprise($operator);
+	}
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -827,11 +836,11 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 			$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY dbms_lob.substr(nombre,4000,1)", $search_sql);
 			break;
 	}
-
+	
 	$result = db_get_all_rows_sql ($sql);
 
 	if ($result === false)
-	return array (); //Return an empty array
+		return array (); //Return an empty array
 
 	$agents = array ();
 	foreach ($result as $row) {

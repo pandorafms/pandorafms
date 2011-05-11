@@ -155,11 +155,12 @@ function mainModuleGroups() {
 	
 		foreach ($modelGroups as $idModelGroup => $modelGroup) {
 			$query = sprintf($sql,$idAgentGroup, $idModelGroup);
-
+			
 			$rowsDB = db_get_all_rows_sql ($query);
 			
 			
 			$agents = agents_get_group_agents($idAgentGroup);
+			
 			if (!empty($agents)) {
 				$alerts = agents_get_alerts_simple($agents);
 				

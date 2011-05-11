@@ -21,9 +21,12 @@ global $config;
 require_once ("include/functions_agents.php");
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
+include_graphs_dependencies();
 require_once ($config['homedir'] . '/include/functions_groups.php');
 
+
 check_login ();
+
 
 $id_agente = get_parameter_get ("id_agente", -1);
 

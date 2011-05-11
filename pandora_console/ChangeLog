@@ -1,3 +1,9 @@
+2011-05-11 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php: added hooks for to enterprise ACL.
+
+	* extensions/module_groups.php: cleaned source code.
+
 2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

@@ -17,6 +17,10 @@
 global $config;
 
 require_once ($config['homedir'].'/include/functions_users.php');
+$subquery_enterprise = '';
+if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+	$subquery_enterprise = subquery_acl_enterprise();
+}
 
 $searchAgents = check_acl($config['id_user'], 0, "AR");
 
@@ -119,29 +123,29 @@ if ($searchAgents) {
 					INNER JOIN tgrupo AS t2
 						ON t2.id_grupo = t1.id_grupo
 				WHERE (
-					1 = (
-						SELECT is_admin
-						FROM tusuario
-						WHERE id_user = '" . $config['id_user'] . "'
-					)
-					OR t1.id_grupo IN (
-						" . implode(',', $id_userGroups) . "
-					)
-					OR 0 IN (
-						SELECT id_grupo
-						FROM tusuario_perfil
-						WHERE id_usuario = '" . $config['id_user'] . "'
-							AND id_perfil IN (
-								SELECT id_perfil
-								FROM tperfil WHERE agent_view = 1
-							)
+						1 = (
+							SELECT is_admin
+							FROM tusuario
+							WHERE id_user = '" . $config['id_user'] . "'
 						)
+						OR t1.id_grupo IN (
+							" . implode(',', $id_userGroups) . "
+						)
+						OR 0 IN (
+							SELECT id_grupo
+							FROM tusuario_perfil
+							WHERE id_usuario = '" . $config['id_user'] . "'
+								AND id_perfil IN (
+									SELECT id_perfil
+									FROM tperfil WHERE agent_view = 1
+								)
+							)
 					)
 					AND (
 						t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'
 					)
-			";
+			" . $subquery_enterprise;
 			break;
 		case "postgresql":
 		case "oracle":
@@ -150,33 +154,34 @@ if ($searchAgents) {
 					INNER JOIN tgrupo AS t2
 						ON t2.id_grupo = t1.id_grupo
 				WHERE (
-					1 = (
-						SELECT is_admin
-						FROM tusuario
-						WHERE id_user = '" . $config['id_user'] . "'
-					)
-					OR t1.id_grupo IN (
-						" . implode(',', $id_userGroups) . "
-					)
-					OR 0 IN (
-						SELECT id_grupo
-						FROM tusuario_perfil
-						WHERE id_usuario = '" . $config['id_user'] . "'
-							AND id_perfil IN (
-								SELECT id_perfil
-								FROM tperfil WHERE agent_view = 1
-							)
+						1 = (
+							SELECT is_admin
+							FROM tusuario
+							WHERE id_user = '" . $config['id_user'] . "'
 						)
+						OR t1.id_grupo IN (
+							" . implode(',', $id_userGroups) . "
+						)
+						OR 0 IN (
+							SELECT id_grupo
+							FROM tusuario_perfil
+							WHERE id_usuario = '" . $config['id_user'] . "'
+								AND id_perfil IN (
+									SELECT id_perfil
+									FROM tperfil WHERE agent_view = 1
+								)
+							)
 					)
 					AND (
 						t1.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre LIKE '%%" . $stringSearchSQL . "%%'
 					)
-			";
+			" . $subquery_enterprise;
 			break;
 	}
 	
-	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
+	$select = 
+		"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
 	$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	

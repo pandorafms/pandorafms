@@ -1,3 +1,12 @@
+2011-05-11  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	bin/pandora_server
+	util/pandora_manage.pl: Added thread in main loop of the 
+	server with check to the policy queue. 
+	Apply and delete agents from policy in the new thread
+	Deleting policies lock system from server 
+
 2011-05-09  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DB.pm

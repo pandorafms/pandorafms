@@ -88,15 +88,15 @@ function users_extension_main_god ($god = true) {
 		html_print_table ($table);
 	}
 }
-add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"users/icon.png");
+extensions_add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"users/icon.png");
 
 if (isset($config["id_user"])) {
 	if (check_acl ($config["id_user"], 0, "UM")) {
-		add_operation_menu_option(__('Users connected'), 'usuarios',"users/icon.png");
+		extensions_add_operation_menu_option(__('Users connected'), 'usuarios',"users/icon.png");
 	}
 }
 
-add_extension_godmode_function('users_extension_main_god');
-add_extension_main_function('users_extension_main');
+extensions_add_godmode_function('users_extension_main_god');
+extensions_add_main_function('users_extension_main');
 
 ?>

@@ -58,8 +58,8 @@ if (isset($_GET['get_ptr'])) {
 	}
 }
 else {
-	add_godmode_menu_option (__('Resource exportation'), 'PM','gservers','');
-	add_extension_godmode_function('resource_exportation_extension_main');
+	extensions_add_godmode_menu_option (__('Resource exportation'), 'PM','gservers','');
+	extensions_add_godmode_function('resource_exportation_extension_main');
 }
 
 function output_xml_resource($hook_enterprise) {

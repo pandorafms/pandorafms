@@ -1,3 +1,28 @@
+2011-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_io.php
+	include/config_process.php
+	include/functions_extensions.php
+	index.php
+	extensions/insert_data.php
+	extensions/system_info.php
+	extensions/extension_uploader.php
+	extensions/pandora_logs.php
+	extensions/agents_modules.php
+	extensions/update_manager.php
+	extensions/ssh_console.php
+	extensions/dbmanager.php
+	extensions/vnc_view.php
+	extensions/resource_registration.php
+	extensions/resource_exportation.php
+	extensions/users_connected.php
+	extensions/module_groups.php
+	extensions/plugin_registration.php
+	godmode/extensions.php: functions in 
+	functions_extensions.php have "extensions_" prefix.
+	* install.php: Drop database action is not allowed when installation
+	it's performed over a new database. 
+
 2011-05-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_agents.php: added hooks for to enterprise ACL.

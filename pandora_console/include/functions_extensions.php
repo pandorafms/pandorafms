@@ -27,7 +27,7 @@ $extension_file = '';
  *
  * @param string $filename with contents of the extension
  */
-function extension_call_main_function ($filename) {
+function extensions_call_main_function ($filename) {
 	global $config;
 	
 	$extension = &$config['extensions'][$filename];
@@ -42,7 +42,7 @@ function extension_call_main_function ($filename) {
  *
  * @param string $filename File with extension contents
  */
-function extension_call_godmode_function ($filename) {
+function extensions_call_godmode_function ($filename) {
 	global $config;
 	
 	$extension = &$config['extensions'][$filename];
@@ -71,7 +71,7 @@ function extensions_call_login_function () {
  *
  * @param string $page To check
  */
-function is_extension ($page) {
+function extensions_is_extension ($page) {
 	global $config;
 	
 	$filename = basename ($page);
@@ -84,7 +84,7 @@ function is_extension ($page) {
  *
  * @param bool $enterprise
  */
-function get_extensions ($enterprise = false) {
+function extensions_get_extensions ($enterprise = false) {
 	$dir = EXTENSIONS_DIR;
 	$handle = false;
 	if ($enterprise)
@@ -123,7 +123,7 @@ function get_extensions ($enterprise = false) {
 	
 	/* Load extensions in enterprise directory */
 	if (! $enterprise && file_exists (ENTERPRISE_DIR.'/'.EXTENSIONS_DIR))
-		return array_merge ($extensions, get_extensions (true));
+		return array_merge ($extensions, extensions_get_extensions (true));
 	
 	return $extensions;
 }
@@ -131,7 +131,7 @@ function get_extensions ($enterprise = false) {
 /**
  * Get disabled open and enterprise extensions 
  */
-function get_disabled_extensions() {
+function extensions_get_disabled_extensions() {
 	global $config;
 	
 	$extensions = array ();
@@ -167,37 +167,37 @@ function get_disabled_extensions() {
 			$data = array();
 			
 			$data['operation_menu'] = false;
-			if (preg_match("/<?php(\n|.)*add_operation_menu_option(\n|.)*?>/", $content)) {
+			if (preg_match("/<?php(\n|.)*extensions_add_operation_menu_option(\n|.)*?>/", $content)) {
 				$data['operation_menu'] = true;
 			}
 			
 			$data['godmode_menu'] = false;
-			if (preg_match('/<\?php(\n|.)*add_godmode_menu_option(\n|.)*\?>/', $content)) {
+			if (preg_match('/<\?php(\n|.)*extensions_add_godmode_menu_option(\n|.)*\?>/', $content)) {
 				$data['godmode_menu'] = true;
 			}
 			
 			$data['operation_function'] = false;
-			if (preg_match('/<\?php(\n|.)*add_extension_main_function(\n|.)*\?>/', $content)) {
+			if (preg_match('/<\?php(\n|.)*extensions_add_main_function(\n|.)*\?>/', $content)) {
 				$data['operation_function'] = true;
 			}
 			
 			$data['login_function'] = false;
-			if (preg_match('/<\?php(\n|.)*add_extension_login_function(\n|.)*\?>/', $content)) {
+			if (preg_match('/<\?php(\n|.)*extensions_add_login_function(\n|.)*\?>/', $content)) {
 				$data['login_function'] = true;
 			}
 			
 			$data['extension_ope_tab'] = false;
-			if (preg_match('/<\?php(\n|.)*add_extension_opemode_tab_agent(\n|.)*\?>/', $content)) {
+			if (preg_match('/<\?php(\n|.)*extensions_add_opemode_tab_agent(\n|.)*\?>/', $content)) {
 				$data['extension_ope_tab'] = true;
 			}
 			
 			$data['extension_god_tab'] = false;
-			if (preg_match('/<\?php(\n|.)*add_extension_godmode_tab_agent(\n|.)*\?>/', $content)) {
+			if (preg_match('/<\?php(\n|.)*extensions_add_godmode_tab_agent(\n|.)*\?>/', $content)) {
 				$data['extension_god_tab'] = true;
 			}
 			
 			$data['godmode_function'] = false;
-			if (preg_match('/<\?php(\n|.)*add_extension_godmode_function(\n|.)*\?>/', $content)) {
+			if (preg_match('/<\?php(\n|.)*extensions_add_godmode_function(\n|.)*\?>/', $content)) {
 				$data['godmode_function'] = true;
 			}
 			
@@ -220,7 +220,7 @@ function get_disabled_extensions() {
 /**
  * Get info of all extensions (enabled/disabled)
  */
-function getExtensionInfo() {
+function extensions_get_extension_info() {
 	global $config;
 	
 	$return = array ();
@@ -269,7 +269,7 @@ function getExtensionInfo() {
 		$return[$extension['file']] = $data;
 	}
 	
-	$return = $return + get_disabled_extensions();
+	$return = $return + extensions_get_disabled_extensions();
 	
 	return $return;
 }
@@ -279,7 +279,7 @@ function getExtensionInfo() {
  *
  * @param array $extensions
  */
-function load_extensions ($extensions) {
+function extensions_load_extensions ($extensions) {
 	global $config;
 	global $extension_file;
 	
@@ -296,11 +296,11 @@ function load_extensions ($extensions) {
  * @param string fatherId Id of the parent menu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
+function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null) {
 	global $config;
 	global $extension_file;
 	
-	/* $config['extension_file'] is set in load_extensions(), since that function must
+	/* $config['extension_file'] is set in extensions_load_extensions(), since that function must
 	   be called before any function the extension call, we are sure it will 
 	   be set. */
 	$option_menu['name'] = $name;
@@ -320,11 +320,11 @@ function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
  * @param string fatherId Id of the parent menu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
+function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
 	global $config;
 	global $extension_file;
 	
-	/* $config['extension_file'] is set in load_extensions(), since that function must
+	/* $config['extension_file'] is set in extensions_load_extensions(), since that function must
 	   be called before any function the extension call, we are sure it will 
 	   be set. */
 	$option_menu['acl'] = $acl;
@@ -344,7 +344,7 @@ function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
  * @param tabIcon Path to the image icon 
  * @param tabFunction Name of the function to execute when this extension is called
  */
-function add_extension_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
+function extensions_add_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
 	global $config;
 	global $extension_file;
 	
@@ -364,7 +364,7 @@ function add_extension_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunctio
  * @param tabIcon Path to the image icon 
  * @param tabFunction Name of the function to execute when this extension is called
  */
-function add_extension_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
+function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
 	global $config;
 	global $extension_file;
 	
@@ -381,7 +381,7 @@ function add_extension_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunctio
  *
  * @param string $function_name Callback function name
  */
-function add_extension_main_function ($function_name) {
+function extensions_add_main_function ($function_name) {
 	global $config;
 	global $extension_file;
 	
@@ -394,7 +394,7 @@ function add_extension_main_function ($function_name) {
  *
  * @param string $function_name Callback function name
  */
-function add_extension_godmode_function ($function_name) {
+function extensions_add_godmode_function ($function_name) {
 	global $config;
 	global $extension_file;
 	
@@ -407,7 +407,7 @@ function add_extension_godmode_function ($function_name) {
  *
  * @param string $function_name Callback function name
  */
-function add_extension_login_function ($function_name) {
+function extensions_add_login_function ($function_name) {
 	global $config;
 	global $extension_file;
 	

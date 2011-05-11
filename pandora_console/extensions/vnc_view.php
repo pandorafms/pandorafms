@@ -27,5 +27,5 @@ function vnc_view() {
 /* 	<iframe width="95%" height="500px" src="http://<?php echo $ipAgent;?>:5801"></iframe> */
 }
 
-add_extension_opemode_tab_agent('vnc_view', __('VNC view'), 'images/computer.png', 'vnc_view');
+extensions_add_opemode_tab_agent('vnc_view', __('VNC view'), 'images/computer.png', 'vnc_view');
 ?>

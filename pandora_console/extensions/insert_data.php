@@ -227,6 +227,6 @@ function mainInsertData() {
 <?php
 }
 
-add_extension_godmode_function('mainInsertData');
-add_godmode_menu_option(__('Insert Data'), 'AW', 'gagente');
+extensions_add_godmode_function('mainInsertData');
+extensions_add_godmode_menu_option(__('Insert Data'), 'AW', 'gagente');
 ?>

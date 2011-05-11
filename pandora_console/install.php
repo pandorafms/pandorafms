@@ -36,7 +36,7 @@
 options_text = new Array('An existing Database','A new Database');
 options_values = new Array('db_exist','db_new');
 function ChangeDBDrop(causer) {
-	if (causer.value != 'db_exist' && window.document.step2_form.engine.value != 'mysql') {
+	if (causer.value != 'db_exist') {
 		window.document.step2_form.drop.checked=0;		
 		window.document.step2_form.drop.disabled=1;
 	}
@@ -604,7 +604,7 @@ function install_step3() {
 				<div>DB Name (pandora by default)</div>
 				<input class='login' type='text' name='dbname' value='pandora'>
 
-				<input class='login' type='checkbox' name='drop' value=1>				
+				<input class='login' type='checkbox' name='drop' value=1 disabled>				
 				Drop Database if exists
 
 				<div>Full path to HTTP publication directory<br>

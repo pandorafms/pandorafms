@@ -163,6 +163,7 @@ our @EXPORT = qw(
 	pandora_group_statistics
 	pandora_server_statistics
 	pandora_self_monitoring
+	pandora_process_policy_queue
 	@ServerTypes
 	);
 
@@ -2081,6 +2082,45 @@ sub pandora_server_statistics ($$) {
 	}
 }
 
+##########################################################################
+=head2 C<< pandora_group_statistics (I<$pa_config>, I<$dbh>) >>
+
+Process groups statistics for statistics table
+
+=cut
+##########################################################################
+sub pandora_process_policy_queue ($) {
+	my $pa_config = shift;
+	
+	my %pa_config = %{$pa_config};
+	
+	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, 3306,
+						$pa_config{'dbuser'}, $pa_config{'dbpass'});
+
+	while(1) {
+		my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
+		$operation = @{$operation}[0];
+		
+		if(defined($operation)) {
+			if($operation->{'operation'} eq 'apply') {
+				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}]);
+			}
+			elsif($operation->{'operation'} eq 'delete') {
+				if($operation->{'id_agent'} == 0) {
+					enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
+				}
+				else {
+					enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
+				}
+			}
+			
+			enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
+		}
+		
+		# Check the queue each 5 seconds
+		sleep (5);
+	}	
+}
 
 ##########################################################################
 =head2 C<< pandora_group_statistics (I<$pa_config>, I<$dbh>) >>

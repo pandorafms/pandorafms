@@ -1,3 +1,8 @@
+2011-05-11 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/search_modules.php, operation/search_agents.php,
+	operation/search_alerts.php: added the hook for ACL check for enterprise.
+
 2011-05-11  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/agentes/module_manager_editor.php

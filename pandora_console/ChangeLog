@@ -1,3 +1,7 @@
+2011-05-12  Sergio Martin <sergio.martin@artica.es>
+
+	* images/policies_cog.png: Added new image to policies application
+
 2011-05-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* install.php: Correct a mistake that doesn't allow to create a 

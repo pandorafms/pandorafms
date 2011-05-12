@@ -1,5 +1,10 @@
 2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php, include/db/mysql.php: fixed the scape of name
+	of fields in where.
+
+2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_graph.php: fixed the image parameters for the progress
 	bar.
 

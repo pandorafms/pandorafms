@@ -540,7 +540,9 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 		}
 
 		if ($field[0] != "\"") {
-			$field = "\"".$field."\"";
+			//If the field is as <table>.<field>, don't scape.
+			if (strstr($field, '.') === false)
+				$field = "\"".$field."\"";
 		}
 
 		if (is_null ($value)) {

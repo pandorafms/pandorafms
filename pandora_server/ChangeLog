@@ -1,3 +1,8 @@
+2011-05-12  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Change apply policy option in CLI to
+	add application to queue
+
 2011-05-11  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm

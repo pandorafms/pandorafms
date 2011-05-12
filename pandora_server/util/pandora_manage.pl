@@ -1227,7 +1227,7 @@ sub pandora_manage_main ($$$) {
 			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
 			exist_check($policy_id,'policy',$policy_name);
 			
-			enterprise_hook('pandora_apply_policy', [$dbh, $conf, $policy_id]);
+			enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
 		}
 		elsif ($param eq '--disable_policy_alerts') {
 			param_check($ltotal, 1);

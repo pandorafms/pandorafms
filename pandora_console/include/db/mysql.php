@@ -503,7 +503,9 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 		}
 
 		if ($field[0] != "`") {
-			$field = "`".$field."`";
+			//If the field is as <table>.<field>, don't scape.
+			if (strstr($field, '.') === false)
+				$field = "`".$field."`";
 		}
 
 		if (is_null ($value)) {
@@ -668,7 +670,7 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
 	elseif (! is_string ($fields)) {
 		return false;
 	}
-
+	
 	//TODO: Validate and clean filter options
 	if (is_array ($filter)) {
 		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');

@@ -1227,7 +1227,14 @@ sub pandora_manage_main ($$$) {
 			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
 			exist_check($policy_id,'policy',$policy_name);
 			
-			enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
+			my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
+			
+			if($ret == -1) {
+				print "[ERROR] Operation 'apply' cannot be added to policy '$policy_name' because is duplicated in queue or incompatible with others operations\n\n";
+				exit;
+			}
+			
+			print "[INFO] Added operation 'apply' to policy '$policy_name'\n\n";
 		}
 		elsif ($param eq '--disable_policy_alerts') {
 			param_check($ltotal, 1);

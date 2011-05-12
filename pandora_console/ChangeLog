@@ -1,5 +1,10 @@
 2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/users/configure_user.php: fixed the old call to function
+	"profile_create_user_profile", I sorry that the before overwrite was mine.
+
+2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: added new parameter for the "check_acl" function
 	the $id_agent, by default is 0, and this parameter now only is used in the
 	enterprise ACL check (as you see in the hook for enterprise into the

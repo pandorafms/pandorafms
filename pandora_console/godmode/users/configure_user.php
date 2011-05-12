@@ -230,7 +230,7 @@ if ($add_profile) {
 	$profile2 = (int) get_parameter ('assign_profile');
 	db_pandora_audit("User management",
 		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
-	$return = create_user_profile ($id2, $profile2, $group2);
+	$return = profile_create_user_profile($id2, $profile2, $group2);
 	
 	if ($enterprise_include) {
 		add_enterprise_db_data_user_profile_form($return);

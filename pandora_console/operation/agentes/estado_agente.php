@@ -26,9 +26,9 @@ require_once($config['homedir'] . '/include/functions_modules.php');
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR")) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access agent main list view");
+	db_pandora_audit("ACL Violation", "Trying to access agent main list view");
 	require ("general/noaccess.php");
+	
 	return;
 }
 
@@ -262,11 +262,19 @@ else {
 $total_agents = 0;
 $agents = false;
 if (! empty ($agent_names)) {
-	if (check_acl ($config['id_user'], 0, "PM")){
-		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
+	$subquery_enterprise = '';
+	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+		$subquery_enterprise = subquery_acl_enterprise();
+	}
+	
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s %s', $search_sql, $subquery_enterprise);
 		$total_agents = db_get_sql ($sql);
 		
-		$sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+		$sql = sprintf ('SELECT * FROM tagente
+			WHERE 1=1 %s %s
+			ORDER BY %s %s LIMIT %d, %d', $search_sql, $subquery_enterprise,
+			$order['field'], $order['order'], $offset, $config["block_size"]);
 		$agents = db_get_all_rows_sql ($sql);
 
 	}

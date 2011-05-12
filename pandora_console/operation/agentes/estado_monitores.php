@@ -185,6 +185,9 @@ $table->align = array("left","left","left","left","left","center");
 $last_modulegroup = 0;
 $rowIndex = 0;
 foreach ($modules as $module) {
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if (!module_in_acl_enterprise($module['id_agente_modulo'])) continue;
+	}
 	
 	//The code add the row of 1 cell with title of group for to be more organice the list.
 	

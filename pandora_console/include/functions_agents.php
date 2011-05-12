@@ -326,7 +326,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
 		$enterprise_include = true;
 	}
-
+	
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
@@ -888,6 +888,10 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
  */
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
+	
+	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+		$subquery_enterprise = subquery_acl_enterprise();
+	}
 
 	if ($id_agent === null) {
 		//Extract the agents of group user.
@@ -998,20 +1002,22 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		case "postgresql":
 			$sql = sprintf ('SELECT %s%s
 				FROM tagente_modulo
-				%s
+				%s %s
 				ORDER BY nombre',
 				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
 				io_safe_output(implode (",", (array) $details)),
-				$where);
+				$where,
+				$subquery_enterprise);
 			break;
 		case "oracle":
 			$sql = sprintf ('SELECT %s%s
 				FROM tagente_modulo
-				%s
+				%s %s
 				ORDER BY dbms_lob.substr(nombre, 4000, 1)',
 				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
 				io_safe_output(implode (",", (array) $details)),
-				$where);
+				$where,
+				$subquery_enterprise);
 			break;
 	}
 	

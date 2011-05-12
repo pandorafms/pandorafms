@@ -34,6 +34,12 @@ require_once($config['homedir'] . '/include/functions_users.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
+//Add the subquery for the ACL enterprise
+if (ENTERPRISE_NOT_HOOK !== $isFunctionPolicies) {
+	$subquery_enterprise = subquery_acl_enterprise();
+	$subquery_enterprise2 = subquery_acl_enterprise('AND', 'tagente.id_agente');
+}
+
 ui_print_page_header ("Monitor detail", "images/bricks.png", false);
 
 
@@ -85,7 +91,7 @@ switch ($config["dbtype"]) {
 		$sql = '
 		SELECT distinct(nombre) 
 		FROM tagente_modulo 
-		WHERE nombre <> "delete_pending" and id_agente in 
+		WHERE nombre <> "delete_pending" ' . $subquery_enterprise . '  and id_agente in 
 		(
 			select id_agente 
 			from tagente where id_grupo IN (
@@ -117,7 +123,7 @@ switch ($config["dbtype"]) {
 		$sql = '
 		select distinct(nombre) 
 		from tagente_modulo 
-		where nombre <> \'delete_pending\' and id_agente in 
+		where nombre <> \'delete_pending\' ' . $subquery_enterprise . ' and id_agente in 
 		(
 			select id_agente 
 			from tagente where id_grupo IN (
@@ -156,7 +162,7 @@ switch ($config["dbtype"]) {
 		$sql = '
 		select nombre 
 		from (select distinct dbms_lob.substr(nombre,4000,1) as nombre, ' . $column_names .' from tagente_modulo) 
-		where nombre <> \'delete_pending\' and id_agente in 
+		where nombre <> \'delete_pending\' ' . $subquery_enterprise . ' and id_agente in 
 		(
 			select id_agente 
 			from tagente where id_grupo IN (
@@ -208,7 +214,7 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 	WHERE tagente.id_agente = tagente_modulo.id_agente 
 	AND tagente_modulo.disabled = 0 
 	AND tagente.disabled = 0 
-	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
+	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo" . $subquery_enterprise2 ;
 
 // Agent group selector
 if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {

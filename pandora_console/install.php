@@ -701,7 +701,7 @@ function install_step4() {
 						}
 						
 						// Create schema
-						if ($dbaction != 'db_exist'){
+						if ($dbaction != 'db_exist' || $dbdrop == 1){
 							$step1 = mysql_query ("CREATE DATABASE $dbname");
 							check_generic ($step1, "Creating database '$dbname'");
 						}
@@ -839,7 +839,7 @@ function install_step4() {
 							$result = pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
 						}
 						
-						if ($dbaction != 'db_exist'){
+						if ($dbaction != 'db_exist' || $dbdrop == 1){
 							pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
 							$result = pg_get_result($connection);
 							if (pg_result_status($result) != PGSQL_FATAL_ERROR) {

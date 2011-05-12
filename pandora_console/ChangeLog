@@ -1,5 +1,21 @@
 2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions.php: added new parameter for the "check_acl" function
+	the $id_agent, by default is 0, and this parameter now only is used in the
+	enterprise ACL check (as you see in the hook for enterprise into the
+	function source). And cleaned source code style.
+	
+	* include/functions_agents.php, operation/search_modules.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/alerts_status.php, operation/agentes/estado_agente.php,
+	operation/agentes/estado_monitores.php, operation/agentes/ver_agente.php,
+	godmode/agentes/module_manager.php, godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php, godmode/alerts/alert_list.list.php:
+	added checks for the ACL enterprise.
+
+2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php, include/db/mysql.php: fixed the scape of name
 	of fields in where.
 

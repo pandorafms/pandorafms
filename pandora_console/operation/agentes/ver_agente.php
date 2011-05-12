@@ -342,7 +342,7 @@ if (empty ($id_agente)) {
 $agent = db_get_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
-if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
+if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente)) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");

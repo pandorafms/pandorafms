@@ -28,7 +28,7 @@ $group = 0;
 if ($id_agente)
 	$group = agents_get_agent_group ($id_agente);
 
-if (! check_acl ($config["id_user"], $group, "AW")) {
+if (! check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");

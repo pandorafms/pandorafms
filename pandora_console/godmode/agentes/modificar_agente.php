@@ -224,27 +224,34 @@ if ($ag_group > 0) {
 else {
 
     // Admin user get ANY group, even if they doesnt exist
-    if (check_acl ($config['id_user'], 0, "PM")){
-	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
+    if (check_acl ($config['id_user'], 0, "PM")) {
+	    $subquery_enterprise = '';
+		if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+			$subquery_enterprise = subquery_acl_enterprise();
+		}
+    	
+	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s %s', $search_sql, $subquery_enterprise);
 	    $total_agents = db_get_sql ($sql);
     	switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE 1=1 %s
-					ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+					FROM tagente WHERE 1=1 %s %s
+					ORDER BY %s %s LIMIT %d, %d', $search_sql, $subquery_enterprise, $order['field'],
+					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE 1=1 %s
-					ORDER BY %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
+					FROM tagente WHERE 1=1 %s %s
+					ORDER BY %s %s LIMIT %d OFFSET %d', $search_sql, $subquery_enterprise, $order['field'],
+					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
 				$set = array ();
 				$set['limit'] = $config["block_size"];
 				$set['offset'] = $offset;
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE 1=1 %s
-					ORDER BY %s %s', $search_sql, $order['field'], $order['order']);
+					FROM tagente WHERE 1=1 %s %s
+					ORDER BY %s %s', $search_sql, $subquery_enterprise, $order['field'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
@@ -339,12 +346,13 @@ if ($agents !== false) {
 	$iterator = 0;
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
-		if (! check_acl ($config["id_user"], $id_grupo, "AW"))
+		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']))
 			continue;
+		
 		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;
-			}
+		}
 		else {
 			$tdcolor = "datos2";
 			$color = 1;

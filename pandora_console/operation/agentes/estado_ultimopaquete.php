@@ -224,6 +224,11 @@ $texto=''; $last_modulegroup = 0;
 $color = 1;
 $write = check_acl ($config['id_user'], $agent['id_grupo'], "AW");
 foreach ($modules as $module) {
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if (!module_in_acl_enterprise($module['id_agente_modulo'])) continue;
+	}
+	
+	
 	// Calculate table line color
 	if ($color == 1){
 		$tdcolor = "datos";

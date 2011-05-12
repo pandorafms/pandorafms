@@ -312,6 +312,10 @@ foreach($tempRows as $row) {
 }
 
 foreach ($modules as $module) {
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if (!module_in_acl_enterprise($module['id_agente_modulo'])) continue;
+	} 
+	
 	$type = $module["id_tipo_modulo"];
 	$id_module = $module["id_modulo"];
 	$nombre_modulo = $module["nombre"];

@@ -18,6 +18,10 @@ global $config;
 
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . '/include/functions_users.php');
+$subquery_enterprise = '';
+if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+	$subquery_enterprise = subquery_acl_enterprise('', 't1.id_agente', 'AND');
+}
 
 $searchModules = check_acl($config['id_user'], 0, "AR");
 
@@ -73,7 +77,7 @@ if ($searchModules) {
 						ON t3.id_grupo = t2.id_grupo
 					INNER JOIN tagente_estado AS t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
-				WHERE (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+				WHERE ' . $subquery_enterprise . ' (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
@@ -96,7 +100,7 @@ if ($searchModules) {
 						ON t3.id_grupo = t2.id_grupo
 					INNER JOIN tagente_estado AS t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
-				WHERE (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+				WHERE ' . $subquery_enterprise . ' (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
@@ -119,7 +123,7 @@ if ($searchModules) {
 						ON t3.id_grupo = t2.id_grupo
 					INNER JOIN tagente_estado AS t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
-				WHERE (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+				WHERE ' . $subquery_enterprise . ' (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil

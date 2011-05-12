@@ -925,14 +925,18 @@ function enterprise_include_once ($filename) {
 	
 	// Load enterprise extensions
 	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
+	
 	if ($filepath === false)
 		return ENTERPRISE_NOT_HOOK;
+	
 	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0)
 		return ENTERPRISE_NOT_HOOK;
+	
 	if (file_exists ($filepath)) {
 		require_once ($filepath);
 		return true;
 	}
+	
 	return ENTERPRISE_NOT_HOOK;
 }
 
@@ -1246,10 +1250,11 @@ function check_login () {
  * @param int $id_user User id
  * @param int $id_group Agents group id to check from
  * @param string $access Access privilege
+ * @param int $id_agent The agent id.
  *
  * @return bool 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access) {
+function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	if (empty ($id_user)) {
 		//User ID needs to be specified
 		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
@@ -1261,7 +1266,7 @@ function check_acl($id_user, $id_group, $access) {
 	else {
 		$id_group = (int) $id_group;
 	}
-
+	
 	$parents_id = array($id_group);
 	if ($id_group != 0) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
@@ -1274,7 +1279,7 @@ function check_acl($id_user, $id_group, $access) {
 	else {
 		$parents_id = array();
 	}
-
+	
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
 	if ($id_group == 0) {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
@@ -1301,9 +1306,9 @@ function check_acl($id_user, $id_group, $access) {
 	}
 
 	$rowdup = db_get_all_rows_sql ($query);
-
+	
 	if (empty ($rowdup))
-	return 0;
+		return 0;
 
 	$result = 0;
 	foreach ($rowdup as $row) {
@@ -1341,9 +1346,15 @@ function check_acl($id_user, $id_group, $access) {
 				break;
 		}
 	}
-
-	if ($result >= 1)
-	return 1;
+	
+	if ($result >= 1) {
+		if ($id_agent != 0) {
+			if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
+				return check_acl_policy($id_user, $id_agent);
+			}
+		}
+		else return 1;
+	}
 
 	return 0;
 }

@@ -362,6 +362,10 @@ $table->data = array ();
 $rowPair = true;
 $iterator = 0;
 foreach ($alerts['alerts_simple'] as $alert) {
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if (!alert_in_acl_enterprise($alert['id'])) continue;
+	}
+	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -376,7 +380,8 @@ echo '<form method="post" action="'.$url.'">';
 if (!empty ($table->data)) {
 	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
 	html_print_table ($table);
-} else {
+}
+else {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';
 }
 

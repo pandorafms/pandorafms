@@ -10,7 +10,25 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+$ttl = 1;
+$homeurl = '';
 
+function include_graphs_dependencies($home_url = '', $serialize_ttl = 1) {
+	global $ttl;
+	global $homeurl;
+	
+	$ttl = $serialize_ttl;
+	$homeurl = $home_url;
+	
+	include_once($homeurl . 'include/functions.php');
+	include_once($homeurl . 'include/functions_html.php');
+	
+	include_once($homeurl . 'include/graphs/functions_fsgraph.php');
+	include_once($homeurl . 'include/graphs/functions_gd.php');
+	include_once($homeurl . 'include/graphs/functions_utils.php');
+}
+
+/*
 // If is called from index
 if(file_exists('include/functions.php')) {
 	include_once('include/functions.php');
@@ -25,38 +43,67 @@ else if(file_exists('../functions.php')) {
 	include_once('functions_utils.php');
 }
 
+
 include_once('functions_fsgraph.php');
 include_once('functions_utils.php');
+*/
 
-$graph_type = get_parameter('graph_type', '');
+
+if (isset($_GET['homeurl'])) {
+	$homeurl = $_GET['homeurl']; 	
+}
+else $homeurl = '';
+
+if (isset($_GET['ttl'])) {
+	$ttl = $_GET['ttl']; 	
+}
+else $ttl_param = 1;
+
+if (isset($_GET['graph_type'])) {
+	$graph_type = $_GET['graph_type']; 	
+}
+else $graph_type = '';
+
+//$graph_type = get_parameter('graph_type', '');
+//$ttl_param = get_parameter('ttl', 1);
+//$homeurl_param = get_parameter('homeurl', '');
+
+if (!empty($graph_type)) {
+	include_once($homeurl . 'include/functions.php');
+	include_once($homeurl . 'include/functions_html.php');
+	
+	include_once($homeurl . 'include/graphs/functions_fsgraph.php');
+	include_once($homeurl . 'include/graphs/functions_gd.php');
+	include_once($homeurl . 'include/graphs/functions_utils.php');
+}
 
 switch($graph_type) {
 	case 'histogram': 
-				$width = get_parameter('width');
-				$height = get_parameter('height');
-				$font = get_parameter('font');
-				$data = json_decode(io_safe_output(get_parameter('data')), true);
+		$width = get_parameter('width');
+		$height = get_parameter('height');
+		$font = get_parameter('font');
+		$data = json_decode(io_safe_output(get_parameter('data')), true);
 
-				$max = get_parameter('max');
-				$title = get_parameter('title');
-				$mode = get_parameter ('mode', 1);
-				gd_histogram ($width, $height, $mode, $data, $max, $font, $title);
-				break;
+		$max = get_parameter('max');
+		$title = get_parameter('title');
+		$mode = get_parameter ('mode', 1);
+		gd_histogram ($width, $height, $mode, $data, $max, $font, $title);
+		break;
 	case 'progressbar':
-				$width = get_parameter('width');
-				$height = get_parameter('height');
-				$progress = get_parameter('progress');
-				
-				$out_of_lim_str = get_parameter('out_of_lim_str', false);
-				$out_of_lim_image = get_parameter('out_of_lim_image', false);
+		$width = get_parameter('width');
+		$height = get_parameter('height');
+		$progress = get_parameter('progress');
+		
+		$out_of_lim_str = get_parameter('out_of_lim_str', false);
+		$out_of_lim_image = get_parameter('out_of_lim_image', false);
 
-				$font = get_parameter('font');
-				$title = get_parameter('title');
-				
-				$mode = get_parameter('mode', 1);
-				
-				gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode);
-				break;
+		$font = get_parameter('font');
+		$title = get_parameter('title');
+		
+		$mode = get_parameter('mode', 1);
+		
+		gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode);
+		break;
 }
 
 function histogram($chart_data, $width, $height, $font, $max, $title, $mode) {

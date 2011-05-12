@@ -40,6 +40,7 @@ our @EXPORT = qw(
 		db_update
 		get_action_id
 		get_agent_id
+		get_agent_address
 		get_agent_name
 		get_agent_module_id
 		get_alert_template_module_id
@@ -168,13 +169,23 @@ sub get_os_id ($$) {
 }
 
 ##########################################################################
-## SUB dame_agente_nombre (id_agente)
-## Return agent name, given "id_agente"
+## SUB get_agent_name (agent_id)
+## Return agent name, given "agent_id"
 ##########################################################################
 sub get_agent_name ($$) {
 	my ($dbh, $agent_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT nombre FROM tagente WHERE id_agente = ?", $agent_id);
+}
+
+##########################################################################
+## SUB get_agent_address (id_agente)
+## Return agent address, given "agent_id"
+##########################################################################
+sub get_agent_address ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	return get_db_value ($dbh, "SELECT direccion FROM tagente WHERE id_agente = ?", $agent_id);
 }
 
 ##########################################################################

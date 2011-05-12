@@ -1,5 +1,10 @@
 2011-05-12  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/DB.pm: Added a function to give the address of
+	one agent
+
+2011-05-12  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Change apply policy option in CLI to
 	add application to queue
 

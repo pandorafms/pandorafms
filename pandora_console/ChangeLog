@@ -1,3 +1,8 @@
+2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/graphs/fgraph.php: added the function
+	"include_graphs_dependencies".
+
 2011-05-12  Sergio Martin <sergio.martin@artica.es>
 
 	* images/policies_cog.png: Added new image to policies application

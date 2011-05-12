@@ -771,7 +771,7 @@ function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
 	
 	$out_of_lim_str = __("Out of limits");
 	$title = "";
-	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
+	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
 }
 

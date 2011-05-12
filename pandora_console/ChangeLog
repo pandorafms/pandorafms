@@ -1,5 +1,10 @@
 2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: fixed the image parameters for the progress
+	bar.
+
+2011-05-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/fgraph.php: added the function
 	"include_graphs_dependencies".
 

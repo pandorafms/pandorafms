@@ -1,3 +1,8 @@
+2011-05-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css: Added new input button styles
+	with gear icons
+
 2011-05-13 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_agente.php: fixed ACL when the user have a

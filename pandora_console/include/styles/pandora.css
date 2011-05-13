@@ -279,7 +279,7 @@ input.sub[disabled] {
 	color: #aaa;
 }
 
-input.next, input.upd, input.ok, input.wand, input.delete, input.search,
+input.next, input.upd, input.ok, input.wand, input.delete, input.cog, input.target, input.search,
 input.copy, input.add, input.graph, input.percentile, input.binary,
 input.camera, input.config, input.cancel {
 	padding-right: 21px;
@@ -314,6 +314,12 @@ input.cancel {
 }
 input.delete {
 	background: #e5e5e5 url(../../images/cross.png) no-repeat right 3px;
+}
+input.cog {
+	background: #e5e5e5 url(../../images/cog.png) no-repeat right 3px;
+}
+input.target {
+	background: #e5e5e5 url(../../images/target.png) no-repeat right 3px;
 }
 input.graph {
 	background: #e5e5e5 url(../../images/chart_curve.png) no-repeat right 3px;

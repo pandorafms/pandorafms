@@ -440,6 +440,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`propagate` tinyint(1) unsigned NOT NULL default '0',
 	`disabled` tinyint(3) unsigned NOT NULL default '0',
 	`custom_id` varchar(255) default '',
+	`id_skin` int(10) unsigned NOT NULL,
  	PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -706,6 +707,9 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
   `priority` tinyint(4) unsigned NOT NULL default '2',
+  `text` varchar(255) default '',
+  `description` varchar(255) default '',
+  `severity` tinyint(4) unsigned NOT NULL default '2',
   PRIMARY KEY  (`id_trap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -726,6 +730,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `timezone` varchar(50) default '',
   `block_size` int(4) NOT NULL DEFAULT 20,
   `flash_chart` int(4) NOT NULL DEFAULT 1,
+  `id_skin` int(10) unsigned NOT NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -735,6 +740,7 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
   `id_perfil` int(10) unsigned NOT NULL default '0',
   `id_grupo` int(10) NOT NULL default '0',
   `assigned_by` varchar(100) NOT NULL default '',
+  `id_policy` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_up`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

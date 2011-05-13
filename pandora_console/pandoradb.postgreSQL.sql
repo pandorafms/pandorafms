@@ -404,7 +404,8 @@ CREATE TABLE "tgrupo" (
 	"parent" INTEGER NOT NULL default 0,
 	"propagate" SMALLINT default 0,
 	"disabled" SMALLINT default 0,
-	"custom_id" varchar(255) default ''
+	"custom_id" varchar(255) default '',
+	"id_skin" INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "tincidencia" (
@@ -646,7 +647,10 @@ CREATE TABLE "ttrap" (
 	"status" SMALLINT NOT NULL default 0,
 	"id_usuario" varchar(150) default '',
 	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00',
-	"priority" INTEGER NOT NULL default 2
+	"priority" INTEGER NOT NULL default 2,
+	"text" varchar(255) default '',
+	"description" varchar(255) default '',
+	"severity" INTEGER NOT NULL default 2
 );
 
 CREATE TABLE "tusuario" (
@@ -665,7 +669,8 @@ CREATE TABLE "tusuario" (
 	"language" varchar(10) default NULL,
 	"timezone" varchar(50) default '',
 	"block_size" INTEGER NOT NULL default 20,
-	"flash_chart" INTEGER NOT NULL default 1
+	"flash_chart" INTEGER NOT NULL default 1,
+	"id_skin" INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "tusuario_perfil" (
@@ -673,7 +678,8 @@ CREATE TABLE "tusuario_perfil" (
 	"id_usuario" varchar(100) NOT NULL default '',
 	"id_perfil" INTEGER NOT NULL default 0,
 	"id_grupo" INTEGER NOT NULL default 0,
-	"assigned_by" varchar(100) NOT NULL default ''
+	"assigned_by" varchar(100) NOT NULL default '',
+	"id_policy" INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE "tnews" (

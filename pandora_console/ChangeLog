@@ -1,3 +1,10 @@
+2011-05-13 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_agente.php: fixed ACL when the user have a
+	"Pandora Management" in any group that show agents of all groups.
+	
+	Fixes: #3300611
+
 2011-05-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_servers.php

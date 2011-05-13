@@ -1377,10 +1377,10 @@ function agents_get_status($id_agent = 0) {
 						'ceil(date_part(\'epoch\', ultimo_contacto)) + intervalo * 2 > '.$time));
 				break;
 			case "oracle":
-				$status = db_get_value_filter ('COUNT(*)',
+				$status = db_get_value_filter ('count(*)',
 					'tagente',
 					array ('id_agente' => (int) $id_agent,
-						'ceil((to_date(ultimo_contacto, \'DD/MM/YYYY HH24:MI:SS\') - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)) > ' . $time));
+						'ceil((to_date(ultimo_contacto, \'YYYY-MM-DD HH24:MI:SS\') - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)) > ' . $time));
 				break;
 		}
 			

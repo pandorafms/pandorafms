@@ -22,6 +22,7 @@
 -- Table `tgrupo`
 -- -----------------------------------------------------
 ALTER TABLE `tgrupo` MODIFY `nombre` text;
+ALTER TABLE `tgrupo` ADD COLUMN `id_skin` int(10) unsigned NOT NULL;
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`
@@ -58,6 +59,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_item` (
 -- -----------------------------------------------------
 ALTER TABLE `tusuario` ADD COLUMN `block_size` int(4) NOT NULL DEFAULT 20;
 ALTER TABLE `tusuario` ADD COLUMN `flash_chart` int(4) NOT NULL DEFAULT 1;
+ALTER TABLE `tusuario` ADD COLUMN `id_skin` int(10) unsigned NOT NULL;
 
 -- -----------------------------------------------------
 -- Table `talert_actions`
@@ -87,6 +89,19 @@ ALTER TABLE `tperfil` MODIFY `name` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tsesion` CHANGE `ID_sesion` `id_sesion` bigint(20) unsigned NOT NULL auto_increment;
 ALTER TABLE `tsesion` CHANGE `ID_usuario` `id_usuario` varchar(60) NOT NULL default '0';
 ALTER TABLE `tsesion` CHANGE `IP_origen` `ip_origen` varchar(100) NOT NULL default '';
+
+-- -----------------------------------------------------
+-- Table `ttrap`
+-- -----------------------------------------------------
+ALTER TABLE ttrap ADD `text` varchar(255) default '';
+ALTER TABLE ttrap ADD `description` varchar(255) default '';
+ALTER TABLE ttrap ADD `severity` tinyint(4) unsigned NOT NULL default '2';
+
+-- -----------------------------------------------------
+-- Table `tusuario_perfil`
+-- -----------------------------------------------------
+
+ALTER TABLE tusuario_perfil ADD `id_policy` int(10) unsigned NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Change the value "0000-00-00 00:00:00" that Pandora use as zero or null date value

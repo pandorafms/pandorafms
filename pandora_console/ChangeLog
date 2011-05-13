@@ -1,5 +1,13 @@
 2011-05-13  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Moved some alter tables 
+	from Enterprise side
+
+2011-05-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css: Added new input button styles
 	with gear icons
 

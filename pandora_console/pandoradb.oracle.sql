@@ -504,7 +504,8 @@ CREATE TABLE tgrupo (
 	parent NUMBER(10, 0) default 0 NOT NULL,
 	propagate NUMBER(5, 0) default 0,
 	disabled NUMBER(5, 0) default 0,
-	custom_id VARCHAR2(255) default ''
+	custom_id VARCHAR2(255) default '',
+	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE tgrupo_s INCREMENT BY 1 START WITH 1;
@@ -798,7 +799,10 @@ CREATE TABLE ttrap (
 	status NUMBER(5, 0) default 0 NOT NULL,
 	id_usuario VARCHAR2(150) default '',
 	timestamp TIMESTAMP default NULL,
-	priority NUMBER(5, 0) default 2 NOT NULL
+	priority NUMBER(5, 0) default 2 NOT NULL,
+	text VARCHAR2(255) default '',
+	description VARCHAR2(255) default '',
+	severity NUMBER(10, 0) default 2 NOT NULL
 );
 
 CREATE SEQUENCE ttrap_s INCREMENT BY 1 START WITH 1;
@@ -821,7 +825,8 @@ CREATE TABLE tusuario (
 	language VARCHAR2(10) default NULL,
 	timezone VARCHAR2(50) default '',
 	block_size NUMBER(10, 0) default 20 NOT NULL,
-	flash_chart NUMBER(10, 0) default 1 NOT NULL
+	flash_chart NUMBER(10, 0) default 1 NOT NULL,
+	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE tusuario_perfil (
@@ -829,7 +834,8 @@ CREATE TABLE tusuario_perfil (
 	id_usuario VARCHAR2(100) default '',
 	id_perfil NUMBER(10, 0) default 0 NOT NULL,
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	assigned_by VARCHAR2(100) default ''
+	assigned_by VARCHAR2(100) default '',
+	id_policy NUMBER(10, 0) DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;

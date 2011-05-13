@@ -352,7 +352,7 @@ function servers_get_info ($id_server = -1) {
 					case "oracle":
 						$server["lag"] = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 
-						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						break;
 				}
 			} // recon

@@ -1,3 +1,11 @@
+2011-05-16  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Fixed default values into tusuario_perfil
+	and tgrupo
+
 2011-05-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.oracle.sql: Removed PK from id_agente_modulo field of 

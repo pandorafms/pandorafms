@@ -104,7 +104,7 @@ CREATE SEQUENCE tagente_datos_inc_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tagente_datos_inc_inc BEFORE INSERT ON tagente_datos_inc REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_inc_s.nextval INTO :NEW.ID_ADI FROM dual; END;;
 
 CREATE TABLE tagente_datos_string (
-	id_agente_modulo NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_agente_modulo NUMBER(10, 0) NOT NULL,
 	datos CLOB NOT NULL,
 	utimestamp NUMBER(10, 0) default 0 NOT NULL 
 );

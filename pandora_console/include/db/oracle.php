@@ -67,15 +67,15 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null)
 function oracle_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d AND rownum < 2",
+		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = %d) WHERE rownum < 2",
 				$field, $table, $field_search, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %f AND rownum < 2",
+		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = %f) WHERE rownum < 2",
 				$field, $table, $field_search, $condition);
 	}
 	else {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' AND rownum < 2",
+		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = '%s') WHERE rownum < 2",
 				$field, $table, $field_search, $condition);
 	}
 
@@ -120,15 +120,15 @@ function oracle_db_get_row ($table, $field_search, $condition, $fields = false) 
 	}
 	
 	if (is_int ($condition)) {
-		$sql = sprintf ('SELECT %s FROM %s WHERE %s = %d AND rownum < 2',
+		$sql = sprintf ('SELECT * FROM (SELECT %s FROM %s WHERE %s = %d) WHERE rownum < 2',
 			$fields, $table, $field_search, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM %s WHERE \"%s\" = %f AND rownum < 2",
+		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE \"%s\" = %f) WHERE rownum < 2",
 			$fields, $table, $field_search, $condition);
 	}
 	else {
-		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' AND rownum < 2", 
+		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = '%s') WHERE rownum < 2", 
 			$fields, $table, $field_search, $condition);
 	}
 	$result = db_get_all_rows_sql ($sql);
@@ -396,6 +396,9 @@ function oracle_db_process_sql_insert($table, $values, $autocommit = true) {
 		else if (is_float ($value) || is_double ($value)) {
 			$values_str .= sprintf("%f", $value);
 		}
+		else if (substr($value,0,1) == '#'){
+			$values_str .= sprintf("%s", substr($value,1));
+		}
 		else {
 			$values_str .= sprintf("'%s'", $value);
 		}
@@ -462,7 +465,7 @@ function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND
 	unset ($filter['limit']);
 	unset ($filter['offset']);
 
-	$sql = sprintf ("SELECT %s FROM %s WHERE %s AND rownum < 2",
+	$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s) WHERE rownum < 2",
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
 	
@@ -1346,6 +1349,44 @@ function oracle_db_get_type_field_table($table, $field) {
 	oci_free_statement($query);	
 
 	return $type;
+}
+
+/**
+ * Get all field names of a table and recode fields  
+ * for clob datatype as "dbms_lob.substr(<field>, 4000 ,1) as <field>".
+ * 
+ * @param string $table The table to retrieve all column names.
+ * @param integer $return_mode Whether to return as array (by default) or as comma separated string.
+ * 
+ * @return mixed Return an array/string of table fields or false if something goes wrong.
+ */
+function oracle_list_all_field_table($table_name, $return_mode = 'array'){
+	if (empty($table_name)){
+		return false;
+	}
+
+	$fields_info = db_get_all_rows_field_filter('user_tab_columns', 'table_name', strtoupper($table_name));
+	if (empty($fields_info)){
+		return false;
+	}
+	$field_list = array();
+	foreach ($fields_info as $field){
+		if ($field['data_type'] == 'CLOB'){
+			$new_field = 'dbms_lob.substr(' . $field['table_name'] . '.' . $field['column_name'] . ', 4000, 1) as ' . strtolower($field['column_name']);
+			$field_list[] = $new_field;  		
+		}
+		else{
+			$field_list[] = strtolower($field['table_name'] . '.' . $field['column_name']);	
+		}
+	}
+	// Return as comma separated string 
+	if ($return_mode == 'string'){
+		return implode(',', $field_list);
+	}
+	// Return as array
+	else{
+		return $field_list;
+	}
 }
 
 ?>

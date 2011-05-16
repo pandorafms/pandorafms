@@ -1,5 +1,14 @@
 2011-05-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	include/functions_graph.php
+	include/db/oracle.php
+	include/functions_modules.php
+	include/functions_network_components.php
+	operation/agentes/estado_monitores.php: Several corrections over
+	sql queries for Oracle DBMS.
+
+2011-05-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/config_process.php
 	include/graphs/fgraph.php: Included new graph dependencies.
 

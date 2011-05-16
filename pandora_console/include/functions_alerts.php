@@ -1069,7 +1069,7 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
 		array ('id_alert_compound' => $id_alert_agent_module),
 		$fields);
 	}
-	else {	
+	else {
 		$actions = db_get_all_rows_filter ('talert_template_module_actions',
 			array ('id_alert_template_module' => $id_alert_agent_module),
 			$fields);
@@ -1084,6 +1084,7 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
 		$action = alerts_get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
+		$action['module_action_threshold'] = $element['module_action_threshold'];
 		if (isset($element['id']))
 		$retval[$element['id']] = $action;
 	}

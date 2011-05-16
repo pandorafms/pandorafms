@@ -1,3 +1,9 @@
+2011-05-16  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/alerts/alert_list_list.php
+	include/ functions_alerts.php: Fixed bug: Display the action threshold when displaying actions in the agent alert views.
+
+
 2011-05-16 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/status_monitor.php: changed the source code to extract

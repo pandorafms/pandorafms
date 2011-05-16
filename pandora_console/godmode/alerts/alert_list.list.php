@@ -481,6 +481,9 @@ foreach ($simple_alerts as $alert) {
 					$data[6] .= __('From').' '.$action['fires_min'].
 						' '.__('to').' '.$action['fires_max'];
 			}
+			if ($action['module_action_threshold'] != 0)
+				$data[6] .= ' '.__('Threshold').' '.$action['module_action_threshold'];
+
 			$data[6] .= ')</em>';
 			$data[6] .= '</font>';
 //			$data[6] .= ' <span class="delete" style="clear:right">';

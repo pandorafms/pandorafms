@@ -1,3 +1,8 @@
+2011-05-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/config_process.php
+	include/graphs/fgraph.php: Included new graph dependencies.
+
 2011-05-16  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

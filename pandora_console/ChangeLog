@@ -1,3 +1,8 @@
+2011-05-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.oracle.sql: Removed PK from id_agente_modulo field of 
+	tagente_datos_string table.
+
 2011-05-16  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/alerts/alert_list_list.php

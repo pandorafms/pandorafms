@@ -82,76 +82,54 @@ echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
 $user_groups = implode (",", array_keys (users_get_groups ()));
-//$user_agents = array_keys (agents_get_group_agents($user_groups));
-
-//$modules = db_get_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$sql = '
-		SELECT distinct(nombre) 
-		FROM tagente_modulo 
-		WHERE nombre <> "delete_pending" ' . $subquery_enterprise . '  and id_agente in 
-		(
-			select id_agente 
-			from tagente where id_grupo IN (
-				select id_grupo 
-				from tusuario_perfil 
-				where id_usuario = "' . $config['id_user'] . '" 
-				and id_perfil IN (
-					select id_perfil 
-					from tperfil where agent_view = 1
-				)
-			)
-			OR
-			(1 = (
-		                 SELECT is_admin FROM tusuario WHERE id_user = "' . $config['id_user'] . '"
-		             )
-		        )
-			OR 0 IN (
-				select id_grupo
-				from tusuario_perfil
-				where id_usuario = "' . $config['id_user'] . '"
-				and id_perfil IN (
-					select id_perfil
-					from tperfil where agent_view = 1
-				)
-			)
-		)';
-		break;
 	case "postgresql":
-		$sql = '
-		select distinct(nombre) 
-		from tagente_modulo 
-		where nombre <> \'delete_pending\' ' . $subquery_enterprise . ' and id_agente in 
+		
+		$profiles = db_get_all_rows_sql('SELECT id_grupo
+			FROM tusuario_perfil AS t1
+				INNER JOIN tperfil AS t2 ON t1.id_perfil = t2.id_perfil
+			WHERE t2.agent_view = 1 AND t1.id_usuario = \'' . $config['id_user'] .  '\';');
+		if ($profiles === false)
+			$profiles = array();
+		
+		$id_groups = array();
+		$flag_all_group = false;
+		foreach ($profiles as $profile) {
+			if ($profile['id_grupo'] == 0) {
+				$flag_all_group = true;
+			}
+			$id_groups[] = $profile['id_grupo'];
+		}
+		
+		//The check of is_admin
+		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
+		
+		$sql = ' SELECT distinct(nombre)
+		FROM tagente_modulo
+		WHERE nombre <> \'delete_pending\' ' . $subquery_enterprise . ' AND id_agente IN
 		(
-			select id_agente 
-			from tagente where id_grupo IN (
-				select id_grupo 
-				from tusuario_perfil 
-				where id_usuario = \'' . $config['id_user'] . '\' 
-				and id_perfil IN (
-					select id_perfil 
-					from tperfil where agent_view = 1
-				)
-			)
-			OR
-			(1 = (
-		                 SELECT is_admin FROM tusuario WHERE id_user = \'' . $config['id_user'] . '\'
-		             )
-		        )
-			OR 0 IN (
-				select id_grupo
-				from tusuario_perfil
-				where id_usuario = \'' . $config['id_user'] . '\'
-				and id_perfil IN (
-					select id_perfil
-					from tperfil where agent_view = 1
-				)
-			)
-		)';
+			SELECT id_agente
+			FROM tagente
+			WHERE';
+		
+		if ($flag_is_admin || $flag_all_group) {
+			$sql .= ' 1 = 1 ';
+		}
+		else {
+			if (empty($id_groups)) {
+				$sql .= ' 1 = 0 ';
+			}
+			else {
+				$sql .= ' id_grupo IN (' . implode(',', $id_groups) . ') ';
+			}
+		}
+		
+		$sql .= ')';
 		break;
 	case "oracle":
+		//TODO PENDING TO OPTIMIZE
 		$names = oracle_db_get_all_rows_filter ('user_tab_columns',array ('table_name' => 'TAGENTE_MODULO', 'column_name' => '<>NOMBRE'), 'column_name');
 		$column_names = '';
 		foreach ($names as $column_name => $value) {
@@ -162,7 +140,7 @@ switch ($config["dbtype"]) {
 		$sql = '
 		select nombre 
 		from (select distinct dbms_lob.substr(nombre,4000,1) as nombre, ' . $column_names .' from tagente_modulo) 
-		where nombre <> \'delete_pending\' ' . $subquery_enterprise . ' and id_agente in 
+		where nombre <> \'delete_pending\' ' . $subquery_enterprise . ' AND id_agente in 
 		(
 			select id_agente 
 			from tagente where id_grupo IN (

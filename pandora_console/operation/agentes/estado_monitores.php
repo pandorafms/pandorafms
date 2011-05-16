@@ -130,18 +130,42 @@ switch ($config["dbtype"]) {
 
 
 // Get all module from agent
-$sql = sprintf ("
-	SELECT *
-	FROM tagente_estado, tagente_modulo
-		LEFT JOIN tmodule_group
-		ON tmodule_group.id_mg = tagente_modulo.id_module_group
-	WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-		AND tagente_modulo.id_agente = %d 
-		AND tagente_modulo.disabled = 0
-		AND tagente_modulo.delete_pending = 0
-		AND tagente_estado.utimestamp != 0 
-	ORDER BY tagente_modulo.id_module_group , %s %s
-	", $id_agente, $order['field'], $order['order']);
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql = sprintf ("
+			SELECT *
+			FROM tagente_estado, tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tmodule_group.id_mg = tagente_modulo.id_module_group
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.id_agente = %d 
+				AND tagente_modulo.disabled = 0
+				AND tagente_modulo.delete_pending = 0
+				AND tagente_estado.utimestamp != 0 
+			ORDER BY tagente_modulo.id_module_group , %s %s
+			", $id_agente, $order['field'], $order['order']);
+		break;
+	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
+	case "oracle":
+		$fields_tagente_estado = oracle_list_all_field_table('tagente_estado', 'string');
+		$fields_tagente_modulo = oracle_list_all_field_table('tagente_modulo', 'string');
+		$fields_tmodule_group = oracle_list_all_field_table('tmodule_group', 'string');
+
+		$sql = sprintf ("
+			SELECT " . $fields_tagente_estado . ', ' . $fields_tagente_modulo . ', ' . $fields_tmodule_group .
+			" FROM tagente_estado, tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tmodule_group.id_mg = tagente_modulo.id_module_group
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.id_agente = %d 
+				AND tagente_modulo.disabled = 0
+				AND tagente_modulo.delete_pending = 0
+				AND tagente_estado.utimestamp != 0 
+			ORDER BY tagente_modulo.id_module_group , %s %s
+			", $id_agente, $order['field'], $order['order']);
+		break;
+}
 
 $modules = db_get_all_rows_sql ($sql);
 if (empty ($modules)) {

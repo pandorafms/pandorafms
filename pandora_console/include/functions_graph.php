@@ -707,11 +707,23 @@ function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
 		}
 
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$data[$name]['data'] = (int) db_get_value_filter ('COUNT(*)',
-			'tagent_access',
-			array ('id_agent' => $id_agent,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top));
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$data[$name]['data'] = (int) db_get_value_filter ('COUNT(*)',
+					'tagent_access',
+					array ('id_agent' => $id_agent,
+						'utimestamp > '.$bottom,
+						'utimestamp < '.$top));
+				break;
+			case "oracle":
+				$data[$name]['data'] = (int) db_get_value_filter ('count(*)',
+					'tagent_access',
+					array ('id_agent' => $id_agent,
+						'utimestamp > '.$bottom,
+						'utimestamp < '.$top));
+				break;
+		}	
 	}
 	
 	echo area_graph($config['flash_charts'], $data, $width, $height,
@@ -733,12 +745,24 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 
 	$data = array ();
 	$max_items = 6;
-	$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
-		FROM tevento, tagente_modulo
-		WHERE id_agentmodule = id_agente_modulo
-			AND disabled = 0 AND tevento.id_agente = %d
-		GROUP BY id_agentmodule, nombre LIMIT %d', $id_agent, $max_items);
-	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
+				FROM tevento, tagente_modulo
+				WHERE id_agentmodule = id_agente_modulo
+					AND disabled = 0 AND tevento.id_agente = %d
+				GROUP BY id_agentmodule, nombre LIMIT %d', $id_agent, $max_items);
+			break;
+		case "oracle":
+			$sql = sprintf ('SELECT COUNT(id_evento) as count_number, dbms_lob.substr(nombre,4000,1) as nombre
+				FROM tevento, tagente_modulo
+				WHERE (id_agentmodule = id_agente_modulo
+					AND disabled = 0 AND tevento.id_agente = %d) AND rownum <= %d
+				GROUP BY id_agentmodule, dbms_lob.substr(nombre,4000,1)', $id_agent, $max_items);
+			break;
+	}
+
 	$events = db_get_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {

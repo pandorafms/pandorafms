@@ -1,3 +1,10 @@
+2011-05-16 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/status_monitor.php: changed the source code to extract
+	the modules.
+	
+	Fixes: #3285116
+
 2011-05-16  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* enterprise/include/functions_policies.php: Fixed bug: When I link again the module to policy, the linkation works fine but the message showed is "Error processing request".

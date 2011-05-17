@@ -803,7 +803,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
 					break;
 				case "oracle":
-					$search_sql .= ' AND nombre LIKE UPPER("' . $name . '") ';
+					$search_sql .= ' AND UPPER(nombre) LIKE UPPER(\'' . $name . '\') ';
 					break;
 			}
 				
@@ -958,13 +958,29 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				}
 
 				if ($value[0] == '%') {
-					array_push ($fields, $field.' LIKE "'.$value.'"');
+					switch ($config['dbtype']){
+						case "mysql":
+						case "postgresql":
+							array_push ($fields, $field.' LIKE "'.$value.'"');
+							break;
+						case "oracle":
+							array_push ($fields, $field.' LIKE \''.$value.'\'');
+							break;
+					}
 				}
 				else if ($operatorDistin) {
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {
-					array_push ($fields, $field.' LIKE "'.$value.'"');
+					switch ($config['dbtype']){
+						case "mysql":
+						case "postgresql":
+							array_push ($fields, $field.' LIKE "'.$value.'"');
+							break;
+						case "oracle":
+							array_push ($fields, $field.' LIKE \''.$value.'\'');
+							break;
+					}
 				}
 				else {
 					switch ($config["dbtype"]) {

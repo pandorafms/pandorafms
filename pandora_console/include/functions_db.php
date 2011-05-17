@@ -3435,7 +3435,7 @@ function delete_agent ($id_agents, $disableACL = false) {
 		// temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
 		// Delete agent policies
-		enterprise_hook('delete_agent_policies', array($id_agent));
+		enterprise_hook('delete_agent_policies', array($id_agent, true));
 
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script

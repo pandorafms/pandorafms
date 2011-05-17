@@ -1,3 +1,8 @@
+2011-05-17 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_db.php: added the parameter to delete_only in the call
+	to enterprise function.
+
 2011-05-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Merged from trunk. Do not count the

@@ -21,6 +21,7 @@ global $config;
 require_once ($config["homedir"] . '/include/functions_graph.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . "/include/functions_fsgraph.php");
 
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database information'), "images/god8.png", false, "", true);
 

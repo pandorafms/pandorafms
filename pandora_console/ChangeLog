@@ -1,5 +1,16 @@
 2011-05-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/graphs/fgraph.php
+	include/config_process.php
+	include/functions_agents.php
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_agente.php: Several corrections 
+	over sql queries for Oracle DBMS.
+	* godmode/db/db_info.php: Added include to 
+	functions_fsgraph.php
+
+2011-05-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/graphs/fgraph.php	
 	include/config_process.php
 	operation/events/events.php: Added flash graph dependencies.

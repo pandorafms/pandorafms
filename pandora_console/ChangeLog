@@ -1,3 +1,9 @@
+2011-05-17  Sergio Martin <sergio.martin@artica.es>
+
+	* images/policies_error.png
+	images/policies_ok.png: Added two new icons to 
+	policy list
+
 2011-05-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	include/functions_graph.php

@@ -13,7 +13,7 @@
 $ttl = 1;
 $homeurl = '';
 
-/*function include_graphs_dependencies($home_url = '', $serialize_ttl = 1) {
+function include_graphs_dependencies($home_url = '', $serialize_ttl = 1) {
 	global $ttl;
 	global $homeurl;
 	
@@ -26,7 +26,7 @@ $homeurl = '';
 	include_once($homeurl . 'include/graphs/functions_fsgraph.php');
 	include_once($homeurl . 'include/graphs/functions_gd.php');
 	include_once($homeurl . 'include/graphs/functions_utils.php');
-}*/
+}
 /*
 // If is called from index
 if(file_exists('include/functions.php')) {

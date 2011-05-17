@@ -1,3 +1,9 @@
+2011-05-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/graphs/fgraph.php	
+	include/config_process.php
+	operation/events/events.php: Added flash graph dependencies.
+
 2011-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* images/policies_error.png

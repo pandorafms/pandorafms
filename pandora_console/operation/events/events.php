@@ -21,7 +21,7 @@ require_once ("include/functions_alerts.php"); //Alerts processing functions
 require_once ($config['homedir'].'/include/functions_agents.php'); //Agents functions
 require_once ($config['homedir'].'/include/functions_users.php'); //Users functions
 require_once ($config['homedir'].'/include/functions_graph.php');
-include_flash_chart_script();
+
 check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IR")) {

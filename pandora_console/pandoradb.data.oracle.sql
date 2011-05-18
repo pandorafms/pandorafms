@@ -129,14 +129,14 @@ END;;
 --
 BEGIN
 LOCK TABLE tgrupo IN EXCLUSIVE MODE;
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (2,'Servers','server_database',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (4,'Firewalls','firewall',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (8,'Databases','database_gear',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (9,'Network','transmit',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (10,'Unknown','world',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (11,'Workstations','computer',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (12,'Applications','applications',0,0,0,'',0);
-INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id) VALUES (13,'Web','world',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (2,'Servers','server_database',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (4,'Firewalls','firewall',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (8,'Databases','database_gear',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (9,'Network','transmit',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (10,'Unknown','world',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (11,'Workstations','computer',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (12,'Applications','applications',0,0,0,'',0);
+INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (13,'Web','world',0,0,0,'',0);
 COMMIT;
 END;;
 

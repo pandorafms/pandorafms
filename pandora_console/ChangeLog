@@ -1,5 +1,14 @@
 2011-05-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php
+	operation/events/events.php: Changed the way to include flash
+	graph include. 
+	* pandoradb.oracle.sql: Changed datatype on max_value field of 
+	talert_templates table.
+	* pandoradb.data.oracle.sql: Fixes errors in Oracle installation.
+
+2011-05-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events.php: Added functions_graph.php include in this
 	file.
 

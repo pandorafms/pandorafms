@@ -288,7 +288,7 @@ CREATE TABLE talert_templates (
 	type VARCHAR2(50), 
 	value VARCHAR2(255) default '',
 	matches_value NUMBER(5, 0) default 0,
-	max_value BINARY_DOUBLE default NULL,
+	max_value DOUBLE PRECISION default NULL,
 	min_value DOUBLE PRECISION default NULL,
 	time_threshold NUMBER(10, 0) default 0 NOT NULL,
 	max_alerts NUMBER(10, 0) default 1 NOT NULL,

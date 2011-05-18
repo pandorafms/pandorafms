@@ -1239,7 +1239,9 @@ function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
 		}
 		$loop++;
 	}
-	
+	if ($config['flash_charts']){
+		include_flash_chart_script();
+	}
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);

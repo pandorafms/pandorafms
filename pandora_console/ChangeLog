@@ -1,3 +1,8 @@
+2011-05-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/events/events.php: Added functions_graph.php include in this
+	file.
+
 2011-05-18  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_agents.php: Fixed filter Group in Alert Detail.

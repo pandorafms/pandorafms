@@ -151,7 +151,8 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
 	
-	if (($id_agent === false) && ($idGroup !== false)) {
+	if (($id_agent !== false) && ($idGroup !== false)) {
+	
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo

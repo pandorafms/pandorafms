@@ -1,3 +1,13 @@
+2011-05-18 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php: changed the source code to fixed the
+	enterprise call in function "agents_get_agents".
+
+	* operation/agentes/estado_agente.php: apply the change to the call
+	"agents_get_agents".
+	
+	Fixes: #3303426
+
 2011-05-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

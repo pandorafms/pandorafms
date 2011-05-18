@@ -151,8 +151,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
 	
-	if (($id_agent !== false) && ($idGroup !== false)) {
-	
+	if (($id_agent === false) && ($idGroup !== false)) {
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -372,7 +371,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	$filter['order'] = $order['field'] . ' ' . $order['order'];
 	
 	if ($enterprise_include) {
-		add_enterprise_agents_get_agents_filter_acl($filter);
+		$ids = get_id_agents_user_profile_policy();
+		
+		if (!empty($filter['id_agente'])) {
+			$filter['id_agente'] = array_intersect($filter['id_agente'], $ids);
+		}
 	}
 	
 	return db_get_all_rows_filter ('tagente', $filter, $fields);
@@ -804,7 +807,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
 					break;
 				case "oracle":
-					$search_sql .= ' AND UPPER(nombre) LIKE UPPER(\'' . $name . '\') ';
+					$search_sql .= ' AND nombre LIKE UPPER("' . $name . '") ';
 					break;
 			}
 				
@@ -959,29 +962,13 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				}
 
 				if ($value[0] == '%') {
-					switch ($config['dbtype']){
-						case "mysql":
-						case "postgresql":
-							array_push ($fields, $field.' LIKE "'.$value.'"');
-							break;
-						case "oracle":
-							array_push ($fields, $field.' LIKE \''.$value.'\'');
-							break;
-					}
+					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
 				else if ($operatorDistin) {
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {
-					switch ($config['dbtype']){
-						case "mysql":
-						case "postgresql":
-							array_push ($fields, $field.' LIKE "'.$value.'"');
-							break;
-						case "oracle":
-							array_push ($fields, $field.' LIKE \''.$value.'\'');
-							break;
-					}
+					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
 				else {
 					switch ($config["dbtype"]) {

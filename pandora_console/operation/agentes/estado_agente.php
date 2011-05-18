@@ -269,30 +269,25 @@ else {
 $total_agents = 0;
 $agents = false;
 if (! empty ($agent_names)) {
-	$subquery_enterprise = '';
-	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-		$subquery_enterprise = subquery_acl_enterprise();
-	}
-	
-	$total_agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
-		'order' => 'nombre ASC',
-		'disabled' => 0,
-		'id_grupo' => $groups),
-		array ('COUNT(*) as total'));
-	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
-	
-	$agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
-		'order' => 'nombre ASC',
-		'id_grupo' => $groups,
-		'offset' => (int) get_parameter ('offset'),
-		'limit' => (int) $config['block_size']),
-		array ('id_agente',
-			'id_grupo',
-			'id_os',
-			'ultimo_contacto',
-			'intervalo'),
-		'AR',
-		$order);
+		$total_agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
+			'order' => 'nombre ASC',
+			'disabled' => 0,
+			'id_grupo' => $groups),
+			array ('COUNT(*) as total'));
+		$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+		
+		$agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
+			'order' => 'nombre ASC',
+			'id_grupo' => $groups,
+			'offset' => (int) get_parameter ('offset'),
+			'limit' => (int) $config['block_size']),
+			array ('id_agente',
+				'id_grupo',
+				'id_os',
+				'ultimo_contacto',
+				'intervalo'),
+			'AR',
+			$order);
 }
 
 if (empty ($agents)) {

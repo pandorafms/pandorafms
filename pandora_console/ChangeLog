@@ -1,3 +1,9 @@
+2011-05-19  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Added a hidden 
+	control in the module form to keep the type when the type combo
+	is disabled
+
 2011-05-17 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_db.php: added the parameter to delete_only in the call

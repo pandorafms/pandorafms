@@ -215,7 +215,7 @@ if($filter_standby == 'standby_on') {
 
 $alerts['alerts_simple'] = agents_get_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
 
-$countAlertsSimple = agents_get_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
+$countAlertsSimple = agents_get_alerts_simple ($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true);
 
 $alerts['alerts_combined'] = agents_get_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
 $countAlertsCombined = agents_get_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);

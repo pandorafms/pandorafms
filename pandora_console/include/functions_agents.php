@@ -150,8 +150,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
-	
-	if (($id_agent === false) && ($idGroup !== false)) {
+	if (($id_agent !== false) && ($idGroup !== false)) {
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -206,6 +205,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 					ON talert_template_modules.id_alert_template = t4.id
 			WHERE id_agent_module in (%s) %s %s %s",
 			$selectText, $subQuery, $where, $filter, $orderbyText);
+		break;
 		case "oracle":
 			$sql = sprintf ("SELECT %s
 			FROM talert_template_modules
@@ -218,7 +218,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			WHERE id_agent_module in (%s) %s %s %s",
 			$selectText, $subQuery, $where, $filter, $orderbyText);
 	}
-	
+
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -265,7 +265,7 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
 	
-	if (($id_agent === false) && ($idGroup !== false)) {
+	if (($id_agent !== false) && ($idGroup !== false)) {
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente FROM tagente WHERE id_grupo = ' . $idGroup;
 		}
@@ -291,9 +291,9 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
 	$sql = sprintf ("SELECT %s FROM talert_compound
 		WHERE id_agent IN (%s) %s %s",
 		$selectText, $subQuery, $where, $filter);
-	
+
 	$alerts = db_get_all_rows_sql ($sql);
-	
+
 	if ($alerts === false)
 		return array ();
 	

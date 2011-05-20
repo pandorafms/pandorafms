@@ -164,8 +164,17 @@ if (isset ($_GET["update_alert"])) {
 		$fields[$row["id"]] = $row["name"];
 	}
 	
-	html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
-		"alert_type", $alert_type, '', '', 0, false, false, false);
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+			"alert_type", $alert_type, '', '', 0, false, false, false);
+			break;
+		case "oracle":
+			html_print_select_from_sql ('SELECT id, dbms_lob.substr(name,4000,1) as name FROM talert_actions ORDER BY dbms_lob.substr(name,4000,1)',
+			"alert_type", $alert_type, '', '', 0, false, false, false);
+			break;
+	}
 	echo '</td></tr>';
 	
 	// Description

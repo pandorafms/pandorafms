@@ -232,7 +232,21 @@ switch ($action) {
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
-						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
+						switch ($config['dbtype']){
+							case "mysql":
+							case "postgresql":
+								$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
+								break;
+							case "oracle":
+								$only_display_wrong_tmp = get_parameter('checkbox_only_display_wrong');
+								if (empty($only_display_wrong_tmp)){
+									$values['only_display_wrong'] = 0;
+								}
+								else{
+									$values['only_display_wrong'] = $only_display_wrong_tmp;					
+								}														
+								break;
+						}	
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
 						$values['wednesday'] = get_parameter('wednesday', 0);
@@ -240,12 +254,21 @@ switch ($action) {
 						$values['friday'] = get_parameter('friday', 0);
 						$values['saturday'] = get_parameter('saturday', 0);
 						$values['sunday'] = get_parameter('sunday', 0);
-						$values['time_from'] = get_parameter('time_from');
-						$values['time_to'] = get_parameter('time_to');
-						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
-						$values['show_resume'] = get_parameter ('checkbox_show_resume');
-						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
-						$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+						switch ($config['dbtype']){
+							case "mysql":
+							case "postgresql":
+								$values['time_from'] = get_parameter('time_from');
+								$values['time_to'] = get_parameter('time_to');
+								break;
+							case "oracle":
+								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi\')';
+								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi\')';
+								break;		
+						}							
+						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent',0);
+						$values['show_resume'] = get_parameter ('checkbox_show_resume',0);
+						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown',0);
+						$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 						$values['top_n_value'] = get_parameter('quantity');
 						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
@@ -292,7 +315,7 @@ switch ($action) {
 								case "postgresql":
 								case "oracle":
 									$max = db_get_all_rows_sql('SELECT max("order") AS max 
-										FROM treport_content WHERE id_report = ' . $idReport . ';');
+										FROM treport_content WHERE id_report = ' . $idReport);
 									break;
 							}
 							if ($max === false) {

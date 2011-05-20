@@ -807,7 +807,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
 					break;
 				case "oracle":
-					$search_sql .= ' AND nombre LIKE UPPER("' . $name . '") ';
+					$search_sql .= ' AND UPPER(nombre) LIKE UPPER(\'' . $name . '\') ';
 					break;
 			}
 				
@@ -962,13 +962,29 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				}
 
 				if ($value[0] == '%') {
-					array_push ($fields, $field.' LIKE "'.$value.'"');
+					switch ($config['dbtype']){
+						case "mysql":
+						case "postgresql":
+							array_push ($fields, $field.' LIKE "'.$value.'"');
+							break;
+						case "oracle":
+							array_push ($fields, $field.' LIKE \''.$value.'\'');
+							break;
+					}
 				}
 				else if ($operatorDistin) {
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {
-					array_push ($fields, $field.' LIKE "'.$value.'"');
+					switch ($config['dbtype']){
+						case "mysql":
+						case "postgresql":
+							array_push ($fields, $field.' LIKE "'.$value.'"');
+							break;
+						case "oracle":
+							array_push ($fields, $field.' LIKE \''.$value.'\'');
+							break;
+					}
 				}
 				else {
 					switch ($config["dbtype"]) {
@@ -995,10 +1011,29 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 
 	if (empty ($details)) {
-		$details = "nombre";
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":		
+				$details = "nombre";
+				break;
+			case "oracle":
+				$details = "dbms_lob.substr(nombre,4000,1) as nombre";		
+		}
 	}
-	else {
-		$details = io_safe_input ($details);
+	else { 
+		if ($config['dbtype'] == 'oracle'){
+			$details_new = array(); 
+			foreach ($details as $detail){
+				if ($detail == 'nombre')
+					$details_new[] = 'dbms_lob.substr(nombre,4000,1) as nombre';
+				else
+					$details_new[] = $detail;
+			}
+			html_debug_print($details_new,"/tmp/prueba.txt");
+			$details = io_safe_input ($details_new);
+		}
+		else
+			$details = io_safe_input ($details);
 	}
 
 	switch ($config["dbtype"]) {

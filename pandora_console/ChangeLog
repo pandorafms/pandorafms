@@ -1,3 +1,19 @@
+2011-05-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/db/oracle.php
+	include/functions_agents.php
+	include/functions_db.php
+	include/functions_alerts.php
+	pandoradb.oracle.sql
+	pandoradb.data.oracle.sql
+	godmode/alerts/configure_alert_compound.php
+	godmode/alerts/configure_alert_template.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/users/configure_user.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.php: Several corrections 
+	over Console code for Oracle support. 
+
 2011-05-19  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/agentes/alerts_status.php 

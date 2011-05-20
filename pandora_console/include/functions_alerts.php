@@ -552,11 +552,26 @@ function alerts_get_alert_templates ($filter = false, $fields = false) {
  * @return mixed Selected alert template or false if something goes wrong.
  */
 function alerts_get_alert_template ($id_alert_template) {
+	global $config;
+	
 	$id_alert_template = safe_int ($id_alert_template, 1);
 	if (empty ($id_alert_template))
 		return false;
-	
-	return db_get_row ('talert_templates', 'id', $id_alert_template);
+		
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			return db_get_row ('talert_templates', 'id', $id_alert_template);
+			break;
+		case "oracle":
+			$fields_select = db_get_all_rows_sql('SELECT column_name FROM user_tab_columns WHERE table_name = \'TALERT_TEMPLATES\' AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
+			foreach ($fields_select as $field_select){
+				$select_field[] = $field_select['column_name'];				
+			}
+			$select_stmt = implode(',', $select_field);
+			return db_get_row_sql("SELECT $select_stmt, to_char(time_from, 'hh24:mi:ss') as time_from, to_char(time_to, 'hh24:mi:ss') as time_to FROM talert_templates");	
+			break;
+	}
 }
 
 /**
@@ -1234,12 +1249,20 @@ function alerts_compound_operations () {
  * @return Id of the alert compound of false is something goes wrong.
  */
 function alerts_create_alert_compound ($name, $id_agent, $values = false) {
+	global $config;
+
 	if (empty ($name))
 		return false;
 	if (! is_array ($values))
 		$values = array ();
 	$values['name'] = $name;
 	$values['id_agent'] = (int) $id_agent;
+	
+	switch($config['dbtype']){
+		case "oracle":
+			$values['field3_recovery'] = ' ';
+			break;
+	}
 	
 	return @db_process_sql_insert ('talert_compound', $values);
 }
@@ -1325,7 +1348,22 @@ function alerts_get_alert_compounds ($filter = false, $fields = false) {
  * @return Result set of the selected alert compound or false is something goes wrong.
  */
 function alerts_get_alert_compound ($id_alert_compound) {
-	return db_get_row ('talert_compound', 'id', $id_alert_compound);
+	global $config;
+
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			return db_get_row ('talert_compound', 'id', $id_alert_compound);
+			break;
+		case "oracle":
+			$fields_select = db_get_all_rows_sql('SELECT column_name FROM user_tab_columns WHERE table_name = \'TALERT_COMPOUND\' AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
+			foreach ($fields_select as $field_select){
+				$select_field[] = $field_select['column_name'];				
+			}
+			$select_stmt = implode(',', $select_field);
+			return db_get_row_sql("SELECT $select_stmt, to_char(time_from, 'hh24:mi:ss') as time_from, to_char(time_to, 'hh24:mi:ss') as time_to FROM talert_compound");	
+			break;
+	}
 }
 
 /**

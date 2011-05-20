@@ -161,6 +161,8 @@ function print_alert_template_steps ($step, $id) {
 }
 
 function update_template ($step) {
+	global $config;
+
 	$id = (int) get_parameter ('id');
 	
 	if (empty ($id))
@@ -213,25 +215,47 @@ function update_template ($step) {
 		if (empty ($default_action)) {
 			$default_action = NULL;
 		}
-		
-		$values = array ('monday' => $monday,
-			'tuesday' => $tuesday,
-			'wednesday' => $wednesday,
-			'thursday' => $thursday,
-			'friday' => $friday,
-			'saturday' => $saturday,
-			'sunday' => $sunday,
-			'time_from' => $time_from,
-			'time_to' => $time_to,
-			'time_threshold' => $threshold,
-			'id_alert_action' => $default_action,
-			'field1' => $field1,
-			'field2' => $field2,
-			'field3' => $field3,
-			'max_alerts' => $max_alerts,
-			'min_alerts' => $min_alerts
-			);
-		
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":
+				$values = array ('monday' => $monday,
+					'tuesday' => $tuesday,
+					'wednesday' => $wednesday,
+					'thursday' => $thursday,
+					'friday' => $friday,
+					'saturday' => $saturday,
+					'sunday' => $sunday,
+					'time_from' => $time_from,
+					'time_to' => $time_to,
+					'time_threshold' => $threshold,
+					'id_alert_action' => $default_action,
+					'field1' => $field1,
+					'field2' => $field2,
+					'field3' => $field3,
+					'max_alerts' => $max_alerts,
+					'min_alerts' => $min_alerts
+					);
+				break;
+			case "oracle":
+				$values = array ('monday' => $monday,
+					'tuesday' => $tuesday,
+					'wednesday' => $wednesday,
+					'thursday' => $thursday,
+					'friday' => $friday,
+					'saturday' => $saturday,
+					'sunday' => $sunday,
+					'time_from' => "#to_date('" . $time_from . "','hh24:mi:ss')",
+					'time_to' => "#to_date('" . $time_to . "','hh24:mi:ss')",
+					'time_threshold' => $threshold,
+					'id_alert_action' => $default_action,
+					'field1' => $field1,
+					'field2' => $field2,
+					'field3' => $field3,
+					'max_alerts' => $max_alerts,
+					'min_alerts' => $min_alerts
+					);
+				break;
+		}	
 		$result = alerts_update_alert_template ($id, $values);
 	}
 	elseif ($step == 3) {
@@ -307,14 +331,29 @@ if ($create_template) {
 	$priority = (int) get_parameter ('priority');
 	$id_group = get_parameter ("id_group");
 
-	$values = array ('description' => $description,
-			'value' => $value,
-			'max_value' => $max,
-			'min_value' => $min,
-			'id_group' => $id_group,
-			'matches_value' => $matches,
-			'priority' => $priority);
-	
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$values = array ('description' => $description,
+					'value' => $value,
+					'max_value' => $max,
+					'min_value' => $min,
+					'id_group' => $id_group,
+					'matches_value' => $matches,
+					'priority' => $priority);
+			break;
+		case "oracle":
+			$values = array ('description' => $description,
+					'value' => $value,
+					'max_value' => $max,
+					'min_value' => $min,
+					'id_group' => $id_group,
+					'matches_value' => $matches,
+					'priority' => $priority,
+					'field3' => ' ',
+					'field3_recovery' => ' ');
+			break;
+	}
 	$result = alerts_create_alert_template ($name, $type, $values);
 		
 	if ($result) {
@@ -457,7 +496,15 @@ if ($step == 2) {
 	
 	$table->data[4][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
-	$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
+			break;
+		case "oracle":
+			$sql_query = sprintf('SELECT id, dbms_lob.substr(name,4000,1) as nombre FROM talert_actions WHERE id_group IN (%s) ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
+			break;
+	}
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
 		'default_action', $default_action, '', __('None'), 0,
 		true, false, false).ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);

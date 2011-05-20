@@ -43,6 +43,8 @@ ALTER TABLE `treport_content` ADD COLUMN `show_graph` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `group_by_agent` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `id_group` int (10) unsigned NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content` ADD COLUMN `id_module_group` int (10) unsigned NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content` ADD COLUMN `style` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `treport_content` ADD COLUMN `server_name` TEXT DEFAULT '';
 
 -- -----------------------------------------------------
 -- Table `treport_content_item`
@@ -50,7 +52,8 @@ ALTER TABLE `treport_content` ADD COLUMN `id_module_group` int (10) unsigned NOT
 CREATE TABLE IF NOT EXISTS `treport_content_item` (
   `id` INTEGER UNSIGNED NOT NULL auto_increment, 
   `id_report_content` INTEGER UNSIGNED NOT NULL, 
-  `id_agent_module` int(10) unsigned NOT NULL, 
+  `id_agent_module` int(10) unsigned NOT NULL,
+  `server_name` TEXT DEFAULT '',
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -73,9 +76,10 @@ ALTER TABLE `talert_template_module_actions` ADD COLUMN `module_action_threshold
 ALTER TABLE `talert_template_module_actions` ADD COLUMN `last_execution` bigint(20) NOT NULL DEFAULT '0';
 
 -- -----------------------------------------------------
--- Table `treport_content`
+-- Table `treport_content_sla_combined`
 -- -----------------------------------------------------
-ALTER TABLE `treport_content` ADD COLUMN `style` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `treport_content_sla_combined` ADD COLUMN `server_name` TEXT DEFAULT '';
+ALTER TABLE `treport_content_sla_combined` DROP FOREIGN KEY treport_content_sla_combined_ibfk_2;
 
 -- -----------------------------------------------------
 -- Table `tperfil`

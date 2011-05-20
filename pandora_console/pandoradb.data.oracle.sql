@@ -512,15 +512,15 @@ END;;
 CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER) AS g_nclob CLOB; BEGIN if FLAG = 0 then insert into treport_custom_sql values (IDX, NAME, empty_clob()) returning SQL into g_nclob; dbms_lob.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); else select SQL into g_nclob from treport_custom_sql where ID = IDX for update; dbms_lob.writeappend( g_nclob, length(SQL_TXT), SQL_TXT); end if; END;;
 
 BEGIN
-treport_custom_sql_insert(4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=',0);
+treport_custom_sql_insert(4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=',0);
 
-treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;t3.id_grupo&#41;&#x20;as&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;as&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;t3.id_grupo&#41;&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','t4&#x20;WHERE&#x20;t4.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;t4.disabled&#x20;=&#x20;0&#x20;AND&#x20;t4.ultimo_contacto&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;NOW&#40;&#41;&#x20;-&#x20;&#40;intervalo&#x20;/',1); 
 
-treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;agent_unknown,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;agent_unknown,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,',1);
 
 treport_custom_sql_insert(4,'Group&#x20;view','&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;',1);
 
@@ -532,13 +532,13 @@ treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;&#40;UNIX_TIMESTAMP&#40
 
 treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;&gt;=&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
 
-treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;as&#x20;monitor_unknow,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,',1);
+treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#41;&#x20;monitor_unknow,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.id_agente&#x20;=&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','tagente_estado.id_agente&#x20;AND&#x20;tagente_estado.id_agente_modulo&#x20;=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;',1);
 
-treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#x20;&#40;21,22,23,24&#41;&#x20;AND&#x20;utimestamp&#x20;=&#x20;0&#41;&#x20;as&#x20;monitor_no_init,&#x20;&#40;SELECT&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','AND&#x20;tagente_modulo.id_tipo_modulo&#x20;NOT&#x20;IN&#x20;&#40;21,22,23,24&#41;&#x20;AND&#x20;utimestamp&#x20;=&#x20;0&#41;&#x20;monitor_no_init,&#x20;&#40;SELECT&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;',1);
 
@@ -550,7 +550,7 @@ treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&
 
 treport_custom_sql_insert(4,'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;&#40;utimestamp&#x20;&gt;&#x20;0&#x20;OR&#x20;',1);
 
-treport_custom_sql_insert(4, 'Group&#x20;view','&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24&#41;&#41;&#41;&#41;&#x20;as&#x20;monitor_ok,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24&#41;&#41;&#41;&#41;&#x20;monitor_ok,&#x20;&#40;SELECT&#x20;COUNT&#40;tagente_estado.id_agente_estado&#41;&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','FROM&#x20;tagente_estado,&#x20;tagente,&#x20;tagente_modulo&#x20;WHERE&#x20;tagente.id_grupo&#x20;=&#x20;t1.id_grupo&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;',1);
 
@@ -560,7 +560,7 @@ treport_custom_sql_insert(4, 'Group&#x20;view','#x20;=&#x20;0&#x20;AND&#x20;esta
 
 treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;tagente_estado.utimestamp&#41;&#x20;&lt;&#x20;&#40;tagente_estado.current_interval&#x20;/',1);
 
-treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;&#40;1/2&#41;&#41;&#x20;OR&#x20;&#40;tagente_modulo.id_tipo_modulo&#x20;IN&#40;21,22,23,24,100&#41;&#41;&#41;&#x20;AND&#x20;utimestamp&#x20;&gt;&#x20;0&#41;&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','monitor_critical,&#x20;&#40;SELECT&#x20;COUNT&#40;talert_template_modules.id&#41;&#x20;FROM&#x20;talert_template_modules,&#x20;tagente_modulo,&#x20;tagente_estado,&#x20;tagente&#x20;',1);
 
@@ -568,8 +568,8 @@ treport_custom_sql_insert(4, 'Group&#x20;view','WHERE&#x20;tagente.id_grupo&#x20
 
 treport_custom_sql_insert(4, 'Group&#x20;view','tagente_modulo.id_agente_modulo&#x20;AND&#x20;tagente_modulo.disabled&#x20;=&#x20;0&#x20;AND&#x20;tagente.disabled&#x20;=&#x20;0&#x20;AND&#x20;talert_template_modules.id_agent_module&#x20;',1);
 
-treport_custom_sql_insert(4, 'Group&#x20;view','=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;&gt;&#x20;0&#41;&#x20;as&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;as&#x20;t1&#x20;where&#x20;0&#x20;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;&gt;&#x20;0&#41;&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;t1&#x20;where&#x20;0&#x20;',1);
 
-treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;as&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;',1);
+treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;',1);
 COMMIT;
 END;;

@@ -127,13 +127,25 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 	$accion = io_safe_input($accion);
 	$descripcion = io_safe_input($descripcion);
 
-	$values = array('id_usuario' => $id,
-		'accion' => $accion,
-		'ip_origen' => $ip,
-		'descripcion' => $descripcion,
-		'fecha' => date('Y-m-d H:i:s'),
-		'utimestamp' => time());
-
+	switch ($config['dbtype']){	
+		case "mysql":
+		case "postgresql":
+			$values = array('id_usuario' => $id,
+				'accion' => $accion,
+				'ip_origen' => $ip,
+				'descripcion' => $descripcion,
+				'fecha' => date('Y-m-d H:i:s'),
+				'utimestamp' => time());
+			break;
+		case "oracle":
+			$values = array('id_usuario' => $id,
+				'accion' => $accion,
+				'ip_origen' => $ip,
+				'descripcion' => $descripcion,
+				'fecha' => '#to_date(\'' . date('Y-m-d H:i:s') . '\',\'YYYY-MM-DD HH24:MI:SS\')',
+				'utimestamp' => time());
+			break;
+	}
 	$id_audit = db_process_sql_insert('tsesion', $values);
 
 	enterprise_include_once('include/functions_audit.php');

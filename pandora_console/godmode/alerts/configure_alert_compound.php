@@ -95,6 +95,8 @@ function print_alert_compound_steps ($step, $id) {
 }
 
 function update_compound ($step) {
+	global $config;
+
 	$id = (int) get_parameter ('id');
 	
 	if (empty ($id))
@@ -138,20 +140,40 @@ function update_compound ($step) {
 		$min_alerts = (int) get_parameter ('min_alerts');
 		if ($threshold == -1)
 			$threshold = (int) get_parameter ('other_threshold');
-		
-		$values = array ('monday' => $monday,
-			'tuesday' => $tuesday,
-			'wednesday' => $wednesday,
-			'thursday' => $thursday,
-			'friday' => $friday,
-			'saturday' => $saturday,
-			'sunday' => $sunday,
-			'time_from' => $time_from,
-			'time_to' => $time_to,
-			'time_threshold' => $threshold,
-			'max_alerts' => $max_alerts,
-			'min_alerts' => $min_alerts
-			);
+
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":		
+				$values = array ('monday' => $monday,
+					'tuesday' => $tuesday,
+					'wednesday' => $wednesday,
+					'thursday' => $thursday,
+					'friday' => $friday,
+					'saturday' => $saturday,
+					'sunday' => $sunday,
+					'time_from' => $time_from,
+					'time_to' => $time_to,
+					'time_threshold' => $threshold,
+					'max_alerts' => $max_alerts,
+					'min_alerts' => $min_alerts
+					);
+				break;
+			case "oracle":
+				$values = array ('monday' => $monday,
+					'tuesday' => $tuesday,
+					'wednesday' => $wednesday,
+					'thursday' => $thursday,
+					'friday' => $friday,
+					'saturday' => $saturday,
+					'sunday' => $sunday,
+					'time_from' => "#to_date('" . $time_from . "', 'hh24:mi:ss')",
+					'time_to' => "#to_date('" . $time_to . "', 'hh24:mi:ss')",
+					'time_threshold' => $threshold,
+					'max_alerts' => $max_alerts,
+					'min_alerts' => $min_alerts
+					);
+				break;
+		}				
 		
 		$result = alerts_update_alert_compound ($id, $values);
 		
@@ -355,8 +377,18 @@ if ($step == 2) {
 		5, 7, true);
 	
 	$table->data[4][0] = __('Actions');
-	$table->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
-		'action', '', '', __('Select'), 0, true, false, false).' ';
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$table->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+			'action', '', '', __('Select'), 0, true, false, false).' ';
+			break;
+		case "oracle":
+			$table->data[4][1] = html_print_select_from_sql ('SELECT id, dbms_lob.substr(name,4000,1) as name FROM talert_actions ORDER BY dbms_lob.substr(name,4000,1)',
+			'action', '', '', __('Select'), 0, true, false, false).' ';				
+			break;
+	}	
+
 	$table->data[4][1] .= html_print_button (__('Add'), 'add_action', false, '',
 		'class="sub next"', true);
 	$table->data[4][1] .=  '<br />';

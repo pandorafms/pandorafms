@@ -98,13 +98,13 @@ if ($create_user) {
 	$values['email'] = (string) get_parameter ('email');
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
-	$values['is_admin'] = get_parameter ('is_admin', 0);
+	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', $config["language"]);
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		$values['id_skin'] = get_parameter ('skin', 0);
+		$values['id_skin'] = (int) get_parameter ('skin', 0);
 	}
-	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
-	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
+	$values['block_size'] = (int) get_parameter ('block_size', $config["block_size"]);
+	$values['flash_chart'] = (int) get_parameter ('flash_charts', $config["flash_charts"]);
 	
 	if ($id == '') {
 		ui_print_error_message (__('User ID cannot be empty'));
@@ -139,7 +139,16 @@ if ($create_user) {
 			$info .= ' Skin: ' . $values['id_skin'];
 		}
 		
-		$result = create_user($id, $password_new, $values);
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":
+				$result = create_user($id, $password_new, $values);
+				break;
+			case "oracle":
+				$result = db_process_sql('/INSERT INTO tusuario (fullname, firstname, lastname, email, phone, comments, is_admin, language, id_skin, block_size, flash_chart, id_user, password, last_connect, registered) VALUES (\'' . $values['fullname'] . '\',\'\',\'\',\'\',\'\',\'\',' . $values['is_admin'] . ',\'' . $values['language'] .'\',' . $values['id_skin'] . ',' . $values['block_size'] . ',' . $values['flash_chart'] . ',\'' . $id . '\',\'' . $password_new . '\',0,\'' . get_system_time () . '\')');		
+				break;		
+		}
+			
 
 		db_pandora_audit("User management",
 			"Created user ".io_safe_input($id), false, false, $info);

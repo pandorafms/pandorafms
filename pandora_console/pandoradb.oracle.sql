@@ -812,8 +812,8 @@ CREATE OR REPLACE TRIGGER ttrap_inc BEFORE INSERT ON ttrap REFERENCING NEW AS NE
 CREATE TABLE tusuario (
 	id_user VARCHAR2(60) NOT NULL PRIMARY KEY,
 	fullname VARCHAR2(255) NOT NULL,
-	firstname VARCHAR2(255) NOT NULL,
-	lastname VARCHAR2(255) NOT NULL,
+	firstname VARCHAR2(255),
+	lastname VARCHAR2(255),
 	middlename VARCHAR2(255) default '',
 	password VARCHAR2(45) default NULL,
 	comments VARCHAR2(200) default NULL,

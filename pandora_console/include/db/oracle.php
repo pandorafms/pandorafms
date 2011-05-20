@@ -237,7 +237,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 			}
 			// Prevent execution of insert_id stored procedure
 			else if ($type[0] == '/INSERT'){
-				$query = oci_parse($dbconnection, substr($sql,1));			
+				$query = oci_parse($config['dbconnection'], substr($sql,1));			
 			}
 			else{
 				$query = oci_parse($config['dbconnection'], $sql);
@@ -812,8 +812,10 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 	}
 	else{
 		$result = oracle_db_process_sql($result);
-		for ($i=0; $i < count($result); $i++) {
-			unset($result[$i]['RNUM']);		
+		if ($result !== false){		
+			for ($i=0; $i < count($result); $i++) {
+				unset($result[$i]['RNUM']);		
+			}
 		}
 		return $result;
 	}
@@ -1080,10 +1082,14 @@ function oracle_db_format_array_to_update_sql ($values) {
 		else {
 			/* String */
 			if (isset ($value[0]) && $value[0] == '`')
-			/* Don't round with quotes if it references a field */
-			$sql = sprintf ("%s = %s", $field, str_replace('`', '', $value));
-			else
-			$sql = sprintf ("%s = '%s'", $field, $value);
+				/* Don't round with quotes if it references a field */
+				$sql = sprintf ("%s = %s", $field, str_replace('`', '', $value));
+			else if (substr($value, 0,1) == '#'){
+				$sql = sprintf ("%s = %s", $field, substr($value,1));							
+			}
+			else{
+				$sql = sprintf ("%s = '%s'", $field, $value);
+			}
 		}
 		array_push ($fields, $sql);
 	}

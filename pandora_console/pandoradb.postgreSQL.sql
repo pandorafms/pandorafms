@@ -764,22 +764,25 @@ CREATE TABLE "treport_content" (
 	"group_by_agent" INTEGER NOT NULL default 0,
 	"style" TEXT NOT NULL DEFAULT '',
 	"id_group" INTEGER NOT NULL default 0,
-	"id_module_group" INTEGER NOT NULL default 0
+	"id_module_group" INTEGER NOT NULL default 0,
+	"server_name" TEXT DEFAULT ''
 );
 
 CREATE TABLE "treport_content_sla_combined" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_report_content" INTEGER NOT NULL  REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE,
-	"id_agent_module" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo") ON UPDATE CASCADE ON DELETE CASCADE,
+	"id_agent_module" INTEGER NOT NULL,
 	"sla_max" DOUBLE PRECISION NOT NULL default 0,
 	"sla_min" DOUBLE PRECISION NOT NULL default 0,
-	"sla_limit" DOUBLE PRECISION NOT NULL default 0
+	"sla_limit" DOUBLE PRECISION NOT NULL default 0,
+	"server_name" TEXT DEFAULT ''
 );
 
 CREATE TABLE "treport_content_item" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_report_content" INTEGER NOT NULL,
-	"id_agent_module" INTEGER NOT NULL
+	"id_agent_module" INTEGER NOT NULL,
+	"server_name" TEXT DEFAULT ''
 );
 
 CREATE TABLE "treport_custom_sql" (

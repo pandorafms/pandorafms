@@ -833,6 +833,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`style` TEXT NOT NULL DEFAULT '',
 	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`server_name` text default '',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -844,11 +845,10 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
   `id_agent_module` int(10) unsigned NOT NULL,
   `sla_max` double(18,2) NOT NULL default 0,
   `sla_min` double(18,2) NOT NULL default 0,
-  `sla_limit` double(18,2) NOT NULL default 0,  
+  `sla_limit` double(18,2) NOT NULL default 0,
+  `server_name` text default '',
   PRIMARY KEY(`id`),
   FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
-     ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
      ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -856,6 +856,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_item` (
   `id` INTEGER UNSIGNED NOT NULL auto_increment, 
   `id_report_content` INTEGER UNSIGNED NOT NULL, 
   `id_agent_module` int(10) unsigned NOT NULL, 
+  `server_name` text default '',
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

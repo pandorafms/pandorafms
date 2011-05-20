@@ -942,7 +942,8 @@ CREATE TABLE treport_content (
 	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
 	style CLOB default '',
 	id_group NUMBER(10, 0) default 0 NOT NULL,
-	id_module_group NUMBER(10, 0) default 0 NOT NULL
+	id_module_group NUMBER(10, 0) default 0 NOT NULL,
+	server_name CLOB default ''
 );
 
 CREATE SEQUENCE treport_content_s INCREMENT BY 1 START WITH 1;
@@ -955,10 +956,11 @@ CREATE OR REPLACE TRIGGER treport_content_update AFTER UPDATE OF ID_REPORT ON tr
 CREATE TABLE treport_content_sla_combined (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_report_content NUMBER(10, 0) NOT NULL  REFERENCES treport_content(id_rc) ON DELETE CASCADE,
-	id_agent_module NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
+	id_agent_module NUMBER(10, 0) NOT NULL,
 	sla_max BINARY_DOUBLE default 0 NOT NULL,
 	sla_min BINARY_DOUBLE default 0 NOT NULL,
-	sla_limit BINARY_DOUBLE default 0 NOT NULL 
+	sla_limit BINARY_DOUBLE default 0 NOT NULL,
+	server_name CLOB default ''
 );
 
 CREATE SEQUENCE treport_cont_sla_c_s INCREMENT BY 1 START WITH 1;
@@ -968,13 +970,12 @@ CREATE OR REPLACE TRIGGER treport_content_sla_comb_inc BEFORE INSERT ON treport_
 -- on update trigger
 CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF ID_RC ON treport_content FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET ID_REPORT_CONTENT = :NEW.ID_RC WHERE ID_REPORT_CONTENT = :OLD.ID_RC; END;;
 
--- on update trigger 1
-CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update1 AFTER UPDATE OF ID_AGENTE_MODULO ON tagente_modulo FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET ID_AGENT_MODULE = :NEW.ID_AGENTE_MODULO WHERE ID_AGENT_MODULE = :OLD.ID_AGENTE_MODULO; END;;
 
 CREATE TABLE treport_content_item (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_report_content NUMBER(10, 0) NOT NULL,
-	id_agent_module NUMBER(10, 0) NOT NULL
+	id_agent_module NUMBER(10, 0) NOT NULL,
+	server_name CLOB default ''
 );
 
 CREATE SEQUENCE treport_content_item_s INCREMENT BY 1 START WITH 1;

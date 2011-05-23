@@ -1,5 +1,13 @@
 2011-05-23  Sergio Martin <sergio.martin@artica.es>
 
+	* images/cog_db.png
+	images/cross_undo.png
+	godmode/agentes/module_manager_editor.php: Added two new images to
+	queue and added check when relink a module into policy avoiding it 
+	when te policy is applying
+
+2011-05-23  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php: Added hidden field
 	in module edition form to keep the type when is disabled
 

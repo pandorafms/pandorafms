@@ -176,6 +176,9 @@ sub pandora_purgedb ($$) {
     my $trap_limit = time() - 86400 * $conf->{'_trap_purge'};
     $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($trap_limit));
 	db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
+	
+    # Delete policy queue data
+	enterprise_hook("pandora_purge_policy_queue", [$dbh, $conf]);
 
     # Delete GIS  data
     if (!defined($conf->{'_gis_purge'})){

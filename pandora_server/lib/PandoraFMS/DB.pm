@@ -49,6 +49,7 @@ our @EXPORT = qw(
 		get_db_value
 		get_group_id
 		get_group_name
+		get_module_agent_id
 		get_module_group_id
 		get_module_id
 		get_module_name
@@ -179,6 +180,16 @@ sub get_agent_name ($$) {
 }
 
 ##########################################################################
+## SUB get_module_agent_id (agent_module_id)
+## Return agent id, given "agent_module_id"
+##########################################################################
+sub get_module_agent_id ($$) {
+	my ($dbh, $agent_module_id) = @_;
+	
+	return get_db_value ($dbh, "SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ?", $agent_module_id);
+}
+
+##########################################################################
 ## SUB get_agent_address (id_agente)
 ## Return agent address, given "agent_id"
 ##########################################################################
@@ -204,7 +215,7 @@ sub get_module_name ($$) {
 sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", safe_input(safe_output($module_name)), $agent_id);
+	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND nombre = ? AND id_agente = ?", safe_input(safe_output($module_name)), $agent_id);
 	return defined ($rc) ? $rc : -1;
 }
 

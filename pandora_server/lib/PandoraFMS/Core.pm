@@ -1212,8 +1212,8 @@ sub pandora_create_module ($$$$$$$$$$) {
 ##########################################################################
 ## Delete a module given its id.
 ##########################################################################
-sub pandora_delete_module ($$) {
-	my ($dbh, $module_id) = @_;
+sub pandora_delete_module ($$;$) {
+	my ($dbh, $module_id, $conf) = @_;
 
 	# Delete Graphs, layouts & reports
 	db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
@@ -1228,6 +1228,15 @@ sub pandora_delete_module ($$) {
 
 	# Set pending delete the module
 	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ?', $module_id);
+
+	my $agent_id = get_module_agent_id($dbh, $module_id);
+	
+	my $agent_name = get_agent_name($dbh, $agent_id);
+	my $module_name = get_module_name($dbh, $module_id);
+	
+	if ((-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') && (defined($conf))) {
+		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module_name]);
+	}
 }
 
 ##########################################################################
@@ -2102,8 +2111,8 @@ sub pandora_process_policy_queue ($) {
 		$operation = @{$operation}[0];
 		
 		if(defined($operation)) {
-			if($operation->{'operation'} eq 'apply') {
-				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}]);
+			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
+				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
 			}
 			elsif($operation->{'operation'} eq 'delete') {
 				if($operation->{'id_agent'} == 0) {

@@ -106,7 +106,7 @@ $msg_cnt = 0;
 			}
 			else {	
 				$ignored_params['refr'] = '';
-				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
 				$values = array (
 					'5' => '5 '.__('seconds'),
 					'10' => '10 '.__('seconds'),

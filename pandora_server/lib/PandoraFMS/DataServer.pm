@@ -550,8 +550,8 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'id_module_group'} = ($conf_group_id == -1) ? $module->{'id_module_group'} : $conf_group_id;
 	}
 
-	# Update module configuration if in learning mode
-	if ($agent->{'modo'} eq '1') {
+	# Update module configuration if in learning mode and not a policy module
+	if ($agent->{'modo'} eq '1' && $module->{'id_policy_module'} == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
 

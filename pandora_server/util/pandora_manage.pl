@@ -866,12 +866,7 @@ sub pandora_manage_main ($$$) {
 			my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
 			exist_check($id_module,'module',$module_name);
 			
-			pandora_delete_module($dbh,$id_module);
-			
-			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-				enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module_name]);
-			}
-						
+			pandora_delete_module($dbh,$id_module,$conf);
 		}
 		elsif ($param eq '--delete_not_policy_modules') {
 			param_check($ltotal, 0);

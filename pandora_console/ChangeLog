@@ -1,3 +1,9 @@
+2011-05-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* general/header.php: Added close tag in the autorefresh html link.
+
+	Fixes: #3305092
+
 2011-05-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/oracle.php

@@ -1,3 +1,8 @@
+2011-05-23  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Added hidden field
+	in module edition form to keep the type when is disabled
+
 2011-05-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/header.php: Added close tag in the autorefresh html link.

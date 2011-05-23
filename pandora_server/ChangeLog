@@ -1,3 +1,11 @@
+2011-05-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Applied Koichiro's patch to reuse an
+	  already running snmptrapd.
+
+	* lib/PandoraFMS/DataServer.pm: Do not update the configuration of
+	  policy modules.
+
 2011-05-23  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DB.pm

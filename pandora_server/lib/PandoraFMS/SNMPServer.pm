@@ -47,7 +47,23 @@ sub new ($$;$) {
 	return undef unless $config->{'snmpconsole'} == 1;
 
 	# Start snmptrapd
-	if (system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p /var/run/pandora_snmptrapd.pid -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n >/dev/null 2>&1') != 0) {
+
+	my $pid_file = '/var/run/pandora_snmptrapd.pid';
+
+	my $snmptrapd_running = 0;
+
+	if ( -e $pid_file && open (PIDFILE, $pid_file)) {
+		my $pid = <PIDFILE> + 0;
+		close PIDFILE;
+
+		# check if snmptrapd is running
+		if ($snmptrapd_running = kill (0, $pid)) {
+			logger ($config, "snmptrapd (pid $pid) is already running, using existing process.", 1);
+			print_message ($config, "snmptrapd (pid $pid) is already running, using existing process.", 1);
+		}
+	}
+		
+	if (!$snmptrapd_running && system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p ' . $pid_file . ' -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n >/dev/null 2>&1') != 0) {
 		logger ($config, " [E] Could not start snmptrapd.", 1);
 		print_message ($config, " [E] Could not start snmptrapd.", 1);
 		return undef;

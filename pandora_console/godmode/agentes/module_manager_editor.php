@@ -223,23 +223,35 @@ else {
 		$snmp3_security_level = "";
 	}
 }
-enterprise_include_once('include/functions_policies.php');
 
-$relink_policy = get_parameter('relink_policy', 0);
-$unlink_policy = get_parameter('unlink_policy', 0);
+$is_function_policies = enterprise_include_once('include/functions_policies.php');
 
-if($relink_policy) {
-	$result = policies_relink_module($id_agent_module);
-	ui_print_result_message($result, 'Module relinked to the policy successful');
-	
-	db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
-}
+if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
+	$relink_policy = get_parameter('relink_policy', 0);
+	$unlink_policy = get_parameter('unlink_policy', 0);
 
-if($unlink_policy) {
-	$result = policies_unlink_module($id_agent_module);
-	ui_print_result_message($result, 'Module unlinked from the policy successful');
-	
-	db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
+	if($relink_policy) {
+		$policy_info = policies_info_module_policy($id_agent_module);
+		$policy_id = $policy_info['id_policy'];
+
+		if($relink_policy && policies_get_policy_queue_status ($policy_id) == STATUS_IN_QUEUE_APPLYING) {
+			ui_print_error_message(__('This policy is applying and cannot be modified'));
+		}
+		else {
+			$result = policies_relink_module($id_agent_module);
+			ui_print_result_message($result, __('Module relinked to the policy successful'));
+			
+			db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
+		}
+	}
+
+	if($unlink_policy) {
+		$result = policies_unlink_module($id_agent_module);
+		ui_print_result_message($result, __('Module unlinked from the policy successful'));
+		
+		db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
+	}
+
 }
 
 switch ($moduletype) {

@@ -1,3 +1,7 @@
+2011-05-23 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: cleaned source code style.
+
 2011-05-23  Sergio Martin <sergio.martin@artica.es>
 
 	* images/cog_db.png

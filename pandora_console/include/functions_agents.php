@@ -205,7 +205,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 					ON talert_template_modules.id_alert_template = t4.id
 			WHERE id_agent_module in (%s) %s %s %s",
 			$selectText, $subQuery, $where, $filter, $orderbyText);
-		break;
+			break;
 		case "oracle":
 			$sql = sprintf ("SELECT %s
 			FROM talert_template_modules
@@ -217,8 +217,9 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 					ON talert_template_modules.id_alert_template = t4.id
 			WHERE id_agent_module in (%s) %s %s %s",
 			$selectText, $subQuery, $where, $filter, $orderbyText);
+			break;
 	}
-
+	
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -291,9 +292,9 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
 	$sql = sprintf ("SELECT %s FROM talert_compound
 		WHERE id_agent IN (%s) %s %s",
 		$selectText, $subQuery, $where, $filter);
-
+	
 	$alerts = db_get_all_rows_sql ($sql);
-
+	
 	if ($alerts === false)
 		return array ();
 	

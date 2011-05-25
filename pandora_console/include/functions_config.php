@@ -204,8 +204,6 @@ function config_update_config () {
 	config_update_value ('ldap_start_tls', get_parameter ('ldap_start_tls', $config['ldap_start_tls']));
 	config_update_value ('ldap_base_dn', get_parameter ('ldap_base_dn', $config['ldap_base_dn']));
 	config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr', $config['ldap_login_attr']));
-	config_update_value ('ldap_admin_dn', get_parameter ('ldap_admin_dn', $config['ldap_admin_dn']));
-	config_update_value ('ldap_admin_pwd', get_parameter ('ldap_admin_pwd', $config['ldap_admin_pwd']));
 
 	config_update_value ('ad_server', get_parameter ('ad_server', $config['ad_server']));
 	config_update_value ('ad_port', get_parameter ('ad_port', $config['ad_port']));
@@ -535,14 +533,6 @@ function config_process_config () {
 
 	if (!isset ($config['ldap_login_attr'])) {
 		config_update_value ( 'ldap_login_attr', 'uid');
-	}
-
-	if (!isset ($config['ldap_admin_dn'])) {
-		config_update_value ( 'ldap_admin_dn', '');
-	}
-
-	if (!isset ($config['ldap_admin_pwd'])) {
-		config_update_value ( 'ldap_admin_pwd', '');
 	}
 
 	if (!isset ($config['ad_server'])) {

@@ -1,5 +1,10 @@
 2011-05-25  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* godmode/setup/setup_auth.php
+	include/functions_config.php: Removed user and password from LDAP setup.
+
+2011-05-25  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* operation/agentes/ver_agente.php
 	operation/agentes/graphs.php
 	godmode/agentes/configurar_agente.php

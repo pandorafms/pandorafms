@@ -121,7 +121,10 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 		$id = $user_id;
 	}
 	else {
-		$id = $config["id_user"];
+		if (isset($config["id_user"])) {
+			$id = $config["id_user"];
+		}
+		else $id = 0;
 	}
 
 	$accion = io_safe_input($accion);

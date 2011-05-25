@@ -109,6 +109,7 @@ $custom_id = "";
 $cascade_protection = 0;
 $icon_path = '';
 $update_gis_data = 0;
+$unit = "";
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -129,6 +130,7 @@ if ($create_agent) {
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
+
 
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
@@ -613,7 +615,8 @@ if ($update_module || $create_module) {
 	$min_critical = (float) get_parameter ('min_critical');
 	$max_critical = (float) get_parameter ('max_critical');
 	$ff_event = (int) get_parameter ('ff_event');
-	
+	$unit = (string) get_parameter('unit');
+
 	$active_snmp_v3 = get_parameter('active_snmp_v3');
 	if ($active_snmp_v3) {
 	//
@@ -661,7 +664,8 @@ if ($update_module) {
 			'custom_string_3' => $custom_string_3,
 			'custom_integer_1' => $custom_integer_1,
 			'custom_integer_2' => $custom_integer_2,
-			'min_ff_event' => $ff_event);
+			'min_ff_event' => $ff_event,
+			'unit' => $unit);
 	
 	$result = modules_update_agent_module ($id_agent_module,
 		$values);
@@ -738,9 +742,10 @@ if ($create_module) {
 			'custom_string_3' => $custom_string_3,
 			'custom_integer_1' => $custom_integer_1,
 			'custom_integer_2' => $custom_integer_2,
-			'min_ff_event' => $ff_event
+			'min_ff_event' => $ff_event,
+			'unit' => $unit
 		);
-	
+
 	$id_agent_module = modules_create_agent_module ($id_agente, $name, $values);
 	
 	if ($id_agent_module === false) {

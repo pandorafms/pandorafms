@@ -330,7 +330,7 @@ function ldap_search_user ($login) {
  */
 function ldap_valid_login ($login, $password) {
 	global $ldap_cache, $config;
-	
+
 	if (! function_exists ("ldap_connect")) {
 		die ("Your installation of PHP does not support LDAP");
 	}
@@ -558,7 +558,7 @@ function ldap_connect_bind () {
 				return $ret;
 			}
 		}
-		
+
 		if (!empty ($config["auth"]["ldap_admin_dn"])) {
 			$r = @ldap_bind ($ldap_cache["ds"], $config["auth"]["ldap_admin_dn"], $config["auth"]["ldap_admin_pwd"]);
 		} else {

@@ -28,7 +28,7 @@ define("GRAPH_STACKED_LINE", 3);
 function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
-				$date = 0, $baseline = 0, $return_data = 0, $show_title = true,
+				$date = 0, $unit, $baseline = 0, $return_data = 0, $show_title = true,
 				$only_image = false, $homeurl = '') {
 	global $config;
 	global $graphic_type;
@@ -310,7 +310,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size']);
+		 $config['fontpath'], $config['font_size'], $unit);
 }
 
 /**
@@ -646,7 +646,7 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size']);
+				$config['fontpath'], $config['font_size'], "");
 			break;
 		default:
 		case GRAPH_STACKED_AREA:
@@ -729,7 +729,7 @@ function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
 	echo area_graph($config['flash_charts'], $data, $width, $height,
 		null, null, null, "images/image_problem.opaque.png", "", "", "",
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size']);
+		 $config['fontpath'], $config['font_size'], "");
 }
 
 /**
@@ -1788,7 +1788,7 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size']);
+		 $config['fontpath'], $config['font_size'], "");
 }
 
 /**
@@ -2020,7 +2020,7 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size']);
+		 $config['fontpath'], $config['font_size'], "");
 }
 
 function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,

@@ -40,6 +40,8 @@ $zoom = get_parameter ("zoom", 1);
 $modulesChecked = get_parameter('modules', array());
 $filter = get_parameter('filter', 0);
 
+$unit = "";
+
 $modules = agents_get_modules($id_agente);
 
 if (!$filter) {
@@ -123,8 +125,9 @@ else
 
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
 	echo "<h3>" . $modules[$idModuleShowGraph] . '</h3>';
+	$unit = modules_get_unit ($idModuleShowGraph);
 	echo grafico_modulo_sparse2($idModuleShowGraph, $period, $draw_events, $width, $height,
-		$modules[$idModuleShowGraph], null, $draw_alerts, $avg_only, false, $date);
+		$modules[$idModuleShowGraph], null, $draw_alerts, $avg_only, false, $date, $unit);
 }
 
 echo "<div style='clear: both;'></div>";

@@ -152,6 +152,7 @@ CREATE TABLE "tagente_modulo" (
 	"id_tipo_modulo" INTEGER NOT NULL default 0,
 	"descripcion" TEXT NOT NULL default '',
 	"nombre" TEXT NOT NULL default '',
+	"unit" TEXT default '',
 	"id_policy_module" INTEGER NOT NULL default 0,
 	"max" BIGINT NOT NULL default 0,
 	"min" BIGINT NOT NULL default 0,

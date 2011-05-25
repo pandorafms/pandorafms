@@ -166,6 +166,7 @@ CREATE TABLE tagente_modulo (
 	id_tipo_modulo NUMBER(10, 0) default 0 NOT NULL,
 	descripcion CLOB default '',
 	nombre CLOB default '',
+	unit VARCHAR2(100) DEFAULT '',
 	id_policy_module NUMBER(10, 0) default 0 NOT NULL,
 	max NUMBER(19, 0) default 0 NOT NULL,
 	min NUMBER(19, 0) default 0 NOT NULL,

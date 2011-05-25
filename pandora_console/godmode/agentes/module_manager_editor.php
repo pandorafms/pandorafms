@@ -173,6 +173,7 @@ if ($id_agent_module) {
 	$min_critical = $module['min_critical'];
 	$max_critical = $module['max_critical'];
 	$ff_event = $module['min_ff_event'];
+	$unit = $module['unit'];
 }
 else {
 	if (!isset ($moduletype)) {

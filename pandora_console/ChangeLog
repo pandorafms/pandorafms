@@ -1,3 +1,10 @@
+2011-05-25 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: erased lost trace in source code.
+	
+	* include/functions_db.php: in function "db_pandora_audit" added the check
+	the exists the id_user.
+
 2011-05-23 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php: cleaned source code style.

@@ -1030,7 +1030,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				else
 					$details_new[] = $detail;
 			}
-			html_debug_print($details_new,"/tmp/prueba.txt");
+			
 			$details = io_safe_input ($details_new);
 		}
 		else

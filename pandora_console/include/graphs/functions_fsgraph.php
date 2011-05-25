@@ -309,7 +309,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 }
 
 
-function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '') {
+function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit) {
 	global $config;
 
 	$graph_type = "MSArea2D"; //MSLine is possible also
@@ -346,7 +346,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 			else {
 				$chart->addCategory($i, 'showName=' . $show_name);
 			}
-			
+
 			$c = 0;
 			foreach($values as $i2 => $value) {
 				$data2[$i2][$i] = $value;
@@ -390,7 +390,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 				$color = 'color=#' . $colors[$i]['color'];
 			}
 		}
-		
+	
 		$chart->addDataSet($legend_text, $alpha . 
 			'showAreaBorder=' . $showAreaBorder . ';' .
 			$areaBorderColor .
@@ -423,7 +423,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 		}
 	}
 	
-	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . 
+	$chart->setChartParams('numberSuffix=' . $unit . ';'.'animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
 		'lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
@@ -447,7 +447,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 					pie_' . $chart_id . ' ();
 			-->
 		</script>';
-	
+
 	return $output;	
 }
 ///////////////////////////////

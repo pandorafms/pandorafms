@@ -190,13 +190,14 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homedir="",
-	$water_mark = "", $font = '', $font_size = '') {
+	$water_mark = "", $font = '', $font_size = '', $unit) {
+
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
 	
 	if($flash_chart) {
-		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homedir);
+		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homedir, $unit);
 	}
 	else {
 		$graph = array();

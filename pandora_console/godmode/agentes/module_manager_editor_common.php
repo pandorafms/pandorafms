@@ -226,4 +226,7 @@ $table_advanced->data[4][0] = __('Export target');
 $table_advanced->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
 	'id_export', $id_export, '',__('None'),'0', true, false, false, $disabledBecauseInPolicy).ui_print_help_tip (__('In case you use an Export server you can link this module and export data to one these.'), true);
 $table_advanced->colspan[4][1] = 3;
+$table_advanced->data[5][0] = __('Unit');
+$table_advanced->data[5][1] = html_print_input_text ('unit', $unit,
+	'', 20, 65, true);
 ?>

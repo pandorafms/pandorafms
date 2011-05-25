@@ -1,3 +1,18 @@
+2011-05-25  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* operation/agentes/ver_agente.php
+	operation/agentes/graphs.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php
+	godmode/agentes/module_manager_editor_common.php
+	include/graphs/fgraph.php
+	include/graphs/functions_fsgraph.php
+	include/functions_graph.php
+	include/functions_modules.php
+	pandoradb.oracle.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.sql: Added units to modules and graphs
+
 2011-05-25 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php: erased lost trace in source code.

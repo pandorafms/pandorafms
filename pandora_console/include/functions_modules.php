@@ -544,6 +544,17 @@ function modules_get_agentmodule_type ($id_agentmodule) {
 }
 
 /**
+ * Get the unit of an agent module.
+ *
+ * @param int $id_agente_module Agent module id.
+ *
+ * @return string Module unit of the given agent module.
+ */
+function modules_get_unit ($id_agente_modulo) {
+	return $unit = (string) db_get_value ('unit', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+}
+
+/**
  * Get all the times a monitor went down during a period.
  *
  * @param int $id_agent_module Agent module of the monitor.

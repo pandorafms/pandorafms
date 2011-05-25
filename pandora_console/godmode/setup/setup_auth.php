@@ -74,19 +74,15 @@ $table->data[9][0] = __('Base DN');
 $table->data[9][1] = html_print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
 $table->data[10][0] = __('Login attribute');
 $table->data[10][1] = html_print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
-$table->data[11][0] = __('Username');
-$table->data[11][1] = html_print_input_text ('ldap_admin_dn', $config['ldap_admin_dn'], '', 30, 100, true);
-$table->data[12][0] = __('Password');
-$table->data[12][1] = html_print_input_password ('ldap_admin_pwd', $config['ldap_admin_pwd'], '', 30, 100, true);
 
 // Hide LDAP configuration options
-for ($i = 5; $i <= 12; $i++) {
+for ($i = 5; $i <= 10; $i++) {
 	$table->rowstyle[$i] = $config['auth'] == 'ldap' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'ldap';
 }
 
 // Add enterprise authentication options
-enterprise_hook ('add_enterprise_auth_options', array (&$table, 13));
+enterprise_hook ('add_enterprise_auth_options', array (&$table, 11));
 
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);

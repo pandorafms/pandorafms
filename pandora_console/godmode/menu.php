@@ -173,6 +173,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["glog"]["text"] = __('System audit log');
 	$menu["glog"]["sec2"] = "godmode/admin_access_logs";
 	$menu["glog"]["id"] = "god-audit";
+		
+	// Tag
+	$menu["gtag"]["text"] = __('Manage tags');
+	$menu["gtag"]["sec2"] = "godmode/tag/tag";
+	$menu["gtag"]["id"] = "god-tag";
 
 	// Setup
 	$menu["gsetup"]["text"] = __('Setup');

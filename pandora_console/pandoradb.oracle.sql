@@ -1408,3 +1408,54 @@ CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF ID_AGENTE O
 -- Procedure for retrieve PK information after an insert statement
 CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER) IS BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT ' ||table_name||'_s.currval FROM DUAL' INTO id; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
 
+
+-- -----------------------------------------------------
+-- Table "ttag"
+-- -----------------------------------------------------
+
+CREATE TABLE ttag ( 
+ id_tag NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+ name VARCHAR2(100) default '' NOT NULL, 
+ description CLOB default '' NOT NULL, 
+ url CLOB default '' NOT NULL
+); 
+
+CREATE SEQUENCE ttag_s INCREMENT BY 1 START WITH 1;
+
+CREATE OR REPLACE TRIGGER ttag_inc BEFORE INSERT ON ttag REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttag_s.nextval INTO :NEW.ID_TAG FROM dual; END ttag_inc;;
+
+-- -----------------------------------------------------
+-- Table "ttag_module"
+-- -----------------------------------------------------
+
+CREATE TABLE ttag_module ( 
+ id_tag NUMBER(10, 0) NOT NULL, 
+ id_agente_modulo NUMBER(10, 0) DEFAULT 0 NOT NULL, 
+   PRIMARY KEY  (id_tag, id_agente_modulo)
+); 
+
+CREATE INDEX ttag_module_id_ag_modulo_idx ON ttag_module(id_agente_modulo);
+
+-- -----------------------------------------------------
+-- Table "ttag_policy_module"
+-- -----------------------------------------------------
+
+CREATE TABLE ttag_policy_module ( 
+ id_tag NUMBER(10, 0) NOT NULL, 
+ id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL, 
+   PRIMARY KEY  (id_tag, id_policy_module)
+); 
+
+CREATE INDEX ttag_poli_mod_id_pol_mo_idx ON ttag_policy_module(id_policy_module);
+
+-- -----------------------------------------------------
+-- Table "ttag_event"
+-- -----------------------------------------------------
+
+CREATE TABLE ttag_event ( 
+ id_tag NUMBER(10, 0) NOT NULL, 
+ id_evento NUMBER(19, 0) DEFAULT 0 NOT NULL, 
+   PRIMARY KEY  (id_tag, id_evento)
+); 
+
+CREATE INDEX ttag_event_id_evento_idx ON ttag_event(id_evento);

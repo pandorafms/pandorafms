@@ -1136,3 +1136,50 @@ CREATE TABLE "tagent_custom_data" (
 	"description" text default '',
   PRIMARY KEY  ("id_field", "id_agent")
 );
+
+-- -----------------------------------------------------
+-- Table "ttag"
+-- -----------------------------------------------------
+
+CREATE TABLE "ttag" ( 
+ "id_tag" SERIAL NOT NULL PRIMARY KEY, 
+ "name" VARCHAR2(100) NOT NULL default '', 
+ "description" text NOT NULL default '', 
+ "url" text NOT NULL default ''
+); 
+
+-- -----------------------------------------------------
+-- Table "ttag_module"
+-- -----------------------------------------------------
+
+CREATE TABLE "ttag_module" ( 
+ "id_tag" INTEGER NOT NULL, 
+ "id_agente_modulo" INTEGER NOT NULL DEFAULT 0, 
+   PRIMARY KEY  (id_tag, id_agente_modulo)
+); 
+
+CREATE INDEX "ttag_module_id_ag_modulo_idx" ON "ttag_module"("id_agente_modulo");
+
+-- -----------------------------------------------------
+-- Table "ttag_policy_module"
+-- -----------------------------------------------------
+
+CREATE TABLE "ttag_policy_module" ( 
+ "id_tag" INTEGER NOT NULL, 
+ "id_policy_module" INTEGER NOT NULL DEFAULT 0, 
+   PRIMARY KEY  (id_tag, id_policy_module)
+); 
+
+CREATE INDEX "ttag_poli_mod_id_pol_mo_idx" ON "ttag_policy_module"("id_policy_module");
+
+-- -----------------------------------------------------
+-- Table "ttag_event"
+-- -----------------------------------------------------
+
+CREATE TABLE "ttag_event" ( 
+ id_tag INTEGER NOT NULL, 
+ id_evento BIGINT(20) NOT NULL DEFAULT 0, 
+   PRIMARY KEY  (id_tag, id_evento)
+); 
+
+CREATE INDEX "ttag_event_id_evento_idx" ON "ttag_event"("id_evento");

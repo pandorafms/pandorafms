@@ -1212,3 +1212,48 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
 	ON UPDATE CASCADE ON DELETE CASCADE,
   PRIMARY KEY  (`id_field`, `id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `ttag`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `ttag` ( 
+ `id_tag` integer(10) unsigned NOT NULL auto_increment, 
+ `name` varchar(100) NOT NULL default '', 
+ `description` text NOT NULL default '', 
+ `url` mediumtext NOT NULL default '', 
+ PRIMARY KEY  (`id_tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+-- -----------------------------------------------------
+-- Table `ttag_module`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `ttag_module` ( 
+ `id_tag` int(10) NOT NULL, 
+ `id_agente_modulo` int(10) NOT NULL DEFAULT 0, 
+   PRIMARY KEY  (id_tag, id_agente_modulo),
+   KEY `idx_id_agente_modulo` (`id_agente_modulo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+-- -----------------------------------------------------
+-- Table `ttag_policy_module`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `ttag_policy_module` ( 
+ `id_tag` int(10) NOT NULL, 
+ `id_policy_module` int(10) NOT NULL DEFAULT 0, 
+   PRIMARY KEY  (id_tag, id_policy_module),
+   KEY `idx_id_policy_module` (`id_policy_module`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+-- -----------------------------------------------------
+-- Table `ttag_event`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `ttag_event` ( 
+ `id_tag` int(10) NOT NULL, 
+ `id_evento` bigint(20) NOT NULL DEFAULT 0, 
+   PRIMARY KEY  (id_tag, id_evento),
+   KEY `idx_id_evento` (`id_evento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 

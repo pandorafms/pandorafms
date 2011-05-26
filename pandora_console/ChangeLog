@@ -1,3 +1,19 @@
+2011-05-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/menu.css: Added new background image on css 
+	tag entry.
+	* include/functions_tags.php: Added new function code for tag 
+	functionality.
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added new tables "ttag",
+	"ttag_module", "ttag_policy_module" and "ttag_event".
+	* godmode/tag: Added new path.
+	* godmode/menu.php
+	godmode/tag/tag.php
+	godmode/tag/edit_tag.php: Tag editor for events correlation engine.
+
 2011-05-25  Sergio Martin <sergio.martin@artica.es>
 
 	* images/policies_error_db.png: Added new image to policies

@@ -229,4 +229,9 @@ $table_advanced->colspan[4][1] = 3;
 $table_advanced->data[5][0] = __('Unit');
 $table_advanced->data[5][1] = html_print_input_text ('unit', $unit,
 	'', 20, 65, true);
+/* Tags */
+$table_advanced->data[6][0] =  __('Tag');
+$table_advanced->data[6][1] =  html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
+	'id_tag[]', $id_tag, '',__('None'),'0', true, true, false, false);
+
 ?>

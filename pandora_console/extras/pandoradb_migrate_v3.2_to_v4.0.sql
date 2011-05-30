@@ -169,3 +169,9 @@ CREATE TABLE IF NOT EXISTS `ttag_event` (
    PRIMARY KEY  (id_tag, id_evento),
    KEY `idx_id_evento` (`id_evento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+-- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
+
+ALTER TABLE `tagente_modulo` ADD COLUMN (`unit` text DEFAULT '');

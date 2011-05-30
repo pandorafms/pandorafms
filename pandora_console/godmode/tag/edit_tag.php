@@ -19,7 +19,7 @@ check_login ();
 require_once ($config['homedir'].'/include/functions_tags.php');
 
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	db_pandora_audit("ACL Violation", "Trying to access Edit Skin");
+	db_pandora_audit("ACL Violation", "Trying to access Edit Tag");
 	require ("general/noaccess.php");
 	return;
 }
@@ -44,12 +44,12 @@ if ($update_tag && $id_tag != 0) {
 	$values['description'] = $description_tag;
 	$values['url'] = $url_tag;
 	
-	$result = tags_update_tag($values);
+	$result = tags_update_tag($values, 'id_tag = ' . $id_tag);
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('Error updating tag').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Successfully updated skin').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully updated tag').'</h3>';
 	}
 }
 

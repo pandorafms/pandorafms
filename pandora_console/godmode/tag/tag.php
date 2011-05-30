@@ -45,10 +45,10 @@ if (is_ajax ()) {
 		
 		echo '<h3>'.$tag['name'].'</h3>';
 		echo '<strong>'.__('Number of modules').': </strong> ' . 
-		tags_get_local_modules_count($id);
+		tags_get_local_modules_count($id_tag);
 		echo '<br>';
 		echo '<strong>'.__('Number of policy modules').': </strong>' . 
-		tags_get_policy_modules_count($id);
+		tags_get_policy_modules_count($id_tag);
 	
 		return;
 	}
@@ -71,14 +71,20 @@ if ($delete != 0) {
 	}
 }
 
+// statements for pagination
+$url = ui_get_url_refresh ();
+$total_tags = tags_get_tag_count();
+
+$filter['offset'] = (int) get_parameter ('offset');
+$filter['limit'] = (int) $config['block_size'];
 // Search action: This will filter the display tag view
 $result = false;
 // Filtered view? 
 if ($search != 0) {
-	$result = tags_search_tag($tag_name);
+	$result = tags_search_tag($tag_name, $filter);
 }
 else{
-	$result = tags_search_tag();
+	$result = tags_search_tag(false, $filter);
 }
 
 // Form to add new tags or search tags
@@ -99,6 +105,9 @@ echo "<td align=right>";
 	html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
 	echo "</form>";
 echo "</table>";
+
+// Prepare pagination
+ui_pagination ($total_tags, $url);
 
 // Display tags previously filtered or not
 $rowPair = true;
@@ -133,7 +142,7 @@ if (!empty($result)){
 		$data = array ();
 
 		$data[0] = $tag["name"];  
-		$data[1] = $tag["description"];
+		$data[1] = ui_print_truncate_text($tag["description"], 25, false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
 		$data[3] = ' <a class="tag_details"
 		href="ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">' .

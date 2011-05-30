@@ -21,6 +21,7 @@
 
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
+include_once($config['homedir'] . '/include/functions_tags.php');
 
 /**
  * Copy a module defined in an agent to other agent.
@@ -172,17 +173,23 @@ function modules_delete_agent_module ($id_agent_module) {
  *
  * @param mixed Agent module id to be deleted. Accepts an array with ids.
  * @param array Values to update.
- *
+ * @param mixed Tag's module array or false.
+ * 
  * @return True if the module was updated. False if not.
  */
-function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false) {
+function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false, 
+	$tags = false) {
 	if (! is_array ($values) || empty ($values))
 		return false;
 		
 	if (isset ($values['nombre']) && empty ($values['nombre']))
 		return false;
-	
-		
+
+	$return_tag = tags_update_module_tag ($id, $tags);	
+
+	if ($return_tag === false){
+			return false;
+	}
 		
 	if ($onlyNoDeletePending) {
 		return (@db_process_sql_update ('tagente_modulo', $values,
@@ -201,10 +208,12 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
  * @param int Module name id.
  * @param array Extra values for the module.
  * @param bool Disable the ACL checking, for default false.
- *
+ * @param mixed Array with tag's ids or false.
+ * 
  * @return New module id if the module was created. False if not.
  */
-function modules_create_agent_module ($id_agent, $name, $values = false, $disableACL = false) {
+function modules_create_agent_module ($id_agent, $name, $values = false, $disableACL = false,
+	$tags = false) {
 	global $config;
 
 	if (!$disableACL) {
@@ -223,6 +232,15 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	
 	if ($id_agent_module === false)
 		return false;
+
+	$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
+
+	if ($return_tag === false){
+		db_process_sql_delete ('tagente_modulo',
+			array ('id_agente_modulo' => $id_agent_module));
+
+		return false;
+	}
 
 	switch ($config["dbtype"]) {
 		case "mysql":

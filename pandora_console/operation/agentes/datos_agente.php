@@ -70,7 +70,7 @@ if ($moduletype_name == "log4x") {
 	$columns = array(
 		
 		"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
-		"Sev" 		=> array("severity", 				"format_data", 			"align" => "center", "width" => "70px"),
+		"Sev" 		=> array("severity", 				"modules_format_data", 			"align" => "center", "width" => "70px"),
 		"Message"	=> array("message", 				"modules_format_verbatim",		"align" => "left", "width" => "45%"),
 		"StackTrace" 		=> array("stacktrace",				"modules_format_verbatim", 			"align" => "left", "width" => "50%")
 	);
@@ -80,7 +80,7 @@ if ($moduletype_name == "log4x") {
 	
 	$columns = array(
 		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "center"),
-		"Data" 		=> array("datos", 				"format_data", 				"align" => "center"),
+		"Data" 		=> array("datos", 				"modules_format_data", 				"align" => "center"),
 		"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
 	);
 } else {
@@ -88,7 +88,7 @@ if ($moduletype_name == "log4x") {
 	
 	$columns = array(
 		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "center"),
-		"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
+		"Data" 		=> array("datos", 				"modules_format_data", 			"align" => "center"),
 		"Time" 		=> array("utimestamp", 			"modules_format_time", 			"align" => "center")
 	);
 }

@@ -23,10 +23,11 @@
  * Find a tag searching by tag's or description name. 
  * 
  * @param string $tag_name_description Name or description of the tag that it's currently searched. 
- *
+ * @param array $filter Array with pagination parameters. 
+ * 
  * @return mixed Returns an array with the tag selected by name or false.
  */
-function tags_search_tag ($tag_name_description = false) {
+function tags_search_tag ($tag_name_description = false, $filter = false) {
 	global $config;
 	
 	if ($tag_name_description){
@@ -41,15 +42,27 @@ function tags_search_tag ($tag_name_description = false) {
 				break;
 			case "oracle":
 						$sql = 'SELECT * FROM ttag WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
-						UPPER(description) LIKE UPPER (\'%'. $tag_name_description .'%\'))';
+						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\'))';
 				break;
 		}
 	}
 	else{
 		$sql = 'SELECT * FROM ttag';
 	}
-	$result = db_get_all_rows_sql ($sql);
-
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
+			break;
+		case "oracle":
+			$result = oracle_recode_query ($sql, $filter, 'AND', false);
+			if ($components != false) {
+				for ($i=0; $i < count($components); $i++) {
+					unset($result[$i]['rnum']);		
+				}			
+			}
+			break;
+	}
 	if ($result === false)
 		return array (); //Return an empty array
 	else 
@@ -123,8 +136,8 @@ function tags_get_url($id){
  * @return mixed Int with the tag's count or false.
  */
 function tags_get_modules_count($id){
-	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', 'id_tag', $id);
-	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', 'id_tag', $id);
+	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_tag' => $id));
+	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', array('id_tag' => $id));
 
 	return $num_modules + $num_policy_modules;
 }
@@ -137,7 +150,7 @@ function tags_get_modules_count($id){
  * @return mixed Int with the tag's count or false.
  */
 function tags_get_local_modules_count($id){
-	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', 'id_tag', $id);
+	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_tag' => $id));
 
 	return $num_modules;
 }
@@ -150,7 +163,7 @@ function tags_get_local_modules_count($id){
  * @return mixed Int with the tag's count or false.
  */
 function tags_get_policy_modules_count($id){
-	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', 'id_tag', $id);
+	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', array('id_tag' => $id));
 
 	return $num_policy_modules;
 }
@@ -161,11 +174,12 @@ function tags_get_policy_modules_count($id){
  * Updates a tag by id. 
  * 
  * @param array $id Int with tag id info. 
+ * @param string $where Where clause to update record.
  *
  * @return bool True or false if something goes wrong.
  */
-function tags_update_tag($values){
-	return db_process_sql_update ('ttag', $values);
+function tags_update_tag($values, $where){
+	return db_process_sql_update ('ttag', $values, $where);
 }
 
 /**
@@ -200,3 +214,111 @@ function tags_delete_tag ($id_tag){
 	}
 
 }
+
+/**
+ * Get tag's total count.  
+ *
+ * @return mixed Int with the tag's count.
+ */
+function tags_get_tag_count(){
+	return (int)db_get_value('count(*)', 'ttag');
+}
+
+/**
+ * Inserts tag's array of a module. 
+ * 
+ * @param int $id_agent_module Module's id.
+ * @param array $tags Array with tags to associate to the module. 
+ *
+ * @return bool True or false if something goes wrong.
+ */
+function tags_insert_module_tag ($id_agent_module, $tags){
+	$errn = 0;
+	
+	$values = array();
+	foreach ($tags as $tag){
+		//Protect against default insert
+		if (empty($tag))
+			continue;
+		
+		$values['id_tag'] = $tag;
+		$values['id_agente_modulo'] = $id_agent_module;
+		$result_tag = db_process_sql_insert('ttag_module', $values, false);
+		if ($result_tag === false)
+			$errn++;		
+	}
+	
+	if ($errn > 0){
+		db_process_sql_rollback();
+		return false;
+	}
+	else{
+		db_process_sql_commit();
+		return true;
+	}
+}
+
+/**
+ * Updates tag's array of a module. 
+ * 
+ * @param int $id_agent_module Module's id.
+ * @param array $tags Array with tags to associate to the module. 
+ *
+ * @return bool True or false if something goes wrong.
+ */
+function tags_update_module_tag ($id_agent_module, $tags){
+	$errn = 0;
+	
+	/* First delete module tag entries */
+	$result_tag = db_process_delete_temp ('ttag_module', 'id_agente_modulo', $id_agent_module);
+	
+	if ($result_tag === false){
+		db_process_sql_rollback();
+		return false;
+	}
+
+	$values = array();
+	foreach ($tags as $tag){
+		$values['id_tag'] = $tag;
+		$values['id_agente_modulo'] = $id_agent_module;
+		$result_tag = db_process_sql_insert('ttag_module', $values, false);
+		if ($result_tag === false)
+			$errn++;		
+	}
+
+	if ($errn > 0){
+		db_process_sql_rollback();
+		return false;
+	}
+	else{
+		db_process_sql_commit();
+		return true;
+	}
+
+}
+
+/**
+ * Select all tags of a module. 
+ * 
+ * @param int $id_agent_module Module's id.
+ *
+ * @return mixed Array with module tags or false if something goes wrong.
+ */
+function tags_get_module_tags ($id_agent_module){
+	if (empty($id_agent_module))
+		return false;
+	
+	$tags = db_get_all_rows_filter('ttag_module', array('id_agente_modulo' => $id_agent_module), false);
+
+	if ($tags === false)
+		return false;
+	
+	$return = array();
+	foreach ($tags as $tag){
+		$return[] = $tag['id_tag'];
+	}
+	
+	return $return;
+}
+	
+?>

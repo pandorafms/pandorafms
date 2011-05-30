@@ -110,6 +110,7 @@ $cascade_protection = 0;
 $icon_path = '';
 $update_gis_data = 0;
 $unit = "";
+$id_tag = array();
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -616,6 +617,7 @@ if ($update_module || $create_module) {
 	$max_critical = (float) get_parameter ('max_critical');
 	$ff_event = (int) get_parameter ('ff_event');
 	$unit = (string) get_parameter('unit');
+	$id_tag = (array) get_parameter('id_tag');
 
 	$active_snmp_v3 = get_parameter('active_snmp_v3');
 	if ($active_snmp_v3) {
@@ -668,7 +670,7 @@ if ($update_module) {
 			'unit' => $unit);
 	
 	$result = modules_update_agent_module ($id_agent_module,
-		$values);
+		$values, false, $id_tag);
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
@@ -746,7 +748,7 @@ if ($create_module) {
 			'unit' => $unit
 		);
 
-	$id_agent_module = modules_create_agent_module ($id_agente, $name, $values);
+	$id_agent_module = modules_create_agent_module ($id_agente, $name, $values, false, $id_tag);
 	
 	if ($id_agent_module === false) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
@@ -819,6 +821,10 @@ if ($delete_module) { // DELETE agent module !
 	if (alerts_delete_alert_agent_module($id_borrar_modulo) === false)
 		$error++;
 	
+	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo', $id_borrar_modulo);	
+	if ($result === false)
+		$error++;
+
 
 	//Check for errors
 	if ($error != 0) {

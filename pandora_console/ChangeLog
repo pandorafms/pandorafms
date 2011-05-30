@@ -1,5 +1,9 @@
 2011-05-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* install.php: Fixed typo mistake in this file.
+
+2011-05-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* ChangeLog: forgot to update Changelog.
 
 2011-05-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

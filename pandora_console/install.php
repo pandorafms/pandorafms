@@ -318,7 +318,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 
 function oracle_drop_all_objects ($connection) {
 
-	//Drop all objects of the current instalation
+	//Drop all objects of the current installation
 	$stmt = oci_parse($connection,
 			"BEGIN " .
   				"FOR cur_rec IN (SELECT object_name, object_type " . 
@@ -585,7 +585,7 @@ function install_step3() {
 		echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
 		echo $options;
 		echo "</select>";
-		echo "<div style=\"height:40px;\">Instalation in <br>";
+		echo "<div style=\"height:40px;\">Installation in <br>";
 		echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
 		echo 	"<option value='db_new'>A new Database</option>";
 		echo 	"<option value='db_exist'>An existing Database</option>";

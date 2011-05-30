@@ -2304,11 +2304,18 @@ sub pandora_self_monitoring ($$) {
 	# Number of unknown agents
 	my $agents_unknown = 0;
 	if (defined ($my_data_server)) {
-		$agents_unknown = get_db_value ($dbh, "SELECT * FROM tagente_estado, tagente WHERE tagente.disabled =0 AND tagente.id_agente = tagente_estado.id_agente AND running_by = $my_data_server AND utimestamp < NOW() - (current_interval * 2) limit 10;");
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT tagente_estado.id_agente)
+		                                       FROM tagente_estado, tagente, tagente_modulo
+		                                       WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+		                                       AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+		                                       AND tagente_modulo.disabled = 0
+		                                       AND running_by = $my_data_server
+		                                       AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24,100)
+		                                       AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
 		$agents_unknown = 0 if (!defined($agents_unknown));
 	}
 
-my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
 
 	if (!defined($queued_modules)){
 		$queued_modules = 0;

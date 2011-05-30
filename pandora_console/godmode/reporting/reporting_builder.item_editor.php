@@ -28,6 +28,7 @@ $show_graph_options[1] = __('Table & Graph');
 $show_graph_options[2] = __('Only graph');
 
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 require_once ($config['homedir'].'/include/functions_agents.php');
 
 switch ($action) {
@@ -67,15 +68,24 @@ switch ($action) {
 		$show_in_two_columns = 0;
 		$show_in_landscape = 0;
 		$modulegroup = 0;
+		$server_name = '';
 		break;
 	default:
 		$actionParameter = 'update';
 		$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
+		$server_name = $item ['server_name'];
 		
+		// Metaconsole db connection
+		if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+			$connection = metaconsole_get_connection($server_name);
+			if (!metaconsole_load_external_db($connection)) {
+				ui_print_error_message ("Error connecting to ".$server_name);
+			}
+		}
+
 		$style = json_decode(io_safe_output($item['style']), true);
 		$show_in_two_columns = $style['show_in_two_columns'];
 		$show_in_landscape = $style['show_in_landscape'];
-		
 		$type = $item['type'];
 		switch ($type) {
 			case 'avg_value':
@@ -357,6 +367,7 @@ html_print_input_hidden('id_item', $idItem);
 					html_print_input_text_extended ('agent', agents_get_name ($idAgent), 'text-agent', '', 30, 100, false, '',
 						array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 						. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+					html_print_input_hidden ('server_name', $server_name);
 				?>
 			</td>
 		</tr>
@@ -516,8 +527,13 @@ ui_require_javascript_file('pandora');
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
 }
+//Restore db connection
+if ($config ['metaconsole'] == 1) {
+	metaconsole_restore_db();
+}
 
 function print_SLA_list($width, $action, $idItem = null) {
+	global $config;
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="95%">
 		<thead>
@@ -548,6 +564,14 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$itemsSLA = array();
 					}
 					foreach ($itemsSLA as $item) {
+						$server_name = $item ['server_name'];
+						// Metaconsole db connection
+						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+							$connection = metaconsole_get_connection($server_name);
+							if (!metaconsole_load_external_db($connection)) {
+								ui_print_error_message ("Error connecting to ".$server_name);
+							}
+						}
 						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
@@ -562,6 +586,10 @@ function print_SLA_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
+						if ($config ['metaconsole'] == 1) {
+							//Restore db connection
+							metaconsole_restore_db();
+						}
 					}
 					echo '</tbody>';
 					?>
@@ -579,6 +607,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 						<tr id="sla_form" style="" class="datos">
 							<td>
 								<input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
+								<input id="hidden-server_name" name="server_name" value="" type="hidden">
 								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_sla" id="text-agent_sla" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
 							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
 							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
@@ -599,6 +628,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 }
 
 function print_General_list($width, $action, $idItem = null) {
+	global $config;
 	?>
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="95%">
 		<thead>
@@ -626,6 +656,14 @@ function print_General_list($width, $action, $idItem = null) {
 						$itemsGeneral = array();
 					}
 					foreach ($itemsGeneral as $item) {
+						$server_name = $item ['server_name'];
+						// Metaconsole db connection
+						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+							$connection = metaconsole_get_connection($server_name);
+							if (!metaconsole_load_external_db($connection)) {
+								ui_print_error_message ("Error connecting to ".$server_name);
+							}
+						}
 						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
@@ -637,6 +675,10 @@ function print_General_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
+						if ($config ['metaconsole'] == 1) {
+							//Restore db connection
+							metaconsole_restore_db();
+						}
 					}
 					echo '</tbody>';
 					?>
@@ -651,6 +693,7 @@ function print_General_list($width, $action, $idItem = null) {
 						<tr id="general_form" style="" class="datos">
 							<td>
 								<input id="hidden-id_agent_general" name="id_agent_general" value="" type="hidden">
+								<input id="hidden-server_name_general" name="server_name_general" value="" type="hidden">
 								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_general" id="text-agent_general" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
 							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
@@ -670,9 +713,9 @@ function print_General_list($width, $action, $idItem = null) {
 ?>
 <script>
 $(document).ready (function () {
-	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module');
-	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla');
-	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general');
+	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name');
+	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name');
+	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general');
 	chooseType();
 	chooseSQLquery();
 
@@ -768,6 +811,7 @@ function deleteGeneralRow(id_row) {
 function addSLARow() {
 	var nameAgent = $("input[name=agent_sla]").val();
 	var idAgent = $("input[name=id_agent_sla]").val();
+	var serverName = $("input[name=server_name]").val();
 	var idModule = $("#id_agent_module_sla").val();
 	var nameModule = $("#id_agent_module_sla :selected").text();
 	var slaMin = $("input[name=sla_min]").val();
@@ -814,6 +858,7 @@ function addSLARow() {
 			params.push("sla_min=" + slaMin);
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
+			params.push("server_name=" + serverName);
 		
 			params.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
@@ -836,6 +881,7 @@ function addSLARow() {
 						$(".delete_button", row).attr('href', 'javascript: deleteSLARow(' + data['id'] + ');');
 						$("#list_sla").append($(row).html());
 						$("input[name=id_agent_sla]").val('');
+						$("input[name=server_name]").val('');
 						$("input[name=agent_sla]").val('');
 						$("#id_agent_module_sla").empty();
 						$("#id_agent_module_sla").attr('disabled', 'true');
@@ -855,6 +901,7 @@ function addSLARow() {
 function addGeneralRow() {
 	var nameAgent = $("input[name=agent_general]").val();
 	var idAgent = $("input[name=id_agent_general]").val();
+	var serverName = $("input[name=server_name_general]").val();
 	var idModule = $("#id_agent_module_general").val();
 	var nameModule = $("#id_agent_module_general :selected").text();
 
@@ -893,6 +940,8 @@ function addGeneralRow() {
 		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
 		params.push("id_module=" + idModule);
+		params.push("server_name_general=" + serverName);
+		
 		params.push("page=include/ajax/reporting.ajax");
 		jQuery.ajax ({
 			data: params.join ("&"),
@@ -913,6 +962,7 @@ function addGeneralRow() {
 					$("#list_general").append($(row).html());
 				
 					$("input[name=id_agent_general]").val('');
+					$("input[name=server_name_general]").val('');
 					$("input[name=agent_general]").val('');
 					$("#id_agent_module_general").empty();
 					$("#id_agent_module_general").attr('disabled', 'true');

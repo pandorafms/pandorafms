@@ -23,10 +23,11 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
-enterprise_include ('operation/agentes/ver_agente.php');
+enterprise_include_once ('operation/agentes/ver_agente.php');
 
 check_login ();
 
@@ -142,24 +143,69 @@ if (is_ajax ()) {
 				$enabled = 'disabled = 0';
 				break;
 		}
-		
-		$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
-			FROM tagente_modulo t1
-			WHERE ' . $enabled . '
-				AND delete_pending = 0
-				AND id_agente IN (' . implode(',', $idAgents) . ') AND (
-					SELECT count(nombre)
-					FROM tagente_modulo t2
-					WHERE delete_pending = 0 AND t1.nombre = t2.nombre
-						AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
-		
-		if ($nameModules == false) {
+
+		if ($config ['metaconsole'] == 1) {
+			$result = array();
 			$nameModules = array();
+			$temp = array();
+			$first = true;
+
+			foreach ($idAgents as $idA) {
+				$row = explode ('|', $idA);
+				$server_name = $row[0];
+				$id_agent = $row [1];
+				
+				//Metaconsole db connection
+				$connection = metaconsole_get_connection($server_name);
+				if (!metaconsole_load_external_db($connection)) {
+					ui_print_error_message ("Error connecting to ".$server_name);
+				}
+				
+				//Get agent's modules
+				$temp = agents_get_modules ($id_agent);
+				
+				//Copy only the very first result to $nameModules
+				if (empty($nameModules) && $first == true) {
+					$first = false;
+					$nameModules = $temp;
+				}
+				
+				//If there's only one agent selected, get out of this loop 
+				if (count($idAgents) <= 1) {
+					//Restore db connection
+					metaconsole_restore_db();
+					break;
+				}
+				$nameModules = array_intersect ($nameModules, $temp); 
+				
+			//Restore db connection
+			metaconsole_restore_db();
+			}
+			
+			foreach ($nameModules as $nameModule) {
+				$result[] = io_safe_output($nameModule);
+			}
 		}
+		else {
 		
-		$result = array();
-		foreach($nameModules as $nameModule) {
-			$result[] = io_safe_output($nameModule['nombre']);
+			$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
+				FROM tagente_modulo t1
+				WHERE ' . $enabled . '
+					AND delete_pending = 0
+					AND id_agente IN (' . implode(',', $idAgents) . ') AND (
+						SELECT count(nombre)
+						FROM tagente_modulo t2
+						WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+							AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+		
+			if ($nameModules == false) {
+				$nameModules = array();
+			}
+		
+			$result = array();
+			foreach($nameModules as $nameModule) {
+				$result[] = io_safe_output($nameModule['nombre']);
+			}
 		}
 		
 		echo json_encode($result);
@@ -172,6 +218,7 @@ if (is_ajax ()) {
 		$fields = (string) get_parameter ('fields');
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
+		$server_name = (string) get_parameter ('server_name', null);
 		
 		if ($agentName != null) {
 				$search = array();
@@ -180,13 +227,31 @@ if (is_ajax ()) {
 		else
 			$search = false;
 		
-		/* Get all agents if no agent was given */
-		if ($id_agent == 0)
-			$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
-		
-		$agent_modules = agents_get_modules ($id_agent,
-			($fields != '' ? explode (',', $fields) : "*"),
-			($filter != '' ? $filter : false), $indexed);
+		if ($config ['metaconsole'] == 1) {
+			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_load_external_db($connection)) {
+					/* Get all agents if no agent was given */
+					if ($id_agent == 0)
+						$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
+					
+					$agent_modules = agents_get_modules ($id_agent,
+						($fields != '' ? explode (',', $fields) : "*"),
+						($filter != '' ? $filter : false), $indexed);
+				}
+				// Restore db connection
+				metaconsole_restore_db();
+			}
+		}
+		else {
+			/* Get all agents if no agent was given */
+			if ($id_agent == 0)
+				$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
+			
+			$agent_modules = agents_get_modules ($id_agent,
+				($fields != '' ? explode (',', $fields) : "*"),
+				($filter != '' ? $filter : false), $indexed);
+		}
 		
 		foreach($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);

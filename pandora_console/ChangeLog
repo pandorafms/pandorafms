@@ -1,3 +1,20 @@
+2011-05-30 Javier Lanz <javier.lanz@artica.es>
+	* include/functions_reporting.php: Edited "render_report_html" function
+	to work with metaconsole printing metaconsole elements
+	* include/javascript/pandora.js: Modified autocomplete javascript to use
+	with metaconsole
+	* include/ajax/reporting.ajax.php: Edited to work with metaconsole
+	* include/ajax/agent.php: Edited autocomplete to work with metaconsole
+	* operation/agentes/ver_agente.php: Modified to get the agent's modules
+	using metacofacensole
+	* godmode/reporting/reporting_builder.list_items.php: Edited to display
+	agents & modules in metaconsole. Edited top filters to work with
+	metaconsole
+	* godmode/reporting/reporting_builder.php: Added getting parameter
+	server_name & fixed deleting items
+	* godmode/reporting/reporting_builder.item_editor.php: Edited to send
+	the host when metaconsole is active
+
 2011-05-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* install.php: Fixed typo mistake in this file.

@@ -197,6 +197,7 @@ switch ($action) {
 						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
+						$values['server_name'] = get_parameter ('server_name');
 					
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
@@ -275,6 +276,7 @@ switch ($action) {
 						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
+						$values['server_name'] = get_parameter ('server_name');
 						
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
  
@@ -362,9 +364,12 @@ switch ($action) {
 		$reportName = $report['name'];
 		
 		$resultOperationDB = db_process_sql_delete('treport_content_sla_combined', array('id_report_content' => $idItem));
-		
+		$resultOperationDB2 = db_process_sql_delete('treport_content_item', array('id_report_content' => $idItem));
 		if ($resultOperationDB !== false) {
 			$resultOperationDB = db_process_sql_delete('treport_content', array('id_rc' => $idItem));
+		}
+		if ($resultOperationDB2 !== false) {
+			$resultOperationDB2 = db_process_sql_delete('treport_content', array('id_rc' => $idItem));
 		}
 		break;
 	case 'order':

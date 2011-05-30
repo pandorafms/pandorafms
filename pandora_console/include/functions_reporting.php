@@ -32,6 +32,7 @@ include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 
 /** 
  * Get the average value of an agent module in a period of time.
@@ -2012,7 +2013,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$sizgraph_w = '750';
 		$sizgraph_h = '230';
 	}
-
+	
+	$server_name = $content ['server_name'];
+	if (($config ['metaconsole'] == 1) && $server_name != '') {
+		$connection = metaconsole_get_connection($server_name);
+		if (!metaconsole_load_external_db($connection))
+			ui_print_error_message ("Error connecting to ".$server_name);
+	}
 		
 	$module_name = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	if ($content['id_agent_module'] != 0) {
@@ -2189,6 +2196,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$sla_failed = false;
 			foreach ($slas as $sla) {
+				$server_name = $sla ['server_name'];
+				//Metaconsole connection
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					$connection = metaconsole_get_connection($server_name);
+					if (!metaconsole_load_external_db($connection))
+						ui_print_error_message ("Error connecting to ".$server_name);
+				}
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
@@ -2241,6 +2255,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data[4] .= "</span>";
 					
 					array_push ($table1->data, $data);
+				}
+				if ($config ['metaconsole'] == 1) {
+					//Restore db connection
+					metaconsole_restore_db();
 				}
 			}
 			$table->colspan[2][0] = 3;
@@ -2858,10 +2876,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			switch ($group_by_agent) {
 				//0 means not group by agent
 				case 0:
-					$sql = sprintf("select a.id_agent_module, b.nombre as agent_name,
-					c.nombre as module_name from treport_content_item as a, tagente as b,
-					tagente_modulo as c where a.id_agent_module = c.id_agente_modulo and
-					c.id_agente = b.id_agente and id_report_content = %d", $content['id_rc']);
+					$sql = sprintf("select id_agent_module, server_name from treport_content_item
+									where id_report_content = %d", $content['id_rc']);
 
 					$generals = db_process_sql ($sql);
 					if ($generals === false) {
@@ -2884,12 +2900,28 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$data_avg = array();
 					foreach ($generals as $key => $row) {
+						//Metaconsole connection
+						$server_name = $row ['server_name'];
+						if (($config ['metaconsole'] == 1) && $server_name != '') {
+							$connection = metaconsole_get_connection($server_name);
+							if (!metaconsole_load_external_db($connection))
+								ui_print_error_message ("Error connecting to ".$server_name);
+						}
+						
+						$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
+						$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
+						
 						$data_avg[$key] = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
 						$id_agent_module[$key] = $row['id_agent_module'];
-						$agent_name[$key] = $row['agent_name'];
-						$module_name[$key] = $row['module_name'];
+						$agent_name[$key] = $ag_name;
+						$module_name[$key] = $mod_name;
+						
+						//Restore dbconnection
+						if (($config ['metaconsole'] == 1) && $server_name != '') {
+							metaconsole_restore_db();
+						}
 					}
-					
+					//Order by data descending, ascending or without order
 					if ($order_uptodown == 0 || $order_uptodown == 1 || $order_uptodown == 2) {
 						switch ($order_uptodown) {
 							//Descending
@@ -2911,6 +2943,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$i++;
 						}
 					}
+					//Order by agent name
 					elseif ($order_uptodown == 3) {
 						array_multisort($agent_name, SORT_ASC, $data_avg, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 						$i=0;
@@ -2931,25 +2964,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					break;
 				//1 means group by agent
 				case 1:
-					//Get the list of agents
-					$sql_agents = sprintf ("select distinct ta.nombre from tagente as ta,
-					tagente_modulo as tam, treport_content_item as trci
-					where ta.id_agente = tam.id_agente and tam.id_agente_modulo = trci.id_agent_module
-					and trci.id_report_content = %d", $content['id_rc']);
-					$agent_list = db_process_sql ($sql_agents);
-
-					//Get the list of modules
-					$sql_modules = sprintf ("select distinct tam.nombre from tagente_modulo as tam,
-					treport_content_item as trci where tam.id_agente_modulo = trci.id_agent_module
-					and trci.id_report_content = %d", $content['id_rc']);
-					$modules_list = db_process_sql ($sql_modules);
-					
 					//Get the data
-					$sql_data = sprintf("select trci.id_agent_module, ta.nombre as agent_name,
-					tam.nombre as module_name from treport_content_item as trci, tagente as ta,
-					tagente_modulo as tam where ta.id_agente = tam.id_agente and
-					tam.id_agente_modulo = trci.id_agent_module
-					and id_report_content = %d", $content['id_rc']);
+					$sql_data = sprintf("select id_agent_module, server_name from treport_content_item
+									where id_report_content = %d", $content['id_rc']);
 					$generals = db_process_sql ($sql_data);
 					
 					if ($generals === false) {
@@ -2959,6 +2976,33 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						array_push ($table->data, $data);
 						break;
 					}
+					
+					$agent_list = array();
+					$modules_list = array();
+					foreach ($generals as $general) {
+						
+						//Metaconsole connection
+						$server_name = $general ['server_name'];
+						if (($config ['metaconsole'] == 1) && $server_name != '') {
+							$connection = metaconsole_get_connection($server_name);
+							if (!metaconsole_load_external_db($connection))
+								ui_print_error_message ("Error connecting to ".$server_name);
+						}
+						
+						$ag_name = modules_get_agentmodule_agent_name ($general ['id_agent_module']);
+						if (!in_array ($ag_name, $agent_list)) {
+							array_push ($agent_list, $ag_name);
+						}
+						$mod_name = modules_get_agentmodule_name ($general ['id_agent_module']);
+						if (!in_array ($mod_name, $modules_list)) {
+							array_push ($modules_list, $mod_name);
+						}
+						
+						//Restore dbconnection
+						if (($config ['metaconsole'] == 1) && $server_name != '') {
+							metaconsole_restore_db();
+						}
+					}
 
 					$table2->width = '99%';
 					$table2->data = array ();
@@ -2967,25 +3011,37 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table2->style[0] = 'text-align: center';
 					$i = 1;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = ui_print_truncate_text($m['nombre'], 20, false);
+						$table2->head[$i] = ui_print_truncate_text($m, 20, false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
 					}
 
 					foreach ($agent_list as $a) {
 						$data = array();
-						$data[0] = printSmallFont($a['nombre']);
+						$data[0] = printSmallFont($a);
 						$i = 1;
 						foreach ($modules_list as $m) {
 							foreach ($generals as $g) {
-								$agent_name = $g['agent_name'];
-								$module_name = $g['module_name'];
+								
+								//Metaconsole connection
+								$server_name = $g ['server_name'];
+								if (($config ['metaconsole'] == 1) && $server_name != '') {
+									$connection = metaconsole_get_connection($server_name);
+									if (!metaconsole_load_external_db($connection)) {
+										//ui_print_error_message ("Error connecting to ".$server_name);
+									}
+								}
+								
+								$agent_name = modules_get_agentmodule_agent_name ($g['id_agent_module']);
+								$module_name = modules_get_agentmodule_name ($g['id_agent_module']);
 								$found = false;
-								if (strcmp($a['nombre'], $agent_name) == 0 && strcmp($m['nombre'], $module_name) == 0) {
-									if (reporting_get_agentmodule_data_average($g['id_agent_module'], $content['period']) === false)
+								if (strcmp($a, $agent_name) == 0 && strcmp($m, $module_name) == 0) {
+									$value_avg = reporting_get_agentmodule_data_average($g['id_agent_module'], $content['period']);
+									
+									if ($value_avg === false) {
 										$data[$i] = '--';
-									else {
-										$data[$i] = reporting_get_agentmodule_data_average($g['id_agent_module'], $content['period']);
+									} else {
+										$data[$i] = $value_avg;
 									}
 									$found = true;
 								}
@@ -2993,6 +3049,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 									$data[$i] = '--';
 								}
 								if ($found == true) break;
+								
+								//Restore dbconnection
+								if (($config ['metaconsole'] == 1) && $server_name != '') {
+									metaconsole_restore_db();
+								}
 							}
 							$i++;
 						}
@@ -3011,8 +3072,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$min = false;
 				$i=0;
 				do {
+					//Metaconsole connection
+					$server_name = $generals[$i]['server_name'];
+					if (($config ['metaconsole'] == 1) && $server_name != '') {
+						$connection = metaconsole_get_connection($server_name);
+						if (!metaconsole_load_external_db($connection))
+							ui_print_error_message ("Error connecting to ".$server_name);
+					}
+					
 					$min = reporting_get_agentmodule_data_average($generals[$i]['id_agent_module'], $content['period']);
 					$i++;
+					
+					//Restore dbconnection
+					if (($config ['metaconsole'] == 1) && $server_name != '') {
+						metaconsole_restore_db();
+					}
 				} while ($min === false && $i < count($generals));
 				$max = $min;
 				$avg = 0;
@@ -3023,6 +3097,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				foreach ($generals as $g) {
+					//Metaconsole connection
+					$server_name = $g['server_name'];
+					if (($config ['metaconsole'] == 1) && $server_name != '') {
+						$connection = metaconsole_get_connection($server_name);
+						if (!metaconsole_load_external_db($connection))
+							ui_print_error_message ("Error connecting to ".$server_name);
+					}
+					
 					$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
 					if ($value !== false) {
 						if ($value > $max) {
@@ -3033,6 +3115,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						$avg += $value;
 						$length++;
+					}
+					
+					//Restore dbconnection
+					if (($config ['metaconsole'] == 1) && $server_name != '') {
+						metaconsole_restore_db();
 					}
 				}
 				if ($length == 0) {
@@ -3071,10 +3158,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("select a.id_agent_module, b.nombre as agent_name,
-			c.nombre as module_name from treport_content_item as a, tagente as b,
-			tagente_modulo as c where a.id_agent_module = c.id_agente_modulo and
-			c.id_agente = b.id_agente and id_report_content = %d", $content['id_rc']);
+			$sql = sprintf("select id_agent_module, server_name from treport_content_item
+			where id_report_content = %d", $content['id_rc']);
 			
 			$tops = db_process_sql ($sql);
 			if ($tops === false) {
@@ -3098,6 +3183,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			$data_top = array();
 			foreach ($tops as $key => $row) {
+				
+				//Metaconsole connection
+				$server_name = $row['server_name'];
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					$connection = metaconsole_get_connection($server_name);
+					if (!metaconsole_load_external_db($connection))
+						ui_print_error_message ("Error connecting to ".$server_name);
+				}
+				
+				$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
+				$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
+				
 				switch ($top_n) {
 					//Max
 					case 1:
@@ -3113,12 +3210,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$value = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
 						break;
 				}
-				//If the returned value from modules_get_agentmodule_data... is false it won't be stored.
+				//If the returned value from modules_get_agentmodule_data_max/min/avg is false it won't be stored.
 				if ($value !== false) {
 					$data_top[$key] = $value;
 					$id_agent_module[$key] = $row['id_agent_module'];
-					$agent_name[$key] = $row['agent_name'];
-					$module_name[$key] = $row['module_name'];
+					$agent_name[$key] = $ag_name;
+					$module_name[$key] = $mod_name;
+				}
+				
+				//Restore dbconnection
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					metaconsole_restore_db();
 				}
 			}
 
@@ -3212,7 +3314,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph($config['flash_charts'], $data_pie_graph,
 					600, 150, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']); 
+					$config['fontpath'], $config['font_size']); 
 				
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -3290,10 +3392,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("select a.id_agent_module, b.nombre as agent_name,
-			c.nombre as module_name from treport_content_item as a, tagente as b,
-			tagente_modulo as c where a.id_agent_module = c.id_agente_modulo and
-			c.id_agente = b.id_agente and id_report_content = %d", $content['id_rc']);
+			$sql = sprintf("select id_agent_module, server_name from treport_content_item
+							where id_report_content = %d", $content['id_rc']);
 			
 			$exceptions = db_process_sql ($sql);
 			if ($exceptions === false) {
@@ -3319,14 +3419,38 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//Get the very first not null value 
 			$i=0;
 			do {
+				//Metaconsole connection
+				$server_name = $exceptions[$i]['server_name'];
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					$connection = metaconsole_get_connection($server_name);
+					if (!metaconsole_load_external_db($connection))
+						ui_print_error_message ("Error connecting to ".$server_name);
+				}
+				
 				$min = reporting_get_agentmodule_data_average ($exceptions[$i]['id_agent_module'], $content['period']);
 				$i++;
+				
+				//Restore dbconnection
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					metaconsole_restore_db();
+				}
 			} while ($min === false && $i < count($exceptions));
 			$max = $min;
 			$avg = 0;
 			
 			$i=0;
 			foreach ($exceptions as $exc) {
+				//Metaconsole connection
+				$server_name = $exc['server_name'];
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					$connection = metaconsole_get_connection($server_name);
+					if (!metaconsole_load_external_db($connection))
+						ui_print_error_message ("Error connecting to ".$server_name);
+				}
+				
+				$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);
+				$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
+				
 				$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
 				if ($value !== false) {
 					if ($value > $max) $max = $value;
@@ -3368,8 +3492,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$i++;
 					$data_exceptions[] = $value;
 					$id_agent_module[] = $exc['id_agent_module'];
-					$agent_name[] = $exc['agent_name'];
-					$module_name[] = $exc['module_name'];
+					$agent_name[] = $ag_name;
+					$module_name[] = $mod_name;
+				}
+				//Restore dbconnection
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					metaconsole_restore_db();
 				}
 			}
 			//$i <= 0 means that there are no rows on the table, therefore no modules under the conditions defined.
@@ -3402,15 +3530,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$avg = $avg / $i;
 
 				switch ($order_uptodown) {
-					//Descending
+					//Order descending
 					case 1:
 						array_multisort($data_exceptions, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 						break;
-					//Ascending
+					//Order ascending
 					case 2:
 						array_multisort($data_exceptions, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 						break;
-					//By agent name or without selection
+					//Order by agent name or without selection
 					case 0:
 					case 3:
 						array_multisort($agent_name, SORT_ASC, $data_exceptions, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
@@ -3461,7 +3589,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph($config['flash_charts'], $data_graph,
 					600, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']); 
+					$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;
@@ -3694,6 +3822,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = $table_data;
 			array_push ($table->data, $data);
 			break;
+	}
+	//Restore dbconnection
+	if (($config ['metaconsole'] == 1) && $server_name != '') {
+		metaconsole_restore_db();
 	}
 }
 

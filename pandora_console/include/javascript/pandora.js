@@ -388,7 +388,7 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
  * @param id_agent_id id of the hidden field to store the agent id
  * @param id_agent_module_selector id of the selector for the modules of the agent.
  */
-function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, noneValue) {
+function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, id_server_name, noneValue) {
 		$(id_agent_name).autocomplete(
 			"ajax.php",
 			{
@@ -415,11 +415,14 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 			function (e, data, formatted) {
 				$(id_agent_module_selector).attr('disabled', false);
 				agent_id = data[1];
+				server_name = data[2];
+				$(id_server_name).val(server_name);
 				$(id_agent_id).val(agent_id);
 				jQuery.post ('ajax.php', 
 							{"page": "operation/agentes/ver_agente",
 									"get_agent_modules_json": 1,
 									"id_agent": agent_id,
+									"server_name": server_name,
 									"filter" : 'disabled=0 AND delete_pending=0',
 									"fields" : "id_agente_modulo,nombre"
 									},

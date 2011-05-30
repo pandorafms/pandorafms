@@ -63,13 +63,15 @@ if ($add_sla) {
 	$sla_limit = get_parameter('sla_limit', 0);
 	$sla_max = get_parameter('sla_max', 0);
 	$sla_min = get_parameter('sla_min', 0);
+	$server_name = get_parameter('server_name', '');
 	
 	$result = db_process_sql_insert('treport_content_sla_combined', array(
 		'id_report_content' => $id,
 		'id_agent_module' => $id_module,
 		'sla_max' => $sla_max,
 		'sla_min' => $sla_min,
-		'sla_limit' => $sla_limit));
+		'sla_limit' => $sla_limit,
+		'server_name' => $server_name));
 	
 	if ($result === false) {
 		$data['correct'] = 0;
@@ -85,10 +87,12 @@ if ($add_sla) {
 
 if ($add_general) {
 	$id_module = get_parameter('id_module', 0);
+	$server_name = get_parameter('server_name_general', '');
 	
 	$result = db_process_sql_insert('treport_content_item', array(
 		'id_report_content' => $id,
-		'id_agent_module' => $id_module));
+		'id_agent_module' => $id_module,
+		'server_name' => $server_name));
 	
 	if ($result === false) {
 		$data['correct'] = 0;

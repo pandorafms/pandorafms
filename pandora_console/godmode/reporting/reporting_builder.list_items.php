@@ -24,87 +24,99 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 }
 
 include_once($config['homedir'] . "/include/functions_agents.php");
+enterprise_include_once ('include/functions_metaconsole.php');
 
-//FORM FILTER
-switch ($config['dbtype']){
-	case "mysql":
-	case "postgresql":
-		$rows = db_get_all_rows_sql('
-			SELECT t5.nombre, t5.id_agente
-			FROM
-				(
-				SELECT t1.*, id_agente
+if ($config ['metaconsole'] == 1) {
+	$agents = array();
+	$agents = metaconsole_get_report_agents($idReport);
+	$modules = array();
+	$modules = metaconsole_get_report_modules($idReport);
+	$types = array ();
+	$types = metaconsole_get_report_types($idReport);
+}
+else {
+	//FORM FILTER
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$rows = db_get_all_rows_sql('
+				SELECT t5.nombre, t5.id_agente
+				FROM
+					(
+					SELECT t1.*, id_agente
+					FROM treport_content AS t1
+						LEFT JOIN tagente_modulo AS t2
+							ON t1.id_agent_module = id_agente_modulo
+					) AS t4
+					INNER JOIN tagente AS t5
+						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
+				WHERE t4.id_report = ' . $idReport);
+			break;
+		case "oracle":
+			$rows = db_get_all_rows_sql('
+				SELECT t5.nombre, t5.id_agente
+				FROM
+					(
+					SELECT t1.*, id_agente
+					FROM treport_content t1
+						LEFT JOIN tagente_modulo t2
+							ON t1.id_agent_module = id_agente_modulo
+					) t4
+					INNER JOIN tagente t5
+						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
+				WHERE t4.id_report = ' . $idReport);
+			break;
+	}
+
+	if ($rows === false) {
+		$rows = array();
+	}
+
+	$agents = array();
+	foreach ($rows as $row) {
+		$agents[$row['id_agente']] = $row['nombre'];
+	}
+
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			$rows = db_get_all_rows_sql('
+				SELECT t1.id_agent_module, t2.nombre
 				FROM treport_content AS t1
-					LEFT JOIN tagente_modulo AS t2
-						ON t1.id_agent_module = id_agente_modulo
-				) AS t4
-				INNER JOIN tagente AS t5
-					ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
-			WHERE t4.id_report = ' . $idReport);
-		break;
-	case "oracle":
-		$rows = db_get_all_rows_sql('
-			SELECT t5.nombre, t5.id_agente
-			FROM
-				(
-				SELECT t1.*, id_agente
+					INNER JOIN tagente_modulo AS t2
+						ON t1.id_agent_module = t2.id_agente_modulo
+				WHERE t1.id_report = ' . $idReport);
+			break;
+		case "oracle":
+			$rows = db_get_all_rows_sql('
+				SELECT t1.id_agent_module, t2.nombre
 				FROM treport_content t1
-					LEFT JOIN tagente_modulo t2
-						ON t1.id_agent_module = id_agente_modulo
-				) t4
-				INNER JOIN tagente t5
-					ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
-			WHERE t4.id_report = ' . $idReport);
-		break;
-}
-if ($rows === false) {
-	$rows = array();
-}
+					INNER JOIN tagente_modulo t2
+						ON t1.id_agent_module = t2.id_agente_modulo
+				WHERE t1.id_report = ' . $idReport);
+			break;
+	}
+	if ($rows === false) {
+		$rows = array();
+	}
 
-$agents = array();
-foreach ($rows as $row) {
-	$agents[$row['id_agente']] = $row['nombre'];
-}
+	$modules = array();
+	foreach ($rows as $row) {
+		$modules[$row['id_agent_module']] = $row['nombre'];
+	}
 
-switch ($config['dbtype']){
-	case "mysql":
-	case "postgresql":
-		$rows = db_get_all_rows_sql('
-			SELECT t1.id_agent_module, t2.nombre
-			FROM treport_content AS t1
-				INNER JOIN tagente_modulo AS t2
-					ON t1.id_agent_module = t2.id_agente_modulo
-			WHERE t1.id_report = ' . $idReport);
-		break;
-	case "oracle":
-		$rows = db_get_all_rows_sql('
-			SELECT t1.id_agent_module, t2.nombre
-			FROM treport_content t1
-				INNER JOIN tagente_modulo t2
-					ON t1.id_agent_module = t2.id_agente_modulo
-			WHERE t1.id_report = ' . $idReport);
-		break;
-}
-if ($rows === false) {
-	$rows = array();
-}
+	$rows = db_get_all_rows_sql('
+		SELECT DISTINCT(type)
+		FROM treport_content
+		WHERE id_report = ' . $idReport);
+	if ($rows === false) {
+		$rows = array();
+	}
 
-$modules = array();
-foreach ($rows as $row) {
-	$modules[$row['id_agent_module']] = $row['nombre'];
-}
-
-$rows = db_get_all_rows_sql('
-	SELECT DISTINCT(type)
-	FROM treport_content
-	WHERE id_report = ' . $idReport);
-if ($rows === false) {
-	$rows = array();
-}
-
-$types = array();
-foreach ($rows as $row) {
-	$types[$row['type']] = get_report_name($row['type']);
+	$types = array();
+	foreach ($rows as $row) {
+		$types[$row['type']] = get_report_name($row['type']);
+	}
 }
 
 $agentFilter = get_parameter('agent_filter', 0);
@@ -253,6 +265,15 @@ foreach ($items as $item) {
 	
 	$row[1] = get_report_name($item['type']);
 	
+	$server_name = $item ['server_name'];
+	
+	if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+		
+		$connection = metaconsole_get_connection($server_name);
+		if (!metaconsole_load_external_db($connection))
+			ui_print_error_message ("Error connecting to ".$server_name);
+	}
+	
 	if ($item['id_agent'] == 0) {
 		if ($item['id_agent_module'] == '') {
 			$row[2] = '-';
@@ -289,6 +310,10 @@ foreach ($items as $item) {
 	
 	$table->data[] = $row;
 	$count++;
+	//Restore db connection
+	if (($config ['metaconsole'] == 1) && ($server_name != '') ) {
+		metaconsole_restore_db();
+	}
 }
 ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 html_print_table($table);

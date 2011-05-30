@@ -234,6 +234,8 @@ sub pandora_load_config {
 	$pa_config->{"update_parent"} = 0; # 3.1
 	$pa_config->{"google_maps_description"} = 0;
 	$pa_config->{'openstreetmaps_description'} = 0;
+	$pa_config->{"eventserver"} = 1; # 4.0
+	$pa_config->{"event_window"} = 3600; # 4.0
 
 	$pa_config->{"max_queue_files"} = 500; 
 
@@ -432,6 +434,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^webserver\s([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^eventserver\s([0-9]*)/i) {
+			$pa_config->{'eventserver'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^servername\s(.*)/i) { 
 			$pa_config->{'servername'}= clean_blank($1);
 		}
@@ -579,6 +584,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^update_parent\s([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_window\s([0-9]*)/i) {
+			$pa_config->{'event_window'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

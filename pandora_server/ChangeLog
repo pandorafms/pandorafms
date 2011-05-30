@@ -1,3 +1,8 @@
+2011-05-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/Core.pm: Added support for event alerts (Enterprise).
+
 2011-05-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Applied Koichiro's patch to reuse an

@@ -169,7 +169,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 ##########################################################################
@@ -224,10 +224,14 @@ B<Returns>:
 
 =cut
 ##########################################################################
-sub pandora_evaluate_alert ($$$$$$$) {
-	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value) = @_;
+sub pandora_evaluate_alert ($$$$$$$;$$$) {
+	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value, $events, $event) = @_;
 
-	logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "'.", 10);
+	if (defined ($agent)) {
+		logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "'.", 10);
+	} else {
+		logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "'.", 10);
+	}
 
 	# Value returned on valid data
 	my $status = 1;
@@ -328,8 +332,12 @@ sub pandora_evaluate_alert ($$$$$$$) {
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
 	}
 	# Compound alert
-	elsif (pandora_evaluate_compound_alert($pa_config, $alert->{'id'}, $alert->{'name'}, $dbh) == 0) {
-		return $status
+	elsif (defined ($alert->{'id_agent'})) {
+		return $status if (pandora_evaluate_compound_alert($pa_config, $alert->{'id'}, $alert->{'name'}, $dbh) == 0);
+	# Event alert
+	} else {
+		my $rc = enterprise_hook ('evaluate_event_alert', [$pa_config, $dbh, $alert, $events, $event]);
+		return $status unless (defined ($rc) && $rc == 1);
 	}
 
 	# Check min and max alert limits
@@ -349,12 +357,25 @@ Process an alert given the status returned by pandora_evaluate_alert.
 sub pandora_process_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp, $extra_macros) = @_;
 	
-	logger ($pa_config, "Processing alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
+	if (defined ($agent)) {
+		logger ($pa_config, "Processing alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
+	} else {
+		logger ($pa_config, "Processing alert '" . $alert->{'name'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
+	}
 
-	# Simple or compound alert?
-	my $id = defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : $alert->{'id'};
-	my $table = defined ($alert->{'id_template_module'}) ? 'talert_template_modules' : 'talert_compound';
-
+	# Simple, event or compound alert?
+	my ($id, $table) = (undef, undef);
+	if (defined ($alert->{'id_template_module'})) {
+		$id = $alert->{'id_template_module'};
+		$table = 'talert_template_modules';
+	} elsif (defined ($alert->{'id_agent'})) {
+		$id = $alert->{'id'};
+		$table = 'talert_compound';
+	} else {
+		$id = $alert->{'id'};
+		$table = 'tevent_alert';
+	}
+	
 	# Do not execute
 	return if ($rc == 1);
 
@@ -366,11 +387,16 @@ sub pandora_process_alert ($$$$$$$$;$) {
 				 internal_counter = 0 WHERE id = ?', $id);
 
 		# Generate an event
-		pandora_event ($pa_config, "Alert ceased (" .
+		if ($table eq 'tevent_alert') {
+			pandora_event ($pa_config, "Alert ceased (" .
+				$alert->{'name'} . ")", 0, 0, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
+				"alert_ceased", 0, $dbh);
+		}  else {
+			pandora_event ($pa_config, "Alert ceased (" .
 					$alert->{'name'} . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
 					"alert_ceased", 0, $dbh);
-
+		}
 		return;
 	}
 
@@ -530,11 +556,19 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 
 	# Alerts in stand-by are not executed
 	if ($alert->{'standby'} == 1) {
-		logger ($pa_config, "Alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "' is in stand-by. Not executing.", 10);
+		if (defined ($module)) {
+			logger ($pa_config, "Alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "' is in stand-by. Not executing.", 10);
+		} else {
+			logger ($pa_config, "Alert '" . $alert->{'name'} . "' is in stand-by. Not executing.", 10);
+		}
 		return;
 	}
 
-	logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
+	if (defined ($module)) {
+		logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
+	} else {
+		logger ($pa_config, "Executing alert '" . $alert->{'name'} . "'.", 10);
+	}
 
 	# Get active actions/commands
 	my @actions;
@@ -554,11 +588,11 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands
 						WHERE talert_actions.id = ?
 						AND talert_actions.id_alert_command = talert_commands.id',
-						$alert->{'id_alert_action'}, );
+						$alert->{'id_alert_action'});
 		}
 	}
 	# Compound alert
-	else {
+	elsif (defined ($alert->{'id_agent'})) {
 		@actions = get_db_rows ($dbh, 'SELECT * FROM talert_compound_actions, talert_actions, talert_commands
 					WHERE talert_compound_actions.id_alert_action = talert_actions.id
 					AND talert_actions.id_alert_command = talert_commands.id
@@ -567,10 +601,32 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 					OR (? >= fires_min AND ? <= fires_max))',
 					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});
 	}
+	# Event alert
+	else {
+		@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
+					WHERE tevent_alert_action.id_alert_action = talert_actions.id
+					AND talert_actions.id_alert_command = talert_commands.id
+					AND tevent_alert_action.id = ?
+					AND ((fires_min = 0 AND fires_max = 0)
+					OR (? >= fires_min AND ? <= fires_max))', 
+					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+
+		# Get default action
+		if ($#actions < 0) {
+			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands
+						WHERE talert_actions.id = ?
+						AND talert_actions.id_alert_command = talert_commands.id',
+						$alert->{'id_alert_action'});
+		}
+	}
 
 	# No actions defined
 	if ($#actions < 0) {
-		logger ($pa_config, "No actions defined for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+		if (defined ($module)) {
+			logger ($pa_config, "No actions defined for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+		} else {
+			logger ($pa_config, "No actions defined for alert '" . $alert->{'name'} . "'.", 10);
+		}
 		return;
 	}
 
@@ -584,16 +640,20 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
 			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
 		} else {
-			logger ($pa_config, "Skipping action " . $action->{'name'} . " for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+			if (defined ($module)) {
+				logger ($pa_config, "Skipping action " . $action->{'name'} . " for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+			} else {
+				logger ($pa_config, "Skipping action " . $action->{'name'} . " for alert '" . $alert->{'name'} . "'.", 10);
+			}
 		}
 	}
 
 	# Generate an event
 	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
 
-	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") assigned to (". $module->{'nombre'} .")",
-			$agent->{'id_grupo'}, $agent->{'id_agente'}, $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
-			$alert->{'id_agent_module'}, $event, 0, $dbh);
+	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") " . (defined ($module)) ? 'assigned to ('. $module->{'nombre'} . ")" : "",
+			defined ($agent) ? $agent->{'id_grupo'} : 0, defined ($agent) ? $agent->{'id_agente'} : 0 , $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
+			defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0, $event, 0, $dbh);
 }
 
 ##########################################################################

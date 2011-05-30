@@ -270,7 +270,7 @@ switch ($moduletype) {
 		if ($config['enterprise_installed'] && $remote_conf) {
 			if($id_agent_module) {
 				enterprise_include_once('include/functions_config_agents.php');
-				$configuration_data = enterprise_hook('config_agents_get_module_from_conf', array($id_agente, get_agentmodule_name($id_agent_module)));
+				$configuration_data = enterprise_hook('config_agents_get_module_from_conf', array($id_agente, modules_get_agentmodule_name($id_agent_module)));
 			}
 			enterprise_include ('godmode/agentes/module_manager_editor_data.php');
 		}

@@ -1,5 +1,10 @@
 2011-05-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed the query to get the number of unknown
+	  agents. Thanks to Koichiro.
+
+2011-05-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/Core.pm: Added support for event alerts (Enterprise).
 

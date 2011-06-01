@@ -1,3 +1,19 @@
+2011-06-01 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_graph.php: Fixed a deprecated function call
+	* include/functions_reporting.php: Fixed a deprecated function call and
+	removed some connection error messages
+	* include/functions.php: Disabled agents/modules report type when
+	metaconsole is active
+	* operation/agentes/ver_agente.php: Removed some connection error messages
+	* godmode/reporting/reporting_builder.list_items.php: Removed some
+	connection error messages
+	* godmode/reporting/reporting_builder.php: Added getting server name for
+	sql reports & custom graph in metaconsole
+	* godmode/reporting/reporting_builder.item_editor.php: Added Server
+	combo box, custom graph for metaconsole & removed some connection error
+	messages
+
 2011-05-30 Javier Lanz <javier.lanz@artica.es>
 	* include/functions_reporting.php: Edited "render_report_html" function
 	to work with metaconsole printing metaconsole elements

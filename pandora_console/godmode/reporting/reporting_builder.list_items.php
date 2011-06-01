@@ -270,8 +270,10 @@ foreach ($items as $item) {
 	if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 		
 		$connection = metaconsole_get_connection($server_name);
-		if (!metaconsole_load_external_db($connection))
-			ui_print_error_message ("Error connecting to ".$server_name);
+		if (!metaconsole_load_external_db($connection)) {
+			//ui_print_error_message ("Error connecting to ".$server_name);
+			continue;
+		}
 	}
 	
 	if ($item['id_agent'] == 0) {

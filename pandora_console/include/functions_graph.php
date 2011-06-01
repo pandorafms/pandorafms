@@ -803,7 +803,7 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 	global $config;
 	
 
-	$data = get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+	$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
 	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
 	return slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'],

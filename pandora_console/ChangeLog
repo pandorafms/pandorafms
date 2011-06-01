@@ -1,3 +1,8 @@
+2011-06-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/auth/mysql.php: Merged from trunk. Do not allow empty
+	  passwords when authenticating against an LDAP server.
+
 2011-05-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Typo fixed 

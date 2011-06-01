@@ -414,7 +414,7 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 
-	if (!@ldap_bind ($ds, $config["ldap_login_attr"]."=".$login.",".$config["ldap_base_dn"], $password)) {
+	if (strlen($password) == 0 || !@ldap_bind ($ds, $config["ldap_login_attr"]."=".$login.",".$config["ldap_base_dn"], $password)) {
 		$config["auth_error"] = 'User not found in database or incorrect password';
 		@ldap_close ($ds);
 		return false;

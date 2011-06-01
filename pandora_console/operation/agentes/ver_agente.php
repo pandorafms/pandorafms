@@ -158,7 +158,8 @@ if (is_ajax ()) {
 				//Metaconsole db connection
 				$connection = metaconsole_get_connection($server_name);
 				if (!metaconsole_load_external_db($connection)) {
-					ui_print_error_message ("Error connecting to ".$server_name);
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
 				}
 				
 				//Get agent's modules

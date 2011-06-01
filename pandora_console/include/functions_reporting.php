@@ -621,14 +621,14 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	
 	// Get previous data
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
 
 	// Get next data
-	$next_data = get_next_data ($id_agent_module, $date);
+	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
@@ -2017,8 +2017,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$server_name = $content ['server_name'];
 	if (($config ['metaconsole'] == 1) && $server_name != '') {
 		$connection = metaconsole_get_connection($server_name);
-		if (!metaconsole_load_external_db($connection))
-			ui_print_error_message ("Error connecting to ".$server_name);
+		if (!metaconsole_load_external_db($connection)){
+			//ui_print_error_message ("Error connecting to ".$server_name);
+		}
 	}
 		
 	$module_name = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
@@ -2200,8 +2201,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				//Metaconsole connection
 				if (($config ['metaconsole'] == 1) && $server_name != '') {
 					$connection = metaconsole_get_connection($server_name);
-					if (!metaconsole_load_external_db($connection))
-						ui_print_error_message ("Error connecting to ".$server_name);
+					if (!metaconsole_load_external_db($connection)) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
 				}
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
@@ -2904,8 +2907,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$server_name = $row ['server_name'];
 						if (($config ['metaconsole'] == 1) && $server_name != '') {
 							$connection = metaconsole_get_connection($server_name);
-							if (!metaconsole_load_external_db($connection))
-								ui_print_error_message ("Error connecting to ".$server_name);
+							if (!metaconsole_load_external_db($connection)) {
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
+							}
 						}
 						
 						$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
@@ -2985,8 +2990,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$server_name = $general ['server_name'];
 						if (($config ['metaconsole'] == 1) && $server_name != '') {
 							$connection = metaconsole_get_connection($server_name);
-							if (!metaconsole_load_external_db($connection))
-								ui_print_error_message ("Error connecting to ".$server_name);
+							if (!metaconsole_load_external_db($connection)) {
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
+							}
 						}
 						
 						$ag_name = modules_get_agentmodule_agent_name ($general ['id_agent_module']);
@@ -3029,6 +3036,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 									$connection = metaconsole_get_connection($server_name);
 									if (!metaconsole_load_external_db($connection)) {
 										//ui_print_error_message ("Error connecting to ".$server_name);
+										continue;
 									}
 								}
 								
@@ -3076,8 +3084,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$server_name = $generals[$i]['server_name'];
 					if (($config ['metaconsole'] == 1) && $server_name != '') {
 						$connection = metaconsole_get_connection($server_name);
-						if (!metaconsole_load_external_db($connection))
-							ui_print_error_message ("Error connecting to ".$server_name);
+						if (!metaconsole_load_external_db($connection)) {
+							//ui_print_error_message ("Error connecting to ".$server_name);
+							continue;
+						}
 					}
 					
 					$min = reporting_get_agentmodule_data_average($generals[$i]['id_agent_module'], $content['period']);
@@ -3101,8 +3111,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$server_name = $g['server_name'];
 					if (($config ['metaconsole'] == 1) && $server_name != '') {
 						$connection = metaconsole_get_connection($server_name);
-						if (!metaconsole_load_external_db($connection))
-							ui_print_error_message ("Error connecting to ".$server_name);
+						if (!metaconsole_load_external_db($connection)) {
+							//ui_print_error_message ("Error connecting to ".$server_name);
+							continue;
+						}
 					}
 					
 					$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
@@ -3188,8 +3200,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$server_name = $row['server_name'];
 				if (($config ['metaconsole'] == 1) && $server_name != '') {
 					$connection = metaconsole_get_connection($server_name);
-					if (!metaconsole_load_external_db($connection))
-						ui_print_error_message ("Error connecting to ".$server_name);
+					if (!metaconsole_load_external_db($connection)) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
 				}
 				
 				$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
@@ -3423,8 +3437,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$server_name = $exceptions[$i]['server_name'];
 				if (($config ['metaconsole'] == 1) && $server_name != '') {
 					$connection = metaconsole_get_connection($server_name);
-					if (!metaconsole_load_external_db($connection))
-						ui_print_error_message ("Error connecting to ".$server_name);
+					if (!metaconsole_load_external_db($connection)) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
 				}
 				
 				$min = reporting_get_agentmodule_data_average ($exceptions[$i]['id_agent_module'], $content['period']);
@@ -3444,8 +3460,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$server_name = $exc['server_name'];
 				if (($config ['metaconsole'] == 1) && $server_name != '') {
 					$connection = metaconsole_get_connection($server_name);
-					if (!metaconsole_load_external_db($connection))
-						ui_print_error_message ("Error connecting to ".$server_name);
+					if (!metaconsole_load_external_db($connection)) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
 				}
 				
 				$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);

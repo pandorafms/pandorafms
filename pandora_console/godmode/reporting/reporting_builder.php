@@ -198,6 +198,20 @@ switch ($action) {
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');
+						if ($values['server_name'] == '')
+							$values['server_name'] = get_parameter ('combo_server');
+							
+						if (($values['type'] == 'custom_graph') && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
+							$resultOperationDB = false;
+							break;
+						}
+						
+						$id_gs = strstr($values ['id_gs'], '|', true);
+						if ($id_gs !== false) {
+							$server_name = strstr($values ['id_gs'], '|');
+							$values ['id_gs'] = $id_gs;
+							$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+						}
 					
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
@@ -277,6 +291,20 @@ switch ($action) {
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');
+						if ($values['server_name'] == '')
+							$values['server_name'] = get_parameter ('combo_server');
+						
+						if (($values['type'] == 'custom_graph') && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
+							$resultOperationDB = false;
+							break;
+						}
+						
+						$id_gs = strstr($values ['id_gs'], '|', true);
+						if ($id_gs !== false) {
+							$server_name = strstr($values ['id_gs'], '|');
+							$values ['id_gs'] = $id_gs;
+							$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+						}
 						
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
  

@@ -28,8 +28,10 @@ $show_graph_options[1] = __('Table & Graph');
 $show_graph_options[2] = __('Only graph');
 
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
-enterprise_include_once ('include/functions_metaconsole.php');
 require_once ($config['homedir'].'/include/functions_agents.php');
+if (enterprise_include_once ('include/functions_metaconsole.php')) {
+	$servers = metaconsole_get_connection_names();
+}
 
 switch ($action) {
 	case 'new':
@@ -79,7 +81,7 @@ switch ($action) {
 		if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 			$connection = metaconsole_get_connection($server_name);
 			if (!metaconsole_load_external_db($connection)) {
-				ui_print_error_message ("Error connecting to ".$server_name);
+				//ui_print_error_message ("Error connecting to ".$server_name);
 			}
 		}
 
@@ -278,6 +280,11 @@ switch ($action) {
 				break;
 		}
 		
+		//Restore db connection
+		if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+			metaconsole_restore_db();
+		}
+		
 		break;
 }
 
@@ -393,16 +400,23 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Custom graph'); ?></td>
 			<td style="">
 				<?php
-				switch ($config["dbtype"]) {
-					case "mysql":
-						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")';
-						break;
-					case "postgresql":
-					case "oracle":
-						$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
-						break;
+				if ($config['metaconsole'] == 1) {
+					$graphs = array();
+					$graphs = metaconsole_get_custom_graphs();
+					html_print_select ($graphs, 'id_custom_graph', $idCustomGraph, '', '--', 0);
 				}
-				html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
+				else {
+					switch ($config["dbtype"]) {
+						case "mysql":
+							$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")';
+							break;
+						case "postgresql":
+						case "oracle":
+							$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
+							break;
+					}
+					html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
+				}
 				?>
 			</td>
 		</tr>
@@ -413,6 +427,15 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_query" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Query SQL'); ?></td>
 			<td style=""><?php html_print_textarea('sql', 5, 25, $sql); ?></td>
+		</tr>
+		<tr id="row_servers" style="" class="datos">			
+			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
+			<td style=""><?php
+				if ($config ['metaconsole'] != 1)
+					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0, false, false, true, '', true);
+				else
+					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
+				 ?></td>
 		</tr>
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . '<a href="#" class="tip">&nbsp;<span>' . __("The separator character is | .") . '</span></a>';?></td>
@@ -569,7 +592,8 @@ function print_SLA_list($width, $action, $idItem = null) {
 						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (!metaconsole_load_external_db($connection)) {
-								ui_print_error_message ("Error connecting to ".$server_name);
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
 							}
 						}
 						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
@@ -661,7 +685,8 @@ function print_General_list($width, $action, $idItem = null) {
 						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (!metaconsole_load_external_db($connection)) {
-								ui_print_error_message ("Error connecting to ".$server_name);
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
 							}
 						}
 						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
@@ -1011,6 +1036,7 @@ function chooseType() {
 	$("#row_show_in_two_columns").css('display', 'none');
 	$("#row_show_in_landscape").css('display', 'none');
 	$("#row_module_group").css('display', 'none');
+	$("#row_servers").css('display', 'none');
 		
 	switch (type) {
 		case 'event_report_group':
@@ -1097,6 +1123,7 @@ function chooseType() {
 			$("#row_custom").css('display', '');
 			$("#row_custom_example").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
+			$("#row_servers").css('display', '');
 			break;
 		case 'sql_graph_pie':
 			$("#row_description").css('display', '');
@@ -1105,6 +1132,8 @@ function chooseType() {
 			$("#row_custom_example").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
 			$("#row_show_in_landscape").css('display', '');
+			$("#row_servers").css('display', '');
+			
 			break;
 		case 'sql_graph_hbar':
 			$("#row_description").css('display', '');
@@ -1113,6 +1142,7 @@ function chooseType() {
 			$("#row_custom_example").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
 			$("#row_show_in_landscape").css('display', '');
+			$("#row_servers").css('display', '');
 			break;
         case 'sql_graph_vbar':
 			$("#row_description").css('display', '');
@@ -1121,6 +1151,7 @@ function chooseType() {
 			$("#row_custom_example").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
 			$("#row_show_in_landscape").css('display', '');
+			$("#row_servers").css('display', '');
 			break;
 		case 'url':
 			$("#row_description").css('display', '');

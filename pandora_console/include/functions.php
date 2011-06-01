@@ -645,7 +645,8 @@ function get_report_types () {
 	$types['general'] = __('General');
 	$types['top_n'] = __('Top n');
 	$types['exception'] = __('Exception');
-	$types['agent_module'] = __('Agents/Modules');
+	if ($config['metaconsole'] != 1)
+		$types['agent_module'] = __('Agents/Modules');
 //	$types['agent_detailed_event'] = __('Agent detailed event');
 //	$types['list_events_module'] = __('List events of module');
 //	$types['list_events_agent'] = __('List events of agent');

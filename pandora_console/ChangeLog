@@ -1,3 +1,8 @@
+2011-06-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/auth/mysql.php: Do not allow empty passwords when
+	  authenticating against an LDAP server.
+
 2011-06-01 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_graph.php: Fixed a deprecated function call

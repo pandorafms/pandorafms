@@ -1,3 +1,7 @@
+2011-06-01  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* unix/pandora_agent: Allow the agent to include additional configuration files.
+
 2011-04-05  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/modules/pandora_module_exec.cc,

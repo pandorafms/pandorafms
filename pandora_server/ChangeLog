@@ -1,3 +1,8 @@
+2011-06-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Merged from trunk. Do not include
+	  BADXML files when evaluating max_queue_files.
+
 2011-05-07  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Implemented full-depth topology

@@ -89,14 +89,20 @@ sub data_producer ($) {
 
 	# Open the incoming directory
 	opendir (DIR, $pa_config->{'incomingdir'})
-	        || die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
+		|| die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
 
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
  	while (my $file = readdir (DIR)) {
+		
+		# Data files must have the extension .data
+		next if ($file !~ /^.*\.data$/);
+		
+		# Do not queue more than max_queue_files files
 		if ($file_count > $pa_config->{"max_queue_files"}) {
 			last;
 		}
+
 		push (@files, $file);
 		$file_count++;
 	}
@@ -105,27 +111,7 @@ sub data_producer ($) {
 	# Temporarily disable warnings (some files may have been deleted)
 	{
 		no warnings; 
-		@files = sort { -C $pa_config->{'incomingdir'} . "/$b" <=> -C $pa_config->{'incomingdir'} . "/$a" } (@files);
-	}
-
-	# Queue files
-	my $queue_count = 0;
- 	foreach my $file_name (@files) {
-		if ($queue_count > $pa_config->{"max_queue_files"}) {
-			last;
-		}
-
-		# For backward compatibility
-		if ($file_name =~ /^.*\.checksum$/) {
-			unlink("$pa_config->{'incomingdir'}/$file_name");
-			next;
-		} 
-
-		# Data files must have the extension .data
-		next if ($file_name !~ /^.*\.data$/);
-
-		$queue_count++;
-		push (@tasks, $file_name);
+		@tasks = sort { -C $pa_config->{'incomingdir'} . "/$b" <=> -C $pa_config->{'incomingdir'} . "/$a" } (@files);
 	}
 
 	return @tasks;

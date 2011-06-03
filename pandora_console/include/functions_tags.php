@@ -270,12 +270,7 @@ function tags_update_module_tag ($id_agent_module, $tags){
 	$errn = 0;
 	
 	/* First delete module tag entries */
-	$result_tag = db_process_delete_temp ('ttag_module', 'id_agente_modulo', $id_agent_module);
-	
-	if ($result_tag === false){
-		db_process_sql_rollback();
-		return false;
-	}
+	$result_tag = db_process_sql_delete ('ttag_module', 'id_agente_modulo', $id_agent_module);
 
 	$values = array();
 	foreach ($tags as $tag){
@@ -285,16 +280,7 @@ function tags_update_module_tag ($id_agent_module, $tags){
 		if ($result_tag === false)
 			$errn++;		
 	}
-
-	if ($errn > 0){
-		db_process_sql_rollback();
-		return false;
-	}
-	else{
-		db_process_sql_commit();
-		return true;
-	}
-
+	
 }
 
 /**

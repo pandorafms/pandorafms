@@ -1,3 +1,7 @@
+2011-06-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_tags.php: Some modifications in update tag function.
+
 2011-06-03 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php: Edited to get

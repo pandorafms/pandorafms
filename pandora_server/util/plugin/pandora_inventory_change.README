@@ -1,0 +1,23 @@
+Pandora FMS Inventory Change detector for Pandora FMS
+=====================================================
+
+This is a small remote plugin used in Pandora FMS 3.0 or higher to check if a inventory module has changed. It connects to Pandora FMS database and checks if inventory data for a given module in a given agent has changed.
+
+Returns 0 if fails and 1 if it's the same, so this remote module should be configured using a generic_proc (generic Boolean) module type. Parameters accepted are two:
+
+ -m <module_name>
+ -a <agent_name>
+
+This is an example call to the plugin:
+
+ pandora_inventory_change.pl -a almendra -m Cisco_Device_Configuration
+
+It stores in /tmp a file with the MD5 hash for the whole inventory data for each agent module:
+
+ -rw-r--r-- 1 root root 32 jun  3 16:14 /tmp/inv_almendra_Cisco_Device_Configuration
+
+Witch contains a MD5 hash of the configuration:
+
+ 7e3ec4986f2e3951a83fb5ff4cab8396
+
+

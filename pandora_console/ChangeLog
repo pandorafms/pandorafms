@@ -1,3 +1,10 @@
+2011-06-03 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/agentes/module_manager_editor_prediction.php: Edited to get
+	"custom_integer_2" parameter & Added period combo 
+	* godmode/agentes/module_manager_editor.php: Edited to get
+	"custom_integer_2" parameter
+
 2011-06-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/auth/mysql.php: Do not allow empty passwords when

@@ -165,6 +165,7 @@ if ($id_agent_module) {
 	$id_plugin = $module['id_plugin'];
 	$post_process = $module['post_process'];
 	$prediction_module = $module['prediction_module'];
+	$custom_integer_2 = $module ['custom_integer_2'];
 	$max_timeout = $module['max_timeout'];
 	$custom_id = $module['custom_id'];
 	$history_data = $module['history_data'];
@@ -191,6 +192,7 @@ else {
 		$max = '';
 		$interval = '';
 		$prediction_module = '';
+		$custom_integer_2 = 0;
 		$id_plugin = '';
 		$id_export = '';
 		$disabled = "0";

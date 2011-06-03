@@ -22,11 +22,13 @@ $page = get_parameter('page', '');
 $id_agente = get_parameter('id_agente', '');
 $agent_name = get_parameter('agent_name', agents_get_name($id_agente));
 $id_agente_modulo= get_parameter('id_agent_module',0);
+$custom_integer_2 = get_parameter ('custom_integer_2', 0);
 $sql = 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_agente_modulo;
 $row = db_get_row_sql($sql);
 $is_service = false;
 if ($row !== false && is_array($row)) {
 	$prediction_module = $row['prediction_module'];
+	$custom_integer_2 = $row ['custom_integer_2'];
 	// Services are an Enterprise feature.
 	$service_select  = $row['custom_integer_1'];
 	if ($service_select > 0) {
@@ -73,6 +75,15 @@ if($id_agente) {
 else {
 	$data[1] .= '<select id="prediction_module" name="prediction_module" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
+
+$data[1] .= html_print_label(__("Period"), 'custom_integer_2', true)."<br/>";
+
+$periods [0] = __('Weekly');
+$periods [1] = __('Monthly');
+$periods [2] = __('Daily');
+$data[1] .= html_print_select ($periods, 'custom_integer_2', $custom_integer_2, '', '', 0, true); //html_debug_print ($custom_integer_2);
+
+
 $data[1] .= html_print_input_hidden ('id_agente', $id_agente, true);
 $data[1] .= '</div>';
 

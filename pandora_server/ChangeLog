@@ -1,3 +1,9 @@
+2011-06-03  SanchO Lerena <slerena@artica.es>
+
+	* pandora_inventory_change.pl
+	pandora_inventory_change.README: New remote plugin to check changes
+	in inventory, using a direct database check (only MySQL supported).
+
 2011-06-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Do not include BADXML files when

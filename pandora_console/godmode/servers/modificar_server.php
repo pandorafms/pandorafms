@@ -107,7 +107,7 @@ else {
 		$table->head[5] = __('Updated');
 		
 		//Only Pandora Administrator can delete servers
-		if (give_acl ($config["id_user"], 0, "PM")) {
+		if (check_acl ($config["id_user"], 0, "PM")) {
 			$table->head[6] = __('Delete');
 		}
 		
@@ -128,7 +128,7 @@ else {
 			$data[5] = human_time_comparation ($server["keepalive"]);
 
 			//Only Pandora Administrator can delete servers
-			if (give_acl ($config["id_user"], 0, "PM")) {
+			if (check_acl ($config["id_user"], 0, "PM")) {
 				$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
 				$data[6] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
 				$data[6] .= '</a>';

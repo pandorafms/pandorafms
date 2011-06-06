@@ -170,14 +170,14 @@ if (isset($_GET["create"])) {
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
 //Pandora Admin must see all columns
-if (! give_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	$sql = sprintf('SELECT * FROM trecon_task RT, tusuario_perfil UP WHERE 
 					UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group', 
 					$config['id_user']);
 					
-	$result = db_get_db_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql);
 } else {
-	$result = db_get_db_all_rows_in_table('trecon_task');
+	$result = db_get_all_rows_in_table('trecon_task');
 }
 $color=1;
 if ($result !== false) {

@@ -1,3 +1,7 @@
+2011-05-17 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* operation/agentes/estado_agente.php: fixed the search.
+
 2011-06-06  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* godmode/servers/manage_recontask.php: User with flag AW can manage recon

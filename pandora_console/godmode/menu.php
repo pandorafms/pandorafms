@@ -89,6 +89,7 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 		$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
 	}
 	$sub["godmode/alerts/alert_compounds"]["text"] = __('Correlation');
+	enterprise_hook('eventalerts_submenu');
 
 	$menu["galertas"]["sub"] = $sub;
 }

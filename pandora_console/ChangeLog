@@ -1,3 +1,9 @@
+2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/ajax/alert_list.ajax.php: Added new callback function 
+	for jQuery requests. 
+	* godmode/menu.php: Added alert events entry. 
+
 2011-06-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_tags.php: Some modifications in update tag function.

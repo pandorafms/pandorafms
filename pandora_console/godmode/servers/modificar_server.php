@@ -20,7 +20,7 @@ require_once ("include/functions_servers.php");
 
 check_login();
 
-if (! give_acl ($config["id_user"], 0, "PM")) {
+if (! give_acl ($config["id_user"], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Server Management");
 	require ("general/noaccess.php");
@@ -99,7 +99,11 @@ if (isset($_GET["server"])) {
 		$table->head[3] = __('Type');
 		$table->head[4] = __('Started');
 		$table->head[5] = __('Updated');
-		$table->head[6] = __('Delete');
+		
+		//Only Pandora Administrator can delete servers
+		if (give_acl ($config["id_user"], 0, "PM")) {
+			$table->head[6] = __('Delete');
+		}
 		
 		foreach ($servers as $server) {
 			if ($server['status'] == 0) {
@@ -116,9 +120,14 @@ if (isset($_GET["server"])) {
 			$data[3] = $server['img'];
 			$data[4] = human_time_comparation ($server["laststart"]);
 			$data[5] = human_time_comparation ($server["keepalive"]);
-			$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
-			$data[6] .= print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
-			$data[6] .= '</a>';
+			
+			
+			//Only Pandora Administrator can delete servers
+			if (give_acl ($config["id_user"], 0, "PM")) {
+				$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
+				$data[6] .= print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
+				$data[6] .= '</a>';
+			}
 			
 			array_push ($table->data, $data);
 		}

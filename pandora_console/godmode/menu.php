@@ -158,7 +158,7 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 	}
 }
 
-if (give_acl ($config['id_user'], 0, "PM")) {
+if (give_acl ($config['id_user'], 0, "AW")) {
 
 	// Servers
 	$menu["gservers"]["text"] = __('Manage servers');
@@ -168,11 +168,14 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub = array ();
 	$sub["godmode/servers/manage_recontask"]["text"] = __('Manage recontask');
 	
-	$sub["godmode/servers/plugin"]["text"] = __('Manage plugins');
-	
-	$sub["godmode/servers/recon_script"]["text"] = __('Manage recon script');
-	
-	enterprise_hook('export_target_submenu');
+	//This subtabs are only for Pandora Admin
+	if (give_acl ($config['id_user'], 0, "PM")) {
+		$sub["godmode/servers/plugin"]["text"] = __('Manage plugins');
+		
+		$sub["godmode/servers/recon_script"]["text"] = __('Manage recon script');
+		
+		enterprise_hook('export_target_submenu');
+	}
 	
 	$menu["gservers"]["sub"] = $sub;
 }

@@ -1,3 +1,14 @@
+2011-06-06  Dario Rodriguez  <dario.rodriguez@artica.es>
+
+	* godmode/servers/manage_recontask.php: User with flag AW can manage recon
+	task, only for their group.
+	* godmode/servers/modificar_server.php: User with AW flag can view server
+	status but only Pandora Admin can delete one of them.
+	* godmode/servers/manage_recontask_form.php: User with flag AW can manage recon
+	task, but only for their group.
+	* godmode/menu.php: Allowing user with flag AW see manage server tab and 
+	manage recon task subtab.
+
 2011-06-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/auth/mysql.php: Merged from trunk. Do not allow empty

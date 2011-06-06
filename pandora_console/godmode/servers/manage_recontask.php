@@ -19,7 +19,7 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "PM")) {
+if (! give_acl ($config['id_user'], 0, "AW")) {
 	pandora_audit("ACL Violation",
 		"Trying to access Recon Task Management");
 	require ("general/noaccess.php");
@@ -124,9 +124,16 @@ if (isset($_GET["create"])) {
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-
-
-$result = get_db_all_rows_in_table ("trecon_task");
+//Pandora Admin must see all columns
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	$sql = sprintf('SELECT * FROM trecon_task RT, tusuario_perfil UP WHERE 
+					UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group', 
+					$config['id_user']);
+					
+	$result = get_db_all_rows_sql ($sql);
+} else {
+	$result = get_db_all_rows_in_table('trecon_task');
+}
 $color=1;
 if ($result !== false) {
 	$table->head = array  (__('Name'), __('Network'), __('Mode'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));

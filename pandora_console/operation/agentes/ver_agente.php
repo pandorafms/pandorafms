@@ -42,7 +42,8 @@ if (is_ajax ()) {
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
-	
+	$get_agent_id = (bool) get_parameter ("get_agent_id");
+
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 
@@ -343,7 +344,7 @@ if (is_ajax ()) {
 		return;
 	}
 	
-		if ($get_agentmodule_status_tooltip) {
+	if ($get_agentmodule_status_tooltip) {
 		$id_module = (int) get_parameter ('id_module');
 		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
@@ -395,6 +396,13 @@ if (is_ajax ()) {
 		}
 		
 		return;
+	}
+
+	if ($get_agent_id){
+			$agent_name = (string) get_parameter ("agent_name");
+			
+			echo agents_get_agent_id ($agent_name);
+			return;
 	}
 
 	return;

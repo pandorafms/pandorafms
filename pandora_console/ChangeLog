@@ -1,5 +1,13 @@
 2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_tags.php: Fixed problem on
+	update tag function. 
+	* godmode/tag/tag.php
+	* godmode/tag/edit_tag.php: Added tab that links to 
+	tag list view.
+
+2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_modules.php: Some mofications over update_tag
 	function.
 	* include/functions_alerts.php: Added new function 

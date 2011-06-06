@@ -32,6 +32,7 @@ require_once ($config['homedir'].'/include/functions_tags.php');
 $delete = (int) get_parameter ("delete_tag", 0);
 $search = (int) get_parameter ("search_tag", 0);
 $tag_name = (string) get_parameter ("tag_name","");
+$tab = (string) get_parameter ("tab", "list");
 
 //Ajax tooltip to deploy module's count info of a tag.
 if (is_ajax ()) {
@@ -55,8 +56,16 @@ if (is_ajax ()) {
 	return;
 }
 
+$buttons = array(
+	'list' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=galertas&sec2=godmode/tag/tag&tab=list">' . 
+			html_print_image ("images/god6.png", true, array ("title" => __('List tags'))) .'</a>'));
+
+$buttons[$tab]['active'] = true;
+
 // Header
-ui_print_page_header (__('Tags configuration'), "images/comments.png", false, "", true);
+ui_print_page_header (__('Tags configuration'), "images/comments.png", false, "", true, $buttons);
 
 // Two actions can performed in this page: search and delete tags
 

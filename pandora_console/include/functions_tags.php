@@ -69,6 +69,8 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 	else {
 		$result = db_get_all_rows_sql ($sql);
 	}
+	if ($result === false)
+		$result = array();
 	$result_tags = array();
 	if ($only_names) {
 		foreach ($result as $tag){
@@ -287,7 +289,7 @@ function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
 		$tags = array();
 	
 	/* First delete module tag entries */
-	$result_tag = db_process_sql_delete ('ttag_module', 'id_agente_modulo', $id_agent_module);
+	$result_tag = db_process_sql_delete ('ttag_module', array('id_agente_modulo' => $id_agent_module));
 
 	$values = array();
 	foreach ($tags as $tag){

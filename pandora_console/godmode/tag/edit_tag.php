@@ -32,9 +32,18 @@ $create_tag = (int) get_parameter ("create_tag", 0);
 $name_tag = (string) get_parameter ("name_tag", "");
 $description_tag = (string) get_parameter ("description_tag", "");
 $url_tag = (string) get_parameter ("url_tag", "");
+$tab = (string) get_parameter ("tab", "list");
+
+$buttons = array(
+	'list' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=galertas&sec2=godmode/tag/tag&tab=list">' . 
+			html_print_image ("images/god6.png", true, array ("title" => __('List tags'))) .'</a>'));
+
+$buttons[$tab]['active'] = true;
 
 // Header
-ui_print_page_header (__('Tags configuration'), "images/comments.png", false, "", true);
+ui_print_page_header (__('Tags configuration'), "images/comments.png", false, "", true, $buttons);
 
 // Two actions can performed in this page: update and create tags
 // Update tag: update an existing tag

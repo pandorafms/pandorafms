@@ -935,6 +935,26 @@ function alerts_get_alerts_agent_module ($id_agent_module, $disabled = false, $f
 }
 
 /**
+ * Get alert associated to a module (only id and name fields).
+ * 
+ * @param int Id of an alert template.
+ * @param bool Disabled or not.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_get_alerts_module_name ($id_agent_module, $disabled = false) {
+	$id_alert_agent_module = safe_int ($id_agent_module, 0);
+		
+	$sql = sprintf ('SELECT a.id, b.name 
+					 FROM talert_template_modules as a, talert_templates as b
+					 WHERE a.id=b.id AND a.id_agent_module = %d AND a.disabled = %d', 
+					 $id_agent_module, (int)$disabled);
+	
+	return db_process_sql($sql);				 
+}
+
+
+/**
  * Get disabled field of talert_template_modules table.
  * 
  * @param int Id of an alert associated to a module.

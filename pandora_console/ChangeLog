@@ -1,5 +1,13 @@
 2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_modules.php: Some mofications over update_tag
+	function.
+	* include/functions_alerts.php: Added new function 
+	alerts_get_alerts_module_name() to retrieve alerts of a module
+	in html select tag format.
+
+2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_tags.php: Added new parameters to function 
 	tags_search_tag().
 

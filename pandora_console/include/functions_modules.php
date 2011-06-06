@@ -185,11 +185,12 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	if (isset ($values['nombre']) && empty ($values['nombre']))
 		return false;
 
-	$return_tag = tags_update_module_tag ($id, $tags);	
+	if ($tags !== false)
+		$return_tag = tags_update_module_tag ($id, $tags);	
 
-	if ($return_tag === false){
-			return false;
-	}
+//	if ($return_tag === false){
+//			return false;
+//	}
 		
 	if ($onlyNoDeletePending) {
 		return (@db_process_sql_update ('tagente_modulo', $values,

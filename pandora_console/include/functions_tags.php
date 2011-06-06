@@ -24,10 +24,11 @@
  * 
  * @param string $tag_name_description Name or description of the tag that it's currently searched. 
  * @param array $filter Array with pagination parameters. 
+ * @param bool $only_names Whether to return only names or all fields.
  * 
  * @return mixed Returns an array with the tag selected by name or false.
  */
-function tags_search_tag ($tag_name_description = false, $filter = false) {
+function tags_search_tag ($tag_name_description = false, $filter = false, $only_names = false) {
 	global $config;
 	
 	if ($tag_name_description){
@@ -49,19 +50,31 @@ function tags_search_tag ($tag_name_description = false, $filter = false) {
 	else{
 		$sql = 'SELECT * FROM ttag';
 	}
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
-			break;
-		case "oracle":
-			$result = oracle_recode_query ($sql, $filter, 'AND', false);
-			if ($components != false) {
-				for ($i=0; $i < count($components); $i++) {
-					unset($result[$i]['rnum']);		
-				}			
-			}
-			break;
+	if ($filter !== false){
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
+				break;
+			case "oracle":
+				$result = oracle_recode_query ($sql, $filter, 'AND', false);
+				if ($components != false) {
+					for ($i=0; $i < count($components); $i++) {
+						unset($result[$i]['rnum']);		
+					}			
+				}
+				break;
+		}
+	}
+	else {
+		$result = db_get_all_rows_sql ($sql);
+	}
+	$result_tags = array();
+	if ($only_names) {
+		foreach ($result as $tag){
+				$result_tags [$tag['id_tag']] = $tag['name'];
+		}
+		$result = $result_tags;
 	}
 	if ($result === false)
 		return array (); //Return an empty array
@@ -103,7 +116,7 @@ function tags_search_tag_id($id){
  * @return mixed String with tag name or false.
  */
 function tags_get_name($id){
-	return db_get_value_filter ('name', 'ttag', 'id_tag', $id);
+	return db_get_value_filter ('name', 'ttag', array('id_tag' => $id));
 }
 
 /**
@@ -114,7 +127,7 @@ function tags_get_name($id){
  * @return mixed String with tag description or false.
  */
 function tags_get_description($id){
-		return db_get_value_filter('description', 'ttag', 'id_tag', $id);
+		return db_get_value_filter('description', 'ttag', array('id_tag' => $id));
 }
 
 /**
@@ -125,7 +138,7 @@ function tags_get_description($id){
  * @return mixed String with tag url or false.
  */
 function tags_get_url($id){
-		return db_get_value_filter('description', 'ttag', 'id_tag', $id);
+		return db_get_value_filter('description', 'ttag', array('id_tag' => $id));
 }
 
 /**
@@ -263,17 +276,25 @@ function tags_insert_module_tag ($id_agent_module, $tags){
  * 
  * @param int $id_agent_module Module's id.
  * @param array $tags Array with tags to associate to the module. 
- *
+ * @param bool $autocommit Whether to do automatical commit or not.
+ * 
  * @return bool True or false if something goes wrong.
  */
-function tags_update_module_tag ($id_agent_module, $tags){
+function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
 	$errn = 0;
+
+	if (empty($tags))
+		$tags = array();
 	
 	/* First delete module tag entries */
 	$result_tag = db_process_sql_delete ('ttag_module', 'id_agente_modulo', $id_agent_module);
 
 	$values = array();
 	foreach ($tags as $tag){
+		//Protect against default insert
+		if (empty($tag))
+			continue;		
+		
 		$values['id_tag'] = $tag;
 		$values['id_agente_modulo'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_module', $values, false);

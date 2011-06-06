@@ -30,7 +30,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "3.1 PS100310";
+my $version = "4.0 PS100310";
 
 # Pandora server configuration
 my %conf;
@@ -266,7 +266,7 @@ sub pandora_compactdb ($$) {
 	my %id_agent_hash;
 	my %value_hash;
 
-	return if ($conf->{'_days_purge'} == 0 || $conf->{'_step_compact'} < 1);
+	return if ($conf->{'_days_compact'} == 0 || $conf->{'_step_compact'} < 1);
 
 	# Compact interval length in seconds
 	# $conf->{'_step_compact'} varies between 1 (36 samples/day) and
@@ -278,7 +278,7 @@ sub pandora_compactdb ($$) {
 	return unless (defined ($limit_utime) && $limit_utime > 0);
 
 	# Calculate the start date
-	my $start_utime = time() - $conf->{'_days_purge'} * 24 * 60 * 60;
+	my $start_utime = time() - $conf->{'_days_compact'} * 24 * 60 * 60;
 	my $stop_utime;
 
 	print "[COMPACT] Compacting data until " . strftime ("%Y-%m-%d %H:%M:%S", localtime($start_utime)) ."\n";
@@ -391,7 +391,6 @@ sub pandora_load_config ($) {
 
 	$conf->{'_days_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_purge'");
 	$conf->{'_days_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_compact'");
-	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
 	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
 	$conf->{'_history_db_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_enabled'");
 	$conf->{'_history_db_host'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_host'");

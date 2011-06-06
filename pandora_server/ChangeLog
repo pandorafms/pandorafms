@@ -1,3 +1,8 @@
+2011-06-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Use days_compact instead of days_purge in
+	  pandora_compactdb.
+
 2011-06-03  SanchO Lerena <slerena@artica.es>
 
 	* pandora_inventory_change.pl

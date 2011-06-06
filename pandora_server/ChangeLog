@@ -1,3 +1,8 @@
+2011-06-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Merged from trunk. Use days_compact instead
+	  of days_purge in pandora_compactdb.
+
 2011-06-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Merged from trunk. Do not include

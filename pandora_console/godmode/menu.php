@@ -160,7 +160,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$sub["godmode/servers/manage_recontask"]["text"] = __('Manage recontask');
 	
 	//This subtabs are only for Pandora Admin
-	if (give_acl ($config['id_user'], 0, "PM")) {
+	if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/servers/plugin"]["text"] = __('Manage plugins');
 		
 		$sub["godmode/servers/recon_script"]["text"] = __('Manage recon script');

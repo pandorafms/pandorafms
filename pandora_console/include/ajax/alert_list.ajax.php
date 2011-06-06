@@ -31,6 +31,7 @@ $isFunctionPolicies = enterprise_include ('include/functions_policies.php');
 $get_agent_alerts_simple = (bool) get_parameter ('get_agent_alerts_simple');
 $disable_alert = (bool) get_parameter ('disable_alert');
 $enable_alert = (bool) get_parameter ('enable_alert');
+$get_actions_module = (bool) get_parameter ('get_actions_module');
 
 if ($get_agent_alerts_simple) {
 	$id_agent = (int) get_parameter ('id_agent');
@@ -89,6 +90,18 @@ if ($disable_alert) {
 		echo __('Successfully disabled');
 	else
 		echo __('Could not be disabled');
+	return;
+}
+
+if ($get_actions_module) {
+	$id_module = get_parameter ('id_module');
+	
+	if (empty($id_module))
+		return false;
+		
+	$alerts_modules = alerts_get_alerts_module_name ($id_module);	
+	
+	echo json_encode ($alerts_modules);
 	return;
 }
 return;

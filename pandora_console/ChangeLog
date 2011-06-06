@@ -1,5 +1,10 @@
 2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_tags.php: Added new parameters to function 
+	tags_search_tag().
+
+2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/ajax/alert_list.ajax.php: Added new callback function 
 	for jQuery requests. 
 	* godmode/menu.php: Added alert events entry. 

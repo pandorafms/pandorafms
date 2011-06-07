@@ -26,7 +26,12 @@ $module_id = get_parameter_get ("id", 0);
 $period = get_parameter ("period", 86400);
 $group = agents_get_agentmodule_group ($module_id);
 $agentId = get_parameter("id_agente"); 
-
+$freestring = get_parameter ("freestring");
+$selection_mode = get_parameter('selection_mode', 'fromnow');
+$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
+$time_from = (string) get_parameter ('time_from', date ('h:iA'));
+$date_to = (string) get_parameter ('date_to', date ('Y-m-j'));
+$time_to = (string) get_parameter ('time_to', date ('h:iA'));
 
 if (! check_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	db_pandora_audit("ACL Violation",
@@ -62,10 +67,18 @@ $block_size = (int) $config["block_size"];
 //
 $columns = array ();
 
+$datetime_from = strtotime ($date_from.' '.$time_from);
+$datetime_to = strtotime ($date_to.' '.$time_to);
+
 if ($moduletype_name == "log4x") {
 	$table->width = "100%";
+	$sql_freestring = '%' . $freestring . '%';
 
-	$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+	if ($selection_mode == "fromnow") {
+		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, get_system_time () - $period);
+	} else {
+		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
+	}
 	
 	$columns = array(
 		
@@ -76,7 +89,12 @@ if ($moduletype_name == "log4x") {
 	);
 
 } else if (preg_match ("/string/", $moduletype_name)) {
-	$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+	$sql_freestring = '%' . $freestring . '%';
+	if ($selection_mode == "fromnow") {
+		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND datos like '%s' AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, get_system_time () - $period);
+	} else {
+		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND datos like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
+	}
 	
 	$columns = array(
 		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "center"),
@@ -84,7 +102,11 @@ if ($moduletype_name == "log4x") {
 		"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
 	);
 } else {
-	$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+	if ($selection_mode == "fromnow") {
+		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+	} else {
+		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+	}
 	
 	$columns = array(
 		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "center"),
@@ -125,18 +147,42 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 }
 
 $header_title = __('Received data from')." ".modules_get_agentmodule_agent_name ($module_id)." / ".modules_get_agentmodule_name ($module_id); 
-$header_title .= "<br><br>" . __("From the last") . " " . human_time_description_raw ($period);
 
 echo "<h3>".$header_title. "</h3>";
 
-echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
-echo __("Choose a time from now") . ": ";
 $intervals = array ();
 $intervals[3600] = human_time_description_raw (3600); // 1 hour
 $intervals[86400] = human_time_description_raw (86400); // 1 day 
 $intervals[604800] = human_time_description_raw (604800); // 1 week
 $intervals[2592000] = human_time_description_raw (2592000); // 1 month
-echo html_print_extended_select_for_time ($intervals, 'period', $period, 'this.form.submit();', '', '0', 10) . __(" seconds.");
+
+$formtable->data = array ();
+
+echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
+
+$formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Choose a time from now");
+$formtable->data[0][1] = html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10, true) . __(" seconds.");
+
+$formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
+$formtable->data[1][1] = __('Timestamp from');
+$formtable->data[1][1] .= html_print_input_text ('date_from', $date_from, '', 10, 10, true);
+$formtable->data[1][1] .= html_print_input_text ('time_from', $time_from, '', 7, 7, true);
+$formtable->data[1][1] .= '<br />';
+$formtable->data[1][1] .= __('Timestamp to');
+$formtable->data[1][1] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
+$formtable->data[1][1] .= html_print_input_text ('time_to', $time_to, '', 7, 7, true);
+
+if (preg_match ("/string/", $moduletype_name) || $moduletype_name == "log4x") {
+      $formtable->data[2][0] = __('Free text for search');
+      $formtable->data[2][1] = html_print_input_text ("freestring", $freestring, '', 20,30, true);
+}
+
+html_print_table ($formtable);
+
+echo '<div class="action-buttons" style="width: 75%">';
+html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+echo '</div>';
+
 echo "</form><br />";
 
 //
@@ -165,7 +211,7 @@ foreach ($result as $row) {
 }
 
 if (empty ($table->data)) {
-	echo '<h3 class="error">'.__('There was a problem locating the source of the graph').'</h3>';
+	echo '<h3 class="error">'.__('No available data to show').'</h3>';
 }
 else {
 	ui_pagination($count);
@@ -173,4 +219,20 @@ else {
 	unset ($table);
 }
 
+ui_require_css_file ('datepicker');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.datepicker');
+ui_require_jquery_file ('timeentry');
+
 ?>
+<script language="javascript" type="text/javascript">
+
+$(document).ready (function () {
+        $("#text-time_from, #text-time_to").timeEntry ({
+                spinnerImage: 'images/time-entry.png',
+                spinnerSize: [20, 20, 0]
+                });
+        $("#text-date_from, #text-date_to").datepicker ();
+        $.datepicker.regional["<?php echo $config['language']; ?>"];
+});
+</script>

@@ -1,3 +1,8 @@
+2011-06-07  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/datos_agente.php: Improved filter. It allows
+	to select 'Specify time range' and search string.
+
 2011-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/ver_agente.php: Added callback function

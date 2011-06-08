@@ -164,6 +164,7 @@ function modules_delete_agent_module ($id_agent_module) {
 	db_process_sql_update ('tagente_modulo',
 		array ('nombre' => 'delete_pending', 'delete_pending' => 1, 'disabled' => 1),
 		$where);
+	db_process_sql_delete('ttag_module', $where);
 	
 	return true;
 }
@@ -234,7 +235,8 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if ($id_agent_module === false)
 		return false;
 
-	$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
+	if ($tags !== false)
+		$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
 
 	if ($return_tag === false){
 		db_process_sql_delete ('tagente_modulo',

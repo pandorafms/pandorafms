@@ -2435,11 +2435,14 @@ sub pandora_get_module_tags ($$$) {
 	
 	# No tags found
 	return '' if ($#tags < 0);
-	
-	my $tag_string = '|';
+
+	my $tag_string = '';
 	foreach my $tag (@tags) {
-		$tag_string .=  $tag->{'name'} . '|';
+		$tag_string .=  $tag->{'name'} . ',';
 	}
+	
+	# Remove the trailing ','
+	chop ($tag_string);
 	
 	return $tag_string;
 }

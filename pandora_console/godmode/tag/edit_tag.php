@@ -48,6 +48,10 @@ ui_print_page_header (__('Tags configuration'), "images/comments.png", false, ""
 // Two actions can performed in this page: update and create tags
 // Update tag: update an existing tag
 if ($update_tag && $id_tag != 0) {	
+
+	// Erase comma characters on tag name
+	$name_tag = str_replace(',', '', $name_tag); 
+
 	$values = array();
 	$values['name'] = $name_tag;
 	$values['description'] = $description_tag;
@@ -66,6 +70,9 @@ if ($update_tag && $id_tag != 0) {
 if ($create_tag) {
 
 	$return_create = true;
+	
+	// Erase comma characters on tag name
+	$name_tag = str_replace(',', '', $name_tag); 
 	
 	$data = array();
 	$data['name'] = $name_tag;

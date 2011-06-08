@@ -40,6 +40,7 @@ namespace Pandora_Modules {
 	private:
 		list<Pandora_Module *>           *modules;
 		list<Pandora_Module *>::iterator *current;
+		void		 parseModuleConf (string path_file, list<Pandora_Module *> *modules);
 		void             parseModuleDefinition (string definition);
 	public:
 		Pandora_Module_List                    (string filename);

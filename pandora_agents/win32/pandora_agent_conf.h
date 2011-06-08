@@ -51,6 +51,7 @@ namespace Pandora {
 		static Pandora_Agent_Conf *getInstance ();
 		
 		~Pandora_Agent_Conf            ();
+		void 				parseFile(string path_file, Collection *aux);
 		void               setFile     (string filename);
 		string             getValue    (const string key);
 		

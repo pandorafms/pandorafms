@@ -1,3 +1,10 @@
+2011-06-07  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* win32/pandora_agent_conf.cc
+	  win32/pandora_agent_conf.h
+	  win32/modules/pandora_module_list.cc
+	  win32/modules/pandora_module_list.h: Allow the windows agent to include additional configuration files.
+
 2011-06-01  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* unix/pandora_agent: Allow the agent to include additional configuration files.

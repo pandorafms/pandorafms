@@ -40,6 +40,58 @@
 
 using namespace std;
 
+/**
+ * Additional configuration file.
+ */
+void
+Pandora_Modules::Pandora_Module_List::parseModuleConf (string path_file, list<Pandora_Module *> *modules) {
+	ifstream     file_conf (path_file.c_str ());
+	string       buffer;
+	unsigned int pos;
+	
+	if (!file_conf.is_open ()) {
+		return;
+	}
+	
+	/* Read and set the file */
+	while (!file_conf.eof ()) {
+		/* Set the value from each line */
+		getline (file_conf, buffer);
+		
+		/* Ignore blank or commented lines */
+		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+			/* Module */
+			pos = buffer.find ("module_begin");  
+			if (pos != string::npos) {
+				string str_module = buffer + "\n";
+				bool   module_end = false;
+				
+				while (!module_end) {
+					if (file_conf.eof ()) {
+						break;
+					}
+					getline (file_conf, buffer);
+					pos = buffer.find ("module_end");
+					module_end = (pos != string::npos);
+					str_module += buffer + "\n";
+				}
+				
+				this->parseModuleDefinition (str_module);
+				continue;
+			}
+			
+			/* Plugin */
+			pos = buffer.find ("module_plugin");  
+			if (pos != string::npos) {
+				this->parseModuleDefinition (buffer);
+				continue;
+			}
+			
+		}
+	}
+	file_conf.close ();
+	return;
+}
 /** 
  * Read and set a key-value set from a file.
  *
@@ -66,6 +118,23 @@ Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 		
 		/* Ignore blank or commented lines */
 		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+			/*Check if is a include*/
+				pos = buffer.find("include");
+				if (pos != string::npos){
+					string path_file;
+					unsigned pos_c;
+				
+					path_file = buffer.substr(pos+8);
+
+					pos_c = path_file.find("\"");
+					/* Remove " */
+					while (pos_c != string::npos){
+						path_file.replace(pos_c, 1, "");
+						pos_c = path_file.find("\"",pos_c+1);
+					}
+
+					parseModuleConf(path_file, modules);
+			}
 			
 			/* Module */
 			pos = buffer.find ("module_begin");  

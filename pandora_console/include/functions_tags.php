@@ -274,6 +274,40 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 }
 
 /**
+ * Inserts tag's array of a policy module. 
+ * 
+ * @param int $id_agent_module Policy module's id.
+ * @param array $tags Array with tags to associate to the module. 
+ *
+ * @return bool True or false if something goes wrong.
+ */
+function tags_insert_policy_module_tag ($id_agent_module, $tags){
+	$errn = 0;
+	
+	$values = array();
+	foreach ($tags as $tag){
+		//Protect against default insert
+		if (empty($tag))
+			continue;
+		
+		$values['id_tag'] = $tag;
+		$values['id_policy_module'] = $id_agent_module;
+		$result_tag = db_process_sql_insert('ttag_policy_module', $values, false);
+		if ($result_tag === false)
+			$errn++;		
+	}
+	
+	if ($errn > 0){
+		db_process_sql_rollback();
+		return false;
+	}
+	else{
+		db_process_sql_commit();
+		return true;
+	}
+}
+
+/**
  * Updates tag's array of a module. 
  * 
  * @param int $id_agent_module Module's id.
@@ -307,6 +341,39 @@ function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
 }
 
 /**
+ * Updates tag's array of a policy module. 
+ * 
+ * @param int $id_policy_module Policy module's id.
+ * @param array $tags Array with tags to associate to the module. 
+ * @param bool $autocommit Whether to do automatical commit or not.
+ * 
+ * @return bool True or false if something goes wrong.
+ */
+function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = false){
+	$errn = 0;
+
+	if (empty($tags))
+		$tags = array();
+	
+	/* First delete module tag entries */
+	$result_tag = db_process_sql_delete ('ttag_policy_module', array('id_policy_module' => $id_policy_module));
+
+	$values = array();
+	foreach ($tags as $tag){
+		//Protect against default insert
+		if (empty($tag))
+			continue;		
+		
+		$values['id_tag'] = $tag;
+		$values['id_policy_module'] = $id_policy_module;
+		$result_tag = db_process_sql_insert('ttag_policy_module', $values, false);
+		if ($result_tag === false)
+			$errn++;		
+	}
+	
+}
+
+/**
  * Select all tags of a module. 
  * 
  * @param int $id_agent_module Module's id.
@@ -329,5 +396,30 @@ function tags_get_module_tags ($id_agent_module){
 	
 	return $return;
 }
+
+/**
+ * Select all tags of a policy module. 
+ * 
+ * @param int $id_policy_module Policy module's id.
+ *
+ * @return mixed Array with module tags or false if something goes wrong.
+ */
+function tags_get_policy_module_tags ($id_policy_module){
+	if (empty($id_policy_module))
+		return false;
+	
+	$tags = db_get_all_rows_filter('ttag_policy_module', array('id_policy_module' => $id_policy_module), false);
+
+	if ($tags === false)
+		return false;
+	
+	$return = array();
+	foreach ($tags as $tag){
+		$return[] = $tag['id_tag'];
+	}
+	
+	return $return;
+}
+
 	
 ?>

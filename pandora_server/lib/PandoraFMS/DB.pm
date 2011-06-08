@@ -44,6 +44,7 @@ our @EXPORT = qw(
 		get_agent_name
 		get_agent_module_id
 		get_alert_template_module_id
+		get_alert_template_name
 		get_db_rows
 		get_db_single_row
 		get_db_value
@@ -545,6 +546,16 @@ sub db_text ($) {
 	return " dbms_lob.substr(" . $string . ", 4000, 1)" if ($RDBMS eq 'oracle');
 	
 	return $string;
+}
+
+##########################################################################
+## SUB get_alert_template_name(alert_id)
+## Return the alert template name, given "alert_id"
+##########################################################################
+sub get_alert_template_name ($$) {
+	my ($dbh, $alert_id) = @_;
+	
+	return get_db_value ($dbh, "SELECT name FROM talert_templates, talert_template_modules WHERE talert_templates.id = talert_template_modules.id_alert_template AND talert_template_modules.id = ?", $alert_id);
 }
 
 # End of function declaration

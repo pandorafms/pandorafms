@@ -47,6 +47,9 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	if (strlen(get_parameter('history_data')) > 0) {
 		$values['history_data'] = get_parameter('history_data');
 	}
+
+	// Whether to update module tag info
+	$update_tags = get_parameter('id_tag', false);
 	
 	$modules = db_get_all_rows_filter ('tagente_modulo',
 		array ('id_agente' => $agents_select,
@@ -59,7 +62,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		return false;
 		
 	foreach ($modules as $module) {
-		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true);
+		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true, $update_tags);
 		
 		if ($result === false) {
 			db_process_sql_rollback ();
@@ -341,6 +344,12 @@ $table->data['edit7'][1] = html_print_input_text ('min_ff_event', '', '', 5, 15,
 $table->data['edit7'][2] = __('Historical data');
 $table->data['edit7'][3] = html_print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
+/* Tags avalaible */
+$id_tag = array();
+$table->data['edit8'][2] = __('Tags');
+$table->data['edit8'][3] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
+	'id_tag[]', $id_tag, '',__('None'),'0', true, true, false, false);
+
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 html_print_table ($table);
 
@@ -390,7 +399,7 @@ $(document).ready (function () {
 			$(".select_modules_row_2").css('display', '');
 		}
 		
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 		
 		if (this.value == '0') {
 			filter = '';
@@ -425,7 +434,7 @@ $(document).ready (function () {
 		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "35%");
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").removeAttr ("checked");
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
 	}
 	
 	function clean_lists() {
@@ -433,7 +442,7 @@ $(document).ready (function () {
 		$("#module_name").html('<?php echo __('None'); ?>');
 		$("#agents").html('<?php echo __('None'); ?>');
 		$("#module").html('<?php echo __('None'); ?>');
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
 		$('#module_type').val(-1);
@@ -445,24 +454,24 @@ $(document).ready (function () {
 			if(this.id == "checkbox-force_type"){
 				if(this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
-					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
 				}
 				else {
 					$(".select_modules_row_2").css('display', '');
 					if($('#module_name option:selected').val() == undefined) {
-						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 					}
 				}
 			}
 			else {
 				if(this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
-					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
 					if($('#id_agents option:selected').val() == undefined) {
-						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 					}				
 				}
 			}
@@ -500,7 +509,7 @@ $(document).ready (function () {
 				$(".select_agents_row_2").css('display', '');
 			}
 			
-			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",

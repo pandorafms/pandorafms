@@ -1,3 +1,8 @@
+2011-06-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/tag/edit_tag.php: Comma characters are erased 
+	during tag creation/update.
+
 2011-06-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Added support for event tags.

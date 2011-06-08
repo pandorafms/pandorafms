@@ -54,6 +54,54 @@ Pandora::Pandora_Agent_Conf::getInstance () {
 }
 
 /**
+ * Additional configuration file.
+ */
+void
+Pandora::Pandora_Agent_Conf::parseFile(string path_file, Collection *aux){
+	ifstream     file_conf (path_file.c_str ());
+	string buffer;
+	unsigned int pos;
+
+	if (!file_conf.is_open ()) {
+		return;
+	}
+	
+	/* Read and set the file */
+	while (!file_conf.eof ()) {
+		/* Set the value from each line */
+		getline (file_conf, buffer);
+		
+		/* Ignore blank or commented lines */
+		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {		
+			/*Check if is a collection*/
+			pos = buffer.find("file_collection");
+			if(pos != string::npos) {
+				string collection_name, trimmed_str;
+				
+				/*Add collection to collection_list*/
+				/*The number 15 is the number of character of string file_collection*/
+				collection_name = buffer.substr(pos+15);
+				
+				
+				aux = new Collection();
+				
+				aux->name = trim (collection_name);
+				
+				/*Check for ".." substring for security issues*/
+				if ( collection_name.find("..") == string::npos ) {
+					aux->verify = 0;
+					collection_list->push_back (*aux);
+				}
+				continue;
+			}
+		}
+	}
+	
+	file_conf.close();
+	return;
+}
+
+/**
  * Sets configuration file to Pandora_Agent_Conf object instance.
  * 
  * It parses the filename and initialize the internal structures
@@ -70,7 +118,7 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 	string       buffer;
 	unsigned int pos;
 	Collection *aux;
-
+	
 	if (this->key_values)
 		delete this->key_values;
 	this->key_values = new list<Key_Value> ();
@@ -90,6 +138,22 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 		
 		/* Ignore blank or commented lines */
 		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+				/*Check if is a include*/
+				pos = buffer.find("include");
+				if (pos != string::npos){
+					string path_file;
+					unsigned pos_c;
+				
+					path_file = buffer.substr(pos+8);
+
+					pos_c = path_file.find("\"");
+					/* Remove " */
+					while (pos_c != string::npos){
+						path_file.replace(pos_c, 1, "");
+						pos_c = path_file.find("\"",pos_c+1);
+					}
+					parseFile(path_file, aux);
+			}
 			/*Check if is a collection*/
 			pos = buffer.find("file_collection");
 			if(pos != string::npos) {

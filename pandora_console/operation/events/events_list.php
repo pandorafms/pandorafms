@@ -611,7 +611,14 @@ foreach ($result as $event) {
 	} else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
-	
+	$string .= '</td></tr>';
+	$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Tags') . ':</td><td align="left">';
+	if ($event["tags"] != '') {
+		$string .= $event["tags"];
+	}
+	else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+	}
 	$string .= '</td></tr>';
 	$string .= '</table>';
 	

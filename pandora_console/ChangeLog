@@ -1,5 +1,10 @@
 2011-06-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: Added tag information in this 
+	view.
+
+2011-06-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/tag/edit_tag.php: Comma characters are erased 
 	during tag creation/update.
 

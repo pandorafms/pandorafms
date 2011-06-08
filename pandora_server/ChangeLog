@@ -1,5 +1,9 @@
 2011-06-08  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Use commas to separate tags.
+
+2011-06-08  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm: Added a function to get the name of an alert
 	  template given the alert id.
 	

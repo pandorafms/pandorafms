@@ -146,6 +146,7 @@ our @EXPORT = qw(
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
 	pandora_generate_compound_alerts
+	pandora_get_module_tags
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
@@ -389,13 +390,15 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		# Generate an event
 		if ($table eq 'tevent_alert') {
 			pandora_event ($pa_config, "Alert ceased (" .
-				$alert->{'name'} . ")", 0, 0, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
+				$alert->{'name'} . ")", 0, 0, $alert->{'priority'}, $id,
+				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
 				"alert_ceased", 0, $dbh);
 		}  else {
 			pandora_event ($pa_config, "Alert ceased (" .
 					$alert->{'name'} . ")", $agent->{'id_grupo'},
-					$agent->{'id_agente'}, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
-					"alert_ceased", 0, $dbh);
+					$agent->{'id_agente'}, $alert->{'priority'}, $id,
+					(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
+			        "alert_ceased", 0, $dbh);
 		}
 		return;
 	}
@@ -651,9 +654,9 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	# Generate an event
 	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
 
-	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") " . (defined ($module)) ? 'assigned to ('. $module->{'nombre'} . ")" : "",
-			defined ($agent) ? $agent->{'id_grupo'} : 0, defined ($agent) ? $agent->{'id_agente'} : 0 , $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
-			defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0, $event, 0, $dbh);
+	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") " . (defined ($module) ? 'assigned to ('. $module->{'nombre'} . ")" : ""),
+			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh);
 }
 
 ##########################################################################
@@ -1417,18 +1420,24 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$) {
+sub pandora_event ($$$$$$$$$$;$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh) = @_;
 
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 
+	# Get module tags
+	my $module_tags = '';
+	if (defined ($id_agentmodule) && $id_agentmodule > 0) {
+		$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
+	}	
+		
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
-
-	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, '');
+	
+	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, '', $module_tags);
 }
 
 ##########################################################################
@@ -2408,6 +2417,31 @@ sub pandora_module_unknown ($$) {
 			logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 		}
 	}
+}
+
+##########################################################################
+=head2 C<< get_event_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+
+Get a list of module tags in the format: |tag|tag| ... |tag|
+
+=cut
+##########################################################################
+sub pandora_get_module_tags ($$$) {
+	my ($pa_config, $dbh, $id_agentmodule) = @_;
+	
+	my @tags = get_db_rows ($dbh, 'SELECT ttag.name FROM ttag, ttag_module
+	                               WHERE ttag.id_tag = ttag_module.id_tag
+	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
+	
+	# No tags found
+	return '' if ($#tags < 0);
+	
+	my $tag_string = '|';
+	foreach my $tag (@tags) {
+		$tag_string .=  $tag->{'name'} . '|';
+	}
+	
+	return $tag_string;
 }
 
 # End of function declaration

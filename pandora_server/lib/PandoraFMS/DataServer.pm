@@ -98,13 +98,13 @@ sub data_producer ($) {
 		# Data files must have the extension .data
 		next if ($file !~ /^.*\.data$/);
 		
-		# Do not queue more than max_queue_files files
-		if ($file_count > $pa_config->{"max_queue_files"}) {
-			last;
-		}
-
 		push (@files, $file);
 		$file_count++;
+
+		# Do not queue more than max_queue_files files
+		if ($file_count >= $pa_config->{"max_queue_files"}) {
+			last;
+		}
 	}
 	closedir(DIR);
 

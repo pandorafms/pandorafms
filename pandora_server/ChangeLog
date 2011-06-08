@@ -1,3 +1,13 @@
+2011-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added a function to get the name of an alert
+	  template given the alert id.
+	
+	* lib/PandoraFMS/Core.pm: Added support for module tags.
+	
+	* lib/PandoraFMS/DataServer.pm: Do not queue more than max_queue_files
+	  files (not max_queue_files + 1!).
+
 2011-06-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Use days_compact instead of days_purge in

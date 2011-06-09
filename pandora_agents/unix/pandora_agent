@@ -151,7 +151,7 @@ my %Conf = (
 	'udp_server' => 0,
 	'proxy_mode' => 0,
 	'proxy_max_connection' => 10,
-	'proxy_timeout' => 1
+	'proxy_timeout' => 1,
 );
 
 # Modules
@@ -293,6 +293,8 @@ sub parse_conf_modules($) {
 	my $module;
 	
 	foreach my $line (@{$param}) {
+		
+		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
 		# Module definition
 		if ($line =~ /^\s*module_begin\s*$/) {
 			$module = {
@@ -398,143 +400,41 @@ sub parse_conf_modules($) {
 			my $collection = $1;
 		}
 	}
+	return;
 }
 
 ################################################################################
-# Parse configuration file.
+# Read configuration file. Exit on error.
 ################################################################################
-sub parse_conf ($$) {
-	my ($param, $token) = @_;
-	my $module; 
-
-	foreach my $line (@{$param}) {
+sub read_config (;$) {
+	my $token = shift;
+	my $module;
+	
+	error ("File '$ConfDir/$ConfFile' not found.") unless (-e "$ConfDir/$ConfFile");
+	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
+	
+	my @file = <CONF_FILE>;
+	while (my $line = <CONF_FILE>) {
 	
 		# Skip comments and empty lines
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
-		
+
 		# Single token search
 		if (defined ($token)) {
 			return $2 if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token);
 			next;
 		}
 		
+		#Additional configuration file
 		if ($line =~ /^include\s+(.*)\s*/){
 			open (FILE, "$1") or next;
 			my @file_conf = <FILE>;
 			parse_conf_modules(\@file_conf);	
 			close (FILE);
 		}
-
-		# Module definition
-		if ($line =~ /^\s*module_begin\s*$/) {
-			$module = {
-				'name' => '',
-				'type' => 'generic_data',
-				'description' => '',
-				'func' => 0,
-				'params' => '',
-				'description' => '',
-				'interval' => 1,
-				'timeout' => 0,
-				'counter' => 0,
-				'max' => undef,
-				'min' => undef,
-				'post_process' => undef,
-				'save' => '',
-				'conditions' => [],
-				'cron' => '',
-				'cron_utimestamp' => 0,
-				'cron_interval' => -1
-			};
-		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
-			$module->{'name'} = $1;
-		} elsif ($line =~ /^\s*module_description\s+(.+)$/) {
-			$module->{'description'} = $1;
-		} elsif ($line =~ /^\s*module_type\s+(\S+)\s*$/) {
-			$module->{'type'} = $1;
-		} elsif ($line =~ /^\s*module_exec\s+(.+)$/) {
-			$module->{'func'} = \&module_exec;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_cpuusage\s+(.*)$/) {
-			$module->{'func'} = \&module_cpuusage;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_freememory\s+(.*)$/) {
-			$module->{'func'} = \&module_freememory;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_freepercentmemory\s+(.*)$/) {
-			$module->{'func'} = \&module_freepercentmemory;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*(module_proc|module_service)\s+(.+)$/) {
-			$module->{'func'} = \&module_proc;
-			$module->{'params'} = $2;
-		} elsif ($line =~ /^\s*module_cpuproc\s+(.+)$/) {
-			$module->{'func'} = \&module_cpuproc;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_memproc\s+(.+)$/) {
-			$module->{'func'} = \&module_memproc;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_freedisk\s+(.*)$/) {
-			$module->{'func'} = \&module_freedisk;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_freepercentdisk\s+(.*)$/) {
-			$module->{'func'} = \&module_freepercentdisk;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_occupiedpercentdisk\s+(.*)$/) {
-			$module->{'func'} = \&module_occupiedpercentdisk;
-			$module->{'params'} = $1;
-		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
-			$module->{'max'} = $1;
-		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
-			$module->{'min'} = $1;
-		} elsif ($line =~ /^\s*module_postprocess\s+(.*)\s*$/) {
-			$module->{'post_process'} = $1;
-		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
-			$module->{'interval'} = $1;
-
-			# Make the module run the first time
-			$module->{'counter'} = $1;
-		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
-			$module->{'timeout'} = $1;
-		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
-			$module->{'save'} = $1;
-		} elsif ($line =~ /^\s*module_condition\s+(.*)$/) {
-			my $action = $1;
-			# Numeric comparison
-			if ($action =~ /^\s*([<>!=]+)\s+(\d+\.\d*)\s+(.*)$/) {
-				push (@{$module->{'conditions'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
-			# Interval
-			} elsif ($action =~ /^\s*[(]\s*(\d+\.\d*)\s*,\s*(\d+\.\d*)\s*[)]\s+(.*)$/) {
-				push (@{$module->{'conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
-			# Regular expression
-			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
-				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
-			}
-		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
-			$module->{'cron'} = $1;
-		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
-			$module->{'cron_interval'} = $1;
-		} elsif ($line =~ /^\s*module_end\s*$/) {
-			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
-			push (@Modules, $module);
-		# Plugin
-		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
-			push (@Plugins, $1);
-		# Module proc command redefinition		
-		} elsif ($line =~ /^\s*module_proc_cmd\s+(.+)$/) {
-			PROC_CMDS->{$OS} = $1;
-		# Module freedisk command redefinition		
-		} elsif ($line =~ /^\s*module_freedisk_cmd\s+(.+)$/) {
-			PART_CMDS->{$OS} = $1;
-		# Collection
-		} elsif ($line =~ /^\s*file_collection\s+(.+)$/) {
-			my $collection = $1;
-			
-			# Prevent path traversal attacks
-			if ($collection !~ m/(\.\.)|\//) {
-				$Collections{$collection} = 0;
-			}
+		
 		# Configuration token
-		} elsif ($line =~ /^\s*(\S+)\s+(.*)$/) {
+		 if ($line =~ /^\s*(\S+)\s+(.*)$/) {
 			
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
@@ -542,30 +442,18 @@ sub parse_conf ($$) {
 			# Remove trailing spaces
 			$Conf{$1} =~ s/\s*$//;
 		}
+		
 	}
 	
-	return undef;
-}
-
-################################################################################
-# Read configuration file. Exit on error.
-################################################################################
-sub read_config (;$) {
-
-	my $token = shift;
-	
-	error ("File '$ConfDir/$ConfFile' not found.") unless (-e "$ConfDir/$ConfFile");
-	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
-	my @file = <CONF_FILE>;
+	# Module, plugin and collection definition
+		parse_conf_modules(\@file);
 
 	# Token not found
 	if (defined ($token)) {
-		$token = parse_conf(\@file, $token);
 		close (CONF_FILE);
-		return $token if defined ($token);
 		return undef;
-	}	parse_conf(\@file, $token);
-	
+	}
+
 	# Update the agent MD5 since agent_name may have changed
 	$AgentMD5 = md5 ($Conf{'agent_name'});
 	$RemoteConfFile = "$AgentMD5.conf";

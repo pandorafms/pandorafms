@@ -1,3 +1,7 @@
+2011-06-09  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* unix/pandora_agent: Clean the code: parse configuration files.
+
 2011-06-07  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/pandora_agent_conf.cc

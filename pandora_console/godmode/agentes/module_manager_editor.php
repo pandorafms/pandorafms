@@ -257,7 +257,8 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 	}
 
 }
-
+global $__code_from;
+$__code_from = 'modules';
 switch ($moduletype) {
 	case "dataserver":
 	case 1:

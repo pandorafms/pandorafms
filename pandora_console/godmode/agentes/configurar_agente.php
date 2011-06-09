@@ -617,7 +617,7 @@ if ($update_module || $create_module) {
 	$max_critical = (float) get_parameter ('max_critical');
 	$ff_event = (int) get_parameter ('ff_event');
 	$unit = (string) get_parameter('unit');
-	$id_tag = (array) get_parameter('id_tag');
+	$id_tag = (array) get_parameter('id_tag_selected');
 
 	$active_snmp_v3 = get_parameter('active_snmp_v3');
 	if ($active_snmp_v3) {

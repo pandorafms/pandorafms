@@ -171,6 +171,19 @@ function tags_get_local_modules_count($id){
 }
 
 /**
+ * Get tag's local module count. 
+ * 
+ * @param array $id Int with tag id info. 
+ *
+ * @return mixed Int with the tag's count or false.
+ */
+function tags_get_modules_tag_count($id){
+	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_agente_modulo' => $id));
+
+	return $num_modules;
+}
+
+/**
  * Get tag's policy module count. 
  * 
  * @param array $id Int with tag id info. 

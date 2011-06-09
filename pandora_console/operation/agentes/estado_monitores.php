@@ -16,6 +16,29 @@
 // Load globar vars
 global $config;
 
+//Ajax tooltip to deploy modules's tag info.
+if (is_ajax ()) {
+	$get_tag_tooltip = (bool) get_parameter ('get_tag_tooltip', 0);
+	
+	if ($get_tag_tooltip) {
+		$id_agente_modulo = (int) get_parameter ('id_agente_modulo');
+		if ($id_agente_modulo === false)
+			return;
+		$tags = tags_get_module_tags($id_agente_modulo);
+		
+		if ($tags === false)
+			$tags = array();
+			
+		echo '<h3> Tag\'s information </h3>';		
+		foreach ($tags as $tag) {
+				echo tags_get_name($tag).'<br>';
+		}
+	
+		return;
+	}
+	return;
+}
+
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
 	db_pandora_audit("HACK Attempt",
@@ -26,6 +49,7 @@ if (!isset ($id_agente)) {
 
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
+include_once($config['homedir'] . "/include/functions_tags.php");
 
 $id_agent = get_parameter('id_agente');
 $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $id_agent;
@@ -293,6 +317,11 @@ foreach ($modules as $module) {
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
 	$data[3] = ui_print_string_substr ($module["nombre"], 25, true);
+	//Adds tag context information
+	if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
+		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
+		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
+	}
 	$data[4] = ui_print_string_substr ($module["descripcion"], 30, true);
 
 	$status = STATUS_MODULE_WARNING;
@@ -420,4 +449,20 @@ else {
 
 unset ($table);
 unset ($table_data);
+
+ui_require_css_file ('cluetip');
+ui_require_jquery_file ('cluetip');
 ?>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+	$("a.tag_details").cluetip ({
+		arrows: true,
+		attribute: 'href',
+		cluetipClass: 'default'
+	}).click (function () {
+		return false;
+	});
+
+/* ]]> */
+</script>

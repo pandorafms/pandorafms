@@ -667,7 +667,7 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
     $chart->setChartParams($params.';numVDivLines='.$num_vlines.($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
+	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
 }
 
 // Returns a 3D column chart

@@ -81,8 +81,7 @@ $data[1] .= html_print_label(__("Period"), 'custom_integer_2', true)."<br/>";
 $periods [0] = __('Weekly');
 $periods [1] = __('Monthly');
 $periods [2] = __('Daily');
-$data[1] .= html_print_select ($periods, 'custom_integer_2', $custom_integer_2, '', '', 0, true); //html_debug_print ($custom_integer_2);
-
+$data[1] .= html_print_select ($periods, 'custom_integer_2', $custom_integer_2, '', '', 0, true);
 
 $data[1] .= html_print_input_hidden ('id_agente', $id_agente, true);
 $data[1] .= '</div>';

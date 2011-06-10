@@ -108,6 +108,12 @@ ALTER TABLE ttrap ADD `severity` tinyint(4) unsigned NOT NULL default '2';
 ALTER TABLE tusuario_perfil ADD `id_policy` int(10) unsigned NOT NULL default 0;
 
 -- -----------------------------------------------------
+-- Table `tevento`
+-- -----------------------------------------------------
+
+ALTER TABLE `tevento` MODIFY `event_type` enum('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown';
+
+-- -----------------------------------------------------
 -- Change the value "0000-00-00 00:00:00" that Pandora use as zero or null date value
 -- for the value "01-01-1970 00:00:00".
 -- -----------------------------------------------------

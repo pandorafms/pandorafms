@@ -26,6 +26,7 @@
 
 CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
+CREATE AGGREGATE array_agg (anyelement) (sfunc = array_append, stype = anyarray, initcond = '{}');;
 
 CREATE TABLE taddress (
 	id_a NUMBER(10, 0) NOT NULL PRIMARY KEY,
@@ -484,7 +485,7 @@ CREATE TABLE tevento (
 	criticity NUMBER(10, 0) default 0 NOT NULL,
 	user_comment CLOB,
 	tags CLOB NOT NULL,
-	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal'))
+	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
 );
 CREATE INDEX tevento_id_1_idx ON tevento(id_agente, id_evento);
 CREATE INDEX tevento_id_2_idx ON tevento(utimestamp, id_evento);

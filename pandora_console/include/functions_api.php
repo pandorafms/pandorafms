@@ -1195,7 +1195,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 				'alert_ceased', 'alert_manual_validation',
 				'recon_host_detected', 'system','error', 'new_agent',
 				'going_up_warning', 'going_up_critical', 'going_down_warning',
-				'going_down_normal', 'going_down_critical', 'going_up_normal');
+				'going_down_normal', 'going_down_critical', 'going_up_normal','configuration_change');
 			
 			if (in_array($other['data'][1], $valuesAvaliable)) {
 				$values['event_type'] = $other['data'][1];

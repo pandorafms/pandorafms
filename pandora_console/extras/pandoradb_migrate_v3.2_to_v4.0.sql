@@ -175,3 +175,9 @@ CREATE TABLE IF NOT EXISTS `ttag_event` (
 -- -----------------------------------------------------
 
 ALTER TABLE `tagente_modulo` ADD COLUMN (`unit` text DEFAULT '');
+
+-- -----------------------------------------------------
+-- Table `tevento`
+-- -----------------------------------------------------
+
+ALTER TABLE `tevento` ADD COLUMN (`tags` text NOT NULL);

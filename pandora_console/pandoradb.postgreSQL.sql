@@ -387,7 +387,8 @@ CREATE TABLE "tevento" (
 	"id_agentmodule" INTEGER NOT NULL default 0,
 	"id_alert_am" INTEGER NOT NULL default 0,
 	"criticity" INTEGER NOT NULL default 0,
-	"user_comment" text NOT NULL
+	"user_comment" text NOT NULL,
+	"tags" text NOT NULL
 );
 CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");
 CREATE INDEX "tevento_id_2_idx" ON "tevento"("utimestamp", "id_evento");

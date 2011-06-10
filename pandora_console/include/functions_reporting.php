@@ -3284,7 +3284,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($order_uptodown == 1 || $order_uptodown == 2) {
 				$i = 0;
 				$data_pie_graph = array();
+				$data_hbar = array();
 				foreach ($data_top as $dt) {
+					$data_hbar[$agent_name[$i]]['g'] = $dt;
 					$data_pie_graph[$agent_name[$i]] = $dt;
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
@@ -3566,7 +3568,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				if ($order_uptodown == 1 || $order_uptodown == 2) {
 					$j=0;
 					$data_pie_graph = array();
+					$data_hbar = array();
 					foreach ($data_exceptions as $dex) {
+						$data_hbar[$agent_name[$j]]['g'] = $dex;
 						$data_pie_graph[$agent_name[$j]] = $dex;
 						if  ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
@@ -3581,7 +3585,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				else if ($order_uptodown == 0 || $order_uptodown == 3) {
 					$j=0;
 					$data_pie_graph = array();
+					$data_hbar = array();
 					foreach ($agent_name as $an) {
+						$data_hbar[$an]['g'] = $data_exceptions[$j];
 						$data_pie_graph[$an] = $data_exceptions[$j];
 						if  ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
@@ -3605,7 +3611,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[3][0] = 3;
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
-				$data[0] = pie3d_graph($config['flash_charts'], $data_graph,
+				$data[0] = pie3d_graph($config['flash_charts'], $data_pie_graph,
 					600, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
@@ -3614,7 +3620,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
 				
-				$data[0] = hbar_graph($config['flash_charts'], $data_horin_graph, 600, $height);
+				$data[0] = hbar_graph($config['flash_charts'], $data_hbar, 600, $height);
 				
 				array_push ($table->data, $data);
 			}

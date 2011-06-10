@@ -1,3 +1,12 @@
+2011-06-10 Javier Lanz <javier.lanz@artica.es>
+
+	* include/graphs/functions_fsgraph.php: Updated a deprecated function
+	call
+	* include/functions_reporting.php: ixed a mistake using the wrong
+	variable to print pie graph
+	* godmode/agentes/module_manager_editor_prediction.php: Removed a
+	html_debug_print call
+
 2011-06-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.postgreSQL.sql

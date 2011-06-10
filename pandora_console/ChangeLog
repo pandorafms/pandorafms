@@ -1,5 +1,12 @@
 2011-06-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: New field "tags" in 
+	"tevento" table for Oracle, Postgresql and migration script.
+
+2011-06-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/config_process.php: Graph's dependencies now are included
 	by calling a new file with require_once sentence in order to avoid 
 	duplicate function declaration problem.

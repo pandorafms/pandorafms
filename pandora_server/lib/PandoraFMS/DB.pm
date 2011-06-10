@@ -41,6 +41,7 @@ our @EXPORT = qw(
 		get_action_id
 		get_agent_id
 		get_agent_address
+		get_agent_group
 		get_agent_name
 		get_agent_module_id
 		get_alert_template_module_id
@@ -168,6 +169,19 @@ sub get_os_id ($$) {
 
 	my $rc = get_db_value ($dbh, "SELECT id_os FROM tconfig_os WHERE name = ?", $os_name);
 	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## SUB get_agent_name (agent_id)
+## Return agent group id, given "agent_id"
+##########################################################################
+sub get_agent_group ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	my $group_id = get_db_value ($dbh, "SELECT id_grupo FROM tagente WHERE id_agente = ?", $agent_id);
+	return 0 unless defined ($group_id);
+	
+	return $group_id;
 }
 
 ##########################################################################

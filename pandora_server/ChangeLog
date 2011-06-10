@@ -1,3 +1,9 @@
+2011-06-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added a function to get the group of an agent.
+
+	* lib/PandoraFMS/Core.pm: Fixed a prototype.
+
 2011-06-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Use commas to separate tags.

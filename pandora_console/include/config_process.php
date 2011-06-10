@@ -153,20 +153,9 @@ if (isset($config['history_db_enabled'])) {
 // Make dbconnection the default connection again (the link identifier of the already opened link will be returned)
 db_connect();
 
-function include_graphs_dependencies($home_url = '', $serialize_ttl = 1) {
-	global $ttl;
-	global $homeurl;
-	
-	$ttl = $serialize_ttl;
-	$homeurl = $home_url;
-	
-	include_once($homeurl . 'include/functions.php');
-	include_once($homeurl . 'include/functions_html.php');
-	
-	include_once($homeurl . 'include/graphs/functions_fsgraph.php');
-	include_once($homeurl . 'include/graphs/functions_gd.php');
-	include_once($homeurl . 'include/graphs/functions_utils.php');
-}
+// Function include_graphs_dependencies() it's called in the code below
+require_once("include_graph_dependencies.php");
+
 //require_once("include/fgraph.php");
 include_graphs_dependencies();
 

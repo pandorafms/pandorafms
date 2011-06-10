@@ -270,14 +270,16 @@ if ($group_rep == 0) {
 else {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+			$sql = "SELECT *, GROUP_CONCAT(user_comment SEPARATOR '') AS user_comment,
+			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
 				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
-			$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+			$sql = "SELECT *, array_to_string(array_agg(user_comment), '') AS user_comment,
+			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
@@ -290,7 +292,8 @@ else {
 			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
 				FROM (select * from tevento WHERE 1=1 ".$sql_post.") a, 
 				(select min(id_evento) as id_evento,  to_char(evento) as evento, 
-				id_agentmodule, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep 
+				id_agentmodule, COUNT(*) AS event_rep, MAX(estado) AS estado,
+				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep 
 				from tevento 
 				WHERE 1=1 ".$sql_post." 
 				GROUP BY to_char(evento), id_agentmodule) b 

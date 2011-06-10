@@ -1,3 +1,11 @@
+2011-06-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/config_process.php: Graph's dependencies now are included
+	by calling a new file with require_once sentence in order to avoid 
+	duplicate function declaration problem.
+	* include/include_graph_dependencies.php: All graph's dependencies
+	in this file. 
+
 2011-06-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_tags.php

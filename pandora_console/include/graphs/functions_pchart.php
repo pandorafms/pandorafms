@@ -53,7 +53,9 @@ if (!$id_graph) {
 	exit;
 }
 
-$graph = unserialize_in_temp($id_graph);
+$ttl = get_parameter('ttl', 1);
+
+$graph = unserialize_in_temp($id_graph, true, $ttl);
 
 if (!isset($graph)) {
 	exit;

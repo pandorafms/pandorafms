@@ -1,3 +1,7 @@
+2011-06-13  Sancho Lerena <slerena@artica.es>
+
+        * NetworkServer.pm: Avoid warning messages on pandora_server.error
+
 2011-06-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Merged from trunk. Use days_compact instead

@@ -419,7 +419,7 @@ sub exec_network_module ($$$$) {
 			    if ($id_tipo_modulo == 18){ #snmp_data_proc
                             # RFC1213-MIB where it says that: SYNTAX INTEGER { up(1), down(2), testing(3),
                             # unknown(4), dormant(5), notPresent(6), lowerLayerDown(7) } 
-				    if ($module_data != 1){ # up state is 1, down state in SNMP is 2 ....
+				    if ($module_data ne '1'){ # up state is 1, down state in SNMP is 2 ....
 					    $module_data = 0;
 				    }
 			    }

@@ -123,7 +123,7 @@ if ($id_user_ack != "0")
 
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
-	$sql_post .= " AND utimestamp > ".$unixtime;
+	$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
@@ -246,7 +246,8 @@ echo '</div>';
 if ($group_rep == 0) {
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 } else {
-	$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+	$sql = "SELECT *, GROUP_CONCAT(user_comment SEPARATOR '') AS user_comment,
+			MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 }
 
 //Extract the events by filter (or not) from db

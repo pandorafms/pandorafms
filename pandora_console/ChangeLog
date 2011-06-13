@@ -1,3 +1,8 @@
+2011-06-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/events_list.php: Merged from trunk. Always show
+	  pending events. Improved event grouping.
+
 2011-05-17 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_agente.php: fixed the search.

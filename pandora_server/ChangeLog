@@ -1,5 +1,7 @@
 2011-06-13  Sancho Lerena <slerena@artica.es>
 
+	* Tools.pm: Avoid errors when provide an empty string to md5.
+
 	* NetworkServer.pm: Avoid warning messages on pandora_server.error
 
 2011-06-10  Ramon Novoa  <rnovoa@artica.es>

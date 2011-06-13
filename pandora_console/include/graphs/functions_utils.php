@@ -55,7 +55,7 @@ function unserialize_in_temp($serial_id = null, $delete = true, $ttl = 1) {
 			unlink($file_path);
 		}
 		else {
-			$next_volume = $volume++;
+			$next_volume = $volume + 1;
 			rename($file_path, sys_get_temp_dir()."/pandora_serialize_".$serial_id."__".$next_volume."__".$ttl);
 		}
 	}

@@ -189,7 +189,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height) {
 
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homedir="",
-	$water_mark = "", $font = '', $font_size = '', $unit) {
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
 
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
@@ -211,9 +211,9 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 				
-		$id_graph = serialize_in_temp($graph);
+		$id_graph = serialize_in_temp($graph, null, $ttl);
 
-		return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "'>";
+		return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=area&id_graph=" . $id_graph . "&ttl=" . $ttl . "'>";
 	}	
 }
 

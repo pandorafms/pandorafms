@@ -29,7 +29,8 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
 				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
-				$only_image = false, $homeurl = '') {
+				$only_image = false, $homeurl = '', $ttl = 1) {
+
 	global $config;
 	global $graphic_type;
 	
@@ -306,11 +307,11 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	if ($flash_chart) {
 		include_flash_chart_script($homeurl);
 	}
-	
+
 	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], $unit);
+		 $config['fontpath'], $config['font_size'], $unit, $ttl);
 }
 
 /**

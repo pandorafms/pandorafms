@@ -194,7 +194,7 @@ foreach ($contents as $content) {
 			
 			$img = grafico_modulo_sparse2($content['id_agent_module'],
 				$content['period'], 0, 720,
-				230, '', null, false, true, false, $datetime, 0, 0, true, true);
+				230, '', null, false, true, false, $datetime, '', 0, 0, true, true);
 			
 			preg_match("/src='(.*)'/", $img, $matches);
 			$url = $matches[1];
@@ -207,7 +207,7 @@ foreach ($contents as $content) {
 			
 			$img = grafico_modulo_sparse2($content['id_agent_module'],
 				$content['period'], 0, 720,
-				230, '', null, false, true, false, ($datetime + $content['period']), true, 0, true, true);
+				230, '', null, false, true, false, ($datetime + $content['period']), '', true, 0, true, true);
 				
 			preg_match("/src='(.*)'/", $img, $matches);
 			$url = $matches[1];

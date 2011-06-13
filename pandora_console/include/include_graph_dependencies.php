@@ -21,7 +21,7 @@
 		
 		$ttl = $serialize_ttl;
 		$homeurl = $home_url;
-		
+		include_once($homeurl . 'include/functions_io.php');
 		include_once($homeurl . 'include/functions.php');
 		include_once($homeurl . 'include/functions_html.php');
 		

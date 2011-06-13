@@ -28,7 +28,7 @@ define("GRAPH_STACKED_LINE", 3);
 function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
-				$date = 0, $unit, $baseline = 0, $return_data = 0, $show_title = true,
+				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
 				$only_image = false, $homeurl = '') {
 	global $config;
 	global $graphic_type;
@@ -795,6 +795,10 @@ function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
 	
 	$out_of_lim_str = __("Out of limits");
 	$title = "";
+	
+	require_once("include_graph_dependencies.php");
+	include_graphs_dependencies("/var/www/pandora/");
+
 	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
 }

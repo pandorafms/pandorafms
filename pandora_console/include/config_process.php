@@ -157,6 +157,6 @@ db_connect();
 require_once("include_graph_dependencies.php");
 
 //require_once("include/fgraph.php");
-include_graphs_dependencies();
+include_graphs_dependencies($config['homedir'].'/');
 
 ?>

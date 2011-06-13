@@ -47,7 +47,6 @@ include_once('functions_fsgraph.php');
 include_once('functions_utils.php');
 */
 
-
 if (isset($_GET['homeurl'])) {
 	$homeurl = $_GET['homeurl']; 	
 }

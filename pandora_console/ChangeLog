@@ -1,3 +1,20 @@
+2011-06-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_pchart.php
+	include/graphs/functions_gd.php
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php
+	include/functions_reporting.php
+	include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php
+	include/config_process.php
+	include/include_graph_dependencies.php
+	operation/agentes/stat_win.php
+	operation/reporting/reporting_xml.php: Fixed missed parameters
+	in sparse graph functions.
+	Fixed graph includes and bugs
+
 2011-06-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_api.php, pandoradb.sql,

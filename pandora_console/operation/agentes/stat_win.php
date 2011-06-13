@@ -153,7 +153,7 @@ switch ($graph_type) {
 		break;
 	case 'sparse':
 		echo grafico_modulo_sparse2 ($id, $period, $draw_events, $width, $height,
-			$label, null, $draw_alerts, $avg_only, false, $date, $baseline,
+			$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
 			0, true, false, $urlImage);
 		break;
 	case 'string':

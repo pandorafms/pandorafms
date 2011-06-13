@@ -21,14 +21,15 @@ if(file_exists('include/functions.php')) {
 else if(file_exists('../functions.php')) {
 	include_once('../functions.php');
 	include_once('../functions_html.php');
-	include_once('../functions_html.php');
 	include_once('functions_utils.php');
 }
+
+$types = array('histogram', 'progressbar');
 	
 $id_graph = get_parameter('id_graph', false);
+$graph_type = get_parameter('graph_type', '');
 
-if($id_graph) {
-
+if($id_graph && in_array($graph_type, $types)) {
 
 	if (!$id_graph) {
 		exit;
@@ -44,8 +45,6 @@ if($id_graph) {
 		$graph['fontsize'] = 6;
 	}
 	
-	$graph_type = get_parameter('graph_type', '');
-
 	switch($graph_type) {
 		case 'histogram': 
 					gd_histogram ($graph['width'], 

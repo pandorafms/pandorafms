@@ -12,6 +12,7 @@
 // GNU General Public License for more details.
 
 include_once('functions_utils.php');
+include_once('../functions_io.php');
 include_once('../functions.php');
 include_once('../functions_html.php');
 
@@ -47,7 +48,6 @@ $force_steps = true;
 $graph_type = get_parameter('graph_type', '');
 
 $id_graph = get_parameter('id_graph', false);
-
 
 if (!$id_graph) {
 	exit;

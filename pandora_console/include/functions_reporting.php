@@ -2053,7 +2053,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data[0] = grafico_modulo_sparse2($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], 0, 0, true, true);
+				$report["datetime"], '', 0, 0, true, true);
 			
 			array_push ($table->data, $data);
 			
@@ -2079,7 +2079,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$data[0] = grafico_modulo_sparse2($layout_data['id_agente_modulo'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], true, 0, true, true);
+				$report["datetime"], '', true, 0, true, true);
 			array_push ($table->data, $data);
 			
 			break;

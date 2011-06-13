@@ -1,3 +1,7 @@
+2011-06-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/events_list.php: Always show pending events.
+
 2011-06-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

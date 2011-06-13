@@ -128,7 +128,7 @@ if ($id_user_ack != "0")
 
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
-	$sql_post .= " AND utimestamp > ".$unixtime;
+	$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .

@@ -571,6 +571,10 @@ sub md5_init () {
 sub md5 ($) {
 	my $str = shift;
 
+	if (!defined($str)){
+		return "";
+	}
+
 	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
 
 	# Initialize variables

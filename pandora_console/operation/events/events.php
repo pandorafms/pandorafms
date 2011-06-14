@@ -378,7 +378,7 @@ $(document).ready( function() {
 			"id" : id,
 			"comment" : comment,
 			"new_status" : select_validate,
-			"similar" : <?php echo ($group_rep ? 1 : 0) ?>
+			"similars" : <?php echo ($group_rep ? 1 : 0) ?>
 			},
 			function (data, status) {
 				if (data == "ok") {

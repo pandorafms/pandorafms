@@ -1,3 +1,8 @@
+2011-06-14  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.php: Fixed typo to fix the bug of
+	multichange of event status when status are grouped
+
 2011-06-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/events/events_list.php: Merged from trunk. Always show

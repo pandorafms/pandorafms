@@ -1,3 +1,9 @@
+2011-06-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/fgraph.php: Added ttl parameter to all 
+	pdf report graphs
+
 2011-06-14 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php: Added enterprise

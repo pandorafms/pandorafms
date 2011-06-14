@@ -647,7 +647,7 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size'], "");
+				$config['fontpath'], $config['font_size'], "", $ttl);
 			break;
 		default:
 		case GRAPH_STACKED_AREA:
@@ -655,21 +655,21 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size']);
+				$config['fontpath'], $config['font_size'], "", $ttl);
 			break;
 		case GRAPH_LINE:
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size']);
+				$config['fontpath'], $config['font_size'], "", $ttl);
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
 			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size']);
+				$config['fontpath'], $config['font_size'], "", $ttl);
 			break;
 	}
 }
@@ -1334,7 +1334,7 @@ function grafico_eventos_usuario2 ($width, $height) {
  * @param integer width graph width
  * @param integer Graph type 1 vbar, 2 hbar, 3 pie
  */
-function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homeurl = '') {
+function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homeurl = '', $ttl = 1) {
 	global $config;
 
     $report_content = db_get_row ('treport_content', 'id_rc', $id);
@@ -1355,6 +1355,7 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
 	
 	$count = 0;
 	foreach ($data_result as $data_item) {
+		html_debug_print($data_item);
 		$count++;
 	    switch ($type) {
 	        case 'sql_graph_vbar': // vertical bar

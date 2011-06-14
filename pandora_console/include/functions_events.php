@@ -157,10 +157,13 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	/* We must validate all events like the selected */
+
 	if ($similars) {
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
 		}
+		
+		$id_event = array_unique($id_event);
 	}
 	
 	db_process_sql_begin ();

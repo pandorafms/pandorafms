@@ -1,5 +1,11 @@
 2011-06-14  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php
+	operation/events/events.php: Fixed multiple validation
+	when events are grouped
+
+2011-06-14  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php
 	include/graphs/fgraph.php: Added ttl parameter to all 
 	pdf report graphs

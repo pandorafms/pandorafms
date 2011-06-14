@@ -349,6 +349,7 @@ $(document).ready( function() {
 		var comment = $('#textarea_comment_'+id).val();
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process
 		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
+		var similars = $('#group_rep').val();
 
 		if(!select_validate) {
 			select_validate = 1;
@@ -377,7 +378,7 @@ $(document).ready( function() {
 			"id" : id,
 			"comment" : comment,
 			"new_status" : select_validate,
-			"similar" : <?php echo ($group_rep ? 1 : 0) ?>
+			"similars" : similars
 			},
 			function (data, status) {
 				if (data == "ok") {

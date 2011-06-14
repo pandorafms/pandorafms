@@ -96,6 +96,25 @@ $table_simple->colspan['prediction_module'][1] = 3;
 
 push_table_simple ($data, 'prediction_module');
 
+// Synthetic modules are an Enterprise feature.
+$data = array();
+$synthetic_selector = enterprise_hook ('get_synthetic_module_selector', array($is_service));
+if ($synthetic_selector !== ENTERPRISE_NOT_HOOK) {
+	$data[0] = __('Synthetic module');
+	$data[1] = $synthetic_selector;
+	$table_simple->colspan['synthetic_selector'][1] = 3;
+	push_table_simple ($data, 'synthetic_selector');
+}
+
+$data = array();
+$synthetic_module_form = enterprise_hook ('get_synthetic_module_form');
+if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
+	$data[0] = '';
+	$data[1] = $synthetic_module_form;
+	$table_simple->colspan['synthetic_module_form'][1] = 3;
+	push_table_simple ($data, 'synthetic_module_form');
+}
+
 /* Removed common useless parameter */
 unset ($table_advanced->data[3]);
 unset ($table_advanced->data[2][2]);

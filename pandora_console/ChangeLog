@@ -1,3 +1,8 @@
+2011-06-14 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/agentes/module_manager_editor_prediction.php: Added enterprise
+	hook for synthetic modules
+
 2011-06-13 Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

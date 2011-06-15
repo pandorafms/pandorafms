@@ -110,9 +110,8 @@ function delete_event ($id_event, $similar = true) {
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
 		}
+		$id_event = array_unique($id_event);
 	}
-	
-	$id_event = array_unique($id_event);
 
 	process_sql_begin ();
 	$errors = 0;
@@ -164,10 +163,9 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
 		}
+		$id_event = array_unique($id_event);
 	}
 		
-	$id_event = array_unique($id_event);
-
 	process_sql_begin ();
 	$errors = 0;
 	

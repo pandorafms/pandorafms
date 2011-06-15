@@ -1,5 +1,9 @@
 2011-06-15  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php: Minor fixes to improve performance
+
+2011-06-15  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_events.php
 	operation/events/events_list.php: Fixed insertion
 	of repeated event comment

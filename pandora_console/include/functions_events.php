@@ -110,6 +110,7 @@ function events_delete_event ($id_event, $similar = true) {
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
 		}
+		$id_event = array_unique($id_event);
 	}
 	
 	db_process_sql_begin ();
@@ -162,7 +163,6 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
 		}
-		
 		$id_event = array_unique($id_event);
 	}
 	

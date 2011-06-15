@@ -1,3 +1,8 @@
+2011-06-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php: Fixed repeated values into
+	array of event ids in delete function merged from validate function
+
 2011-06-15  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* include/functions_ui.php: Fixed typos

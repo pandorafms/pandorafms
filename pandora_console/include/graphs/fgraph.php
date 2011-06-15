@@ -223,7 +223,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
-	
+
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -316,7 +316,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}	
 }
 
-function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1) {
+function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1, $homedir="") {
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -328,15 +328,15 @@ function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $
 		
 	$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-	return "<img src='include/graphs/functions_pchart.php?graph_type=".$graph_type."&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+	return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=".$graph_type."&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 }
 
-function radar_graph($flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1) {
-	return kiviat_graph('radar', $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl);
+function radar_graph($flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1, $homedir="") {
+	return kiviat_graph('radar', $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl, $homedir);
 }
 
-function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1) {
-	return kiviat_graph('polar', $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl);
+function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1, $homedir="") {
+	return kiviat_graph('polar', $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl, $homedir="");
 }
 
 function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),

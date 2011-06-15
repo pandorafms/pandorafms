@@ -1,5 +1,11 @@
 2011-06-15  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/events/events_list.php: Merged from trunk. Do not show
+	  repeated comments when grouping events. Raise the maximum permitted
+	  result length for GROUP_CONCAT.
+
+2011-06-15  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandoradb.oracle.sql: Removed unneeded code.
 
 	* operation/events/events_list.php: Do not show duplicate messages when

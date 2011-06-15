@@ -270,6 +270,7 @@ if ($group_rep == 0) {
 else {
 	switch ($config["dbtype"]) {
 		case "mysql":
+			process_sql ('SET group_concat_max_len = 9999999');
 			$sql = "SELECT *, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
 			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento

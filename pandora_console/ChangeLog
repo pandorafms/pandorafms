@@ -1,3 +1,9 @@
+2011-06-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merge from the branch.
+	
+	* godmode/alerts/alert_actions.php: fixed the url to copy the alert action.
+
 2011-06-15 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/graphs/fgraph.php: Adding homedir to radar, polar and kiviat

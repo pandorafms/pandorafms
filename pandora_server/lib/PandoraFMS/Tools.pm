@@ -692,12 +692,35 @@ sub disk_free ($) {
 }
 
 sub load_average {
-	my $load_average = `cat /proc/loadavg | awk '{ print \$1 }'`;
+	my $load_average;
+
+	my $OSNAME = $^O;
+
+	if ($OSNAME eq "freebsd"){
+		$load_average = ((split(/\s+/, `/sbin/sysctl -n vm.loadavg`))[1]);
+	}
+	# by default LINUX calls
+	else {
+		$load_average = `cat /proc/loadavg | awk '{ print \$1 }'`;
+	}
 	return $load_average;
 }
 
 sub free_mem {
-	my $free_mem = `free | grep Mem | awk '{ print \$4 }'`;
+	my $free_mem;
+
+	my $OSNAME = $^O;
+
+	if ($OSNAME eq "freebsd"){
+		my ($pages_free, $page_size) = `/sbin/sysctl -n vm.stats.vm.v_page_size vm.stats.vm.v_free_count`;
+		# in kilobytes
+		$free_mem = $pages_free * $page_size / 1024;
+
+	}
+	# by default LINUX calls
+	else {
+		$free_mem = `free | grep Mem | awk '{ print \$4 }'`;
+	}
 	return $free_mem;
 }
 

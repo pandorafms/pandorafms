@@ -49,11 +49,11 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 	
 	$text = io_safe_output($text);
 	if ((strlen($text)) > ($numChars)) {
-		$half_lenght = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
-		$truncateText2 = mb_strimwidth($text, (strlen($text) - $half_lenght), strlen($text));
+		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
+		$truncateText2 = mb_strimwidth($text, (strlen($text) - $half_length), strlen($text));
 		// In case $numChars were an odd number.
-		$half_lenght = $numChars - $half_lenght - 3;
-		$truncateText = mb_strimwidth($text, 0, $half_lenght) . $suffix;
+		$half_length = $numChars - $half_length - 3;
+		$truncateText = mb_strimwidth($text, 0, $half_length) . $suffix;
 		$truncateText=$truncateText . $truncateText2;
 		
 		if ($showTextInTitle) {

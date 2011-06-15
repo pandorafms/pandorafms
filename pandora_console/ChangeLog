@@ -1,3 +1,10 @@
+2011-06-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.oracle.sql: Removed unneeded code.
+
+	* operation/events/events_list.php: Do not show duplicate messages when
+	  grouping events.
+
 2011-06-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Fixed repeated values into

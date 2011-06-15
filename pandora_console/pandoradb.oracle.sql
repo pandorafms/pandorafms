@@ -26,7 +26,6 @@
 
 CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
-CREATE AGGREGATE array_agg (anyelement) (sfunc = array_append, stype = anyarray, initcond = '{}');;
 
 CREATE TABLE taddress (
 	id_a NUMBER(10, 0) NOT NULL PRIMARY KEY,

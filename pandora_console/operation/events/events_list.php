@@ -270,7 +270,7 @@ if ($group_rep == 0) {
 else {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT *, GROUP_CONCAT(user_comment SEPARATOR '') AS user_comment,
+			$sql = "SELECT *, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
 			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
@@ -278,7 +278,7 @@ else {
 				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
-			$sql = "SELECT *, array_to_string(array_agg(user_comment), '') AS user_comment,
+			$sql = "SELECT *, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
 			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
@@ -289,6 +289,7 @@ else {
 			$set = array();
 			$set['limit'] = $pagination;
 			$set['offset'] = $offset;
+			// TODO: Remove duplicate user comments
 			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
 				FROM (select * from tevento WHERE 1=1 ".$sql_post.") a, 
 				(select min(id_evento) as id_evento,  to_char(evento) as evento, 

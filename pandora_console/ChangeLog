@@ -1,3 +1,9 @@
+2011-06-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/events_list.php: Merged from trunk. Do not show
+	  repeated comments when grouping events. Raise the maximum permitted
+	  result length for GROUP_CONCAT.
+
 2011-06-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Minor fixes to improve performance

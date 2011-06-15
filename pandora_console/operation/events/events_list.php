@@ -246,6 +246,7 @@ echo '</div>';
 if ($group_rep == 0) {
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 } else {
+	process_sql ('SET group_concat_max_len = 9999999');
 	$sql = "SELECT *, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
 			MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 }

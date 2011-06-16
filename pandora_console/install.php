@@ -23,12 +23,11 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena, Raul Mateos">
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
+<meta name="author" content="Pandora FMS Development Team">
+<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and many others">
 <meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/pandora_minimal.css" type="text/css">
 <link rel="stylesheet" href="include/styles/install.css" type="text/css">
 </head>
 
@@ -61,13 +60,14 @@ function ChangeDBAction(causer) {
 	ChangeDBDrop(window.document.step2_form.db_action);
 }
 </script>
+<body>
+<div style='height: 10px'>
 
-<body bgcolor="#555555">
 
 <?php
 
 $version = "4.0-dev";
-$build = "110111";
+$build = "110617";
 $banner = "v$version Build $build";
 
 error_reporting(0);
@@ -357,7 +357,7 @@ function print_logo_status ($step, $step_total){
 	echo "
 		<div id='logo_img'>
 			<img src='images/pandora_logo.png' border='0'><br>
-			<span style='font-size: 8px;'>$banner</span>
+			<span style='font-size: 9px;'>$banner</span>
 			<br><br>
 			<b>Install step $step of $step_total</b>
 		</div>";
@@ -369,21 +369,20 @@ function install_step1() {
 
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS installation wizard. Step #1 of 5</h1>
-	<div id='wizard' style='height: 490px;'>
+	<div id='wizard' style='height: 480px;'>
 		<div id='install_box'>
 			<h2>Welcome to Pandora FMS installation Wizard</h2>
-			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
-			<p>In four steps checks all dependencies and make your configuration 
-			for a quick installation.</p>
-			<p>For more information, please refer to documentation.</p>
-			<i>Pandora FMS Development Team</i>
+			<p>This wizard helps you to quick install Pandora FMS console and main database in your system.</p>
+			<p>In four steps, this installer will check all dependencies and will create your configuration, ready to use.</p>
+			<p>For more information, please refer to documentation.<br>
+			<i>Pandora FMS Development Team</i></p>
 		";
 		if (file_exists("include/config.php")){
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
 		}
-		echo "<table width=100%>";
+        echo "<br>";
+		echo "<table width=85%>";
 		$writable = check_writable ( "include", "Checking if ./include is writable");
 		if (file_exists("include/config.php"))
 			$writable += check_writable ( "include/config.php", "Checking if include/config.php is writable");
@@ -395,7 +394,7 @@ function install_step1() {
 		</div>";
 
 		echo "<div class='info'><b>Upgrade</b>: 
-		If you want to upgrade from Pandora FMS 2.x to 3.0 version, 
+		If you want to upgrade from Pandora FMS 3.2 to 4.0 version, 
 		please download the migration tool from our website at 
 		<a href='http://www.pandorafms.com'>PandoraFMS.com web site</a>.</div>";
 		
@@ -424,8 +423,7 @@ function install_step1() {
 function install_step1_licence() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS installation wizard. Step #2 of 5</h1>
-	<div id='wizard' style='height: 520px;'>
+	<div id='wizard' style='height: 500px;'>
 		<div id='install_box'>
 			<h2>GPL2 Licence terms agreement</h2>
 			<p>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
@@ -439,7 +437,7 @@ function install_step1_licence() {
 	}
 	else {
 		echo "<form method=post action='install.php?step=2'>";
-		echo "<textarea name='gpl2' cols=50 rows=17>";
+		echo "<textarea name='gpl2' cols=55 rows=15>";
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";
@@ -462,7 +460,6 @@ function install_step2() {
 
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console installation wizard. Step #3 of 5</h1>
 	<div id='wizard' style='min-height: 390px;'>
 		<div id='install_box'>";
 		echo "<h2>Checking software dependencies</h2>";
@@ -540,8 +537,7 @@ function install_step3() {
 
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console installation wizard. Step #4 of 5 </h1>
-	<div id='wizard' style='height: 750px;'>
+	<div id='wizard' style='height: 635px;'>
 		<div id='install_box'>
 			<h2>Environment and database setup</h2>
 			<p>
@@ -572,7 +568,10 @@ function install_step3() {
 	if (!$error) {
 		echo "<form method='post' name='step2_form' action='install.php?step=4'>";
 	}
-	echo "<div>DB ENGINE</div>";
+
+    echo "<table cellpadding=6 celwidth=100% border=0>";
+    echo "<tr><td>";
+	echo "DB Engine<br>";
 
 
 	if ($error) {
@@ -585,41 +584,43 @@ function install_step3() {
 		echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
 		echo $options;
 		echo "</select>";
-		echo "<div style=\"height:40px;\">Installation in <br>";
+
+        echo "<td>";
+		echo " Installation in <br>";
 		echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
 		echo 	"<option value='db_new'>A new Database</option>";
 		echo 	"<option value='db_exist'>An existing Database</option>";
 		echo "</select>";
-		echo "</div>";	
 	}
-	echo "		<div>DB User with privileges on DB</div>
-				<input class='login' type='text' name='user' value='root'>
-
-				<div>DB Password for this user</div>
-				<input class='login' type='password' name='pass' value=''>
+	echo "		<tr><td>DB User with privileges<br>
+				<input class='login' type='text' name='user' value='root' size=8>
+               
+				<td>DB Password for this user<br>
+				<input class='login' type='password' name='pass' value='' size=8>
 				
-				<div>DB Hostname</div>
-				<input class='login' type='text' name='host' value='localhost'>
+				<tr><td>DB Hostname<br>
+				<input class='login' type='text' name='host' value='localhost' size=12>
 
-				<div>DB Name (pandora by default)</div>
-				<input class='login' type='text' name='dbname' value='pandora'>
+				<td>DB Name (pandora by default)<br>
+				<input class='login' type='text' name='dbname' value='pandora' size=8>
 
+                <tr><td valign=top>
+				Drop Database if exists<br>
 				<input class='login' type='checkbox' name='drop' value=1 disabled>				
-				Drop Database if exists
 
-				<div>Full path to HTTP publication directory<br>
-					<span class='f9b'>For example /var/www/pandora_console/. 
-					Needed for graphs and attachments.
-					</span>
-				</div>
-				<input class='login' type='text' name='path' style='width: 190px;' 
+
+				<td>Full path to HTTP publication directory<br>
+					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
+				<br>
+				<input class='login' type='text' name='path' style='width: 240px;' 
 				value='".dirname (__FILE__)."'>
 
-				<div>URL path to Pandora FMS Console<br>
-				<span class='f9b'>For example '/pandora_console'</span>
-				</div>
+				<tr><td colspan=2>URL path to Pandora FMS Console<br>
+				<span style='font-size: 9px'>For example '/pandora_console'</span>
+				</br>
 				<input class='login' type='text' name='url' style='width: 250px;' 
 				value='".dirname ($_SERVER["SCRIPT_NAME"])."'>
+            </table>
 				";
 	
 	if (!$error) {
@@ -682,7 +683,6 @@ function install_step4() {
 
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS Console installation wizard. Step #5 of 5</h1>
 	<div id='wizard' style='height: 480px;'>
 		<div id='install_box'>
 			<h2>Creating database and default configuration file</h2>
@@ -1057,7 +1057,6 @@ function install_step4() {
 function install_step5() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console installation wizard. Finished</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
 			<h2>Installation complete</h2>

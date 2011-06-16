@@ -219,10 +219,6 @@ if (isset ($_GET["bye"])) {
 	exit ("</html>");
 }
 
-// http://es2.php.net/manual/en/ref.session.php#64525
-// Session locking concurrency speedup!
-session_write_close (); 
-
 // Header
 if ($config["pure"] == 0) {
 	echo '<div id="container"><div id="head">';
@@ -235,16 +231,17 @@ else {
 	echo '<div id="main_pure">';
 }
 
+// http://es2.php.net/manual/en/ref.session.php#64525
+// Session locking concurrency speedup!
+session_write_close (); 
+
+
 // Main block of content
 if ($config["pure"] == 0) {
 	echo '<div id="main">';
 }
 
-// Check permissions
-if (!is_writable ("attachment")){
-	echo '<h3 class="error">'.__('Attachment directory is not writable by HTTP Server').'</h3>';
-	echo '<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory').'</p>';
-}
+
 
 // Page loader / selector
 if ($searchPage) {

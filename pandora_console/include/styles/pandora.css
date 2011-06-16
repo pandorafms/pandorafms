@@ -31,7 +31,10 @@ svg * {
 body {
 	text-align: center;
 	background-color: #555555;
+    background-image:  url(../../images/greyback.gif);
+
 }
+
 body.pure {
 	background-color: #fff;
 }
@@ -255,7 +258,7 @@ input.datos_readonly {
 	background-color: #050505;
 }
 input.login {
-	border-color: #3f4e2f;
+	border-color: #aaa;
 	background-color: #f5f5f5;
 	margin: 2px 0 8px;
 	width: 90px;

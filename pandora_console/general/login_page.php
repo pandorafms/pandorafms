@@ -28,7 +28,7 @@ echo '<div class="databox" id="login">';
 
 echo '<br /><br />';
 echo '
-	<div class="databox" id="login_in">
+	<div id="login_in">
 		<form method="post" action="index.php'.$url.'">
 		<table cellpadding="4" cellspacing="1" width="420">';
 
@@ -38,7 +38,7 @@ if (isset ($login_failed)) {
 	echo '</td></tr>';
 }
 
-echo '<tr><td rowspan="3" align="left" style="border-right: solid 1px #678;">';
+echo '<tr><td rowspan="3" align="left">';
 
 if (!empty ($page) && !empty ($sec)) {
 	foreach ($_POST as $key => $value) {

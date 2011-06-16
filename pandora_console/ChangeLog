@@ -1,3 +1,23 @@
+2011-06-16 Sancho Lerena <slerena@artica.es>
+
+    * include/styles/install.css,
+    include/styles/pandora.css,
+    install.php: Yeeeha!, new look & feel for 4.0 version ! :-)
+
+    * index.php: Minimal changes in session close (after the header render).
+
+    * images/greyback.gif: New background for 4.0 (included the installer)
+
+    * COPYING: removed bad carriage returns.
+
+    * general/login_page.php: Small modifications to have a better style.
+
+    * operation/system_alert.php,
+    include/javascript/jquery.pandora.js,
+    general/header.php: Implemented a "alert" icon who shows the general
+    problems, instead naggin the user in each page. Incorporated the new 
+    feature to warn user when he doesn't change the default password :-)
+
 2011-06-16 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merge from the branch.

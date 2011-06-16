@@ -18,20 +18,20 @@
 
 h1 {
 	font: bold 1em Arial, Sans-serif;
-	text-transform: uppercase;
 	font-size: 18px;
 	color: #ffffff;
+    text-align: center;
 }
 h2 {
 	font: bold 1em Arial, Sans-serif;
-	text-transform: uppercase;
-	font-size: 14px;
+    border-bottom: solid 1px #00aa00;
+	font-size: 16px;
 }
 
 div#install_container {
 	margin: 0 auto;
-	margin-top: 15px;
-	width: 600px;
+	margin-top: 45px;
+	width: 650px;
 }
 div#logo_img {
 	text-align: center;
@@ -43,14 +43,14 @@ div#wizard {
 	margin-top: 1em;
 	padding: 20px;
 	padding-left: 20px;
-	width: 600px;
+	width: 650px;
 	background-color: #fafafa;
 }
 div#install_box, div#install_img {
 	float: right;
 	padding-right: 20px;
 	margin-top: 0px;
-	width: 350px;
+	width: 400px;
 }
 div#install_img {
 	margin-bottom: 25px;
@@ -66,7 +66,7 @@ div#foot_install {
 	padding-right: 20px;
 	text-align: center;
 	background: #777;
-	width: 600px;
+	width: 650px;
 	border-left: 1px solid #999;
 	border-right: 1px solid #999;
 }
@@ -100,9 +100,14 @@ span.arr {
 	font-family: verdana,arial, sans;
         font-size: 8.5pt;
 }
-body {
-	font-family: verdana,arial, sans;
+
+body, td {
+    font-family: Sans, Arial, sans;
 	font-size: 9pt;
-	background-color: #fff;
+    line-height: 15px;
+}
+
+body{
+    background: url(../../images/greyback.gif);
 }
 

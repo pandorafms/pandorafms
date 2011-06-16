@@ -58,4 +58,33 @@ $(document).ready (function () {
 		
 		return false;
 	});
-});
+
+	$("a#show_systemalert_dialog").click (function () {
+		jQuery.get ("ajax.php",
+			{"page": "operation/system_alert"},
+			function (data, status) {
+				$("#alert_messages").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						title: $("a#show_systemalert_dialog").attr ("title"),
+						resizable: true,
+                        draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						bgiframe: jQuery.browser.msie,
+						width: 700,
+						height: 300
+					})
+					.show ();
+			},
+			"html"
+		);	
+		return false;
+	});
+}
+
+);

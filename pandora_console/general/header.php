@@ -19,6 +19,28 @@ require_once ('include/functions_servers.php');
 
 
 $msg_cnt = 0;
+$alert_cnt = 0;
+$_SESSION["alert_msg"] = "";
+
+// Check permissions
+
+// Global error checking.
+
+if (!is_writable ("attachment")){
+    $alert_cnt++;
+
+    // At this first version I'm passing errors using session variables, because the error management
+    // is done by an AJAX request. Better solutions could be implemented in the future :-)
+
+    $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory').'</p>';
+}
+
+// Check default password for "admin"
+$hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
+if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
+    $alert_cnt++;
+    $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.').'</p>';
+}
 
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
@@ -48,8 +70,8 @@ $msg_cnt = 0;
 			if ($config["metaconsole"] == 0){
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
-					echo '<div id="dialog_messages" style="display: none"></div>';
 
+					echo '<div id="dialog_messages" style="display: none"></div>';
 					ui_require_css_file ('dialog');
 					ui_require_jquery_file ('ui.core');
 					ui_require_jquery_file ('ui.dialog');
@@ -57,41 +79,55 @@ $msg_cnt = 0;
 					html_print_image ("images/email.png", false,
 					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
 					echo '</a>';
+                    echo "&nbsp;";
+                    echo "&nbsp;";
 				}
 			}
-			?>
-			&nbsp;
-			<a class="white_bold" href="index.php?bye=bye"><?php html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')))?></a>
-		</td>
-		
-		<td width="20%">
 
-<?php
-		if ($config["metaconsole"] == 0){
-			echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
+            if ($alert_cnt > 0){
+                echo '<div id="alert_messages" style="display: none"></div>';
+                ui_require_css_file ('dialog');
+       			ui_require_jquery_file ('ui.core');
+    			ui_require_jquery_file ('ui.dialog');
+                
+    			echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
+	    		html_print_image ("images/error.png", false,
+    			array ("title" => __('You have %d warning(s)', $alert_cnt), "id" => "yougotalert", "class" => "bot"));
+	    		echo '</a>';
+                echo "&nbsp;";
+                echo "&nbsp;";
+            }
 
-			$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
-			$servers["up"] = (int) servers_check_status ();
-			$servers["down"] = $servers["all"] - $servers["up"];
-			if ($servers["up"] == 0) {
-				//All Servers down or no servers at all
-				echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
-			}
-			elseif ($servers["down"] != 0) {
-				//Some servers down
-				echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
-			}
-			else {
-				//All servers up
-				echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
-			}
-			unset ($servers); // Since this is the header, we don't like to trickle down variables.
-			echo '</a>';
-		} else {
-			// TODO: Put here to remark this is a metaconsole
-			echo "";
+            echo '<a class="white_bold" href="index.php?bye=bye">';
+            html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
+            echo '</a></td>';
+		    echo '<td width="20%">';
 
-		}
+		    if ($config["metaconsole"] == 0){
+			    echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
+
+			    $servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
+			    $servers["up"] = (int) servers_check_status ();
+			    $servers["down"] = $servers["all"] - $servers["up"];
+			    if ($servers["up"] == 0) {
+				    //All Servers down or no servers at all
+				    echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
+			    }
+			    elseif ($servers["down"] != 0) {
+				    //Some servers down
+				    echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
+			    }
+			    else {
+				    //All servers up
+				    echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
+			    }
+			    unset ($servers); // Since this is the header, we don't like to trickle down variables.
+			    echo '</a>';
+		    } else {
+			    // TODO: Put here to remark this is a metaconsole
+			    echo "";
+
+		    }
 ?>
 		</td>
 		<td width="20%">
@@ -177,6 +213,9 @@ if ($config["metaconsole"] == 0){
 $(document).ready (function () {
 <?php if ($msg_cnt > 0): ?>
 	$("#yougotmail").pulsate ();
+<?php endif; ?>
+<?php if ($alert_cnt > 0): ?>
+	$("#yougotalert").pulsate ();
 <?php endif; ?>
 <?php if ($config["refr"]): ?>
 	t = new Date();

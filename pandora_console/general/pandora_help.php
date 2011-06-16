@@ -24,7 +24,7 @@ require_once ("../include/functions_html.php");
 	echo __('Pandora FMS help system');
 ?>
 </title></head>
-<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">
+<?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
 <body style="background-color: #fff;">
 <?php
 $id = get_parameter ('id');
@@ -50,7 +50,7 @@ if (! $id || ! file_exists ($help_file)) {
 	echo __('Help system error');
 	echo "</h1>";
 	echo "<div class='noa'>";
-	echo '<a href="../index.php">' . html_print_image("../images/pandora_logo.png", array("border" => '0')) . '</a><br>';
+	echo '<a href="../index.php">' . html_print_image("images/pandora_logo.png", array("border" => '0')) . '</a><br>';
 	echo "</div>";
 	echo '<div class="msg">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
 	return;
@@ -59,7 +59,7 @@ if (! $id || ! file_exists ($help_file)) {
 /* Show help */
 echo '<div>';
 echo '<span style="float:left; margin: 0px; padding: 0px">';
-echo html_print_image('../images/pandora_textlogo.png', true, array("border" => '0'));
+echo html_print_image('images/pandora_textlogo.png', true, array("border" => '0'));
 echo "</span>";
 echo '<p style="text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
 echo '</div>';

@@ -1,3 +1,12 @@
+2011-06-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php: Changed the way to include css files 
+	when skin functionality is enabled.
+	* general/pandora_help.php: Some modifications in css link help 
+	file.
+	* godmode/alerts/alert_list.php: Changed enterprise_include() 
+	function to enterprise_include().
+
 2011-06-15 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merge from the branch.

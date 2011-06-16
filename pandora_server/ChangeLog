@@ -1,3 +1,7 @@
+2011-06-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed a typo.
+
 2011-06-15  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* lib/PandoraFMS/Tools.pm: Added FreeBSD specific code to load_average()

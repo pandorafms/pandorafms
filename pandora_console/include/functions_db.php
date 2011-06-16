@@ -2482,8 +2482,6 @@ function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cac
 	
 	$retval = array();
 	
-	debugPrint($sql, true);
-	
 	if ($sql == '')
 		return false;
 	

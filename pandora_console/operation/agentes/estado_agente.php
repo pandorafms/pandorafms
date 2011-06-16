@@ -232,9 +232,6 @@ if (! empty ($agent_names)) {
 		'id_grupo' => $groups),
 		array ('COUNT(*) as total'));
 	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
-	
-	debugPrint(" <<<<<< ENTER INTO SOURCE CODE TO CHECKING", true);
-	
 	$agents = get_agents (array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'id_grupo' => $groups,
@@ -247,8 +244,6 @@ if (! empty ($agent_names)) {
 			'intervalo'),
 		'AR',
 		$order);
-		
-	debugPrint(" >>>>>> EXIT INTO SOURCE CODE TO CHECKING", true);
 }
 
 if (empty ($agents)) {

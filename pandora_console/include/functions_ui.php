@@ -884,12 +884,11 @@ function ui_process_page_head ($string, $bitfield) {
 	if ($exists_css){
 		foreach ($skin_styles as $filename => $name){
 			$style = substr ($filename, 0, strlen ($filename) - 4);
-			$config['css'] = array_merge(array ($style => $skin_path . 'include/styles/' . $filename));
+			$config['css'][$style] = $skin_path . 'include/styles/' . $filename; 
 		}
-	}
+	} 
 	//Otherwise assign default and user's css
 	else{
-	
 		//User style should go last so it can rewrite common styles
 		$config['css'] = array_merge (array (
 			"common" => "include/styles/common.css", 

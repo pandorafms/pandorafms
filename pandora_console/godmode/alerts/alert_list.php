@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_users.php');
-$isFunctionPolicies = enterprise_include ('include/functions_policies.php');
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
 $id_group = 0;
 /* Check if this page is included from a agent edition */

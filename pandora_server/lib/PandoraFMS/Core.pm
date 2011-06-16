@@ -756,7 +756,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Update action last execution date
 	if (defined ($action->{'last_execution'}) && defined ($action->{'id'})) {
-		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ? WHERE id = ?', time (), $alert->{'id'});
+		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ? WHERE id = ?', time (), $action->{'id'});
 	}
 }
 

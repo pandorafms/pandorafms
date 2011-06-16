@@ -1,3 +1,10 @@
+2011-06-16 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merge from the branch.
+	
+	* godmode/alerts/alert_actions.php: fixed the url to copy the alert action.
+	The file didn't upload to repository.
+
 2011-06-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* images/skin

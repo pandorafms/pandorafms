@@ -285,7 +285,7 @@ foreach ($actions as $action) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
 		$action['name'].'</a>';
 	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;'. ui_print_truncate_text(groups_get_name ($action["id_group"], true));
-	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&copy_action=1&id='.$action['id'].'"
+	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 		html_print_image("images/copy.png", true) . '</a>';
 	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"

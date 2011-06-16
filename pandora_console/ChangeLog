@@ -1,5 +1,18 @@
 2011-06-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* images/skin
+	images/skin/skin_default
+	images/skin/skin_default/images
+	images/skin/skin_default/include
+	images/skin/skin_default/include/styles
+	images/skin/skin_default/include/styles/tip.css
+	images/skin/skin_default/include/styles/common.css
+	images/skin/skin_default/include/styles/pandora.css
+	images/skin/skin_default/include/styles/menu.css: Default skin
+	files.
+
+2011-06-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_ui.php: Changed the way to include css files 
 	when skin functionality is enabled.
 	* general/pandora_help.php: Some modifications in css link help 

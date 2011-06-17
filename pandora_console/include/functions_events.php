@@ -185,14 +185,13 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	}else {
 		$commentbox = '';
 	}
-
-	$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
 	
 	foreach ($id_event as $event) {
+		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+		
 		$fullevent = events_get_event($event);
 
 		if($fullevent['user_comment'] != ''){
-			$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$fullevent['user_comment'].'</div>';
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
 	

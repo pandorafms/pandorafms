@@ -1,3 +1,8 @@
+2011-06-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php: Fixed duplicated comments in
+	event validation
+
 2011-06-15 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_db.php: Deleted forgotten debugPrint calls

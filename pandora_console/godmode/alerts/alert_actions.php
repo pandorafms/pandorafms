@@ -46,7 +46,7 @@ $create_action = (bool) get_parameter ('create_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $copy_action = (bool) get_parameter ('copy_action');
 
-if ((!$copy_action) && (!$delete_action))
+if ((!$copy_action) && (!$delete_action) && (!$update_action))
 	// Header
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 

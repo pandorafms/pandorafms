@@ -322,10 +322,9 @@ if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
 }
 else {
-	$sql = "SELECT COUNT(DISTINCT(evento)) FROM tevento WHERE 1=1 ".$sql_post;
+	$sql = "SELECT COUNT(*) FROM tevento WHERE id_evento IN (SELECT id_evento FROM tevento
+		WHERE 1=1 $sql_post GROUP BY evento, id_agentmodule)";
 }
-
-
 
 //Count the events with this filter (TODO but not utimestamp).
 $total_events = (int) db_get_sql ($sql);

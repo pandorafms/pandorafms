@@ -170,7 +170,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 ##########################################################################
@@ -410,6 +410,11 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
+		# Reset action thresholds
+		if (defined ($alert->{'id_template_module'})) {
+			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
+		}
+
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, $extra_macros);
 		return;
 	}
@@ -578,7 +583,8 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
-		@actions = get_db_rows ($dbh, 'SELECT * FROM talert_template_module_actions, talert_actions, talert_commands
+		@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
+		            FROM talert_template_module_actions, talert_actions, talert_commands
 					WHERE talert_template_module_actions.id_alert_action = talert_actions.id
 					AND talert_actions.id_alert_command = talert_commands.id
 					AND talert_template_module_actions.id_alert_template_module = ?
@@ -755,8 +761,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	}
 	
 	# Update action last execution date
-	if (defined ($action->{'last_execution'}) && defined ($action->{'id'})) {
-		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ? WHERE id = ?', time (), $action->{'id'});
+	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_template_module_actions'})) {
+		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ? WHERE id = ?', time (), $action->{'id_alert_template_module_actions'});
 	}
 }
 

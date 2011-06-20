@@ -271,19 +271,19 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 		
 		$values['id_tag'] = $tag;
 		$values['id_agente_modulo'] = $id_agent_module;
-		$result_tag = db_process_sql_insert('ttag_module', $values, false);
+		$result_tag = db_process_sql_insert('ttag_module', $values);
 		if ($result_tag === false)
 			$errn++;		
 	}
 	
-	if ($errn > 0){
+/*	if ($errn > 0){
 		db_process_sql_rollback();
 		return false;
 	}
 	else{
 		db_process_sql_commit();
 		return true;
-	}
+	}*/
 }
 
 /**

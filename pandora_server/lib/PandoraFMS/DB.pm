@@ -473,9 +473,9 @@ sub db_process_insert($$$$;@) {
 	}	
 	$wildcards = '('.$wildcards.')';
 			
-	my $columns_string = join(',',@columns_array);
+	my $columns_string = join('`,`',@columns_array);
 	
-	my $res = db_insert ($dbh, $index, "INSERT INTO $table (".$columns_string.") VALUES ".$wildcards, @values_array);
+	my $res = db_insert ($dbh, $index, "INSERT INTO $table (`".$columns_string."`) VALUES ".$wildcards, @values_array);
 
 	return $res;
 }
@@ -502,7 +502,7 @@ sub db_process_update($$$$$;@) {
 		if($i > 0 && $i <= $#values_array) {
 			$fields = $fields.',';
 		}
-		$fields = $fields." $columns_array[$i] = ?";
+		$fields = $fields." `$columns_array[$i]` = ?";
 	}	
 	
 	push(@values_array, $where_value);

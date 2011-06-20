@@ -1,5 +1,10 @@
 2011-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_modules.php: Added initialization variable 
+	value.
+
+2011-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_modules.php
 	include/functions_tags.php: Correct a mistake that doesn't allow
 	to create network modules correctly.

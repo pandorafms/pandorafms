@@ -235,6 +235,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if ($id_agent_module === false)
 		return false;
 
+	$return_tag = true;
 	if (($tags !== false) || (empty($tags)))
 		$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
 

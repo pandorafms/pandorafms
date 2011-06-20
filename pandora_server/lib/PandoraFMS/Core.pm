@@ -1297,7 +1297,7 @@ sub pandora_delete_module ($$;$) {
 	my $agent_name = get_agent_name($dbh, $agent_id);
 	my $module_name = get_module_name($dbh, $module_id);
 	
-	if ((-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') && (defined($conf))) {
+	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module_name]);
 	}
 }

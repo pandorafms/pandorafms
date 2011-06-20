@@ -1,3 +1,12 @@
+2011-06-20  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added quotes to process
+	database functions to avoid errors when the tables
+	will have key words names
+
+	* lib/PandoraFMS/Core.pm: Fixed a bug change the position
+	of two conditions to avoid a notice
+
 2011-06-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed a typo.

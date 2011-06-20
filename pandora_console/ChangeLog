@@ -1,3 +1,10 @@
+2011-06-20 Sancho Lerena <slerena@artica.es>
+
+	* net_tools
+	net_tools/nettool.png: Nettools extension. Allow from interface
+	several operations like ping the host, do a traceroute, get whois
+	/dig information, get SNMP device information and interface status
+
 2011-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_modules.php: Added initialization variable 

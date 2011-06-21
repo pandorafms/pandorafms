@@ -88,7 +88,7 @@ ui_require_javascript_file ('calendar');
 
 
 // Header
-ui_print_page_header (__("Export data"), "images/bricks.png");
+ui_print_page_header (__("Export data"), "images/server_export.png");
 
 $group = get_parameter_post ('group', 0);
 //$agent = get_parameter_post ('agent', 0);
@@ -329,8 +329,10 @@ if (!in_array ($agent, array_keys ($agents))) {
 }
 
 //$table->data[1][1] = html_print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
+//Src code of lightning image with skins 
+$src_code = html_print_image ('images/lightning.png', true, false, true);
 $table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 30, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	array('style' => "background: url($src_code) no-repeat right;"), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	
 //Module selector

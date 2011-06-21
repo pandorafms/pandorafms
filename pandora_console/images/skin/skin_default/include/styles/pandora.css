@@ -301,6 +301,10 @@ div#head {
 	-moz-box-shadow: 0px 0px 15px #000000;
 	-webkit-box-shadow: 0px 0px 15px #000000;
 	box-shadow: 0px 0px 15px #000000;
+	/* For IE 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#000000')";
+	/* For IE 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#000000');
 	margin-bottom: 10px;
 	position: relative;
 }
@@ -373,6 +377,10 @@ div#foot {
 	-moz-box-shadow: 0px 0px 15px #000000;
 	-webkit-box-shadow: 0px 0px 15px #000000;
 	box-shadow: 0px 0px 15px #000000;
+	/* For IE 8 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#000000')";
+	/* For IE 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#000000');
 }
 div#foot a {
 	color: #333!important;	
@@ -490,28 +498,28 @@ input.camera, input.config, input.cancel {
 	padding-right: 21px;
 }
 input.next {
-	background: #D0E6FB url(../../../../..//images/go.png) no-repeat right 2px;
+	background: #D0E6FB url(../../images/go.png) no-repeat right 2px;
 }
 input.upd {
-	background: #D0E6FB url(../../../../..//images/upd.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/upd.png) no-repeat right 3px;
 }
 input.wand {
-	background: #D0E6FB url(../../../../..//images/wand.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/wand.png) no-repeat right 3px;
 }
 input.delete {
-	background: #D0E6FB url(../../../../..//images/cross.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/cross.png) no-repeat right 3px;
 }
 input.search {
-	background: #D0E6FB url(../../../../..//images/zoom.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/zoom.png) no-repeat right 3px;
 }
 input.copy {
 	background: #D0E6FB url(../../../../..//images/copy.png) no-repeat right 3px;
 }
 input.ok {
-	background: #D0E6FB url(../../../../..//images/ok.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/ok.png) no-repeat right 3px;
 }
 input.add {
-	background: #D0E6FB url(../../../../..//images/add.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/add.png) no-repeat right 3px;
 }
 input.graph {
 	background: #D0E6FB url(../../../../..//images/chart_curve.png) no-repeat right 3px;
@@ -715,7 +723,7 @@ a.mn, .gr {
 	font-family: Arial, Verdana, sans-serif, Helvetica;
 }
 div.nf {
-	background: url(../../../../..//images/info.png) no-repeat;
+	background: url(../../images/info.png) no-repeat;
 	color: #ac4444;
 	margin-left: 7px;
 	padding: 2px 1px 6px 25px;
@@ -743,9 +751,11 @@ div.title_line {
 	/*margin-left:-8px;*/
 	/*padding-right:8px;*/
 	
-	-moz-border-radius: 4px;
+	/* Round corners are commented for ie compatibility */
+/*	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
-	border-radius: 4px;
+	border-radius: 4px;	*/
+	
 }
 
 
@@ -871,59 +881,75 @@ div.title_line {
 
 
 span.users {
-	background: url(../../../../..//images/group.png) no-repeat;
+	background: url(../../../../../images/group.png) no-repeat;
 }
 span.agents {
-	background: url(../../../../..//images/bricks.png) no-repeat;
+	background: url(../../../../../images/bricks.png) no-repeat;
 }
 span.data {
-	background: url(../../../../..//images/data.png) no-repeat;
+	background: url(../../../../../images/data.png) no-repeat;
 }
 span.alerts {
-	background: url(../../../../..//images/bell.png) no-repeat;
+	background: url(../../../../../images/bell.png) no-repeat;
 }
 span.time {
-	background: url(../../../../..//images/hourglass.png) no-repeat;
+	background: url(../../../../../images/hourglass.png) no-repeat;
 }
 span.net {
-	background: url(../../../../..//images/network.png) no-repeat;
+	background: url(../../../../../images/network.png) no-repeat;
 }
 span.master {
-	background: url(../../../../..//images/master.png) no-repeat;
+	background: url(../../../../../images/master.png) no-repeat;
 }
 span.wmi {
-	background: url(../../../../..//images/wmi.png) no-repeat;
+	background: url(../../../../../images/wmi.png) no-repeat;
 }
 span.prediction {
-	background: url(../../../../..//images/chart_bar.png) no-repeat;
+	background: url(../../../../../images/chart_bar.png) no-repeat;
 }
 span.plugin {
-	background: url(../../../../..//images/plugin.png) no-repeat;
+	background: url(../../../../../images/plugin.png) no-repeat;
 }
 span.export {
-	background: url(../../../../..//images/database_refresh.png) no-repeat;
+	background: url(../../../../../images/database_refresh.png) no-repeat;
 }
 span.snmp {
-	background: url(../../../../..//images/snmp.png) no-repeat;
+	background: url(../../../../../images/snmp.png) no-repeat;
 }
 span.binary {
-	background: url(../../../../..//images/binary.png) no-repeat;
+	background: url(../../../../../images/binary.png) no-repeat;
 }
 span.recon {
-	background: url(../../../../..//images/recon.png) no-repeat;
+	background: url(../../../../../images/recon.png) no-repeat;
 }
 span.rmess {
-	background: url(../../../../..//images/email_open.png) no-repeat;
+	background: url(../../../../../images/email_open.png) no-repeat;
 }
 span.nrmess {
-	background: url(../../../../..//images/email.png) no-repeat;
+	background: url(../../../../../images/email.png) no-repeat;
+}
+span.recon_server {
+	background: url(../../../../../images/recon.png) no-repeat;
+}
+span.wmi_server {
+	background: url(../../../../../images/wmi.png) no-repeat;
+}
+span.export_server {
+	background: url(../../images/server_export.png) no-repeat;
+}
+span.inventory_server {
+	background: url(../../../../../images/page_white_text.png) no-repeat;
+}
+span.web_server {
+	background: url(../../../../../images/world.png) no-repeat;
 }
 /* This kind of span do not have any sense, should be replaced on PHP code
 by a real img in code. They are not useful because insert too much margin around
 (for example, not valid to use in the table of server view */
 span.users, span.agents, span.data, span.alerts, span.time, span.net,
 span.master, span.snmp, span.binary, span.recon, span.wmi, span.prediction,
-span.plugin, span.plugin, span.export {
+span.plugin, span.plugin, span.export, span.recon_server, span.wmi_server,
+span.export_server, span.inventory_server, span.web_server {
 	margin-left: 4px;
 	margin-top: 10px;
 	padding: 4px 8px 12px 30px;
@@ -1644,9 +1670,11 @@ div.warn {
 	width: auto;
 	margin: 0px 4px;
 	padding: 2px;
-	-moz-border-radius: 4px;
+	
+	/* Round corners are commented for ie compatibility */
+/*	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
-	border-radius: 4px;
+	border-radius: 4px;	*/
 }
 
 .bg+.menu ul.submenu {
@@ -1823,6 +1851,8 @@ body.help_popup {
 	text-align: left;	
 }
 
+/**** Pandora width ****/
+
 
 div#container {
 	width: 95%;
@@ -1840,7 +1870,7 @@ div#main {
 	margin-right: 25px;
 }
 div#head {
-	width: auto;
+	width: 100%;
 }
 div#foot {
 	width: auto;

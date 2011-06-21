@@ -40,7 +40,7 @@ if (ENTERPRISE_NOT_HOOK !== $isFunctionPolicies) {
 	$subquery_enterprise2 = subquery_acl_enterprise('AND', 'tagente.id_agente');
 }
 
-ui_print_page_header ("Monitor detail", "images/bricks.png", false);
+ui_print_page_header ("Monitor detail", "images/brick.png", false);
 
 
 $ag_freestring = get_parameter ('ag_freestring');

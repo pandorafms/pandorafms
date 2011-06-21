@@ -65,7 +65,7 @@ $buttons = array(
 $buttons[$tab]['active'] = true;
 
 // Header
-ui_print_page_header (__('Tags configuration'), "images/comments.png", false, "", true, $buttons);
+ui_print_page_header (__('Tags configuration'), "images/tag_red.png", false, "", true, $buttons);
 
 // Two actions can performed in this page: search and delete tags
 

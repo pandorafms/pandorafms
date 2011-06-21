@@ -95,7 +95,7 @@ sub data_producer ($) {
 		AND tagente_modulo.id_agente = tagente.id_agente
 		AND tagente.disabled = 0
 		AND tagente_modulo.id_tipo_modulo > 4
-		AND tagente_modulo.id_tipo_modulo < 19'
+		AND tagente_modulo.id_tipo_modulo < 19 '
 		. enterprise_hook ('get_network_filter', []) .
 		'AND tagente_modulo.disabled = 0
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
@@ -109,7 +109,7 @@ sub data_producer ($) {
 		AND tagente.disabled = 0
 		AND tagente_modulo.disabled = 0
 		AND tagente_modulo.id_tipo_modulo > 4
-		AND tagente_modulo.id_tipo_modulo < 19'
+		AND tagente_modulo.id_tipo_modulo < 19 '
 		. enterprise_hook ('get_network_filter', []) .
 		'AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()))

@@ -1159,6 +1159,7 @@ Pandora_Windows_Service::pandora_run () {
 	string server_addr;
     	int startup_delay = 0;
     	static unsigned char delayed = 0;
+    	int exe = 1;
 
 	pandoraDebug ("Run begin");
 	
@@ -1189,7 +1190,11 @@ Pandora_Windows_Service::pandora_run () {
 			Pandora_Module *module;
 		
 			module = this->modules->getCurrentValue ();
+	
+			exe = module->evaluatePreconditions ();
 		
+			if (exe == 0) return;
+	
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 
 			if (module->checkCron () == 1) {

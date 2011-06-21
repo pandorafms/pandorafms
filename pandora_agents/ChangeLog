@@ -1,3 +1,11 @@
+2011-06-21  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* win32/pandora_windows_service.cc
+	  win32/modules/pandora_module.cc
+	  win32/modules/pandora_module.h
+	  win32/modules/pandora_module_factory.cc
+	  unix/pandora_agent: Allow the windows and unix agent to include preconditions on modules.
+
 2011-06-09  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* unix/pandora_agent: Clean the code: parse configuration files.

@@ -16,7 +16,7 @@ Version 3.2
 
 =head1 USAGE
 
-C<< pandora_agent F<pandora home> >>
+<< pandora_agent F<pandora home> >>
 
 =cut
 
@@ -314,7 +314,9 @@ sub parse_conf_modules($) {
 				'conditions' => [],
 				'cron' => '',
 				'cron_utimestamp' => 0,
-				'cron_interval' => -1
+				'cron_interval' => -1,
+				'precondition' => [],
+				'precon'=> 0
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
@@ -322,6 +324,19 @@ sub parse_conf_modules($) {
 			$module->{'description'} = $1;
 		} elsif ($line =~ /^\s*module_type\s+(\S+)\s*$/) {
 			$module->{'type'} = $1;
+		}elsif ($line =~ /^\s*module_precondition\s+(.*)$/) {
+			my $action = $1;
+			$module->{'precon'} = 1;
+			# Numeric comparison
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+\.\d*)\s+(.*)$/) {
+				push (@{$module->{'precondition'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
+			# Interval
+			} elsif ($action =~ /^\s*[(]\s*(\d+\.\d*)\s*,\s*(\d+\.\d*)\s*[)]\s+(.*)$/) {
+				push (@{$module->{'precondition'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
+			# Regular expression
+			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
+				push (@{$module->{'precondition'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+			}
 		} elsif ($line =~ /^\s*module_exec\s+(.+)$/) {
 			$module->{'func'} = \&module_exec;
 			$module->{'params'} = $1;
@@ -1003,12 +1018,44 @@ sub load_parts () {
 }
 
 ################################################################################
+# Execute the given command precondition.
+################################################################################
+sub module_precondition_exec ($) {
+	my $module = shift;
+	my @data;
+
+	# Check module parameters
+	return () unless ($module->{'params_precon'} ne '');
+
+	# Execute the command
+	if ($module->{'timeout'} == 0) {
+		@data = `$module->{'params_precon'} 2> $DevNull`;
+	} else {
+		my $cmd = quotemeta ($module->{'params_precon'});
+		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> $DevNull`;
+	}
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+	
+# Evaluate module preconditions
+	evaluate_module_preconditions ($module, $data[0]);
+	
+	return @data;
+}
+
+################################################################################
 # Execute the given command.
 ################################################################################
 sub module_exec ($) {
 	my $module = shift;
 	my @data;
+	my $exe;
 
+	$exe = evaluate_module_preconditions ($module);
+
+	return @data if ($exe == 0);
+	
 	# Check module parameters
 	return () unless ($module->{'params'} ne '');
 
@@ -1191,6 +1238,37 @@ sub module_freepercentmemory ($) {
 	
 	return sprintf (("%d", $avail * 100 / $total));
 }
+
+################################################################################
+# Evaluate and execute module preconditions.
+################################################################################
+sub evaluate_module_preconditions ($) {
+	my ($module) = @_;
+	my $exe = 1;
+
+	# Evaluate preconditions
+	if ($module->{'precon'}){
+		
+		foreach my $precondition (@{$module->{'precondition'}}) {
+			
+			my $data = `$precondition->{'command'} 2> $DevNull`;
+		
+			if (($precondition->{'operator'} eq '>' && $data > $precondition->{'value_1'}) ||
+				($precondition->{'operator'} eq '<' && $data < $precondition->{'value_1'}) ||
+				($precondition->{'operator'} eq '=' && $data == $precondition->{'value_1'}) ||
+				($precondition->{'operator'} eq '!=' && $data != $precondition->{'value_1'}) ||
+				($precondition->{'operator'} eq '=~' && $data =~ /$precondition->{'value_1'}/) ||
+				($precondition->{'operator'} eq '()' && $data > $precondition->{'value_1'} && $data < $precondition->{'value_2'})) {
+					$exe = 1;
+			} else {
+				$exe = 0;
+				return $exe;
+			}
+		}
+	}	
+	return $exe;
+}
+
 
 ################################################################################
 # Evaluate and execute module conditions.

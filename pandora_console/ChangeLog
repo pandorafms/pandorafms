@@ -1,3 +1,9 @@
+2011-06-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_filemanager.php: Sended from file manager
+	form relative path and hash to keep the path position in 
+	file collections
+
 2011-06-20 Sancho Lerena <slerena@artica.es>
 
 	* net_tools

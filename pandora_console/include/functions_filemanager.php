@@ -601,6 +601,15 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[4] .= html_print_input_hidden ('filename', $fileinfo['realpath'], true);
 			$data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
 			$data[4] .= html_print_input_hidden ('delete_file', 1, true);
+
+			$relative_dir = str_replace($config['homedir'], '', dirname($fileinfo['realpath']));
+			if ($relative_dir[0] == '/') {
+				$relative_dir = substr($relative_dir, 1);
+			}
+			$hash2 = md5($relative_dir . $config['dbpass']);
+
+			$data[4] .= html_print_input_hidden ('directory', $relative_dir, true);
+			$data[4] .= html_print_input_hidden ('hash2', $hash2, true);
 			$data[4] .= '</form>';
 			
 			if (($editor) && (!$readOnly)) {

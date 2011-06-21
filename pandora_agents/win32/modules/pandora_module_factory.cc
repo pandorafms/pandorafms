@@ -85,6 +85,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_CONDITION     ("module_condition ")
 #define TOKEN_CRONTAB       ("module_crontab ")
 #define TOKEN_CRONINTERVAL  ("module_cron_interval ")
+#define TOKEN_PRECONDITION  ("module_precondition ")
 
 string
 parseLine (string line, string token) {
@@ -127,14 +128,16 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_retries, module_startdelay, module_retrydelay;
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
-	string                 module_plugin, module_save, module_condition;
+	string                 module_plugin, module_save, module_condition, module_precondition;
 	string                 module_crontab, module_cron_interval, module_post_process;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
 	long                    agent_interval;
 	list<string>           condition_list;
+	list<string>           precondition_list;
 	list<string>::iterator condition_iter;
+	list<string>::iterator precondition_iter;
 
 	module_name          = "";
 	module_type          = "";
@@ -172,6 +175,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_crontab       = "";
 	module_cron_interval = "";
 	module_post_process  = "";
+	module_precondition  = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -187,6 +191,15 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_type == "") {
 			module_type = parseLine (line, TOKEN_TYPE);
+		}
+		if (module_precondition == "") {
+			module_precondition = parseLine (line, TOKEN_PRECONDITION);
+			
+			/* Queue the precondition and keep looking for more */
+			if (module_precondition != "") {
+				precondition_list.push_back (module_precondition);
+				module_precondition = "";
+			}
 		}
 		if (module_interval == "") {
 			module_interval = parseLine (line, TOKEN_INTERVAL);
@@ -424,6 +437,16 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module->setAsync (true);
 	}
 
+/* Module precondition */
+	if (precondition_list.size () > 0) {
+		precondition_iter = precondition_list.begin ();
+		for (precondition_iter = precondition_list.begin ();
+		     precondition_iter != precondition_list.end ();
+		     precondition_iter++) {
+			module->addPrecondition (*precondition_iter);
+		}
+	}
+	
 	/* Module condition */
 	if (condition_list.size () > 0) {
 		condition_iter = condition_list.begin ();

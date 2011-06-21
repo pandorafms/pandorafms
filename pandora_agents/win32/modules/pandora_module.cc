@@ -25,6 +25,8 @@
 #include <iostream>
 #include <sstream>
 
+#define BUFSIZE 4096 
+
 using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
@@ -50,6 +52,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->async           = false;
 	this->data_list       = NULL;
     this->inventory_list  = NULL;
+    this->precondition_list  = NULL;
     this->condition_list  = NULL;
 	this->cron            = NULL;
 }
@@ -61,11 +64,29 @@ Pandora_Module::Pandora_Module (string name) {
  */
 Pandora_Module::~Pandora_Module () {
 	Condition *cond = NULL;
+	Precondition *precond = NULL;
 	list<Condition *>::iterator iter;
+	list<Precondition *>::iterator iter_pre;
 
 	/* Clean data lists */
 	this->cleanDataList ();
 
+	/* Clean precondition list */
+	if (this->precondition_list != NULL && this->precondition_list->size () > 0) {
+		iter_pre = this->precondition_list->begin ();
+		for (iter_pre = this->precondition_list->begin ();
+		     iter_pre != this->precondition_list->end ();
+		     iter++) {
+			/* Free regular expressions */
+			precond = *iter_pre;
+			if (precond->string_value != "") {
+				regfree (&(precond->regexp));
+			}
+			delete (*iter_pre);
+		}
+		delete (this->precondition_list);
+	}
+	
 	/* Clean condition list */
 	if (this->condition_list != NULL && this->condition_list->size () > 0) {
 		iter = this->condition_list->begin ();
@@ -675,6 +696,63 @@ Pandora_Module::getSave () {
 }
 
 /** 
+ * Adds a new precondition to the module.
+ * 
+ * @param precondition string.
+ */
+void
+Pandora_Module::addPrecondition (string precondition) {
+	Precondition *precond;
+	char operation[256], string_value[1024], command[1024];
+
+	/* Create the precondition list if it does not exist */
+	if (this->precondition_list == NULL) {
+		this->precondition_list = new list<Precondition *> ();
+	}
+
+	/* Create the new precondition */
+	precond = new Precondition;
+	if (precond == NULL) {
+		return;
+	}
+
+	precond->value_1 = 0;
+	precond->value_2 = 0;
+
+	/* Numeric comparison */
+	if (sscanf (precondition.c_str (), "%255s %lf %1023[^\n]s", operation, &(precond->value_1), command) == 3) {
+		precond->operation = operation;
+		precond->command = command;
+		precond->command = "cmd.exe /c \"" + precond->command + "\"";
+		this->precondition_list->push_back (precond);
+		return;
+		
+	/* Regular expression */
+	} else if (sscanf (precondition.c_str (), "=~ %1023s %1023[^\n]s", string_value, command) == 2) {
+		precond->operation = "=~";
+		precond->string_value = string_value;
+		precond->command = command;
+		if (regcomp (&(precond->regexp), string_value, 0) != 0) {
+			pandoraDebug ("Invalid regular expression %s", string_value);
+			delete (precond);
+			return;
+		}
+		this->precondition_list->push_back (precond);
+		
+	/* Interval */
+	} else if (sscanf (precondition.c_str (), "(%lf , %lf) %1023[^\n]s", &(precond->value_1), &(precond->value_2), command) == 3) {
+		precond->operation = "()";
+		precond->command = command;
+		this->precondition_list->push_back (precond);
+	} else {
+		pandoraDebug ("Invalid module condition: %s", precondition.c_str ());
+		delete (precond);
+		return;
+	}
+return;
+}
+
+/** 
  * Adds a new condition to the module.
  * 
  * @param condition Condition string.
@@ -701,7 +779,7 @@ Pandora_Module::addCondition (string condition) {
 	if (sscanf (condition.c_str (), "%255s %lf %1023[^\n]s", operation, &(cond->value_1), command) == 3) {
 		cond->operation = operation;
 		cond->command = command;
-		this->condition_list->push_back (cond);
+		this->condition_list->push_back (cond);		
 	/* Regular expression */
 	} else if (sscanf (condition.c_str (), "=~ %1023s %1023[^\n]s", string_value, command) == 2) {
 		cond->operation = "=~";
@@ -712,7 +790,7 @@ Pandora_Module::addCondition (string condition) {
 			delete (cond);
 			return;
 		}
-		this->condition_list->push_back (cond);
+		this->condition_list->push_back (cond);		
 	/* Interval */
 	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1023[^\n]s", &(cond->value_1), &(cond->value_2), command) == 3) {
 		cond->operation = "()";
@@ -723,10 +801,173 @@ Pandora_Module::addCondition (string condition) {
 		delete (cond);
 		return;
 	}
-	
-	/* Run commands through cmd.exe */
-	cond->command = "cmd.exe /c \"" + cond->command + "\"";
 }
+
+/** 
+ * Evaluates and executes module preconditions.
+ */
+int
+Pandora_Module::evaluatePreconditions () {
+	STARTUPINFO         si;
+	PROCESS_INFORMATION pi;
+	DWORD               retval, dwRet;
+	SECURITY_ATTRIBUTES attributes;
+	HANDLE              out, new_stdout, out_read, job;
+	string              working_dir;
+	Precondition *precond = NULL;
+	float float_output;
+	list<Precondition *>::iterator iter;
+	unsigned char run;
+	int exe = 1;
+	string output;
+	
+	if (this->precondition_list != NULL && this->precondition_list->size () > 0) {
+
+		iter = this->precondition_list->begin ();
+		for (iter = this->precondition_list->begin ();
+		     iter != this->precondition_list->end ();
+		     iter++) {
+				
+			precond = *iter;
+			run = 0;	
+			
+	
+			/* Set the bInheritHandle flag so pipe handles are inherited. */
+			attributes.nLength = sizeof (SECURITY_ATTRIBUTES); 
+			attributes.bInheritHandle = TRUE; 
+			attributes.lpSecurityDescriptor = NULL; 
+
+			/* Create a job to kill the child tree if it become zombie */
+			/* CAUTION: In order to compile this, WINVER should be defined to 0x0500.
+			This may need no change, since it was redefined by the 
+			program, but if needed, the macro is defined 
+			in <windef.h> */
+			job = CreateJobObject (&attributes, this->module_name.c_str ());
+			if (job == NULL) {
+				pandoraLog ("CreateJobObject bad. Err: %d", GetLastError ());
+				this->has_output = false;
+				return 0;
+			}
+
+			/* Get the handle to the current STDOUT. */
+			out = GetStdHandle (STD_OUTPUT_HANDLE); 
+
+			if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
+				pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
+				this->has_output = false;
+				return 0;
+			}
+
+			/* Ensure the read handle to the pipe for STDOUT is not inherited */
+			SetHandleInformation (out_read, HANDLE_FLAG_INHERIT, 0);
+
+			/* Set up members of the STARTUPINFO structure. */
+			ZeroMemory (&si, sizeof (si));
+			GetStartupInfo (&si);
+
+			si.cb = sizeof (si);
+			si.dwFlags     = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+			si.wShowWindow = SW_HIDE;
+			si.hStdError   = new_stdout;
+			si.hStdOutput  = new_stdout;
+
+			/* Set up members of the PROCESS_INFORMATION structure. */
+			ZeroMemory (&pi, sizeof (pi));
+			pandoraDebug ("Executing: %s", precond->command.c_str ());
+
+			/* Set the working directory of the process. It's "utils" directory
+			to find the GNU W32 tools */
+			working_dir = getPandoraInstallDir () + "util\\";
+
+			/* Create the child process. */
+			if (! CreateProcess (NULL, (CHAR *) precond->command.c_str (), NULL,
+			     NULL, TRUE, CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL,
+			     working_dir.c_str (), &si, &pi)) {
+				pandoraLog ("Pandora_Module_Exec: %s CreateProcess failed. Err: %d",
+			    this->module_name.c_str (), GetLastError ());
+				this->has_output = false;
+			} else {
+				char          buffer[BUFSIZE + 1];
+				unsigned long read, avail;
+	
+				if (! AssignProcessToJobObject (job, pi.hProcess)) {
+					pandoraLog ("Could not assigned proccess to job (error %d)",
+				    GetLastError ());
+				}
+			ResumeThread (pi.hThread);
+	
+			/*string output;*/
+			int tickbase = GetTickCount();
+			while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
+				PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
+					if (avail > 0) {
+						ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
+						buffer[read] = '\0';
+						output += (char *) buffer;
+				}
+			
+			float_output = atof(output.c_str());
+
+			if (dwRet == WAIT_OBJECT_0) { 
+				break;
+			} else if(this->getTimeout() < GetTickCount() - tickbase) {
+				/* STILL_ACTIVE */
+				TerminateProcess(pi.hThread, STILL_ACTIVE);
+				pandoraLog ("Pandora_Module_Exec: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
+				break;
+			}
+		}
+
+		GetExitCodeProcess (pi.hProcess, &retval);
+
+		if (retval != 0) {
+			if (! TerminateJobObject (job, 0)) {
+				pandoraLog ("TerminateJobObject failed. (error %d)",
+				GetLastError ());
+			}
+            if (retval != STILL_ACTIVE) {
+				pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
+                this->module_name.c_str (), retval);
+            }
+            this->has_output = false;
+		}
+
+        if (!output.empty()) {
+			this->setOutput (output);
+        } else {
+			this->setOutput ("");
+        }
+	
+		/* Close job, process and thread handles. */
+		CloseHandle (job);
+		CloseHandle (pi.hProcess);
+		CloseHandle (pi.hThread);
+	}
+
+	CloseHandle (new_stdout);
+	CloseHandle (out_read);
+	
+	if ((precond->operation == ">" && float_output > precond->value_1) ||
+			    (precond->operation == "<" && float_output < precond->value_1) ||
+			    (precond->operation == "=" && float_output == precond->value_1) ||
+			    (precond->operation == "!=" && float_output != precond->value_1) ||
+			    (precond->operation == "=~" && regexec (&(precond->regexp), output.c_str(), 0, NULL, 0) == 0) ||
+				(precond->operation == "()" && float_output > precond->value_1 && float_output < precond->value_2)){
+						exe = 1;
+			} else {
+				exe = 0;
+				return exe;
+			}
+			
+			CloseHandle (pi.hProcess);			
+	} 
+}
+	return exe;
+}
+			
+	
+
+
 
 /** 
  * Evaluates and executes module conditions.

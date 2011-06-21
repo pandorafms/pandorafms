@@ -90,6 +90,18 @@ namespace Pandora_Modules {
 	} Module_Kind;
 	
 	/**
+	 * Defines the structure that holds module preconditions.
+	 */
+	typedef struct {
+		double value_1;
+		double value_2;
+		string string_value;
+		string operation;
+		string command;
+		regex_t regexp;
+	} Precondition;
+	
+	/**
 	 * Defines the structure that holds module conditions.
 	 */
 	typedef struct {
@@ -165,6 +177,7 @@ namespace Pandora_Modules {
 		Module_Kind           module_kind;
 		string                save;
 		list<Condition *>     *condition_list;
+		list<Precondition *>  *precondition_list;
 		Cron				  *cron;
 
 	protected:
@@ -248,7 +261,10 @@ namespace Pandora_Modules {
 		void        setSave        (string save);
 
 		void        exportDataOutput ();
+		void		addPrecondition ();
 		void        addCondition (string condition);
+		void		addPrecondition (string precondition);
+		int 		evaluatePreconditions ();
 		void		evaluateConditions ();
 		int         checkCron ();
 		void        setCron (string cron_string);

@@ -217,7 +217,7 @@ sub process_xml_data ($$$$$) {
 			$valid_position_data = 0;
 		}
 
-		if ((!defined($position_description)) && ($latitude != '')) { #FIXME: Validate the data with a regexp
+		if ((!defined($position_description)) && ($latitude ne '')) { #FIXME: Validate the data with a regexp
 
 			# This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
 			# This requires a connection to internet and could be very slow and have a huge impact in performance.

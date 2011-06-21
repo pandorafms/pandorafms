@@ -1,5 +1,10 @@
 2011-06-21  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/DataServer.pm: Fixed numeric condition in a string
+	comparation
+
+2011-06-21  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/NetworkServer.pm: Added blank space in a couple of
 	queries to avoid errors when the enterprise is not installed
 

@@ -46,9 +46,9 @@ $table->align[1] = 'left';
 if (! $id_agente) {
 	
 	$table->data['agent'][0] = __('Agent');
-	
+	$src_code = html_print_image('images/lightning.png', true, false, true);
 	$table->data['agent'][1] = html_print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 }
 

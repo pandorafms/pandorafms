@@ -1451,17 +1451,20 @@ if($hidde_default) {
 	$style = 'display:none';
 	$toggle_a = "$('#tgl_div_".$uniqid."').show();";
 	$toggle_b = "$('#tgl_div_".$uniqid."').hide();";
-	$image_a = "images/go.png";
-	$image_b = "images/down.png";
+	$image_a = html_print_image("images/go.png", true, false, true);
+	$image_b = html_print_image("images/down.png", true, false, true);
+	$original = "images/down.png";
 }else {
 	$style = '';
 	$toggle_a = "$('#tgl_div_".$uniqid."').hide();";
 	$toggle_b = "$('#tgl_div_".$uniqid."').show();";
-	$image_a = "images/down.png";
-	$image_b = "images/go.png";
+	$image_a = html_print_image("images/down.png", true, false, true);
+	$image_b = html_print_image("images/go.png", true, false, true);
+	$original = "images/go.png";
 }
+
 // Link to toggle
-echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
+echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
 
 // Code into a div
 echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
@@ -1473,6 +1476,7 @@ echo "</div>";
 echo '<script type="text/javascript">';
 echo '/* <![CDATA[ */';
 echo "$(document).ready (function () {";
+
 	echo "$('#tgl_ctrl_".$uniqid."').toggle(function() {";
 		echo $toggle_a;
 		echo "$('#image_".$uniqid."').attr({src: '".$image_a."'});";

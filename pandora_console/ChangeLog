@@ -1,3 +1,121 @@
+2011-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/ie.css
+	include/styles/menu.css
+	include/functions_ui.php
+	extensions/module_groups.php
+	operation/agentes/status_monitor.php
+	godmode/agentes/module_manager_editor_prediction.php
+	godmode/agentes/manage_config_remote.php
+	godmode/agentes/agent_manager.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.builder.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/tag/tag.php
+	godmode/tag/edit_tag.php
+	operation/agentes/exportdata.php: Css style corrections
+	over these codes.
+	
+	* images/skin/skin_default/include/styles/tip.css
+	images/skin/skin_default/include/styles/pandora.css
+	images/skin/skin_default/include/styles/menu.css
+	images/skin/skin_default/include/styles/cluetip.css
+	images/skin/skin_default/images/application_double.png
+	images/skin/skin_default/images/chart.png
+	images/skin/skin_default/images/application.png
+	images/skin/skin_default/images/music_note.png
+	images/skin/skin_default/images/lightbulb_off.png
+	images/skin/skin_default/images/email_open.png
+	images/skin/skin_default/images/application_edit.png
+	images/skin/skin_default/images/copy.png
+	images/skin/skin_default/images/sort_down.png
+	images/skin/skin_default/images/page_white_text.png
+	images/skin/skin_default/images/eye.png
+	images/skin/skin_default/images/lightning.png
+	images/skin/skin_default/images/zoom.png
+	images/skin/skin_default/images/edit.png
+	images/skin/skin_default/images/box.png
+	images/skin/skin_default/images/normalscreen.png
+	images/skin/skin_default/images/mimetypes
+	images/skin/skin_default/images/mimetypes/unknown.png
+	images/skin/skin_default/images/mimetypes/image.png
+	images/skin/skin_default/images/mimetypes/zip.png
+	images/skin/skin_default/images/mimetypes/text.png
+	images/skin/skin_default/images/mimetypes/directory.png
+	images/skin/skin_default/images/page_refresh.png
+	images/skin/skin_default/images/clock.png
+	images/skin/skin_default/images/user_green.png
+	images/skin/skin_default/images/magnifier.png
+	images/skin/skin_default/images/config.png
+	images/skin/skin_default/images/go.png
+	images/skin/skin_default/images/tag_red.png
+	images/skin/skin_default/images/computer_error.png
+	images/skin/skin_default/images/rss.png
+	images/skin/skin_default/images/ok.png
+	images/skin/skin_default/images/pdf.png
+	images/skin/skin_default/images/slash.png
+	images/skin/skin_default/images/bricks.png
+	images/skin/skin_default/images/sticky-notes-text.png
+	images/skin/skin_default/images/comments.png
+	images/skin/skin_default/images/email.png
+	images/skin/skin_default/images/world.png
+	images/skin/skin_default/images/attachment.png
+	images/skin/skin_default/images/wand.png
+	images/skin/skin_default/images/error.png
+	images/skin/skin_default/images/os_icons
+	images/skin/skin_default/images/os_icons/android.png
+	images/skin/skin_default/images/os_icons/network.png
+	images/skin/skin_default/images/network.png
+	images/skin/skin_default/images/disk.png
+	images/skin/skin_default/images/images_stack.png
+	images/skin/skin_default/images/info.png
+	images/skin/skin_default/images/group.png
+	images/skin/skin_default/images/god3.png
+	images/skin/skin_default/images/god5.png
+	images/skin/skin_default/images/extensions.png
+	images/skin/skin_default/images/calendar_view_day.png
+	images/skin/skin_default/images/god8.png
+	images/skin/skin_default/images/god9.png
+	images/skin/skin_default/images/database.png
+	images/skin/skin_default/images/images.png
+	images/skin/skin_default/images/server.png
+	images/skin/skin_default/images/down.png
+	images/skin/skin_default/images/server_export.png
+	images/skin/skin_default/images/cog.png
+	images/skin/skin_default/images/data.png
+	images/skin/skin_default/images/lightbulb.png
+	images/skin/skin_default/images/b_yellow.png
+	images/skin/skin_default/images/bug.png
+	images/skin/skin_default/images/clean.png
+	images/skin/skin_default/images/house.png
+	images/skin/skin_default/images/groups_small
+	images/skin/skin_default/images/groups_small/transmit.png
+	images/skin/skin_default/images/groups_small/world.png
+	images/skin/skin_default/images/groups_small/server_database.png
+	images/skin/skin_default/images/cancel.png
+	images/skin/skin_default/images/log-out.png
+	images/skin/skin_default/images/monitor.png
+	images/skin/skin_default/images/help.png
+	images/skin/skin_default/images/add.png
+	images/skin/skin_default/images/tip.png
+	images/skin/skin_default/images/refresh.png
+	images/skin/skin_default/images/computer.png
+	images/skin/skin_default/images/fullscreen.png
+	images/skin/skin_default/images/server_web.png
+	images/skin/skin_default/images/lupa_15x15.png
+	images/skin/skin_default/images/database_lightning.png
+	images/skin/skin_default/images/lightning_go.png
+	images/skin/skin_default/images/star.png
+	images/skin/skin_default/images/user.png
+	images/skin/skin_default/images/user_suit.png
+	images/skin/skin_default/images/binary.png
+	images/skin/skin_default/images/up.png
+	images/skin/skin_default/images/information.png
+	images/skin/skin_default/images/upd.png
+	images/skin/skin_default/images/cross.png
+	images/skin/skin_default/images/sort_up.png: New images for
+	default skin.
+
 2011-06-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_filemanager.php: Sended from file manager

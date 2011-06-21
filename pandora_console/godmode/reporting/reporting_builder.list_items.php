@@ -324,11 +324,11 @@ ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/rep
 <script type="text/javascript">
 function toggleFormFilter() {
 	if ($("#form_filter").css('display') == 'none') {
-		$("#image_form_filter").attr('src', 'images/up.png');
+		$("#image_form_filter").attr('src', <?php echo "'" . html_print_image('images/up.png', true, false, true) . "'"; ?> );
 		$("#form_filter").css('display','');
 	}
 	else {
-		$("#image_form_filter").attr('src', 'images/down.png');
+		$("#image_form_filter").attr('src', <?php echo "'" . html_print_image('images/down.png', true, false, true) . "'"; ?> );
 		$("#form_filter").css('display','none');
 	}
 }

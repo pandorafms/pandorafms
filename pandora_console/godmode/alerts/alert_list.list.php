@@ -57,8 +57,10 @@ if ($temp){
 }
 
 $form_filter .= "<td>".__('Agents')."</td><td>";
+//Image srv with skins
+$src_code = html_print_image('images/lightning.png', true, false, true);
 $form_filter .= html_print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
-array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);
+array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true);
 $form_filter .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 $form_filter .= "</td>\n";
 
@@ -640,36 +642,36 @@ if (! $id_agente) {
 	
 	$("input[name=disable]").attr ("title", "<?php echo __('Disable')?>")
 		.hover (function () {
-				$(this).attr ("src", "images/lightbulb_off.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb_off.png", true, false, true) . '"'; ?> );
 			},
 			function () {
-				$(this).attr ("src", "images/lightbulb.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb.png", true, false, true) . '"'; ?> );
 			}
 		);
 	$("input[name=enable]").attr ("title", "<?php echo __('Enable')?>")
 		.hover (function () {
-				$(this).attr ("src", "images/lightbulb.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb.png", true, false, true) . '"'; ?> );
 			},
 			function () {
-				$(this).attr ("src", "images/lightbulb_off.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb_off.png", true, false, true) . '"'; ?> );
 			}
 		);
 		
 	$("input[name=standby_on]").attr ("title", "<?php echo __('Set off standby')?>")
 		.hover (function () {
-				$(this).attr ("src", "images/bell.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell.png", true, false, true) . '"'; ?> );
 			},
 			function () {
-				$(this).attr ("src", "images/bell_pause.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell_pause.png", true, false, true) . '"'; ?> );
 			}
 		);
 		
 	$("input[name=standby_off]").attr ("title", "<?php echo __('Set standby')?>")
 		.hover (function () {
-				$(this).attr ("src", "images/bell_pause.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell_pause.png", true, false, true) . '"'; ?> );
 			},
 			function () {
-				$(this).attr ("src", "images/bell.png");
+				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell.png", true, false, true) . '"'; ?> );
 			}
 		);
 	$("form.disable_alert_form").submit (function () {

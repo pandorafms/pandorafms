@@ -62,8 +62,10 @@ $data[1] .= '<div id="module_data" style="top:1em; float:left; width:50%;">';
 $data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
 $sql = "SELECT id_agente, nombre FROM tagente";
 // TODO: ACL Filter
+//Image src with skins
+$src_code = html_print_image('images/lightning.png', true, false, true); 
 $data[1] .= html_print_input_text_extended ('agent_name',$agent_name, 'text_agent_name', '', 30, 100, $is_service, '',
-                            array('style' => 'background: url(images/lightning.png) no-repeat right;'), true, false);
+                            array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true, false);
 $data[1] .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp; <br/>';
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {

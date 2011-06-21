@@ -132,8 +132,10 @@ $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');
+//Image src with skins
+$src_code = html_print_image('images/lightning.png', true, false, true);
 $table->data[2][1] = html_print_input_text_extended ('id_parent', agents_get_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
 $table->data[2][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);

@@ -1,3 +1,9 @@
+2011-06-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Added a new SNMP server (enterprise).
+
+	* lib/PandoraFMS/NetworkServer.pm: Small fixes.
+
 2011-06-21  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Fixed numeric condition in a string

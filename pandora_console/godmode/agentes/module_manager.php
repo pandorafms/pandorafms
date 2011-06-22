@@ -262,7 +262,7 @@ $modules = db_get_all_rows_filter ('tagente_modulo',
 		'order' => $order),
 	array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
 		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-		'disabled',));
+		'disabled','max_warning', 'min_warning', 'max_critical', 'min_critical'));
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('No available data to show')."</div>";
@@ -286,7 +286,10 @@ $table->head[4] = __('Interval') . ' ' .
 	'<a href="' . $url . '&sort_field=interval&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=interval&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
 $table->head[5] = __('Description');
-$table->head[6] = __('Max/Min');
+$table->head[6] = __('Warn');
+
+
+
 $table->head[7] = __('Action');
 
 $table->style = array ();
@@ -410,11 +413,24 @@ foreach ($modules as $module) {
 		$data[4] = $agent_interval;
 	}
 	
-	$data[5] = ui_print_truncate_text($module['descripcion'], 25, false);
+	$data[5] = ui_print_string_substr ($module["descripcion"], 32, true, 9);
 	
 	// MAX / MIN values
-	$data[6] = $module["max"] ? $module["max"] : __('N/A');
-	$data[6] .= ' / '.($module["min"] != $module['max']? $module["min"] : __('N/A'));
+    $data[6] = "<span style='font-size: 8px'>";
+
+    if ($module["max_warning"] != $module["min_warning"]){
+        $data[6] .= format_for_graph ($module["max_warning"]) ."/". format_for_graph ($module["min_warning"]);
+    } else {
+        $data[6] .= __("N/A");
+    }
+
+    $data[6] .= " - ";
+
+    if ($module["max_critical"] != $module["min_critical"]){
+        $data[6] .= format_for_graph($module["max_critical"]) ."/". format_for_graph ($module["min_critical"]);
+    } else {
+        $data[6] .= __("N/A");
+    }
 
 	// Delete module
 	$data[7] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);

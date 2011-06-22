@@ -595,10 +595,11 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
  * @param string The string to be cut
  * @param int At how much characters to cut
  * @param bool Whether to return or print it out
+ * @param int Size font (fixed) in px, applyed as CSS style (optional)
  *
  * @return An HTML string
  */
-function ui_print_string_substr ($string, $cutoff = 16, $return = false) {
+function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsize = 0) {
 	if (empty ($string)) {
 		return "";
 	}
@@ -610,8 +611,12 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false) {
 		$string3 = "";
 	}
 
-	
-	$string = '<span title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
+	$font_size_mod = "";
+
+    if ($fontsize > 0){
+        $font_size_mod = "style='font-size: ".$fontsize."px'";
+    }
+	$string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
 
 	if ($return === false) {
 		echo $string;

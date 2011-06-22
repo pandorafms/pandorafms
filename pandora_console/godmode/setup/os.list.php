@@ -28,13 +28,14 @@ $table = null;
 
 $table->width = '80%';
 $table->head[0] = '';
-$table->head[1] = __('Name');
-$table->head[2] = __('Description');
-$table->head[3] = '';
+$table->head[1] = __('ID');
+$table->head[2] = __('Name');
+$table->head[3] = __('Description');
+$table->head[4] = '';
 $table->align[0] = 'center';
-$table->align[3] = 'center';
+$table->align[4] = 'center';
 $table->size[0] = '20px';
-$table->size[3] = '20px';
+$table->size[4] = '20px';
 
 $osList = db_get_all_rows_in_table('tconfig_os');
 
@@ -42,6 +43,7 @@ $table->data = array();
 foreach ($osList as $os) {
 	$data = array();
 	$data[] = ui_print_os_icon($os['id_os'], false, true);
+	$data[] = $os['id_os'];
 	$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os=' . $os['id_os'] . '">' . io_safe_output($os['name']) . '</a>';
 	$data[] = ui_print_truncate_text(io_safe_output($os['description']), 25, true, true);
 	if ($os['id_os'] > 13) {

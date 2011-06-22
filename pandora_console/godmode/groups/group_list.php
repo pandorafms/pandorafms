@@ -195,16 +195,16 @@ if ($delete_group) {
 		 
 }
 
-
-$table->width = '65%';
+$table->width = '90%';
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Icon');
-$table->head[2] = __('Alerts');
-$table->head[3] = __('Actions');
+$table->head[1] = __('ID');
+$table->head[2] = __('Icon');
+$table->head[3] = __('Alerts');
+$table->head[4] = __('Actions');
 $table->align = array ();
-$table->align[1] = 'center';
-$table->align[3] = 'center';
+$table->align[2] = 'center';
+$table->align[4] = 'center';
 $table->data = array ();
 
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
@@ -283,14 +283,15 @@ foreach ($groups as $id_group => $group) {
 	else {
 		$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre']).'</strong>';
 	}
-	$data[1] = ui_print_group_icon($group['id_grupo'], true);
-	$data[2] = $group['disabled'] ? __('Disabled') : __('Enabled');
+	$data[1] = $group['id_grupo'];
+	$data[2] = ui_print_group_icon($group['id_grupo'], true);
+	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
 	if ($group['id_grupo'] == 0) {
-		$data[3] = '';
+		$data[4] = '';
 	}
 	else {
-		$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
-		$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+		$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+		$data[4] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 	}
 	
 	array_push ($table->data, $data);

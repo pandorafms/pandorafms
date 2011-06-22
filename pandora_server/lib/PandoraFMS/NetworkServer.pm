@@ -87,7 +87,8 @@ sub data_producer ($) {
 
 	my @tasks;
 	my @rows;
-
+	my $network_filter = enterprise_hook ('get_network_filter', [$pa_config]);
+	
 	if ($pa_config->{'pandora_master'} == 0) {
 		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try AS time_left, last_execution_try
 		FROM tagente, tagente_modulo, tagente_estado
@@ -96,7 +97,7 @@ sub data_producer ($) {
 		AND tagente.disabled = 0
 		AND tagente_modulo.id_tipo_modulo > 4
 		AND tagente_modulo.id_tipo_modulo < 19 '
-		. enterprise_hook ('get_network_filter', []) .
+		. (defined ($network_filter) ? $network_filter : ' ') .
 		'AND tagente_modulo.disabled = 0
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())) 
@@ -110,7 +111,7 @@ sub data_producer ($) {
 		AND tagente_modulo.disabled = 0
 		AND tagente_modulo.id_tipo_modulo > 4
 		AND tagente_modulo.id_tipo_modulo < 19 '
-		. enterprise_hook ('get_network_filter', []) .
+		. (defined ($network_filter) ? $network_filter : ' ') .
 		'AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()))
 		ORDER BY tagente_modulo.flag DESC, time_left DESC, tagente_estado.last_execution_try ASC', $pa_config->{'servername'});

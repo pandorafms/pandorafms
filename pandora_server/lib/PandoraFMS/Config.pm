@@ -238,7 +238,9 @@ sub pandora_load_config {
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"icmpserver"} = 1; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
-	$pa_config->{"block_size"} = 50; # 4.0
+	$pa_config->{"snmpserver"} = 1; # 4.0
+	$pa_config->{"snmp_threads"} = 3; # 4.0
+	$pa_config->{"block_size"} = 15; # 4.0
 	
 	$pa_config->{"max_queue_files"} = 500; 
 
@@ -252,6 +254,9 @@ sub pandora_load_config {
 
 	# nmap for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"nmap"} = "/usr/bin/nmap";
+
+	# braa for enterprise snmp server
+	$pa_config->{"braa"} = "/usr/bin/braa";
 
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
@@ -512,6 +517,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^nmap\s(.*)/i) {
 			$pa_config->{'nmap'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^braa\s(.*)/i) {
+			$pa_config->{'braa'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 

@@ -127,14 +127,15 @@ $table->width = '90%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Description');
-$table->head[2] = __('Delete');
+$table->head[1] = __('ID');
+$table->head[2] = __('Description');
+$table->head[3] = __('Delete');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[2] = '40px';
+$table->size[3] = '40px';
 $table->align = array ();
-$table->align[2] = 'center';
+$table->align[3] = 'center';
 
 $commands = db_get_all_rows_in_table ('talert_commands');
 if ($commands === false)
@@ -148,11 +149,11 @@ foreach ($commands as $command) {
 			$command['name'].'</a>';
 	else
 		$data[0] = $command['name'];
-	
-	$data[1] = $command['description'];
-	$data[2] = '';
+	$data[1] = $command['id'];
+	$data[2] = $command['description'];
+	$data[3] = '';
 	if (! $command['internal'])
-		$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
+		$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			html_print_image("images/cross.png", true) . '</a>';
 	

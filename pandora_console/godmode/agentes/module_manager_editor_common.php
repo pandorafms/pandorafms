@@ -169,19 +169,19 @@ $table_simple->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM
 	true, false, true, $disabledBecauseInPolicy);
 
 $table_simple->data[2][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
-$table_simple->data[2][1] = '<em>'.__('Min.').'</em>';
+$table_simple->data[2][1] = '<em>'.__('Min. ').'</em></span>';
 $table_simple->data[2][1] .= html_print_input_text ('min_warning', $min_warning,
-	'', 5, 255, true, $disabledBecauseInPolicy);
+	'', 10, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][1] .= html_print_input_text ('max_warning', $max_warning,
-	'', 5, 255, true, $disabledBecauseInPolicy);
+	'', 10, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
-$table_simple->data[2][3] = '<em>'.__('Min.').'</em>';
+$table_simple->data[2][3] = '<em>'.__('Min. ').'</em>';
 $table_simple->data[2][3] .= html_print_input_text ('min_critical', $min_critical,
-	'', 5, 255, true, $disabledBecauseInPolicy);
+	'', 10, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][3] .= html_print_input_text ('max_critical', $max_critical,
-	'', 5, 255, true, $disabledBecauseInPolicy);
+	'', 10, 255, true, $disabledBecauseInPolicy);
 
 /* FF stands for Flip-flop */
 $table_simple->data[3][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
@@ -215,7 +215,7 @@ $table_advanced->data[2][1] = html_print_input_text ('module_interval', $interva
 	
 $table_advanced->data[2][2] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][3] = html_print_input_text ('post_process',
-	$post_process, '', 12, 25, true, $disabledBecauseInPolicy);
+	$post_process, '', 15, 25, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[3][0] = __('Min. Value');
 $table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy);

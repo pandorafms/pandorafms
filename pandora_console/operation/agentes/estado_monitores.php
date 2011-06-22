@@ -195,7 +195,7 @@ $modules = db_get_all_rows_sql ($sql);
 if (empty ($modules)) {
 	$modules = array ();
 }
-$table->width = 750;
+$table->width = "100%";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = "databox";
@@ -316,13 +316,14 @@ foreach ($modules as $module) {
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
-	$data[3] = ui_print_string_substr ($module["nombre"], 25, true);
+	$data[3] = ui_print_string_substr ($module["nombre"], 30, true);
+
 	//Adds tag context information
 	if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
 		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
 		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
 	}
-	$data[4] = ui_print_string_substr ($module["descripcion"], 30, true);
+	$data[4] = ui_print_string_substr ($module["descripcion"], 40, true, 9);
 
 	$status = STATUS_MODULE_WARNING;
 	$title = "";

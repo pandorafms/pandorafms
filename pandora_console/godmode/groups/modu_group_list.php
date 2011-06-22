@@ -105,12 +105,14 @@ if ($delete_group) {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-$table->width = '65%';
+$table->width = '500px';
 $table->head = array ();
-$table->head[0] = __('Name');
-$table->head[1] = __('Delete');
+$table->head[0] = __('ID');
+$table->head[1] = __('Name');
+$table->head[2] = __('Delete');
 $table->align = array ();
-$table->align[1] = 'center';
+$table->align[1] = 'left';
+$table->align[2] = 'center';
 $table->data = array ();
 
 $sql = "SELECT * 
@@ -120,9 +122,9 @@ $groups = db_get_all_rows_sql ($sql, true);
 
 foreach ($groups as $id_group ) {
 	$data = array ();
-	
-	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' . ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
-	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+	$data[0] = 	$id_group["id_mg"];
+	$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' . ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
+	$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	
 	array_push ($table->data, $data);
 }

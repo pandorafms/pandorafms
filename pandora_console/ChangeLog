@@ -1,3 +1,26 @@
+2011-06-21 Sancho Lerena <slerena@artica.es>
+
+    * include/functions_ui.php: Improved function ui_print_string_substr to
+    render a span with a predefined font size.
+
+    * godmode/setup/os.list.php,
+    godmode/groups/modu_group_list.php,
+    godmode/groups/group_list.php, 
+    godmode/alerts/alert_commands.php: Show element's ID in tables, useful 
+    to use later in CLI, CVS importer or other tool.
+
+    * godmode/agentes/module_manager.php
+    godmode/agentes/module_manager_editor_common.php: Show warning/critical
+    thresholds instead max/min values for module, much more useful. Aesthetic
+    changes on editor and description visualization.
+
+    * godmode/agentes/agent_manager.php: Added a direct link to delete current
+    agent from main agent edit section.
+
+    * operation/agentes/status_monitor.php,
+    operation/agentes/estado_monitores.php: usability fixes on desc. size 
+    and table width.
+ 
 2011-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/ie.css

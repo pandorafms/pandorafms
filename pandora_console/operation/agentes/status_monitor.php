@@ -316,7 +316,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = 750;
+$table->width = "100%";
 $table->class = "databox";
 
 $table->head = array ();
@@ -406,7 +406,7 @@ foreach ($result as $row) {
 	
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
-	$data[3] = mb_strimwidth (io_safe_output($row["module_name"]), 0, 30);
+	$data[3] = ui_print_string_substr ($row["module_name"], 45, true, 9);
 
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
 

@@ -102,7 +102,9 @@ $table->data[0][0] = __('Agent name') .
 $table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 30, 100,true); 
 
 if ($id_agente) {
-	$table->data[0][1] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
+
+    $table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
+	$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
 	$table->data[0][1] .= html_print_image ("images/lupa.png", true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
 }
@@ -110,10 +112,15 @@ if ($id_agente) {
 // Remote configuration available
 if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
-		$table->data[0][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
 		$table->data[0][1] .= html_print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
 		$table->data[0][1] .= '</a>'.ui_print_help_tip (__('You can remotely edit this agent configuration'), true);
 	}
+}
+
+// Delete link from here
+if (!$new_agent) {
+$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
 }
 
 $table->data[1][0] = __('IP Address');

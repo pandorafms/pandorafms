@@ -284,14 +284,26 @@ sub pandora_daemonize {
 	defined(my $pid = fork)     or die "Can't fork: $!";
 	exit if $pid;
 	setsid                      or die "Can't start a new session: $!";
-	umask 0;
 
 	# Store PID of this process in file presented by config token
 	if ($pa_config->{'PID'} ne ""){
+
+		if ( -e $pa_config->{'PID'} && open (FILE, $pa_config->{'PID'})) {
+			$pid = <FILE> + 0;
+			close FILE;
+
+			# check if pandora_server is running
+			if (kill (0, $pid)) {
+				die "[FATAL] pandora_server already running, pid: $pid.";
+			}
+			logger ($pa_config, '[W] Stale PID file, overwriting.', 1);
+		}
+		umask 022;
 		open (FILE, "> ".$pa_config->{'PID'}) or die "[FATAL] Cannot open PIDfile at ".$pa_config->{'PID'};
 		print FILE "$$";
 		close (FILE);
 	}
+	umask 0;
 }
 
 

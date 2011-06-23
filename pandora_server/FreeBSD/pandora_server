@@ -26,25 +26,11 @@ load_rc_config $name
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 
-command=/usr/local/bin/${name}
-command_args="-D /usr/local/etc/pandora/pandora_server.conf"
-
 pidfile=/var/run/$name.pid
+command=/usr/local/bin/${name}
+command_args="-D -P ${pidfile} /usr/local/etc/pandora/pandora_server.conf"
 required_files="/usr/local/etc/pandora/pandora_server.conf"
-start_postcmd=start_postcmd
-stop_postcmd=stop_postcmd
 
 procname="/usr/local/bin/perl"
-
-start_postcmd()
-{
-	PANDORA_PID=`pgrep -f -j none $name`
-	echo $PANDORA_PID > $pidfile
-}
-
-stop_postcmd()
-{
-	rm -f $pidfile
-}
 
 run_rc_command "$1"

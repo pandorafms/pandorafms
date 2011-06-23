@@ -1,3 +1,15 @@
+2011-06-23  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Checked if pandora_server is already
+	  running, in order to prevent multiple instances with same PID
+	  file from running. And made PID file permissions 644, rather
+	  than 666. 
+
+	* bin/pandora_server: Remove PID file on shutdown.
+
+	* FreeBSD/pandora_server: Use -P option for PID file instead of
+	  pgrep.
+
 2011-06-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Added a new SNMP server (enterprise).

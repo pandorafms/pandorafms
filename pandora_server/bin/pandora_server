@@ -56,6 +56,9 @@ sub pandora_shutdown () {
 
 	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 1);
 	db_disconnect ($DBH);
+	if ($Config{'PID'} ne "") {
+		unlink($Config{'PID'}) or logger (\%Config, "[W] Could not remove PID file: $!",1);
+	}
 	exit (0);
 }
 

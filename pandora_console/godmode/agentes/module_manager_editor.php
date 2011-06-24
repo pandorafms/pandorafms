@@ -132,6 +132,7 @@ if ($id_agent_module) {
 	if ($interval == 0) {
 		$interval = agents_get_interval ($id_agente);
 	}
+	$unit = $module['unit'];
 	$tcp_port = $module['tcp_port'];
 	$tcp_send = $module['tcp_send'];
 	$tcp_rcv = $module['tcp_rcv'];
@@ -191,6 +192,7 @@ else {
 		$min = '';
 		$max = '';
 		$interval = '';
+		$unit = '';
 		$prediction_module = '';
 		$custom_integer_2 = 0;
 		$id_plugin = '';

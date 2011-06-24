@@ -1,3 +1,7 @@
+2011-06-24  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/agentes/module_manager_editor.php: Show units in module edition.
+
 2011-06-21 Sancho Lerena <slerena@artica.es>
 
     * include/functions_ui.php: Improved function ui_print_string_substr to

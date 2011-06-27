@@ -355,6 +355,7 @@ sub pandora_query_snmp ($$) {
 		}
 	}
 
+	chomp ($module_data);
 	return ($module_data, $module_result);
 }
 

@@ -1265,6 +1265,36 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false) {
 }
 
 /**
+ * Print module max/min values for warning/critical state
+ *
+ * @param float Max value for warning state
+ * @param float Min value for warning state
+ * @param float Max value for critical state
+ * @param float Min value for critical state
+ *
+ * @return string HTML string
+ */
+function ui_print_module_warn_value ($max_warning, $min_warning, $max_critical, $min_critical) {
+	$data = "<span style='font-size: 8px' title='" . __("Warning") . ": " . __("Max") . $max_warning . "/" . __("Min") . $min_warning . " - " . __("Critical") . ": " . __("Max") . $max_critical . "/" . __("Min") . $min_critical . "'>";
+
+	if ($max_warning != $min_warning) {
+		$data .= format_for_graph($max_warning) ."/". format_for_graph ($min_warning);
+	} else {
+		$data .= __("N/A");
+	}
+
+	$data .= " - ";
+
+	if ($max_critical != $min_critical){
+		$data .= format_for_graph($max_critical) ."/". format_for_graph ($min_critical);
+	} else {
+		$data .= __("N/A");
+	}
+	$data .= "</span>";
+	return $data;
+}
+
+/**
 * Format a file size from bytes to a human readable meassure.
 *
 * @param int File size in bytes

@@ -1,5 +1,17 @@
 2011-06-27  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/functions_ui.php: Added a new function to show max/min
+	values for module.
+	
+	* operation/agentes/estado_monitores.php, 
+	operation/agentes/status_monitor.php: Improved to show max/min
+	values for module.
+
+	* godmode/agentes/module_manager.php: Modified to use the function,
+	ui_print_module_warn_value() to show max/min values for module.
+
+2011-06-27  Junichi Satoh  <junichi@rworks.jp>
+
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added missing INDEX.
 	(Merged from pandoradb.sql)
 

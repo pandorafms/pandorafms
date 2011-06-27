@@ -260,6 +260,10 @@ switch ($config["dbtype"]) {
 			tagente_modulo.module_interval, 
 			tagente_estado.datos, 
 			tagente_estado.estado,
+			tagente_modulo.min_warning,
+			tagente_modulo.max_warning,
+			tagente_modulo.min_critical,
+			tagente_modulo.max_critical,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
 		break;
 	case "postgresql":
@@ -276,6 +280,10 @@ switch ($config["dbtype"]) {
 			tagente_modulo.module_interval, 
 			tagente_estado.datos, 
 			tagente_estado.estado,
+			tagente_modulo.min_warning,
+			tagente_modulo.max_warning,
+			tagente_modulo.min_critical,
+			tagente_modulo.max_critical,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT " . $config["block_size"] . " OFFSET " . $offset;
 		break;
 	case "oracle":
@@ -294,6 +302,10 @@ switch ($config["dbtype"]) {
 			tagente_modulo.module_interval, 
 			tagente_estado.datos, 
 			tagente_estado.estado,
+			tagente_modulo.min_warning,
+			tagente_modulo.max_warning,
+			tagente_modulo.min_critical,
+			tagente_modulo.max_critical,
 			tagente_estado.utimestamp AS utimestamp".$sql;
 		$sql = oracle_recode_query ($sql, $set);
 		break;
@@ -343,11 +355,14 @@ $table->align[5] = "center";
 $table->head[6] = __('Graph');
 $table->align[6] = "center";
 
-$table->head[7] = __('Data');
+$table->head[7] = __('Warn');
 $table->align[7] = "left";
 
-$table->head[8] = __('Timestamp');
-$table->align[8] = "right";
+$table->head[8] = __('Data');
+$table->align[8] = "left";
+
+$table->head[9] = __('Timestamp');
+$table->align[9] = "right";
 
 $rowPair = true;
 $iterator = 0;
@@ -454,10 +469,12 @@ foreach ($result as $row) {
 		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 	}
 
+	$data[7] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['max_critical'], $row['min_critical']);
+
 	if (is_numeric($row["datos"]))
-		$data[7] = format_numeric($row["datos"]);
+		$data[8] = format_numeric($row["datos"]);
 	else
-		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
+		$data[8] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
 	
 	if ($row["module_interval"] > 0)
 		$interval = $row["module_interval"];
@@ -469,7 +486,7 @@ foreach ($result as $row) {
 	} else {
 		$option = array ();
 	}
-	$data[8] = ui_print_timestamp ($row["utimestamp"], true, $option);
+	$data[9] = ui_print_timestamp ($row["utimestamp"], true, $option);
 	
 	array_push ($table->data, $data);
 }

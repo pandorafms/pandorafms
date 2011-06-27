@@ -416,21 +416,7 @@ foreach ($modules as $module) {
 	$data[5] = ui_print_string_substr ($module["descripcion"], 32, true, 9);
 	
 	// MAX / MIN values
-    $data[6] = "<span style='font-size: 8px'>";
-
-    if ($module["max_warning"] != $module["min_warning"]){
-        $data[6] .= format_for_graph ($module["max_warning"]) ."/". format_for_graph ($module["min_warning"]);
-    } else {
-        $data[6] .= __("N/A");
-    }
-
-    $data[6] .= " - ";
-
-    if ($module["max_critical"] != $module["min_critical"]){
-        $data[6] .= format_for_graph($module["max_critical"]) ."/". format_for_graph ($module["min_critical"]);
-    } else {
-        $data[6] .= __("N/A");
-    }
+	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["max_critical"], $module["min_critical"]); 
 
 	// Delete module
 	$data[7] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);

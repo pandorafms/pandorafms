@@ -220,11 +220,12 @@ $table->head[4] = __('Description');
 $table->head[5] = __('Status') . ' ' .
 	'<a href="' . $url . '&sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
 	'<a href="' . $url . '&sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
-$table->head[6] = __('Data') . ' ' .
+$table->head[6] = __('Warn'); 
+$table->head[7] = __('Data') . ' ' .
 	'<a href="' . $url . '&sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up")) . '</a>' .
 	'<a href="' . $url . '&sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
-$table->head[7] = __('Graph');
-$table->head[8] = __('Last contact') . ' ' .
+$table->head[8] = __('Graph');
+$table->head[9] = __('Last contact') . ' ' .
 	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
@@ -398,10 +399,12 @@ foreach ($modules as $module) {
 		}
 	}
 
-	$data[6] = $salida;
+	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["max_critical"], $module["min_critical"]);
+
+	$data[7] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 
-	$data[7] = " ";
+	$data[8] = " ";
 	if ($module['history_data'] == 1){
 		$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
@@ -411,18 +414,18 @@ foreach ($modules as $module) {
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
 
 	//	if ($nombre_tipo_modulo != "log4x")
-			$data[7] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a>';
-		$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
+			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a>';
+		$data[8] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
 	}
 	
 	if ($module['estado'] == 3) {
-		$data[8] = '<span class="redb">';
+		$data[9] = '<span class="redb">';
 	}
 	else {
-		$data[8] = '<span>';
+		$data[9] = '<span>';
 	}
-	$data[8] .= ui_print_timestamp ($module["utimestamp"], true);
-	$data[8] .= '</span>';
+	$data[9] .= ui_print_timestamp ($module["utimestamp"], true);
+	$data[9] .= '</span>';
 	
 	array_push ($table->data, $data);
 	$rowIndex++;

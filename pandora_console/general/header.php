@@ -20,27 +20,13 @@ require_once ('include/functions_servers.php');
 
 $msg_cnt = 0;
 $alert_cnt = 0;
+$config["alert_cnt"] = 0;
 $_SESSION["alert_msg"] = "";
 
 // Check permissions
 
-// Global error checking.
-
-if (!is_writable ("attachment")){
-    $alert_cnt++;
-
-    // At this first version I'm passing errors using session variables, because the error management
-    // is done by an AJAX request. Better solutions could be implemented in the future :-)
-
-    $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory').'</p>';
-}
-
-// Check default password for "admin"
-$hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
-if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
-    $alert_cnt++;
-    $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.').'</p>';
-}
+// Global errors/warnings checking.
+config_check();
 
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
@@ -84,7 +70,7 @@ if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
 				}
 			}
 
-            if ($alert_cnt > 0){
+            if ($config["alert_cnt"] > 0){
                 echo '<div id="alert_messages" style="display: none"></div>';
                 ui_require_css_file ('dialog');
        			ui_require_jquery_file ('ui.core');
@@ -92,7 +78,7 @@ if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
                 
     			echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
 	    		html_print_image ("images/error.png", false,
-    			array ("title" => __('You have %d warning(s)', $alert_cnt), "id" => "yougotalert", "class" => "bot"));
+    			array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
 	    		echo '</a>';
                 echo "&nbsp;";
                 echo "&nbsp;";
@@ -214,7 +200,7 @@ $(document).ready (function () {
 <?php if ($msg_cnt > 0): ?>
 	$("#yougotmail").pulsate ();
 <?php endif; ?>
-<?php if ($alert_cnt > 0): ?>
+<?php if ($config["alert_cnt"] > 0): ?>
 	$("#yougotalert").pulsate ();
 <?php endif; ?>
 <?php if ($config["refr"]): ?>

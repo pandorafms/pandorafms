@@ -653,4 +653,85 @@ function config_process_config () {
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
+
+function config_check (){
+    global $config;
+    
+    // At this first version I'm passing errors using session variables, because the error management
+    // is done by an AJAX request. Better solutions could be implemented in the future :-)
+
+    // Check default password for "admin"
+    $hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
+    if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
+        $config["alert_cnt"]++;
+        $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.').'</p>';
+    }
+
+    if (!is_writable ("attachment")){
+        $config["alert_cnt"]++;
+        $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory').'</p>';
+    }
+
+    // Get remote file dir.
+    $remote_config = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'remote_config'");
+    if (defined ('PANDORA_ENTERPRISE')){
+
+        if (!is_writable ($remote_config)){
+            $config["alert_cnt"]++;
+            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
+        }
+
+        $remote_config = $remote_config . "/conf";
+        if (!is_writable ($remote_config)){
+            $config["alert_cnt"]++;
+            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
+        }
+
+        $remote_config = $remote_config . "/collections";
+        if (!is_writable ($remote_config)){
+            $config["alert_cnt"]++;
+            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
+        }
+    }
+
+    // Check attachment directory (too much files?)
+
+    $filecount = count(glob($config["homedir"]."/attachment/*"));
+    // 100 temporal files of trash should be enough for most people.
+    if ($filecount > 100){
+            $config["alert_cnt"]++;
+            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Too much files in your tempora/attachment directory').'</h3>';
+            $_SESSION["alert_msg"] .= __("There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually"). " ( $filecount ". __("files") . " )";
+    }
+
+    // Check database maintance
+
+    $db_maintance = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'");
+    $now = date("U");
+
+    $resta = $now - $db_maintance;
+    // ~ about 50 hr
+    if (($db_maintance == "") OR ($resta > 190000)){
+            $config["alert_cnt"]++;
+            $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Database maintance problem").'</h3>';
+            $_SESSION["alert_msg"] .= __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible').'</h3>';
+    }
+    
+    $fontpath = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'fontpath'");
+    if (($fontpath == "") OR (!file_exists ($fontpath))) {
+        $config["alert_cnt"]++;
+        $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Default font doesnt exist").'</h3>';
+        $_SESSION["alert_msg"] .= __('Your defined fonr doesnt exist or is not defined. Please check font parameters in your config').'</h3>';
+    }
+
+    global $develop_bypass;
+
+    if ($develop_bypass == 1){
+        $config["alert_cnt"]++;
+        $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Developer mode is enabled").'</h3>';
+        $_SESSION["alert_msg"] .= __('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file').'</h3>';
+    }
+
+}
+
 ?>

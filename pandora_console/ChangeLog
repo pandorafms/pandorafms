@@ -1,3 +1,8 @@
+2011-06-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added missing INDEX.
+	(Merged from pandoradb.sql)
+
 2011-06-24  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Show units in module edition.

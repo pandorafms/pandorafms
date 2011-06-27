@@ -1,3 +1,7 @@
+2011-06-27  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* unix/pandora_agent: Create configuration file for drone agents in Unix.
+
 2011-06-21  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/pandora_windows_service.cc

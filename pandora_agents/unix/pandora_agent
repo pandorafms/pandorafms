@@ -419,18 +419,35 @@ sub parse_conf_modules($) {
 }
 
 ################################################################################
+# Create configuration file for drone agents.
+################################################################################
+sub write_broker_conf($$){
+	my ($conf_file, $broker_file) = @_;
+	my $content = '';
+
+	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
+	open (BROKER_FILE, ">$broker_file") or error ("Could not write configuration file: $!");
+
+	print BROKER_FILE while (<CONF_FILE>);
+
+	close (BROKER_FILE);
+	close (CONF_FILE);
+}
+
+################################################################################
 # Read configuration file. Exit on error.
 ################################################################################
 sub read_config (;$) {
 	my $token = shift;
 	my $module;
-	
+
 	error ("File '$ConfDir/$ConfFile' not found.") unless (-e "$ConfDir/$ConfFile");
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
 	
 	my @file = <CONF_FILE>;
-	while (my $line = <CONF_FILE>) {
+	close(CONF_FILE);
 	
+	foreach my $line (@file){
 		# Skip comments and empty lines
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
 
@@ -438,8 +455,7 @@ sub read_config (;$) {
 		if (defined ($token)) {
 			return $2 if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token);
 			next;
-		}
-		
+		}		
 		#Additional configuration file
 		if ($line =~ /^include\s+(.*)\s*/){
 			open (FILE, "$1") or next;
@@ -447,21 +463,24 @@ sub read_config (;$) {
 			parse_conf_modules(\@file_conf);	
 			close (FILE);
 		}
-		
-		# Configuration token
-		 if ($line =~ /^\s*(\S+)\s+(.*)$/) {
-			
+		#Broker agent
+		if ($line =~ /^broker_agent\s+(\w*)\s*/){
+			my $path_conf = "$ConfDir/$ConfFile";
+			my $path_broker = "$ConfDir/$1.conf";
+			write_broker_conf($path_conf, $path_broker);
+		 }	
+		 #Configuration token
+		 if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
 			
 			# Remove trailing spaces
 			$Conf{$1} =~ s/\s*$//;
-		}
-		
+		}		
 	}
-	
+
 	# Module, plugin and collection definition
-		parse_conf_modules(\@file);
+	parse_conf_modules(\@file);
 
 	# Token not found
 	if (defined ($token)) {
@@ -489,12 +508,11 @@ sub read_config (;$) {
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq 'yes');		
 	}
 
-	close (CONF_FILE);
 }
 
-################################################################################
-# Remove any trailing / from directory names.
-################################################################################
+#################################################################################
+## Remove any trailing / from directory names.
+#################################################################################
 sub fix_directory ($) {
 	my $dir = shift;
 	
@@ -502,6 +520,8 @@ sub fix_directory ($) {
 	return $dir if ($char eq '/');
 	return $dir . $char;
 }
+
+
 
 ################################################################################
 # Sends a file to the server.

@@ -228,7 +228,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 				$chart[$timestamp]['max'] = $previous_data;
 			}
 		}
-
+		
 		//$chart[$timestamp]['count'] = 0;
 		/////////
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
@@ -243,7 +243,9 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
 		if ($chart[$timestamp]['baseline'] == NULL) {
 			$chart[$timestamp]['baseline'] = 0;
-		}
+		}		
+		$units = modules_get_unit($agent_module_id);
+		$chart[$timestamp]['unit'] = 0;
 	}
 	
 	// Return chart data and don't draw
@@ -270,7 +272,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
     // Only show caption if graph is not small
     if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT)
     	//Flash chart
-		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value . '    ' . __('Units. Value') . ': ' . $units;
     else
 		$caption = array();
 	
@@ -286,6 +288,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
+	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);
 	
 	$legend = array();
 	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
@@ -298,6 +301,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
 	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
 	$legend['baseline'] = __('Baseline');
+	$legend['unit'] = __('Units'). ' (' . $units . ')';
 	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
@@ -587,8 +591,9 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		$min = format_for_graph($min);
 		$max = format_for_graph($max);
 		$avg = format_for_graph($avg);
+		$units = modules_get_unit($agent_module_id);
 		
-		$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg)";
+		$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg, ". __("Units"). ": $units)";
 		
 		if ($weight_list[$i] != 1) {
 			//$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
@@ -1985,6 +1990,7 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
 	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
 	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+	$unit = modules_get_unit($agent_module_id);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;

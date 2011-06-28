@@ -1586,16 +1586,16 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
-	my $ip_address;
+	my $address;
 
-	if(defined($Conf{'ip_address'})) {
-		# Check if ip_address is auto to get the local ip
-		if ($Conf{'ip_address'} eq 'auto') {
-			$ip_address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
-			chomp($ip_address);
+	if(defined($Conf{'address'})) {
+		# Check if address is auto to get the local ip
+		if ($Conf{'address'} eq 'auto') {
+			$address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
+			chomp($address);
 		}
 		else {
-			$ip_address = $Conf{'ip_address'};
+			$address = $Conf{'address'};
 		}
 	}
 	
@@ -1605,8 +1605,8 @@ while (1) {
 		"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
 		"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
 
-	if (defined ($Conf{'ip_address'})) {
-		$Xml .= "' ip_address='" .$ip_address;
+	if (defined ($Conf{'address'})) {
+		$Xml .= "' address='" .$address;
 	}
 	
 	if (defined ($Conf{'parent_agent_name'})) {

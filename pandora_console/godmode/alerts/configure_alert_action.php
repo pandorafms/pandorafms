@@ -86,7 +86,7 @@ if ($id) {
 	$action_threshold = $action ['action_threshold'];
 }
 
-$table->width = '90%';
+$table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
@@ -152,7 +152,7 @@ ui_require_javascript_file ('pandora_alerts');
 <script type="text/javascript">
 $(document).ready (function () {
 <?php if ($id_command) : ?>
-	original_command = "<?php $command = get_alert_command_command ($id_command);
+	original_command = "<?php $command = alerts_get_alert_command_command ($id_command);
 								$command = io_safe_output($command);
 								echo addslashes($command);
 		?>";

@@ -38,7 +38,7 @@ if ($id) {
 	$parent = '';
 }
 
-$table->width = '50%';
+$table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->data = array ();

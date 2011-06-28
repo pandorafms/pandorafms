@@ -58,9 +58,9 @@ $label_group = 0;
 $last_label = "";
 
 // Title
-echo "<h3>".__('Display of last data modules received by agent');
+echo "<h4>".__('Display of last data modules received by agent');
 echo "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data'>" . html_print_image('images/refresh.png', true, array("alt" => '')) . "</a>";
-echo "</h3>";
+echo "</h4>";
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');

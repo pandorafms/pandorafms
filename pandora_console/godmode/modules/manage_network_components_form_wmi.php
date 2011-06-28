@@ -79,7 +79,7 @@ if (! $id) {
 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components">';
 
-echo '<table width="95%" cellspacing="4" cellpadding="4" class="databox_color">';
+echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox_color">';
 echo '<tr>';
 
 // Name

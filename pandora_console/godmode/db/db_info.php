@@ -46,7 +46,7 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 echo grafico_db_agentes_purge2(0, 600, 400);
 
 echo '<div id="db_info_graph">';
-echo '<table border=0>';
+echo '<table border=0 width="98%">';
 echo '<tr><td>';
 echo '<h3>'.__('Modules per agent').'</h3>';
 

@@ -76,7 +76,7 @@ if (isset ($_GET["update"])) { // Edit mode
 ui_print_page_header (__('Manage recontask') . " " . ui_print_help_icon ("recontask", true), "", false, "", true);
 
 
-$table->width='90%';
+$table->width='98%';
 $table->cellspacing=4;
 $table->cellpadding=4;
 $table->class="databox_color";

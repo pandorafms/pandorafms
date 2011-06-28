@@ -83,7 +83,7 @@ if ($edit_graph) {
 // CREATE/EDIT GRAPH FORM
 // -----------------------
 
-echo "<table width='500' cellpadding=4 cellspacing=4 class='databox_color'>";
+echo "<table width='98%' cellpadding=4 cellspacing=4 class='databox_color'>";
 
 if ($edit_graph)
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&update_graph=1&id=" . $id_graph . "'>";

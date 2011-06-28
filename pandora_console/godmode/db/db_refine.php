@@ -61,7 +61,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	echo '<br /><br /><h3 class="suc">'.__('Filtering completed').'</h3>';
 }
 echo '<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">';
-echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
+echo "<table width='98%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 
 echo '<tr><td class="datost">';
 echo '<div style="float:left; width: 250px;">';
@@ -86,7 +86,7 @@ html_print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', f
 
 echo '</div>'; //Left div
 
-echo '<div style="float:left; width:250px;"><b>'.__('Purge data out of these limits').'</b><br /><br />';
+echo '<div style="float:left; width:"98%";"><b>'.__('Purge data out of these limits').'</b><br /><br />';
 echo '<table><tr><td>';
 echo __('Minimum').': ';
 echo '</td><td>';

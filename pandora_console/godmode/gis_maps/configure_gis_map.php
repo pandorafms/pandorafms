@@ -297,7 +297,7 @@ switch ($action) {
 		break;
 }
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->valign[0] = 'top';
 
@@ -366,7 +366,7 @@ html_print_table($table);
 
 echo "<h3>" . __('Layers') . ui_print_help_tip (__('Each layer can show agents from one group or the agents added to that layer or both.'), true). "</h3>";
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->valign[0] = 'top';
 $table->valign[1] = 'top';

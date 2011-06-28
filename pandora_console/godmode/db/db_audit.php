@@ -68,7 +68,7 @@ if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 }
 # End of get parameters block
 
-echo "<table cellpadding='4' cellspacing='4' class='databox'>";
+echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'>";
 echo "<tr><td class='datos'>";
 $result = db_get_row_sql ("SELECT COUNT(*) AS total, MIN(fecha) AS first_date, MAX(fecha) AS latest_date FROM tsesion");
 
@@ -86,7 +86,7 @@ echo "</tr></table>";
 ?>
 <h3><?php echo __('Purge data') ?></h3>
 <form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_audit">
-<table width='300' cellpadding='4' cellspacing='4' class='databox'>
+<table width='98%' cellpadding='4' cellspacing='4' class='databox'>
 <tr><td class='datos'>
 <select name="date_purge">
 	<option value="<?php echo $time["3month"] ?>"><?php echo __('Purge audit data over 90 days') ?></option>

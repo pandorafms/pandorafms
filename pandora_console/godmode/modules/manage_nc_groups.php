@@ -85,7 +85,7 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'upd' => false,
 	'id_sg' => false));
 
-$table->width = '90%';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Parent');

@@ -158,7 +158,7 @@ function show_logfile($file_name, $numLines = 2000) {
 		}
 		else {
 			echo "<h2>" . $file_name . "</h2>";
-			echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";
+			echo "<textarea style='width: 98%; height: 200px;' name='$file_name'>";
 			echo shell_exec('tail -n ' . $numLines . ' ' . $file_name);
 			echo "</textarea>";
 		}
@@ -263,7 +263,7 @@ function mainSystemInfo() {
 
 	echo "<form method='post'>";
 	$table = null;
-	$table->width = '80%';
+	$table->width = '98%';
 	$table->align = array();
 	$table->align[1] = 'right';
 	if ($pandora_diag) {

@@ -226,6 +226,8 @@ if($id_networkmap == 0) {
 
 // CONFIGURATION FORM
 
+echo "<br>";
+
 // Layout selection
 $layout_array = array (
 			'circular' => 'circular',

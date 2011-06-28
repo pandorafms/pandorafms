@@ -267,7 +267,7 @@ if ($delete_profile) {
 		__('Could not be deleted'));
 }
 
-$table->width = '80%';
+$table->width = '98%';
 $table->data = array ();
 $table->colspan = array ();
 $table->size = array ();
@@ -379,7 +379,7 @@ if (empty ($id) || $new_user)
 
 echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 
-$table->width = '85%';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();

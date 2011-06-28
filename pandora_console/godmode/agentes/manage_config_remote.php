@@ -99,7 +99,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		// Header
 		ui_print_page_header (__("Remote configuration management"), "images/god1.png", false, "", true, "");
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
-		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
+		echo "<table width='98%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
 		// Source group
 		echo '<tr><td class="datost"><b>'. __('Source group'). '</b><br><br>';
@@ -107,7 +107,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		$group_select = users_get_groups ($config['id_user']);
 		$grouplist = implode (',', array_keys ($group_select));
 		
-		echo html_print_select_groups($config['id_user'], "AR", true, 'id_group', $id_group, '', '', '', true);
+		echo html_print_select_groups($config['id_user'], "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:180px;');
 		echo '&nbsp;&nbsp;';
 		echo '<input type=submit name="update_group" class="sub upd"  value="'.__('Filter').'">';
 		echo '<br><br>';
@@ -144,7 +144,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		// Destination agent
 		echo '<tr><td class="datost">';
 		echo '<b>'.__('To agent(s):').'</b><br><br>';
-		echo "<select name=destino[] size='10' multiple='multiple' style='width: 250px;'>";
+		echo "<select name=destino[] size='10' multiple='multiple' style='width: 350px;'>";
 		if ($id_group > 0)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
 		else
@@ -170,3 +170,18 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 	}
 
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+		
+	$("#id_group").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#id_group").blur (function () {
+		$(this).css ("width", "180px"); 
+	});
+		
+});
+</script>

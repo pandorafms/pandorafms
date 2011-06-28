@@ -113,7 +113,7 @@ $update_module_id = (int) get_parameter_get ('update_module');
 html_print_input_hidden ('moduletype', $moduletype);
 
 $table_simple->id = 'simple';
-$table_simple->width = '90%';
+$table_simple->width = '98%';
 $table_simple->class = 'databox_color';
 $table_simple->data = array ();
 $table_simple->colspan = array ();
@@ -192,7 +192,7 @@ $table_simple->data[3][3] = html_print_checkbox ("history_data", 1, $history_dat
 
 /* Advanced form part */
 $table_advanced->id = 'advanced';
-$table_advanced->width = '90%';
+$table_advanced->width = '98%';
 $table_advanced->class = 'databox_color';
 $table_advanced->data = array ();
 $table_advanced->style = array ();

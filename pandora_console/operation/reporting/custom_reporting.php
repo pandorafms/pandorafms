@@ -33,7 +33,7 @@ if (sizeof ($reports) == 0) {
 	return;
 }
 
-$table->width = '90%';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');

@@ -139,6 +139,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
 	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;offset=" . $offset;
 
+echo "<br>";
 //Link to toggle filter
 echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
 
@@ -189,9 +190,10 @@ html_print_input_text ('search', $search, '', 15);
 echo '</td>';
 
 //Agent search
+$src_code = html_print_image('images/lightning.png', true, false, true);
 echo "<td>".__('Agent search')."</td><td>";
 html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
-array('style' => 'background: url(images/lightning.png) no-repeat right;'))
+array('style' => 'background: url(' . $src_code . ') no-repeat right;'))
 . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
 

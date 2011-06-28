@@ -38,7 +38,7 @@ if (isset($_GET["server"])) {
 	
 	$table->cellpadding=4;
 	$table->cellspacing=4;
-	$table->width=450;
+	$table->width='98%';
 	$table->class="databox_color";
 	
 	$table->data[] = array (__('Name'),$row["name"]);
@@ -84,7 +84,7 @@ else {
 	
 	$servers = servers_get_info ();
 	if ($servers !== false) {
-		$table->width = "90%";
+		$table->width = "98%";
 		$table->class = "databox";
 		$table->data = array ();
 		

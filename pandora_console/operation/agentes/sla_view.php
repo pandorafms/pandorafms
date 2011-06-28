@@ -42,7 +42,7 @@ if (empty ($modules)) {
 $offset = get_parameter ("offset", 0);
 
 // Get all module from agent
-echo "<h3>".__('Automatic SLA for monitors')."</h3>";
+
 ui_pagination (count ($modules), "index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=".$id_agent, $offset);
 
 $table->width = '95%';

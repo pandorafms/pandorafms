@@ -43,7 +43,7 @@ if($fields === false) {
 	$fields = array();
 	echo "<div class='nf'>". __("No fields defined"). "</div>";
 } else {
-	$table->width = '65%';
+	$table->width = '98%';
 	$table->head = array ();
 	$table->head[0] = __('Field');
 	$table->head[1] = __('Display on front') . ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);

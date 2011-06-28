@@ -97,7 +97,7 @@ else{
 }
 
 // Form to add new tags or search tags
-echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=95%>";
+echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 echo "<tr>";
 echo "<td>";
 	echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
@@ -124,7 +124,7 @@ $iterator = 0;
 
 if (!empty($result)){
 
-	$table->width = '95%';
+	$table->width = '98%';
 	$table->data = array ();
 	$table->head = array ();
 	$table->align = array ();

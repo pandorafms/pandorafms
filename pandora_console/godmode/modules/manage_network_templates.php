@@ -137,7 +137,7 @@ $result = db_get_all_rows_in_table ("tnetwork_profile", "name");
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = "95%";
+$table->width = "98%";
 $table->class = "databox";
 
 $table->head = array ();

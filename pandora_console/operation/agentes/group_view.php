@@ -66,7 +66,7 @@ $agents = agents_get_group_agents(array_keys($groups));
 
 if (count($agents) > 0) {
 
-echo '<table cellpadding="0" cellspacing="0" border="0" width="98%">';
+echo '<table cellpadding="0" style="margin-top:10px" cellspacing="0" border="0" width="98%">';
 
 echo "<tr>";
 echo "<th width=5%>";
@@ -94,7 +94,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Calculate entire row color
 	if ($data["monitor_alerts_fired"] > 0){
-		echo "<tr style='background-color: #ffd78f; height: 35px; '>";
+		echo "<tr style='background-color: #ffd78f; height: 35px; text-align: center;'>";
 	}
 	elseif ($data["monitor_critical"] > 0) {
 		echo "<tr style='background-color: #ffc0b5; height: 35px;'>";
@@ -113,7 +113,7 @@ foreach ($groups as $id_group => $group_name) {
 	}
 
 	// Group name
-	echo "<td>";
+	echo "<td style='text-align:center;'>";
 	echo ui_print_group_icon ($id_group, true);
 	echo "</td>";
 	echo "<td style='font-weight: bold; font-size: 12px;'>";

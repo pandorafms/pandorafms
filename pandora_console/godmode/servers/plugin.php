@@ -82,7 +82,7 @@ if (($create != "") OR ($view != "")){
 	else
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1'>";
 
-	echo '<table width="600" cellspacing="4" cellpadding="4" class="databox_color">';
+	echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox_color">';
 	
 	echo '<tr><td class="datos">'.__('Name');
 	echo '<td class="datos">';
@@ -125,7 +125,7 @@ if (($create != "") OR ($view != "")){
 	echo '</textarea></td></tr>';
 
 	echo '</table>';
-	echo '<table width=600>';
+	echo '<table width="98%">';
 	echo '<tr><td align="right">';
 	
 	if ($create != ""){
@@ -227,7 +227,7 @@ else {
 	$rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 	
 	if ($rows !== false) {
-		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
+		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Type')."</th>";
 		echo "<th>".__('Command')."</th>";

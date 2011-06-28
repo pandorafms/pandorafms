@@ -102,7 +102,7 @@ if ($disable_alert) {
 }
 
 $table->id = 'filter_compound_table';
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
@@ -165,7 +165,7 @@ ui_pagination ($total, $url);
 
 $table->id = 'alert_list';
 $table->class = 'alert_list databox';
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->style = array ();

@@ -41,7 +41,7 @@ require_once ($config['homedir'].'/include/functions_users.php');
 // Table for filter controls
 $form_filter = '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />\n";
-$form_filter .= '<table style="width: 90%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
+$form_filter .= '<table style="width: 98%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 $form_filter .= "<tr>\n";
 $form_filter .= "<td>".__('Template name')."</td><td>";
 $form_filter .= html_print_input_text ('template_name', $templateName, '', 12, 255, true);
@@ -57,7 +57,7 @@ if ($temp){
 }
 
 $form_filter .= "<td>".__('Agents')."</td><td>";
-//Image srv with skins
+//Image src with skins
 $src_code = html_print_image('images/lightning.png', true, false, true);
 $form_filter .= html_print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
 array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true);
@@ -119,6 +119,7 @@ $form_filter .= "</tr>\n";
 $form_filter .= "</table>\n";
 $form_filter .= "</form>\n";
 
+echo "<br>";
 ui_toggle($form_filter,__('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
@@ -296,7 +297,7 @@ else {
 }
 	
 $table->class = 'alert_list';
-$table->width = '95%';
+$table->width = '98%';
 $table->size = array ();
 
 $table->align[0] = 'center';
@@ -570,12 +571,20 @@ else {
 }
 
 // Create alert button
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">';
-html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
-echo '</form>';
-echo '</div>';
+// $dont_display_alert_create_bttn is setted in configurar_agente.php in order to not display create button
+$display_create = true;
+if (isset($dont_display_alert_create_bttn))
+	if ($dont_display_alert_create_bttn)
+		$display_create = false;
 
+if ($display_create){
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">';
+	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
+	echo '</form>';
+	echo '</div>';
+}
+	
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 ui_require_jquery_file ('pandora.controls');

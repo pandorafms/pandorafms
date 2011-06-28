@@ -303,7 +303,7 @@ print_alert_compound_steps ($step, $id);
 $groups = users_get_groups ();
 
 $table->id = 'compound';
-$table->width = '90%';
+$table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: top';
 $table->style[2] = 'font-weight: bold';
@@ -587,7 +587,7 @@ if ($step == 1) {
 	
 	/* Rest of fields are reused */
 	$table_alerts->id = 'alert_list';
-	$table_alerts->width = '80%';
+	$table_alerts->width = '98%';
 	$table_alerts->data = array ();
 	unset ($table_alerts->head[3]);
 	

@@ -129,11 +129,11 @@ else {
 	echo '<form method="post" action="' . ui_get_url_refresh (array('offset' => 0)).'">';
 }
 
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
 
 $groups = users_get_groups ();
-html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '');
+html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:180px');
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -145,7 +145,7 @@ echo '</td><td style="white-space:nowrap;">';
 
 html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub search")); 
 
-echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
+echo '</td><td style="width:5%;">&nbsp;</td></tr></table></form>';
 
 if ($search != ""){
 	$filter = array ("string" => '%' . $search . '%');
@@ -355,7 +355,7 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}
 		
-	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 25, 'none', true);
+	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 40, 'none', true);
 	
 	$data[1] = ui_print_os_icon ($agent["id_os"], false, true);
 
@@ -428,3 +428,18 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 }
 */
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+		
+	$("#group_id").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#group_id").blur (function () {
+		$(this).css ("width", "180px"); 
+	});
+		
+});
+</script>

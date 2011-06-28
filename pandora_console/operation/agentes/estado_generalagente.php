@@ -63,7 +63,7 @@ if ($config['flash_charts']) {
 echo '</div>';
 	
 echo '<div width="450px">';
-echo '<table cellspacing="4" cellpadding="4" border="0" class="databox">';
+echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:53%">';
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 if ($agent['disabled']) {

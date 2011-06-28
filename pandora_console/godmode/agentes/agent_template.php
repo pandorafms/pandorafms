@@ -100,13 +100,12 @@ if (isset ($_POST["template_id"])) {
 
 // Main header
 
-echo "<h2>".__('Module templates')."</h2>";
 
 // ==========================
 // TEMPLATE ASSIGMENT FORM
 // ==========================
 
-echo "<h3>".__('Available templates')."</h3>";
+echo "<br>";
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
 
 $nps = db_get_all_fields_in_table ("tnetwork_profile", "name");
@@ -121,13 +120,14 @@ foreach ($nps as $row) {
 
 echo '<div>'.__('Template');
 html_print_select ($select, "template_id");
+echo '&nbsp;';
 html_print_submit_button (__('Assign'), 'crt', false, 'class="sub next"');
 echo '</div></form>';
 
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
-echo "<h3>".__('Assigned modules')."</h3>";
+echo "<h4>".__('Assigned modules')."</h4>";
 
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -143,7 +143,7 @@ if ($result === false) {
 	$result = array ();
 }
 
-$table->width = 700;
+$table->width = '95%';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = "databox";

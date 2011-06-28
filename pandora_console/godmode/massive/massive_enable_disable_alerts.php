@@ -109,7 +109,7 @@ switch($action) {
 $groups = users_get_groups ();
 
 $table->id = 'delete_table';
-$table->width = '95%';
+$table->width = '98%';
 $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';

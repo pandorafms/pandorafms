@@ -38,7 +38,7 @@ if ($id_field) {
 	ui_print_page_header (__("Create agent custom field"), "images/note.png", false, "", true, "");
 }
 
-$table->width = '450px';
+$table->width = '98%';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);

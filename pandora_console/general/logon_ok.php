@@ -34,7 +34,7 @@ ui_print_page_header (__('Welcome to Pandora FMS Web Console'));
 // Site news !
 // ---------------------------------------------------------------------------
 
-echo '<div style="width:350px; float:left; padding-right: 30px;" id="leftcolumn">';
+echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">';
 echo '<h2>' . __('Site news') . '</h2>';
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -66,7 +66,7 @@ echo '</div>';
 // ---------------------------------------------------------------------------
 // Site stats (global!)
 // ---------------------------------------------------------------------------
-echo '<div style="width:300px; float:left; padding-left: 30px;" id="rightcolumn">';
+echo '<div style="width:30%; float:left; padding-left: 30px;" id="rightcolumn">';
 $data = reporting_get_group_stats ();
 
 $table->class = "databox";
@@ -145,13 +145,13 @@ foreach ($cells as $key => $row) {
 
 echo '</tbody></table>';
 echo "</div>";
-echo '<div id="activity" style="width:700px;">';
+echo '<div id="activity" style="width:87%;">';
 echo "<br /><br />";
 
 // Show last activity from this user
 echo "<h2>" . __('This is your last activity in Pandora FMS console') . "</h2>";
 
-$table->width = 650; //Don't specify px
+$table->width = '90%'; //Don't specify px
 $table->data = array ();
 $table->size = array ();
 $table->size[2] = '130px';

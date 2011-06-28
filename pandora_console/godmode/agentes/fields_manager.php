@@ -87,7 +87,7 @@ if ($delete_field) {
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
-	$table->width = '65%';
+	$table->width = '98%';
 if ($fields) {
 	$table->head = array ();
 	$table->head[0] = __('Field');

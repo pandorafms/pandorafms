@@ -29,7 +29,7 @@ require_once ('include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 
 $table->id = 'wizard_table';
-$table->width = '65%';
+$table->width = '98%';
 $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';

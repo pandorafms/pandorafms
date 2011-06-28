@@ -166,7 +166,7 @@ if ($create_downtime || $update_downtime) {
 		}
 			
 		$table->class = 'databox_color';
-		$table->width = '90%';
+		$table->width = '98%';
 		$table->data = array ();
 		$table->data[0][0] = __('Name');
 		$table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true);
@@ -186,7 +186,7 @@ if ($create_downtime || $update_downtime) {
 
 		if ($id_downtime > 0){
 			echo "<table width=100% border=0 cellpadding=4 >";
-			echo "<tr><td width=65% valign='top'>";
+			echo "<tr><td width=75% valign='top'>";
 		}
 	
 		//Editor form
@@ -238,14 +238,15 @@ if ($create_downtime || $update_downtime) {
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
 
-		html_print_select_groups(false, "AR", true, 'filter_group', $filter_group);	
+		html_print_select_groups(false, "AR", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');	
+
 		echo "<br /><br />";
 		html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
-		echo html_print_select ($data, "id_agent[]", '', '', '', 0, false, true);
+		echo html_print_select ($data, "id_agent[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 		echo "<br /><br /><br />";
 		html_print_submit_button (__('Add'), '', false, 'class="sub next"',false);
 		echo "</form>";
@@ -267,7 +268,7 @@ if ($create_downtime || $update_downtime) {
 		}
 		else {
 			$table->class = 'databox';
-			$table->width = '80%';
+			$table->width = '98%';
 			$table->data = array ();
 			$table->head = array ();
 			$table->head[0] = __('Name');
@@ -304,7 +305,7 @@ else {
 	// View available downtimes present in database (if any of them)
 		$table->class = 'databox';
 		//Start Overview of existing planned downtime
-		$table->width = '90%';
+		$table->width = '98%';
 		$table->data = array ();
 		$table->head = array ();
 		$table->head[0] = __('Name #Ag.');
@@ -326,7 +327,6 @@ else {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
 		}
 		else {
-			echo '<h3>'.__('Planned Downtime present on system').':</h3>';
 			foreach ($downtimes as $downtime) {
 				$data = array();
 				$total  = db_get_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
@@ -381,5 +381,25 @@ $(document).ready (function () {
 		});
 	$("#text-date_from, #text-date_to").datepicker ();
 	$.datepicker.regional["<?php echo $config['language']; ?>"];
+	
+	
+	$("#filter_group").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#filter_group").blur (function () {
+		$(this).css ("width", "180px"); 
+	});	
+	
+	$("#id_agent").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#id_agent").blur (function () {
+		$(this).css ("width", "180px"); 
+	});			
+	
 });
 </script>

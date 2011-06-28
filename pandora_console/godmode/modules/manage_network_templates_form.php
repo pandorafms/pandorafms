@@ -120,7 +120,7 @@ else {
 	echo '<form name="mod_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&update='.$id_np.'">';
 }
 
-echo '<table width="550" cellpadding="4" cellspacing="4" class="databox_color">';
+echo '<table width="98%" cellpadding="4" cellspacing="4" class="databox_color">';
 
 echo '<tr><td class="datos">'.__('Name').'</td><td class="datos">';
 html_print_input_text ("name", $name, '', 63);
@@ -169,7 +169,7 @@ if ($id_np > 0) {
 	$table->head = array ();
 	$table->data = array ();
 	$table->align = array ();
-	$table->width = 550;
+	$table->width = '98%';
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->class = "databox";
@@ -196,13 +196,13 @@ if ($id_np > 0) {
 	if (!empty ($table->data)) {
 		echo '<form name="component_delete" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&delete_module=1">';
 		html_print_table ($table);
-		echo '<div style="width:540px; text-align:right">';
+		echo '<div style="width:98%; text-align:right">';
 		html_print_submit_button (__('Delete'), "delbutton", false, 'class="sub delete" onClick="if (!confirm(\'Are you sure?\')) return false;"');
 		echo '</div></form>';
 	}
 	unset ($table);
 	
-	echo "<h3>".__('Add modules')."</h3>";
+	echo "<h4 style='margin-top:0px !important;'>".__('Add modules')."</h4>";
 	
 	//Here should be a form to filter group
 
@@ -232,7 +232,7 @@ if ($id_np > 0) {
 	echo '</noscript></div></form>';
 	
 	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-	echo '<div style="width:540px">';
+	echo '<div style="width: 98%">';
 	if ($ncgroup > 0) {
 		$sql = sprintf ("SELECT id_nc, name, id_group FROM tnetwork_component WHERE id_group = %d ORDER BY name", $ncgroup);
 	}

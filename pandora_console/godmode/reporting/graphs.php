@@ -69,7 +69,7 @@ else
 $graphs = custom_graphs_get_user ($config['id_user'], false, $return_all_group, "IW");
 
 if (! empty ($graphs)) {
-	$table->width = '720px';
+	$table->width = '98%';
 	$tale->class = 'databox_frame';
 	$table->align = array ();
 	$table->align[0] = 'center';
@@ -118,7 +118,7 @@ else {
 }
 
 echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/graph_builder">';
-echo '<div class="action-buttons" style="width: 720px;">';
+echo '<div class="action-buttons" style="width: 98%;">';
 html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
 echo "</div>";
 echo "</form>";

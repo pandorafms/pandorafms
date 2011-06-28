@@ -191,7 +191,7 @@ $url = ui_get_url_refresh (array ('offset' => false));
 $search_string = (string) get_parameter ('search_string');
 $search_type = (string) get_parameter ('search_type');
 
-$table->width = '600px';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->style = array ();
@@ -229,7 +229,7 @@ $templates = alerts_get_alert_templates ($filter,
 if ($templates === false)
 	$templates = array ();
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

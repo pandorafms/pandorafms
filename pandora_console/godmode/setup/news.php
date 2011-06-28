@@ -93,7 +93,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 
 	// Create news
 
-	echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';   
+	echo '<table class="databox" cellpadding="4" cellspacing="4" width="98%">';   
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news">';
 	if ($creation_mode == 1)
 		echo "<input type='hidden' name='create' value='1'>";
@@ -115,7 +115,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	echo '</textarea></td>';
 	echo '</tr>';	
 	echo "</table>";
-	echo "<table width='500px'>";
+	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	if (isset($_GET["form_add"])) {
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
@@ -128,7 +128,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 else {
 
 	// Main list view for Links editor
-	echo "<table cellpadding='4' cellspacing='4' class='databox' width=90%>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox' width=98%>";
 	echo "<th>".__('Subject')."</th>";
 	echo "<th>".__('Author')."</th>";
 	echo "<th>".__('Timestamp')."</th>";
@@ -157,7 +157,7 @@ else {
 		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row["id_news"].'&borrar='.$row["id_news"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a></td></tr>';
 	}
 	echo "</table>";
-	echo "<table width='90%'>";
+	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/news&form_add=1'>";
 	echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";

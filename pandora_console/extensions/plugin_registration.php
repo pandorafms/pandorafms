@@ -34,7 +34,7 @@ function pluginreg_extension_main () {
 	if (!isset ($_FILES['plugin_upload']['tmp_name'])){
 		// Upload form
 		echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
-		echo '<table class="databox" id="table1" width="50%" border="0" cellpadding="4" cellspacing="4">';
+		echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
 		echo "<tr><td class='datos'><input type='file' name='plugin_upload' />";
 		echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
 		echo "</form></table>";

@@ -420,7 +420,7 @@ if ($id && ! $create_template) {
 print_alert_template_steps ($step, $id);
 
 $table->id = 'template';
-$table->width = '90%';
+$table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: top';
 $table->style[2] = 'font-weight: bold; vertical-align: top';

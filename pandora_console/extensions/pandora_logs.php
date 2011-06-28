@@ -29,7 +29,7 @@ function view_logfile ($file_name) {
 		else {
 			$data = file_get_contents ($file_name);			
 			echo "<h2>$file_name (".format_numeric(filesize ($file_name)/1024)." KB) </h2>";
-			echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";
+			echo "<textarea style='width: 98%; float:right; height: 200px; margin-bottom:20px;' name='$file_name'>";
 			echo $data;
 			echo "</textarea><br><br>";
 		}

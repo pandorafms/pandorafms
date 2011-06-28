@@ -85,7 +85,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 		$nombre = "";
 		$link = "";
 	}
-	echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';
+	echo '<table class="databox" cellpadding="4" cellspacing="4" width="98%">';
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
 	if ($creation_mode == 1)
 		echo "<input type='hidden' name='create' value='1'>";
@@ -105,7 +105,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	<input type="text" name="link" size="35" value="'.$link.'"></td>';
 	echo '</tr>';	
 	echo "</table>";
-	echo "<table width='500px'>";
+	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	if (isset($_GET["form_add"])) {
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
@@ -116,7 +116,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	echo '</form></td></tr></table>';
 }
 else {  // Main list view for Links editor
-	echo "<table cellpadding='4' cellspacing='4' class='databox'>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
 	echo "<th width='180px'>".__('Link name')."</th>";
 	echo "<th width='80px'>".__('Delete')."</th>";
 	
@@ -139,7 +139,7 @@ else {  // Main list view for Links editor
 		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a></td></tr>';
 	}
 	echo "</table>";
-	echo "<table width='290px'>";
+	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
 	echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";

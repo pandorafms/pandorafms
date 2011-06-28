@@ -41,7 +41,7 @@ if ($id) {
 // Header
 ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert command'), "images/god2.png", false, "", true);
 
-$table->width = '90%';
+$table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();

@@ -75,7 +75,7 @@ if ($editGraph) {
 
 // Modules table
 if(count($module_array) > 0){
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
+	echo "<table width='98%' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
 	<th>".__('Agent')."</th>
 	<th>".__('Module')."</th>
@@ -118,7 +118,7 @@ if(count($module_array) > 0){
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id . "'>";
 
-echo "<table width='500' cellpadding='4' cellpadding='4' class='databox_color'>";
+echo "<table width='98%' cellpadding='4' cellpadding='4' class='databox_color'>";
 echo "<tr>";
 echo "<td colspan='3'>".__('Filter group')."</td>";
 echo "</tr><tr>";

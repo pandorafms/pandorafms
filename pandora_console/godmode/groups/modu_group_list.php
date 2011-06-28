@@ -105,7 +105,7 @@ if ($delete_group) {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-$table->width = '500px';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('ID');
 $table->head[1] = __('Name');

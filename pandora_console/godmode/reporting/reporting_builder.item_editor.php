@@ -301,7 +301,7 @@ $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&ta
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
 ?>
-<table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="95%">
+<table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="98%">
 	<tbody>
 		<tr id="row_type" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Type'); ?></td>
@@ -558,7 +558,7 @@ if ($config ['metaconsole'] == 1) {
 function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	?>
-	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="95%">
+	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
 			<tr>
 				<th class="header" scope="col"><?php echo __('Agent');?></th>
@@ -654,7 +654,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 function print_General_list($width, $action, $idItem = null) {
 	global $config;
 	?>
-	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="95%">
+	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
 			<tr>
 				<th class="header" scope="col"><?php echo __('Agent');?></th>

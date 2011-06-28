@@ -1,6 +1,13 @@
 2011-06-28  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Improved the token ip
+	implantation adding the ip to the secondary agent ips
+
+2011-06-28  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm
 	lib/PandoraFMS/ReconServer.pm: Moved add_address function 
 	to DB to common uses and create add_new_address_agent function
 	into DB library with repeated code for the same 

@@ -65,6 +65,7 @@ our @EXPORT = qw(
 		get_server_id
 		get_template_id
 		get_template_module_id
+		is_agent_address
 		is_group_disabled
 	);
 
@@ -553,6 +554,19 @@ sub db_do ($$;@) {
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
 
 	$dbh->do($query, undef, @values);
+}
+
+##########################################################################
+# Return the ID of the taddress agent with the given IP.
+##########################################################################
+sub is_agent_address ($$$) {
+	my ($dbh, $id_agent, $id_addr) = @_;
+
+	my $id_ag = get_db_value ($dbh, 'SELECT id_ag FROM taddress_agent 
+	                                    WHERE id_a = ?
+	                                    AND id_agent = ?', $id_addr, $id_agent);
+	                                    
+	return (defined ($id_ag)) ? $id_ag : 0;
 }
 
 ##########################################################################

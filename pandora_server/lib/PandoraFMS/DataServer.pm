@@ -350,7 +350,10 @@ sub process_xml_data ($$$$$) {
 	} else {
 		# Update agent address if necessary
 		if ($address ne '' && $address ne $agent->{'direccion'}) {
+			# Update the main address
 			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh);
+			# Update the addres list if necessary
+			pandora_add_agent_address($pa_config, $agent_id, $address, $dbh);
 		}
 	}
 
@@ -384,7 +387,7 @@ sub process_xml_data ($$$$$) {
 		}
 	}	
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
-
+	
 	# Process modules
 	foreach my $module_data (@{$data->{'module'}}) {
 

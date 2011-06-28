@@ -1728,7 +1728,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		}
 	}
 
-	$buffer .=  '</div> <br /><br />'; //<br />';
+	$buffer .=  '</div>';  //<br /><br /><br />';
 
 	if (!$return)
 		echo $buffer;

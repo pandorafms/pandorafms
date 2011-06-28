@@ -1,5 +1,12 @@
 2011-06-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/styles/pandora.css
+	include/functions_ui.php
+	images/skin/skin_default/include/styles/pandora.css: Modifications
+	over css styles.
+
+2011-06-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* extensions/module_groups/brick.png
 	images/skin/skin_default/images/agents_group.png
 	images/skin/skin_default/images/note.png

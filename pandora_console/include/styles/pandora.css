@@ -567,9 +567,10 @@ div.title_line {
 	width: 762px;
 }
 #menu_tab_frame, #menu_tab_frame_view {
+	display: block !important;
 	background:#ce5c00 none repeat scroll 0 0;
 	border-bottom:1px solid #778866;
-	float:left;
+/*	float:left; */
 	margin-left:-8px;
 	min-height:25px;
 	padding-right:8px;

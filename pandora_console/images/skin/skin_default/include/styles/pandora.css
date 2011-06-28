@@ -292,7 +292,7 @@ div#menu {
 div#head {
 	font-size: 8pt;
 	width: 960px;
-	height: 84px;/*84px;*/ /*height: 60px;*/
+	height: 64px;/*84px;*/ /*height: 60px;*/
 	padding-top: 1px;
 	background: #0359AF url(../../images/sendero/fondo_cabecera.png) repeat-x top left;
 	-moz-border-radius: 10px;
@@ -800,7 +800,7 @@ div.title_line {
 	line-height: 100%;
 	font-family: Arial, Helvetica, sans-serif;;
 	padding: 3px 0px;
-	margin: 0px 0px 0px 0px!important;
+	margin: 0px 0px 5px 0px!important;
 
 	/*border-bottom:1px solid #778866;*/
 	/*margin-left:-8px;*/
@@ -1114,7 +1114,7 @@ img.img_title[src="images/configure_agent.png"] {
 
 /* New styles for data box */
 .databox, .databox_color, .databox_frame {
-	margin: 5px auto 5px auto;
+	margin: 0px auto 5px auto;
 	border: 1px solid #D0E6FD;
 	
 	-moz-border-radius: 5px;

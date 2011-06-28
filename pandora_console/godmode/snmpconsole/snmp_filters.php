@@ -89,7 +89,7 @@ if ($edit_filter > -1) {
 // Create/update form
 if ($edit_filter > -2) {
 	$table->data = array ();
-	$table->width = '90%';
+	$table->width = '98%';
 	$table->data[0][0] = __('Description');
 	$table->data[0][1] = html_print_input_text ('description', $description, '', 60, 100, true);
 	$table->data[1][0] = __('Filter');
@@ -119,7 +119,7 @@ if ($edit_filter > -2) {
 	$table->size = array ();
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->width = "750px";
+	$table->width = "98%";
 	$table->class= "databox";
 	$table->align = array ();
 

@@ -26,7 +26,7 @@ require_once ('include/functions_groups.php');
 
 $layouts = visual_map_get_user_layouts ();	
 
-$table->width = "70%";
+$table->width = "98%";
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

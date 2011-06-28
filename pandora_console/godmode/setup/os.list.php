@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 $table = null;
 
-$table->width = '80%';
+$table->width = '98%';
 $table->head[0] = '';
 $table->head[1] = __('ID');
 $table->head[2] = __('Name');

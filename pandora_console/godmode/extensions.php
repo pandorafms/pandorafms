@@ -141,7 +141,7 @@ if ($disabled != '') {
 
 $extensions = extensions_get_extension_info();
 
-$table->width = '95%';
+$table->width = '98%';
 
 $table->head = array();
 $table->head[] = __('File');

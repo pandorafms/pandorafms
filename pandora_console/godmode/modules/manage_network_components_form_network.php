@@ -29,7 +29,7 @@ if (! $id) {
 	$snmp_community = "public";
 }
 
-echo "<h3>".__('Network component')."</h3>";
+
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
@@ -59,7 +59,7 @@ $data = array();
 $data[0] = __('Auth user');
 $data[1] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
 $data[2] = __('Auth password');
-$data[3] = print_input_text ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
+$data[3] = html_print_input_text ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
 $data[3] .= html_print_input_hidden('active_snmp_v3', 0, true);
 push_table_row($data, 'field_snmpv3_row1');
 

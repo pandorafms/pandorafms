@@ -111,6 +111,7 @@ $icon_path = '';
 $update_gis_data = 0;
 $unit = "";
 $id_tag = array();
+$tab_description = '';
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -222,7 +223,7 @@ if ($id_agente) {
 		
 	/* Module tab */
 	$moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">' 
-			. html_print_image ("images/lightbulb.png", true, array ("title" =>__('Modules')))
+			. html_print_image ("images/brick.png", true, array ("title" =>__('Modules')))
 			. '</a>';
 	
 	if($tab == 'module')
@@ -312,8 +313,37 @@ if ($id_agente) {
 			$onheader = $onheader + array($id => $extension_tab);	
 		}
 	}
+	
+	// This add information to the header 
+	switch ($tab) {
+		case "main":
+			$tab_description = '- '. __('Setup'); 
+			break;
+		case "collection":
+			$tab_description = '- ' . __('Collection');
+			break;
+		case "inventory":
+			$tab_description = '- ' . __('Inventory');
+			break;	
+		case "module":
+			$tab_description = '- '. __('Modules');
+			break;
+		case "alert":
+			$tab_description = '- ' . __('Alert');
+			break;
+		case "template":
+			$tab_description = '- ' . __('Templates');
+			break;	
+		case "gis":
+			$tab_description = '- ' . __('Gis');
+			break;
+		case "extension":
+			break;
+		default:
 
-	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' . ui_print_truncate_text(agents_get_name ($id_agente), 25, false), "images/setup.png", false, "", true, $onheader);
+	}	
+	
+	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' . ui_print_truncate_text(agents_get_name ($id_agente), 25, false) . ' ' . $tab_description, "images/setup.png", false, "", true, $onheader);
 	
 }
 // Create agent 
@@ -937,6 +967,8 @@ switch ($tab) {
 		break;
 	case "alert":
 		/* Because $id_agente is set, it will show only agent alerts */
+		/* This var is for not display create button on alert list */
+		$dont_display_alert_create_bttn = true;
 		require ("godmode/alerts/alert_list.php");
 		break;
 	case "template":

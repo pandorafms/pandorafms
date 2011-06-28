@@ -77,7 +77,7 @@ html_print_table ($table);
 
 unset($table);
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();

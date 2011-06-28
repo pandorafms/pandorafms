@@ -596,7 +596,40 @@ foreach($config['extensions'] as $extension) {
 	}
 }
 
-ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(agents_get_name($id_agente),0,25), $icon, false, "", false, $onheader);
+$header_description = '';
+switch($tab) {
+	case "main":
+		break;
+	case "data":
+		$header_description = ' - ' . __('Last data');
+		break;
+	case "alert":
+		$header_description = ' - ' . __('Alerts');
+		break;
+	case "sla":
+		$header_description = ' - ' . __('S.L.A.');
+		break;
+	case "inventory":
+		$header_description = ' - ' . __('Inventory');
+		break;	
+	case "collection":
+		$header_description = ' - ' . __('Collection');
+		break;		
+	case "gis":
+		$header_description = ' - ' . __('Gis');
+		break;	
+	case "custom_fields":
+		$header_description = ' - ' . __('Custom fields');
+		break;	
+	case "graphs":
+		$header_description = ' - ' . __('Graphs');
+		break;	
+	case "policy":
+		$header_description = ' - ' . __('Policy');
+		break;	
+}
+
+ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(agents_get_name($id_agente),0,25) . $header_description, $icon, false, "", false, $onheader);
 
 
 switch ($tab) {

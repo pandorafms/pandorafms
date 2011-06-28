@@ -119,7 +119,7 @@ elseif (isset ($_GET["profile_del"])) { //delete profile
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = '700px';
+$table->width = '98%';
 $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
@@ -243,7 +243,7 @@ echo '<h3>'.__('Profiles defined in Pandora').'</h3>';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = 'databox';
-$table->width = '700px';
+$table->width = '98%';
 
 $table->head = array ();
 $table->data = array ();

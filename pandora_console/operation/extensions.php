@@ -42,7 +42,7 @@ if ($delete != ""){
 }
 
 
-$table->width = '500px';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
 //if (check_acl ($config['id_user'], 0, "PM")){

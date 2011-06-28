@@ -58,7 +58,7 @@ switch ($action) {
 		break;
 }
 
-$table->width = '500px';
+$table->width = '98%';
 $table->head[0] = __('Map connection name');
 $table->head[1] = __('Group');
 $table->head[3] = __('Delete');

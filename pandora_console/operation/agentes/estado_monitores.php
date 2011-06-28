@@ -447,7 +447,7 @@ if (empty ($table->data)) {
 	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';
 }
 else {
-	echo "<h3>".__('Full list of monitors')."</h3>";
+	echo "<h4 style='padding-top:0px !important;'>".__('Full list of monitors')."</h4>";
 	html_print_table ($table);
 }
 

@@ -157,7 +157,7 @@ if (check_acl ($config['id_user'], 0, 'PM')) {
 	} else {
 		echo '<h5 class="suc">'.__('There\'s a new update for Pandora FMS').'</h5>';
 	
-		$table->width = '80%';
+		$table->width = '98%';
 		$table->data = array ();
 
 		$table->data[0][0] = '<strong>'.__('Id').'</strong>';
@@ -187,7 +187,7 @@ if (check_acl ($config['id_user'], 0, 'PM')) {
 	
 	unset($table);
 	
-	$table->width = '80%';
+	$table->width = '98%';
 	$table->data = array ();
 	$table->colspan[0][0] = 2;
 

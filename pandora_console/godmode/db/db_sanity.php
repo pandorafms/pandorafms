@@ -97,7 +97,7 @@ elseif ($sanity == 2) {
 } 
 
 echo "<br>";
-echo "<div style='width:520px'>";
+echo "<div style='width:98%'>";
 echo __('Pandora FMS Sanity tool is used to remove bad database structure data, created modules with missing status, or modules that cannot be initialized (and don\'t report any valid data) but retry each its own interval to get data. This kind of bad modules could degrade performance of Pandora FMS. This database sanity tool is also implemented in the <b>pandora_db.pl</b> that you should be running each day or week. This console sanity DONT compact your database, only delete bad structured data.');
 	
 echo "<br><br>";

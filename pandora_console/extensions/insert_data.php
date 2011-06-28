@@ -110,14 +110,15 @@ function mainInsertData() {
 	echo '</div>';
 	
 	$table = null;
-	$table->width = '80%';
+	$table->width = '98%';
 	$table->style = array();
 	$table->style[0] = 'font-weight: bolder;';
 	
 	$table->data = array();
 	$table->data[0][0] = __('Agent');
+	$src_code = html_print_image('images/lightning.png', true, false, true);
 	$table->data[0][1] = html_print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
-		array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+		array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
 		. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	$table->data[1][0] = __('Module');
 	$modules = array ();

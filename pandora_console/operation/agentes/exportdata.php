@@ -293,7 +293,7 @@ switch ($export_type) {
 
 echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/exportdata" name="export_form">';
 
-$table->width = 550;
+$table->width = '98%';
 $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
@@ -331,7 +331,7 @@ if (!in_array ($agent, array_keys ($agents))) {
 //$table->data[1][1] = html_print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
 //Src code of lightning image with skins 
 $src_code = html_print_image ('images/lightning.png', true, false, true);
-$table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 30, 100, false, '',
+$table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 40, 100, false, '',
 	array('style' => "background: url($src_code) no-repeat right;"), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	
@@ -344,7 +344,7 @@ if ($agent > 0) {
 	$modules = array ();
 }
 
-$table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w130', false);
+$table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w155', false);
 
 //Start date selector
 $table->data[3][0] = '<b>'.__('Begin date').'</b>';
@@ -373,7 +373,7 @@ $table->data[5][1] = html_print_select ($export_types, "export_type", $export_ty
 html_print_table ($table);
 
 // Submit button
-echo '<div class="action-buttons" style="width:550px;">';
+echo '<div class="action-buttons" style="width:80%;">';
 	html_print_submit_button (__('Export'), 'export_btn', false, 'class="sub wand"');
 echo '</div></form>';
 

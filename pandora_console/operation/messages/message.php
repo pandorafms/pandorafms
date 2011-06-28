@@ -78,7 +78,7 @@ if (isset ($_GET["new_msg"])) { //create message
 //	ui_print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
 
 	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
-	<table width="85%" class="databox_color" cellpadding="4" cellspacing="4">
+	<table width="98%" class="databox_color" cellpadding="4" cellspacing="4">
 	<tr>
 		<td class="datos">'.__('Message from').':</td>
 		<td class="datos"><b>' . ui_print_username ($config["id_user"], true).'</b></td>
@@ -127,7 +127,7 @@ if (isset ($_GET["new_msg"])) { //create message
 	messages_process_read ($message_id);
 	
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">
-			<table class="databox_color" width="650" cellpadding="4" cellspacing="4">
+			<table class="databox_color" width="98%" cellpadding="4" cellspacing="4">
 			<tr><td class="datos">'.__('Message from').':</td>
 			<td class="datos"><b>' . ui_print_username ($message["sender"], true).' '.__('at').' ' . ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp")).'</b></td></tr>';
 	
@@ -185,7 +185,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 	if (empty ($messages)) {
 		echo '<div class="nf">'.__('There are no messages').'</div>';
 	} else {
-		$table->width = "85%";
+		$table->width = "98%";
 		$table->class = "databox";
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;

@@ -52,7 +52,7 @@ $modulegroup = (int) get_parameter ('modulegroup');
 
 echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60">';
 
-echo '<table cellspacing="4" cellpadding="4" width="750" class="databox">';
+echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
@@ -416,12 +416,12 @@ foreach ($result as $row) {
 	}
 	
 	$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';
-	$data[1] .= substr ($row["agent_name"], 0, 25);
+	$data[1] .= ui_print_truncate_text($row["agent_name"],30,false,true,false);
 	$data[1] .= '</a></strong>';
 	
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
-	$data[3] = ui_print_string_substr ($row["module_name"], 45, true, 9);
+	$data[3] = ui_print_truncate_text($row["module_name"],30,false,true,false);
 
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
 

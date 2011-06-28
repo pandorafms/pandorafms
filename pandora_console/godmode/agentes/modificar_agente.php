@@ -82,11 +82,11 @@ else {
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width='770'><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 
-html_print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();', '', 0);
+html_print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
 
 echo "<td valign='top'>
 <noscript>
@@ -324,7 +324,7 @@ echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
 	
-	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='95%' class='databox'>";
+	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='98%' class='databox'>";
 	echo "<th>".__('Agent name') . ' ' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
@@ -373,7 +373,7 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 30, true)."</a></strong>";
+		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 40, true)."</a></strong>";
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 			echo "</em>";
@@ -454,5 +454,20 @@ $(document).ready (function () {
 		function () {
 			$(".actions", this).css ("visibility", "hidden");
 		});
+
+	$("#ag_group").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+		
+/*	$("#ag_group").hover (
+	function () {
+		$(this).css ("width", "auto"); 
+	});*/
+	
+	$("#ag_group").blur (function () {
+		$(this).css ("width", "100px"); 
+	});
+		
 });
 </script>

@@ -52,7 +52,7 @@ enterprise_include ('godmode/setup/setup.php');
 ui_print_page_header (__('General configuration'), "", false, "", true);
 
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 
 // Current config["language"] could be set by user, not taken from global setup !

@@ -214,7 +214,7 @@ $data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4
 $data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query));
 $data["total"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query));
 
-$table->width = '50%';
+$table->width = '98%';
 $table->border = 0;
 $table->class = "databox";
 

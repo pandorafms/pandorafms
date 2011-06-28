@@ -162,7 +162,7 @@ function mainAgentsModules() {
 		return;
 	}
 	
-	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
+	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE; width:97%;">';
 
 	echo "<th width='140px' style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";	
 

@@ -250,7 +250,7 @@ if ($delete_action) {
 		__('Could not be deleted'));
 }
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

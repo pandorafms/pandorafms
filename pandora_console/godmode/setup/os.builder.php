@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 echo '<form id="form_setup" method="post">';
 $table = null;
-$table->width = '50%';
+$table->width = '98%';
 
 $table->style[0] = 'font-weight: bolder; vertical-align: top;';
 

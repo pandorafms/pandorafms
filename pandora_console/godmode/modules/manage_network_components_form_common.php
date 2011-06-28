@@ -35,7 +35,7 @@ function push_table_row ($row, $id = false) {
 
 
 $table->id = 'network_component';
-$table->width = '90%';
+$table->width = '98%';
 $table->class = 'databox_color';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';

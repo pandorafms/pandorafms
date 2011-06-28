@@ -103,7 +103,7 @@ if ($add) {
 $groups = users_get_groups ();
 
 $table->id = 'add_table';
-$table->width = '95%';
+$table->width = '98%';
 $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
@@ -118,7 +118,7 @@ $table->data = array ();
 	
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', 0,
-	'', 'Select', -1, true, false, true, '', false);
+	'', 'Select', -1, true, false, true, '', false, 'width:180px;');
 $table->data[0][2] = '';
 $table->data[0][3] = '';
 
@@ -130,9 +130,9 @@ $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 $agents = agents_get_agents();
 $table->data[1][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
-	'id_agents[]', '', '', '', '', true, true, true, '', false);
+	'id_agents[]', '', '', '', '', true, true, true, '', false, 'width:180px;');
 $table->data[1][2] = __('Modules');
-$table->data[1][3] = html_print_select (array(), 'module[]',	'', false, '', '', true, true, false);
+$table->data[1][3] = html_print_select (array(), 'module[]',	'', false, '', '', true, true, false, '', false, 'width:180px;');
 
 $templates = alerts_get_alert_templates (false, array ('id', 'name'));
 $table->data[2][0] = __('Alert template');
@@ -188,6 +188,34 @@ $(document).ready (function () {
 	});
 	
 	$("#id_group").value = "0";
+	
+	$("#id_group").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#id_group").blur (function () {
+		$(this).css ("width", "180px"); 
+	});	
+
+	$("#id_agents").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#id_agents").blur (function () {
+		$(this).css ("width", "180px"); 
+	});	
+	
+	$("#module").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+			
+	$("#module").blur (function () {
+		$(this).css ("width", "180px"); 
+	});			
+	
 });
 /* ]]> */
 </script>

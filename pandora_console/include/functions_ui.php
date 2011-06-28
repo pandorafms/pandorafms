@@ -360,17 +360,22 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * @param int Operating system id
  * @param bool Whether to also append the name of the OS after the icon
  * @param bool Whether to return or echo the result 
+ * @param bool Whether to apply skin or not
  * 
  * @return string HTML with icon of the OS
  */
-function ui_print_os_icon ($id_os, $name = true, $return = false) {
+function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true) {
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		return "-";
 	}
 	
-	$output = html_print_image("images/os_icons/".$icon, true, array("alt" => $os_name, "title" => $os_name)); 
+	if ($apply_skin)
+		$output = html_print_image("images/os_icons/".$icon, true, array("alt" => $os_name, "title" => $os_name)); 
+	else
+		//$output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
+		$output = "images/os_icons/" . $icon;
 	
 	if ($name === true) {
 		$output .= ' - '.$os_name;
@@ -1723,7 +1728,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		}
 	}
 
-	$buffer .=  '</div><br /><br /><br />';
+	$buffer .=  '</div> <br /><br />'; //<br />';
 
 	if (!$return)
 		echo $buffer;

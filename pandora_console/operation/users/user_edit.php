@@ -89,7 +89,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 
 echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
 
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="90%">';
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 
 echo '<tr><td class="datos">'.__('User ID').'</td>';
 echo '<td class="datos">';
@@ -180,7 +180,7 @@ echo '</div></form>';
 
 echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 
-$table->width = '50%';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();

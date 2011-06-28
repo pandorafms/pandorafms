@@ -43,7 +43,7 @@ $filter_text = get_parameter('filter_text', '');
 $filter_hours_old = get_parameter('filter_hours_old', 24);
 $filter_ip = get_parameter('filter_ip', '');
 
-echo "<table width='90%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
+echo "<table width='98%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 echo '<tr><td class="datost">';
 echo '<div style="float: left; width: 400px;">';
 echo '<b>'.__('Filter').'</b><br><br>';

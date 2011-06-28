@@ -66,7 +66,6 @@ if ($idAgent != 0) {
 	
 	$print_agent = false;
 	
-	echo "<h3>" . __('Alerts') . "</h3>";
 } 
 else {
 	if (!check_acl ($config["id_user"], 0, "AR")) {
@@ -229,7 +228,7 @@ if ($print_agent) {
 	ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, true),__('Alert control filter'), __('Toggle filter(s)'));
 }
 
-$table->width = '95%';
+$table->width = '98%';
 $table->class = "databox";
 
 $table->size = array ();

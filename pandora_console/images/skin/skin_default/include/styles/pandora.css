@@ -497,6 +497,10 @@ input.copy, input.add, input.graph, input.percentile, input.binary,
 input.camera, input.config, input.cancel {
 	padding-right: 21px;
 }
+input.delete_min, input.graph_min, input.percentile_min, input.binary_min,
+input.camera_min, input.config_min, input.label_min, input.icon_min {
+	padding-right: 25px;
+}
 input.next {
 	background: #D0E6FB url(../../images/go.png) no-repeat right 2px;
 }
@@ -538,6 +542,57 @@ input.config {
 }
 input.cancel {
 	background: #D0E6FB url(../../../../..//images/cancel.png) no-repeat right 3px;
+}
+input.delete_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/cross.disabled.png) no-repeat center;
+}
+input.delete_min {
+	background: #e5e5e5 url(../../../../../images/cross.png) no-repeat center;
+}
+input.graph_min {
+	background: #e5e5e5 url(../../../../../images/chart_curve.png) no-repeat center;
+}
+input.graph_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/chart_curve.disabled.png) no-repeat center;
+}
+input.percentile_min {
+	background: #e5e5e5 url(../../../../../images/chart_bar.png) no-repeat center;
+}
+input.percentile_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/chart_bar.disabled.png) no-repeat center;
+}
+input.binary_min {
+	background: #e5e5e5 url(../../../../../images/binary.png) no-repeat center;
+}
+input.binary_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/binary.disabled.png) no-repeat center;
+}
+input.camera_min {
+	background: #e5e5e5 url(../../../../../images/camera.png) no-repeat center;
+}
+input.camera_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/camera.disabled.png) no-repeat center;
+}
+input.config_min {
+	background: #e5e5e5 url(../../../../../images/config.png) no-repeat center;
+}
+input.config_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/config.disabled.png) no-repeat center;
+}
+input.label_min {
+	background: #e5e5e5 url(../../../../../images/tag_red.png) no-repeat center;
+}
+input.label_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/tag_red.disabled.png) no-repeat center;
+}
+input.icon_min {
+	background: #e5e5e5 url(../../../../../images/photo.png) no-repeat center;
+}
+input.icon_min[disabled] {
+	background: #e5e5e5 url(../../../../../images/photo.disabled.png) no-repeat center;
+}
+#toolbox {
+	margin-top: 10px;
 }
 table, img {
 	border: 0px;
@@ -1059,7 +1114,7 @@ img.img_title[src="images/configure_agent.png"] {
 
 /* New styles for data box */
 .databox, .databox_color, .databox_frame {
-	margin: 5px auto 15px auto;
+	margin: 5px auto 5px auto;
 	border: 1px solid #D0E6FD;
 	
 	-moz-border-radius: 5px;
@@ -1285,6 +1340,9 @@ ul {
 }
 span.actions {
 	margin-left: 30px;
+}
+.actions {
+	min-width: 200px! important;
 }
 code, pre {
 	font-family: courier, serif;

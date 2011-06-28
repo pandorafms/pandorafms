@@ -41,7 +41,7 @@ require_once ('include/functions_themes.php');
 // Header
 ui_print_page_header (__('Visual configuration'), "", false, "", true);
 
-$table->width = '90%';
+$table->width = '98%';
 $table->data = array ();
 
 $table->data[1][0] = __('Date format string') . ui_print_help_icon("date_format", true);

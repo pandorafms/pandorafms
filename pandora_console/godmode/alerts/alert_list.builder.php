@@ -30,7 +30,7 @@ include_once($config['homedir'] . '/include/functions_users.php');
 
 $table->id = 'add_alert_table';
 $table->class = 'databox';
-$table->width = '95%';
+$table->width = '98%';
 $table->head = array ();
 $table->data = array ();
 $table->size = array ();

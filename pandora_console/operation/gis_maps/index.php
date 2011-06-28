@@ -27,7 +27,7 @@ ui_print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_we
 
 $maps = gis_get_maps();
 
-$table->width = "70%";
+$table->width = "98%";
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

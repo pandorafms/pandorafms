@@ -149,7 +149,7 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
-	echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
+	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color">';
 	
 	// Alert type (e-mail, event etc.)
 	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
@@ -271,7 +271,7 @@ if (isset ($_GET["update_alert"])) {
 	$table->size = array ();
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->width = "750 px";
+	$table->width = "98%";
 	$table->class= "databox";
 	$table->align = array ();
 
@@ -335,7 +335,7 @@ if (isset ($_GET["update_alert"])) {
 	
 	unset ($table);	
 	
-	echo '<div style="text-align:right; width:740px">';
+	echo '<div style="text-align:right; width:98%">';
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
 	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";

@@ -61,7 +61,7 @@ switch ($action) {
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
-			$table->width = '720px';
+			$table->width = '98%';
 			$table->head = array ();
 			$table->align = array ();
 			$table->align[2] = 'center';
@@ -112,7 +112,7 @@ switch ($action) {
 		}
 		
 		echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
-		echo '<div class="action-buttons" style="width: 720px;">';
+		echo '<div class="action-buttons" style="width: 98%;">';
 		html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 		echo "</div>";
 		echo "</form>";

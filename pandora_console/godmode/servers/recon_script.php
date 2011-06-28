@@ -70,7 +70,7 @@ if (($create != "") OR ($view != "")){
 	else
 		echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&create_reconscript=1'>";
 
-	echo '<table width="90%" cellspacing="4" cellpadding="4" class="databox_color">';
+	echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox_color">';
 	
 	echo '<tr><td class="datos">'.__('Name');
 	echo '<td class="datos">';
@@ -86,7 +86,7 @@ if (($create != "") OR ($view != "")){
 	echo '</textarea></td></tr>';
 
 	echo '</table>';
-	echo '<table width=90%>';
+	echo '<table width=98%>';
 	echo '<tr><td align="right">';
 	
 	if ($create != ""){
@@ -164,7 +164,7 @@ else {
 	$rows = db_get_all_rows_in_table('trecon_script');
 	
 	if ($rows !== false) {
-		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
+		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Command')."</th>";
 		echo "<th>".__('Description')."</th>";
@@ -198,7 +198,7 @@ else {
 		echo '<div class="nf">'. __('There are no recon scripts in the system');
 		echo "<br>";
 	}
-	echo "<table width=730>";
+	echo "<table width=98%>";
 	echo "<tr><td align=right>";
 	echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&create=1'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";

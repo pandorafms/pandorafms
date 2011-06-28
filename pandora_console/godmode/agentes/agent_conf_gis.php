@@ -42,7 +42,7 @@ if ($agentData === false) {
 }
 echo "<div class='warn'>" .__("Warning: When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") . "</div>";
 
-$table->width = '60%';
+$table->width = '85%';
 $table->data = array();
 
 $table->head[0] =__('Agent position');

@@ -113,7 +113,7 @@ echo '<form method="post" action="index.php?sec=gtag&sec2=godmode/tag/edit_tag&a
 
 echo '<div align=left style="width: 98%" class="pandora_form">';
 
-echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=85%>";
+echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 	echo "<tr>";
 		echo "<td>";
 		if ($action == "update"){ 

@@ -33,7 +33,7 @@ enterprise_include ('godmode/setup/setup_auth.php');
 ui_print_page_header (__('Authentication configuration'), "", false, "", true);
 
 $table->data = array ();
-$table->width = '90%';
+$table->width = '98%';
 $table->size[0] = '30%';
 
 $table->data[0][0] = __('Authentication method');

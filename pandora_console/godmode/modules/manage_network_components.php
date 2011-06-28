@@ -252,7 +252,7 @@ $url = ui_get_url_refresh (array ('offset' => false,
 $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
-$table->width = '600px';
+$table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
@@ -291,7 +291,7 @@ if ($components === false)
 	$components = array ();
 
 unset ($table);
-$table->width = '95%';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');

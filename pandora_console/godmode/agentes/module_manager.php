@@ -16,7 +16,7 @@
 /* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
 if (isset ($id_agente)) {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-	echo "<h2>".__('Modules')."</h2>";
+
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
@@ -26,7 +26,7 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_servers.php');
 
 // Create module/type combo
-echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';
+echo '<table width="95%" cellpadding="4" cellspacing="4" class="databox" style="text-align:center; ">';
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 echo "<tr><td class='datos'>";
 
@@ -64,7 +64,7 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	unset($modules['predictionserver']);
 }
 
-html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
+html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 html_print_input_hidden ('edit_module', 1);
 echo '</td>';
 echo '<td class="datos">';
@@ -153,7 +153,7 @@ if ($multiple_delete) {
 // MODULE VISUALIZATION TABLE
 // ==========================
 
-echo "<h3>".__('Assigned modules')."</h3>";
+echo "<h4>".__('Assigned modules')."</h4>";
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=' . $id_agente;
 $selectNameUp = '';
@@ -413,7 +413,7 @@ foreach ($modules as $module) {
 		$data[4] = $agent_interval;
 	}
 	
-	$data[5] = ui_print_string_substr ($module["descripcion"], 32, true, 9);
+	$data[5] = ui_print_truncate_text($module['descripcion'], 25, false);
 	
 	// MAX / MIN values
 	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["max_critical"], $module["min_critical"]); 

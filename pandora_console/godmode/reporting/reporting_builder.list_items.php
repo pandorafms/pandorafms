@@ -134,7 +134,7 @@ $urlFilter = '&agent_filter=' . $agentFilter . '&module_filter=' . $moduleFilter
 echo '<a href="javascript: toggleFormFilter();"><b>'.__('Items filter').'</b> ' . html_print_image("images/down.png", true, array("title" => __('Toggle filter(s)'), "id" => 'image_form_filter')) . '</a>';
 
 $table = null;
-$table->width = '80%';
+$table->width = '98%';
 $table->data[0][0] = __('Agents');
 $table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
 $table->data[0][2] = __('Modules');

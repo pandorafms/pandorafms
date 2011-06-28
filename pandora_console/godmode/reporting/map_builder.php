@@ -101,7 +101,7 @@ if ($copy_layout) {
 		
 }
 
-$table->width = '550px';
+$table->width = '98%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Map name');

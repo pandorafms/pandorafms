@@ -68,7 +68,7 @@ $max_data = 12000000;
 
 ui_print_page_header (__('Current database maintenance setup'), "", false, "", true);
 
-echo '<table class=databox width="550" cellspacing="4" cellpadding="4" border="0">';
+echo '<table class=databox width="98%" cellspacing="4" cellpadding="4" border="0">';
 
 // Current setup
 

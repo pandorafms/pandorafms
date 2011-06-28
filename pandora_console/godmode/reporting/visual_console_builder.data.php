@@ -43,7 +43,7 @@ switch ($action) {
 		break;
 }
 
-$table->width = '70%';
+$table->width = '98%';
 $table->data = array ();
 $table->data[0][0] = __('Name:'). ui_print_help_tip (__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 

@@ -85,8 +85,10 @@ $values[300] = human_time_description_raw (300);
 $values[600] = human_time_description_raw (600);
 $values[1800] = human_time_description_raw (1800);
 
-$table->width = 500;
+$table->width = '90%';
 $table->data = array ();
+$table->style = array ();
+$table->style[2] = 'text-align: center';
 $table->data[0][0] = __('Autorefresh time');
 $table->data[0][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
 $table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);

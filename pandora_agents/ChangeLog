@@ -1,6 +1,12 @@
 2011-06-28  Sergio Martin <sergio.martin@artica.es>
 
 	* unix/Linux/pandora_agent.conf
+	unix/pandora_agent: Changed the ip_address token name
+	to address to compatibility with the server works
+
+2011-06-28  Sergio Martin <sergio.martin@artica.es>
+
+	* unix/Linux/pandora_agent.conf
 	unix/pandora_agent: Added ip_address token to conf file and
 	auto and manual mode into agent script. 
 	Added gis_exec token to obtain gis coordinates executing a

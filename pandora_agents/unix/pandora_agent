@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # **********************************************************************
 # Pandora FMS Generic Unix/Perl Agent
-# (c) 2010 Artica Soluciones Tecnológicas
+# (c) 2009-2011 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -12,7 +12,7 @@ pandora_agent - Pandora FMS Agent
 
 =head1 VERSION
 
-Version 3.2
+Version 4.0
 
 =head1 USAGE
 
@@ -52,8 +52,8 @@ if (!$@) {
 	threads::shared::share (\$Sem);
 }	
 
-use constant AGENT_VERSION => '3.2';
-use constant AGENT_BUILD => '101227';
+use constant AGENT_VERSION => '4.0';
+use constant AGENT_BUILD => '110629';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -1591,6 +1591,7 @@ while (1) {
 	if(defined($Conf{'address'})) {
 		# Check if address is auto to get the local ip
 		if ($Conf{'address'} eq 'auto') {
+			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
 			$address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
 			chomp($address);
 		}

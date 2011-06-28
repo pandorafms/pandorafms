@@ -484,7 +484,6 @@ sub read_config (;$) {
 
 	# Token not found
 	if (defined ($token)) {
-		close (CONF_FILE);
 		return undef;
 	}
 
@@ -1587,16 +1586,55 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
+	my $ip_address;
+
+	if(defined($Conf{'ip_address'})) {
+		# Check if ip_address is auto to get the local ip
+		if ($Conf{'ip_address'} eq 'auto') {
+			$ip_address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
+			chomp($ip_address);
+		}
+		else {
+			$ip_address = $Conf{'ip_address'};
+		}
+	}
+	
 	$Xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
 		"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
 		"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
 		"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
 		"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
+
+	if (defined ($Conf{'ip_address'})) {
+		$Xml .= "' ip_address='" .$ip_address;
+	}
 	
 	if (defined ($Conf{'parent_agent_name'})) {
 		$Xml .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
 	}
-	if (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
+	
+	# Check the gis mode (exec or manual). If exec script is defined, we execute it and get the coordenates
+	if (defined ($Conf{'gis_exec'}) && (-e $Conf{'gis_exec'})) {		
+		my $coord_str = `$Conf{'gis_exec'}`;
+		chomp($coord_str);
+		my @coords = split(',',$coord_str);
+		# Check if lat and long are numeric
+		if (defined($coords[0]) && defined($coords[1]) && ($coords[0] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/) && ($coords[1] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/)) {
+			my $lat = $coords[0];
+			my $long = $coords[1];
+			
+			$Xml .= "' longitude='" .$long . "' latitude='" .$lat;
+
+			if (defined ($coords[2])) {
+				my $alt = $coords[2];
+				$Xml .= "' altitude='" .$alt;
+			}
+			if (defined ($Conf{'position_description'})) {
+				$Xml .= "' position_description='" .$Conf{'position_description'};
+			}
+		}
+	}
+	elsif (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
 		$Xml .= "' longitude='" .$Conf{'longitude'} . "' latitude='" .$Conf{'latitude'};
 		if (defined ($Conf{'altitude'})) {
 			$Xml .= "' altitude='" .$Conf{'altitude'};

@@ -127,6 +127,7 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
+	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
 	pandora_create_incident
@@ -1381,6 +1382,33 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
+}
+
+##########################################################################
+# Add an address if not exists and add this address to taddress_agent if not exists
+##########################################################################
+sub pandora_add_agent_address ($$$$) {
+	my ($pa_config, $agent_id, $addr, $dbh) = @_;
+	
+	my $agent_name = get_agent_name($dbh, $agent_id);
+
+	# Add the new address if it does not exist
+	my $addr_id = get_addr_id ($dbh, $addr);
+
+	if($addr_id <= 0) {
+		logger($pa_config, 'Adding address ' . $addr . ' to the address list', 10);
+		$addr_id = add_address ($dbh, $addr);
+	}
+	
+	if ($addr_id <= 0) {
+		logger($pa_config, "Could not add address '$addr' for host '$agent_name'", 3);
+	}
+	
+	my $agent_address = is_agent_address($dbh, $agent_id, $addr_id);
+	if($agent_address == 0) {
+		logger($pa_config, 'Updating address for agent ' . $agent_name . ' (' . $addr . ') in his address list', 10);
+		add_new_address_agent ($dbh, $addr_id, $agent_id)
+	}
 }
 
 ##########################################################################

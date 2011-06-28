@@ -288,9 +288,8 @@ sub data_consumer ($$) {
 		}
 
 		# Assign the new address to the agent
-		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		                  VALUES (?, ?)', $addr_id, $agent_id);
-
+		add_new_address_agent ($dbh, $addr_id, $agent_id);
+		
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
 
@@ -432,8 +431,7 @@ sub get_host_parent ($$$$$$){
 		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $parent_name, $parent_addr, $group, $parent_parent, $id_os, '', 300, $dbh);
 
 		# Assign the new address to the agent
-		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-			          VALUES (?, ?)', $addr_id, $agent_id);
+		add_new_address_agent ($dbh, $addr_id, $agent_id);
 
 		return $agent_id;
 	}
@@ -485,16 +483,6 @@ sub guess_os {
 }
 
 ##########################################################################
-# Return the ID of the given address, -1 if it does not exist.
-##########################################################################
-sub get_addr_id ($$) {
-	my ($dbh, $addr) = @_;
-
-	my $addr_id = get_db_value ($dbh, 'SELECT id_a FROM taddress WHERE ip = ?', $addr);
-	return (defined ($addr_id) ? $addr_id : -1);
-}
-
-##########################################################################
 # Return the ID of the agent with the given IP.
 ##########################################################################
 sub get_agent_from_addr ($$) {
@@ -516,15 +504,6 @@ sub update_recon_task ($$$) {
 	my ($dbh, $id_task, $status) = @_;
 
 	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $status, $id_task);
-}
-
-##########################################################################
-# Add the given address to taddress.
-##########################################################################
-sub add_address ($$) {
-	my ($dbh, $ip_address) = @_;
-
-	return db_insert ($dbh, 'id_a', 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
 }
 
 ##########################################################################

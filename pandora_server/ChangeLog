@@ -1,3 +1,10 @@
+2011-06-28  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/ReconServer.pm: Moved add_address function 
+	to DB to common uses and create add_new_address_agent function
+	into DB library with repeated code for the same 
+
 2011-06-27  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/NetworkServer.pm: Fixed SNMP PROC modules always

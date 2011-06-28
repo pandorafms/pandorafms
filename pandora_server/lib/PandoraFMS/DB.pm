@@ -27,7 +27,9 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 
+our @EXPORT = qw(
+		add_address
+		add_new_address_agent
 		db_connect
 		db_disconnect
 		db_do
@@ -39,6 +41,7 @@ our @EXPORT = qw(
 		db_text
 		db_update
 		get_action_id
+		get_addr_id
 		get_agent_id
 		get_agent_address
 		get_agent_group
@@ -510,6 +513,35 @@ sub db_process_update($$$$$;@) {
 	my $res = db_update ($dbh, "UPDATE $table SET$fields WHERE $where_column = ?", @values_array);
 
 	return $res;
+}
+
+##########################################################################
+# Add the given address to taddress.
+##########################################################################
+sub add_address ($$) {
+	my ($dbh, $ip_address) = @_;
+
+	return db_insert ($dbh, 'id_a', 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
+}
+
+##########################################################################
+# Assign the new address to the agent
+##########################################################################
+sub add_new_address_agent ($$$) {
+	my ($dbh, $addr_id, $agent_id) = @_;
+	
+	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+				  VALUES (?, ?)', $addr_id, $agent_id);
+}
+
+##########################################################################
+# Return the ID of the given address, -1 if it does not exist.
+##########################################################################
+sub get_addr_id ($$) {
+	my ($dbh, $addr) = @_;
+
+	my $addr_id = get_db_value ($dbh, 'SELECT id_a FROM taddress WHERE ip = ?', $addr);
+	return (defined ($addr_id) ? $addr_id : -1);
 }
 
 ##########################################################################

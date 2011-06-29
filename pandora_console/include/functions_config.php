@@ -721,7 +721,7 @@ function config_check (){
     if (($fontpath == "") OR (!file_exists ($fontpath))) {
         $config["alert_cnt"]++;
         $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Default font doesnt exist").'</h3>';
-        $_SESSION["alert_msg"] .= __('Your defined fonr doesnt exist or is not defined. Please check font parameters in your config').'</h3>';
+        $_SESSION["alert_msg"] .= __('Your defined font doesnt exist or is not defined. Please check font parameters in your config').'</h3>';
     }
 
     global $develop_bypass;

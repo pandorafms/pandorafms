@@ -194,6 +194,12 @@ if ($config["metaconsole"] == 0){
 	ui_require_jquery_file ('countdown');
 ?>
 
+
+<script type="text/javascript" src="include/javascript/jquery.ui.dialog.js "></script>	
+<script type="text/javascript" src="include/javascript/jquery.ui.draggable.js "></script>	
+<script type="text/javascript" src="include/javascript/jquery.ui.droppable.js "></script>		
+<script type="text/javascript" src="include/javascript/jquery.ui.resizable.js "></script>	
+	
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {

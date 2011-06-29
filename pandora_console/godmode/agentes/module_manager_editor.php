@@ -327,12 +327,6 @@ switch ($moduletype) {
 		break;
 }
 
-echo "<h2>".__('Modules')."</h2>";
-
-echo '<h3>'.__('Module assignment');
-if (isset ($extra_title))
-	echo ' - '.$extra_title;
-echo '</h3>';
 
 if($config['enterprise_installed'] && $id_agent_module) {
 	if (policies_is_module_in_policy($id_agent_module)) {

@@ -158,16 +158,14 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	/* We must validate all events like the selected */
-
-	if ($similars) {
+	if ($similars && $new_status == 1) {
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
 		}
 		$id_event = array_unique($id_event);
 	}
-	
+		
 	db_process_sql_begin ();
-	$errors = 0;
 	
 	switch($new_status) {
 		case 1:
@@ -187,10 +185,12 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	}
 	
 	foreach ($id_event as $event) {
-		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
+		}
 		
+		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
 		$fullevent = events_get_event($event);
-
 		if($fullevent['user_comment'] != ''){
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
@@ -201,31 +201,17 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 			'user_comment' => $comment);
 		
 		$ret = db_process_sql_update('tevento', $values, array('id_evento' => $event), 'AND', false);
-		
-		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
-			//Check ACL
-			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
-		}
-		elseif ($ret !== false) {
-			//ACL didn't fail nor did return
-			continue;
-		}
-		
-		$errors++;
-		break;
+		if ($ret === false) {
+			process_sql_rollback ();
+			return false;
+		}	
 	}
 	
-	if ($errors > 1) {
-		db_process_sql_rollback ();
-		return false;
+	foreach ($id_event as $event) {
+		db_pandora_audit("Event validated", "Validated event #".$event);
 	}
-	else {
-		foreach ($id_event as $event) {
-			db_pandora_audit("Event validated", "Validated event #".$event);
-		}
-		db_process_sql_commit ();
-		return true;
-	}
+	db_process_sql_commit ();
+	return true;
 }
 
 /** 

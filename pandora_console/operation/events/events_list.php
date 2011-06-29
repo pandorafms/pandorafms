@@ -272,17 +272,17 @@ if ($group_rep == 0) {
 else {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			process_sql ('SET group_concat_max_len = 9999999');
-			$sql = "SELECT *, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+			db_process_sql ('SET group_concat_max_len = 9999999');
+			$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
 				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
-			$sql = "SELECT *, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-			        MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
+			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
@@ -294,16 +294,16 @@ else {
 			$set['offset'] = $offset;
 			// TODO: Remove duplicate user comments
 			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-				FROM (select * from tevento WHERE 1=1 ".$sql_post.") a, 
-				(select min(id_evento) as id_evento,  to_char(evento) as evento, 
-				id_agentmodule, COUNT(*) AS event_rep, MAX(estado) AS estado,
+				FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
+				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
+				id_agentmodule, COUNT(*) AS event_rep, MIN(estado) AS min_estado, MAX(estado) AS max_estado,
 				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep 
-				from tevento 
+				FROM tevento 
 				WHERE 1=1 ".$sql_post." 
 				GROUP BY to_char(evento), id_agentmodule) b 
-				where a.id_evento=b.id_evento and 
+				WHERE a.id_evento=b.id_evento AND 
 				to_char(a.evento)=to_char(b.evento) 
-				and a.id_agentmodule=b.id_agentmodule";
+				AND a.id_agentmodule=b.id_agentmodule";
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
@@ -369,8 +369,23 @@ foreach ($result as $event) {
 	//First pass along the class of this row
 	$table->rowclass[] = get_priority_class ($event["criticity"]);
 	
-	// Colored box
-	switch($event["estado"]) {
+	// Grouped events
+	if ($group_rep != 0) {
+		if ($event["max_estado"] == 2) {
+			$estado = 2;
+		} else if ($event["min_estado"] == 0) {
+			$estado = 0;
+		} else {
+			$estado = 1;
+		}
+	}
+	// Ungrouped events
+	else {
+		$estado = $event["estado"];
+	}
+	
+	// Colored box	
+	switch($estado) {
 		case 0:
 			$img_st = "images/star.png";
 			$title_st = __('New event');
@@ -482,12 +497,7 @@ foreach ($result as $event) {
 	}
 	
 	//Checkbox
-	if($event["estado"] != 1) {
-		$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
-	}
-	else {
-		$data[5] = '';
-	}		
+	$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
 	array_push ($table->data, $data);
 
 	//Hiden row with description form

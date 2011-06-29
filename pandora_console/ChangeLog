@@ -1,3 +1,11 @@
+2011-06-29  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_snmp_trap_types.php
+	include/help/es/help_snmp_trap_types.php
+	include/functions_snmp.php
+	operation/snmpconsole/snmp_view.php: Added snmp trap generator
+	in the snmpview
+
 2011-06-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css

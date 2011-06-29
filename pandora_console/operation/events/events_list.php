@@ -247,8 +247,8 @@ if ($group_rep == 0) {
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 } else {
 	process_sql ('SET group_concat_max_len = 9999999');
-	$sql = "SELECT *, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-			MAX(estado) AS estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+	$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+			MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 }
 
 //Extract the events by filter (or not) from db
@@ -304,8 +304,23 @@ foreach ($result as $event) {
 	//First pass along the class of this row
 	$table->rowclass[] = get_priority_class ($event["criticity"]);
 	
-	// Colored box
-	switch($event["estado"]) {
+	// Grouped events
+	if ($group_rep != 0) {
+		if ($event["max_estado"] == 2) {
+			$estado = 2;
+		} else if ($event["min_estado"] == 0) {
+			$estado = 0;
+		} else {
+			$estado = 1;
+		}
+	}
+	// Ungrouped events
+	else {
+		$estado = $event["estado"];
+	}
+	
+	// Colored box	
+	switch($estado) {
 		case 0:
 			$img_st = "images/star.png";
 			$title_st = __('New event');
@@ -417,12 +432,7 @@ foreach ($result as $event) {
 	}
 	
 	//Checkbox
-	if($event["estado"] != 1) {
-		$data[5] = print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
-	}
-	else {
-		$data[5] = '';
-	}		
+	$data[5] = print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
 	array_push ($table->data, $data);
 
 	//Hiden row with description form

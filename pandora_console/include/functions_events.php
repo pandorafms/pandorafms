@@ -159,7 +159,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	/* We must validate all events like the selected */
-	if ($similars) {
+	if ($similars && $new_status == 1) {
 		foreach ($id_event as $id) {
 			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
 		}
@@ -167,7 +167,6 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	}
 		
 	process_sql_begin ();
-	$errors = 0;
 	
 	switch($new_status) {
 		case 1:
@@ -187,39 +186,29 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 	}
 	
 	foreach ($id_event as $event) {
+		if (give_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
+			continue;
+		}
+		
 		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
-
 		$fullevent = get_event($event);
-
 		if($fullevent['user_comment'] != ''){
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
 	
-		$sql = sprintf ("UPDATE tevento SET estado = %d, id_usuario = '%s', user_comment = '%s' WHERE id_evento = %d", $new_status, $config['id_user'], $comment, $event);
+		$sql = sprintf ("UPDATE tevento SET estado = %d, id_usuario = '%s', user_comment = '%s' WHERE id_evento = %d AND estado <> 1", $new_status, $config['id_user'], $comment, $event);
 		$ret = process_sql ($sql);
-		
-		if (give_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
-			//Check ACL
-			pandora_audit("ACL Violation", "Attempted updating event #".$event);
-		} elseif ($ret !== false) {
-			//ACL didn't fail nor did return
-			continue;
+		if ($ret === false) {
+			process_sql_rollback ();
+			return false;
 		}
-		
-		$errors++;
-		break;
 	}
 	
-	if ($errors > 1) {
-		process_sql_rollback ();
-		return false;
-	} else {
-		foreach ($id_event as $event) {
-			pandora_audit("Event validated", "Validated event #".$event);
-		}
-		process_sql_commit ();
-		return true;
+	foreach ($id_event as $event) {
+		pandora_audit("Event validated", "Validated event #".$event);
 	}
+	process_sql_commit ();
+	return true;
 }
 
 /** 

@@ -57,6 +57,7 @@ if (! $id || ! file_exists ($help_file)) {
 }
 
 /* Show help */
+echo '<div id="main_help">';
 echo '<div>';
 echo '<span style="float:left; margin: 0px; padding: 0px">';
 echo html_print_image('images/pandora_textlogo.png', true, array("border" => '0'));
@@ -71,6 +72,7 @@ echo '</div>';
 echo '<br /><br /><hr width="100%" size="1" />';
 echo '<div style="background-color: #CCC; font-family: verdana, arial; font-size: 11px;">';
 include ('footer.php');
+echo '</div>';
 ?>
 </body>
 </html>

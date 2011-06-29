@@ -178,7 +178,7 @@ if (!$config["user_can_update_info"]) {
 }
 echo '</div></form>';
 
-echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
+echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
 $table->width = '98%';
 $table->data = array ();

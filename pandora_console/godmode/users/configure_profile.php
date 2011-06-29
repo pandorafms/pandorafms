@@ -25,8 +25,22 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
+$tab = get_parameter('tab', 'profile');
+
+$buttons = array(
+	'user' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user">' . 
+			html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
+	'profile' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
+			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
+			
+$buttons[$tab]['active'] = true;
+
 // Header
-ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true);
+ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true, $buttons);
 
 $new_profile = (bool) get_parameter ('new_profile');
 $create_profile = (bool) get_parameter ('create_profile');
@@ -48,7 +62,7 @@ if ($delete_profile) {
 			"Delete profile ". $profile['name']);
 		
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
+		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list">&laquo; Back</a>';
 	}
 	
 	//Delete profile from user data
@@ -93,7 +107,7 @@ if ($update_profile) {
 			"Update profile ". $name, false, false, $info);
 		
 		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
-		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
+		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list">&laquo; Back</a>';
 	}
 	else {
 		echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
@@ -131,7 +145,7 @@ if ($create_profile) {
 	
 	if ($ret !== false) {
 		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
-		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
+		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list">&laquo; Back</a>';
 		
 		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
 			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
@@ -202,7 +216,7 @@ if ($id_profile || $new_profile) {
 		$page_title = __('Update profile');
 	}
 	
-	$table->width = '400px';
+	$table->width = '98%';
 	$table->class = 'databox';
 	$table->size = array ();
 	$table->style = array ();

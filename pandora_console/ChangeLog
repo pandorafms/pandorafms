@@ -1,3 +1,23 @@
+2011-06-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_messages.php
+	include/functions_config.php
+	extensions/dbmanager.php
+	operation/users/user_edit.php
+	operation/messages/message.php
+	images/skin/skin_default/include/styles/pandora.css
+	general/header.php
+	godmode/agentes/module_manager_editor.php
+	godmode/menu.php
+	godmode/users/user_list.php
+	godmode/users/configure_user.php
+	godmode/users/configure_profile.php: Messages and alert sections in
+	header are now dropable and resizable. 
+	
+	* images/profiles.png: Added profile image
+
+	* godmode/users/profile_list.php_ Added new manage profiles section
+
 2011-06-29  Sergio Martin <sergio.martin@artica.es>
 
 	* include/help/en/help_snmp_trap_types.php

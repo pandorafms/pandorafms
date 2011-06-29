@@ -137,6 +137,7 @@ function dbmgr_extension_main () {
 		return;
 	}
 	
+	echo "<div style='overflow: auto;'>";
 	$table->width = '90%';
 	$table->class = 'dbmanager';
 	$table->head = array_keys ($result[0]);
@@ -144,6 +145,7 @@ function dbmgr_extension_main () {
 	$table->data = $result;
 	
 	html_print_table ($table);
+	echo "</div>";
 }
 
 /* This adds a option in the operation menu */

@@ -204,7 +204,7 @@ function messages_get_overview ($order = "status", $order_dir = "ASC") {
 		break;
 		case "status":
 		default:
-			$order = "estado";
+			$order = "estado, timestamp";
 			break;
 	}
 	

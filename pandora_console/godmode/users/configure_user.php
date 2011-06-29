@@ -47,8 +47,22 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 	return;
 }
 
+$tab = get_parameter('tab', 'user');
+
+$buttons = array(
+	'user' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user">' . 
+			html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
+	'profile' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
+			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
+			
+$buttons[$tab]['active'] = true;
+
 // Header
-ui_print_page_header (__('User detail editor'), "images/god3.png", false, "", true);
+ui_print_page_header (__('User detail editor'), "images/god3.png", false, "", true, $buttons);
 
 
 if ($config['user_can_update_info']) {

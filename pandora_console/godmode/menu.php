@@ -102,7 +102,11 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 	$menu["gusuarios"]["text"] = __('Manage users');
 	$menu["gusuarios"]["sec2"] = "godmode/users/user_list";
 	$menu["gusuarios"]["id"] = "god-users";
-
+	
+	$sub = array ();
+	$sub['godmode/users/profile_list']['text'] = __('Manage profiles');
+	
+	$menu["gusuarios"]["sub"] = $sub;
 }
 
 // SNMP console

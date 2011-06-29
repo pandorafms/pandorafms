@@ -151,7 +151,7 @@ echo "<br /><br />";
 // Show last activity from this user
 echo "<h2>" . __('This is your last activity in Pandora FMS console') . "</h2>";
 
-$table->width = '90%'; //Don't specify px
+$table->width = '98%'; //Don't specify px
 $table->data = array ();
 $table->size = array ();
 $table->size[2] = '130px';

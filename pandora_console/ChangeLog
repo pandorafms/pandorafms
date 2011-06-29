@@ -1,3 +1,10 @@
+2011-06-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css
+	operation/agentes/status_events.php
+	general/pandora_help.php
+	general/logon_ok.php: Css style improvements.
+
 2011-06-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css

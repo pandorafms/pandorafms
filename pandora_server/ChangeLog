@@ -1,3 +1,11 @@
+2011-06-30  Sergio Martin <sergio.martin@artica.es>
+
+	* util/recon_scripts/snmpdevices.pl: Improved recon script 
+	to update existing modules, add a new parameter optative -a 
+	to force show downed interfaces (only up are processed by default)
+	Get the interfaces ip (if is setted) and put it in the status interface
+	module description
+
 2011-06-28  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DB.pm

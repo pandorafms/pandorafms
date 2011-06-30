@@ -35,8 +35,11 @@ my $create_incident = $ARGV[2]; # Defined by user
 # Used Custom Fields in this script
 my $target_network = $ARGV[3]; # Filed1 defined by user
 my $target_community = $ARGV[4]; # Field2 defined by user
+my $all_mode = $ARGV[5]; # Field3 defined by user
+
+$all_mode = '' unless defined($all_mode);
+
 # Unused Custom Fields in this script
-# my $field3 = $ARGV[5]; # Defined by user
 # my $field4 = $ARGV[6]; # Defined by user
 
 ##########################################################################
@@ -53,24 +56,15 @@ sub update_recon_task ($$$) {
 ##########################################################################
 sub show_help {
 	print "\nSpecific Pandora FMS SNMP Recon Plugin for SNMP device autodiscovery\n";
-	print "(c) Artica ST 2010 <info\@artica.es>\n\n";
+	print "(c) Artica ST 2011 <info\@artica.es>\n\n";
 	print "Usage:\n\n";
-	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2>\n\n";
+	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3>\n\n";
 	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";
 	print " * custom_field2 = snmp_community. \n\n";
+	print " * custom_field3 = optative parameter to force process downed interfaces (use: '-a'). Only up interfaces are processed by default \n\n";
 	print " Additional information:\nWhen the script is called from a recon task, 'task_id' parameter is automatically filled, ";
 	print "group_id and create_incident_flag are passed from interface form combos and custom fields manually filled.\n\n\n";
 	exit;
-}
-
-##########################################################################
-# Return the ID of the given address, -1 if it does not exist.
-##########################################################################
-sub get_addr_id ($$) {
-	my ($dbh, $addr) = @_;
-
-	my $addr_id = get_db_value ($dbh, 'SELECT id_a FROM taddress WHERE ip = ?', $addr);
-	return (defined ($addr_id) ? $addr_id : -1);
 }
 
 ##########################################################################
@@ -89,15 +83,6 @@ sub get_agent_from_addr ($$) {
 }
 
 ##########################################################################
-# Add the given address to taddress.
-##########################################################################
-sub add_address ($$) {
-	my ($dbh, $ip_address) = @_;
-
-	return db_insert ($dbh, 'id_a', 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
-}
-
-##########################################################################
 # Get SNMP response.
 ##########################################################################
 sub get_snmp_response ($$$) {
@@ -105,7 +90,7 @@ sub get_snmp_response ($$$) {
 
 	# The OID used is the SysUptime OID
 	my $buffer = `/usr/bin/snmpget -v 1 -r0 -t$target_timeout -OUevqt -c '$target_community' $addr .1.3.6.1.2.1.1.3.0 2>/dev/null`;
-	print "/usr/bin/snmpget -v 1 -r0 -t$target_timeout -OUevqt -c '$target_community' $addr .1.3.6.1.2.1.1.3.0 2>/dev/null";
+
 	# Remove forbidden caracters
 	$buffer =~ s/\l|\r|\"|\n|\<|\>|\&|\[|\]//g;
 	
@@ -134,8 +119,14 @@ sub process_module_snmp ($$$$$$$$$){
 	# id_modulo = 2 for snmp modules
 	$parameters{'id_modulo'} = 2;	
 
-	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	my $module_id = get_agent_module_id($dbh, $module_name, $parameters{'id_agente'});
 	
+	if($module_id == -1) {
+		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	}
+	else {
+		pandora_update_module_from_hash ($conf, \%parameters, $dbh, 'id_agente_modulo', $module_id);
+	}
 }
 
 ##########################################################################
@@ -175,7 +166,7 @@ if (! defined ($net_addr)) {
 
 # Scan the network for hosts
 my ($total_hosts, $hosts_found, $addr_found) = ($net_addr->num, 0, '');
-for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
+for (my $i = 1, $net_addr++; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 
 	my $addr = (split(/\//, $net_addr))[0];
 	$hosts_found ++;
@@ -196,7 +187,7 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 	# Resolve the address
 	my $host_name = gethostbyaddr(inet_aton($addr), AF_INET);
 	$host_name = $addr unless defined ($host_name);
-
+	#/usr/bin/snmpwalk -OUevqt -c 'public' -v 1 192.168.50.100 SNMPv2-MIB::sysName.0
 	logger(\%conf, "SNMP Recon App found host $host_name.", 10);
 
 	# Add the new address if it does not exist
@@ -228,16 +219,20 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 		next;
 	}
 
-	# Create a new agent
-	my $agent_id; 
+	# Check if the agent exists
+	my $agent_id = get_agent_id($dbh, $host_name);
 	
-	$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, $host_name, $addr, $target_group,									  0, 11, '', 300, $dbh);
-	
+	# If the agent doesnt exist we create it
+	if($agent_id == -1) {
+		# Create a new agent
+		$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, $host_name, $addr, $target_group, 0, 11, '', 300, $dbh);
+	}
+
 	# Assign the new address to the agent
 	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`) VALUES (?, ?)', $addr_id, $agent_id);
-					  
+	
 	# Generate an event
-	pandora_event (\%conf, "[RECON] New SNMP host [$host_name] detected on network [" . $target_network . ']',                      $target_group, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
+	pandora_event (\%conf, "[RECON] New SNMP host [$host_name] detected on network [" . $target_network . ']', $target_group, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 
 	# SysUptime
 	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.1.3.0", "ticks", "SysUptime", "remote_snmp_string", "System uptime reported by SNMP", $conf);
@@ -255,17 +250,33 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 	# Get interface indexes
 		
 	my $interface_indexes = `/usr/bin/snmpwalk -Ouvq -c '$target_community' -v 1 $addr ifIndex 2>/dev/null`;
-	
+
 	my @ids = split("\n", $interface_indexes);
 
 	foreach my $ax (@ids) {
+		my $oper_status = `/usr/bin/snmpwalk -OUevqt -c '$target_community' -v 1 $addr .1.3.6.1.2.1.2.2.1.8.$ax 2>/dev/null`;
+
+		# If switch_mode is active and the interface is not up, we avoid it
+		if($all_mode ne '-a' && $oper_status != 1) {
+			next;
+		}
 		
 		my $interface = `/usr/bin/snmpget -v 1 -r0 -t$target_timeout -OUevqt -c '$target_community' $addr RFC1213-MIB::ifDescr.$ax 2>/dev/null`;
+				
+		my $ip_address = `/usr/bin/snmpwalk -OnQ -c '$target_community' -v 1 $addr .1.3.6.1.2.1.4.20.1.2 | sed 's/.1.3.6.1.2.1.4.20.1.2.//' | grep "= $ax" | awk '{print \$1}'`;
+		
+		if($ip_address eq '') {
+			$ip_address = 'N/A';
+		}
+		else {
+			chomp($ip_address);
+			$ip_address =~ s/\n/,/g;
+		}
 		
 		# Remove forbidden caracters
 		$interface =~ s/\"|\n|\<|\>|\&|\[|\]//g;
-				
-		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_snmp_proc", "Operative status for $interface at position $ax", $conf);
+		 
+		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_snmp_proc", "Operative status for $interface at position $ax. IP Address: $ip_address", $conf);
 			
 		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.10.$ax", "", "$interface Inbound bps", "remote_snmp_inc", "Incoming traffic for $interface", $conf);
 		

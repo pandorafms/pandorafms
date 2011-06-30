@@ -4,14 +4,26 @@
 
 .ui-dialog {
 	background-color: #ffffff;
+		
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	
+	-moz-box-shadow: 0px 7px 7px #010E1B;
+	-webkit-box-shadow: 0px 7px 7px #010E1B;
+	box-shadow: 0px 7px 7px #010E1B;
 }
 
 .ui-dialog .ui-dialog-titlebar {
-	border-bottom: 1px solid #d8d2aa;
-	background: #778866 url(images/dialog-title.gif) repeat-x;
-	padding: 0px;
+	background: #778866 url(../../images/dialog-title.gif) repeat-x; 
 	height: 28px;
 	_height: 29px;
+	width: 97%;
+	margin: 7px auto 0 auto;
+
+	-moz-border-radius: 14px;
+	-webkit-border-radius: 14px;
+	border-radius: 14px;	
 }
 
 .ui-dialog.ui-draggable .ui-dialog-titlebar {
@@ -24,7 +36,8 @@
 	background: url(images/dialog-titlebar-close.png) no-repeat;
 	position:absolute;
 	top: 6px;
-	right: 7px;
+	#top: 10px;
+	right: 17px;
 	cursor: default;
 }
 
@@ -51,6 +64,10 @@
 
 .ui-dialog .ui-dialog-content {
 	margin: 1.2em;
+}
+
+.ui-dialog-content {
+	overflow: auto;
 }
 
 .ui-dialog .ui-dialog-buttonpane {

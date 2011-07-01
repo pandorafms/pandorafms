@@ -1,3 +1,10 @@
+2011-07-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* Makefile.PL: Removed NetAddr::IP from the dependency list. Not
+	  needed by the new improved Recon Server.
+
+	* lib/PandoraFMS/ReconServer.pm: Improved Recon server that uses nmap.
+
 2011-06-30  Sergio Martin <sergio.martin@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Improved recon script 

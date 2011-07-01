@@ -10,7 +10,6 @@ WriteMakefile(
 	VERSION_FROM    => 'lib/PandoraFMS/Config.pm',
 	AUTHOR 			=> 'Artica ST <info@artica.es>',
 	PREREQ_PM 	=> {
-		NetAddr::IP => 0,
 		DBI => 0,
 		threads::shared => 0,
 		IO::Socket => 0,

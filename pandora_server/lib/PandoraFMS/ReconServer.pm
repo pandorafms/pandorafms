@@ -25,7 +25,6 @@ use threads::shared;
 use Thread::Semaphore;
 
 use IO::Socket::INET;
-use NetAddr::IP;
 use POSIX qw(strftime ceil);
 
 # Default lib dir for RPM and DEB packages
@@ -45,7 +44,6 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared = Thread::Semaphore->new;
 my $TaskSem :shared = Thread::Semaphore->new (0);
-my $TracerouteAvailable = (eval 'use PandoraFMS::Traceroute::PurePerl; 1') ? 1 : 0;
 
 ########################################################################################
 # Recon Server class constructor.
@@ -55,6 +53,12 @@ sub new ($$$$$$) {
 
 	return undef unless $config->{'reconserver'} == 1;
 
+	if (! -e $config->{'nmap'}) {
+		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by Pandora FMS Recon Server not found.", 1);
+		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by Pandora FMS Recon Server not found.", 1);
+		return undef;
+	}
+	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 3, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
 
@@ -93,7 +97,7 @@ sub data_producer ($) {
 
 	my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
                                    WHERE id_recon_server = ? 
-                                   AND (utimestamp = 1) OR (status = -1 AND interval_sweep > 0 AND (utimestamp = 0 OR (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
+                                   AND utimestamp = 0 OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
 	foreach my $row (@rows) {
 
 		# Update task status
@@ -116,107 +120,87 @@ sub data_consumer ($$) {
 	my $task = get_db_single_row ($dbh, 'SELECT * FROM trecon_task WHERE id_rt = ?', $task_id);	
 	return -1 unless defined ($task);
 
-	# Fixed config here. SANCHO TODO
-	$task->{'os_detect'} = 1;
-	$task->{'resolve_names'} = 1;
-	$task->{'parent_detection'} = 1;
-	$task->{'parent_recursion'} = 5;
-
 	# Is it a recon script?
-	if ((defined ($task->{'id_recon_script'})) && ($task->{'id_recon_script'} != 0)) {
+	if (defined ($task->{'id_recon_script'}) && ($task->{'id_recon_script'} != 0)) {
 		exec_recon_script ($pa_config, $dbh, $task);
 		return;
 	}
 
-	# Get a NetAddr::IP object for the target network
-	my $net_addr = new NetAddr::IP ($task->{'subnet'});
-	if (! defined ($net_addr)) {
-		logger ($pa_config, "Invalid network " . $task->{'subnet'} . " for task '" . $task->{'name'} . "'.", 3);
+	# Call nmap
+	my $nmap = $pa_config->{'nmap'};
+	my $subnet = $task->{'subnet'};
+	my @output = `$nmap -nsP $subnet`;
+	if ($? != 0) {
 		update_recon_task ($dbh, $task_id, -1);
-		return -1;
+		return;
 	}
 
-	# Scan the network for hosts
-	my ($total_hosts, $hosts_found, $addr_found) = ($net_addr->num, 0, '');
-	for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
+	# Parse nmap output
+	my $addr = '';
+	my $found_hosts = {};
+	foreach my $line (@output) {
+		chomp ($line);
+		
+		if ($line =~ m/Nmap scan report for (\S+).*/) {
+			$addr = $1;
+		} elsif ($line =~ m/Host is up \((\S+)s.*/) {
+			next unless ($addr ne '');
+			$found_hosts->{$addr} = 1;	
+			$addr = '';
+		}
+	}
 
-		my $addr = (split(/\//, $net_addr))[0];
+	# Process found hosts
+	my $progress = 0;
+	my $added = '';
+	my $total_hosts = scalar (keys (%{$found_hosts}));
+	foreach my $addr (keys (%{$found_hosts})) {
+		$progress++;
 		
 		# Update the recon task or break if it does not exist anymore
-		last if (update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100))) eq '0E0');
+		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_hosts / 100))) eq '0E0');
        
 		# Does the host already exist?
-		my $current_agent_id = get_agent_from_addr ($dbh, $addr);
+		my $agent = get_agent_from_addr ($dbh, $addr);
+		my $agent_id = defined ($agent) ? $agent->{'id_agente'} : 0;
+		if ($agent_id > 0) {
 
-		if ($current_agent_id > 0) {
-			my $current_agent = get_db_single_row ($dbh, 'SELECT * FROM tagente wHERE id_agente = ?', $current_agent_id);
-
-			# Skip existing hosts with a known parent
-			if ($current_agent->{'id_parent'} != 0){
-				next;
-			}
-			
-			# Skip existing hosts with learnmode disabled
-			if ($current_agent->{'modo'} != 1){
-				next;
-			}
-			
-
-		} else {		
-			my $alive = 0;
-			if (pandora_ping ($pa_config, $addr) == 1) {
-				$alive = 1;
-
-				# TCP Port profiling 
-				if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
-					$alive = tcp_scan ($pa_config, $addr, $task->{'recon_ports'});
-				}
-			}
-
-			# Skip non-responsive hosts
-			next unless ($alive > 0);
+			# Skip if not in learning mode or parent detection is disabled
+			next if ($agent->{'modo'} != 1 || $task->{'parent_detection'} == 0);
+		}
+		
+		# Filter by TCP port
+		if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
+			next unless (tcp_scan ($pa_config, $addr, $task->{'recon_ports'}) > 0);
 		}
 
-		$hosts_found ++;
-
-		# Implement OS detection (optional)
-		my $id_os = 11; # By default now is a network host
+		# Filter by OS
+		my $id_os = 11; # Network by default
 		if ($task->{'os_detect'} == 1){
-			# Guess the OS and filter
 			$id_os = guess_os ($pa_config, $addr);
-			if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os) {
-				logger($pa_config, "Skipping host $addr os ID $id_os.", 10);
-				next;
-			}
+			next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
 		}
-
-		# This string will contain all addresses separated with blank spaces (for incident)
-		$addr_found .= $addr . " ";
-
-		# By default, hostname is the IP address
-		my $host_name = $addr;
 
 		# Get the parent host
 		my $parent_id = 0;
-		if ($task->{'parent_detection'} == 1){
-			logger($pa_config, "Getting the parent for host $addr", 5);
+		if ($task->{'parent_detection'} == 1) {
 			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
 		}
-
-		# Update parent only if agent already exist, and skip rest of iteration
-		if ($current_agent_id > 0) {
-			# Skip existing hosts with a known parent
-			if ($parent_id > 0){
-				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id  ,$current_agent_id );
+		
+		# If the agent already exists update parent and continue
+		if ($agent_id > 0) {
+			if ($parent_id > 0) {
+				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
 			}
 			next;
 		}
 
-		# Resolve names is optional (performance killer!)
+		# Resolve hostnames
+		my $host_name = undef;
 		if ($task->{'resolve_names'} == 1){
-			# Resolve the address
 			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
 		}
+		$host_name = $addr unless defined ($host_name);
 
 		# Add the new address if it does not exist
 		my $addr_id = get_addr_id ($dbh, $addr);
@@ -225,8 +209,6 @@ sub data_consumer ($$) {
 			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
 			next;
 		}
-
-		my $agent_id;
 
         # GIS Code -----------------------------
 
@@ -277,9 +259,7 @@ sub data_consumer ($$) {
 									  $parent_id, $id_os, '', 300, $dbh);
 			}
 		}
-
 		# End of GIS code -----------------------------      
-
 		else {	
 			# Create a new agent
 			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
@@ -287,27 +267,33 @@ sub data_consumer ($$) {
 									  $parent_id, $id_os, '', 300, $dbh);
 		}
 
+		# Check agent creation
+		if ($agent_id <= 0) {
+			logger($pa_config, "Error creating agent '$host_name'.", 3);
+			next;
+		}
+
 		# Assign the new address to the agent
-		add_new_address_agent ($dbh, $addr_id, $agent_id);
-		
+		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		                  VALUES (?, ?)', $addr_id, $agent_id);
+
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
 
 		# Generate an event
         pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
                        $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
+		
+        $added .= $addr . ' ';
 	}
-	# End of recon sweep main loop
-
 
 	# Create an incident with totals
-
-	if ($hosts_found > 0 && $task->{'create_incident'} == 1){
-		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($hosts_found) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
+	if ($total_hosts > 0 && $task->{'create_incident'} == 1) {
+		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($total_hosts) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
 		if ($task->{'id_network_profile'} > 0) {
 			$text .= "Aditionally, and following instruction for this task, agent(s) has been created, with modules assigned to network component profile [" . get_nc_profile_name ($dbh, $task->{'id_network_profile'}) . "]. Please check this agent as soon as possible to verify it.";
 		}
-		$text .= "\n\nThis is the list of IP addresses found: \n\n$addr_found";
+		$text .= "\n\nThis is the list of IP addresses found: \n\n$added";
 		pandora_create_incident ($pa_config, $dbh, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
 	}
 
@@ -319,124 +305,69 @@ sub data_consumer ($$) {
 ##########################################################################
 # Returns the ID of the parent of the given host if available.
 ##########################################################################	
-sub get_host_parent; # Need to define first, because is a recursive function
-sub get_host_parent ($$$$$$){
+sub get_host_parent {
 	my ($pa_config, $host, $dbh, $group, $max_depth, $resolve, $os_detect) = @_;
 
 	# Recursive exit condition
-	if ($max_depth == 0){
-		return 0;
-	}
+	return 0 if ($max_depth == 0);
 
-	if ($TracerouteAvailable == 0){
-		logger($pa_config, "Traceroute is not available, skipping get_parent for $host", 10);
-		return 0;
-		# Traceroute not available
-	}
+	# Call nmap
+	my $nmap = $pa_config->{'nmap'};
+	#my $traceroutetimeout = $pa_config->{'networktimeout'};
+	my @output = `$nmap --traceroute -nsP $host`;
+	return 0 if ($? != 0);
 
-	my $traceroutetimeout = $pa_config->{'networktimeout'};
-
-
-	# TTL is not configurable, you can get problems with this if too low
-	# Timeout is 20% more than normal network timeout
-
-	my $tr = PandoraFMS::Traceroute::PurePerl->new (
-		backend        => 'PurePerl',
-		host           => $host,
-		debug          => 0,
-		max_ttl        => 25,   
-		query_timeout  => ceil ($traceroutetimeout * 1.2),
-		packetlen      => 150,
-		protocol       => 'icmp', # udp or icmp
-	);
-
-	my $success = 0;
-
-	# Do the traceroute	
-	$success = $tr->traceroute();
-
-	# Error or timeout
-	if ($@){
-		return 0;
-	}
-
-	# Traceroute was not successful
-	if ($tr->hops < 2 || $success == 0){
-		return 0;
-	}
-
-	my $hopstotal = $tr->hops;
-	$hopstotal--;
-	
-	# Run all list of parents until find a known parent
-	my $parent_addr;
-	my $parent_addr_check = 0;
-
-	for (my $ax = $hopstotal; $ax >= 0; $ax--){
-		$parent_addr = $tr->hop_query_host($ax, 0);
-
-		if ($host eq $parent_addr){
-			last;
-		}			
-
-		if ($parent_addr ne $host){
-			$parent_addr_check  = get_agent_from_addr ($dbh, $parent_addr);
-
-			if ($parent_addr_check != -1){
-				return $parent_addr_check;
-			}
-			else {
-				last;
-			}
-		} else {
-			# Parent cannot be host, that means 0 hops or no parents ... skipping
-			return 0;
+	# Parse nmap output
+	my $parent_addr = '';
+	foreach my $line (@output) {
+		chomp ($line);
+		
+		if ($line =~ m/\d+\s+\S+\s+ms\s+(\S+)/) {
+			next if ($1 eq '*' || $1 eq $host);
+			$parent_addr = $1;
 		}
 	}
+	
+	# No parent found
+	return 0 if ($parent_addr eq '');
+	
+	# Check if the parent host exists
+	my $parent = get_agent_from_addr ($dbh, $parent_addr);
+	my $parent_id = defined ($parent) ? $parent->{'id_agente'} : 0;
+	return $parent_id if ($parent_id > 0);
 
-
-	# If no parent found, create the last parent. It will greate a new agent
-	# for inmediate parentship, and call again the get_host_parent recursively 
-	# until found the whole connection. For safety this have implemented
-	# a max numbers of hops to build the chain (max_depth).
-
-	# Create a new agent if we get a valid parent
-	if ($parent_addr_check == -1){
-
-		# Add the new address if it does not exist
-		my $addr_id = get_addr_id ($dbh, $parent_addr);
-		$addr_id = add_address ($dbh, $parent_addr) unless ($addr_id > 0);
-		if ($addr_id <= 0) {
-			# This should never happen ! :(
+	# Add the new address if it does not exist
+	my $addr_id = get_addr_id ($dbh, $parent_addr);
+	$addr_id = add_address ($dbh, $parent_addr) unless ($addr_id > 0);
+	
+	# Should not happen
+	if ($addr_id <= 0) {		
 			logger($pa_config, "Could not add address '$parent_addr'", 1);
 			return 0;
-		}
-
-		# Recursive call - Limiting with ($max_depth -1)
-		my $parent_parent = get_host_parent ($pa_config, $parent_addr, $dbh, $group, $max_depth-1, $resolve, $os_detect);
-
-		my $parent_name = $parent_addr;
-		if ($resolve == 1){
-			# Resolve the address
-			$parent_name = gethostbyaddr(inet_aton($parent_addr), AF_INET);
-		}
-
-		# Implement OS detection (optional)
-		my $id_os = 11;
-		if ($os_detect == 1){
-			# Guess the OS and filter
-			$id_os = guess_os ($pa_config, $parent_addr);
-		}
-
-		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $parent_name, $parent_addr, $group, $parent_parent, $id_os, '', 300, $dbh);
-
-		# Assign the new address to the agent
-		add_new_address_agent ($dbh, $addr_id, $agent_id);
-
-		return $agent_id;
 	}
 
-	return 0;	
+	# Get the parent's name
+	my $parent_name = undef;
+	if ($resolve == 1){
+		$parent_name = gethostbyaddr(inet_aton($parent_addr), AF_INET);
+	}
+	$parent_name = $parent_addr unless defined ($parent_name);
+	
+	# Detect parent's OS
+	my $id_os = 11;
+	if ($os_detect == 1) {
+		$id_os = guess_os ($pa_config, $parent_addr);
+	}
+
+	# Get the parent's parent
+	my $parent_parent = get_host_parent ($pa_config, $parent_addr, $dbh, $group, $max_depth-1, $resolve, $os_detect);
+
+	# Create the parent
+	my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $parent_name, $parent_addr, $group, $parent_parent, $id_os, '', 300, $dbh);
+	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		          VALUES (?, ?)', $addr_id, $agent_id);
+
+	return $agent_id;
 }
 
 ##############################################################################
@@ -444,14 +375,11 @@ sub get_host_parent ($$$$$$){
 ##############################################################################
 sub tcp_scan ($$$) {
 	my ($pa_config, $host, $portlist) = @_;
-	my $runcommand;
 	
 	my $nmap = $pa_config->{'nmap'};
-    eval {
-		$runcommand = `$nmap -p$portlist $host | grep open | wc -l`;
-	};
-	return 0 if ($@);
-	return $runcommand;
+    my $output = `$nmap -p$portlist $host | grep open | wc -l`;
+	return 0 if ($? != 0);
+	return $output;
 }
 
 ##########################################################################
@@ -459,42 +387,35 @@ sub tcp_scan ($$$) {
 ##########################################################################
 sub guess_os {
     my ($pa_config, $host) = @_;
-    my $nmap = $pa_config->{'nmap'};
+    
+    # Use xprobe2 if available
 	my $xprobe = $pa_config->{'xprobe2'};
-
-    # if xprobe2 not available, use nmap, if not, not able to detect OS	
-	if (! -e $xprobe){
-	    return 10 if (! -e $nmap);
-	}
-	
-	# Execute Nmap (4.x) or Xprobe2
-    my $output = ''; 
-    eval {
-    	if (-e $xprobe){
-    		$output = `$xprobe $host 2> /dev/null | grep 'Running OS' | head -1`;
-    	} else {
-			$output = `$nmap -F -O $host 2> /dev/null | grep 'Aggressive OS guesses'`;
-    	}
-    };
-
-	# Check for errors
-    return 10 if ($@);
+   	if (-e $xprobe){
+    		my $output = `$xprobe $host 2> /dev/null | grep 'Running OS' | head -1`;
+    		return 10 if ($? != 0);
+    		return pandora_get_os ($output);
+    }
+    
+    # Use nmap by default
+    my $nmap = $pa_config->{'nmap'};
+	my $output = `$nmap -F -O $host 2> /dev/null | grep 'Aggressive OS guesses'`;
+	return 10 if ($? != 0);
 	return pandora_get_os ($output);
 }
 
 ##########################################################################
-# Return the ID of the agent with the given IP.
+# Return the agent given the IP address.
 ##########################################################################
 sub get_agent_from_addr ($$) {
 	my ($dbh, $ip_address) = @_;
 
 	return 0 if (! defined ($ip_address) || $ip_address eq '');
 
-	my $agent_id = get_db_value ($dbh, 'SELECT id_agent FROM taddress, taddress_agent, tagente
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM taddress, taddress_agent, tagente
 	                                    WHERE tagente.id_agente = taddress_agent.id_agent
 	                                    AND taddress_agent.id_a = taddress.id_a
 	                                    AND ip = ?', $ip_address);
-	return (defined ($agent_id)) ? $agent_id : -1;
+	return $agent
 }
 
 ##########################################################################

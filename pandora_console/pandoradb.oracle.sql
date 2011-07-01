@@ -703,7 +703,11 @@ CREATE TABLE trecon_task (
 	field1 VARCHAR2(250) default '',
 	field2 VARCHAR2(250) default '',
 	field3 VARCHAR2(250) default '',
-	field4 VARCHAR2(250) default ''
+	field4 VARCHAR2(250) default '',
+	os_detect NUMBER(5, 0) default 1 NOT NULL,
+	resolve_names NUMBER(5, 0) default 1 NOT NULL,
+	parent_detection NUMBER(5, 0) default 1 NOT NULL,
+	parent_recursion NUMBER(5, 0) default 1 NOT NULL
 );
 CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
 

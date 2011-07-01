@@ -1,3 +1,22 @@
+2011-07-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	  godmode/servers/manage_recontask.php,
+	  godmode/servers/manage_recontask_form.php: Changes needed by the
+	  improved Recon Server.
+
+2011-06-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_events.php: Do not update validated events.
+
+2011-06-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/events_list.php,
+	  operation/events/events.php: Improved event behaviour.
+
 2011-06-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/dialog.css
@@ -42,6 +61,7 @@
 	general/pandora_help.php
 	general/logon_ok.php: Css style improvements.
 
+>>>>>>> .r4506
 2011-06-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css

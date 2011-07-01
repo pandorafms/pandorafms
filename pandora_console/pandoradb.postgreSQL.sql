@@ -567,7 +567,11 @@ CREATE TABLE "trecon_task" (
 	"field1" varchar(250) NOT NULL default '',
 	"field2" varchar(250) NOT NULL default '',
 	"field3" varchar(250) NOT NULL default '',
-	"field4" varchar(250) NOT NULL default ''
+	"field4" varchar(250) NOT NULL default '',
+	"os_detect" SMALLINT NOT NULL default 1,
+	"resolve_names" SMALLINT NOT NULL default 1,
+	"parent_detection" SMALLINT NOT NULL default 1,
+	"parent_recursion" SMALLINT NOT NULL default 1
 );
 CREATE INDEX "trecon_task_id_recon_server_idx" ON "trecon_task"("id_recon_server");
 

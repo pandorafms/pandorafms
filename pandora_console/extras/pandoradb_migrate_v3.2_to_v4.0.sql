@@ -188,3 +188,13 @@ ALTER TABLE `tagente_modulo` ADD INDEX module(id_modulo);
 -- -----------------------------------------------------
 
 ALTER TABLE `tevento` ADD COLUMN (`tags` text NOT NULL);
+
+-- -----------------------------------------------------
+-- Table `trecon_task`
+-- -----------------------------------------------------
+
+ALTER TABLE `trecon_task` ADD COLUMN (`os_detect` tinyint(1) unsigned default '0');
+ALTER TABLE `trecon_task` ADD COLUMN (`resolve_names` tinyint(1) unsigned default '0');
+ALTER TABLE `trecon_task` ADD COLUMN (`parent_detection` tinyint(1) unsigned default '0');
+ALTER TABLE `trecon_task` ADD COLUMN (`parent_recursion` tinyint(1) unsigned default '0');
+

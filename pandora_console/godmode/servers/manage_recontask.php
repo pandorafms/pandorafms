@@ -72,7 +72,10 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 		$id_recon_script = 'NULL';
 	else
 		$id_network_profile = 0;
-		
+	$os_detect = (int) get_parameter ("os_detect", 0);
+	$resolve_names = (int) get_parameter ("resolve_names", 0);
+	$parent_detection = (int) get_parameter ("parent_detection", 0);
+	$parent_recursion = (int) get_parameter ("parent_recursion", 1);
 }
 
 // --------------------------------
@@ -98,6 +101,10 @@ if (isset($_GET["update"])) {
 		'field2' => $field2,
 		'field3' => $field3,
 		'field4' => $field4,
+		'os_detect' => $os_detect,
+		'resolve_names' => $resolve_names,
+		'parent_detection' => $parent_detection,
+		'parent_recursion' => $parent_recursion
 		);
 		
 	$where = array('id_rt' => $id);
@@ -141,7 +148,12 @@ if (isset($_GET["create"])) {
 		'field1' => $field1,
 		'field2' => $field2,
 		'field3' => $field3,
-		'field4' => $field4);
+		'field4' => $field4,
+		'os_detect' => $os_detect,
+		'resolve_names' => $resolve_names,
+		'parent_detection' => $parent_detection,
+		'parent_recursion' => $parent_recursion
+		);
 
 	if ($name != "") {
 		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))

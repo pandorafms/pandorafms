@@ -619,6 +619,10 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `field2` varchar(250) NOT NULL default '',
   `field3` varchar(250) NOT NULL default '',
   `field4` varchar(250) NOT NULL default '',
+  `os_detect` tinyint(1) unsigned default '0',
+  `resolve_names` tinyint(1) unsigned default '0',
+  `parent_detection` tinyint(1) unsigned default '0',
+  `parent_recursion` tinyint(1) unsigned default '0',
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

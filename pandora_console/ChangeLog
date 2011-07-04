@@ -1,3 +1,16 @@
+2011-07-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_networkmap.php
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	operation/agentes/networkmap.topology.php
+	operation/agentes/ver_agente.php
+	operation/agentes/networkmap.php
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Add to the topology
+	network maps a switch to show the snmp_inc modules with their 
+	ip addresses if they have for task 3296127
+
 2011-07-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql,

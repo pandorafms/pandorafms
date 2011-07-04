@@ -365,6 +365,26 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Agent').':</strong> ';
 		echo ui_print_truncate_text(modules_get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
 		
+		if($module['id_tipo_modulo'] == 18) {
+			echo '<strong>'.__('Address').':</strong> ';
+			
+			// Get the IP/IPs from the module description
+			// Always the IP is the last part of the description (after the last space)
+			$ips = explode(' ', $module['descripcion']);
+			$ips = $ips[count($ips)-1];
+			
+			$ips = explode(',', $ips);
+			if(count($ips) == 1) {
+				echo $ips[0];
+			}
+			else {
+				echo '<ul style="display:inline;">';
+				foreach ($ips as $ip) {
+					echo "<li>$ip</li>";
+				}
+				echo '</ul>';
+			}
+		}
 		return;
 	}
 

@@ -1361,7 +1361,8 @@ CREATE TABLE tnetwork_map (
 	zoom BINARY_DOUBLE default 1,
 	distance_nodes BINARY_DOUBLE default 2.5,
 	center NUMBER(10, 0) default 0 NOT NULL,
-	contracted_nodes CLOB
+	contracted_nodes CLOB,
+	show_snmp_modules NUMBER(5, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;

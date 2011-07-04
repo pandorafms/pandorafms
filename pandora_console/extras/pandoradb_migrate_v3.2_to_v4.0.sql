@@ -190,11 +190,7 @@ ALTER TABLE `tagente_modulo` ADD INDEX module(id_modulo);
 ALTER TABLE `tevento` ADD COLUMN (`tags` text NOT NULL);
 
 -- -----------------------------------------------------
--- Table `trecon_task`
+-- Table `tnetwork_map`
 -- -----------------------------------------------------
 
-ALTER TABLE `trecon_task` ADD COLUMN (`os_detect` tinyint(1) unsigned default '0');
-ALTER TABLE `trecon_task` ADD COLUMN (`resolve_names` tinyint(1) unsigned default '0');
-ALTER TABLE `trecon_task` ADD COLUMN (`parent_detection` tinyint(1) unsigned default '0');
-ALTER TABLE `trecon_task` ADD COLUMN (`parent_recursion` tinyint(1) unsigned default '0');
-
+ALTER TABLE `tnetwork_map` ADD COLUMN `show_snmp_modules` TINYINT(1) UNSIGNED  NOT NULL DEFAULT 0;

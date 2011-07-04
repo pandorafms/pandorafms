@@ -42,7 +42,7 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 }
 
 // Generate a dot graph definition for graphviz
-function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $id_networkmap = 0) {
+function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $id_networkmap = 0, $show_snmp_modules = 0) {
 	$parents = array();
 	$orphans = array();
 
@@ -62,18 +62,45 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 	
 	// Parse agents
 	$nodes = array ();
+	$node_count = 1;
+
 	foreach ($agents as $agent) {
 		// Save node parent information to define edges later
 		if ($agent['id_parent'] != "0") {
-			$parents[$agent['id_agente']] = $agent['id_parent'];
+			$parents[$node_count] = $agent['id_parent'];
 		} else {
-			$orphans[$agent['id_agente']] = 1;
+			$orphans[$node_count] = 1;
 		}
 		
-		$agent['id_node'] = $agent['id_agente'];
+		$agent['id_node'] = $node_count;
 	
+		$agent['type'] = 'agent';
+
 		// Add node
-		$nodes[$agent['id_agente']] = $agent;
+		$nodes[$node_count] = $agent;
+		
+		if($show_snmp_modules) {
+			// Get agent modules data of snmp_proc type
+			$modules = agents_get_modules ($agent['id_agente'], false, array('disabled' => 0, 'id_tipo_modulo' => 18), true, false);
+			// Parse modules
+			foreach ($modules as $key => $module) {
+				$node_count ++;
+				$agent_module = modules_get_agentmodule($key);
+
+				$alerts_module = db_get_sql('SELECT count(*) as num
+					FROM talert_template_modules WHERE id_agent_module = '.$key);
+									
+				// Save node parent information to define edges later
+				$parents[$node_count] = $agent_module['parent'] = $agent['id_node'];
+					
+				$agent_module['id_node'] = $node_count;
+
+				$agent_module['type'] = 'module';
+				// Add node
+				$nodes[$node_count] = $agent_module;
+			}
+		}
+		$node_count++;
 	}
 	
 	if (empty ($nodes)) {
@@ -88,7 +115,14 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 			continue;
 		}
 
-		$graph .= networkmap_create_agent_node ($node , $simple, $font_size)."\n\t\t";
+		switch($node['type']){
+			case 'agent':
+				$graph .= networkmap_create_agent_node ($node , $simple, $font_size)."\n\t\t";
+				break;
+			case 'module':
+				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
+				break;
+		}
 	}
 
 	// Define edges

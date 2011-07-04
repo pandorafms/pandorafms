@@ -1111,7 +1111,8 @@ CREATE TABLE "tnetwork_map" (
 	"zoom" DOUBLE PRECISION default 1,
 	"distance_nodes" DOUBLE PRECISION default 2.5,
 	"center" INTEGER NOT NULL default 0,
-	"contracted_nodes" TEXT
+	"contracted_nodes" TEXT,
+	"show_snmp_modules" SMALLINT NOT NULL default 0,
 );
 
 -- -----------------------------------------------------

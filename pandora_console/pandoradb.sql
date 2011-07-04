@@ -1178,6 +1178,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
   `distance_nodes` FLOAT UNSIGNED NOT NULL DEFAULT 2.5,
   `center` INT UNSIGNED NOT NULL DEFAULT 0,
   `contracted_nodes` TEXT,
+  `show_snmp_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
    PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

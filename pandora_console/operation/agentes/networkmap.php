@@ -81,6 +81,7 @@ if($save_networkmap || $update_networkmap) {
 	$ranksep = (float) get_parameter ('ranksep', 2.5);
 	$simple = (int) get_parameter ('simple', 0);
 	$regen = (int) get_parameter ('regen', 0);
+	$show_snmp_modules = (int) get_parameter ('show_snmp_modules', 0);
 	$font_size = (int) get_parameter ('font_size', 12);
 	$group = (int) get_parameter ('group', 0);
 	$module_group = (int) get_parameter ('module_group', 0);
@@ -91,7 +92,8 @@ if($save_networkmap || $update_networkmap) {
 	$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
 							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
 							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
-							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center));
+							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center, 
+							'show_snmp_modules' => (int)$show_snmp_modules));
 	$message = ui_print_result_message ($result,
 		__('Network map saved successfully'),
 		__('Could not save network map'), '', true);
@@ -129,6 +131,7 @@ if(!$update_networkmap && !$save_networkmap && $id_networkmap != 0) {
 	$ranksep = $networkmap_data['distance_nodes'];
 	$simple = $networkmap_data['simple'];
 	$regen = $networkmap_data['regenerate'];
+	$show_snmp_modules = $networkmap_data['show_snmp_modules'];
 	$font_size = $networkmap_data['font_size'];
 	$group = $networkmap_data['id_group'];
 	$module_group = $networkmap_data['id_module_group'];
@@ -193,7 +196,8 @@ if(!$nomaps && $id_networkmap != 0) {
 					&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
 					&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
 					&amp;modwithalerts='.$modwithalerts.'&amp;hidepolicymodules='.$hidepolicymodules.'
-					&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'">' . 
+					&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'
+					&amp;show_snmp_modules='.(int)$show_snmp_modules.'">' . 
 				html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
 }
 
@@ -253,6 +257,13 @@ if($activeTab == 'groups' || $activeTab == 'policies'){
 	$options_form .= html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
 	$options_form .= '</td>';
 }
+
+if($activeTab == 'topology') {
+	$options_form .= '<td valign="top">' . __('Show interfaces') . '<br />';
+	$options_form .= html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
+	$options_form .= '</td>';
+}
+
 $options_form .= '<td valign="top">' . __('Layout') . '<br />';
 $options_form .= html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
 $options_form .= '</td>';

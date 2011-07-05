@@ -1,3 +1,9 @@
+2011-07-05  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Fixed SNMP PROC
+	modules always return critical state when snmp data contains newline
+	character from the end of a string.
+
 2011-06-13  Sancho Lerena <slerena@artica.es>
 
         * Tools.pm: Avoid errors when provide an empty string to md5.

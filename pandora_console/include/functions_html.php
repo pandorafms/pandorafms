@@ -1376,7 +1376,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 		var text = document.createTextNode(str);
 		div.appendChild(text);
 		return div.innerHTML;
-	};
+	}
 	
 		$(document).ready (function () {		
 			$("#text-<?php echo $name; ?>").autocomplete(

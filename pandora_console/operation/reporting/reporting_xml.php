@@ -169,7 +169,7 @@ $xml["group"]["name"] = io_safe_output_xml ($group_name);
 
 if ($contents === false) {
 	$contents = array ();
-};
+}
 
 xml_array ($xml);
 

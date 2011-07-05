@@ -49,7 +49,7 @@ if (is_ajax ()) {
                        		$filter .= ' OR ';
                 	}
                 	$filter .= 'id_agent=' . $id_agent;
-        	};
+        	}
 			$alert_compounds = alerts_get_alert_compounds ($filter, array('id', 'name'));
 			echo json_encode (index_array ($alert_compounds, 'id', 'name'));
 			return;
@@ -177,7 +177,7 @@ else {
                         $filter .= ' OR ';
                 }
                 $filter .= 'id_agent=' . $id_agent;
-        };
+        }
 	$alert_compounds = alerts_get_alert_compounds ($filter, array('id', 'name'));
 }
 $table->data[3][0] = __('Alert compounds');

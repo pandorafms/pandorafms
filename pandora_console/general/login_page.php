@@ -24,7 +24,7 @@ if (!empty ($page) && !empty ($sec)) {
 
 echo '<div class="databox_login" id="login">';
 
-	//echo '<h1>Put here your custom welcome message</h1>";
+//	echo "<h1>Put here your custom welcome message</h1>";
 
 //echo '<br /><br /><br />';
 echo '
@@ -34,7 +34,7 @@ echo '
 
 if (isset ($login_failed)) {
 //	echo '<tr><td colspan="3">';
-	echo '<div style="margin-top:-35px;">';
+	echo '<div id="error_login">';
 	echo '<h3 class="error">'.__('Login failed').': '.$config["auth_error"].'</h3>';
 	echo '</div>';
 //	echo '</td></tr>';
@@ -53,13 +53,13 @@ if (!empty ($page) && !empty ($sec)) {
 
 // Replace the following with your own URL and logo.
 // A mashup of the Pandora FMS logo and your companies highly preferred
-echo '<a href="http://pandorafms.org" title="Go to pandorafms.org...">';
+echo '&nbsp;&nbsp;<a href="http://pandorafms.org" title="Go to pandorafms.org...">';
 html_print_image ("images/pandora_logo.png", false, array ("alt" => "logo", "border" => 0));
 echo '</a><br />';
 
 // This prints the current pandora console version.
 // For stable/live function it might be wise to comment it out
-echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : ''); 
+echo '&nbsp;&nbsp;&nbsp;' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : ''); 
 	
 /* CUSTOM BRANDING ENDS HERE */
 
@@ -67,9 +67,11 @@ echo '</td><td class="f9b">
 		'.__('Login').':<br />'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).'
 	</td></tr>
 	<tr><td class="f9b">
+	<br>
 		'.__('Password').':<br />'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).'
 	</td></tr>
 	<tr><td align="center">
+	<br>
 		'.html_print_submit_button ("Login",'',false,'class="sub next"',true).'
 	</td></tr>
 	</table>

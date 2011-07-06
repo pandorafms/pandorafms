@@ -300,8 +300,8 @@ $table->class = 'alert_list';
 $table->width = '98%';
 $table->size = array ();
 
-$table->align[2] = 'center';
-$table->align[3] = 'center';
+$table->align[2] = 'left';
+$table->align[3] = 'left';
 $table->align[4] = 'center';
 $table->align[5] = 'center';
 
@@ -355,8 +355,6 @@ $table->valign[2] = 'middle';
 $table->valign[3] = 'middle';
 $table->valign[4] = 'middle';
 $table->valign[5] = 'middle';
-$table->align[2] = 'center';
-$table->align[3] = 'center';
 
 /*if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->align[5] = 'center';

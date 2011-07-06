@@ -47,7 +47,7 @@ if (isset($_GET["server"])) {
 	html_print_table ($table);
 
 
-	echo '<div class="action-buttons" style="width: 450px">';
+	echo '<div class="action-buttons" style="width: 98%">';
 	echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
 	echo "</div>";
 
@@ -94,8 +94,7 @@ else {
 		$table->align[3] = "center";
 		$table->align[4] = "center";
 		$table->align[5] = "center";
-		$table->align[6] = "center";
-		$table->align[7] = "center";
+		$table->align[6] = "left";
 		$table->style = array ();
 		$table->style[0] = 'font-weight: bold';
 		$table->head = array ();
@@ -106,9 +105,12 @@ else {
 		$table->head[4] = __('Started');
 		$table->head[5] = __('Updated');
 		
+		$table->size = array();
+		$table->size[6] = '50px';
+		
 		//Only Pandora Administrator can delete servers
 		if (check_acl ($config["id_user"], 0, "PM")) {
-			$table->head[6] = __('Delete');
+			$table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
 		}
 		
 		foreach ($servers as $server) {
@@ -127,9 +129,13 @@ else {
 			$data[4] = human_time_comparation ($server["laststart"]);
 			$data[5] = human_time_comparation ($server["keepalive"]);
 
+			$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
+			$data[6] .= html_print_image ('images/config.png', true, array ('title' => __('Edit')));
+			$data[6] .= '</a>';
+
 			//Only Pandora Administrator can delete servers
 			if (check_acl ($config["id_user"], 0, "PM")) {
-				$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
+				$data[6] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
 				$data[6] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
 				$data[6] .= '</a>';
 			}

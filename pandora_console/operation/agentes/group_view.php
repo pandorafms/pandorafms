@@ -114,7 +114,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Group name
 	echo "<td style='text-align:center;'>";
-	echo ui_print_group_icon ($id_group, true);
+	echo ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
 	echo "</td>";
 	echo "<td style='font-weight: bold; font-size: 12px;'>";
 	echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";

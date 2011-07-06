@@ -88,7 +88,7 @@ if (isset ($_POST["template_id"])) {
 					'estado' => 0,
 					'id_agente' => $id_agente,
 					'utimestamp' => 0);
-				process_sql_insert('tagente_estado', $values);
+				db_process_sql_insert('tagente_estado', $values);
 			}
 			else {
 				echo '<h3 class="error">'.__('Error adding module').'</h3>';
@@ -118,16 +118,21 @@ foreach ($nps as $row) {
 	$select[$row["id_np"]] = $row["name"];
 }
 
-echo '<div>'.__('Template');
-html_print_select ($select, "template_id");
-echo '&nbsp;';
+echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
+echo "<tr><td class='datos' style='width:50%'>";
+html_print_select ($select, "template_id", '', '', '', 0, false, false, true, '', false, 'max-width: 200px !important');
+echo '</td>';
+echo '<td class="datos">';
 html_print_submit_button (__('Assign'), 'crt', false, 'class="sub next"');
-echo '</div></form>';
+echo '</td>';
+echo '</tr>';
+echo "</form>";
+echo "</table>";
+echo '</form>';
 
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
-echo "<h4>".__('Assigned modules')."</h4>";
 
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -143,7 +148,7 @@ if ($result === false) {
 	$result = array ();
 }
 
-$table->width = '95%';
+$table->width = '98%';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = "databox";
@@ -162,7 +167,7 @@ $table->align[3] = "center";
 foreach ($result as $row) {
 	$data = array ();
 	
-	$data[0] = $row["nombre"];
+	$data[0] = '<span style="font-size: 7.2pt">' . $row["nombre"];
 	if ($row["id_tipo_modulo"] > 0) {
 		$data[1] = html_print_image("images/" . modules_show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
 	} else {
@@ -170,9 +175,9 @@ foreach ($result as $row) {
 	}
 	$data[2] = mb_substr ($row["descripcion"], 0, 60);
 	
-	$data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'">' . html_print_image("images/cross.png", true, array("border" => "0", "alt" => __('Delete'), "onclick" => "if (!confirm('".__('Are you sure?') . "')) return false;")) . '</a>&nbsp;';
+	$data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'">' . html_print_image("images/cross.png", true, array("border" => "0", "alt" => __('Delete'), "onclick" => "if (!confirm('".__('Are you sure?') . "')) return false;")) . '</a>&nbsp;&nbsp;';
 	
-	$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row["id_agente_modulo"].'">' . html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update')))  . '</a>';
+	$data[3] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row["id_agente_modulo"].'">' . html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update')))  . '</a>';
 	
 	array_push ($table->data, $data);
 }

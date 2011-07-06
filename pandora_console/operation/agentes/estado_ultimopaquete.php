@@ -57,10 +57,6 @@ switch ($config["dbtype"]) {
 $label_group = 0;
 $last_label = "";
 
-// Title
-echo "<h4>".__('Display of last data modules received by agent');
-echo "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data'>" . html_print_image('images/refresh.png', true, array("alt" => '')) . "</a>";
-echo "</h4>";
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
@@ -315,12 +311,12 @@ foreach ($modules as $module) {
 			$last_label = $nombre_grupomodulo;
 			$texto = $texto. "
 			<td class='$tdcolor' align='center' colspan='7'>
-			<b>".$nombre_grupomodulo."</b></td>";
+			<b><span style='font-size: 7.5pt'>".$nombre_grupomodulo."</span></b></td>";
 		}
 	}
 	$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 	echo "<td class='".$tdcolor."_id' title='".io_safe_output($module["nombre"])."'>";
-	ui_print_string_substr ($module["nombre"]);
+	ui_print_string_substr ($module["nombre"], 35, false, 10);
 	echo "</td><td class='".$tdcolor."'> ";
 	
 	ui_print_moduletype_icon ($module["id_tipo_modulo"]);

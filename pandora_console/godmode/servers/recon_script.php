@@ -58,12 +58,12 @@ if ($create != ""){
 if (($create != "") OR ($view != "")){
 	
 	if ($create != "")
-		ui_print_page_header (__('Recon script creation'), "", false, "", true);
+		ui_print_page_header (__('Recon script creation') . ui_print_help_icon("reconscript_definition", true), "", false, "", true);
 	else {
-		ui_print_page_header (__('Recon script update'), "", false, "", true);
+		ui_print_page_header (__('Recon script update') . ui_print_help_icon("reconscript_definition", true), "", false, "", true);
 		$id_recon_script = get_parameter ("view","");
 	}
-	ui_print_help_icon("reconscript_definition");
+
 
 	if ($create == "") 
 		echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&update_reconscript=$id_recon_script'>";
@@ -195,7 +195,7 @@ else {
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">'. __('There are no recon scripts in the system');
+		echo '<div class="nf">'. __('There are no recon scripts in the system') . '</div>';
 		echo "<br>";
 	}
 	echo "<table width=98%>";

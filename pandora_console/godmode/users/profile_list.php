@@ -69,7 +69,7 @@ $table->head[7] = "UM" . ui_print_help_tip (__('Users management'), true);
 $table->head[8] = "DM" . ui_print_help_tip (__('Database management'), true);
 $table->head[9] = "LM" . ui_print_help_tip (__('Alerts management'), true);
 $table->head[10] = "PM" . ui_print_help_tip (__('Systems management'), true);
-$table->head[11] = __('Delete');
+$table->head[11] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
@@ -90,7 +90,8 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = '<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
+	$data[11] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
+	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 	

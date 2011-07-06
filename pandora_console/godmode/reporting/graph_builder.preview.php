@@ -133,7 +133,7 @@ foreach ($graphRows as $graphRow) {
 $modules = implode(',', $module_array);
 $weights = implode(',', $weight_array);
 
-echo "<table class='databox_frame' cellpadding='0' cellspacing='0'>";
+echo "<table class='databox_frame' cellpadding='0' cellspacing='0' style='width:98%'>";
 echo "<tr><td>";
 
 if(!empty($modules)) {
@@ -143,13 +143,13 @@ if(!empty($modules)) {
 				'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked, $unixdate);
 }
 else {
-	echo "<div class='nf'>".__('Empty graph')."</div>";
+	echo "<div class='nf' style='width: 98%'>".__('Empty graph')."</div>";
 }
 
 echo "</td></tr></table>";
 
 echo "<form method = 'POST' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=preview&edit_graph=1&id=$id_graph'>";
-echo "<table class='databox_frame' cellpadding='4' cellspacing='4'>";
+echo "<table class='databox_frame' cellpadding='4' cellspacing='4' style='width: 98%'>";
 echo "<tr>";
 echo "<td>";
 echo "<b>".__('Date')."</b>"." ";

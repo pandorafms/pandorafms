@@ -6,7 +6,7 @@ Description: The default Pandora FMS theme layout
 
 // Pandora FMS - http://pandorafms.com
 // ==========================================================
-// Copyright (c) 2004-2010 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2011 Artica Soluciones Tecnológicas S.L
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,7 @@ h4 {
 	padding-top: 5px;
 	font-size: 13px;
 	color: #000;
+	text-transform: none;
 }
 a {
 	color: #000;
@@ -145,6 +146,7 @@ div#login {
 	border-right: solid 2px #000;
 }
 div#login_in, #login_f {
+	padding-top: 30px;
 	margin: 0 auto;
 	width: 400px;
 }
@@ -190,8 +192,8 @@ div#page {
 	width: 960px;
 	background: #fff;
 	clear: both;
-	border-bottom: solid 5px #3f4e2f;
-	border-top: solid 5px #3f4e2f;
+	border-bottom: solid 5px #80ab51;
+	border-top: solid 5px #80ab51;
 }
 div#main {
 	width: 785px;
@@ -400,13 +402,17 @@ input.icon_min {
 input.icon_min[disabled] {
 	background: #e5e5e5 url(../../images/photo.disabled.png) no-repeat center;
 }
+#toolbox {
+	margin-top: 10px;
+}
 table, img {
 	border: 0px;
 }
 th {
 	color: #fff;
-	background-color: #9eac8b;
+	background-color: #90b165;
 	text-align:center;
+	font-size: 7pt;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
 tr.datosf9, tr.datos2, tr.datos2t, 
@@ -442,13 +448,13 @@ tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
 .bg { /* op menu */
-	background-color: #3f4e2f;
+	background-color: #80ab51;
 }
 .bg2 { /* main page */
-	background-color: #ce5c00;
+	background-color: #e79b5d;
 }
 .bg3 { /* godmode */
-	background-color: #ce5c00;
+	background-color: #e79b5d;
 }
 .bg4 { /* links */
 	background-color: #5385bf;
@@ -569,10 +575,10 @@ a.mn, .gr {
 	font-family: Arial, Verdana, sans-serif, Helvetica;
 }
 div.nf {
-	background: url(../../images/info.png) no-repeat;
+	background: url(../../images/info.png) no-repeat scroll 0 50% transparent;
 	color: #ac4444;
 	margin-left: 7px;
-	padding: 2px 1px 6px 25px;
+	padding: 8px 1px 6px 25px;
 }
 div.title_line {
 	background-color: #4e682c;
@@ -581,7 +587,7 @@ div.title_line {
 }
 #menu_tab_frame, #menu_tab_frame_view {
 	display: block !important;
-	background:#ce5c00 none repeat scroll 0 0;
+	background:#e79b5d none repeat scroll 0 0;
 	border-bottom:1px solid #778866;
 /*	float:left; */
 	margin-left:-8px;
@@ -590,7 +596,7 @@ div.title_line {
 	width:100%;
 }
 #menu_tab_frame_view {
-	background: #66AA44;
+	background: #9bc969;
 }
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
@@ -605,18 +611,18 @@ div.title_line {
 	background: #d4ddc6;
 	padding: 3px 5px;
 	color: #666;
-	border-left: 2px solid #778866;
+	border-left: 2px solid #80AB51;
 	font-weight: bold;
 	line-height: 18px;
 }
 
 #menu_tab li.separator_view {
-	background: #66AA44;
+	background: #9BC969;
 	padding: 4px;
 }
 
 #menu_tab li.separator {
-	background: #ce5c00;
+	background: #e79b5d;
 	padding: 4px;
 }
 
@@ -654,7 +660,7 @@ div.title_line {
 }
 #menu_tab_left li a, #menu_tab_left li span {
 /*	text-transform: uppercase; */
-	background: #ce5c00;
+	background: #e79b5d;
 	padding: 2px 5px 2px 5px;
 	color: #fff;
 	font-weight: bold;
@@ -760,6 +766,18 @@ span.rmess, span.nrmess {
 }
 .databox {
 	background-color: #fafafa;
+}
+/* Style for login form */
+.databox_login {
+	margin-top: 100px !important;
+	width: 550px !important;
+	height: 290px;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	margin-left: 0px;
+	border: none !important; 
+	background-color: #fafafa;
+	background: url(../../images/splash_pandora.png); 
 }
 .databox_color {
 	background-color: #fafafa;
@@ -982,6 +1000,9 @@ table#simple label {
 table#agent_list tr, table.alert_list tr {
 	vertical-align: top;
 }
+.toggle { border-collapse: collapse;}
+.toggle td { border-left: 1px solid #D3D3D3;}
+
 ul.actions_list {
 	list-style-image: url(../../images/arrow.png);
 	list-style-position: inside;
@@ -1080,7 +1101,7 @@ ul.action_list li div {
 	margin-left: 15px;
 }
 span.action_name {
-	float: left;
+	float: none;
 }
 div.actions_container {
 	overflow:auto;
@@ -1188,4 +1209,63 @@ div.warn {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+}
+
+/* Pandora width style theme */
+
+div#container {
+	width: 95%;
+}
+div#page {
+	width: auto;
+}
+div#main {
+	width: auto;
+	float: none;
+	padding-left: 0px;
+	padding-top: 0px;
+	padding-bottom: 20px;
+	margin-left: 175px;
+	margin-right: 20px;
+}
+div#head {
+	width: auto;
+}
+div#foot {
+	width: auto;
+}
+ol.steps {
+	margin-bottom: 70px;
+}
+div#steps_clean {
+	display:none;
+}
+#menu_tab_frame, #menu_tab_frame_view {
+	width: 100%;
+	padding-right: 28px;
+	margin-left: -8px;
+}
+div#events_list {
+	float: left;
+	width: 100%;
+}
+span#logo_text1 {
+	font: bolder 3em Arial, Sans-serif;
+	letter-spacing: -2px;
+	color: #eee;
+}
+span#logo_text2 {
+	font: 3em Arial, Sans-serif;
+	letter-spacing: -2px;
+	color: #aaa;
+}
+div#logo_text3 {
+	text-align: right;
+	font: 2em Arial, Sans-serif;
+	letter-spacing: 6px;
+	color: #aaa;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-left: 4px;
+	padding-top: 0px;
 }

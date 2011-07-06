@@ -144,11 +144,13 @@ if ($commands === false)
 foreach ($commands as $command) {
 	$data = array ();
 	
+	$data[0] = '<span style="font-size: 7.5pt">';
 	if (! $command['internal'])
-		$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'">'.
+		$data[0] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'">'.
 			$command['name'].'</a>';
 	else
-		$data[0] = $command['name'];
+		$data[0] .= $command['name'];
+	$data[0] .= '</span>';
 	$data[1] = $command['id'];
 	$data[2] = $command['description'];
 	$data[3] = '';

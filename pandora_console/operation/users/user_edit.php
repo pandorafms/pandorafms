@@ -189,6 +189,8 @@ $table->style[0] = 'font-weight: bold';
 $table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
+$table->align = array();
+$table->align[1] = 'center';
 
 $table->data = array ();
 
@@ -199,7 +201,7 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data[0] = '<b>'.profile_get_name ($profile["id_perfil"]).'</b>';
-	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.groups_get_name ($profile["id_grupo"], true).'</a>';
+	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'"></a>';
 	array_push ($table->data, $data);
 }
 

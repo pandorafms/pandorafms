@@ -373,7 +373,7 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 40, true)."</a></strong>";
+		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 60, true, true, true, '[&hellip;]', 'font-size: 7pt')."</a></strong>";
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 			echo "</em>";
@@ -453,7 +453,7 @@ $(document).ready (function () {
 		},
 		function () {
 			$(".actions", this).css ("visibility", "hidden");
-		});
+	});
 
 	$("#ag_group").click (
 	function () {

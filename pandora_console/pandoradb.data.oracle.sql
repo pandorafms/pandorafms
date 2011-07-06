@@ -573,3 +573,12 @@ treport_custom_sql_insert(4, 'Group&#x20;view','=&#x20;tagente_modulo.id_agente_
 treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;',1);
 COMMIT;
 END;;
+
+--
+-- Dumping data for table `tskin`
+--
+BEGIN
+LOCK TABLE tskin IN EXCLUSIVE MODE;
+INSERT INTO tskin VALUES (1,'skin&#x20;default', 'skin_default', 'Default&#x20;skin&#x20;for&#x20;Pandora&#x20;FMS&#x20;web&#x20;console', 1);
+COMMIT;
+END;;

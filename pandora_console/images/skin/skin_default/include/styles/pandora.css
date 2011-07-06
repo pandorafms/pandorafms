@@ -40,7 +40,8 @@ body.pure {
 body[style] {
 	background: #FFFFFF none!important;
 }
-
+.toggle { border-collapse: collapse;}
+.toggle td { border-left: 1px solid #D3D3D3;}
 
 
 input, textarea {
@@ -620,6 +621,7 @@ th {
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
+	font-size: 7pt;
 }
 
 td {
@@ -1127,7 +1129,8 @@ img.img_title[src="images/configure_agent.png"] {
 
 /* New styles for data box */
 .databox, .databox_color, .databox_frame {
-	margin: 0px auto 5px auto;
+/*	margin: 0px auto 5px auto;	*/
+	margin-bottom: 5px;
 	border: 1px solid #D0E6FD;
 	
 	-moz-border-radius: 5px;

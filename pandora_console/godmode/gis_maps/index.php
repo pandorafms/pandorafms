@@ -70,12 +70,14 @@ $table->head[1] = __('Group');
 $table->head[2] = __('View');
 if ($display_default_column)
 	$table->head[3] = __('Default');
-$table->head[4] = __('Delete');
+$table->head[4] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align[1] = 'center';
 $table->align[2] = 'center';
 $table->align[3] = 'center';
 $table->align[4] = 'center';
+$table->size = array();
+$table->size[4] = '60px';
 
 $maps = db_get_all_rows_in_table ('tgis_map','map_name');
 
@@ -106,8 +108,9 @@ if (!$maps) {
 			$default_button = html_print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true);
 			array_push($table_info, $default_button);
 		}
-		$delete_button = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . html_print_image ("images/cross.png", true).'</a>';
-		array_push ($table_info, $delete_button);
+		$buttons = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . html_print_image ("images/config.png", true).'</a>&nbsp;&nbsp;';
+		$buttons .= '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . html_print_image ("images/cross.png", true).'</a>';
+		array_push ($table_info, $buttons);
 		$table->data[] = $table_info;
 	}
 	html_print_table($table);

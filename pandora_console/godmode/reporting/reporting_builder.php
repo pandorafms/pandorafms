@@ -72,9 +72,9 @@ switch ($action) {
 			$table->head[1] = __('Description');
 			$table->head[2] = __('Private');
 			$table->head[3] = __('Group');
-			$table->head[4] = __('Delete');
+			$table->head[4] = '<span title="Operations">' . __('Op.') . '</span>';
 			$table->size = array ();
-			$table->size[4] = '40px';
+			$table->size[4] = '60px';
 			
 			foreach ($reports as $report) {
 			
@@ -96,12 +96,17 @@ switch ($action) {
 					$data[2] = __('No');
 					
 				$data[3] = ui_print_group_icon($report['id_group'], true);
-				$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+				$data[4] = '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
+				$data[4] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+				$data[4] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
+				$data[4] .= '</form>';
+						
+				$data[4] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 				$data[4] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 				$data[4] .= html_print_input_hidden ('action','delete_report', true);
 				$data[4] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
 					true, array ('title' => __('Delete')));
-					$data[4] .= '</form>';
+				$data[4] .= '</form>';
 				
 				array_push ($table->data, $data);
 							

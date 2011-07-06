@@ -70,7 +70,7 @@ echo '<b>'.__('Source agent').'</b><br /><br />';
 $agent_selected = get_parameter_post ("origen", 0);
 $agents = agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW")));
 
-html_print_select ($agents, "origen", $agent_selected, 'javascript:this.form.update_agent.click();', __('No agent selected'), '0', false, false, false, 'w130');
+html_print_select ($agents, "origen", $agent_selected, 'javascript:this.form.update_agent.click();', __('No agent selected'), '0', false, false, false, '', false, 'max-width:300px !important;');
 
 echo '&nbsp;&nbsp;';
 
@@ -82,11 +82,11 @@ echo '<b>'.__('Modules').'</b><br /><br />';
 $module_selected = get_parameter_post ("origen", array ());
 $modules = agents_get_modules ($module_selected, false, 'delete_pending != 1');
 
-html_print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', false, true, false, 'w130');
+html_print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', false, true, false, '', false, 'max-width: 300px !important;');
 
 echo '</div>'; //Left div
 
-echo '<div style="float:left; width:"98%";"><b>'.__('Purge data out of these limits').'</b><br /><br />';
+echo '<div style="float:left; width:\'98%\'; margin-left:20% "><b>'.__('Purge data out of these limits').'</b><br /><br />';
 echo '<table><tr><td>';
 echo __('Minimum').': ';
 echo '</td><td>';

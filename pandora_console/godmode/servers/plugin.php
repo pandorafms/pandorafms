@@ -70,12 +70,12 @@ if ($create != ""){
 if (($create != "") OR ($view != "")){
 	
 	if ($create != "")
-		ui_print_page_header (__('Plugin creation'), "", false, "", true);
+		ui_print_page_header (__('Plugin creation') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
 	else {
-		ui_print_page_header (__('Plugin update'), "", false, "", true);
+		ui_print_page_header (__('Plugin update') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
 		$plugin_id = get_parameter ("view","");
 	}
-	ui_print_help_icon("plugin_definition");
+
 
 	if ($create == "") 
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id'>";
@@ -86,7 +86,7 @@ if (($create != "") OR ($view != "")){
 	
 	echo '<tr><td class="datos">'.__('Name');
 	echo '<td class="datos">';
-	echo '<input type="text" name="form_name" size=30 value="'.$form_name.'"></td>';
+	echo '<input type="text" name="form_name" size=100 value="'.$form_name.'"></td>';
 	
 	echo '<tr><td class="datos2">'.__('Plugin command');
 	echo '<td class="datos2">';
@@ -231,7 +231,7 @@ else {
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Type')."</th>";
 		echo "<th>".__('Command')."</th>";
-		echo "<th>".__('Delete')."</th>";
+		echo "<th style='width:50px;'>" . '<span title="Operations">' . __('Op.') . '</span>' . "</th>";
 		$color = 0;
 		
 		foreach ($rows as $row) {
@@ -256,16 +256,17 @@ else {
 			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
 			echo "</td><td class=$tdcolor>";
+			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&view=".$row["id"]."'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
 			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">'. __('There are no plugins in the system');
+		echo '<div class="nf">'. __('There are no plugins in the system') . '</div>';
 		echo "<br>";
 	}
-	echo "<table width=730>";
+	echo "<table width='98%'>";
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";

@@ -231,11 +231,12 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
  * @param bool Set the input to allow multiple selections (optional, single selection by default).
  * @param bool Whether to sort the options or not (optional, unsorted by default).
  * @param string $style The string of style.
+ * @param mixed $size Max elements showed in the select or default (size=10).
  *
  * @return string HTML code if return parameter is true.
  */
 function html_print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false) {
+	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $size = false) {
 	
 	$output = "\n";
 
@@ -255,7 +256,12 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 		$attributes .= ' onchange="'.$script.'"';
 	}
 	if (!empty ($multiple)) {
-		$attributes .= ' multiple="multiple" size="10"';
+		if ($size !== false) {
+			$attributes .= ' multiple="multiple" size="' . $size . '"';
+		}
+		else {
+			$attributes .= ' multiple="multiple" size="10"';
+		}
 	}
 	if (!empty ($class)) {
 		$attributes .= ' class="'.$class.'"';
@@ -355,18 +361,19 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
  * @param bool $sort Whether to sort the options or not. Sorted by default.
  * @param bool $disabled if it's true, disable the select.
  * @param string $style The string of style.
+ * @param mixed $size Max elements showed in select or default (size=10) 
  *
  * @return string HTML code if return parameter is true.
  */
 function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
-	$multiple = false, $sort = true, $disabled = false, $style = false) {
+	$multiple = false, $sort = true, $disabled = false, $style = false, $size = false) {
 	global $config;
-	
+
 	$fields = array ();
 	$result = db_get_all_rows_sql ($sql);
 	if ($result === false)
 		$result = array ();
-	
+
 	foreach ($result as $row) {
 		$id = array_shift($row);
 		$value = array_shift($row);
@@ -378,7 +385,7 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
 		}
 	}
 	
-	return html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style);
+	return html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style,'', $size);
 }
 
 /**

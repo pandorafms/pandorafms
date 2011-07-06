@@ -159,7 +159,7 @@ if (isset ($_GET["new_msg"])) { //create message
 	html_print_input_hidden ("subject", urlencode ($new_subj));
 	html_print_input_hidden ("message", urlencode ($new_msg));
 	
-	echo '<div style="text-align:right; width:600px;">';
+	echo '<div style="text-align:right; width:98%;">';
 	html_print_submit_button (__('Reply'), "reply_btn", false, 'class="sub next"'); 
 	echo '</div></form>';
 	return;
@@ -244,7 +244,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 		html_print_table ($table);
 		echo '</form>';
 	}
-	echo '<div class="action-buttons" style="width:90%">';
+	echo '<div class="action-buttons" style="width:98%">';
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">';
 	html_print_submit_button (__('New message'), "send_mes", false, 'class="sub next"');
 	echo '</form></div>';

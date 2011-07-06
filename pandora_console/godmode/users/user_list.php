@@ -150,12 +150,12 @@ $table->head[2] = __('Last contact') . ' ' .
 	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
 $table->head[3] = __('Profile');
 $table->head[4] = __('Description');
-$table->head[5] = __('Delete');
+$table->head[5] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align[2] = "center";
 $table->align[3] = "center";
-$table->align[5] = "center";
-$table->size[5] = 40;
+$table->align[5] = "left";
+$table->size[5] = '45px';
 
 $info1 = array ();
 
@@ -228,10 +228,11 @@ foreach ($info as $user_id => $user_info) {
 	
 	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
 
+	$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
-		$data[5] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
+		$data[5] .= "&nbsp;&nbsp;<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 	} else {
-		$data[5] = ''; //Delete button not in this mode
+		$data[5] .= ''; //Delete button not in this mode
 	}
 	array_push ($table->data, $data);
 }

@@ -34,10 +34,11 @@ require_once ($config['homedir'] . '/include/functions_groups.php');
  * @param boolean $return Flag to return as string or not.
  * @param boolean $showTextInTitle Flag to show the text on title.
  * @param string $suffix String at the end of a strimmed string.
+ * @param string $style Style associated to the text.
  *
  * @return string Truncated text.
  */
-function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]') {
+function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]', $style = false) {
 	if ($numChars == 0) {
 		if ($return == true) {
 			return $text;
@@ -46,7 +47,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			echo $text;
 		}
 	} 
-	
+
 	$text = io_safe_output($text);
 	if ((strlen($text)) > ($numChars)) {
 		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
@@ -57,14 +58,34 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 		$truncateText=$truncateText . $truncateText2;
 		
 		if ($showTextInTitle) {
-			$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
+			if ($style !== false){
+				$truncateText = '<span style="' . $style . '" title="'.$text.'">'.$truncateText.'</span>';
+			}
+			else{
+				$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
+			}
 		}
 		if ($showTextInAToopTip) {			
-			$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
+			if ($style !== false){
+				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span></a>';
+			}	
+			else{
+				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
+			}
+		}
+		else{
+			if ($style !== false){
+				$truncateText = '<span style="' . $style . '">'.$truncateText.'</span>';
+			}				
 		}
 	}
 	else {
-		$truncateText = $text;
+		if ($style !== false){ 
+			$truncateText = '<span style="' . $style . '">' . $text . '</span>';
+		}
+		else{ 
+			$truncateText = $text;	
+		}
 	}
 	
 	if ($return == true) {
@@ -288,6 +309,8 @@ function ui_print_username ($username, $return = false) {
  * @param int Group id
  * @param bool Whether to return or print
  * @param string What path to use (relative to images/). Defaults to groups_small
+ * @param string Style for group image
+ * @param bool Whether the group have link or not
  *
  * @return string HTML code if return parameter is true.
  */
@@ -401,9 +424,9 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = 
 	$agent_name = (string) agents_get_name ($id_agent);
 	$agent_name_full = $agent_name;
 	if ($cutname) {
-		$agent_name = ui_print_truncate_text($agent_name, $cutoff);
+		$agent_name = ui_print_truncate_text($agent_name, $cutoff, true, true, true, '[&hellip;]', $style);
 	}
-	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b>'.$agent_name.'</b></a>';
+	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	
@@ -420,10 +443,11 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = 
  * @param bool Whether or not this is a combined alert
  * @param bool Whether to print the agent information with the module information
  * @param string Tab where the function was called from (used for urls)
+ * @param mixed Style for agent name or default (false)
  * 
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
-function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
+function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '', $agent_style = false) {
 
 	$actionText = "";
 	require_once ("include/functions_alerts.php");
@@ -521,13 +545,23 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	
 	$data[$index['agent_name']] = $disabledHtmlStart;
 	if ($compound) {
-		$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled);
+		if ($agent_style !== false) {
+			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled . " $agent_style");			
+		}
+		else { 
+			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled);
+		}
 	} 
 	elseif ($agent == 0) {
 		$data[$index['module_name']] .= mb_substr (modules_get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	} 
 	else {
-		$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
+		if ($agent_style !== false) {
+			$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled . " $agent_style");
+		}
+		else {
+			$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);		
+		}
 		$data[$index['module_name']] = mb_substr (modules_get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;

@@ -122,7 +122,7 @@ $table_simple->style[0] = 'font-weight: bold; vertical-align: top';
 $table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 
 $table_simple->data[0][0] = __('Name');
-$table_simple->data[0][1] = html_print_input_text ('name', $name, '', 20, 100, true, $disabledBecauseInPolicy);
+$table_simple->data[0][1] = html_print_input_text ('name', $name, '', 50, 100, true, $disabledBecauseInPolicy);
 $table_simple->data[0][2] = __('Disabled');
 $table_simple->data[0][3] = html_print_checkbox ("disabled", 1, $disabled, true);
 
@@ -245,14 +245,14 @@ if ($__code_from == 'modules') {
 	$__id_where = 'b.id_policy_module';
 	$__id = $__id_pol_mod;
 }
-$table_advanced->data[6][1] =  html_print_select_from_sql ("SELECT id_tag, name
+$table_advanced->data[6][1] = html_print_select_from_sql ("SELECT id_tag, name
 										FROM ttag 
 										WHERE id_tag NOT IN (
 											SELECT a.id_tag
 											FROM ttag a, $__table_modules b 
 											WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
 											ORDER BY name",
-	'id_tag_available[]', $id_tag, '',__('None'),'0', true, true, false, false);
+	'id_tag_available[]', $id_tag, '',__('None'),'0', true, true, false, false, 'width: 200px', '5');
 $table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 	
@@ -261,7 +261,7 @@ $table_advanced->data[6][4] =  html_print_select_from_sql ("SELECT a.id_tag, nam
 										FROM ttag a, $__table_modules b
 										WHERE a.id_tag = b.id_tag AND $__id_where = $__id
 										ORDER BY name",
-	'id_tag_selected[]', $id_tag, '',__('None'),'0', true, true, false, false);
+	'id_tag_selected[]', $id_tag, '',__('None'),'0', true, true, false, false, 'width: 200px', '5');
 //$table_advanced->data[6][4] .= html_print_input_hidden('id_tag_serialize', '');
 
 ?>

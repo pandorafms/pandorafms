@@ -324,7 +324,7 @@ foreach ($components as $component) {
 	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . '&duplicate_network_component=1&source_id=' . $component['id_nc'] . '">' . 
 		html_print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>';
-	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
+	$data[6] .= '&nbsp;&nbsp;<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . 
 		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
 		html_print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>';

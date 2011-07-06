@@ -84,7 +84,7 @@ echo "<b>".__('Latest date')."</b></td>";
 echo "<td class='datos'>".$result["latest_date"]."</td>";
 echo "</tr></table>";
 ?>
-<h3><?php echo __('Purge data') ?></h3>
+<h4><?php echo __('Purge data') ?></h4>
 <form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_audit">
 <table width='98%' cellpadding='4' cellspacing='4' class='databox'>
 <tr><td class='datos'>

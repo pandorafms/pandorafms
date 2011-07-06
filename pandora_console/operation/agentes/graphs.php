@@ -52,7 +52,7 @@ if (!$filter) {
 
 
 $table = null;
-$table->width = '90%';
+$table->width = '98%';
 
 $table->size = array();
 $table->size[0] = '20%';
@@ -124,7 +124,7 @@ else
 	$date = $utime;
 
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
-	echo "<h3>" . $modules[$idModuleShowGraph] . '</h3>';
+	echo "<h4>" . $modules[$idModuleShowGraph] . '</h4>';
 	$unit = modules_get_unit ($idModuleShowGraph);
 	echo grafico_modulo_sparse2($idModuleShowGraph, $period, $draw_events, $width, $height,
 		$modules[$idModuleShowGraph], null, $draw_alerts, $avg_only, false, $date, $unit);

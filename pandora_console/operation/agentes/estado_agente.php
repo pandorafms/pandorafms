@@ -348,14 +348,25 @@ foreach ($agents as $agent) {
 	
 	$data = array ();
 	
-	$data[0] = '';
+	$data[0] = '';		
+	$data[0] .= '<span class="left">';
+	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
+	$data[0] .= '</span>';
+	$data[0] .= '<div class="left actions" style="visibility: hidden; clear: left">';
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+	$data[0] .= ' | ';
+	$data[0] .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
+		$data[0] .= ' | ';		
+		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+	}
+	$data[0] .= '</div>';
+				
+	/*if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
 		$data[0] .= html_print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
 		$data[0] .= '</a>&nbsp;';
-	}
-		
-	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 40, 'none', true);
+	}*/
 	
 	$data[1] = ui_print_os_icon ($agent["id_os"], false, true);
 
@@ -431,6 +442,13 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 
 <script type="text/javascript">
 $(document).ready (function () {
+		
+	$("table#table1 tr").hover (function () {
+			$(".actions", this).css ("visibility", "");
+		},
+		function () {
+			$(".actions", this).css ("visibility", "hidden");
+	});		
 		
 	$("#group_id").click (
 	function () {

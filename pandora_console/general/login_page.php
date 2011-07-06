@@ -22,20 +22,22 @@ if (!empty ($page) && !empty ($sec)) {
 	}
 }
 
-echo '<div class="databox" id="login">';
+echo '<div class="databox_login" id="login">';
 
 	//echo '<h1>Put here your custom welcome message</h1>";
 
-echo '<br /><br />';
+//echo '<br /><br /><br />';
 echo '
 	<div id="login_in">
 		<form method="post" action="index.php'.$url.'">
 		<table cellpadding="4" cellspacing="1" width="420">';
 
 if (isset ($login_failed)) {
-	echo '<tr><td colspan="3">';
+//	echo '<tr><td colspan="3">';
+	echo '<div style="margin-top:-35px;">';
 	echo '<h3 class="error">'.__('Login failed').': '.$config["auth_error"].'</h3>';
-	echo '</td></tr>';
+	echo '</div>';
+//	echo '</td></tr>';
 }
 
 echo '<tr><td rowspan="3" align="left">';

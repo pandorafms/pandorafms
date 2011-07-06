@@ -114,16 +114,6 @@ echo '<form method="post" action="index.php?sec=gtag&sec2=godmode/tag/edit_tag&a
 echo '<div align=left style="width: 98%" class="pandora_form">';
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
-	echo "<tr>";
-		echo "<td>";
-		if ($action == "update"){ 
-			echo '<h3>'.__("Edit tag").'</h3>';
-		}
-		if ($action == "new"){
-			echo '<h3>'.__("New tag").'</h3>';
-		}
-		echo "</td>";
-	echo "</tr>";
 	echo "<tr>";	
 		echo "<td align=center>";
 		html_print_label (__("Name"),'name');

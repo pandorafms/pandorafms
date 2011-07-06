@@ -429,12 +429,7 @@ foreach ($result as $event) {
 	// Event description
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
 	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
-	if (strlen ($event["evento"]) > 50) {
-		$data[1] .= mb_substr (io_safe_output($event["evento"]), 0, 50)."...";
-	}
-	else {
-		$data[1] .= io_safe_output($event["evento"]);
-	}
+	$data[1] .= '<span style="font-size: 7.5pt;">' . io_safe_output($event["evento"]) . '</span>';
 	$data[1] .= '</a></span>';
 
 	if ($event["event_type"] == "system") {
@@ -533,13 +528,13 @@ foreach ($result as $event) {
 	array_push ($table->data, $data);
 	
 	//Hiden row with extended description
-	$string = '<table border="0" width="90%"><tr>';
-	$string .= '<td align="left" valign="top" width="25%">';
-	$string .= '<b>' . __('Event name') . ':</b></td><td align="left">';
+	$string = '<table width="90%" style="border:solid 1px #D3D3D3;" class="toggle"><tr>';
+	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
+	$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
 	$string .= io_safe_output($event["evento"]);
-	$string .= '</td></tr><tr>';
+	$string .= '</td></tr><tr style="border-left: solid 1px; #D3D3D3;">';
 	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Severity') . ':</b></td><td align="left">';
+	$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
 	$string .= html_print_image ($img_sev, true, 
 		array ("class" => "image_status",
 			"width" => 12,
@@ -548,18 +543,18 @@ foreach ($result as $event) {
 	$string .= ' '.get_priority_name ($event["criticity"]);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Type') . ':</b></td><td align="left">';
+	$string .= '<b>' . __('Type') . '</b></td><td align="left">';
 	$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Agent name') . ':</b></td><td align="left">';
+	$string .= '<b>' . __('Agent name') . '</b></td><td align="left">';
 	$string .= ui_print_agent_name ($event["id_agente"], true);
 	$string .= '</td></tr><tr>';
 	
 	
 	if ($event["id_agentmodule"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Agent module source') . ':</b></td><td align="left">';
+		$string .= '<b>' . __('Agent module source') . '</b></td><td align="left">';
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">';
 		$string .= db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]);
 		$string .= '</a></td></tr><tr>';
@@ -567,7 +562,7 @@ foreach ($result as $event) {
 	
 	if ($event["id_alert_am"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Alert source') . ':</b></td><td align="left">';
+		$string .= '<b>' . __('Alert source') . '</b></td><td align="left">';
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
 		$standby = db_get_value('standby', 'talert_template_modules', 'id', $event["id_alert_am"]);
 		if(!$standby) {
@@ -593,15 +588,14 @@ foreach ($result as $event) {
 	}
 	
 	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Group') . ':</b></td><td align="left">';
+	$string .= '<b>' . __('Group') . '</b></td><td align="left">';
 	$string .= ui_print_group_icon ($event["id_grupo"], true);
-	$string .= ' '. groups_get_name ($event["id_grupo"], true);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	if ($group_rep == 0) {
-		$string .= '<b>' . __('User ID') . ':</b></td><td align="left">';
+		$string .= '<b>' . __('User ID') . '</b></td><td align="left">';
 	} else {
-		$string .= '<b>' . __('Count') . ':</b></td><td align="left">';
+		$string .= '<b>' . __('Count') . '</b></td><td align="left">';
 	}
 	
 	if ($group_rep == 1) {
@@ -621,14 +615,14 @@ foreach ($result as $event) {
 		}
 	}
 	$string .= '</td></tr>';
-	$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Comments') . ':</td><td align="left">';
+	$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Comments') . '</td><td align="left">';
 	if($event["user_comment"] != '') {
 		$string .= $event["user_comment"];
 	} else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr>';
-	$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Tags') . ':</td><td align="left">';
+	$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Tags') . '</td><td align="left">';
 	if ($event["tags"] != '') {
 		$string .= $event["tags"];
 	}

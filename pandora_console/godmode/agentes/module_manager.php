@@ -26,9 +26,9 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_servers.php');
 
 // Create module/type combo
-echo '<table width="95%" cellpadding="4" cellspacing="4" class="databox" style="text-align:center; ">';
+echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
-echo "<tr><td class='datos'>";
+echo "<tr><td class='datos' style='width:50%'>";
 
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
@@ -153,8 +153,6 @@ if ($multiple_delete) {
 // MODULE VISUALIZATION TABLE
 // ==========================
 
-echo "<h4>".__('Assigned modules')."</h4>";
-
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=' . $id_agente;
 $selectNameUp = '';
 $selectNameDown = '';
@@ -269,7 +267,7 @@ if ($modules === false) {
 	return;
 }
 
-$table->width = '95%';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name') . ' ' .
 	'<a href="' . $url . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
@@ -296,7 +294,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '55px';
-$table->size[7] = '90px';
+$table->size[7] = '100px';
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[7] = 'left';
@@ -345,9 +343,9 @@ foreach ($modules as $module) {
 
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
-		$data[0] .= '<em class="disabled_module">' . ui_print_truncate_text($module['nombre'], 25, false).'</em>';
+		$data[0] .= '<em class="disabled_module">' . ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
 	else
-		$data[0] .= ui_print_truncate_text($module['nombre'], 25, false);
+		$data[0] .= ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -420,12 +418,12 @@ foreach ($modules as $module) {
 
 	// Delete module
 	$data[7] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-	$data[7] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+	$data[7] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[7] .= html_print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
 	$data[7] .= '</a> ';
-	$data[7] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+	$data[7] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[7] .= html_print_image ('images/copy.png', true,
 		array ('title' => __('Duplicate')));
@@ -435,7 +433,7 @@ foreach ($modules as $module) {
 
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
-			$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			$data[7] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[7] .= html_print_image ('images/chart_curve.png', true,
 				array ('title' => __('Normalize')));
 			$data[7] .= '</a>';

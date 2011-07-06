@@ -76,7 +76,7 @@ $table->data[5][1] = html_print_submit_button(__('Filter'), 'filter', false, 'cl
 html_print_table($table);
 echo '</form>';
 echo '</div>';
-echo '<div style="float: right; width: 250px;">';
+echo '<div style="float: right; width: 300px;">';
 
 echo graphic_user_activity2(300, 140);
 
@@ -168,7 +168,7 @@ if (empty ($result)) {
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = 750;
+$table->width = '98%';
 $table->class = "databox";
 $table->size = array ();
 $table->data = array ();

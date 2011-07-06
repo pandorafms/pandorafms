@@ -282,7 +282,7 @@ foreach ($groups as $id_group => $group) {
 			'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
 	}
 	else {
-		$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre']).'</strong>';
+		$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre'], 60).'</strong>';
 	}
 	$data[1] = $group['id_grupo'];
 	$data[2] = ui_print_group_icon($group['id_grupo'], true);
@@ -292,7 +292,7 @@ foreach ($groups as $id_group => $group) {
 	}
 	else {
 		$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
-		$data[4] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+		$data[4] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 	}
 	
 	array_push ($table->data, $data);

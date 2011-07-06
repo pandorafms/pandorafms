@@ -260,9 +260,11 @@ $table->head[3] = __('Delete');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
+$table->size[1] = '30px';
 $table->size[2] = '40px';
 $table->size[3] = '40px';
 $table->align = array ();
+$table->align[1] = 'center';
 $table->align[2] = 'center';
 $table->align[3] = 'center';
 
@@ -284,7 +286,7 @@ foreach ($actions as $action) {
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
 		$action['name'].'</a>';
-	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;'. ui_print_truncate_text(groups_get_name ($action["id_group"], true));
+	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;';
 	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 		html_print_image("images/copy.png", true) . '</a>';

@@ -191,7 +191,7 @@ if (check_acl ($config['id_user'], 0, 'PM')) {
 	$table->data = array ();
 	$table->colspan[0][0] = 2;
 
-	$table->data[0][0] = '<h3>'.__('Offline packages loader').'</h3>';
+	$table->data[0][0] = '<h4>'.__('Offline packages loader').'</h4>';
 	$table->data[1][0] = '<input type="hidden" name="upload_package" value="1">';
 	$table->data[1][0] .= '<input type="file" size="55" name="fileloaded">';
 	$table->data[1][1] = '<input type="submit" name="upload_button" value="'.__('Upload').'">';

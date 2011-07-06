@@ -150,7 +150,7 @@ if (!empty($result)){
 
 		$data = array ();
 
-		$data[0] = $tag["name"];  
+		$data[0] = "<a href='index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
 		$data[1] = ui_print_truncate_text($tag["description"], 25, false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
 		$data[3] = ' <a class="tag_details"
@@ -160,7 +160,7 @@ if (!empty($result)){
 	
 		
 		$data[3] .= tags_get_modules_count($tag["id_tag"]);				
-		$data[4] = "<a href='index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>";
+		$data[4] = "<a href='index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
 		$data[4] .= '<a  href="index.php?sec=gtag&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
 	}

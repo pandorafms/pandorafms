@@ -32,7 +32,7 @@
 	margin: 0;
 }
 .menu li.selected {
-	background-color: #D3F389 !important;
+	background-color: #d9fb86 !important;
 }
 .menu li a {
 	background-color: inherit;
@@ -77,7 +77,7 @@
 }
 
 .menu .menu_icon, .menu li.links {
-	background-color: #E9F3D2;
+	background-color: #daedae;
 	background-position: 4px 4px;
 	background-repeat: no-repeat;
 }

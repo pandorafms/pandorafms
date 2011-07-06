@@ -96,7 +96,7 @@ echo __(" seconds.") . "&nbsp;";
 html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
 echo "</form>";
 
-echo "<h3>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h3>";
+echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";
 /* Get the total number of Elements for the pagination */ 
 $sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d) ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
 $countData = db_get_value_sql($sqlCount);

@@ -118,13 +118,13 @@ if ($view_graph) {
 	// Header
 	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, $options);
 
-	echo "<table class='databox_frame' cellpadding='0' cellspacing='0'>";
+	echo "<table class='databox_frame' cellpadding='0' cellspacing='0' width='98%'>";
 	echo "<tr><td>";
 	custom_graphs_print ($id_graph, $height, $width, $period, $stacked, false, $unixdate);
 	echo "</td></tr></table>";
 	$period_label = human_time_description_raw ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
-	echo "<table class='databox_frame' cellpadding='4' cellspacing='4'>";
+	echo "<table class='databox_frame' cellpadding='4' cellspacing='4' style='width: 98%'>";
 	echo "<tr>";
 	echo "<td>";
 	echo "<b>".__('Date')."</b>"." ";
@@ -204,7 +204,7 @@ ui_print_page_header (__('Reporting'). " &raquo;  ".__('Custom graph viewer'), "
 
 $graphs = custom_graphs_get_user ();
 if (! empty ($graphs)) {
-	$table->width = '500px';
+	$table->width = '98%';
 	$tale->class = 'databox_frame';
 	$table->align = array ();
 	$table->align[2] = 'center';

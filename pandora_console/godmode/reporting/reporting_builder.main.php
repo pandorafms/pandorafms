@@ -51,7 +51,7 @@ $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data['name'][0] = __('Name');
-$table->data['name'][1] = html_print_input_text('name', $reportName, __('Name'), 20, 40, true);
+$table->data['name'][1] = html_print_input_text('name', $reportName, __('Name'), 80, 100, true);
 
 $table->data['group'][0] = __('Group');
 $own_info = get_user_info ($config['id_user']);

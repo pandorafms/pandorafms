@@ -22,10 +22,12 @@ Description: A theme with a dark style
 */
 
 @import url(pandora.css);
+@import url(pandora_width.css);
 
 body, body.pure {
 	color: #EEE;
-	background-color: #000;
+	background-color: #4b4949;
+	background: #4b4949 url(../../images/black_background.png) repeat-x left top;
 }
 h1, h2, h3, h4 {
 	color: #BBB;
@@ -43,6 +45,7 @@ h1#log {
 div#container, div#page, div#main, div#head {
 	background-image: none;
 	background-color: #000;
+	background: #4b4949 url(../../images/black_background.png) repeat-x left top;
 }
 div#page {
 	border-bottom: solid 5px #001E40;
@@ -50,6 +53,9 @@ div#page {
 }
 div#foot {
 	background-color: #960003;	
+}
+div#head {
+	background: url(../../images/black_red_header.png); 
 }
 input:hover {
 	background-color: #d4dccd;

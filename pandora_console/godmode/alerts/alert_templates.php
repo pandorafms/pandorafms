@@ -240,8 +240,9 @@ $table->head[4] = __('Op.');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[4] = '50px';
+$table->size[4] = '65px';
 $table->align = array ();
+$table->align[1] = 'center';
 $table->align[4] = 'center';
 
 $rowPair = true;
@@ -259,7 +260,7 @@ foreach ($templates as $template) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
 
-	$data[1] = ui_print_group_icon ($template["id_group"], true) .'&nbsp;'. ui_print_truncate_text(groups_get_name ($template['id_group'], true));
+	$data[1] = ui_print_group_icon ($template["id_group"], true);
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
 
 	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
@@ -268,7 +269,7 @@ foreach ($templates as $template) {
 	$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
 	$data[4] .= '</form> ';
 	
-	$data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+	$data[4] .= '&nbsp;&nbsp;<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
 	$data[4] .= html_print_input_hidden ('delete_template', 1, true);
 	$data[4] .= html_print_input_hidden ('id', $template['id'], true);
 	$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));

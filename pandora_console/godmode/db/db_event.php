@@ -63,7 +63,7 @@ $table->data[2][1] = $row["latest_date"];
 html_print_table ($table);
 unset ($table);
 
-echo '<h3>'.__('Purge data').'</h3>';
+echo '<h4>'.__('Purge data').'</h4>';
 
 echo '<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_event">';
 echo '<table width="98%" cellpadding="4" cellspacing="4" class="databox">

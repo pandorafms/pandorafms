@@ -131,12 +131,12 @@ if ($edit_filter > -2) {
 
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = $row['description'];
+		$data[0] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' . $row['description'] . '</a>';
 		$data[1] = $row['filter'];
-		$data[2] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
-				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>&nbsp;
-				<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
-				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+		$data[2] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
+				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
+				'&nbsp;&nbsp;<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
+				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 		array_push ($table->data, $data);
 	}
 
@@ -146,7 +146,7 @@ if ($edit_filter > -2) {
 	
 	unset ($table);	
 	
-	echo '<div style="text-align:right; width:740px">';
+	echo '<div style="text-align:right; width:98%">';
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
 	html_print_submit_button (__('Create'), 'submit_button', false, 'class="sub next"');
 	echo '</form></div>';

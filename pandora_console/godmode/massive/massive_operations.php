@@ -132,7 +132,6 @@ ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], 
 
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
 echo '<table border="0"><tr><td>';
-echo '<h3>'.__('Massive options').':</h3>';
 echo '</td><td>';
 html_print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
 if($option == 'edit_agents' || $option == 'edit_modules') 

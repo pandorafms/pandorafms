@@ -200,6 +200,8 @@ if ($result !== false) {
 	$table->cellspacing = 4;
 	$table->class = "databox";
 	$table->data = array ();	
+	$table->size = array ();
+	$table->size[8] = '70px';
 	
 	foreach ($result as $row) {
 		
@@ -253,9 +255,9 @@ if ($result !== false) {
 		}
 		
 		// ACTION
-		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'>" . html_print_image("images/eye.png", true) . "</a>&nbsp;".
-			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .
-			html_print_image("images/config.png", true) . '</a>';
+		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'>" . html_print_image("images/eye.png", true) . "</a>&nbsp;&nbsp;" .
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' . html_print_image("images/config.png", true) . '</a>&nbsp;&nbsp;' .
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 		
 		$table->data[] = $data;
 	}

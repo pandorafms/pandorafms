@@ -216,7 +216,7 @@ if ($items){
 	}
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
-	$table->head[6] = '<span title="' . __('Options') . '">' . __('O.') . '</span>';
+	$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';
 
 	$table->align[6] = 'center';
 } else {
@@ -307,7 +307,7 @@ foreach ($items as $item) {
 	}
 	
 	$row[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
-	$row[6] .= '&nbsp;';
+	$row[6] .= '&nbsp;&nbsp;';
 	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	
 	$table->data[] = $row;

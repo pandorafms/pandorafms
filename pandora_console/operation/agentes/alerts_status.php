@@ -322,7 +322,7 @@ else
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
 		$table->head[8] = __('Validate');
-		
+
 		$table->align[7] = 'center';
 		$table->align[8] = 'center';
 	}
@@ -347,7 +347,7 @@ else
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
 		$table->head[7] = __('Validate');
-		
+
 		$table->align[6] = 'center';
 		$table->align[7] = 'center';
 	}
@@ -371,7 +371,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
 	
-	array_push ($table->data, ui_format_alert_row ($alert, false, $print_agent, $url));
+	array_push ($table->data, ui_format_alert_row ($alert, false, $print_agent, $url, 'font-size: 7pt;'));
 }
 
 echo '<form method="post" action="'.$url.'">';
@@ -404,7 +404,7 @@ else
 $table->data = array ();
 
 foreach ($alerts['alerts_combined'] as $alert) {
-	array_push ($table->data, format_alert_row ($alert, true, $print_agent));
+	array_push ($table->data, ui_format_alert_row ($alert, true, $print_agent));
 }	
 
 if (!empty ($table->data)) {

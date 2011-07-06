@@ -16,7 +16,9 @@
 
 ?>
 <div class="databox_login" id="login">
+	<br>
 	<h1 id="log"><?php echo __('Logged out'); ?></h1>
+	<br>
 	<div class="databox" style="width: 400px; margin: 0 auto auto;">
 		<table cellpadding="4" cellspacing="1" width="400">
 		<tr><td align="left">
@@ -30,5 +32,6 @@
 		</td></tr>
 		</table>
 	</div>
+	<br>
 	<div id="ip"><?php echo 'IP: <b class="f10">'.$_SERVER['REMOTE_ADDR'].'</b>'; ?></div>
 </div>

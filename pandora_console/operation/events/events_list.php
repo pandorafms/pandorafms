@@ -34,6 +34,8 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
+$tag_search = get_parameter("tag", "");
+
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
 
@@ -131,13 +133,18 @@ if ($event_view_hr > 0) {
 	$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
 }
 
+//Search by tag
+if ($tag_search != "") {
+	$sql_post .= " AND tags LIKE '%".io_safe_input($tag_search)."%'";
+}
+
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	rawurlencode($search) . "&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;offset=" . $offset;
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag_search=" . $tag_search . "&amp;offset=" . $offset;
 
 echo "<br>";
 //Link to toggle filter
@@ -233,6 +240,10 @@ echo "</td><td>";
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 html_print_select ($repeated_sel, "group_rep", $group_rep, '');
+echo "</td></tr>";
+echo "<tr><td>";
+echo __("Tag") . "</td><td>";
+html_print_input_text ('tag', $tag_search, '', 15);
 echo "</td></tr>";
 
 echo '<tr><td colspan="4" style="text-align:right">';

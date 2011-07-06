@@ -146,9 +146,16 @@ div#login {
 	border-right: solid 2px #000;
 }
 div#login_in, #login_f {
-	padding-top: 30px;
+	padding-top: 40px;
+	#padding-top: 20px;
 	margin: 0 auto;
 	width: 400px;
+}
+div#error_login {
+	margin-top:-35px; 
+	#margin-top:0px; 	
+	position: float;
+	#margin-left:120px;
 }
 div#login_f {
 	margin-top: 10px;
@@ -210,12 +217,13 @@ div#main {
 	margin-right: 0px;
 }
 div#main_help {
-	width: 98%;
-	min-height: 400px;
+	width: 100%;
+	height: 100%;
+	min-height: 350px;
 	padding-left: 0px;
 	padding-top: 0px;
-	padding-bottom: 20px;
-	margin-bottom: 25px;
+/*	padding-bottom: 20px;
+	margin-bottom: 25px;	*/
 	background-color: #fefefe;
 	background-image: url(../../images/backgrounds/background4.jpg);
 	margin-top: 0px;
@@ -250,8 +258,10 @@ div#foot {
 	margin-bottom: 25px;
 }
 #ip {
-	margin-top: 10px;
+	margin-top: 20px;
+	#margin-top: 3px;
 	margin-bottom: 5px;
+	margin-left: 280px;
 }
 label {
 	display: block;

@@ -1,5 +1,20 @@
 2011-07-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/styles/pandora.css
+	operation/events/events_list.php
+	images/splash_pandora.png
+	images/sort_down.png
+	images/sort_up.png
+	general/pandora_help.php
+	general/error_perms.php
+	general/login_page.php
+	general/error_noconfig.php
+	general/logoff.php
+	general/error_install.php
+	godmode/alerts/alert_list.list.php: Css style improvements.
+
+2011-07-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_html.php
 	include/styles/dialog.css
 	include/styles/pandora_blackmetal.css

@@ -19,13 +19,13 @@ require_once ("../include/config.php");
 require_once ("../include/functions.php");
 require_once ("../include/functions_html.php");
 ?>
-<html><head><title>
+<html style="height:100%; margin: 0 0;"><head><title>
 <?php
 	echo __('Pandora FMS help system');
 ?>
 </title></head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
-<body style="background-color: #fff;">
+<body style="background-color: #fff; height: 100%; margin: -10 0;">
 <?php
 $id = get_parameter ('id');
 

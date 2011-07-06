@@ -84,7 +84,7 @@ function servers_get_performance () {
 		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 			AND disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0");
 
-	if ($data["total_remote_modules"] == 0)
+	if ($data["avg_interval_remote_modules"] == 0)
 		$data["remote_modules_rate"] = 0;
 	else
 		$data["remote_modules_rate"] =  $data["total_remote_modules"] / $data["avg_interval_remote_modules"];

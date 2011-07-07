@@ -1,5 +1,9 @@
 2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php: Fixed graphs on Visual console.
+
+2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_visual_map.php: Added links to service items
 	in visual console.
 	

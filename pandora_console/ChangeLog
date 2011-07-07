@@ -1,3 +1,10 @@
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_servers.php
+	godmode/servers/manage_recontask.php
+	godmode/servers/manage_recontask_form.php: Added switch to 
+	enable/disabe a recon task
+
 2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora_black.css: Changed some imcompatible 

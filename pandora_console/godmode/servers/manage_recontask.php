@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -44,6 +44,23 @@ if (isset ($_GET["delete"])) {
 	}
 	else {
 		echo '<h3 class="error">'.__('Error deleting recon task').'</h3>';
+	}
+}
+else if(isset($_GET["disabled"])) {
+	$id = get_parameter_get ("id");
+	$disabled = get_parameter_get ("disabled");
+	
+	$result = db_process_sql_update('trecon_task', array('disabled' => $disabled), array('id_rt' => $id));
+	
+	if ($result !== false) {
+		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
+		// If the action is enabled, we force recon_task to be queued asap
+		if($disabled == 0) {
+			servers_force_recon_task($id);
+		}
+	}
+	else {
+		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
 	}
 }
 
@@ -169,7 +186,6 @@ if (isset($_GET["create"])) {
 	else
 		$result = false;
 		
-	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
 	}
@@ -200,14 +216,14 @@ if ($result !== false) {
 	$table->cellspacing = 4;
 	$table->class = "databox";
 	$table->data = array ();	
-	$table->size = array ();
-	$table->size[8] = '70px';
+	
+	$table->style[8] = 'text-align: center;';
 	
 	foreach ($result as $row) {
 		
 		$data = array();
 		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
-		
+
 		if ($row["id_recon_script"] == 0)
 			$data[1] = $row["subnet"];
 		else
@@ -255,10 +271,16 @@ if ($result !== false) {
 		}
 		
 		// ACTION
-		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'>" . html_print_image("images/eye.png", true) . "</a>&nbsp;&nbsp;" .
-			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' . html_print_image("images/config.png", true) . '</a>&nbsp;&nbsp;' .
-			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+		$data[8] = '<a href="index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id='.$row["id_recon_server"].'">' . html_print_image("images/eye.png", true) . '</a>&nbsp;';
+		$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>&nbsp;';
+		$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>&nbsp;';
 		
+		if($row["disabled"] == 0) {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/b_yellow.png", true) . '</a>';
+		}
+		else {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/b_white.png", true) . '</a>';
+		}
 		$table->data[] = $data;
 	}
 	

@@ -94,6 +94,10 @@ $table->rowclass[5]="network_sweep";
 $table->rowclass[7]="network_sweep";
 $table->rowclass[8]="network_sweep";
 $table->rowclass[11]="network_sweep";
+$table->rowclass[17]="network_sweep";
+$table->rowclass[18]="network_sweep";
+$table->rowclass[19]="network_sweep";
+$table->rowclass[20]="network_sweep";
 
 $table->rowclass[6]="recon_script";
 $table->rowclass[12]="recon_script";

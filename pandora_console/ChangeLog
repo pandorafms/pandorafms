@@ -1,5 +1,10 @@
 2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/styles/pandora_black.css: Changed some imcompatible 
+	colors.
+
+2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb_data.sql
 	pandoradb.data.postgreSQL.sql
 	pandoradb.data.oracle.sql: Default skin applied to all groups 

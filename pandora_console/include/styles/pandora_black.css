@@ -22,7 +22,6 @@ Description: A theme with a dark style
 */
 
 @import url(pandora.css);
-@import url(pandora_width.css);
 
 body, body.pure {
 	color: #EEE;
@@ -184,4 +183,16 @@ ol.steps li.visited {
 }
 .menu .menu_icon, .menu li.links {
 	background-color: #000;
+}
+
+#ip {
+	color: #000000;
+}
+
+input.login {
+	background-color: #f5f5f5;
+}
+
+.databox_login {
+	color: #000000;
 }

@@ -1381,7 +1381,7 @@ sub pandora_manage_main ($$$) {
 				foreach my $collection (@{$array_pointer_col}) {
 					my $collection_name = enterprise_hook('get_collection_name',[$dbh, $collection->{'id_collection'}]);
 
-					$collection_data = "\n#file_collection $collection_name\n"; 
+					$collection_data .= "\n#file_collection $collection_name\n"; 
 					$collection_data .= "\nfile_collection fc_$collection->{'id_collection'}\n\n"; 
 				}
 				

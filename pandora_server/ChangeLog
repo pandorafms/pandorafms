@@ -1,3 +1,9 @@
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Merge from trunk a fix of file collections
+	in policy applyment where only the last collection was added to the 
+	conf file 
+
 2011-07-05  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Fixed SNMP PROC

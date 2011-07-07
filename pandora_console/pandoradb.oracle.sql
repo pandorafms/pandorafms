@@ -707,7 +707,8 @@ CREATE TABLE trecon_task (
 	os_detect NUMBER(5, 0) default 1 NOT NULL,
 	resolve_names NUMBER(5, 0) default 1 NOT NULL,
 	parent_detection NUMBER(5, 0) default 1 NOT NULL,
-	parent_recursion NUMBER(5, 0) default 1 NOT NULL
+	parent_recursion NUMBER(5, 0) default 1 NOT NULL,
+	disabled NUMBER(5, 0) default 1 NOT NULL
 );
 CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
 

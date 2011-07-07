@@ -1,5 +1,13 @@
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added to the database
+	schemma the disabled attribute to recon task table
+
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_servers.php
 	godmode/servers/manage_recontask.php
 	godmode/servers/manage_recontask_form.php: Added switch to 

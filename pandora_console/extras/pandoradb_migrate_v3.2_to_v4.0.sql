@@ -194,3 +194,9 @@ ALTER TABLE `tevento` ADD COLUMN (`tags` text NOT NULL);
 -- -----------------------------------------------------
 
 ALTER TABLE `tnetwork_map` ADD COLUMN `show_snmp_modules` TINYINT(1) UNSIGNED  NOT NULL DEFAULT 0;
+
+-- -----------------------------------------------------
+-- Table `trecon_task`
+-- -----------------------------------------------------
+
+ALTER TABLE `trecon_task` ADD COLUMN `disabled` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;

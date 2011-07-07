@@ -571,7 +571,8 @@ CREATE TABLE "trecon_task" (
 	"os_detect" SMALLINT NOT NULL default 1,
 	"resolve_names" SMALLINT NOT NULL default 1,
 	"parent_detection" SMALLINT NOT NULL default 1,
-	"parent_recursion" SMALLINT NOT NULL default 1
+	"parent_recursion" SMALLINT NOT NULL default 1,
+	"disabled" SMALLINT NOT NULL default 1
 );
 CREATE INDEX "trecon_task_id_recon_server_idx" ON "trecon_task"("id_recon_server");
 

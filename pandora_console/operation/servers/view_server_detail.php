@@ -48,8 +48,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	if (isset ($_GET["force"])) {
 		$id = (int) get_parameter_get ("force", 0);
 		
-		$values = array('utimestamp' => 0, 'status' => 1);
-		db_process_sql_update('trecon_task', $values, array('id_rt' => $id));
+		servers_force_recon_task($id);
 	}
 }
 
@@ -99,9 +98,14 @@ $table->align[8] = "center";
 foreach ($recon_tasks as $task) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'&amp;force='.$task["id_rt"].'">';
-	$data[0] .= html_print_image ("images/target.png", true, array ("title" => __('Force')));
-	$data[0] .= '</a>';
+	if($task["disabled"] == 0) {
+		$data[0] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'&amp;force='.$task["id_rt"].'">';
+		$data[0] .= html_print_image ("images/target.png", true, array ("title" => __('Force')));
+		$data[0] .= '</a>';
+	}
+	else {
+		$data[0] = '';
+	}
 	
 	$data[1] = '<b>'. $task["name"].'</b>';
 

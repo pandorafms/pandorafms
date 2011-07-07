@@ -1,5 +1,10 @@
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/servers/view_server_detail.php: Updated missed
+	filed in the last commit
+
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb.sql
 	pandoradb.postgreSQL.sql
 	pandoradb.oracle.sql

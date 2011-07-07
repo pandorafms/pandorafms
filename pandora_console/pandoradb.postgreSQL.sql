@@ -882,7 +882,8 @@ CREATE TABLE "tplanned_downtime" (
 	"date_from" BIGINT NOT NULL default 0,
 	"date_to" BIGINT NOT NULL default 0,
 	"executed" SMALLINT NOT NULL default 0,
-	"id_group" BIGINT NOT NULL default 0
+	"id_group" BIGINT NOT NULL default 0,
+	"only_alerts" SMALLINT NOT NULL default 0
 );
 
 CREATE TABLE "tplanned_downtime_agents" (

@@ -51,6 +51,8 @@ $delete_downtime_agent = (int) get_parameter ("delete_downtime_agent", 0);
 
 $groups = users_get_groups ();
 
+$only_alerts = (bool) get_parameter ('only_alerts', 0);
+
 // Header
 ui_print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
 
@@ -108,7 +110,8 @@ if ($create_downtime || $update_downtime) {
 				'description' => $description,
 				'date_from' => $datetime_from,
 				'date_to' => $datetime_to,
-				'id_group' => $id_group);
+				'id_group' => $id_group,
+				'only_alerts' => (int)$only_alerts);
 			$result = db_process_sql_insert('tplanned_downtime', $values);
 		}
 		else if ($update_downtime) {
@@ -117,15 +120,26 @@ if ($create_downtime || $update_downtime) {
 				'description' => $description,
 				'date_from' => $datetime_from,
 				'date_to' => $datetime_to,
-				'id_group' => $id_group);
+				'id_group' => $id_group,
+				'only_alerts' => (int)$only_alerts);
 			$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 		}
 		
 		if ($result === false) {
-			echo '<h3 class="error">'.__('Could not be created').'</h3>';
+			if($create_downtime) {
+				echo '<h3 class="error">'.__('Could not be created').'</h3>';
+			}
+			else {
+				echo '<h3 class="error">'.__('Could not be updated').'</h3>';
+			}
 		}
 		else {
-			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+			if($create_downtime) {
+				echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+			}
+			else {
+				echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+			}
 		}
 	}
 }
@@ -137,17 +151,17 @@ if ($create_downtime || $update_downtime) {
 		if ($id_downtime > 0) {
 			switch ($config["dbtype"]) {
 				case "mysql":
-					$sql = sprintf ("SELECT `id`, `name`, `description`, `date_from`, `date_to`, `id_group`
+					$sql = sprintf ("SELECT `id`, `name`, `description`, `date_from`, `date_to`, `id_group`, `only_alerts`
 						FROM `tplanned_downtime` WHERE `id` = %d",
 						$id_downtime);
 					break;
 				case "postgresql":
-					$sql = sprintf ("SELECT \"id\", \"name\", \"description\", \"date_from\", \"date_to\", \"id_group\"
+					$sql = sprintf ("SELECT \"id\", \"name\", \"description\", \"date_from\", \"date_to\", \"id_group\", \"only_alerts\"
 						FROM \"tplanned_downtime\" WHERE \"id\" = %d",
 						$id_downtime);
 					break;
 				case "oracle":
-					$sql = sprintf ("SELECT id, name, description, date_from, date_to, id_group
+					$sql = sprintf ("SELECT id, name, description, date_from, date_to, id_group, only_alerts
 						FROM tplanned_downtime WHERE id = %d",
 						$id_downtime);
 					break;
@@ -160,6 +174,7 @@ if ($create_downtime || $update_downtime) {
 			$date_to = strftime ('%Y-%m-%d', $result["date_to"]);
 			$time_from = strftime ('%I:%M%p', $result["date_from"]);
 			$time_to = strftime ('%I:%M%p', $result["date_to"]);
+			$only_alerts = $result["only_alerts"];
 			
 			if ($id_group == 0)
 				$id_group = $result['id_group'];
@@ -182,6 +197,8 @@ if ($create_downtime || $update_downtime) {
 
 		$table->data[5][0] = __('Group');
 		$table->data[5][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
+		$table->data[6][0] = __('Only alerts');
+		$table->data[6][1] = html_print_checkbox('only_alerts', 1, $only_alerts, true);
 		echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
 		if ($id_downtime > 0){
@@ -313,13 +330,15 @@ else {
 		$table->head[2] = __('Group');
 		$table->head[3] = __('From');
 		$table->head[4] = __('To');
-		$table->head[5] = __('Delete');
-		$table->head[6] = __('Update');
-		$table->head[7] = __('Running');
+		$table->head[5] = __('Affect');
+		$table->head[6] = __('Delete');
+		$table->head[7] = __('Update');
+		$table->head[8] = __('Running');
 		$table->align[2] = "center";		
 		$table->align[5] = "center";
 		$table->align[6] = "center";
 		$table->align[7] = "center";
+		$table->align[8] = "center";
 
 		$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
 		$downtimes = db_get_all_rows_sql ($sql);
@@ -336,22 +355,28 @@ else {
 				$data[2] = ui_print_group_icon ($downtime['id_group'], true);
 				$data[3] = date ("Y-m-d H:i", $downtime['date_from']);
 				$data[4] = date ("Y-m-d H:i", $downtime['date_to']);
+				if($only_alerts) {
+					$data[5] = __('Only alerts');
+				}
+				else {
+					$data[5] = __('All');	
+				}
 				if ($downtime["executed"] == 0){
-					$data[5] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
 					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
-					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
+					$data[7] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
 					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 				}
 				else {
-					$data[5]= "N/A";
 					$data[6]= "N/A";
+					$data[7]= "N/A";
 
 				}
 				if ($downtime["executed"] == 0)
-					$data[7] = html_print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
+					$data[8] = html_print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
-					$data[7] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+					$data[8] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 
 				array_push ($table->data, $data);
 			}

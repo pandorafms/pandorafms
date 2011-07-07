@@ -965,6 +965,7 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
   `date_to` bigint(20) NOT NULL default '0',
   `executed` tinyint(1) UNSIGNED NOT NULL default 0,
   `id_group` mediumint(8) unsigned NULL default 0,
+  `only_alerts` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY (  `id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

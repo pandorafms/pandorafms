@@ -200,3 +200,9 @@ ALTER TABLE `tnetwork_map` ADD COLUMN `show_snmp_modules` TINYINT(1) UNSIGNED  N
 -- -----------------------------------------------------
 
 ALTER TABLE `trecon_task` ADD COLUMN `disabled` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime`
+-- -----------------------------------------------------
+
+ALTER TABLE `tplanned_downtime` ADD COLUMN `only_alerts` TINYINT(1) NOT NULL DEFAULT 0;

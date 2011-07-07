@@ -64,6 +64,8 @@ if (is_ajax ()) {
 	if ($get_group_agents) {
 		$id_group = (int) get_parameter ('id_group');
 		$disabled = (int) get_parameter ('disabled', 0);
+		$search = (string) get_parameter ('search', '');
+		$keycount = (int) get_parameter ('keycount', 0);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
@@ -72,7 +74,15 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		echo json_encode (agents_get_group_agents ($id_group, array('disabled' => $disabled), "none"));
+		$filter['disabled'] = $disabled;
+		
+		if($search != '') {
+			$filter['string'] = $search;
+		}
+			
+		$agents['keycount'] = $keycount;
+		$agents = $agents + agents_get_group_agents ($id_group, $filter, "none");
+		echo json_encode ($agents);
 		return;
 	}
 

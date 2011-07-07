@@ -738,9 +738,35 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
 						echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					
+					$endTagA = false;
+					
+					if ($show_links) {
+						//Extract id service if it is a prediction module.
+						$id_service = db_get_value_filter('custom_integer_1',
+							'tagente_modulo',
+							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+								'prediction_module' => 1));
+
+						if ($id_service === false) {
+							$id_service = 0;
+						}
+						
+						if ($id_service != 0) { 
+							//Link to an service page
+							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								$id_service . '&offset=0">';
+							$endTagA = true;
+						}				
+					}
+
 					echo '<strong>'.$layout_data['label']. ' ';
 					echo db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
-					echo '</strong></div>';
+					echo '</strong>';
+					
+					if ($endTagA) echo '</a>';
+					
+					echo '</div>';
 					break;	
 				case 3:
 					// ****************************************************************
@@ -756,7 +782,28 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						$percentile = $valor / $layout_data['height'] * 100;
 					else
 						$percentile = 100;
+				
+					$endTagA = false;
 					
+					if ($show_links) {				
+						//Extract id service if it is a prediction module.
+						$id_service = db_get_value_filter('custom_integer_1',
+							'tagente_modulo',
+							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+								'prediction_module' => 1));
+
+						if ($id_service === false) {
+							$id_service = 0;
+						}
+						
+						if ($id_service != 0) { 
+							//Link to an service page
+							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								$id_service . '&offset=0">';
+							$endTagA = true;
+						}			
+					}
+						
 					echo $layout_data['label'];
 					echo "<br>";
 
@@ -764,6 +811,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						echo progress_bar2($percentile, ((integer)($proportion * $width)), 15);
 					else
 						echo progress_bar2($percentile, $width, 15);	
+					
+					if ($endTagA) echo '</a>';	
+						
 					echo '</div>';
 					break;
 				case 1;
@@ -779,10 +829,29 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					echo $layout_data['label'];
 					echo "<br>";
 
-					
+					$endTagA = false;
+										
 					if ($show_links) {
 						if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
-							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+
+							//Extract id service if it is a prediction module.
+							$id_service = db_get_value_filter('custom_integer_1',
+								'tagente_modulo',
+								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+									'prediction_module' => 1));
+
+							if ($id_service === false) {
+								$id_service = 0;
+							}
+							
+							if ($id_service != 0) { 
+								//Link to an service page
+								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0">';
+							}
+							else {
+								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+							}
 						} else {
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}

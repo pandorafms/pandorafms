@@ -1,3 +1,12 @@
+2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_visual_map.php: Added links to service items
+	in visual console.
+	
+	Pending tasks: #3175079
+	
+	* general/pandora_help.php: Changed color of the footer.
+
 2011-07-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_network_components.php,

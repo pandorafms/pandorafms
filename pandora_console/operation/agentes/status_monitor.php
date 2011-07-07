@@ -262,8 +262,10 @@ switch ($config["dbtype"]) {
 			tagente_estado.estado,
 			tagente_modulo.min_warning,
 			tagente_modulo.max_warning,
+			tagente_modulo.str_warning,
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
+			tagente_modulo.str_critical,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
 		break;
 	case "postgresql":
@@ -282,8 +284,10 @@ switch ($config["dbtype"]) {
 			tagente_estado.estado,
 			tagente_modulo.min_warning,
 			tagente_modulo.max_warning,
+			tagente_modulo.str_warning,
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
+			tagente_modulo.str_critical,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT " . $config["block_size"] . " OFFSET " . $offset;
 		break;
 	case "oracle":
@@ -304,8 +308,10 @@ switch ($config["dbtype"]) {
 			tagente_estado.estado,
 			tagente_modulo.min_warning,
 			tagente_modulo.max_warning,
+			tagente_modulo.str_warning,
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
+			tagente_modulo.str_critical,
 			tagente_estado.utimestamp AS utimestamp".$sql;
 		$sql = oracle_recode_query ($sql, $set);
 		break;
@@ -469,7 +475,7 @@ foreach ($result as $row) {
 		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 	}
 
-	$data[7] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['max_critical'], $row['min_critical']);
+	$data[7] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
 
 	if (is_numeric($row["datos"]))
 		$data[8] = format_numeric($row["datos"]);

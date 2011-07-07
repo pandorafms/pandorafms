@@ -332,8 +332,10 @@ function network_components_create_module_from_network_component ($id_network_co
 			'history_data',
 			'min_warning',
 			'max_warning',
+			'str_warning',
 			'min_critical',
 			'max_critical',
+			'str_critical',
 			'min_ff_event'));
 	if (empty ($component))
 		return false;
@@ -392,8 +394,10 @@ function network_components_duplicate_network_component ($id_local_component) {
     $networkCopy['history_data'] = $network['history_data'];
     $networkCopy['min_warning'] = $network['min_warning'];
     $networkCopy['max_warning'] = $network['max_warning'];
+    $networkCopy['str_warning'] = $network['str_warning'];
     $networkCopy['min_critical'] = $network['min_critical'];
     $networkCopy['max_critical'] = $network['max_critical'];
+    $networkCopy['str_critical'] = $network['str_critical'];
     $networkCopy['min_ff_event'] = $network['min_ff_event'];
 	
 	return network_components_create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);

@@ -643,8 +643,10 @@ if ($update_module || $create_module) {
 	$history_data = (int) get_parameter('history_data');
 	$min_warning = (float) get_parameter ('min_warning');
 	$max_warning = (float) get_parameter ('max_warning');
+	$str_warning = (string) get_parameter ('str_warning');
 	$min_critical = (float) get_parameter ('min_critical');
 	$max_critical = (float) get_parameter ('max_critical');
+	$str_critical = (string) get_parameter ('str_critical');
 	$ff_event = (int) get_parameter ('ff_event');
 	$unit = (string) get_parameter('unit');
 	$id_tag = (array) get_parameter('id_tag_selected');
@@ -689,8 +691,10 @@ if ($update_module) {
 			'history_data' => $history_data,
 			'min_warning' => $min_warning,
 			'max_warning' => $max_warning,
+			'str_warning' => $str_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
+			'str_critical' => $str_critical,
 			'custom_string_1' => $custom_string_1,
 			'custom_string_2' => $custom_string_2,
 			'custom_string_3' => $custom_string_3,
@@ -767,8 +771,10 @@ if ($create_module) {
 			'history_data' => $history_data,
 			'min_warning' => $min_warning,
 			'max_warning' => $max_warning,
+			'str_warning' => $str_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
+			'str_critical' => $str_critical,
 			'custom_string_1' => $custom_string_1,
 			'custom_string_2' => $custom_string_2,
 			'custom_string_3' => $custom_string_3,

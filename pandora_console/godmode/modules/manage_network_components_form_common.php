@@ -75,12 +75,18 @@ $table->data[3][1] .= html_print_input_text ('min_warning', $min_warning,
 $table->data[3][1] .= '<br /><em>'.__('Max.').'</em>';
 $table->data[3][1] .= html_print_input_text ('max_warning', $max_warning,
 	'', 5, 15, true);
+$table->data[3][1] .= '<br /><em>'.__('Str.').'</em>';
+$table->data[3][1] .= html_print_input_text ('str_warning', $str_warning,
+	'', 5, 15, true);
 $table->data[3][2] = __('Critical status');
 $table->data[3][3] = '<em>'.__('Min.').'</em>';
 $table->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
 	'', 5, 15, true);
 $table->data[3][3] .= '<br /><em>'.__('Max.').'</em>';
 $table->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
+	'', 5, 15, true);
+$table->data[3][3] .= '<br /><em>'.__('Str.').'</em>';
+$table->data[3][3] .= html_print_input_text ('str_critical', $str_critical,
 	'', 5, 15, true);
 
 $table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);

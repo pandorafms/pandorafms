@@ -146,7 +146,11 @@ function pluginreg_extension_main () {
 			'max_timeout' => $ini_array[$label]["max_timeout"],
 			'history_data' => $ini_array[$label]["history_data"],
 			'min_warning' => $ini_array[$label]["min_warning"],
+			'max_warning' => $ini_array[$label]["max_warning"],
+			'str_warning' => $ini_array[$label]["str_warning"],
 			'min_critical' => $ini_array[$label]["min_critical"],
+			'max_critical' => $ini_array[$label]["max_critical"],
+			'str_critical' => $ini_array[$label]["str_critical"],
 			'min_ff_event' => $ini_array[$label]["min_ff_event"],
 			'tcp_port' => $ini_array[$label]["tcp_port"],
 			'id_plugin' => $create_id);

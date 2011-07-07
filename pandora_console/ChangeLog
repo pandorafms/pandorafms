@@ -1,3 +1,28 @@
+2011-07-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_network_components.php,
+	  include/functions_api.php,
+	  include/functions_ui.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extensions/resource_registration.php,
+	  extensions/plugin_registration.php,
+	  operation/agentes/status_monitor.php,
+	  operation/agentes/estado_monitores.php,
+	  extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	  godmode/agentes/module_manager_editor_common.php,
+	  godmode/agentes/module_manager.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/module_manager_editor.php,
+	  godmode/massive/massive_edit_modules.php,
+	  godmode/modules/manage_network_components_form.php,
+	  godmode/modules/manage_network_templates.php,
+	  godmode/modules/manage_network_components_form_common.php,
+	  godmode/modules/manage_network_components.php: Added support for
+	  warning/critical status regexp (works with both numeric and string
+	  data types).
+
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql
@@ -39,6 +64,7 @@
 	pandoradb.data.oracle.sql: Default skin applied to all groups 
 	by default.
 
+>>>>>>> .r4523
 2011-07-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css

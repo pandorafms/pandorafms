@@ -51,8 +51,10 @@ $id_modulo = (int) get_parameter ('id_component_type');
 $id_plugin = (int) get_parameter ('id_plugin');
 $min_warning = (int) get_parameter ('min_warning');
 $max_warning = (int) get_parameter ('max_warning');
+$str_warning = (string) get_parameter ('str_warning');
 $min_critical = (int) get_parameter ('min_critical');
 $max_critical = (int) get_parameter ('max_critical');
+$str_critical = (string) get_parameter ('str_critical');
 $ff_event = (int) get_parameter ('ff_event');
 $history_data = (bool) get_parameter ('history_data');
 $post_process = (float) get_parameter('post_process');
@@ -124,8 +126,10 @@ if ($create_component) {
 			'history_data' => $history_data,
 			'min_warning' => $min_warning,
 			'max_warning' => $max_warning,
+			'str_warning' => $str_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
+			'str_critical' => $str_critical,
 			'min_ff_event' => $ff_event,
 			'custom_string_1' => $custom_string_1,
 			'custom_string_2' => $custom_string_2,
@@ -180,8 +184,10 @@ if ($update_component) {
 			'history_data' => $history_data,
 			'min_warning' => $min_warning,
 			'max_warning' => $max_warning,
+			'str_warning' => $str_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
+			'str_critical' => $str_critical,
 			'min_ff_event' => $ff_event,
 			'custom_string_1' => $custom_string_1,
 			'custom_string_2' => $custom_string_2,
@@ -243,8 +249,10 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'history_data' => false,
 	'min_warning' => false,
 	'max_warning' => false,
+	'str_warning' => false,
 	'min_critical' => false,
 	'max_critical' => false,
+	'str_critical' => false,
 	'ff_event' => false,
 	'id_component_type' => false));
 

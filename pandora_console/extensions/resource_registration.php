@@ -607,8 +607,10 @@ function process_upload_xml_component($xml) {
 		$historical_data = (int)$componentElement->historical_data;
 		$min_war = (float)$componentElement->min_war;
 		$max_war = (float)$componentElement->max_war;
+		$str_war = (string)$componentElement->str_war;
 		$min_cri = (float)$componentElement->min_cri;
 		$max_cri = (float)$componentElement->max_cri;
+		$str_cri = (string)$componentElement->str_cri;
 		$ff_treshold = (int)$componentElement->ff_treshold;
 		$snmp_version = (int)$componentElement->snmp_version;
 		$auth_user = io_safe_input((string)$componentElement->auth_user);
@@ -676,8 +678,10 @@ function process_upload_xml_component($xml) {
 						'history_data' => $historical_data,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
+						'str_warning' => $str_war,
 						'min_critical' => $min_cri,
 						'max_critical' => $max_cri,
+						'str_critical' => $str_cri,
 						'min_ff_event' => $ff_treshold,
 						'custom_string_1' => $custom_string_1,
 						'custom_string_2' => $custom_string_2,
@@ -709,8 +713,10 @@ function process_upload_xml_component($xml) {
 						'history_data' => $historical_data,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
+						'str_warning' => $str_war,
 						'min_critical' => $min_cri,
 						'max_critical' => $max_cri,
+						'str_critical' => $str_cri,
 						'min_ff_event' => $ff_treshold,
 						'custom_string_1' => $custom_string_1,
 						'custom_string_2' => $custom_string_2,
@@ -744,8 +750,10 @@ function process_upload_xml_component($xml) {
 						'history_data' => $historical_data,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
+						'str_warning' => $str_war,
 						'min_critical' => $min_cri,
 						'max_critical' => $max_cri,
+						'str_critical' => $str_cri,
 						'min_ff_event' => $ff_treshold,
 						'custom_string_1' => $custom_string_1,
 						'custom_string_2' => $custom_string_2,

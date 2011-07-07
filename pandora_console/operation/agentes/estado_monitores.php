@@ -399,7 +399,7 @@ foreach ($modules as $module) {
 		}
 	}
 
-	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["max_critical"], $module["min_critical"]);
+	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
 
 	$data[7] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);

@@ -172,8 +172,10 @@ if ($id_agent_module) {
 	$history_data = $module['history_data'];
 	$min_warning = $module['min_warning'];
 	$max_warning = $module['max_warning'];
+	$str_warning = $module['str_warning'];
 	$min_critical = $module['min_critical'];
 	$max_critical = $module['max_critical'];
+	$str_critical = $module['str_critical'];
 	$ff_event = $module['min_ff_event'];
 	// Select tag info.
 	$id_tag = tags_get_module_tags ($id_agent_module);
@@ -215,8 +217,10 @@ else {
 		$history_data = 1;
 		$min_warning = 0;
 		$max_warning = 0;
+		$str_warning = '';
 		$min_critical = 0;
 		$max_critical = 0;
+		$str_critical = '';
 		$ff_event = 0;
 
 		// New support for snmp v3

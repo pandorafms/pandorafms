@@ -1,3 +1,8 @@
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/groups/group_list.php: Added code for get agent filter
+	from policy agents view
+
 2011-07-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Fixed graphs on Visual console.

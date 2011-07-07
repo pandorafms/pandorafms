@@ -260,7 +260,8 @@ $modules = db_get_all_rows_filter ('tagente_modulo',
 		'order' => $order),
 	array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
 		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-		'disabled','max_warning', 'min_warning', 'max_critical', 'min_critical'));
+		'disabled','max_warning', 'min_warning', 'str_warning',
+		'max_critical', 'min_critical', 'str_critical'));
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('No available data to show')."</div>";
@@ -414,7 +415,7 @@ foreach ($modules as $module) {
 	$data[5] = ui_print_truncate_text($module['descripcion'], 25, false);
 	
 	// MAX / MIN values
-	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["max_critical"], $module["min_critical"]); 
+	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
 
 	// Delete module
 	$data[7] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);

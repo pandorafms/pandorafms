@@ -175,12 +175,18 @@ $table_simple->data[2][1] .= html_print_input_text ('min_warning', $min_warning,
 $table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][1] .= html_print_input_text ('max_warning', $max_warning,
 	'', 10, 255, true, $disabledBecauseInPolicy);
+$table_simple->data[2][1] .= '<br /><em>'.__('Str.').'</em>';
+$table_simple->data[2][1] .= html_print_input_text ('str_warning', $str_warning,
+	'', 10, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
 $table_simple->data[2][3] = '<em>'.__('Min. ').'</em>';
 $table_simple->data[2][3] .= html_print_input_text ('min_critical', $min_critical,
 	'', 10, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][3] .= html_print_input_text ('max_critical', $max_critical,
+	'', 10, 255, true, $disabledBecauseInPolicy);
+$table_simple->data[2][3] .= '<br /><em>'.__('Str.').'</em>';
+$table_simple->data[2][3] .= html_print_input_text ('str_critical', $str_critical,
 	'', 10, 255, true, $disabledBecauseInPolicy);
 
 /* FF stands for Flip-flop */

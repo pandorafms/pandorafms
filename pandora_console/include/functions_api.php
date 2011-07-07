@@ -348,8 +348,10 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 						'module_history_data' => $module['history_data'],
 						'module_min_warning' => $module['min_warning'],
 						'module_max_warning' => $module['max_warning'],
+						'module_str_warning' => $module['str_warning'],
 						'module_min_critical' => $module['min_critical'],
 						'module_max_critical' => $module['max_critical'],
+						'module_str_critical' => $module['str_critical'],
 						'module_min_ff_event' => $module['min_ff_event'],
 						'module_delete_pending' => $module['delete_pending'],
 						'module_id_agent_state' => $module['id_agente_estado'],
@@ -533,8 +535,10 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 				'module_history_data',
 				'module_min_warning',
 				'module_max_warning',
+				'module_str_warning',
 				'module_min_critical',
 				'module_max_critical',
+				'module_str_critical',
 				'module_min_ff_event',
 				'module_delete_pending',
 				'module_id_agent_state',
@@ -706,7 +710,7 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * @param string $id Name of agent to add the module.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
- *  <id_module_group>;<min_warning>;<max_warning>;<min_critical>;<max_critical>;<ff_threshold>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
@@ -729,20 +733,22 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'id_module_group' => $other['data'][3],
 		'min_warning' => $other['data'][4],
 		'max_warning' => $other['data'][5],
-		'min_critical' => $other['data'][6],
-		'max_critical' => $other['data'][7],
-		'min_ff_event' => $other['data'][8],
-		'history_data' => $other['data'][9],
-		'ip_target' => $other['data'][10],
-		'tcp_port' => $other['data'][11],
-		'snmp_community' => $other['data'][12],
-		'snmp_oid' => $other['data'][13],
-		'module_interval' => $other['data'][14],
-		'post_process' => $other['data'][15],
-		'min' => $other['data'][16],
-		'max' => $other['data'][17],
-		'custom_id' => $other['data'][18],
-		'descripcion' => $other['data'][19],
+		'str_warning' => $other['data'][6],
+		'min_critical' => $other['data'][7],
+		'max_critical' => $other['data'][8],
+		'str_critical' => $other['data'][9],
+		'min_ff_event' => $other['data'][10],
+		'history_data' => $other['data'][11],
+		'ip_target' => $other['data'][12],
+		'tcp_port' => $other['data'][13],
+		'snmp_community' => $other['data'][14],
+		'snmp_oid' => $other['data'][15],
+		'module_interval' => $other['data'][16],
+		'post_process' => $other['data'][17],
+		'min' => $other['data'][18],
+		'max' => $other['data'][19],
+		'custom_id' => $other['data'][20],
+		'descripcion' => $other['data'][21],
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1070,17 +1076,25 @@ function set_new_module($id, $id2, $other, $trash1) {
 		if ($other['data'][9] != '') {
 			$values['max_warning'] = $other['data'][9];
 		}
-		
+
 		if ($other['data'][10] != '') {
-			$values['min_critical'] = $other['data'][10];
+			$values['str_warning'] = $other['data'][10];
 		}
 		
 		if ($other['data'][11] != '') {
-			$values['max_critical'] = $other['data'][11];
+			$values['min_critical'] = $other['data'][11];
 		}
 		
 		if ($other['data'][12] != '') {
-			$values['history_data'] = $other['data'][12];
+			$values['max_critical'] = $other['data'][12];
+		}
+
+		if ($other['data'][13] != '') {
+			$values['str_critical'] = $other['data'][13];
+		}
+		
+		if ($other['data'][14] != '') {
+			$values['history_data'] = $other['data'][14];
 		}
 		
 		$values['id_modulo'] = 2; 

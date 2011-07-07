@@ -1313,14 +1313,14 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false) {
  *
  * @return string HTML string
  */
-function ui_print_module_warn_value ($max_warning, $min_warning, $max_critical, $min_critical) {
+function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $max_critical, $min_critical, $str_critical) {
 	$data = "<span style='font-size: 8px' title='" . __("Warning") . ": " . __("Max") . $max_warning . "/" . __("Min") . $min_warning . " - " . __("Critical") . ": " . __("Max") . $max_critical . "/" . __("Min") . $min_critical . "'>";
 
 	if ($max_warning != $min_warning) {
 		$data .= format_for_graph($max_warning) ."/". format_for_graph ($min_warning);
 	} else {
 		$data .= __("N/A");
-	}
+	} 
 
 	$data .= " - ";
 

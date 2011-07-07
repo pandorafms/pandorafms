@@ -50,8 +50,10 @@ if (isset ($id)) {
 		$max_timeout = $component["max_timeout"];
 		$min_warning = $component["min_warning"];
 		$max_warning = $component["max_warning"];
+		$str_warning = $component["str_warning"];
 		$max_critical = $component["max_critical"];
 		$min_critical = $component["min_critical"];
+		$str_critical = $component["str_critical"];
 		$ff_event = $component["min_ff_event"];
 		$history_data = $component["history_data"];
 		$post_process = $component["post_process"];
@@ -87,8 +89,10 @@ if (isset ($id)) {
 		$type = 0;
 		$min_warning = 0;
 		$max_warning = 0;
+		$str_warning = '';
 		$max_critical = 0;
 		$min_critical = 0;
+		$str_critical = '';
 		$ff_event = 0;
 		$history_data = true;
 		$post_process = 0;

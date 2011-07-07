@@ -1,5 +1,14 @@
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql
+	godmode/agentes/planned_downtime.php: Added only_alerts 
+	flag to planned downtimes
+
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/servers/view_server_detail.php: Updated missed
 	filed in the last commit
 

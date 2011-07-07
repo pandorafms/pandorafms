@@ -1108,7 +1108,8 @@ CREATE TABLE tplanned_downtime (
 	date_from NUMBER(19, 0) default 0 NOT NULL,
 	date_to NUMBER(19, 0) default 0 NOT NULL,
 	executed NUMBER(5, 0) default 0 NOT NULL,
-	id_group NUMBER(19, 0) default 0 NOT NULL
+	id_group NUMBER(19, 0) default 0 NOT NULL,
+	only_alerts NUMBER(5, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tplanned_downtime_s INCREMENT BY 1 START WITH 1;

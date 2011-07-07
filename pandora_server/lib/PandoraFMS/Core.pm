@@ -926,7 +926,11 @@ sub pandora_planned_downtime ($$) {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 		
 		foreach my $downtime_agent (@downtime_agents) {
-			db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+			if ($downtime_agent->{'only_alerts'} == 0) {
+				db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+			} else {
+				db_do ($dbh, 'UPDATE talert_template_modules SET disabled = 1 WHERE id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
+			}
 		}
 	}
 
@@ -943,7 +947,12 @@ sub pandora_planned_downtime ($$) {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 
 		foreach my $downtime_agent (@downtime_agents) {
-			db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+			if ($downtime_agent->{'only_alerts'} == 0) {
+				db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+			} else {
+				db_do ($dbh, 'UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
+			}
+
 		}
 	}
 }
@@ -1823,7 +1832,8 @@ sub get_module_status ($$$) {
 	my ($data, $module, $module_type) = @_;
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
-
+	my ($critical_str, $warning_str) = ($module->{'str_critical'}, $module->{'str_warning'});
+	
 	# Was the module status set in the XML data file?
 	if (defined ($module->{'status'})) {
 		return 1 if (uc ($module->{'status'}) eq 'CRITICAL');
@@ -1831,16 +1841,17 @@ sub get_module_status ($$$) {
 		return 0 if (uc ($module->{'status'}) eq 'NORMAL');
 	}
 
-	# Set default critical max/min for *proc modules
+	# Set default critical max/min/str values
+	$critical_str = '' unless defined ($critical_str);
+	$warning_str = '' unless defined ($warning_str);
+	
 	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}
-
-	if ($module_type =~ m/keep_alive/ && ($critical_min eq $critical_max)) {
+	elsif ($module_type =~ m/keep_alive/ && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}
-
-	if ($module_type eq "log4x") {
+	elsif ($module_type eq "log4x") {
 		if ($critical_min eq $critical_max) {
 			($critical_min, $critical_max) = (50, 61); # ERROR - FATAL
 		}
@@ -1849,18 +1860,28 @@ sub get_module_status ($$$) {
 		}
 	}
 	
-	# Critical
-	if ($critical_min ne $critical_max) {
-		return 1 if ($data >= $critical_min && $data < $critical_max);
-		return 1 if ($data >= $critical_min && $critical_max < $critical_min);
+	# Numeric
+	if ($module_type !~ m/_string/) {
+			
+		# Critical
+		if ($critical_min ne $critical_max) {
+			return 1 if ($data >= $critical_min && $data < $critical_max);
+			return 1 if ($data >= $critical_min && $critical_max < $critical_min);
+		}
+	
+		# Warning
+		if ($warning_min ne $warning_max) {
+			return 2 if ($data >= $warning_min && $data < $warning_max);
+			return 2 if ($data >= $warning_min && $warning_max < $warning_min);
+		}
 	}
+
+	# Critical
+	return 1 if ($critical_str ne '' && $data =~ /$critical_str/);
 
 	# Warning
-	if ($warning_min ne $warning_max) {
-		return 2 if ($data >= $warning_min && $data < $warning_max);
-		return 2 if ($data >= $warning_min && $warning_max < $warning_min);
-	}
-
+	return 2 if ($warning_str ne '' && $data =~ /$warning_str/);		
+	
 	# Normal
 	return 0;
 }

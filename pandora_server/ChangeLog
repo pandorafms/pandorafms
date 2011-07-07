@@ -1,3 +1,9 @@
+2011-07-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added support for warning/critical status
+	  regexp (works with both numeric and string data types). Added
+	  support for alert-only planned downtimes.
+
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
 	* Makefile.PL

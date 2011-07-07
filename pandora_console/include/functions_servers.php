@@ -55,6 +55,13 @@ function servers_get_names () {
 	return $servers;
 }
 
+/**
+ * This function forces a recon task to be queued by the server asap
+ */
+function servers_force_recon_task($id_recon_task) {
+		$values = array('utimestamp' => 0, 'status' => 1);
+		db_process_sql_update('trecon_task', $values, array('id_rt' => $id_recon_task));
+}
 
 /**
  * This function will get several metrics from the database to get info about server performance

@@ -96,7 +96,8 @@ sub data_producer ($) {
 	# Status -1 means "done".
 
 	my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
-                                   WHERE id_recon_server = ? 
+                                   WHERE id_recon_server = ?
+                                   AND disabled = 0
                                    AND utimestamp = 0 OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
 	foreach my $row (@rows) {
 

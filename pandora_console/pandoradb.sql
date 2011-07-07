@@ -623,6 +623,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `resolve_names` tinyint(1) unsigned default '0',
   `parent_detection` tinyint(1) unsigned default '0',
   `parent_recursion` tinyint(1) unsigned default '0',
+  `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

@@ -60,7 +60,7 @@ sub show_help {
 	print "Usage:\n\n";
 	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3>\n\n";
 	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";
-	print " * custom_field2 = snmp_community. \n\n";
+	print " * custom_field2 = snmp_community. \n";
 	print " * custom_field3 = optative parameter to force process downed interfaces (use: '-a'). Only up interfaces are processed by default \n\n";
 	print " Additional information:\nWhen the script is called from a recon task, 'task_id' parameter is automatically filled, ";
 	print "group_id and create_incident_flag are passed from interface form combos and custom fields manually filled.\n\n\n";
@@ -125,7 +125,7 @@ sub process_module_snmp ($$$$$$$$$){
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
 	else {
-		pandora_update_module_from_hash ($conf, \%parameters, $dbh, 'id_agente_modulo', $module_id);
+		pandora_update_module_from_hash ($conf, \%parameters, 'id_agente_modulo', $module_id, $dbh);
 	}
 }
 
@@ -166,16 +166,28 @@ if (! defined ($net_addr)) {
 
 # Scan the network for hosts
 my ($total_hosts, $hosts_found, $addr_found) = ($net_addr->num, 0, '');
-for (my $i = 1, $net_addr++; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 
+my $last = 0;
+for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
+	if($last == 1) {
+		last;
+	}
+	if($net_addr eq $net_addr++) {
+		$last = 1;
+	}
+	
+	
+	if ($net_addr =~ /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3})\b/) {
+		if($1 eq '0' || $1 eq '255') {
+			next;
+		}
+	}
+	
 	my $addr = (split(/\//, $net_addr))[0];
 	$hosts_found ++;
 	
 	# Update the recon task 
 	update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100)));
-
-	# Does the host already exist?
-	next if (get_agent_from_addr ($dbh, $addr) > 0);
       
 	my $alive = 0;
 	if (pandora_ping (\%conf, $addr) == 1) {

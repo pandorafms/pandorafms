@@ -1,3 +1,11 @@
+2011-07-07  Sergio Martin <sergio.martin@artica.es>
+
+	* Makefile.PL
+	lib/PandoraFMS/ReconServer.pm
+	util/recon_scripts/snmpdevices.pl: Added disabled
+	condition to recon tasks, readd NetAddr dependence and
+	fix several bugs in addres loop into recon script
+
 2011-07-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* Makefile.PL: Removed NetAddr::IP from the dependency list. Not

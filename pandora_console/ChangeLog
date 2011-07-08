@@ -1,3 +1,8 @@
+2011-07-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/modificar_agente.php: Changed deprecated function 
+	get_user_groups() to users_get_groups(). 
+
 2011-07-08  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_agents.php: Fixed agents_get_group_agents()

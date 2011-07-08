@@ -1,5 +1,13 @@
 2011-07-08  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added 'always' to the
+	possible values into talert_templates.type
+
+2011-07-08  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_alerts.php: Add always condition to templates
 
 2011-07-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

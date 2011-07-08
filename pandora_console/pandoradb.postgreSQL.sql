@@ -245,7 +245,7 @@ CREATE TABLE "talert_actions" (
 	"action_threshold" BIGINT NOT NULL default 0
 );
 
-CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown');
+CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always');
 CREATE TABLE "talert_templates" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" text default '',

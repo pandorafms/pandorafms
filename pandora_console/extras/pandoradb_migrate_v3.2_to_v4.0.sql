@@ -208,3 +208,9 @@ ALTER TABLE `trecon_task` ADD COLUMN `disabled` tinyint(1) UNSIGNED NOT NULL DEF
 -- -----------------------------------------------------
 
 ALTER TABLE `tplanned_downtime` ADD COLUMN `only_alerts` TINYINT(1) NOT NULL DEFAULT 0;
+
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
+
+ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown', 'always') DEFAULT NULL;

@@ -1,3 +1,7 @@
+2011-07-08  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* unix/pandora_agent: Allow drone agents in Unix.
+
 2011-06-28  Sergio Martin <sergio.martin@artica.es>
 
 	* unix/Linux/pandora_agent.conf: Typo fixed

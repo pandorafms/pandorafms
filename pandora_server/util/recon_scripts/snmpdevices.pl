@@ -172,10 +172,11 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 	if($last == 1) {
 		last;
 	}
-	if($net_addr eq $net_addr++) {
+	
+	$net_addr_temp = $net_addr + 1;
+	if($net_addr eq $net_addr_temp) {
 		$last = 1;
 	}
-	
 	
 	if ($net_addr =~ /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3})\b/) {
 		if($1 eq '0' || $1 eq '255') {

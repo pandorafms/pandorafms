@@ -926,7 +926,7 @@ sub pandora_planned_downtime ($$) {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 		
 		foreach my $downtime_agent (@downtime_agents) {
-			if ($downtime_agent->{'only_alerts'} == 0) {
+			if ($downtime->{'only_alerts'} == 0) {
 				db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 			} else {
 				db_do ($dbh, 'UPDATE talert_template_modules SET disabled = 1 WHERE id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
@@ -947,7 +947,7 @@ sub pandora_planned_downtime ($$) {
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 
 		foreach my $downtime_agent (@downtime_agents) {
-			if ($downtime_agent->{'only_alerts'} == 0) {
+			if ($downtime->{'only_alerts'} == 0) {
 				db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 			} else {
 				db_do ($dbh, 'UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?)', $downtime_agent->{'id_agent'});

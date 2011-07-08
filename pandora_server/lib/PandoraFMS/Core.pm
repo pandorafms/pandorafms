@@ -725,8 +725,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
+		$macros{_field1_} = subst_alert_macros ($field1, \%macros);
+		$macros{_field2_} = subst_alert_macros ($field2, \%macros);
+		$macros{_field3_} = subst_alert_macros ($field3, \%macros);
 		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros);
-		$command = subst_alert_macros ($command, \%macros);
 		logger($pa_config, "Executing command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 8);
 
 		eval {
@@ -1693,16 +1695,10 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 sub subst_alert_macros ($$) {
 	my ($string, $macros) = @_;
 
-	while ((my $macro, my $value) = each (%{$macros})) {
-		
-		# Undefined macro value
-		next unless defined ($value);
-		
-		# Macro data may contain HTML entities
-		my $decoded_value = decode_entities ($value);
-		
-		$string =~ s/($macro)/$decoded_value/ig;
-	}
+	my $macro_regexp = join('|', grep { defined $macros->{$_} } keys %{$macros});
+
+	# Macro data may contain HTML entities
+	$string =~ s/($macro_regexp)/decode_entities($macros->{$1})/ige;
 
 	return $string;
 }

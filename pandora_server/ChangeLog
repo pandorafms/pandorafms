@@ -1,3 +1,8 @@
+2011-07-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Delete unknown modules after a defined number
+	  of days.
+
 2011-07-08  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed alert macro substitution. Now

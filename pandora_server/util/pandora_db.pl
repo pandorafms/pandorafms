@@ -401,6 +401,7 @@ sub pandora_load_config ($) {
 	$conf->{'_history_db_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_days'");
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
+	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
 	db_disconnect ($dbh);
 
 	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";
@@ -470,6 +471,22 @@ sub pandora_checkdb_consistency {
 		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
 	}
 
+	print "[CHECKDB] Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days)... \n";
+	if ($conf{'_days_delete_unknown'} > 0) {
+		my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_estado WHERE estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
+		foreach my $module (@modules) {
+			my $id_agente_modulo = $module->{'id_agente_modulo'};
+	
+			# Skip policy modules
+			next if (is_policy_module ($dbh, $id_agente_modulo));
+	
+			# Delete the module
+			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
+	
+			# Delete any alerts associated to the module
+			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
+		}
+	}
 	print "[CHECKDB] Checking database consistency (Missing status)... \n";
 
 	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');

@@ -1,3 +1,8 @@
+2011-07-08  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_agents.php: Fixed agents_get_group_agents()
+	does not work correctly with $childGroups enabled.
+
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/groups/group_list.php: Added code for get agent filter

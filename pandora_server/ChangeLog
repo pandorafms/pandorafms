@@ -1,3 +1,7 @@
+2011-07-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed alert-only planned downtimes.
+
 2011-07-08  Sergio Martin <sergio.martin@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Fiexd bug in recon script

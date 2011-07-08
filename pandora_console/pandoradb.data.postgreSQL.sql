@@ -44,6 +44,7 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('language','en_GB'),
 ('block_size','20'),
 ('days_purge','60'),
+('days_delete_unknown','0'),
 ('days_compact','15'),
 ('graph_res','5'),
 ('step_compact','1'),

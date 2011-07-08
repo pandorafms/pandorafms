@@ -1,3 +1,7 @@
+2011-07-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_alerts.php: Add always condition to templates
+
 2011-07-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/modificar_agente.php: Changed deprecated function 

@@ -452,6 +452,7 @@ function alerts_get_alert_templates_types () {
 	$types['critical'] = __('Critical status');
 	$types['unknown'] = __('Unknown status');
 	$types['onchange'] = __('On Change');
+	$types['always'] = __('Always');
 
 	return $types;
 }

@@ -112,6 +112,7 @@ my $ConfDir = '';
 
 # Pandora FMS agent configuration file
 my $ConfFile = 'pandora_agent.conf';
+my @all_conf;
 
 # Configuration tokens
 my %Conf = (
@@ -421,15 +422,23 @@ sub parse_conf_modules($) {
 ################################################################################
 # Create configuration file for drone agents.
 ################################################################################
-sub write_broker_conf($$){
-	my ($conf_file, $broker_file) = @_;
+sub write_broker_conf($$$){
+	my ($conf_file, $broker_file, $name_agent) = @_;
 	my $content = '';
 
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
 	open (BROKER_FILE, ">$broker_file") or error ("Could not write configuration file: $!");
 
-	print BROKER_FILE while (<CONF_FILE>);
-
+	while (my $line = <CONF_FILE>){
+		if ($line =~ /^broker_agent\s+(\w*)\s*/){
+			next;
+		}
+		#Change agent_name
+		if ($line =~ m/^\s*#*\s*agent_name\s+(\w*)\s*/) {
+			$line = "agent_name $name_agent";
+		}
+		print BROKER_FILE $line;
+	}
 	close (BROKER_FILE);
 	close (CONF_FILE);
 }
@@ -450,7 +459,6 @@ sub read_config (;$) {
 	foreach my $line (@file){
 		# Skip comments and empty lines
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
-
 		# Single token search
 		if (defined ($token)) {
 			return $2 if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token);
@@ -467,7 +475,11 @@ sub read_config (;$) {
 		if ($line =~ /^broker_agent\s+(\w*)\s*/){
 			my $path_conf = "$ConfDir/$ConfFile";
 			my $path_broker = "$ConfDir/$1.conf";
-			write_broker_conf($path_conf, $path_broker);
+			my $name_agent = $1;
+			push (@all_conf, "$1.conf");
+			unless (-e $path_broker){
+				write_broker_conf($path_conf, $path_broker, $name_agent);
+			}
 		 }	
 		 #Configuration token
 		 if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
@@ -1506,33 +1518,39 @@ print_usage unless ($#ARGV == 0);
 $ConfDir = fix_directory ($ARGV[0]);
 error ("Directory '$ConfDir' does not exist.") unless (-d "$ConfDir");
 
-# Get user to run as
-my $pandora_user = read_config ('pandora_user');
-if (defined ($pandora_user)) {
-	# Change the EUID
-	my $pandora_user_uid = getpwnam ($pandora_user);
-	if (!defined ($pandora_user_uid)) {
-		error ("Cannot get uid for user $pandora_user. Does the user exist and can we read /etc/passwd?");
+push (@all_conf, $ConfFile);
+
+foreach my $conf_agent (@all_conf){
+	
+	$ConfFile = $conf_agent;
+
+	# Get user to run as
+	my $pandora_user = read_config ('pandora_user');
+	if (defined ($pandora_user)) {
+		# Change the EUID
+		my $pandora_user_uid = getpwnam ($pandora_user);
+		if (!defined ($pandora_user_uid)) {
+			error ("Cannot get uid for user $pandora_user. Does the user exist and can we read /etc/passwd?");
+		}
+		$> = $pandora_user_uid;
+		if ($> != $pandora_user_uid) {
+			error ("Cannot run as $pandora_user: Insufficient permissions.");
+		}
 	}
-	$> = $pandora_user_uid;
-	if ($> != $pandora_user_uid) {
-		error ("Cannot run as $pandora_user: Insufficient permissions.");
-	}
+
+	# Guess the OS version
+	$OS_VERSION = guess_os_version ($OS);
+
+	# Initialize MD5 variables
+	md5_init ();
+
+	# Start logging
+	start_log ();
+	log_message ('log', 'Running as user ' . getpwuid ($>));
+
+	# Read configuration file
+	read_config ();
 }
-
-# Guess the OS version
-$OS_VERSION = guess_os_version ($OS);
-
-# Initialize MD5 variables
-md5_init ();
-
-# Start logging
-start_log ();
-log_message ('log', 'Running as user ' . getpwuid ($>));
-
-# Read configuration file
-read_config ();
-
 # Fix directory names
 $Conf{'temporal'} = fix_directory ($Conf{'temporal'});
 error ("Temporal directory '" . $Conf{'temporal'} . "' does not exist.") unless (-d "$Conf{'temporal'}");
@@ -1570,7 +1588,6 @@ if ($Conf{'udp_server'} == 1){
 		exit;
 	}
 }
-
 
 # Loop
 while (1) {
@@ -1715,8 +1732,10 @@ while (1) {
 
 	# Go to sleep
 	#
+
 	sleep ($Conf{'interval'});
 }
+
 
 
 __END__

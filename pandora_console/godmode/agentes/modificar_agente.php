@@ -262,7 +262,7 @@ else {
 			    FROM tagente
 			    WHERE id_grupo IN (%s)
 			    %s',
-			    implode (',', array_keys (get_user_groups ())),
+			    implode (',', array_keys (users_get_groups ())),
 			    $search_sql);    
 			    
 		    $total_agents = db_get_sql ($sql);
@@ -274,7 +274,7 @@ else {
 					    WHERE id_grupo IN (%s)
 					    %s
 					    ORDER BY %s %s LIMIT %d, %d',
-					    implode (',', array_keys (get_user_groups ())),
+					    implode (',', array_keys (users_get_groups ())),
 					    $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
 					break;
 				case "postgresql":
@@ -283,7 +283,7 @@ else {
 					    WHERE id_grupo IN (%s)
 					    %s
 					    ORDER BY %s %s LIMIT %d OFFSET %d',
-					    implode (',', array_keys (get_user_groups ())),
+					    implode (',', array_keys (users_get_groups ())),
 					    $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
 					break;
 				case "oracle":
@@ -295,7 +295,7 @@ else {
 					    WHERE id_grupo IN (%s)
 					    %s
 					    ORDER BY %s %s',
-					    implode (',', array_keys (get_user_groups ())),
+					    implode (',', array_keys (users_get_groups ())),
 					    $search_sql, $order['field'], $order['order']);
 				    $sql = oracle_recode_query ($sql, $set);
 					break;

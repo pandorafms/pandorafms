@@ -47,6 +47,7 @@ LOCK TABLE tconfig IN EXCLUSIVE MODE;
 INSERT INTO tconfig (token, value) VALUES ('language','en_GB');
 INSERT INTO tconfig (token, value) VALUES ('block_size','20');
 INSERT INTO tconfig (token, value) VALUES ('days_purge','60');
+INSERT INTO tconfig (token, value) VALUES ('days_delete_unknown','0');
 INSERT INTO tconfig (token, value) VALUES ('days_compact','15');
 INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');

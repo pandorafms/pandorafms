@@ -88,6 +88,9 @@ $table->data[14][0] = __('Use agent access graph') . ui_print_help_icon("agent_a
 $table->data[14][1] = __('Yes').'&nbsp;'.html_print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
 $table->data[14][1] .= __('No').'&nbsp;'.html_print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
 
+$table->data[15][0] = __('Max. days before delete unknown modules');
+$table->data[15][1] = html_print_input_text ('days_delete_unknown', $config["days_delete_unknown"], '', 5, 5, true);
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);

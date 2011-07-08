@@ -146,6 +146,7 @@ function config_update_config () {
 	config_update_value ('remote_config', (string) get_parameter ('remote_config', $config["remote_config"]));
 	config_update_value ('block_size', (int) get_parameter ('block_size', $config["block_size"]));
 	config_update_value ('days_purge', (int) get_parameter ('days_purge', $config["days_purge"]));
+	config_update_value ('days_delete_unknown', (int) get_parameter ('days_delete_unknown', $config["days_delete_unknown"]));
 	config_update_value ('days_compact', (int) get_parameter ('days_compact', $config["days_compact"]));
 	config_update_value ('graph_res', (int) get_parameter ('graph_res', $config["graph_res"]));
 	config_update_value ('step_compact', (int) get_parameter ('step_compact', $config["step_compact"]));

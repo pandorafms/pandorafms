@@ -310,7 +310,7 @@ CREATE TABLE talert_templates (
 	field3_recovery CLOB NOT NULL,
 	priority NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL, 
-	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown'))
+	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'))
 );
 CREATE INDEX talert_templates_id_al_act_idx ON talert_templates(id_alert_action);
 

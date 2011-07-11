@@ -136,6 +136,12 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Module');?></td>
 			<td><?php html_print_select (array (), 'module', '', '', __('Any'), 0);?></td>
 		</tr>
+		<tr id="process_value_row" class="simple_value datos">
+			<td><?php echo '<span>' . __('Process') . '</span>';?></td>
+			<td><?php html_print_select (array ('1' => __('Min value'), 
+												'2' => __('Max value'),
+												'3' => __('Avg value')), 'process_value', '', '', __('None'), 0);?></td>
+		</tr>	
 		<tr id="background_row_1" class="background datos">
 			<td><?php echo __('Background');?></td>
 			<td><?php html_print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>

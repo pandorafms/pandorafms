@@ -19,4 +19,7 @@ define('MODULE_GRAPH', 1);
 define('SIMPLE_VALUE', 2);
 define('LABEL', 4);
 define('ICON', 5);
+define('SIMPLE_VALUE_MAX', 6);
+define('SIMPLE_VALUE_MIN', 7);
+define('SIMPLE_VALUE_AVG', 8);
 ?>

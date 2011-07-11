@@ -266,6 +266,7 @@ function readFields() {
 	values['top'] = $("input[name=top]").val(); 
 	values['agent'] = $("input[name=agent]").val(); 
 	values['module'] = $("select[name=module]").val();
+	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = $("select[name=period]").val();
 	values['width'] = $("input[name=width]").val();
@@ -420,6 +421,7 @@ function loadFieldsFromDB(item) {
 						moduleId = val;
 						$("select[name=module]").val(val);
 					}
+					if (key == 'process_value') $("select[name=process_value]").val(val);
 					if (key == 'period') $("select[name=period]").val(val);
 					if (key == 'width') $("input[name=width]").val(val);
 					if (key == 'height') $("input[name=height]").val(val);
@@ -522,8 +524,8 @@ function hiddenFields(item) {
 	$("#agent_row").css('display', 'none');
 	$("#agent_row."  + item).css('display', '');
 	
-	$("#module_row").css('display', 'none');
-	$("#module_row."  + item).css('display', '');
+	$("#process_value_row").css('display', 'none');
+	$("#process_value_row."  + item).css('display', '');	
 	
 	$("#background_row_1").css('display', 'none');
 	$("#background_row_1."  + item).css('display', '');
@@ -569,6 +571,7 @@ function cleanFields() {
 	$("input[name=top]").val(0);
 	$("input[name=agent]").val('');
 	$("select[name=module]").val('');
+	$("input[name=process_value]").val('');
 	$("select[name=background_image]").val('');
 	$("input[name=width_percentile]").val('');
 	$("input[name=max_percentile]").val('');

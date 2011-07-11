@@ -132,9 +132,43 @@ function visual_map_print_item($layoutData) {
 			echo '</div>';
 			break;
 		case SIMPLE_VALUE:
+		case SIMPLE_VALUE_MAX:
+		case SIMPLE_VALUE_MIN:
+		case SIMPLE_VALUE_AVG:
 			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
-			echo $text; 
-			echo ' <strong>' . db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
+			echo $text;
+			switch ($type){
+				case SIMPLE_VALUE:
+					echo ' <strong>' . db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
+					break;
+				case SIMPLE_VALUE_MAX:	
+					$value = reporting_get_agentmodule_data_max ($id_module, 86400, 0);
+					if ($value === false) {
+						$value = __('Unknown');
+					} else {
+						$value = format_numeric ($value);
+					}				
+					echo ' <strong> ' . $value . '</strong>';
+					break;
+				case SIMPLE_VALUE_MIN:
+					$value = reporting_get_agentmodule_data_min ($id_module, 86400, 0);
+					if ($value === false) {
+						$value = __('Unknown');
+					} else {
+						$value = format_numeric ($value);
+					}					
+					echo ' <strong> ' . $value . '</strong>';
+					break;
+				case SIMPLE_VALUE_AVG:	
+					$value = reporting_get_agentmodule_data_average ($id_module, 86400, 0);
+					if ($value === false) {
+						$value = __('Unknown');
+					} else {
+						$value = format_numeric ($value);
+					}				
+					echo ' <strong> ' . $value . '</strong>';
+					break;
+			}						
 			echo '</div>';
 			break;
 		case LABEL:
@@ -731,6 +765,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					echo "</div>";
 					break;
 				case 2:
+				case 6:
+				case 7:
+				case 8:
 					// ****************************************************************
 					// SIMPLE DATA VALUE (type = 2)
 					// ****************************************************************
@@ -761,7 +798,39 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 
 					echo '<strong>'.$layout_data['label']. ' ';
-					echo db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+					//TODO: change interface to add a period parameter, now is set to 1 day
+					switch ($layout_data['type']){
+						case 2:
+							echo db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+							break;
+						case 6:
+							$value = reporting_get_agentmodule_data_max ($layout_data['id_agente_modulo'], 86400, 0);
+							if ($value === false) {
+								$value = __('Unknown');
+							} else {
+								$value = format_numeric ($value);
+							}
+							echo $value;
+							break;
+						case 7:
+							$value = reporting_get_agentmodule_data_min ($layout_data['id_agente_modulo'], 86400, 0);
+							if ($value === false) {
+								$value = __('Unknown');
+							} else {
+								$value = format_numeric ($value);
+							}						
+							echo $value;
+							break;
+						case 8:
+							$value = reporting_get_agentmodule_data_average($layout_data['id_agente_modulo'], 86400, 0);
+							if ($value === false) {
+								$value = __('Unknown');
+							} else {
+								$value = format_numeric ($value);
+							}						
+							echo $value;
+							break;
+					}	
 					echo '</strong>';
 					
 					if ($endTagA) echo '</a>';

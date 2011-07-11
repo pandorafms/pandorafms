@@ -102,6 +102,145 @@ Pandora::Pandora_Agent_Conf::parseFile(string path_file, Collection *aux){
 }
 
 /**
+ * Create configuration file for drone agents.
+ * @param filename Configuration file to open.
+ * @param path_broker Configuration file to write.
+ */
+void
+writeBrokerConf(string path_broker, string filename, string name_broker){
+	ifstream     file_conf (filename.c_str ());
+	ofstream     file_broker (path_broker.c_str ());
+	string       buffer;
+	string		 comp;
+	unsigned int pos;
+
+	/* Read and set the file */
+	while (!file_conf.eof ()) {
+		/* Set the value from each line */
+		getline (file_conf, buffer);
+		
+		pos = buffer.find("agent_name");
+		if (pos != string::npos){
+			comp = buffer.substr (0,12);
+			if (comp == "# agent_name"){
+				buffer = "agent_name "+name_broker+"\n";
+			}	
+		}
+		
+		pos = buffer.find("broker_agent");
+		if (pos != string::npos){
+			continue;
+		} else {
+			buffer = buffer + "\n";
+		}
+		file_broker << buffer;
+		
+	}
+	file_conf.close ();
+	file_broker.close();
+}
+
+void
+Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
+	string       buffer, filename;
+	unsigned int pos;
+	Collection *aux;
+	
+	filename = Pandora::getPandoraInstallDir ();
+	filename += "pandora_agent.conf";
+	
+	ifstream     file (filename.c_str ());
+
+	if (this->key_values)
+		delete this->key_values;
+	this->key_values = new list<Key_Value> ();
+
+	if (this->collection_list)
+		delete this->collection_list;
+	this->collection_list = new list<Collection> ();
+	
+	if (!file.is_open ()) {
+		return;
+	}
+	
+	/* Read and set the file */
+	while (!file.eof ()) {
+		/* Set the value from each line */
+		getline (file, buffer);
+		
+		/* Ignore blank or commented lines */
+		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+				/*Check if is a include*/
+				pos = buffer.find("include");
+				if (pos != string::npos){
+					string path_file;
+					unsigned pos_c;
+				
+					path_file = buffer.substr(pos+8);
+
+					pos_c = path_file.find("\"");
+					/* Remove " */
+					while (pos_c != string::npos){
+						path_file.replace(pos_c, 1, "");
+						pos_c = path_file.find("\"",pos_c+1);
+					}
+					parseFile(path_file, aux);
+			}
+			/*Check if is a broker_agent*/
+			pos = buffer.find("broker_agent");
+				if (pos != string::npos){
+					string path_broker, name_broker;
+					unsigned pos_c;
+					int position = 0;
+				
+					name_broker = buffer.substr(pos+13);
+					path_broker = name_broker+".conf";
+
+					all_conf[position] = Pandora::getPandoraInstallDir () + path_broker;	
+					position += 1;
+
+					ifstream     file_br (path_broker.c_str ());
+					/* Check if already exists the configuration file*/
+					if (!file_br){
+						file_br.close();
+						writeBrokerConf(path_broker, filename, name_broker);
+					}	
+				}
+
+			/*Check if is a collection*/
+			pos = buffer.find("file_collection");
+			if(pos != string::npos) {
+				string collection_name, trimmed_str;
+				
+				/*Add collection to collection_list*/
+				/*The number 15 is the number of character of string file_collection*/
+				collection_name = buffer.substr(pos+15);
+
+				aux = new Collection();
+				
+				aux->name = trim (collection_name);
+				
+				/*Check for ".." substring for security issues*/
+				if ( collection_name.find("..") == string::npos ) {
+					aux->verify = 0;
+					collection_list->push_back (*aux);
+				}
+				continue;
+			}
+			/*Check if is a module*/
+			pos = buffer.find ("module_");
+			if (pos == string::npos) {
+				Key_Value kv;
+				
+				kv.parseLine (buffer);
+				key_values->push_back (kv);
+			}
+		}
+	}
+	file.close ();
+}
+
+/**
  * Sets configuration file to Pandora_Agent_Conf object instance.
  * 
  * It parses the filename and initialize the internal structures
@@ -154,6 +293,7 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 					}
 					parseFile(path_file, aux);
 			}
+
 			/*Check if is a collection*/
 			pos = buffer.find("file_collection");
 			if(pos != string::npos) {

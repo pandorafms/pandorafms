@@ -701,7 +701,7 @@ function install_step4() {
 						}
 						
 						// Create schema
-						if ($dbaction != 'db_exist' || $dbdrop == 1){
+						if ($dbaction == 'db_new' || $dbdrop == 1){
 							$step1 = mysql_query ("CREATE DATABASE $dbname");
 							check_generic ($step1, "Creating database '$dbname'");
 						}

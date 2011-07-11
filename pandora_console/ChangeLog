@@ -1,3 +1,10 @@
+2011-07-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  operation/reporting/reporting_xml.php: Fixed custom SQL reports.
+	  safe_output was not properly called before executing que query.
+
+
 2011-06-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_events.php,

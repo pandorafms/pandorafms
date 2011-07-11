@@ -2022,10 +2022,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			if ($content['treport_custom_sql_id'] != 0) {
-				$sql = safe_output_html (get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+				$sql = safe_output (get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 			}
 			else {
-				$sql = safe_output_html ($content['external_source']);
+				$sql = safe_output ($content['external_source']);
 			}
 
             // Do a security check on SQL coming from the user

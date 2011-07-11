@@ -22,6 +22,7 @@ $group_id = (int) get_parameter ("group_id");
 $ag_group = get_parameter ("ag_group_refresh", -1);
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
+$recursion = get_parameter('recursion');
 
 if ($ag_group == -1 )
 	$ag_group = (int) get_parameter ("ag_group", -1);
@@ -95,19 +96,15 @@ echo "<td valign='top'>
 </td>
 </form>
 <td valign='top'>";
+echo __('Group recursion') . ': ';
+html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
+echo "</td><td valign='top'>";
 echo __('Free text for search (*)');
 echo "</td><td>";
 
 // Show group selector
-if (isset($_POST["ag_group"])) {
-	$group_mod = "&ag_group_refresh=".get_parameter_post ("ag_group");
-}
-else {
-	$group_mod ="";
-}
-
-echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60$group_mod'>";
+echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60&ag_group_refresh=$ag_group&recursion=$recursion'>";
 echo "<input type=text name='search' size='15' value='$search' >";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
@@ -189,23 +186,29 @@ if ($ag_group > 0) {
 		%s',
 		$ag_group, $search_sql);
 	$total_agents = db_get_sql ($sql);
+
+	$ag_groups = array();
+	$ag_groups = (array)$ag_group;
+	if ($recursion) {
+		$ag_groups = groups_get_id_recursive($ag_group, true);
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ('SELECT *
 				FROM tagente
-				WHERE id_grupo = %d
+				WHERE id_grupo IN (%s)
 				%s
 				ORDER BY %s %s LIMIT %d, %d',
-				$ag_group, $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
+				implode (",", $ag_groups), $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
 			break;
 		case "postgresql":
 			$sql = sprintf ('SELECT *
 				FROM tagente
-				WHERE id_grupo = %d
+				WHERE id_grupo IN (%s)
 				%s
 				ORDER BY %s %s LIMIT %d OFFSET %d',
-				$ag_group, $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
+				implode (",", $ag_groups), $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
 			break;
 		case "oracle":
 			$set = array ();
@@ -213,10 +216,10 @@ if ($ag_group > 0) {
 			$set['offset'] = $offset;
 			$sql = sprintf ('SELECT *
 				FROM tagente
-				WHERE id_grupo = %d
+				WHERE id_grupo IN (%s)
 				%s
 				ORDER BY %s %s',
-				$ag_group, $search_sql, $order['field'], $order['order']);
+				implode (",", $ag_groups), $search_sql, $order['field'], $order['order']);
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
@@ -319,24 +322,24 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 }
 
 // Prepare pagination
-ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
+ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort", $offset);
 echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
 	
 	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='98%' class='databox'>";
 	echo "<th>".__('Agent name') . ' ' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	echo "</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
 	echo "<th>".__('OS'). ' ' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
 	echo "</th>";
 	echo "<th>".__('Group'). ' ' .
-			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
-			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
 	echo "<th>".__('Description')."</th>";
 	echo "<th>".__('Delete')."</th>";

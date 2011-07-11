@@ -37,6 +37,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <pandora_agent_conf.h>
+#include <fstream>
 
 using namespace std;
 using namespace Pandora;
@@ -114,12 +115,97 @@ Pandora_Windows_Service::start () {
 }
 
 void
+Pandora_Windows_Service::pandora_init_broker (string file_conf) {
+	string interval, debug, transfer_interval, util_dir, path, env;
+	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
+	int pos;
+
+	/*setPandoraDebug (true);*/
+
+	// Add the util subdirectory to the PATH
+	util_dir = Pandora::getPandoraInstallDir ();
+	util_dir += "util";
+	path = getenv ("PATH");
+	env = "PATH=" + path + ";" + util_dir;
+	putenv (env.c_str ());
+	
+	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
+	this->conf->setFile (file_conf);
+	this->modules = new Pandora_Module_List (file_conf);
+	
+	pandoraLog ("Pandora agent started");
+}
+
+int
+Pandora_Windows_Service::count_broker_agents(){
+	string       buffer;
+	string       filename;
+	unsigned int pos;
+	int 		 num = 0;
+	
+	filename = Pandora::getPandoraInstallDir ();
+	filename += "pandora_agent.conf";
+	ifstream     file (filename.c_str ());
+	
+	/* Read and set the file */
+	while (!file.eof ()) {
+		/* Set the value from each line */
+		getline (file, buffer);
+		
+		/* Ignore blank or commented lines */
+		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+				/*Check if is a broker_agent*/
+				pos = buffer.find("broker_agent");
+				if (pos != string::npos){
+					num += 1;
+				}
+		}
+	}
+	file.close ();
+	return num;
+}
+
+void
+Pandora_Windows_Service::check_broker_agents(string *all_conf){
+	string       buffer, filename;
+	unsigned int pos;
+	int pos_file = 0;
+	
+	filename = Pandora::getPandoraInstallDir ();
+	filename += "pandora_agent.conf";
+
+	ifstream     file (filename.c_str ());
+	
+		while (!file.eof ()) {
+		/* Set the value from each line */
+			getline (file, buffer);
+		
+		/* Ignore blank or commented lines */
+			if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+				/*Check if is a broker_agent*/
+				pos = buffer.find("broker_agent");
+					if (pos != string::npos){
+						string name_broker, path_broker;
+						
+						name_broker = buffer.substr(pos+13);
+						path_broker = Pandora::getPandoraInstallDir () + name_broker + ".conf";
+						all_conf[pos_file] = path_broker;
+						pos_file += 1;
+					}
+			}
+		}
+	file.close();
+}
+
+
+void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
+	int pos, num;
 
 	setPandoraDebug (true);
-	
+
 	// Add the util subdirectory to the PATH
 	util_dir = Pandora::getPandoraInstallDir ();
 	util_dir += "util";
@@ -130,10 +216,13 @@ Pandora_Windows_Service::pandora_init () {
 	conf_file = Pandora::getPandoraInstallDir ();
 	conf_file += "pandora_agent.conf";
 	
+	num = count_broker_agents();
+	string all_conf[num];
+	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
-	this->conf->setFile (conf_file);
+	this->conf->setFile (all_conf);
 	this->modules = new Pandora_Module_List (conf_file);
-
+	
 	/* Get the interval value (in seconds) and set it to the service */
 	interval = conf->getValue ("interval");
 	transfer_interval = conf->getValue ("transfer_interval");
@@ -891,11 +980,11 @@ Pandora_Windows_Service::checkCollections () {
 }
 
 void
-Pandora_Windows_Service::checkConfig () {
+Pandora_Windows_Service::checkConfig (string file) {
 	int i, conf_size;
 	char *conf_str = NULL, *remote_conf_str = NULL, *remote_conf_md5 = NULL;
 	char agent_md5[33], conf_md5[33], flag;
-	string agent_name, conf_file, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
+	string agent_name, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
 
 	tmp = conf->getValue ("remote_config");
 	if (tmp != "1") {
@@ -908,10 +997,6 @@ Pandora_Windows_Service::checkConfig () {
 	if (temp_dir[temp_dir.length () - 1] != '\\') {
 		temp_dir += "\\";
 	}
-
-	/* Get base install directory */
-	conf_file = Pandora::getPandoraInstallDir ();
-	conf_file += "pandora_agent.conf";
 
 	/* Get agent name */
 	tmp = conf->getValue ("agent_name");
@@ -930,7 +1015,7 @@ Pandora_Windows_Service::checkConfig () {
 
 	/* Calculate md5 hashes */
 	try {
-		conf_size = Pandora_File::readBinFile (conf_file, &conf_str);
+		conf_size = Pandora_File::readBinFile (file, &conf_str);
 		Pandora_File::md5 (conf_str, conf_size, conf_md5);
 	} catch (...) {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error calculating configuration md5");
@@ -1017,7 +1102,7 @@ Pandora_Windows_Service::checkConfig () {
 		conf_size = Pandora_File::readBinFile (tmp, &conf_str);
 		Pandora_File::removeFile (tmp);
 		/* Save new configuration */
-		Pandora_File::writeBinFile (conf_file, conf_str, conf_size);
+		Pandora_File::writeBinFile (file, conf_str, conf_size);
 	} catch (...) {
 		pandoraDebug("Pandora_Windows_Service::checkConfig: Error retrieving configuration file from server");
 		if (conf_str != NULL) {
@@ -1154,19 +1239,20 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
 }
 
 void
-Pandora_Windows_Service::pandora_run () {
+Pandora_Windows_Service::pandora_run_broker (string config) {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr;
-    	int startup_delay = 0;
-    	static unsigned char delayed = 0;
-    	int exe = 1;
+    int startup_delay = 0;
+    static unsigned char delayed = 0;
+    int exe = 1;
+    int i;
 
 	pandoraDebug ("Run begin");
-	
+
 	conf = this->getConf ();
 
  	/* Sleep if a startup delay was specified */
- 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
+ startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
  	if (startup_delay > 0 && delayed == 0) {
 		delayed = 1;
         	pandoraLog ("Delaying startup %d miliseconds", startup_delay);
@@ -1175,7 +1261,7 @@ Pandora_Windows_Service::pandora_run () {
 
 	/* Check for configuration changes */
 	if (getPandoraDebug () == false) {
-		this->checkConfig ();
+		this->checkConfig (config);
 		this->checkCollections ();
 	}
 
@@ -1196,7 +1282,71 @@ Pandora_Windows_Service::pandora_run () {
 			if (exe == 0) return;
 	
 			pandoraDebug ("Run %s", module->getName ().c_str ());
+			if (module->checkCron () == 1) {
+				module->run ();
+				Sleep(10);
+			}
+			
+			/* Save module data to an environment variable */
+			if (!module->getSave().empty ()) {
+				module->exportDataOutput ();
+			}
 
+			/* Evaluate module conditions */
+			module->evaluateConditions ();
+
+			this->modules->goNext ();
+		}
+	}
+	return;
+}
+
+void
+Pandora_Windows_Service::pandora_run () {
+	Pandora_Agent_Conf  *conf = NULL;
+	string server_addr, conf_file;
+    	int startup_delay = 0;
+    	static unsigned char delayed = 0;
+    	int exe = 1;
+    	int i, num;
+
+	pandoraDebug ("Run begin");
+
+	conf = this->getConf ();
+
+ 	/* Sleep if a startup delay was specified */
+ 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
+ 	if (startup_delay > 0 && delayed == 0) {
+		delayed = 1;
+        	pandoraLog ("Delaying startup %d miliseconds", startup_delay);
+        	Sleep (startup_delay);
+    	}
+
+	/* Check for configuration changes */
+	if (getPandoraDebug () == false) {
+		conf_file = Pandora::getPandoraInstallDir ();
+		conf_file += "pandora_agent.conf";
+		this->checkConfig (conf_file);
+		this->checkCollections ();
+	}
+
+	server_addr = conf->getValue ("server_ip");
+
+	execution_number++;
+
+	if (this->modules != NULL) {
+		this->modules->goFirst ();
+	
+		while (! this->modules->isLast ()) {
+			Pandora_Module *module;
+		
+			module = this->modules->getCurrentValue ();
+	
+			exe = module->evaluatePreconditions ();
+		
+			if (exe == 0) return;
+	
+			pandoraDebug ("Run %s", module->getName ().c_str ());
 			if (module->checkCron () == 1) {
 				module->run ();
 				Sleep(10);
@@ -1214,7 +1364,6 @@ Pandora_Windows_Service::pandora_run () {
 		}
 	}
 
-
 	this->elapsed_transfer_time += this->interval;
 	
 	if (this->elapsed_transfer_time >= this->transfer_interval) {
@@ -1226,6 +1375,16 @@ Pandora_Windows_Service::pandora_run () {
 	
 	/* Get the interval value (in minutes) */
 	pandoraDebug ("Next execution on %d seconds", this->interval / 1000);
+
+	num = count_broker_agents();
+	string all_conf[num];
+
+	check_broker_agents(all_conf);
+
+	for (i=0;i<num;i++){
+		pandora_init_broker(all_conf[i]);
+		pandora_run_broker(all_conf[i]);
+	}
 
 	return;
 }

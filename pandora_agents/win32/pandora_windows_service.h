@@ -73,8 +73,12 @@ namespace Pandora {
 		int	       unzipCollection(string zip_path, string dest_dir);
 		void	       checkCollections ();
 		void		   addCollectionsPath();
-		void           checkConfig ();
+		void           checkConfig (string file);
 		void		 purgeDiskCollections ();
+		void           pandora_init_broker (string file_conf);
+		void           pandora_run_broker (string config);
+		int 		   count_broker_agents();
+		void 		   check_broker_agents(string *all_conf);
 		
 		Pandora_Windows_Service     ();
 

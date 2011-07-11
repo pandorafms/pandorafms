@@ -1,3 +1,15 @@
+2011-07-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php
+	godmode/users/configure_user.php
+	godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.editor.php
+	godmode/reporting/visual_console_builder.constans.php: Added min,
+	max and avg process to simple value items in visual maps.
+	
+	Pending tasks: #3014709
+
 2011-07-11  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/estado_agente.php,

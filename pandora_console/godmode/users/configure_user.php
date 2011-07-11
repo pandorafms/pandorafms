@@ -391,7 +391,7 @@ echo '<br />';
 if (empty ($id) || $new_user)
 	return;
 
-echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
+echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
 $table->width = '98%';
 $table->data = array ();

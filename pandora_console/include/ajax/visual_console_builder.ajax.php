@@ -57,6 +57,7 @@ $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
+$process_simple_value = get_parameter('process_simple_value', 0);
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -84,8 +85,35 @@ switch ($action) {
 		break;
 	case 'get_module_value':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
-		$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-		
+		switch ($layoutData['type']){
+			case SIMPLE_VALUE_MAX:
+				$value = reporting_get_agentmodule_data_max ($layoutData['id_agente_modulo'], 86400, 0);
+				if ($value === false) {
+					$returnValue = __('Unknown');
+				} else {
+					$returnValue = format_numeric ($value);
+				}						
+				break;
+			case SIMPLE_VALUE_MIN:
+				$value = reporting_get_agentmodule_data_min ($layoutData['id_agente_modulo'], 86400, 0);
+				if ($value === false) {
+					$returnValue = __('Unknown');
+				} else {
+					$returnValue = format_numeric ($value);
+				}	
+				break;
+			case SIMPLE_VALUE_AVG:
+				$value = reporting_get_agentmodule_data_average ($layoutData['id_agente_modulo'], 86400, 0);
+				if ($value === false) {
+					$returnValue = __('Unknown');
+				} else {
+					$returnValue = format_numeric ($value);
+				}	
+				break;
+			default:
+				$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				break;
+		}
 		$return = array();
 		$return['value'] = $returnValue;
 		$return['max_percentile'] = $layoutData['height'];
@@ -231,6 +259,23 @@ switch ($action) {
 						$elementFields['height_module_graph'] = $elementFields['height'];
 						break;
 				}
+				//Support for max, min and svg process on simple value items
+				if ($type == 'simple_value'){
+					switch ($elementFields['type']) {
+						case SIMPLE_VALUE:
+							$elementFields['process_value'] = 0;
+							break;
+						case SIMPLE_VALUE_MAX:
+							$elementFields['process_value'] = 2;
+							break;
+						case SIMPLE_VALUE_MIN:
+							$elementFields['process_value'] = 1;
+							break;							
+						case SIMPLE_VALUE_AVG:
+							$elementFields['process_value'] = 3;
+							break;							
+					}
+				}
 				$elementFields['label'] = io_safe_output($elementFields['label']);
 				echo json_encode($elementFields);
 				break;
@@ -271,7 +316,21 @@ switch ($action) {
 				$values['height'] = $height;
 				break;
 			case 'simple_value':
-				$values['type'] = SIMPLE_VALUE;
+				//This allows min, max and avg process in a simple value
+				switch ($process_simple_value){
+					case 0:
+						$values['type'] = SIMPLE_VALUE;
+						break;						
+					case 1:
+						$values['type'] = SIMPLE_VALUE_MIN;
+						break;
+					case 2:
+						$values['type'] = SIMPLE_VALUE_MAX;
+						break;
+					case 3:
+						$values['type'] = SIMPLE_VALUE_AVG;
+						break;		
+				}							
 				break;
 			case 'label':
 				$values['type'] = LABEL;

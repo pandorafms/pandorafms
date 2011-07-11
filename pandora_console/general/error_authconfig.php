@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<div id="main" style='float:left; margin-left: 100px'>
+<div id="main" style=' width: 80%; margin:0 auto 0 auto;'>
 	<div align='center'>
 		<div id='login_f'>
 			<h1 id="log_f" class="error">Problem with Pandora FMS auth system</h1>

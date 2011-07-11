@@ -48,13 +48,13 @@ echo grafico_db_agentes_purge2(0, 600, 400);
 echo '<div id="db_info_graph">';
 echo '<table border=0 width="98%">';
 echo '<tr><td>';
-echo '<h3>'.__('Modules per agent').'</h3>';
+echo '<h4>'.__('Modules per agent').'</h4>';
 
 echo graph_db_agentes_modulos2(600, 250);
 
 echo '</td></tr><tr><td><br /></tr></td>';
 echo '<tr><td>';
-echo '<h3>'.__('Packets per agent').'</h3>';
+echo '<h4>'.__('Packets per agent').'</h4>';
 
 echo grafico_db_agentes_paquetes2(700, 300);
 

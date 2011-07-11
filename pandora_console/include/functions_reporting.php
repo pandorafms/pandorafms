@@ -2517,18 +2517,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($content['treport_custom_sql_id'] != 0) {
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$sql = io_safe_output_html (db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						$sql = io_safe_output (db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 					case "postgresql":
-						$sql = io_safe_output_html (db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						$sql = io_safe_output (db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 					case "oracle":
-						$sql = io_safe_output_html (db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						$sql = io_safe_output (db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 				}
 			}
 			else {
-				$sql = io_safe_output_html ($content['external_source']);
+				$sql = io_safe_output ($content['external_source']);
 			}
 
 			// Do a security check on SQL coming from the user

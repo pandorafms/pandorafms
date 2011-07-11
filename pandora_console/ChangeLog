@@ -1,5 +1,12 @@
 2011-07-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* general/error_authconfig.php
+	godmode/db/db_info.php
+	godmode/db/db_purge.php
+	godmode/setup/file_manager.php: Improvements in css style.
+
+2011-07-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_visual_map.php
 	include/ajax/visual_console_builder.ajax.php
 	godmode/users/configure_user.php

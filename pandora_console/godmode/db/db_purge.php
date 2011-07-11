@@ -39,7 +39,7 @@ ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database purge'
 echo grafico_db_agentes_purge2($id_agent);
 
 echo '<br /><br />';
-echo '<h3>'.__('Get data from agent').'</h3>';
+echo '<h4>'.__('Get data from agent').'</h4>';
 
 // All data (now)
 $time["all"] = get_system_time ();
@@ -170,7 +170,7 @@ if ($id_agent > 0) {
 	$title = __('Information on all agents in the database');
 }
 
-echo '<h3>'.$title.'</h3>';
+echo '<h4>'.$title.'</h4>';
 //Flush before we do some SQL stuff
 flush ();
 
@@ -236,7 +236,7 @@ $table->data[6][1] = '<strong>'.format_numeric($data["total"]).'</strong>';
 html_print_table ($table);
 
 echo '<br />';
-echo '<h3>'.__('Purge data').'</h3>';
+echo '<h4>'.__('Purge data').'</h4>';
 
 $table->data = array ();
 

@@ -108,7 +108,7 @@ $real_directory = realpath ($config['homedir'].'/'.$directory);
 //filemanager_box_upload_file_explorer($real_directory, $directory);
 
 
-echo '<h3>'.__('Index of %s', $directory).'</h3>';
+echo '<h4>'.__('Index of %s', $directory).'</h4>';
 
 filemanager_file_explorer($real_directory, $directory, 'index.php?sec=gsetup&sec2=godmode/setup/file_manager');
 ?>

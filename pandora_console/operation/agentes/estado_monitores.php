@@ -312,7 +312,7 @@ foreach ($modules as $module) {
 		}	
 	}
 
-	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;&nbsp;';
+	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;';
 
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
@@ -415,7 +415,7 @@ foreach ($modules as $module) {
 
 	//	if ($nombre_tipo_modulo != "log4x")
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
-		$data[8] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
+		$data[8] .= "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
 	}
 	
 	if ($module['estado'] == 3) {
@@ -424,7 +424,7 @@ foreach ($modules as $module) {
 	else {
 		$data[9] = '<span>';
 	}
-	$data[9] .= ui_print_timestamp ($module["utimestamp"], true);
+	$data[9] .= ui_print_timestamp ($module["utimestamp"], true, array('style' => 'font-size: 7pt'));
 	$data[9] .= '</span>';
 	
 	array_push ($table->data, $data);

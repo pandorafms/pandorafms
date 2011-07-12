@@ -1,5 +1,11 @@
 2011-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/help/en/help_timesource.php
+	include/help/es/help_timesource.php
+	include/help/ja/help_timesource.php: Fixed bad sintax query.
+
+2011-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Fixes constant notice in
 	this view.
 	

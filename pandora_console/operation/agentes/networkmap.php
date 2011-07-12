@@ -214,7 +214,7 @@ switch($activeTab){
 }
 
 if(!empty($name)) {
-	$title .= " &raquo; ".$name;
+	$title .= " &raquo; ". mb_substr($name, 0, 25);
 }
 
 ui_print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "network_map", false, $buttons);

@@ -1172,6 +1172,7 @@ function string2image($string, $width, $height, $fontsize = 3,
 	imagedestroy($rotated);
 	
 	$file_url = str_replace('#','%23',$file_url);
+	$file_url = str_replace('%','%25',$file_url);
 	return $file_url;
 }
 

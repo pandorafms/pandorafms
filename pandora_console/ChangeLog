@@ -1,3 +1,14 @@
+2011-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_events.php
+	include/functions.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/networkmap.php
+	godmode/modules/manage_nc_groups.php: Fixes in this views in order 
+	to have compatibility with IE.
+	
+	Bug: #3274423
+	
 2011-07-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* install.php: Fixed installation over a new database.

@@ -120,7 +120,7 @@ foreach ($groups as $group) {
 	
 	$data[1] = network_components_get_group_name ($group['parent']);
 	
-	$data[2] = '<form method="post" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+	$data[2] = '<form method="post" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false" style="display: inline">';
 	$data[2] .= html_print_input_hidden ('delete', 1, true);
 	$data[2] .= html_print_input_hidden ('id', $group['id_sg'], true);
 	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true,

@@ -411,7 +411,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 
 
 
-			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. ui_print_string_substr ($event["evento"],45,true). '</span>';
+			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. ui_print_string_substr ($event["evento"], 45, true, '9.5'). '</span>';
 
 			if ($event["id_agente"] > 0) {
 				// Agent name
@@ -434,7 +434,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			}
 			
 			// Timestamp
-			$data[6] = ui_print_timestamp ($event["timestamp"], true);
+			$data[6] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7pt'));
 			
 			array_push ($table->rowclass, get_priority_class ($event["criticity"]));
 			array_push ($table->data, $data);

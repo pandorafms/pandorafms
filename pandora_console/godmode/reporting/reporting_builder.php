@@ -30,6 +30,8 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 	$enterpriseEnable = true;
 }
 
+//Constant with fonts directory
+define ('_MPDF_TTFONTPATH', 'include/fonts/');
 
 $activeTab = get_parameter('tab', 'main');
 $action = get_parameter('action', 'list');

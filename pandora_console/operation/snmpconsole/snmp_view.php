@@ -164,12 +164,6 @@ if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	}
 }
 
-// No traps 
-if (empty ($traps)) {
-	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
-	return;
-}
-
 $traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
 $table->width = '90%';
 $table->size = array ();
@@ -205,6 +199,12 @@ unset($table);
 $traps_generator .= '</form>';
 
 ui_toggle($traps_generator, __('Trap generator'));
+
+// No traps 
+if (empty ($traps)) {
+	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
+	return;
+}
 
 $table->width = '90%';
 $table->size = array ();

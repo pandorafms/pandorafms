@@ -28,6 +28,7 @@ $row = db_get_row_sql($sql);
 $is_service = false;
 $is_synthetic = false;
 $is_synthetic_avg = false;
+$ops = false;
 if ($row !== false && is_array($row)) {
 	$prediction_module = $row['prediction_module'];
 	$custom_integer_2 = $row ['custom_integer_2'];
@@ -144,8 +145,9 @@ unset ($table_advanced->data[2][3]);
 <script type="text/javascript">
 $(document).ready(function() {
 	agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module");
-
-	<?php enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $ops)); ?>
+	<?php 
+		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $ops)); 
+	?>
 });
 	
 </script>

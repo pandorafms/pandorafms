@@ -78,7 +78,7 @@ echo "<table cellpadding='4' cellspacing='4' class='databox' width='770'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 
-print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();', '', 0);
+print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width: 100px; max-width: 180px');
 
 echo "<td valign='top'>
 <noscript>
@@ -350,6 +350,16 @@ $(document).ready (function () {
 		},
 		function () {
 			$(".actions", this).css ("visibility", "hidden");
-		});
+	});
+		
+	$("#ag_group").click (
+	function () {
+		$(this).css ("width", "auto"); 
+	});
+	
+	$("#ag_group").blur (function () {
+		$(this).css ("width", "100px"); 
+	});		
+		
 });
 </script>

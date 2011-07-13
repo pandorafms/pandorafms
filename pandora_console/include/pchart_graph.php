@@ -357,7 +357,32 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph_color[1] = "#FF0000"; // Red
 		$this->graph_color[2] = "#00FF00"; // Green
 		$this->graph_color[3] = "#0000FF"; // Blue
-
+				
+		// Add a lot of colors to the palette	
+					
+		$this->graph->setColorPalette(9, 255, 69, 0);	
+		$this->graph->setColorPalette(10, 50, 205, 50);
+		$this->graph->setColorPalette(11, 95, 158, 160);
+		$this->graph->setColorPalette(12, 255, 0, 255);
+		$this->graph->setColorPalette(13, 75, 0, 130);
+		$this->graph->setColorPalette(14, 0, 0, 128);
+		$this->graph->setColorPalette(15, 255, 0, 0);
+		$this->graph->setColorPalette(16, 188, 143, 143);				
+		$this->graph->setColorPalette(17, 210, 105, 30);	
+		
+		// After 17º color, palette is composed of gradient colors
+		
+		$R1 = 205; $G1 = 92; $B1 = 92;
+		$R2 = 128; $G2 = 0; $B2 = 0;		
+		
+		$RFactor = ($R2-$R1)/130;
+		$GFactor = ($G2-$G1)/130;
+		$BFactor = ($B2-$B1)/130;
+		
+		for ($i=18;$i<=30;$i++){
+			$this->graph->setColorPalette($i, $R1+$RFactor*$i, $G1+$GFactor*$i, $B1+$BFactor*$i);	
+		}		
+																
 		// White background 
 		$this->graph->drawFilledRoundedRectangle(1,1,$this->width,$this->height,0,254,254,254);  
 			

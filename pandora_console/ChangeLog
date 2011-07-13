@@ -1,3 +1,12 @@
+2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/modificar_agente.php: Added max-width to group 
+	select in this view.
+	* include/pchart_graph.php: Added more colors to combined
+	graphs.
+	
+	Fixes: #3301605
+
 2011-07-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php,

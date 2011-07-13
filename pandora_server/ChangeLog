@@ -1,3 +1,8 @@
+2011-07-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Added support for synthetic
+	  modules (enterprise).
+
 2011-07-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Delete unknown modules after a defined number

@@ -18,6 +18,7 @@
 global $config;
 
 enterprise_include ('godmode/agentes/configurar_agente.php');
+enterprise_include ('include/functions_modules.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
 
 check_login ();
@@ -605,7 +606,7 @@ if ($update_module || $create_module) {
 	// Services are an enterprise feature, 
     // so we got the parameters using this function.
 
-	enterprise_hook ('get_service_parameters');
+	enterprise_hook ('get_service_synthetic_parameters');
 	
 	$agent_name = (string) get_parameter('agent_name',agents_get_name ($id_agente));
 
@@ -650,7 +651,13 @@ if ($update_module || $create_module) {
 	$ff_event = (int) get_parameter ('ff_event');
 	$unit = (string) get_parameter('unit');
 	$id_tag = (array) get_parameter('id_tag_selected');
-
+	$serialize_ops = (string) get_parameter('serialize_ops');
+	
+	if($prediction_module != 0) {
+		unset($serialize_ops);
+		modules_delete_synthetic_operations($id_agent_module);
+	}
+	
 	$active_snmp_v3 = get_parameter('active_snmp_v3');
 	if ($active_snmp_v3) {
 	//
@@ -714,6 +721,10 @@ if ($update_module) {
 			"Fail to try update module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
+		if(enterprise_hook('modules_is_synthetic')) {
+			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
+		}
+	
 		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
@@ -794,6 +805,10 @@ if ($create_module) {
 			"Fail to try added module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
+		if(enterprise_hook('modules_is_synthetic')) {
+			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
+		}
+		
 		echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;

@@ -26,6 +26,8 @@ $custom_integer_2 = get_parameter ('custom_integer_2', 0);
 $sql = 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_agente_modulo;
 $row = db_get_row_sql($sql);
 $is_service = false;
+$is_synthetic = false;
+$is_synthetic_avg = false;
 if ($row !== false && is_array($row)) {
 	$prediction_module = $row['prediction_module'];
 	$custom_integer_2 = $row ['custom_integer_2'];
@@ -33,6 +35,20 @@ if ($row !== false && is_array($row)) {
 	$service_select  = $row['custom_integer_1'];
 	if ($service_select > 0) {
 		$is_service = true;
+	}
+	
+	if($prediction_module == 0 && $id_agente_modulo != 0) {
+		$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agente_modulo));
+		$ops = json_decode($ops_json, true);
+
+		$first_op = explode('_', reset(array_keys($ops)));
+		
+		if(isset($first_op[1]) && $first_op[1] == 'avg') {
+			$is_synthetic_avg = true;
+		}
+		else {
+			$is_synthetic = true;
+		}
 	}
 }
 else {
@@ -53,12 +69,19 @@ $data = array ();
 $data[0] = __('Source module');
 $data[0] .= ui_print_help_icon ('prediction_source_module', true);
 $data[1] = '';
-// Services are an Enterprise feature.
-$module_service_selector = enterprise_hook('get_module_service_selector', array($is_service));  
-if ($module_service_selector !== ENTERPRISE_NOT_HOOK) {
-	$data[1] = $module_service_selector;
+// Services and Synthetic are an Enterprise feature.
+$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', array($is_service, $is_synthetic, $is_synthetic_avg));  
+if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
+	$data[1] = $module_service_synthetic_selector;
+	
+	$table_simple->colspan['module_service_synthetic_selector'][1] = 3;
+	push_table_simple ($data, 'module_service_synthetic_selector');
+	
+	$data = array();
+	$data[0] = '';
 }
-$data[1] .= '<div id="module_data" style="top:1em; float:left; width:50%;">';
+
+$data[1] = '<div id="module_data" style="top:1em; float:left; width:50%;">';
 $data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
 $sql = "SELECT id_agente, nombre FROM tagente";
 // TODO: ACL Filter
@@ -88,33 +111,29 @@ $data[1] .= html_print_select ($periods, 'custom_integer_2', $custom_integer_2, 
 $data[1] .= html_print_input_hidden ('id_agente', $id_agente, true);
 $data[1] .= '</div>';
 
-// Services are an Enterprise feature.
-$selector_form = enterprise_hook('get_selector_form', array($is_service, $service_select));
-if ($selector_form !== ENTERPRISE_NOT_HOOK) {
-    $data[1] .= $selector_form;
-}
-
 $table_simple->colspan['prediction_module'][1] = 3;
-
 push_table_simple ($data, 'prediction_module');
 
-// Synthetic modules are an Enterprise feature.
-$data = array();
-$synthetic_selector = enterprise_hook ('get_synthetic_module_selector', array($is_service));
-if ($synthetic_selector !== ENTERPRISE_NOT_HOOK) {
-	$data[0] = __('Synthetic module');
-	$data[1] = $synthetic_selector;
-	$table_simple->colspan['synthetic_selector'][1] = 3;
-	push_table_simple ($data, 'synthetic_selector');
+// Services are an Enterprise feature.
+$selector_form = enterprise_hook('get_selector_form', array($service_select));
+if ($selector_form !== ENTERPRISE_NOT_HOOK) {
+	$data = array();
+    $data[0] = '';
+    $data[1] = $selector_form;
+    
+	$table_simple->colspan['service_module'][1] = 3;
+	push_table_simple ($data, 'service_module');
 }
 
-$data = array();
+// Synthetic modules are an Enterprise feature.
 $synthetic_module_form = enterprise_hook ('get_synthetic_module_form');
 if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
+	$data = array();
 	$data[0] = '';
 	$data[1] = $synthetic_module_form;
-	$table_simple->colspan['synthetic_module_form'][1] = 3;
-	push_table_simple ($data, 'synthetic_module_form');
+	
+	$table_simple->colspan['synthetic_module'][1] = 3;
+	push_table_simple ($data, 'synthetic_module');
 }
 
 /* Removed common useless parameter */
@@ -123,8 +142,10 @@ unset ($table_advanced->data[2][2]);
 unset ($table_advanced->data[2][3]);
 ?>
 <script type="text/javascript">
-$(document).ready(function() {agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module")});
+$(document).ready(function() {
+	agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module");
 
-<?php enterprise_hook('print_services_javascript'); ?>
-
+	<?php enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $ops)); ?>
+});
+	
 </script>

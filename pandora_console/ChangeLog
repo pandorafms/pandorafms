@@ -1,3 +1,9 @@
+2011-07-13  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_prediction.php
+	godmode/agentes/configurar_agente.php: Added interface and calls
+	to enterprise functions for synthetic modules
+
 2011-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/help/en/help_timesource.php

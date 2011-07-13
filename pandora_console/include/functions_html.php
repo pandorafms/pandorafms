@@ -175,8 +175,11 @@ function print_select_groups($id_user = false, $privilege = "AR", $returnAllGrou
 		}
 		unset($user_groups[$id_group]);
 	}
-	
-	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
+	// First group it's needed to retrieve its parent group
+	$first_group = array_slice($user_groups, 0, 1);
+	$parent_group = $first_group[0]['parent'];
+		
+	$user_groups_tree = get_user_groups_tree_recursive($user_groups, $parent_group);
 	
 	$fields = array();
 	foreach ($user_groups_tree as $group) {

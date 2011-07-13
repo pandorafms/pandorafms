@@ -1,3 +1,10 @@
+2011-07-13  Sergio Martin <sergio.martin@artica.es>
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql
+	godmode/agentes/module_manager_editor_prediction.php: Fix a check
+	bug and added to migration database schemma a fix for the prediction
+	modules
+
 2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_html.php: Fixed function print_select_groups()

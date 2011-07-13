@@ -1,4 +1,18 @@
-2011-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php: Fixed function print_select_groups()
+	to retrieve subgroups with parent distinct than "group All". 
+	
+	Fixes: #3365845
+		
+	* godmode/agentes/modificar_agente.php: Fixed call to 
+	print_select_groups() to check user ACLs.
+	
+	* ChangeLog: fixed date of my last commit.
+	
+	* general/logoff.php: Changed logout splash screen.
+
+2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Truncate agent name when is large in
 	graphs legends and add missed ttl variable.

@@ -86,8 +86,12 @@ else {
 echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
-
-html_print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
+	$return_all_group = false;
+else
+	$return_all_group = true;
+html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
 
 echo "<td valign='top'>
 <noscript>
@@ -461,6 +465,7 @@ $(document).ready (function () {
 	$("#ag_group").click (
 	function () {
 		$(this).css ("width", "auto"); 
+		$(this).css ("min-width", "100px"); 
 	});
 		
 /*	$("#ag_group").hover (

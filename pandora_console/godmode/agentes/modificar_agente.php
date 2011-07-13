@@ -78,7 +78,7 @@ echo "<table cellpadding='4' cellspacing='4' class='databox' width='770'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !give_acl ($config['id_user'], 0, "PM") && $collection_group == 0)
+if (!$own_info['is_admin'] && !give_acl ($config['id_user'], 0, "PM"))
 	$return_all_group = false;
 else
 	$return_all_group = true;

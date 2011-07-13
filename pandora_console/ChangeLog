@@ -1,5 +1,10 @@
 2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/agentes/modificar_agente.php: Fixed an error on my last 
+	commit.
+
+2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_html.php: Fixed function print_select_groups()
 	to retrieve subgroups with parent distinct than "group All".
 

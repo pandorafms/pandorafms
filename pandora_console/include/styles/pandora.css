@@ -317,52 +317,52 @@ input.camera_min, input.config_min, input.label_min, input.icon_min {
 	padding-right: 25px;
 }
 input.next {
-	background: #e5e5e5 url(../../images/go.png) no-repeat right 2px;
+	background: #e5e5e5 url(../../images/go.png) no-repeat 98% 2px;
 }
 input.upd {
-	background: #e5e5e5 url(../../images/upd.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/upd.png) no-repeat 98% 3px;
 }
 input.wand {
-	background: #e5e5e5 url(../../images/wand.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/wand.png) no-repeat 98% 3px;
 }
 input.search {
-	background: #e5e5e5 url(../../images/zoom.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/zoom.png) no-repeat 98% 3px;
 }
 input.copy {
-	background: #e5e5e5 url(../../images/copy.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/copy.png) no-repeat 98% 3px;
 }
 input.ok {
-	background: #e5e5e5 url(../../images/ok.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/ok.png) no-repeat 98% 3px;
 }
 input.add {
-	background: #e5e5e5 url(../../images/add.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/add.png) no-repeat 98% 3px;
 }
 input.cancel {
-	background: #e5e5e5 url(../../images/cancel.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/cancel.png) no-repeat 98% 3px;
 }
 input.delete {
-	background: #e5e5e5 url(../../images/cross.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/cross.png) no-repeat 98% 3px;
 }
 input.cog {
-	background: #e5e5e5 url(../../images/cog.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/cog.png) no-repeat 98% 3px;
 }
 input.target {
-	background: #e5e5e5 url(../../images/target.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/target.png) no-repeat 98% 3px;
 }
 input.graph {
-	background: #e5e5e5 url(../../images/chart_curve.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/chart_curve.png) no-repeat 98% 3px;
 }
 input.percentile {
-	background: #e5e5e5 url(../../images/chart_bar.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/chart_bar.png) no-repeat 98% 3px;
 }
 input.binary {
-	background: #e5e5e5 url(../../images/binary.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/binary.png) no-repeat 98% 3px;
 }
 input.camera {
-	background: #e5e5e5 url(../../images/camera.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/camera.png) no-repeat 98% 3px;
 }
 input.config {
-	background: #e5e5e5 url(../../images/config.png) no-repeat right 3px;
+	background: #e5e5e5 url(../../images/config.png) no-repeat 98% 3px;
 }
 input.delete_min {
 	background: #e5e5e5 url(../../images/cross.png) no-repeat center;

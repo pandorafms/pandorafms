@@ -335,7 +335,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
  */
 function graphic_combined_module2 ($module_list, $weight_list, $period, $width, $height,
 		$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
-		$stacked = 0, $date = 0, $only_image = false, $homeurl = '') {
+		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1) {
 	global $config;
 	global $graphic_type;
 	
@@ -410,7 +410,7 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
 		$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 		$agent_id = agents_get_agent_id ($agent_name);
 		$module_name = modules_get_agentmodule_name ($agent_module_id);
-		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 40);
+		$module_name_list[$i] = substr($agent_name, 0,80) ." / ".substr ($module_name, 0, 40);
 		$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 		$module_type = modules_get_moduletype_name ($id_module_type);
 		$uncompressed_module = is_module_uncompressed ($module_type);

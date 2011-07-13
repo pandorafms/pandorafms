@@ -1,3 +1,9 @@
+2011-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php: Truncate agent name when is large in
+	graphs legends and add missed ttl variable.
+	* include/styles/pandora.css: Changed style in submit buttons. 
+
 2011-07-13  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php

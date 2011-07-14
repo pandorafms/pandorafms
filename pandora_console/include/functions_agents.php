@@ -902,6 +902,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
 	
+	$subquery_enterprise = '';
 	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
 		$subquery_enterprise = subquery_acl_enterprise();
 	}

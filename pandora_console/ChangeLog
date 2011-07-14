@@ -1,3 +1,11 @@
+2011-07-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php
+	include/functions_networkmap.php
+	include/functions_ui.php: Several fixes in networkmap.
+	
+	Fixes: #3297487
+
 2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_agents.php: Fixed bad type returned by the function 'agents_get_modules_data_count'.

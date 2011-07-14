@@ -1282,10 +1282,11 @@ function ui_debug ($var, $backtrace = true) {
  * 
  * @param int Module Type ID
  * @param bool Whether to return or print
+ * @param bool $relative Whether to use relative path to image or not (i.e. $relative= true : /pandora/<img_src>).
  *
  * @return string An HTML string with the icon. Printed if return is false
  */
-function ui_print_moduletype_icon ($id_moduletype, $return = false) {
+function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = false) {
 	global $config;
 	
 	$type = db_get_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
@@ -1300,7 +1301,7 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false) {
 	
 	return html_print_image ($imagepath, $return,
 		array ("border" => 0,
-			"title" => $type["descripcion"]));
+			"title" => $type["descripcion"]), false, $relative);
 }
 
 /**

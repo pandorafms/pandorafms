@@ -1126,10 +1126,11 @@ function html_print_checkbox ($name, $value, $checked = false, $return = false, 
  * @param array $options Array with optional HTML options to set. At this moment, the 
  * following options are supported: alt, style, title, width, height, class, pos_tree.
  * @param bool $return_src Whether to return src field of image ('images/*.*') or complete html img tag ('<img src="..." alt="...">'). 
- *
+ * @param bool $relative Whether to use relative path to image or not (i.e. $relative= true : /pandora/<img_src>).
+ * 
  * @return string HTML code if return parameter is true.
  */
-function html_print_image ($src, $return = false, $options = false, $return_src = false) {
+function html_print_image ($src, $return = false, $options = false, $return_src = false, $relative = false) {
 	global $config;
 
 	/* Checks if user's skin is available */
@@ -1141,8 +1142,8 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 			$src = $skin_path;		
 	}
 
-	// path to image 
-	$src = $config["homeurl"] . '/' . $src;
+	// path to image (relative or absolute)
+	$src = ($relative? '' : $config["homeurl"] . '/') . $src;
 
 	// Only return src field of image
 	if ($return_src){

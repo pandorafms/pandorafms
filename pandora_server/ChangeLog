@@ -1,3 +1,9 @@
+2011-07-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Use prediction_module to tell
+	  prediction modules apart instead of prediction_module/custom_integer_1
+	  combinations.
+
 2011-07-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/PredictionServer.pm: Added support for synthetic

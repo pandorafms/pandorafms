@@ -487,7 +487,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	} 
 	else {
 		$data[$index['agent_name']] .= print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
-		$data[$index['module_name']] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
+		$data[$index['module_name']] = printTruncateText (get_agentmodule_name ($alert["id_agent_module"]), 20, false);
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
@@ -502,7 +502,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	else {
 		$actionDefault = get_db_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
 	}
-	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
+	$data[$index['description']] .= $disabledHtmlStart . printTruncateText (safe_input ($description), 35, false) . $disabledHtmlEnd;
 	
 	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
 

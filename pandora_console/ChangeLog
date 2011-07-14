@@ -1,3 +1,10 @@
+2011-07-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php: Changed length on module name and 
+	template column in function ui_format_alert_row().
+	
+	Merged from trunk.	
+
 2011-07-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/modificar_agente.php: Fixed an error on my last 

@@ -384,30 +384,6 @@ foreach ($simple_alerts as $alert) {
 
 	$data = array ();
 	
-/*	$data[0] = '<form class="disable_alert_form" method="post" style="display: inline;">';
-	if ($alert['disabled']) {
-		$data[0] .= html_print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
-		$data[0] .= html_print_input_hidden ('enable_alert', 1, true);
-	}
-	else {
-		$data[0] .= html_print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
-		$data[0] .= html_print_input_hidden ('disable_alert', 1, true);
-	}
-	$data[0] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-	$data[0] .= '</form>';
-	
-	$data[1] = '<form class="standby_alert_form" method="post" style="display: inline;">';
-	if (!$alert['standby']) {
-		$data[1] .= html_print_input_image ('standby_off', 'images/bell.png', 1, '', true);
-		$data[1] .= html_print_input_hidden ('standbyon_alert', 1, true);
-	}
-	else {
-		$data[1] .= html_print_input_image ('standby_on', 'images/bell_pause.png', 1, '', true);
-		$data[1] .= html_print_input_hidden ('standbyoff_alert', 1, true);
-	}
-	$data[1] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-	$data[1] .= '</form>'; */
-	
 	if (! $id_agente) {
 		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
 		$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
@@ -426,20 +402,7 @@ foreach ($simple_alerts as $alert) {
 	$data[2] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
 	$data[2] .= ui_print_truncate_text(alerts_get_alert_template_name ($alert['id_alert_template']), 55, false, true, true, '[&hellip;]', 'font-size: 7.1pt');
 	$data[2] .= "</a>";
-	
-/*	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-		if ($policyInfo === false)
-			$data[5] = '';
-		else {
-			$img = 'images/policies.png';
-				
-			$data[5] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id'] . '">' . 
-				html_print_image($img,true, array('title' => $policyInfo['name'])) .
-				'</a>';
-		}
-	} */
-	
+		
 	$actions = alerts_get_alert_agent_module_actions ($alert['id']);
 
 	$data[3] = '';

@@ -1,3 +1,11 @@
+2011-07-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/alerts/alert_list.list.php
+	include/functions_ui.php: Changed length on module name and template
+	column in function ui_format_alert_row().
+
+	Fixes: #3302292
+
 2011-07-14  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php

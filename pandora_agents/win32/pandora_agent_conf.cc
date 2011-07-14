@@ -148,7 +148,7 @@ Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 	
 	filename = Pandora::getPandoraInstallDir ();
 	filename += "pandora_agent.conf";
-	
+
 	ifstream     file (filename.c_str ());
 
 	if (this->key_values)

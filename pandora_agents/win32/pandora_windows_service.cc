@@ -116,7 +116,7 @@ Pandora_Windows_Service::start () {
 
 void
 Pandora_Windows_Service::pandora_init_broker (string file_conf) {
-	string interval, debug, transfer_interval, util_dir, path, env;
+	string interval, debug, transfer_interval, util_dir, path, env, name_agent;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	int pos;
 
@@ -128,6 +128,9 @@ Pandora_Windows_Service::pandora_init_broker (string file_conf) {
 	path = getenv ("PATH");
 	env = "PATH=" + path + ";" + util_dir;
 	putenv (env.c_str ());
+
+	name_agent = "PANDORA_AGENT=" + checkAgentName(file_conf);
+	putenv(name_agent.c_str());
 	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
 	this->conf->setFile (file_conf);
@@ -202,8 +205,9 @@ void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
+	string name_agent, name;
 	int pos, num;
-
+                
 	setPandoraDebug (true);
 
 	// Add the util subdirectory to the PATH
@@ -212,10 +216,10 @@ Pandora_Windows_Service::pandora_init () {
 	path = getenv ("PATH");
 	env = "PATH=" + path + ";" + util_dir;
 	putenv (env.c_str ());
-	
+
 	conf_file = Pandora::getPandoraInstallDir ();
 	conf_file += "pandora_agent.conf";
-	
+
 	num = count_broker_agents();
 	string all_conf[num];
 	
@@ -223,6 +227,13 @@ Pandora_Windows_Service::pandora_init () {
 	this->conf->setFile (all_conf);
 	this->modules = new Pandora_Module_List (conf_file);
 	
+	name = checkAgentName(conf_file);
+	if (name.empty ()) {
+		name = Pandora_Windows_Info::getSystemName ();
+	}
+	name_agent = "PANDORA_AGENT=" + name;
+	putenv(name_agent.c_str());
+
 	/* Get the interval value (in seconds) and set it to the service */
 	interval = conf->getValue ("interval");
 	transfer_interval = conf->getValue ("transfer_interval");
@@ -979,6 +990,28 @@ Pandora_Windows_Service::checkCollections () {
 	purgeDiskCollections ();
 }
 
+string
+Pandora_Windows_Service::checkAgentName(string filename){
+	string name_agent = "";
+	string       buffer;
+	unsigned int pos;
+	ifstream     file (filename.c_str ());
+
+	while (!file.eof ()) {
+		getline (file, buffer);
+		/* Ignore blank or commented lines */
+		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+			/*Check agent_name*/
+			pos = buffer.find("agent_name");
+			if (pos != string::npos){
+				name_agent = buffer.substr(pos+11);
+				return name_agent;
+			}
+		}
+	}
+	file.close();
+	return name_agent;
+}
 void
 Pandora_Windows_Service::checkConfig (string file) {
 	int i, conf_size;
@@ -999,12 +1032,12 @@ Pandora_Windows_Service::checkConfig (string file) {
 	}
 
 	/* Get agent name */
-	tmp = conf->getValue ("agent_name");
+	 tmp = checkAgentName(file);
 	if (tmp.empty ()) {
 		tmp = Pandora_Windows_Info::getSystemName ();
 	}
 	agent_name = tmp;
-	
+
 	/* Error getting agent name */
 	if (tmp.empty ()) {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error getting agent name");
@@ -1252,7 +1285,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 	conf = this->getConf ();
 
  	/* Sleep if a startup delay was specified */
- startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
+	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
  	if (startup_delay > 0 && delayed == 0) {
 		delayed = 1;
         	pandoraLog ("Delaying startup %d miliseconds", startup_delay);
@@ -1305,10 +1338,10 @@ void
 Pandora_Windows_Service::pandora_run () {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr, conf_file;
-    	int startup_delay = 0;
-    	static unsigned char delayed = 0;
-    	int exe = 1;
-    	int i, num;
+    int startup_delay = 0;
+    static unsigned char delayed = 0;
+    int exe = 1;
+    int i, num;
 
 	pandoraDebug ("Run begin");
 
@@ -1326,6 +1359,7 @@ Pandora_Windows_Service::pandora_run () {
 	if (getPandoraDebug () == false) {
 		conf_file = Pandora::getPandoraInstallDir ();
 		conf_file += "pandora_agent.conf";
+		
 		this->checkConfig (conf_file);
 		this->checkCollections ();
 	}

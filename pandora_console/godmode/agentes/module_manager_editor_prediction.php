@@ -33,27 +33,35 @@ if ($row !== false && is_array($row)) {
 	$prediction_module = $row['prediction_module'];
 	$custom_integer_2 = $row ['custom_integer_2'];
 	// Services are an Enterprise feature.
-	$service_select  = $row['custom_integer_1'];
-	if ($service_select > 0) {
-		$is_service = true;
-	}
+	$custom_integer_1 = $row['custom_integer_1'];
 	
-	if($prediction_module == 0 && $id_agente_modulo != 0) {
-		$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agente_modulo));
-		$ops = json_decode($ops_json, true);
+	switch($prediction_module) {
+		case 2:
+			$is_service = true;
+			$custom_integer_2 = 0;
+			break;
+		case 3:
+			$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agente_modulo));
+			$ops = json_decode($ops_json, true);
 
-		$first_op = explode('_', reset(array_keys($ops)));
-		
-		if(isset($first_op[1]) && $first_op[1] == 'avg') {
-			$is_synthetic_avg = true;
-		}
-		else {
-			$is_synthetic = true;
-		}
+			$first_op = explode('_', reset(array_keys($ops)));
+			
+			if(isset($first_op[1]) && $first_op[1] == 'avg') {
+				$is_synthetic_avg = true;
+			}
+			else {
+				$is_synthetic = true;
+			}
+			
+			$custom_integer_1 = 0;
+			$custom_integer_2 = 0;
+			break;
+		default:
+			$prediction_module = $custom_integer_1;
 	}
 }
 else {
-	$service_select = 0;
+	$custom_integer_1 = 0;
 }
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed'])
@@ -95,11 +103,11 @@ $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
-		WHERE history_data = 1 AND id_agente =  ".$id_agente;
-    $data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true, false, true, $is_service);
+		WHERE delete_pending = 0 AND history_data = 1 AND id_agente =  ".$id_agente;
+    $data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
 }
 else {
-	$data[1] .= '<select id="prediction_module" name="prediction_module" disabled="disabled"><option value="0">Select an Agent first</option></select>';
+	$data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
 }
 
 $data[1] .= html_print_label(__("Period"), 'custom_integer_2', true)."<br/>";
@@ -116,7 +124,7 @@ $table_simple->colspan['prediction_module'][1] = 3;
 push_table_simple ($data, 'prediction_module');
 
 // Services are an Enterprise feature.
-$selector_form = enterprise_hook('get_selector_form', array($service_select));
+$selector_form = enterprise_hook('get_selector_form', array($custom_integer_1));
 if ($selector_form !== ENTERPRISE_NOT_HOOK) {
 	$data = array();
     $data[0] = '';

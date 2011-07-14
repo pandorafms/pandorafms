@@ -583,7 +583,7 @@ if ($update_module || $create_module) {
 	// 1.23E-10 is 0.000000000123
 	
 	$post_process = (string) get_parameter ('post_process', 0.0);
-	$prediction_module = (int) get_parameter ('prediction_module');
+	$prediction_module = 1;
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$min = (int) get_parameter_post ("min");
 	$max = (int) get_parameter ('max');
@@ -600,7 +600,7 @@ if ($update_module || $create_module) {
 	$custom_string_1 = (string) get_parameter ('custom_string_1');
 	$custom_string_2 = (string) get_parameter ('custom_string_2');
 	$custom_string_3 = (string) get_parameter ('custom_string_3');
-	$custom_integer_1 = (int) get_parameter ('custom_integer_1');
+	$custom_integer_1 = (int) get_parameter ('prediction_module');
 	$custom_integer_2 = (int) get_parameter ('custom_integer_2');
 
 	// Services are an enterprise feature, 
@@ -653,7 +653,7 @@ if ($update_module || $create_module) {
 	$id_tag = (array) get_parameter('id_tag_selected');
 	$serialize_ops = (string) get_parameter('serialize_ops');
 	
-	if($prediction_module != 0) {
+	if($prediction_module < 3) {
 		unset($serialize_ops);
 		modules_delete_synthetic_operations($id_agent_module);
 	}
@@ -710,8 +710,13 @@ if ($update_module) {
 			'min_ff_event' => $ff_event,
 			'unit' => $unit);
 	
-	$result = modules_update_agent_module ($id_agent_module,
-		$values, false, $id_tag);
+	if($prediction_module == 3 && $serialize_ops == '') {
+		$result = false;
+	}
+	else {
+		$result = modules_update_agent_module ($id_agent_module,
+			$values, false, $id_tag);
+	}
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
@@ -721,10 +726,9 @@ if ($update_module) {
 			"Fail to try update module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
-		if(enterprise_hook('modules_is_synthetic')) {
+		if($prediction_module == 3) {
 			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
 		}
-	
 		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
@@ -794,8 +798,12 @@ if ($create_module) {
 			'min_ff_event' => $ff_event,
 			'unit' => $unit
 		);
-
-	$id_agent_module = modules_create_agent_module ($id_agente, $name, $values, false, $id_tag);
+	if($prediction_module == 3 && $serialize_ops == '') {
+		$id_agent_module = false;
+	}
+	else {
+		$id_agent_module = modules_create_agent_module ($id_agente, $name, $values, false, $id_tag);
+	}
 	
 	if ($id_agent_module === false) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
@@ -805,7 +813,7 @@ if ($create_module) {
 			"Fail to try added module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
-		if(enterprise_hook('modules_is_synthetic')) {
+		if($prediction_module == 3) {
 			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
 		}
 		

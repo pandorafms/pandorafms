@@ -1,3 +1,11 @@
+2011-07-14  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_prediction.php
+	godmode/agentes/configurar_agente.php: Changed the fields
+	system on prediction modules to use 'prediction_module' as
+	flag 1 to modules, 2 to services and 3 to synthetic, and 
+	the custom_integer_1 to module or service id (unused in synth)
+
 2011-07-13  Sergio Martin <sergio.martin@artica.es>
 
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql

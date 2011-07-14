@@ -1,3 +1,8 @@
+2011-07-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Set additional module configuration parameters
+	  from the XML.
+
 2011-04-13 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* HP-UX/pandora_agent.conf: Fixed a wrong path for command swapinfo.

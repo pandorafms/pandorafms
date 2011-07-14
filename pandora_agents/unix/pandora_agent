@@ -311,6 +311,12 @@ sub parse_conf_modules($) {
 				'max' => undef,
 				'min' => undef,
 				'post_process' => undef,
+			    'min_critical' => undef,
+			    'max_critical' => undef,
+			    'min_warning' => undef,
+			    'max_warning' => undef,
+			    'disabled' => undef,
+			    'min_ff_event' => undef,
 				'save' => '',
 				'conditions' => [],
 				'cron' => '',
@@ -414,6 +420,24 @@ sub parse_conf_modules($) {
 		# Collection
 		} elsif ($line =~ /^\s*file_collection\s+(.+)$/) {
 			my $collection = $1;
+		# Min critical
+		} elsif ($line =~ /^\s*module_min_critical\s+(.*)\s*$/) {
+			$module->{'min_critical'} = $1;
+		# Max critical
+		} elsif ($line =~ /^\s*module_max_critical\s+(.*)\s*$/) {
+			$module->{'max_critical'} = $1;
+		# Min warning
+		} elsif ($line =~ /^\s*module_min_warning\s+(.*)\s*$/) {
+			$module->{'min_warning'} = $1;
+		# Max warning
+		} elsif ($line =~ /^\s*module_max_warning\s+(.*)\s*$/) {
+			$module->{'max_warning'} = $1;
+		# Disabled
+		} elsif ($line =~ /^\s*module_disabled\s+(.*)\s*$/) {
+			$module->{'disabled'} = $1;
+		# Min ff event
+		} elsif ($line =~ /^\s*module_min_ff_event\s+(.*)\s*$/) {
+			$module->{'min_ff_event'} = $1;
 		}
 	}
 	return;
@@ -1418,6 +1442,24 @@ sub write_module_xml ($@) {
 
 	# Post process
 	$Xml .= "	<post_process>" . $module->{'post_process'} . "</post_process>\n" if (defined ($module->{'post_process'}));
+
+	# Min critical
+	$Xml .= "	<min_critical>" . $module->{'min_critical'} . "</min_critical>\n" if (defined ($module->{'min_critical'}));
+
+	# Max critical
+	$Xml .= "	<max_critical>" . $module->{'max_critical'} . "</max_critical>\n" if (defined ($module->{'max_critical'}));
+
+	# Min warning
+	$Xml .= "	<min_warning>" . $module->{'min_warning'} . "</min_warning>\n" if (defined ($module->{'min_warning'}));
+
+	# Max warning
+	$Xml .= "	<max_warning>" . $module->{'max_warning'} . "</max_warning>\n" if (defined ($module->{'max_warning'}));
+
+	# Disabled
+	$Xml .= "	<disabled>" . $module->{'disabled'} . "</disabled>\n" if (defined ($module->{'disabled'}));
+
+	# Min ff event
+	$Xml .= "	<min_ff_event>" . $module->{'min_ff_event'} . "</min_ff_event>\n" if (defined ($module->{'min_ff_event'}));
 
 	# Data list
 	if ($#data > 0) {

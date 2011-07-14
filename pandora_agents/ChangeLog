@@ -1,5 +1,9 @@
 2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* win32/bin/pandora_agent.conf: Add example lines with drone agents and additional configuration files. 
+
+2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* unix/Linux/pandora_agent.conf
 	unix/SunOS/pandora_agent.conf 
 	unix/FreeBSD/pandora_agent.conf

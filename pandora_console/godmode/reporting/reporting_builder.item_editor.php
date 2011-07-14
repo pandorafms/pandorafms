@@ -30,7 +30,7 @@ $show_graph_options[2] = __('Only graph');
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
 require_once ($config['homedir'].'/include/functions_agents.php');
 if (enterprise_include_once ('include/functions_metaconsole.php')) {
-	$servers = metaconsole_get_connection_names();
+	$servers = enterprise_hook("metaconsole_get_connection_names");
 }
 
 switch ($action) {

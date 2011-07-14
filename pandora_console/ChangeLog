@@ -1,3 +1,7 @@
+2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_agents.php: Fixed bad type returned by the function 'agents_get_modules_data_count'.
+
 2011-07-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Added "subquery_enterprise" variable 

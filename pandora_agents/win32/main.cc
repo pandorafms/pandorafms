@@ -18,6 +18,7 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <cstdlib>
 #include <iostream>
 #include "pandora.h"
 #include "pandora_windows_service.h"
@@ -26,6 +27,9 @@
 #ifdef __DEBUG__
 	#include "debug_new.h"
 #endif
+
+using namespace std;
+using namespace Pandora;
 
 #define PATH_SIZE                         _MAX_PATH+1
 #define SERVICE_INSTALL_CMDLINE_PARAM    "--install"
@@ -42,6 +46,7 @@ main (int argc, char *argv[]) {
 	string                   aux;
 	unsigned int             pos;
 	bool                     process = false;
+	string 					 home;
 
 	service = Pandora_Windows_Service::getInstance ();
 	service->setValues (Pandora::name, Pandora::display_name,
@@ -54,6 +59,10 @@ main (int argc, char *argv[]) {
 	pos = aux.rfind ("\\");
 	aux.erase (pos + 1);
 	Pandora::setPandoraInstallDir (aux);
+
+	home = "PANDORA_HOME=";
+	home += Pandora::getPandoraInstallDir ();
+	putenv(home.c_str());
 
 	/* Check the parameters */
 	for (int i = 1; i < argc; i++) {

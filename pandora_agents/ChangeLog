@@ -1,3 +1,9 @@
+2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* win32/pandora_agent_conf.cc
+	win32/pandora_windows_service.cc
+	win32/main.cc: Created runtime enviroment variables for agents and fixed bug in drone agents.
+
 2011-07-11  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/pandora_agent_conf.cc

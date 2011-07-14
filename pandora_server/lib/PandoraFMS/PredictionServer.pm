@@ -140,14 +140,14 @@ sub exec_prediction_module ($$$$) {
 	return unless defined $agent_module;
 
 	# Service modules
-	if ($agent_module->{'custom_integer_1'} != 0) {
+	if ($agent_module->{'prediction_module'} == 2) {
 		logger ($pa_config, "Executing service module " . $agent_module->{'nombre'}, 10);
 		enterprise_hook ('exec_service_module', [$pa_config, $agent_module, $server_id, $dbh]);
 		return;
 	}
 	
 	# Synthetic modules
-	if ($agent_module->{'prediction_module'} == 0) {
+	if ($agent_module->{'prediction_module'} == 3) {
 		logger ($pa_config, "Executing synthetic module " . $agent_module->{'nombre'}, 10);
 		enterprise_hook ('exec_synthetic_module', [$pa_config, $agent_module, $server_id, $dbh]);
 		return;

@@ -170,7 +170,8 @@ namespace Pandora_Modules {
 		int                   module_timeout;
 		int                   executions;
 		int                   max, min;
-		string                post_process;
+		string                min_critical, max_critical, min_warning, max_warning;
+		string                post_process, disabled, min_ff_event;
 		bool                  has_limits, has_min, has_max;
 		Module_Type           module_type;
 		string                module_kind_str;
@@ -257,6 +258,13 @@ namespace Pandora_Modules {
 		void        setMax         (int value);
 		void        setMin         (int value);
 		void        setPostProcess (string value);
+		void        setMinCritical (string value);
+		void        setMaxCritical (string value);
+		void        setMinWarning  (string value);
+		void        setMaxWarning  (string value);
+		void        setDisabled    (string value);
+		void        setMinFFEvent  (string value);
+		
 		void        setAsync       (bool async);
 		void        setSave        (string save);
 

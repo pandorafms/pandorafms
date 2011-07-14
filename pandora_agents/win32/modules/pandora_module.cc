@@ -55,6 +55,12 @@ Pandora_Module::Pandora_Module (string name) {
     this->precondition_list  = NULL;
     this->condition_list  = NULL;
 	this->cron            = NULL;
+	this->min_critical    = "";
+	this->max_critical    = "";
+	this->min_warning     = "";
+	this->max_warning     = "";
+	this->disabled        = "";
+	this->min_ff_event    = "";
 }
 
 /** 
@@ -498,6 +504,48 @@ Pandora_Module::getXml () {
 		module_xml += "]]></post_process>\n";
 	}
 
+	/* Min critical */
+	if (this->min_critical != "") {
+		module_xml += "\t<min_critical><![CDATA[";
+		module_xml += this->min_critical;
+		module_xml += "]]></min_critical>\n";
+	}
+
+	/* Max critical */
+	if (this->max_critical != "") {
+		module_xml += "\t<max_critical><![CDATA[";
+		module_xml += this->max_critical;
+		module_xml += "]]></max_critical>\n";
+	}
+
+	/* Min warning */
+	if (this->min_warning != "") {
+		module_xml += "\t<min_warning><![CDATA[";
+		module_xml += this->min_warning;
+		module_xml += "]]></min_warning>\n";
+	}
+
+	/* Max warning */
+	if (this->max_warning != "") {
+		module_xml += "\t<max_warning><![CDATA[";
+		module_xml += this->max_warning;
+		module_xml += "]]></max_warning>\n";
+	}
+
+	/* Disabled */
+	if (this->disabled != "") {
+		module_xml += "\t<disabled><![CDATA[";
+		module_xml += this->disabled;
+		module_xml += "]]></disabled>\n";
+	}
+
+	/* Min ff event */
+	if (this->min_ff_event != "") {
+		module_xml += "\t<min_ff_event><![CDATA[";
+		module_xml += this->min_ff_event;
+		module_xml += "]]></min_ff_event>\n";
+	}
+
     /* Write module data */
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
@@ -582,6 +630,66 @@ Pandora_Module::setMin (int value) {
 void
 Pandora_Module::setPostProcess (string value) {
 	this->post_process = value;
+}
+
+/** 
+ * Set the min critical value for the module.
+ *
+ * @param value Min critical value .
+ */
+void
+Pandora_Module::setMinCritical (string value) {
+	this->min_critical = value;
+}
+
+/** 
+ * Set the max critical value for the module.
+ *
+ * @param value Max critical value .
+ */
+void
+Pandora_Module::setMaxCritical (string value) {
+	this->max_critical = value;
+}
+
+/** 
+ * Set the min warning value for the module.
+ *
+ * @param value Min warning value .
+ */
+void
+Pandora_Module::setMinWarning (string value) {
+	this->min_warning = value;
+}
+
+/** 
+ * Set the max warning value for the module.
+ *
+ * @param value Max warning value .
+ */
+void
+Pandora_Module::setMaxWarning (string value) {
+	this->max_warning = value;
+}
+
+/** 
+ * Set the disabled value for the module.
+ *
+ * @param value Disabled value .
+ */
+void
+Pandora_Module::setDisabled (string value) {
+	this->disabled = value;
+}
+
+/** 
+ * Set the min ff event value for the module.
+ *
+ * @param value Min ff event value .
+ */
+void
+Pandora_Module::setMinFFEvent (string value) {
+	this->min_ff_event = value;
 }
 
 /** 

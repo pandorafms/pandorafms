@@ -59,6 +59,12 @@ using namespace Pandora_Strutils;
 #define TOKEN_MAX           ("module_max ")
 #define TOKEN_MIN           ("module_min ")
 #define TOKEN_POST_PROCESS  ("module_postprocess ")
+#define TOKEN_MIN_CRITICAL  ("module_min_critical ")
+#define TOKEN_MAX_CRITICAL  ("module_max_critical ")
+#define TOKEN_MIN_WARNING   ("module_min_warning ")
+#define TOKEN_MAX_WARNING   ("module_max_warning ")
+#define TOKEN_DISABLED      ("module_disabled ")
+#define TOKEN_MIN_FF_EVENT  ("module_min_ff_event ")
 #define TOKEN_DESCRIPTION   ("module_description ")
 #define TOKEN_ODBC_QUERY    ("module_odbc_query ")
 #define TOKEN_LOGEVENT      ("module_logevent")
@@ -130,6 +136,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_port, module_timeout, module_regexp;
 	string                 module_plugin, module_save, module_condition, module_precondition;
 	string                 module_crontab, module_cron_interval, module_post_process;
+	string                 module_min_critical, module_max_critical, module_min_warning, module_max_warning;
+	string                 module_disabled, module_min_ff_event;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -176,6 +184,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_cron_interval = "";
 	module_post_process  = "";
 	module_precondition  = "";
+	module_min_critical  = "";
+	module_max_critical  = "";
+	module_min_warning   = "";
+	module_max_warning   = "";
+	module_disabled      = "";
+	module_min_ff_event  = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -242,6 +256,24 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_post_process == "") {
 			module_post_process = parseLine (line, TOKEN_POST_PROCESS);
+		}
+		if (module_min_critical == "") {
+			module_post_process = parseLine (line, TOKEN_MIN_CRITICAL);
+		}
+		if (module_max_critical == "") {
+			module_post_process = parseLine (line, TOKEN_MAX_CRITICAL);
+		}
+		if (module_min_warning == "") {
+			module_post_process = parseLine (line, TOKEN_MIN_WARNING);
+		}
+		if (module_max_warning == "") {
+			module_post_process = parseLine (line, TOKEN_MAX_WARNING);
+		}
+		if (module_disabled == "") {
+			module_post_process = parseLine (line, TOKEN_DISABLED);
+		}
+		if (module_min_ff_event == "") {
+			module_post_process = parseLine (line, TOKEN_MIN_FF_EVENT);
 		}
 		if (module_description == "") {
 			module_description = parseLine (line, TOKEN_DESCRIPTION);
@@ -539,6 +571,30 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 
 	if (module_post_process != "") {
 		module->setPostProcess (module_post_process);
+	}
+
+	if (module_min_critical != "") {
+		module->setMinCritical (module_min_critical);
+	}
+
+	if (module_max_critical != "") {
+		module->setMaxCritical (module_max_critical);
+	}
+
+	if (module_min_warning != "") {
+		module->setMinWarning (module_min_warning);
+	}
+
+	if (module_max_warning != "") {
+		module->setMaxWarning (module_max_warning);
+	}
+
+	if (module_disabled != "") {
+		module->setDisabled (module_disabled);
+	}
+
+	if (module_min_ff_event != "") {
+		module->setMinFFEvent (module_min_ff_event);
 	}
 
 	return module;

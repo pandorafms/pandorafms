@@ -1,5 +1,13 @@
 2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* unix/Linux/pandora_agent.conf
+	unix/SunOS/pandora_agent.conf 
+	unix/FreeBSD/pandora_agent.conf
+	unix/HP-UX/pandora_agent.conf
+	unix/NT4/pandora_agent.conf: Add example lines with drone agents and additional configuration files. 	
+
+2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* unix/pandora_agent: Created runtime enviroment variables for unix agents
 
 2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>

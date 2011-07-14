@@ -1183,11 +1183,7 @@ function agents_get_modules_data_count ($id_agent = 0) {
 			$count["total"] += (int) db_get_sql ($sql, 0, true);
 		}
 	}
-
-	if (!isset ($agent_id)) {
-		//If agent_id is not set, it didn't loop through any agents
-		return $count["total"];
-	}
+	
 	return $count; //Return the array
 }
 

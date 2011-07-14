@@ -463,7 +463,10 @@ sub read_config (;$) {
 		if (defined ($token)) {
 			return $2 if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token);
 			next;
-		}		
+		}
+		if 	($line =~ /^module\s*\w*/){
+			next;
+		}
 		#Additional configuration file
 		if ($line =~ /^include\s+(.*)\s*/){
 			open (FILE, "$1") or next;
@@ -476,6 +479,7 @@ sub read_config (;$) {
 			my $path_conf = "$ConfDir/$ConfFile";
 			my $path_broker = "$ConfDir/$1.conf";
 			my $name_agent = $1;
+	
 			push (@all_conf, "$1.conf");
 			unless (-e $path_broker){
 				write_broker_conf($path_conf, $path_broker, $name_agent);
@@ -1512,18 +1516,20 @@ sub kill_signal_handler (){
 #Handler TERM signal.
 $SIG{'TERM'} = \&kill_signal_handler;
 
-
 # Check command line arguments
 print_usage unless ($#ARGV == 0);
 $ConfDir = fix_directory ($ARGV[0]);
 error ("Directory '$ConfDir' does not exist.") unless (-d "$ConfDir");
+
+#Pandora home path
+$ENV{'PANDORA_HOME'}=$ConfDir;
 
 push (@all_conf, $ConfFile);
 
 foreach my $conf_agent (@all_conf){
 	
 	$ConfFile = $conf_agent;
-
+	
 	# Get user to run as
 	my $pandora_user = read_config ('pandora_user');
 	if (defined ($pandora_user)) {
@@ -1550,7 +1556,10 @@ foreach my $conf_agent (@all_conf){
 
 	# Read configuration file
 	read_config ();
+	
+	$ENV{'PANDORA_AGENT'}=$Conf{'agent_name'};
 }
+
 # Fix directory names
 $Conf{'temporal'} = fix_directory ($Conf{'temporal'});
 error ("Temporal directory '" . $Conf{'temporal'} . "' does not exist.") unless (-d "$Conf{'temporal'}");

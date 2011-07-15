@@ -730,7 +730,7 @@ function gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 				db_process_sql_insert('tgis_map_layer_has_tagente',
 					array(
 						'tgis_map_layer_id_tmap_layer' => $idLayer,
-						'tagente_id_agente' => agents_get_agent_id(safe_input($agent_name))
+						'tagente_id_agente' => agents_get_agent_id(io_safe_input($agent_name))
 					)
 				);
 			}

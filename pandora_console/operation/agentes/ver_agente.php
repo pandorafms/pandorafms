@@ -133,6 +133,7 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
+		$custom_condition = get_parameter('custom_condition', '');
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
 			default:
@@ -191,7 +192,8 @@ if (is_ajax ()) {
 		
 			$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
-				WHERE ' . $enabled . '
+				WHERE ' . $enabled .
+					io_safe_output($custom_condition) . '
 					AND delete_pending = 0
 					AND id_agente IN (' . implode(',', $idAgents) . ') AND (
 						SELECT count(nombre)

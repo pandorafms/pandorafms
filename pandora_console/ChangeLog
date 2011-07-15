@@ -1,3 +1,9 @@
+2011-07-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js
+	operation/agentes/ver_agente.php: Add hack to send to the ajax
+	a custom condition of modules in the agent_changed_by_multiple_agents
+
 2011-07-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_gis.php: Changed name of function safe_input to

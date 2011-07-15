@@ -132,6 +132,14 @@ function isEmptyObject(obj) {
  * @param selected Which module(s) have to be selected
  */
 function agent_changed_by_multiple_agents (event, id_agent, selected) {
+	// Hack to add custom condition
+	if($("#hidden-custom_condition").val() != undefined) {
+		custom_condition = $("#hidden-custom_condition").val();
+	}
+	else {
+		custom_condition = '';
+	}
+	
 	var idAgents = Array();
 	
 	jQuery.each ($("#id_agents option:selected"), function (i, val) {
@@ -155,7 +163,8 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 				 {"page": "operation/agentes/ver_agente",
 				 "get_agent_modules_json_for_multiple_agents": 1,
 				 "id_agent[]": idAgents,
-				 "all": find_modules
+				 "all": find_modules,
+				 "custom_condition": custom_condition
 				 },
 				 function (data) {
 					 $('#module').empty ();

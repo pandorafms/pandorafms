@@ -367,7 +367,7 @@ function create_agent_node ($agent, $simple = 0, $font_size = 10) {
 	}
 
 	// Short name
-	$name = strtolower ($agent["nombre"]);
+	$name = safe_output(strtolower ($agent["nombre"]));
 	if (strlen ($name) > 16)
 		$name = substr ($name, 0, 16);
 

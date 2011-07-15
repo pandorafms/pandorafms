@@ -690,7 +690,7 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 				process_sql_insert('tgis_map_layer_has_tagente',
 					array(
 						'tgis_map_layer_id_tmap_layer' => $idLayer,
-						'tagente_id_agente' => get_agent_id($agent_name)
+						'tagente_id_agente' => get_agent_id(safe_input($agent_name))
 					)
 				);
 			}

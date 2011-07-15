@@ -118,7 +118,7 @@ if ($event_type != "") {
 
 }
 if ($severity != -1)
-	$sql_post .= " AND criticity >= ".$severity;
+	$sql_post .= " AND criticity = ".$severity;
 if ($id_agent != -1)
 	$sql_post .= " AND id_agente = ".$id_agent;
 if ($id_event != -1)

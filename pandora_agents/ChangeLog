@@ -1,3 +1,8 @@
+2011-07-18  Sergio Martin <sergio.martin@artica.es>
+
+	* unix/Linux/pandora_agent.conf: Change default memory modules to get it with free command
+	and using postprocessing to unit conversion. Bug: 3284422
+
 2011-07-14  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/bin/pandora_agent.conf: Add example lines with drone agents and additional configuration files. 

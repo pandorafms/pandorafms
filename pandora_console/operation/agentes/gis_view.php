@@ -52,10 +52,10 @@ if (!gis_get_agent_map($agentId, "500px", "98%", true, true, $period)) {
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP();");
+		$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP()");
 		break;
 	case "postgresql":
-		$timestampLastOperation = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
+		$timestampLastOperation = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
 		break;
 	case "oracle":
 		$timestampLastOperation = db_get_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");

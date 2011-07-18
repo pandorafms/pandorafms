@@ -1,5 +1,9 @@
 2011-07-18  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/gis_view.php: Fixed sql typo error
+
+2011-07-18  Sergio Martin <sergio.martin@artica.es>
+
 	* images/sub.png
 	images/mul.png
 	images/skin/skin_default/images/sub.png

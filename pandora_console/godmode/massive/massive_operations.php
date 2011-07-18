@@ -38,7 +38,12 @@ $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_a
 			
 $options_agents = array('edit_agents' => __('Massive agents edition'), 'delete_agents' => __('Massive agents deletion'));
 
-$options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
+if (give_acl ($config['id_user'], 0, "PM")) {
+	$options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
+}
+else {
+	$options_users = array();
+}
 
 $options_modules = array('delete_modules' => __('Massive modules deletion'), 'edit_modules' => __('Massive modules edition'), 
 				'copy_modules' => __('Massive modules copy'));
@@ -104,7 +109,6 @@ $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massi
 		. print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
 		. '</a>', 'active' => $tab == 'massive_alerts');
 		
-
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
 		. print_image ('images/group.png', true, array ('title' => __('Users operations')))
 		. '</a>', 'active' => $tab == 'massive_users');
@@ -123,10 +127,14 @@ $policiestab = enterprise_hook('massive_policies_tab');
 if ($policiestab == -1)
 	$policiestab = "";
 		
-
-$onheader = array('massive_agents' => $agentstab, 'massive_modules' => $modulestab, 
-				'user_agents' => $userstab, 'massive_alerts' => $alertstab, 
-				'policies' => $policiestab);
+$onheader = array();
+$onheader['massive_agents'] = $agentstab;
+$onheader['massive_modules'] = $modulestab;
+if (give_acl ($config['id_user'], 0, "PM")) {
+	$onheader['user_agents'] = $userstab;
+}
+$onheader['massive_alerts'] = $alertstab;
+$onheader['policies'] = $policiestab;
 
 print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
 

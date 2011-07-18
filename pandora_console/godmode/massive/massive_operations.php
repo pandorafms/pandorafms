@@ -38,7 +38,12 @@ $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_a
 			
 $options_agents = array('edit_agents' => __('Massive agents edition'), 'delete_agents' => __('Massive agents deletion'));
 
-$options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
+if (check_acl ($config['id_user'], 0, "PM")) {
+	$options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
+}
+else {
+	$option_users = array();
+}
 
 $options_modules = array('delete_modules' => __('Massive modules deletion'), 'edit_modules' => __('Massive modules edition'), 
 				'copy_modules' => __('Massive modules copy'));
@@ -104,10 +109,14 @@ $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massi
 		. html_print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
 		. '</a>', 'active' => $tab == 'massive_alerts');
 		
-
-$userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-		. html_print_image ('images/group.png', true, array ('title' => __('Users operations')))
-		. '</a>', 'active' => $tab == 'massive_users');
+if (check_acl ($config['id_user'], 0, "PM")) {
+	$userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
+			. html_print_image ('images/group.png', true, array ('title' => __('Users operations')))
+			. '</a>', 'active' => $tab == 'massive_users');
+}
+else {
+	$userstab = array();
+}
 		
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
 		. html_print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))

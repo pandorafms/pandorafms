@@ -17,9 +17,9 @@
 // Load global vars
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
-		"Trying to access massive alert deletion");
+		"Trying to access massive profile addition");
 	require ("general/noaccess.php");
 	return;
 }

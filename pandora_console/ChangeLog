@@ -1,5 +1,13 @@
 2011-07-18  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/massive/massive_operations.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_add_profiles.php: Restringed profiles massive
+	operations only to admins for bug: 3294464
+	Merged from 3.2.1
+
+2011-07-18  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/gis_view.php: Fixed sql typo error
 
 2011-07-18  Sergio Martin <sergio.martin@artica.es>

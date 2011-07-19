@@ -910,6 +910,11 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
+
+		if(empty($groups)) {
+			return array();
+		}
+		
 		$id_groups = array_keys($groups);
 
 		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
@@ -925,6 +930,11 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	$id_agent = safe_int ($id_agent, 1);
 
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
+	
+	if(empty($userGroups)) {
+		return array();
+	}
+	
 	$id_userGroups = array_keys($userGroups);
 
 	$where = " WHERE (
@@ -951,7 +961,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					)
 				)
 		)";
-
+	
 	if (! empty ($id_agent)) {
 		$where .= sprintf (' AND id_agente IN (%s)', implode (",", (array) $id_agent));
 	}

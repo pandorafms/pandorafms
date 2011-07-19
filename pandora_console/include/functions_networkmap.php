@@ -176,6 +176,9 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	}
 	else {
 		$groups = db_get_all_rows_in_table ('tgrupo');
+		if($groups === false) {
+			$groups = array();
+		}
 	}
 	
 	// Open Graph

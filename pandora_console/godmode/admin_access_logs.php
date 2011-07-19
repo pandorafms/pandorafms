@@ -17,10 +17,6 @@
 
 global $config;
 
-if ($config['flash_charts']) {
-	require_once ("include/fgraph.php");
-}
-
 require_once ($config["homedir"] . '/include/functions_graph.php'); 
 
 check_login ();

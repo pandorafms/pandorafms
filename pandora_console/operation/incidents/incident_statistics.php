@@ -30,19 +30,19 @@ ui_print_page_header (__('Statistics'), "images/book_edit.png", false, "", false
 
 echo '<table width="90%">
 	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';
-echo graph_incidents_status2 ();
+echo graph_incidents_status ();
 
 echo '<td valign="top"><h3>'.__('Incidents by priority').'</h3>';
-echo grafico_incidente_prioridad2 ();
+echo grafico_incidente_prioridad ();
 
 echo '<tr><td><h3>'.__('Incidents by group').'</h3>';
-echo graphic_incident_group2();
+echo graphic_incident_group();
 
 echo '<td><h3>'.__('Incidents by user').'</h3>';
-echo graphic_incident_user2();
+echo graphic_incident_user();
 
 echo '<tr><td><h3>'.__('Incidents by source').'</h3>';
-echo graphic_incident_source2();
+echo graphic_incident_source();
 
 echo '</table>';
 ?>

@@ -69,7 +69,7 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	case 'get_image_sparse':
-		$img = grafico_modulo_sparse2($id_agent_module,
+		$img = grafico_modulo_sparse($id_agent_module,
 			$period, false, $width, $height, '', null, false, 0, false, 0, '', 0, 0,
 			true, true);
 		

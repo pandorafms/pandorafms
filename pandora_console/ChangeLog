@@ -1,3 +1,36 @@
+2011-07-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_fsgraph.php
+	include/graphs/fgraph.php
+	include/functions_reporting.php
+	include/pandora_graph.php
+	include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php
+	include/config_process.php
+	include/functions_custom_graphs.php
+	include/fgraph.php
+	include/functions_fsgraph.php
+	operation/incidents/incident_statistics.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/graphs.php
+	operation/agentes/tactical.php
+	operation/agentes/stat_win.php
+	operation/servers/view_server.php
+	operation/servers/view_server_detail.php
+	operation/integria_incidents/incident_statistics.php
+	operation/events/event_statistics.php
+	operation/events/events_list.php
+	operation/reporting/reporting_xml.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/agents/tactical.php
+	general/logon_ok.php
+	godmode/admin_access_logs.php
+	godmode/db/db_info.php
+	godmode/db/db_purge.php
+	godmode/reporting/graph_builder.preview.php: Delete old graphic engine
+	functions and rename the new ones to the final name (delete '2' suffix)
+
 2011-07-18  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_operations.php: Fixed acl last fix 

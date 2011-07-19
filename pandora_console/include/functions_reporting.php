@@ -25,7 +25,6 @@
 require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
-//include_once ($config["homedir"]."/include/fgraph.php");
 include_once($config["homedir"] . "/include/functions_groups.php");
 require_once ('functions_graph.php');
 include_once($config['homedir'] . "/include/functions_modules.php");
@@ -2051,7 +2050,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-			$data[0] = grafico_modulo_sparse2($content['id_agent_module'], $content['period'],
+			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], '', 0, 0, true, true);
 			
@@ -2077,7 +2076,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data = array ();
-			$data[0] = grafico_modulo_sparse2($layout_data['id_agente_modulo'], $content['period'],
+			$data[0] = grafico_modulo_sparse($layout_data['id_agente_modulo'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], '', true, 0, true, true);
 			array_push ($table->data, $data);
@@ -2121,7 +2120,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
-			$data[0] = 	graphic_combined_module2(
+			$data[0] = 	graphic_combined_module(
 				$modules,
 				$weights,
 				$content['period'],
@@ -2589,7 +2588,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-			$data[0] = graph_custom_sql_graph2($content["id_rc"], $sizgraph_w, 200, $content["type"], true);
+			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true);
 
 			array_push($table->data, $data);
 			break;

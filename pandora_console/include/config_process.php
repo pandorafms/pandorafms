@@ -28,6 +28,8 @@ $pandora_version = 'v4.0dev';
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;
 
+$develop_bypass = 1;
+
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);
 	
@@ -156,7 +158,6 @@ db_connect();
 // Function include_graphs_dependencies() it's called in the code below
 require_once("include_graph_dependencies.php");
 
-//require_once("include/fgraph.php");
 include_graphs_dependencies($config['homedir'].'/');
 
 ?>

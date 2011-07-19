@@ -52,13 +52,13 @@ echo '<div style="height: 10px">&nbsp;</div>';
 echo '<div style="float:right; width:320px; padding-top:11px;">';
 echo '<b>'.__('Agent access rate (24h)').'</b><br />';
 
-graphic_agentaccess2($id_agente, 280, 110, 86400);
+graphic_agentaccess($id_agente, 280, 110, 86400);
 
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
-echo graph_event_module2 (290, 120, $id_agente);
+echo graph_event_module (290, 120, $id_agente);
 if ($config['flash_charts']) {
-	echo graphic_agentevents2 ($id_agente, 290, 60, 86400);
+	echo graphic_agentevents ($id_agente, 290, 60, 86400);
 }
 echo '</div>';
 	
@@ -177,7 +177,7 @@ if ($agent['timezone_offset'] != 0) {
 $progress = agents_get_next_contact($id_agente);
 
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-echo '<td class="datos f9" colspan="2">' . progress_bar2($progress, 200, 20) . '</td></tr>';
+echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
 
 // Custom fields
 $fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));

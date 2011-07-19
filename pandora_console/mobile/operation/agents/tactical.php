@@ -43,16 +43,16 @@ class Tactical {
 		$table->data[0][0] = "<h3 class='title_h3_server'>" . __('Status') . "</h3>" ;
 		$table->data[1][0] = '<span title="' . __('Global health') . '" alt="' . __('Global health') . '">' . __('G') . '</span> ';
 		$table->data[1][1] =
-			progress_bar2($data["global_health"], 70, 8, '', 0);
+			progress_bar($data["global_health"], 70, 8, '', 0);
 		$table->data[2][0] = '<span title="' . __('Monitor health') . '" alt="' . __('Monitor health') . '">' . __('M') . '</span> ';
 		$table->data[2][1] =
-			progress_bar2($data["monitor_health"], 70, 8, '', 0);
+			progress_bar($data["monitor_health"], 70, 8, '', 0);
 		$table->data[3][0] = '<span title="' . __('Module sanity') . '" alt="' . __('Module sanity') . '">' . __('M') . '</span> ';
 		$table->data[3][1] =
-			progress_bar2($data["module_sanity"], 70, 8, '', 0);
+			progress_bar($data["module_sanity"], 70, 8, '', 0);
 		$table->data[4][0] = '<span title="' . __('Alert level') . '" alt="' . __('Alert level') . '">' . __('A') . '</span> ';
 		$table->data[4][1] =
-			progress_bar2($data["alert_level"], 70, 8, '', 0);
+			progress_bar($data["alert_level"], 70, 8, '', 0);
 		$table->data[5][0] = $table->data[5][1] = '';
 		$table->data[6][0] = $table->data[6][1] = '';
 		$table->data[7][0] = $table->data[7][1] = '';

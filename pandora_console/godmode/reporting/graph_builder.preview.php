@@ -139,7 +139,7 @@ echo "<tr><td>";
 if(!empty($modules)) {
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	echo graphic_combined_module2(explode (',', $modules), explode (',', $weights), $period, $width, $height,
+	echo graphic_combined_module(explode (',', $modules), explode (',', $weights), $period, $width, $height,
 				'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked, $unixdate);
 }
 else {

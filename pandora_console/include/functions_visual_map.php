@@ -117,12 +117,12 @@ function visual_map_print_item($layoutData) {
 			
 			echo '<div id="' . $id . '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />';
-			echo progress_bar2($percentile, $width, 15);
+			echo progress_bar($percentile, $width, 15);
 			echo '</div>';
 			
 			break;
 		case MODULE_GRAPH:
-			$img = grafico_modulo_sparse2($id_module, $period, 0, $width,
+			$img = grafico_modulo_sparse($id_module, $period, 0, $width,
 				$height, '', null, false, 0, false, 0, '', 0, 0, true, true);
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
@@ -877,9 +877,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					echo "<br>";
 
 					if ($resizedMap)
-						echo progress_bar2($percentile, ((integer)($proportion * $width)), 15);
+						echo progress_bar($percentile, ((integer)($proportion * $width)), 15);
 					else
-						echo progress_bar2($percentile, $width, 15);	
+						echo progress_bar($percentile, $width, 15);	
 					
 					if ($endTagA) echo '</a>';	
 						
@@ -930,12 +930,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
 					// resulting fault image links :(
 
-						echo grafico_modulo_sparse2 ($layout_data['id_agente_modulo'], $layout_data['period'],
+						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 							false, ((integer)($proportion * $layout_data['width'])), ((integer)($proportion * $layout_data['height'])),
 							'', null, false, 0, false, 0, '', 0, 0, true, true);
 					}
 					else {
-						echo grafico_modulo_sparse2 ($layout_data['id_agente_modulo'], $layout_data['period'],
+						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 							false, $layout_data['width'], $layout_data['height'],
 							'', null, false, 0, false, 0, '', 0, 0, true, true);
 					}

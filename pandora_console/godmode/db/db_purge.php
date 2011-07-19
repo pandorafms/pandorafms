@@ -36,7 +36,7 @@ $id_agent = (int) get_parameter_post ("agent", -1);
 
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database purge'), "images/god8.png", false, "", true);
 
-echo grafico_db_agentes_purge2($id_agent);
+echo grafico_db_agentes_purge($id_agent);
 
 echo '<br /><br />';
 echo '<h4>'.__('Get data from agent').'</h4>';

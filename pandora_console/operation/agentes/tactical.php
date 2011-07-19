@@ -86,28 +86,28 @@ $table->data[0][0] ='<b>'.__('Global health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
 $table->data[1][0] =
-	progress_bar2($data["global_health"], 140, 20, $data["global_health"].'% '.__('of monitors OK'), 0);
+	progress_bar($data["global_health"], 140, 20, $data["global_health"].'% '.__('of monitors OK'), 0);
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
 $table->data[2][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
 $table->data[3][0] =
-	progress_bar2($data["monitor_health"], 140, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
+	progress_bar($data["monitor_health"], 140, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
 $table->data[4][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
 $table->data[5][0] =
-	progress_bar2($data["module_sanity"], 140, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
+	progress_bar($data["module_sanity"], 140, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
 
 $table->style[6] = "padding-top:4px; padding-bottom:4px;";
 $table->data[6][0] = '<b>'.__('Alert level').'</b>';
 
 $table->style[7] = "padding-top:4px; padding-bottom:4px;";
 $table->data[7][0] =
-	progress_bar2($data["alert_level"], 140, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
+	progress_bar($data["alert_level"], 140, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
 	
 html_print_table ($table);
 unset ($table);
@@ -275,7 +275,7 @@ if($is_admin) {
 		
 		if ($server["type"] != "snmp") {
 			$data[3] =
-				progress_bar2($server["load"], 80, 20);	
+				progress_bar($server["load"], 80, 20);	
 
 			if ($server["type"] != "recon"){
 				$data[4] = $server["lag_txt"];

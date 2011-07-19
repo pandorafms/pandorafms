@@ -192,7 +192,7 @@ foreach ($contents as $content) {
 		case 'simple_graph':	
 			$data["title"] = __('Simple graph');
 			
-			$img = grafico_modulo_sparse2($content['id_agent_module'],
+			$img = grafico_modulo_sparse($content['id_agent_module'],
 				$content['period'], 0, 720,
 				230, '', null, false, true, false, $datetime, '', 0, 0, true, true);
 			preg_match("/src='(.*)'/", $img, $matches);
@@ -204,7 +204,7 @@ foreach ($contents as $content) {
 		case 'simple_baseline_graph':	
 			$data["title"] = __('Simple baseline graph');
 			
-			$img = grafico_modulo_sparse2($content['id_agent_module'],
+			$img = grafico_modulo_sparse($content['id_agent_module'],
 				$content['period'], 0, 720,
 				230, '', null, false, true, false, ($datetime + $content['period']), '', true, 0, true, true);
 				
@@ -232,7 +232,7 @@ foreach ($contents as $content) {
 				array_push ($weights, $content2["weight"]);
 			}
 			
-			$img = $data[0] = 	graphic_combined_module2(
+			$img = $data[0] = 	graphic_combined_module(
 				$modules,
 				$weights,
 				$content['period'],

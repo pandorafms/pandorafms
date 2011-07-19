@@ -25,7 +25,7 @@ define("GRAPH_STACKED_AREA", 1);
 define("GRAPH_LINE", 2);
 define("GRAPH_STACKED_LINE", 3);
 
-function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
+function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
 				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
@@ -106,7 +106,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image2 ();
+			return fs_error_image ();
 		}
 		graphic_error ();
 	}
@@ -333,7 +333,7 @@ function grafico_modulo_sparse2 ($agent_module_id, $period, $show_events,
  * 
  * @return Mixed 
  */
-function graphic_combined_module2 ($module_list, $weight_list, $period, $width, $height,
+function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 		$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
 		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1) {
 	global $config;
@@ -685,7 +685,7 @@ function graphic_combined_module2 ($module_list, $weight_list, $period, $width, 
  * @param integer height pie graph height
  * @param integer period time period
  */
-function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
+function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
 	
@@ -743,7 +743,7 @@ function graphic_agentaccess2 ($id_agent, $width, $height, $period = 0) {
  * @param integer height pie graph height
  * @param integer id_agent Agent ID
  */
-function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
+function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	global $config;
 	global $graphic_type;
 
@@ -770,7 +770,7 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 	$events = db_get_all_rows_sql ($sql);
 	if ($events === false) {
 		if (! $graphic_type) {
-			return fs_error_image2 ();
+			return fs_error_image ();
 		}
 		graphic_error ();
 		return;
@@ -794,7 +794,7 @@ function graph_event_module2 ($width = 300, $height = 200, $id_agent) {
 		$config['fontpath'], $config['font_size']);
 }
 
-function progress_bar2($progress, $width, $height, $title = '', $mode = 1) {
+function progress_bar($progress, $width, $height, $title = '', $mode = 1) {
 	global $config;
 	
 	$out_of_lim_str = __("Out of limits");
@@ -825,7 +825,7 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
  * @param integer width pie graph width
  * @param integer height pie graph height
  */
-function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
+function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	global $config;
 	global $graphic_type;
 	
@@ -886,7 +886,7 @@ function grafico_db_agentes_purge2 ($id_agent, $width, $height) {
  * @param integer width pie graph width
  * @param integer height pie graph height
  */
-function grafico_db_agentes_paquetes2($width = 380, $height = 300) {
+function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
 	
@@ -970,7 +970,7 @@ function graph_db_agentes_modulos2($width, $height) {
  * @param integer height pie graph height
  * @param integer period time period
  */
-function graphic_user_activity2 ($width = 350, $height = 230) {
+function graphic_user_activity ($width = 350, $height = 230) {
 	global $config;
 	global $graphic_type;
 
@@ -1009,7 +1009,7 @@ function graphic_user_activity2 ($width = 350, $height = 230) {
 /**
  * Print a pie graph with priodity incident
  */
-function grafico_incidente_prioridad2 () {
+function grafico_incidente_prioridad () {
 	global $config;
 	global $graphic_type;
 
@@ -1044,7 +1044,7 @@ function grafico_incidente_prioridad2 () {
 /**
  * Print a pie graph with incidents data
  */
-function graph_incidents_status2 () {
+function graph_incidents_status () {
 	global $config;
 	global $graphic_type;
 	$data = array (0, 0, 0, 0);
@@ -1079,7 +1079,7 @@ function graph_incidents_status2 () {
 /**
  * Print a pie graph with incident data by group
  */
-function graphic_incident_group2 () {
+function graphic_incident_group () {
 	global $config;
 	global $graphic_type;
 
@@ -1112,7 +1112,7 @@ function graphic_incident_group2 () {
  * @param integer height pie graph height
  * @param integer period time period
  */
-function graphic_incident_user2 () {
+function graphic_incident_user () {
 	global $config;
 	global $graphic_type;
 
@@ -1149,7 +1149,7 @@ function graphic_incident_user2 () {
  * @param integer width pie graph width
  * @param integer height pie graph height
  */
-function graphic_incident_source2($width = 320, $height = 200) {
+function graphic_incident_source($width = 320, $height = 200) {
 	global $config;
 	global $graphic_type;
 
@@ -1194,7 +1194,7 @@ function graphic_incident_source2($width = 320, $height = 200) {
  * @param integer height pie graph height
  * @param string url
  */
-function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
 	global $graphic_type;
 
@@ -1260,7 +1260,7 @@ function grafico_eventos_grupo2 ($width = 300, $height = 200, $url = "") {
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total2($filter = "") {
+function grafico_eventos_total($filter = "") {
 	global $config;
 	global $graphic_type;
 
@@ -1297,7 +1297,7 @@ function grafico_eventos_total2($filter = "") {
  * @param integer height pie graph height
  * @param integer period time period
  */
-function grafico_eventos_usuario2 ($width, $height) {
+function grafico_eventos_usuario ($width, $height) {
 	global $config;
 	global $graphic_type;
 
@@ -1337,7 +1337,7 @@ function grafico_eventos_usuario2 ($width, $height) {
  * @param integer width graph width
  * @param integer Graph type 1 vbar, 2 hbar, 3 pie
  */
-function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homeurl = '', $ttl = 1) {
+function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homeurl = '', $ttl = 1) {
 	global $config;
 
     $report_content = db_get_row ('treport_content', 'id_rc', $id);
@@ -1407,7 +1407,7 @@ function graph_custom_sql_graph2 ($id, $width, $height, $type = 'sql_graph_vbar'
  * @param integer height pie graph height
  * @param integer period time period
  */
-function graphic_agentevents2 ($id_agent, $width, $height, $period = 0) {
+function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
 	
@@ -1450,12 +1450,12 @@ function graphic_agentevents2 ($id_agent, $width, $height, $period = 0) {
 	}
 
 	if (! $graphic_type) {
-		return fs_agent_event_chart2 ($data, $width, $height, $resolution / 750);
+		return fs_agent_event_chart ($data, $width, $height, $resolution / 750);
 	}
 }
 
 // Clean FLASH string strips non-valid characters for flashchart
-function clean_flash_string2 ($string) {
+function clean_flash_string ($string) {
 	$string = html_entity_decode ($string, ENT_QUOTES, "UTF-8");
 	$string = str_replace('&', '', $string);
 	$string = str_replace(' ', '', $string);
@@ -1464,11 +1464,11 @@ function clean_flash_string2 ($string) {
 }
 
 // Returns a Pandora FMS agent event chart
-function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
+function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 	global $config;
 
 	if (sizeof ($data) == 0) {
-		return fs_error_image2 ();
+		return fs_error_image ();
 	}
 
 	// Generate the XML
@@ -1483,24 +1483,24 @@ function fs_agent_event_chart2 ($data, $width, $height, $step = 1) {
 		} else {
 			$show_name = '0';
 		}
-		$chart->addChartData(1, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name . ';color=' . $value);
+		$chart->addChartData(1, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=' . $value);
 	}
 
 	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
+	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
 }
 
 // Prints an error image
-function fs_error_image2 () {
+function fs_error_image () {
 	global $config;
 
 	return html_print_image("images/image_problem.png", true, array("border" => '0'));
 }
 
 
-function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
+function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
 	 $date = 0, $only_image = false, $homeurl = '') {
 	global $config;
@@ -1578,7 +1578,7 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image2 ();
+			return fs_error_image ();
 		}
 		graphic_error ();
 	}
@@ -1814,7 +1814,7 @@ function grafico_modulo_boolean2 ($agent_module_id, $period, $show_events,
  * @param integer pure Fullscreen (1 or 0)
  * @param integer date date
  */
-function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
+function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
 	 $date = 0, $only_image = false, $homeurl = '') {
 	global $config;
@@ -1892,7 +1892,7 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image2 ();
+			return fs_error_image ();
 		}
 		graphic_error ();
 	}
@@ -2033,12 +2033,12 @@ function grafico_modulo_string2 ($agent_module_id, $period, $show_events,
 		 $config['fontpath'], $config['font_size'], "");
 }
 
-function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
+function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
 	 $date = 0) 
 {
 
-        grafico_modulo_log4x_trace2("<pre style='text-align:left;'>");
+        grafico_modulo_log4x_trace("<pre style='text-align:left;'>");
 
 	if ($date == "")
 		$now = time ();
@@ -2073,7 +2073,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $num_slices = $periodo / $adjust_time;
 
-        $fechatope_index = grafico_modulo_log4x_index2($fechatope, $adjust_time);
+        $fechatope_index = grafico_modulo_log4x_index($fechatope, $adjust_time);
 
         $sql1="SELECT utimestamp, SEVERITY " .
                 " FROM tagente_datos_log4x " .
@@ -2084,7 +2084,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
         $max_count = -1;
         $min_count = 9999999;
 
-        grafico_modulo_log4x_trace2("$sql1");
+        grafico_modulo_log4x_trace("$sql1");
 
         $rows = 0;
         
@@ -2100,7 +2100,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 if (!isset($valores[$severity]))
                         $valores[$severity] = array();
 
-                $dest = grafico_modulo_log4x_index2($utimestamp, $adjust_time);
+                $dest = grafico_modulo_log4x_index($utimestamp, $adjust_time);
 
                 $index = (($dest - $fechatope_index) / $adjust_time) - 1;
 
@@ -2117,25 +2117,25 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 $min_count = min($min_count, $valores[$severity][$index]['count']);
        }
 
-        grafico_modulo_log4x_trace2("$rows rows");
+        grafico_modulo_log4x_trace("$rows rows");
 
         // Create graph
         // *************
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
 	//set_error_handler("myErrorHandler");
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 	set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . "/../../include");
 
 	require_once 'Image/Graph.php';
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
         $Graph =& Image_Graph::factory('graph', array($width, $height));
  
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
 
 
@@ -2169,7 +2169,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $title_period = html_entity_decode($title_period);
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
         if ($pure == 0){
                 $Graph->add(
@@ -2199,7 +2199,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 $Graph->add($Plotarea = Image_Graph::factory('plotarea', array('Image_Graph_Axis', 'Image_Graph_Axis')));
         }
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
         $dataset = array();
 
@@ -2224,7 +2224,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                                 $x = 100.0 * ($pivot - $fechatope) / ($now - $fechatope);
                                 if ($x > 100) $x = 100;
 
-                                $size = grafico_modulo_log4x_bubble_size2($count, $max_count, $max_bubble_radius);
+                                $size = grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius);
 
                                 // pivot is the value in the X axis
                                 // y is the number of steps (from the bottom of the graphics) (zero based)
@@ -2244,14 +2244,14 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
                 $i++;
         }
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
         // create the 1st plot as smoothed area chart using the 1st dataset
         $Plot =& $Plotarea->addNew('bubble', array(&$dataset));
         $Plot->setFont($Font);
 
         $AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
-        $AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_x_axis2'));
+        $AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_x_axis'));
         $AxisX->forceMinimum($fechatope);
         $AxisX->forceMaximum($now);
 
@@ -2277,10 +2277,10 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
         //$GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Dotted', array("white", "gray", "gray", "gray")));
         $GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Formatted', array(array("transparent", "transparent", "transparent", "gray"))));
         //*/
-        //grafico_modulo_log4x_trace2(print_r($AxisX, true));
+        //grafico_modulo_log4x_trace(print_r($AxisX, true));
 
         $AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-        $AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_y_axis2'));
+        $AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_y_axis'));
         $AxisY->setLabelOption("showtext",true);
         //$AxisY->setLabelInterval(0);
         //$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
@@ -2303,7 +2303,7 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
         foreach($colors as $color)
                 $FillArray->addColor($color);
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
         $FillArray->addColor('green@0.6');
         //$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
@@ -2326,24 +2326,24 @@ function grafico_modulo_log4x_2 ($id_agente_modulo, $periodo, $show_event,
 
         $plotMinMax =& $PlotareaMinMax->addNew('bubble', array(&$dataset, true));
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 
         $Graph->done();
 
-        grafico_modulo_log4x_trace2(__LINE__);
+        grafico_modulo_log4x_trace(__LINE__);
 }
 
-function grafico_modulo_log4x_index2($x, $interval)
+function grafico_modulo_log4x_index($x, $interval)
 {
         return $x + $interval - (($x - 1) % $interval) - 1;
 }
 
-function grafico_modulo_log4x_trace2($str)
+function grafico_modulo_log4x_trace($str)
 {
         //echo "$str\n";
 }
 
-function grafico_modulo_log4x_bubble_size2($count, $max_count, $max_bubble_radius)
+function grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius)
 {
         //Superformula de ROA
         $r0 = 1.5;
@@ -2377,7 +2377,7 @@ function grafico_modulo_log4x_bubble_size2($count, $max_count, $max_bubble_radiu
         return 5 + log($count);
 }
 
-function grafico_modulo_log4x_format_x_axis2 ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
+function grafico_modulo_log4x_format_x_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
 {
         // $number is the unix time in the local timezone
 
@@ -2389,7 +2389,7 @@ function grafico_modulo_log4x_format_x_axis2 ( $number , $decimals=2, $dec_point
         return date("d/m", $number) . "\n" . date("H:i", $number);
 }
 
-function grafico_modulo_log4x_format_y_axis2 ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
+function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
 {
         $n = "";
 

@@ -409,7 +409,7 @@ class viewGraph {
 		
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
 
-		echo grafico_modulo_sparse2($this->idAgentModule, $this->period, 0, 240,
+		echo grafico_modulo_sparse($this->idAgentModule, $this->period, 0, 240,
 			120, io_safe_output($this->agentModule['nombre']), null, true,
 			0, true, 0, true, true, true, true);
 		

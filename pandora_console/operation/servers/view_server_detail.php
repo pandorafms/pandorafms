@@ -140,7 +140,7 @@ foreach ($recon_tasks as $task) {
 		$data[6] = "-";
 	}
 	else {
-		$data[6] = progress_bar2($task['status'], 100, 20, __('Progress').':'.$task["status"].'%', 0);
+		$data[6] = progress_bar($task['status'], 100, 20, __('Progress').':'.$task["status"].'%', 0);
 	}
 	
 	$data[7] = ui_print_timestamp ($task["utimestamp"], true);

@@ -18,10 +18,9 @@
 // Load global vars
 global $config;
 
-require_once ($config["homedir"] . '/include/functions_graph.php');
-require_once($config['homedir'] . "/include/functions_agents.php");
-require_once($config['homedir'] . "/include/functions_modules.php");
-require_once($config['homedir'] . "/include/functions_fsgraph.php");
+require_once ($config['homedir'] . '/include/functions_graph.php');
+require_once($config['homedir'] . '/include/functions_agents.php');
+require_once($config['homedir'] . '/include/functions_modules.php');
 
 ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database information'), "images/god8.png", false, "", true);
 
@@ -43,7 +42,7 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
  */
 
-echo grafico_db_agentes_purge2(0, 600, 400);
+echo grafico_db_agentes_purge(0, 600, 400);
 
 echo '<div id="db_info_graph">';
 echo '<table border=0 width="98%">';
@@ -56,7 +55,7 @@ echo '</td></tr><tr><td><br /></tr></td>';
 echo '<tr><td>';
 echo '<h4>'.__('Packets per agent').'</h4>';
 
-echo grafico_db_agentes_paquetes2(700, 300);
+echo grafico_db_agentes_paquetes(700, 300);
 
 echo '</table>';
 echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;"><b>'.__('Press here to get database information as text').'</b>&nbsp;' . html_print_image("images/down.png", true, array("alt" => "down", "title" => "down")) . '</a></div>';

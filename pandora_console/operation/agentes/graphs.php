@@ -126,7 +126,7 @@ else
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
 	echo "<h4>" . $modules[$idModuleShowGraph] . '</h4>';
 	$unit = modules_get_unit ($idModuleShowGraph);
-	echo grafico_modulo_sparse2($idModuleShowGraph, $period, $draw_events, $width, $height,
+	echo grafico_modulo_sparse($idModuleShowGraph, $period, $draw_events, $width, $height,
 		$modules[$idModuleShowGraph], null, $draw_alerts, $avg_only, false, $date, $unit);
 }
 

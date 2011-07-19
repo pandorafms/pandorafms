@@ -24,11 +24,8 @@
  * @global array Contents all var configs for the local instalation. 
  */ 
 global $config;
-if ($config['flash_charts']) {
-	require_once ('include/fgraph.php');
-}
 
-require_once ($config["homedir"] . '/include/functions_graph.php');
+require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_users.php');
 
 /**
@@ -110,7 +107,7 @@ function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $re
 		array_push ($weights, $source['weight']);
 	}
 	
-	$output = graphic_combined_module2($modules, $weights, $period, $width, $height,
+	$output = graphic_combined_module($modules, $weights, $period, $width, $height,
 		'', '', 0, 0, 0, $stacked, $date);
 	
 	if ($return)

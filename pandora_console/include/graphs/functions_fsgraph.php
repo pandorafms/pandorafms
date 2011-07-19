@@ -462,7 +462,7 @@ function date_to_epoch ($date) {
 }
 
 // Returns the code needed to display the chart
-function get_chart_code2 ($chart, $width, $height, $swf) {
+function get_chart_code ($chart, $width, $height, $swf) {
 	$random_number = rand ();
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
@@ -480,7 +480,7 @@ function get_chart_code2 ($chart, $width, $height, $swf) {
 }
 
 // Prints a 3D pie chart
-function fs_3d_pie_chart2 ($data, $names, $width, $height, $background = "EEEEEE") {
+function fs_3d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE") {
 	if ((sizeof ($data) != sizeof ($names)) OR (sizeof($data) == 0) ){
 		return;
 	}
@@ -492,11 +492,11 @@ function fs_3d_pie_chart2 ($data, $names, $width, $height, $background = "EEEEEE
   	$chart->setChartParams($params);
 
 	for ($i = 0; $i < sizeof ($data); $i++) {
-		$chart->addChartData($data[$i], 'name=' . clean_flash_string2($names[$i]));
+		$chart->addChartData($data[$i], 'name=' . clean_flash_string($names[$i]));
 	}
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie3D.swf');
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie3D.swf');
 }
 
 // Prints a 2D pie chart
@@ -512,11 +512,11 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
   	$chart->setChartParams($params);
 
 	for ($i = 0; $i < sizeof ($data); $i++) {
-		$chart->addChartData($data[$i], 'name=' . clean_flash_string2($names[$i]));
+		$chart->addChartData($data[$i], 'name=' . clean_flash_string($names[$i]));
 	}
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie2D.swf');
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Pie2D.swf');
 }
 
 // Returns a 2D column chart
@@ -583,7 +583,7 @@ function fs_2d_column_chart ($data, $width, $height) {
 			if ($value > 0) {
 				$empty = 0;
 			}
-			$chart->addChartData($value, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name . ';color=95BB04');
+			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 		}
 	}
 
@@ -658,7 +658,7 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
 			if ($value > 0) {
 				$empty = 0;
 			}
-			$chart->addChartData($value, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
+			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
 		}
 	}
 
@@ -667,7 +667,7 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
     $chart->setChartParams($params.';numVDivLines='.$num_vlines.($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Bar2D.swf');
 }
 
 // Returns a 3D column chart
@@ -695,14 +695,14 @@ function fs_3d_column_chart ($data, $width, $height) {
 		if ($value > 0) {
 			$empty = 0;
 		}
-		$chart->addChartData($value, 'name=' . clean_flash_string2($name) . ';showName=' . $show_name . ';color=95BB04');
+		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 	}
 
     $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
 }
 
 // Prints a Gantt chart
@@ -828,7 +828,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 
 	// Tasks
 	foreach ($tasks as $task) {
-		$chart->addGanttProcess (clean_flash_string2($task['name']), 'id=' . $task['id'] . ';link=' . urlencode($task['link']));
+		$chart->addGanttProcess (clean_flash_string($task['name']), 'id=' . $task['id'] . ';link=' . urlencode($task['link']));
 
 		$chart->addGanttTask (__('Planned'), 'start=' . $task['start'] . ';end=' . $task['end'] . ';id=' . $task['id'] . ';processId=' . $task['id'] . ';color=4b3cff;height=5;topPadding=10;animation=0');
 
@@ -849,7 +849,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 	if ($milestones !== '') {
 		$chart->addGanttProcess (__('Milestones'), 'id=0');
 		foreach ($milestones as $milestone) {
-			$chart->addGanttTask (clean_flash_string2($milestone['name']), 'start=' . $milestone['date'] . ';end=' . $milestone['date'] . ';id=ms-' . $milestone['id'] . ';processId=0;color=ffffff;alpha=0;height=60;topPadding=0;animation=0');
+			$chart->addGanttTask (clean_flash_string($milestone['name']), 'start=' . $milestone['date'] . ';end=' . $milestone['date'] . ';id=ms-' . $milestone['id'] . ';processId=0;color=ffffff;alpha=0;height=60;topPadding=0;animation=0');
 			$chart->addGanttMilestone ('ms-' . $milestone['id'], 'date=' . $milestone['date'] . ';radius=8;color=efbb07;shape=star;numSides=3;borderThickness=1');
 		}
 	}
@@ -858,7 +858,7 @@ function fs_gantt_chart ($title, $from, $to, $tasks, $milestones, $width, $heigh
 	$chart->addTrendLine ('start=' . date ('d/m/Y') . ';displayValue='. __('Today') . ';color=666666;isTrendZone=1;alpha=20');
 
 	// Return the code
-	return get_chart_code2 ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Gantt.swf');
+	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Gantt.swf');
 }
 
 ?>

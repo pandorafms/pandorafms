@@ -80,7 +80,7 @@ foreach ($servers as $server) {
 
 	// Load
 	$data[3] =
-		progress_bar2($server["load"], 60, 20, $server["lag_txt"], 0);
+		progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
 	$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 	$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
 	$data[6] = $server['threads'].' : '.$server['queued_modules'];

@@ -33,16 +33,16 @@ ui_print_page_header (__('Statistics'), "images/lightning_go.png",false, false);
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
 echo "<h3>".__('Event graph')."</h3>";
-echo grafico_eventos_total2();
+echo grafico_eventos_total();
 
 echo "</td><td valign='top'>";
 echo "<h3>".__('Event graph by user')."</h3>";
-echo grafico_eventos_usuario2(300, 200);
+echo grafico_eventos_usuario(300, 200);
 
 echo "</td></tr>";
 echo "<tr><td>";
 echo "<h3>".__('Event graph by group')."</h3>";
-echo grafico_eventos_grupo2(300, 200);
+echo grafico_eventos_grupo(300, 200);
 
 echo '</td></tr>';
 echo "</table>";

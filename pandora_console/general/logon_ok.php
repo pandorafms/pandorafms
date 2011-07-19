@@ -78,13 +78,13 @@ $table->width = "100%";
 
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 $table->data[1][0] = 
-	progress_bar2($data["monitor_health"], 280, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
+	progress_bar($data["monitor_health"], 280, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
 $table->data[2][0] = '<b>'.__('Module sanity').'</b>';
 $table->data[3][0] =
-	progress_bar2($data["module_sanity"], 280, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
+	progress_bar($data["module_sanity"], 280, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
 $table->data[4][0] = '<b>'.__('Alert level').'</b>';
 $table->data[5][0] =
-	progress_bar2($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
+	progress_bar($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
 
 html_print_table ($table);
 unset ($table);

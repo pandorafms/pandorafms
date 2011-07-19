@@ -78,7 +78,7 @@ echo '</form>';
 echo '</div>';
 echo '<div style="float: right; width: 300px;">';
 
-echo graphic_user_activity2(300, 140);
+echo graphic_user_activity(300, 140);
 
 echo '</div>';
 echo '<div style="clear:both;">&nbsp;</div>';

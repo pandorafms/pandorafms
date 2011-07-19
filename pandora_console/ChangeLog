@@ -1,5 +1,10 @@
 2011-07-19  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/admin_access_logs.php: Deleted old include 
+	of graph engine
+
+2011-07-19  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_networkmap.php
 	include/functions_visual_map.php
 	include/functions_agents.php: Fixed more errors when

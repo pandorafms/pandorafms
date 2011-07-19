@@ -1019,15 +1019,23 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$filter = array ();
 	
 	$where = db_format_array_where_clause_sql ($filter);
-	if ($where != '') {
-		$where .= ' AND ';
-	}
+
 	if ($returnAllGroup)
 		$groups = users_get_groups ($id_user);
 	else
 		$groups = users_get_groups ($id_user, 'IR', false);
-	$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
+		
+	if(!empty($groups)) {
+		if ($where != '') {
+			$where .= ' AND ';
+		}
+		$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
+	}
 	
+	if($where == '') {
+		$where = array();
+	}
+
 	$layouts = db_get_all_rows_filter ('tlayout', $where);
 	
 	if ($layouts == false)

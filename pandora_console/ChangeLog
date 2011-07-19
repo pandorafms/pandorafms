@@ -1,5 +1,12 @@
 2011-07-19  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_networkmap.php
+	include/functions_visual_map.php
+	include/functions_agents.php: Fixed more errors when
+	no agents for bug 3371316 
+
+2011-07-19  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php: Fixed check when no 
 	agents for bug 3371316
 

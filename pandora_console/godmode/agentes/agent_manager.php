@@ -231,16 +231,21 @@ $arraySelectIcon = array();
 foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
-
 $table->data[4][0] = __('Agent icon');
+if($icon_path == '') {
+	$display_icons = 'none';
+}
+else {
+	$display_icons = '';
+}
 $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': ' . html_print_image($path . $icon_path . "default.png", true, array("id" => "icon_without_status", "style" => "display:none;")) .
-	'&nbsp;' . __('Default') . ': ' . html_print_image($path . $icon_path . "default.png", true, array("id" => "icon_default", "style" => "display:none;")) .
-	'&nbsp;' . __('Ok') . ': ' . html_print_image($path . $icon_path . "ok.png", true, array("id" => "icon_ok", "style" => "display:none;")) .
+	'&nbsp;' . __('Without status') . ': ' . html_print_image($path . $icon_path . ".default.png", true, array("id" => "icon_without_status", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . __('Default') . ': ' . html_print_image($path . $icon_path . ".default.png", true, array("id" => "icon_default", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . __('Ok') . ': ' . html_print_image($path . $icon_path . ".ok.png", true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
 
-	'&nbsp;' . __('Bad') . ': ' . html_print_image($path . $icon_path . "bad.png", true, array("id" => "icon_bad", "style" => "display:none;")) .
+	'&nbsp;' . __('Bad') . ': ' . html_print_image($path . $icon_path . ".bad.png", true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
 
-	'&nbsp;' . __('Warning') . ': ' . html_print_image($path . $icon_path . "warning.png", true, array("id" => "icon_warning", "style" => "display:none;"));
+	'&nbsp;' . __('Warning') . ': ' . html_print_image($path . $icon_path . ".warning.png", true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');

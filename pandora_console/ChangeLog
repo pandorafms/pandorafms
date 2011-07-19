@@ -1,5 +1,10 @@
 2011-07-19  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/agent_manager.php: Fixed agent icons
+	in agent editor advanced options
+
+2011-07-19  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/admin_access_logs.php: Deleted old include 
 	of graph engine
 

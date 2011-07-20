@@ -1,3 +1,9 @@
+2011-07-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php: Fixed enterprise_not_hook constant
+	fail and log notice. Now the home page bar graphs are showed
+	without data. Bug: 3371403
+
 2011-07-20 Miguel de Dios  <miguel.dedios@artica.es>
 
 	*images/minimenu_open_arrow.png, images/minimenu_close_arrow.png: added

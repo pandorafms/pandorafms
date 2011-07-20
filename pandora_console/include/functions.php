@@ -18,14 +18,15 @@
  * @subpackage Generic_Functions
  */
 
+/* Enterprise hook constant */
+define ('ENTERPRISE_NOT_HOOK', -1);
+
 /**
  * Include the html and ui functions. 
  */
 require_once ('functions_html.php');
 require_once ('functions_ui.php');
 require_once('functions_io.php');
-
-define ('ENTERPRISE_NOT_HOOK', -1);
 
 /* Events state constants */
 define ('EVENT_NEW', 0);

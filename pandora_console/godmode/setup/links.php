@@ -123,7 +123,8 @@ else {  // Main list view for Links editor
 	}
 
 	if (empty($rows)) {
-		echo "<h3 class='error'>".__("There isn't links")."</h3>"; 	
+		echo '<div class="nf">'.__("There isn't links").'</div>';
+	
 	} else {
 		echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
 		echo "<th width='180px'>".__('Link name')."</th>";

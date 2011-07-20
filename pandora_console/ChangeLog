@@ -1,5 +1,9 @@
 2011-07-20  Dario Rodriguez <dario.rodriguez@artica.es>
 	
+	* godmode/setup/links.php: Changing error msg to notice msg.
+
+2011-07-20  Dario Rodriguez <dario.rodriguez@artica.es>
+	
 	* godmode/setup/links.php: Fixed a wrong code to work with an empty array.
 
 2011-07-20  Sergio Martin <sergio.martin@artica.es>

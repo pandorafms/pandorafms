@@ -96,6 +96,9 @@ if ($delete_downtime) {
 if ($create_downtime || $update_downtime) {
 	$description = (string) get_parameter ('description');
 	$name = (string) get_parameter ('name');
+	$check = db_get_value ('name', 'tplanned_downtime', 'name', $name);
+	$subcheck = db_get_value ('name', 'tplanned_downtime', 'id_group', $id_group);
+	
 	$datetime_from = strtotime ($date_from.' '.$time_from);
 	$datetime_to = strtotime ($date_to.' '.$time_to);
 	
@@ -105,24 +108,44 @@ if ($create_downtime || $update_downtime) {
 	else {
 		$sql = '';
 		if ($create_downtime) {
-			$values = array(
-				'name' => $name,
-				'description' => $description,
-				'date_from' => $datetime_from,
-				'date_to' => $datetime_to,
-				'id_group' => $id_group,
-				'only_alerts' => (int)$only_alerts);
-			$result = db_process_sql_insert('tplanned_downtime', $values);
+			if ($name) {
+				if (!$check) {
+					$values = array(
+						'name' => $name,
+						'description' => $description,
+						'date_from' => $datetime_from,
+						'date_to' => $datetime_to,
+						'id_group' => $id_group,
+						'only_alerts' => (int)$only_alerts);
+					$result = db_process_sql_insert('tplanned_downtime', $values);
+				}
+				else {
+					echo "<h3 class='error'>".__('Each planned downtime must have a different name')."</h3>";
+				}
+			}
+			else {
+				echo '<h3 class="error">'.__('Planned downtime must have a name').'</h3>';
+			}
 		}
 		else if ($update_downtime) {
-			$values = array(
-				'name' => $name,
-				'description' => $description,
-				'date_from' => $datetime_from,
-				'date_to' => $datetime_to,
-				'id_group' => $id_group,
-				'only_alerts' => (int)$only_alerts);
-			$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
+			if ($name) {
+				if (!$check || $subcheck == $name) {
+					$values = array(
+						'name' => $name,
+						'description' => $description,
+						'date_from' => $datetime_from,
+						'date_to' => $datetime_to,
+						'id_group' => $id_group,
+						'only_alerts' => (int)$only_alerts);
+					$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
+				}
+				else {
+					echo "<h3 class='error'>".__('Each planned downtime must have a different name')."</h3>";
+				}
+			}
+			else {
+				echo '<h3 class="error">'.__('Planned downtime must have a name').'</h3>';
+			}
 		}
 		
 		if ($result === false) {
@@ -134,10 +157,10 @@ if ($create_downtime || $update_downtime) {
 			}
 		}
 		else {
-			if($create_downtime) {
+			if($create_downtime && $name && !$check) {
 				echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 			}
-			else {
+			else if ($update_downtime && $name && !$check || $subcheck == $name) {
 				echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 			}
 		}

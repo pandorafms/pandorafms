@@ -1,3 +1,8 @@
+2011-07-20 Miguel de Dios  <miguel.dedios@artica.es>
+
+	*images/minimenu_open_arrow.png, images/minimenu_close_arrow.png: added
+	images for to use in networmap enterprise.
+
 2011-07-20  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandora_console_install.php: Changed Pandora home directory.

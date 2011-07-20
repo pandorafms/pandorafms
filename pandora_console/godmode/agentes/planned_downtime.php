@@ -362,9 +362,15 @@ else {
 		$table->align[6] = "center";
 		$table->align[7] = "center";
 		$table->align[8] = "center";
-
-		$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
-		$downtimes = db_get_all_rows_sql ($sql);
+		
+		if(!empty($groups)) {
+			$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
+			$downtimes = db_get_all_rows_sql ($sql);
+		}
+		else {
+			$downtimes = array();
+		}
+		
 		if (!$downtimes) {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
 		}

@@ -321,13 +321,31 @@ $arraySelectIcon = array();
 foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
+if($icon_path == '') {
+	$display_icons = 'none';
+	// Hack to show no icon. Use any given image to fix not found image errors
+	$path_without = "images/spinner.png";
+	$path_default = "images/spinner.png";
+	$path_ok = "images/spinner.png";
+	$path_bad = "images/spinner.png";
+	$path_warning = "images/spinner.png";
+}
+else {
+	$display_icons = '';
+	$path_without = $path . $icon_path . ".default.png";
+	$path_default = $path . $icon_path . ".default.png";
+	$path_ok = $path . $icon_path . ".default.png";
+	$path_bad = $path . $icon_path . ".default.png";
+	$path_warning = $path . $icon_path . ".default.png";
+}
 
 $table->data[4][0] = __('Agent icon');
 $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': ' . html_print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_without_status',"style" => 'display:none;')) .
-	'&nbsp;' . __('Default') . ': ' . html_print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_default',"style" => 'display:none;')) .
-	'&nbsp;' . __('Ok') . ': ' .  html_print_image($path . $icon_path . 'ok.png', true, array("id" => 'icon_ok',"style" => 'display:none;')) .
-	'&nbsp;' . __('Bad') . ': ' . html_print_image($path . $icon_path . 'bad.png', true, array("id" => 'icon_bad',"style" => 'display:none;')) . 		'&nbsp;' . __('Warning') . ': ' .  html_print_image($path . $icon_path . 'warning.png', true, array("id" => 'icon_warning',"style" => 'display:none;'));
+	'&nbsp;' . __('Without status') . ': ' . html_print_image($path_without, true, array("id" => 'icon_without_status',"style" => 'display:'.$display_icons.';')) .
+	'&nbsp;' . __('Default') . ': ' . html_print_image($path_default, true, array("id" => 'icon_default',"style" => 'display:'.$display_icons.';')) .
+	'&nbsp;' . __('Ok') . ': ' .  html_print_image($path_ok, true, array("id" => 'icon_ok',"style" => 'display:'.$display_icons.';')) .
+	'&nbsp;' . __('Bad') . ': ' . html_print_image($path_bad, true, array("id" => 'icon_bad',"style" => 'display:'.$display_icons.';')) . 
+	'&nbsp;' . __('Warning') . ': ' .  html_print_image($path_warning, true, array("id" => 'icon_warning',"style" => 'display:'.$display_icons.';'));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');

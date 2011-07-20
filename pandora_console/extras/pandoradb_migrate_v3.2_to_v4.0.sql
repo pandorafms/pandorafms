@@ -219,6 +219,6 @@ ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max'
 -- Table `tagente_modulo` to adapt the fields use to new prediction types and future modifications
 -- -----------------------------------------------------
 
-UPDATE tagente_modulo SET prediction_module = 2 WHERE custom_integer_1 <> 0 AND prediction_module <> 0
+UPDATE tagente_modulo SET prediction_module = 2 WHERE custom_integer_1 <> 0 AND prediction_module <> 0;
 
-UPDATE tagente_modulo SET custom_integer_1 = prediction_module AND prediction_module = 1 WHERE custom_integer_1 = 0 AND prediction_module <> 0
+UPDATE tagente_modulo SET custom_integer_1 = prediction_module AND prediction_module = 1 WHERE custom_integer_1 = 0 AND prediction_module <> 0;

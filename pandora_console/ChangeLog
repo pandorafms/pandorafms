@@ -1,5 +1,11 @@
 2011-07-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_menu.php: Fixed side menu confitions 
+	to draw in bold style the selected subsections to allow
+	secondary parameters like "&tab=agents" in the subsections
+
+2011-07-20  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/menu.php: Added users massive operation to the
 	left menu into the massive ops category
 

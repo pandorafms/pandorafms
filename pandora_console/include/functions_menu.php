@@ -33,6 +33,9 @@ function menu_print_menu (&$menu) {
 	$sec = (string) get_parameter ('sec');
 	$sec2 = (string) get_parameter ('sec2');
 	
+	$allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
+	$allsec2 = $allsec2[1];
+
 	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
 	
 	foreach ($menu as $mainsec => $main) {
@@ -81,27 +84,25 @@ function menu_print_menu (&$menu) {
 		$submenu_output = '';
 		$selected = false;
 		$visible = false;
-		
 		foreach ($main["sub"] as $subsec2 => $sub) {
-
+			$subsec2 = io_safe_output($subsec2);
 			// Choose valid suboptions (sec2)
 			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false){
 				continue;
 			}
 
-
 			//Set class
-			if (($sec2 == $subsec2 && isset ($sub[$subsec2]["options"]))
+			if (($sec2 == $subsec2 || $allsec2 == $subsec2) && isset ($sub[$subsec2]["options"])
 				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
 				//If the subclass is selected and there are options and that options value is true
 				$class = 'submenu_selected';
 				$selected = true;
 				$visible = true;
 			}
-			elseif ($sec2 == $subsec2 && !isset ($sub[$subsec2]["options"])) {
+			elseif (($sec2 == $subsec2 || $allsec2 == $subsec2) && !isset ($sub[$subsec2]["options"])) {
 				$class = 'submenu_selected';
 				$selected = true;
-				
+
 				$hasExtensions = (array_key_exists('hasExtensions',$main)) ? $main['hasExtensions'] : false;
 				if (($extensionInMenuParameter != '') && ($hasExtensions))
 					$visible = true;
@@ -112,7 +113,7 @@ function menu_print_menu (&$menu) {
 				//Else it's not selected
 				$class = 'submenu_not_selected';
 			}
-			
+
 			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
 			} 

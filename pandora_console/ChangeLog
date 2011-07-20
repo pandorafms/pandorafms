@@ -1,11 +1,6 @@
-2011-07-20  Sergio Martin <sergio.martin@artica.es>
+2011-07-20  Vanessa Gil  <vanessa.gil@artica.es>
 
-	* godmode/agentes/agent_manager.php: Fixed a not found image
-	error with the agent icons
-
-2011-07-20  Junichi Satoh  <junichi@rworks.jp>
-	
-	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added missing ';'.
+	* pandora_console_install.php: Changed Pandora home directory.
 
 2011-07-19  Sergio Martin <sergio.martin@artica.es>
 

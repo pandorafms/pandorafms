@@ -51,6 +51,9 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$sub = array ();
 	$sub["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
 	$sub["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		$sub["godmode/massive/massive_operations&amp;tab=massive_users"]["text"] = __('Users operations');
+	}
 	$sub["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
 	enterprise_hook('massivepolicies_submenu');
 	

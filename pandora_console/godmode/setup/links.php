@@ -116,29 +116,35 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	echo '</form></td></tr></table>';
 }
 else {  // Main list view for Links editor
-	echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
-	echo "<th width='180px'>".__('Link name')."</th>";
-	echo "<th width='80px'>".__('Delete')."</th>";
 	
 	$rows = db_get_all_rows_in_table('tlink', 'name');
 	if ($rows === false) {
 		$rows = array();
 	}
+
+	if (empty($rows)) {
+		echo "<h3 class='error'>".__("There isn't links")."</h3>"; 	
+	} else {
+		echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
+		echo "<th width='180px'>".__('Link name')."</th>";
+		echo "<th width='80px'>".__('Delete')."</th>";
 	
-	$color=1;
-	foreach ($rows as $row) {
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
+		$color=1;
+		foreach ($rows as $row) {
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b></td>";
+			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a></td></tr>';
 		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b></td>";
-		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a></td></tr>';
+		echo "</table>";
 	}
-	echo "</table>";
+
 	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";

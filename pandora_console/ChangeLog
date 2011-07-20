@@ -1,5 +1,10 @@
 2011-07-20  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/planned_downtime.php: Fixed a empty group array
+	bug
+
+2011-07-20  Sergio Martin <sergio.martin@artica.es>
+
 	* DEBIAN/control
 	install.php
 	pandora_console.spec: Added zlib dependence to console installer,

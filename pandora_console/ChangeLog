@@ -1,3 +1,11 @@
+2011-07-20  Sergio Martin <sergio.martin@artica.es>
+
+	* DEBIAN/control
+	install.php
+	pandora_console.spec: Added zlib dependence to console installer,
+	deb package and spec pacage. Added too missed curl dependence to
+	spec package
+
 2011-07-20  Dario Rodriguez <dario.rodriguez@artica.es>
 	
 	* godmode/setup/links.php: Changing error msg to notice msg.

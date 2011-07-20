@@ -64,14 +64,19 @@ if ($create_group) {
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
+
+	if ($name){
+		$result = db_process_sql_insert('tmodule_group', array('name' => $name));
 	
-	$result = db_process_sql_insert('tmodule_group', array('name' => $name));
-	
-	if ($result) {
-		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
+		if ($result) {
+			echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
+		}
+		else {
+			echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
+		}
 	}
 	else {
-		echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
+		echo "<h3 class='error'>".__('Module group must have a name')."</h3>";
 	}
 }
 
@@ -84,12 +89,18 @@ if ($update_group) {
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	
-	$result = db_process_sql_update('tmodule_group', array('name' => $name), array('id_mg' => $id_group));
-	if ($result !== false) {
-		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
+	if ($name) {
+		$result = db_process_sql_update('tmodule_group', array('name' => $name), array('id_mg' => $id_group));
+
+		if ($result !== false) {
+			echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
+		}
+		else {
+			echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
+		}
 	}
 	else {
-		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
+		echo "<h3 class='error'>".__('Module group must have a name')."</h3>";
 	}
 }
 

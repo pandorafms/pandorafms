@@ -32,7 +32,7 @@ Requires:           php >= 4.3.0
 Requires:           php5-gd, php5-snmp, php5-json, php5-gettext
 Requires:           php5-mysql, php5-ldap, php5-mbstring, php5 
 Requires:           graphviz, xorg-x11-fonts-core, graphviz-gd
-Requires:           php5-zip
+Requires:           php5-zip, php5-zlib, php5-curl
 Provides:           %{name}-%{version}
 
 %description

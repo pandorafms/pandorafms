@@ -52,8 +52,14 @@ if ($id_group) {
 	}
 	else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
-		echo "</table>"; 
-		include ("general/footer.php");
+		echo "</table>";
+		echo '</div>';                          
+                echo '<div style="clear:both">&nbsp;</div>';
+                echo '</div>';
+                echo '<div id="foot">';
+                require ("general/footer.php");
+                echo '</div>';
+                echo '</div>';
 		exit;
 	}
 }

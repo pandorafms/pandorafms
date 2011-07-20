@@ -45,13 +45,34 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		// Initial checkings
 
 		// if selected more than 0 agents
-		$destino = $_POST["destino"];
-		if (count($destino) <= 0){
-			echo "<h3 class='error'>ERROR: ".__('No selected agents to copy')."</h3>";
-			echo "</table>";
-			include ("general/footer.php");
-			exit;
+
+		if (isset($_POST["destino"])) {
+			$destino = $_POST["destino"];
+			if (count($destino) <= 0){
+				echo "<h3 class='error'>ERROR: ".__('No selected agents to copy')."</h3>";
+				echo "</table>";
+				echo '</div>';
+			        echo '<div style="clear:both">&nbsp;</div>';
+        			echo '</div>';			
+			        echo '<div id="foot">';
+				require ("general/footer.php");
+				echo '</div>';
+     				echo '</div>';
+				exit;
+			}
 		}
+		else {
+			echo "<h3 class='error'>ERROR: ".__('No source agent selected')."</h3>";
+                        echo "</table>";
+			echo '</div>';
+		        echo '<div style="clear:both">&nbsp;</div>';
+        		echo '</div>';
+		        echo '<div id="foot">';
+        		require ("general/footer.php");
+        		echo '</div>';
+        		echo '</div>';
+                        exit;
+                }
 
 		// Source
 		$id_origen = get_parameter ("origen");

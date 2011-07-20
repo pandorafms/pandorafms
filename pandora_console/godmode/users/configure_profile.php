@@ -185,7 +185,13 @@ if ($id_profile || $new_profile) {
 	
 		if ($profile === false) {
 			echo '<h3 class="error">'.__('There was a problem loading profile').'</h3></table>';
-			include ("general/footer.php"); 
+			echo '</div>';                          
+                        echo '<div style="clear:both">&nbsp;</div>';
+                        echo '</div>';
+                        echo '<div id="foot">';
+                        require ("general/footer.php");
+                        echo '</div>';
+                        echo '</div>'; 
 			exit;
 		}
 		

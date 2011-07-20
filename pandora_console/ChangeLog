@@ -1,5 +1,10 @@
 2011-07-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/dialog.css: Fixed wrong path in the
+	warning dialog header style 3371399
+
+2011-07-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions.php: Fixed enterprise_not_hook constant
 	fail and log notice. Now the home page bar graphs are showed
 	without data. Bug: 3371403

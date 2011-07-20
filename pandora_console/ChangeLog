@@ -1,5 +1,11 @@
 2011-07-20  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/massive/massive_edit_agents.php: Fixed agent icon
+	missed in the massive operations merged from my own fix in 
+	the agent edition of july 19th
+
+2011-07-20  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/planned_downtime.php: Fixed a empty group array
 	bug
 

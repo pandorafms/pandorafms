@@ -401,6 +401,10 @@ function groups_get_all($groupWithAgents = false) {
 
 	$rows = db_get_all_rows_sql ($sql);
 
+	if($rows === false) {
+		$rows = array();
+	}
+	
 	$return = array();
 	foreach ($rows as $row) {
 		if (check_acl ($config['id_user'], $row["id_grupo"], "AR"))

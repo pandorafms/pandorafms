@@ -1,3 +1,14 @@
+2011-07-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php
+	godmode/modules/manage_network_templates.php
+	godmode/modules/manage_network_templates_form.php: Fixed few
+	issues foreach errors
+	
+	* godmode/agentes/agent_manager.php
+	godmode/massive/massive_edit_agents.php: Fixed icon agent colors
+	bug
+
 2011-07-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php: Fixed side menu confitions 

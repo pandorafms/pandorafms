@@ -210,6 +210,9 @@ if ($id_np > 0) {
 	echo '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
 	echo '<div style="width:540px"><a name="filter"></a>';
 	$result = db_get_all_rows_in_table ("tnetwork_component_group","name");
+	if($result === false) {
+		$result = array();
+	}
 	
 	//2 arrays. 1 with the groups, 1 with the groups by parent
 	$groups = array ();

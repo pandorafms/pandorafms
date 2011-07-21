@@ -63,11 +63,23 @@ if($add_networkmap) {
 	$module_group = 0;
 	$center = 0;
 	$name = $activeTab;
-	
-	$id_networkmap = networkmap_create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
-	$message = ui_print_result_message ($id_networkmap,
-		__('Network map created successfully'),
-		__('Could not create network map'), '', true);
+	$check = db_get_value('name', 'tnetwork_map', 'name', $name);
+	$sql = db_get_value_filter('COUNT(name)', 'tnetwork_map', array('name' => "%$name"));
+	$subcheck = db_get_value('name', 'tnetwork_map', 'name', "($sql)".$name);
+
+	if ($check) {
+
+		$id_networkmap = networkmap_create_networkmap("($sql) ".$name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
+		$message = ui_print_result_message ($id_networkmap,
+			__('Network map created successfully'),
+			__('Could not create network map'), '', true);
+	}
+	else {
+		$id_networkmap = networkmap_create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
+                $message = ui_print_result_message ($id_networkmap,
+                        __('Network map created successfully'),
+                        __('Could not create network map'), '', true);
+	}
 }
 
 if($save_networkmap || $update_networkmap) {
@@ -87,9 +99,14 @@ if($save_networkmap || $update_networkmap) {
 	$module_group = (int) get_parameter ('module_group', 0);
 	$center = (int) get_parameter ('center', 0);
 	$name = (string) get_parameter ('name', $activeTab);
-		
+	$check = db_get_value('name', 'tnetwork_map', 'name', $name);
+	$subcheck = db_get_value('name', 'tnetwork_map', 'id_networkmap', $id_networkmap);
+#	$regexp = "/^(\([0-9]+\))/";
+#	$regexpresult = eregi($regexp, $name);
+	
 	if($save_networkmap){
-	$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
+		if (!$check && !preg_match("/$activeTab/", $name) || $subcheck == $name) {
+			$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
 							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
 							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
 							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center, 
@@ -97,6 +114,15 @@ if($save_networkmap || $update_networkmap) {
 	$message = ui_print_result_message ($result,
 		__('Network map saved successfully'),
 		__('Could not save network map'), '', true);
+		}
+		else {
+			if (preg_match("/$activeTab/", $name)) {
+			$message = "<h3 class='error'>".__("Network map name cannot be manually defined as $activeTab")."</h3>";
+			}
+			else {
+			$message = "<h3 class='error'>".__('Each network map must have a different name')."</h3>";
+			}
+		}
 	}
 }
 

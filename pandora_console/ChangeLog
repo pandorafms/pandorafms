@@ -1,5 +1,10 @@
 2011-07-21  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_config.php: Set dbtype to mysql by default
+	  (necessary for 3.2.1 to 4.0 upgrades).
+
+2011-07-21  Ramon Novoa  <rnovoa@artica.es>
+
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Fixed a typo.
 
 2011-07-21  Sergio Martin <sergio.martin@artica.es>

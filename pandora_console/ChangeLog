@@ -1,3 +1,12 @@
+2011-07-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Set default values to width and height
+	parameters in purge graph.
+
+	* godmode/setup/os.list.php
+	godmode/users/profile_list.php: Fixed typica bugs of foreach with
+	no array variable
+
 2011-07-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/control: Removed php5-zlib (zlib comes with the default PHP

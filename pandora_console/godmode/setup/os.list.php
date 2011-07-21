@@ -38,6 +38,9 @@ $table->size[0] = '20px';
 $table->size[4] = '20px';
 
 $osList = db_get_all_rows_in_table('tconfig_os');
+if($osList === false) {
+	$osList = array();
+}
 
 $table->data = array();
 foreach ($osList as $os) {

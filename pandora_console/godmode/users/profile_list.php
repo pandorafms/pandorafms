@@ -75,6 +75,9 @@ $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
 
 $profiles = db_get_all_rows_in_table ("tperfil");
+if($profiles === false) {
+	$profiles = array();
+}
 
 $img = html_print_image ("images/ok.png", true, array ("border" => 0)); 
 

@@ -47,6 +47,122 @@ $buttons[$tab]['active'] = true;
 // Header
 ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true, $buttons);
 
+$delete_profile = (bool) get_parameter ('delete_profile');
+$create_profile = (bool) get_parameter ('create_profile');
+$update_profile = (bool) get_parameter ('update_profile');
+$id_profile = (int) get_parameter ('id');
+
+// Profile deletion
+if ($delete_profile) {
+	// Delete profile
+	$profile = db_get_row('tperfil', 'id_perfil', $id_profile);
+	$sql = sprintf ('DELETE FROM tperfil WHERE id_perfil = %d', $id_profile);
+	$ret = db_process_sql ($sql);
+	if ($ret === false) {
+		echo '<h3 class="error">'.__('There was a problem deleting the profile').'</h3>';
+	}
+	else {		
+		db_pandora_audit("Profile management",
+			"Delete profile ". $profile['name']);
+		
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+	}
+	
+	//Delete profile from user data
+	$sql = sprintf ('DELETE FROM tusuario_perfil WHERE id_perfil = %d', $id_profile);
+	db_process_sql ($sql);
+	
+	$id_profile = 0;
+}
+
+// Update profile
+if ($update_profile) {
+	$name = get_parameter ("name");
+	$incident_view = (bool) get_parameter ("incident_view");
+	$incident_edit = (bool) get_parameter ("incident_edit");
+	$incident_management = (bool) get_parameter ("incident_management");
+	$agent_view = (bool) get_parameter ("agent_view");
+	$agent_edit = (bool) get_parameter ("agent_edit");
+	$alert_edit = (bool) get_parameter ("alert_edit");	
+	$user_management = (bool) get_parameter ("user_management");
+	$db_management = (bool) get_parameter ("db_management");
+	$alert_management = (bool) get_parameter ("alert_management");
+	$pandora_management = (bool) get_parameter ("pandora_management");
+	
+	$sql = sprintf ('UPDATE tperfil SET 
+		name = "%s", incident_view = %d, incident_edit = %d,
+		incident_management = %d, agent_view = %d, agent_edit = %d,
+		alert_edit = %d, user_management = %d, db_management = %d,
+		alert_management = %d, pandora_management = %d 	WHERE id_perfil = %d',
+		$name, $incident_view, $incident_edit, $incident_management,
+		$agent_view, $agent_edit, $alert_edit, $user_management,
+		$db_management, $alert_management, $pandora_management,
+		$id_profile);
+	$ret = db_process_sql ($sql);
+	if ($ret !== false) {
+		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+			' Pandora Management: ' . $pandora_management;
+		db_pandora_audit("User management",
+			"Update profile ". $name, false, false, $info);
+		
+		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+	}
+	else {
+		echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
+	}
+	$id_profile = 0;
+}
+
+// Create profile
+if ($create_profile) {
+	$name = get_parameter ("name");
+	$incident_view = (bool) get_parameter ("incident_view");
+	$incident_edit = (bool) get_parameter ("incident_edit");
+	$incident_management = (bool) get_parameter ("incident_management");
+	$agent_view = (bool) get_parameter ("agent_view");
+	$agent_edit = (bool) get_parameter ("agent_edit");
+	$alert_edit = (bool) get_parameter ("alert_edit");	
+	$user_management = (bool) get_parameter ("user_management");
+	$db_management = (bool) get_parameter ("db_management");
+	$alert_management = (bool) get_parameter ("alert_management");
+	$pandora_management = (bool) get_parameter ("pandora_management");
+	
+	$values = array(
+		'name' => $name,
+		'incident_view' => $incident_view,
+		'incident_edit' => $incident_edit,
+		'incident_management' => $incident_management,
+		'agent_view' => $agent_view,
+		'agent_edit' => $agent_edit,
+		'alert_edit' => $alert_edit,
+		'user_management' => $user_management,
+		'db_management' => $db_management,
+		'alert_management' => $alert_management,
+		'pandora_management' => $pandora_management);
+	$ret = db_process_sql_insert('tperfil', $values);
+	
+	if ($ret !== false) {
+		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+		
+		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+			' Pandora Management: ' . $pandora_management;
+		db_pandora_audit("User management",
+			"Created profile ". $name, false, false, $info);
+	}
+	else {
+		echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
+	}
+	$id_profile = 0;
+}
+
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = 'databox';
@@ -94,7 +210,7 @@ foreach ($profiles as $profile) {
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
 	$data[11] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
-	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
+	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 	

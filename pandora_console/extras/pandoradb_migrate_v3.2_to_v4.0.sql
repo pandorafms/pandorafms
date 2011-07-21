@@ -95,13 +95,6 @@ ALTER TABLE `tsesion` CHANGE `ID_usuario` `id_usuario` varchar(60) NOT NULL defa
 ALTER TABLE `tsesion` CHANGE `IP_origen` `ip_origen` varchar(100) NOT NULL default '';
 
 -- -----------------------------------------------------
--- Table `ttrap`
--- -----------------------------------------------------
-ALTER TABLE ttrap ADD `text` varchar(255) default '';
-ALTER TABLE ttrap ADD `description` varchar(255) default '';
-ALTER TABLE ttrap ADD `severity` tinyint(4) unsigned NOT NULL default '2';
-
--- -----------------------------------------------------
 -- Table `tusuario_perfil`
 -- -----------------------------------------------------
 

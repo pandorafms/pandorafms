@@ -173,7 +173,7 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 		last;
 	}
 	
-	$net_addr_temp = $net_addr + 1;
+	my $net_addr_temp = $net_addr + 1;
 	if($net_addr eq $net_addr_temp) {
 		$last = 1;
 	}

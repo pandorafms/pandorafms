@@ -34,7 +34,12 @@ function menu_print_menu (&$menu) {
 	$sec2 = (string) get_parameter ('sec2');
 	
 	$allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
-	$allsec2 = $allsec2[1];
+	if(isset($allsec2[1])) {
+		$allsec2 = $allsec2[1];
+	}
+	else {
+		$allsec2 = $sec2;
+	}
 
 	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
 	

@@ -1,3 +1,17 @@
+2011-07-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_users.php
+	extensions/module_groups.php
+	godmode/groups/modu_group_list.php
+	godmode/groups/group_list.php
+	godmode/alerts/alert_commands.php
+	godmode/setup/os.list.php
+	godmode/setup/news.php
+	godmode/users/profile_list.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_nc_groups.php: Fixed several lonely 
+	headers when no data and other no data little bugs for 3371455
+
 2011-07-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_config.php: Set dbtype to mysql by default

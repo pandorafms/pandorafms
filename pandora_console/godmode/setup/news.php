@@ -126,37 +126,41 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	echo '</form></td></tr></table>';
 } 
 else {
-
-	// Main list view for Links editor
-	echo "<table cellpadding='4' cellspacing='4' class='databox' width=98%>";
-	echo "<th>".__('Subject')."</th>";
-	echo "<th>".__('Author')."</th>";
-	echo "<th>".__('Timestamp')."</th>";
-	echo "<th>".__('Delete')."</th>";
-	
 	$rows = db_get_all_rows_in_table("tnews", "timestamp");
 	if ($rows === false) {
 		$rows = array();
+		echo "<div class='nf'>".__('There are no defined news')."</div>";
 	} 
-	
-	$color = 1;
-	foreach ($rows as $row) {
-		if ($color == 1) {
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/news&form_edit=1&id_news=".$row["id_news"]."'>".$row["subject"]."</a></b></td>";
-
-		echo "<td class='$tdcolor'>".$row["author"]."</b></td>";
-		echo "<td class='$tdcolor'>".$row["timestamp"]."</b></td>";
+	else {
+		// Main list view for Links editor
+		echo "<table cellpadding='4' cellspacing='4' class='databox' width=98%>";
+		echo "<th>".__('Subject')."</th>";
+		echo "<th>".__('Author')."</th>";
+		echo "<th>".__('Timestamp')."</th>";
+		echo "<th>".__('Delete')."</th>";
 		
-		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row["id_news"].'&borrar='.$row["id_news"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a></td></tr>';
+
+		
+		$color = 1;
+		foreach ($rows as $row) {
+			if ($color == 1) {
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/news&form_edit=1&id_news=".$row["id_news"]."'>".$row["subject"]."</a></b></td>";
+
+			echo "<td class='$tdcolor'>".$row["author"]."</b></td>";
+			echo "<td class='$tdcolor'>".$row["timestamp"]."</b></td>";
+			
+			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row["id_news"].'&borrar='.$row["id_news"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a></td></tr>';
+		}
+		echo "</table>";
 	}
-	echo "</table>";
+	
 	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/news&form_add=1'>";

@@ -48,7 +48,9 @@ function users_get_info ($order = "fullname", $info = "fullname") {
  */
 function users_get_all_model_groups () {
 	$groups = db_get_all_rows_in_table ('tmodule_group');
-
+	if($groups === false) {
+		$groups = array();
+	}
 	$returnGroups = array();
 	foreach ($groups as $group)
 	$returnGroups[$group['id_mg']] = $group['name'];

@@ -125,140 +125,146 @@ function mainModuleGroups() {
 	
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
 	$modelGroups = users_get_all_model_groups();
-	array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 
-	foreach ($modelGroups as $i => $n) {
-		$modelGroups[$i] = ui_print_truncate_text($n, 20);
-	}
+	if(!empty($agentGroups) && !empty($modelGroups)) {
+		array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 
-	$head = $modelGroups;
-	array_unshift($head, '&nbsp;');
-	
-	//Metaobject use in html_print_table
-	$table = null;
-	$table->align[0] = 'right'; //Align to right the first column.
-	$table->style[0] = 'color: #ffffff; background-color: #778866; font-weight: bolder;';
-	$table->head = $head;
-	$table->width = '95%';
-	
-	//The content of table
-	$tableData = array();
-	
-	$fired = false;
-	
-	//Create rows and cells
-	foreach ($agentGroups as $idAgentGroup => $name) {
+		foreach ($modelGroups as $i => $n) {
+			$modelGroups[$i] = ui_print_truncate_text($n, 20);
+		}
+
+		$head = $modelGroups;
+		array_unshift($head, '&nbsp;');
 		
-		$row = array();
+		//Metaobject use in html_print_table
+		$table = null;
+		$table->align[0] = 'right'; //Align to right the first column.
+		$table->style[0] = 'color: #ffffff; background-color: #778866; font-weight: bolder;';
+		$table->head = $head;
+		$table->width = '95%';
 		
-		array_push($row, ui_print_truncate_text($name, 20));
-	
-		foreach ($modelGroups as $idModelGroup => $modelGroup) {
-			$query = sprintf($sql,$idAgentGroup, $idModelGroup);
+		//The content of table
+		$tableData = array();
+		
+		$fired = false;
+		
+		//Create rows and cells
+		foreach ($agentGroups as $idAgentGroup => $name) {
 			
-			$rowsDB = db_get_all_rows_sql ($query);
+			$row = array();
 			
-			
-			$agents = agents_get_group_agents($idAgentGroup);
-			
-			if (!empty($agents)) {
-				$alerts = agents_get_alerts_simple($agents);
+			array_push($row, ui_print_truncate_text($name, 20));
+		
+			foreach ($modelGroups as $idModelGroup => $modelGroup) {
+				$query = sprintf($sql,$idAgentGroup, $idModelGroup);
 				
-				foreach ($alerts as $alert) {
-					$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
+				$rowsDB = db_get_all_rows_sql ($query);
+				
+				
+				$agents = agents_get_group_agents($idAgentGroup);
+				
+				if (!empty($agents)) {
+					$alerts = agents_get_alerts_simple($agents);
 					
-					if ($idModelGroup == $module['id_module_group']) {
-						if ($alert["times_fired"] > 0) {
-							$fired = true;
+					foreach ($alerts as $alert) {
+						$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
+						
+						if ($idModelGroup == $module['id_module_group']) {
+							if ($alert["times_fired"] > 0) {
+								$fired = true;
+							}
 						}
 					}
-				}
-			}			
-			
-			$states = array();
-			if ($rowsDB !== false) {
-				foreach ($rowsDB as $rowDB) {
-					$states[$rowDB['estado']] = $rowDB['count'];	
-				}
-			}
-			
-			$count = 0;
-			foreach ($states as $idState => $state) {
-				$count += $state;
-			}
-			
-			$color = 'transparent'; //Defaut color for cell
-			$font_color = '#000000'; //Default font color for cell
-			if ($count == 0) {
-				$color = '#eeeeee'; //Soft grey when the cell for this model group and agent group hasn't modules.
-				$alinkStart = '';
-				$alinkEnd = '';
-			}
-			else {
+				}			
 				
-				if ($fired) {
-						$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
-				}
-				else if (array_key_exists(1,$states)) {
-						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
-						$font_color = '#ffffff';
-				}
-				elseif (array_key_exists(2,$states)) {
-						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
-				}
-				elseif (array_key_exists(3,$states)) {
-					$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
-				}
-				elseif (array_key_exists(0,$states)) {
-					$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
+				$states = array();
+				if ($rowsDB !== false) {
+					foreach ($rowsDB as $rowDB) {
+						$states[$rowDB['estado']] = $rowDB['count'];	
+					}
 				}
 				
+				$count = 0;
+				foreach ($states as $idState => $state) {
+					$count += $state;
+				}
 				
-				$alinkStart = '<a class="info_cell" rel="ajax.php?page=extensions/module_groups&get_info_alert_module_group=1&module_group=' . $idModelGroup . '&id_agent_group=' . $idAgentGroup . '"
-					href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
-					'&modulegroup=' . $idModelGroup . '" style="color: ' . $font_color . '; font-size: 18px;";>';
-				$alinkEnd = '</a>';
+				$color = 'transparent'; //Defaut color for cell
+				$font_color = '#000000'; //Default font color for cell
+				if ($count == 0) {
+					$color = '#eeeeee'; //Soft grey when the cell for this model group and agent group hasn't modules.
+					$alinkStart = '';
+					$alinkEnd = '';
+				}
+				else {
+					
+					if ($fired) {
+							$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
+					}
+					else if (array_key_exists(1,$states)) {
+							$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+							$font_color = '#ffffff';
+					}
+					elseif (array_key_exists(2,$states)) {
+							$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
+					}
+					elseif (array_key_exists(3,$states)) {
+						$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
+					}
+					elseif (array_key_exists(0,$states)) {
+						$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
+					}
+					
+					
+					$alinkStart = '<a class="info_cell" rel="ajax.php?page=extensions/module_groups&get_info_alert_module_group=1&module_group=' . $idModelGroup . '&id_agent_group=' . $idAgentGroup . '"
+						href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
+						'&modulegroup=' . $idModelGroup . '" style="color: ' . $font_color . '; font-size: 18px;";>';
+					$alinkEnd = '</a>';
+				}
+				
+				array_push($row,
+					'<div
+						style="background: ' . $color . ';
+						height: 25px;
+						margin-left: auto; margin-right: auto;
+						text-align: center; padding-top: 0px; font-size: 18px;">
+						' . $alinkStart . $count . $alinkEnd . '</div>');
 			}
-			
-			array_push($row,
-				'<div
-					style="background: ' . $color . ';
-					height: 25px;
-					margin-left: auto; margin-right: auto;
-					text-align: center; padding-top: 0px; font-size: 18px;">
-					' . $alinkStart . $count . $alinkEnd . '</div>');
+			array_push($tableData,$row);
 		}
-		array_push($tableData,$row);
+		$table->data = $tableData;
+		echo "<div style='width:98%; overflow-x:scroll;'>";
+		html_print_table($table);
+		echo "</div>";
+		
+		echo "<p>" . __("The colours meaning:") .
+			"<ul style='float: left;'>" .
+				'<li style="clear: both;">
+					<div style="float: left; background: #ffa300; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+					__("Orange cell when the module group and agent have at least one alarm fired.") .
+				'</li>' .
+				'<li style="clear: both;">
+					<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+					__("Red cell when the module group and agent have at least one module in critical status and the others in any status") .
+				'</li>' .
+				'<li style="clear: both;">
+					<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+					__("Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status") .
+				'</li>' .
+				'<li style="clear: both;">
+					<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+					__("Green cell when the module group and agent have all modules in OK status") .
+				'</li>' .
+				'<li style="clear: both;">
+					<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+					__("Grey cell when the module group and agent have at least one in unknown status and the others in green status") .
+				'</li>' .
+			"</ul>" .
+		"</p>";
 	}
-	$table->data = $tableData;
-	echo "<div style='width:98%; overflow-x:scroll;'>";
-	html_print_table($table);
-	echo "</div>";
-	
-	echo "<p>" . __("The colours meaning:") .
-		"<ul style='float: left;'>" .
-			'<li style="clear: both;">
-				<div style="float: left; background: #ffa300; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-				__("Orange cell when the module group and agent have at least one alarm fired.") .
-			'</li>' .
-			'<li style="clear: both;">
-				<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-				__("Red cell when the module group and agent have at least one module in critical status and the others in any status") .
-			'</li>' .
-			'<li style="clear: both;">
-				<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-				__("Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status") .
-			'</li>' .
-			'<li style="clear: both;">
-				<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-				__("Green cell when the module group and agent have all modules in OK status") .
-			'</li>' .
-			'<li style="clear: both;">
-				<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-				__("Grey cell when the module group and agent have at least one in unknown status and the others in green status") .
-			'</li>' .
-		"</ul>" .
-	"</p>";
+	else {
+		echo "<div class='nf'>".__('There are no defined groups or module groups')."</div>";
+	}
 	
 	ui_require_css_file('cluetip');
 	ui_require_jquery_file('cluetip');

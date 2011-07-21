@@ -129,31 +129,36 @@ if ($delete_group) {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-$table->width = '98%';
-$table->head = array ();
-$table->head[0] = __('ID');
-$table->head[1] = __('Name');
-$table->head[2] = __('Delete');
-$table->align = array ();
-$table->align[1] = 'left';
-$table->align[2] = 'center';
-$table->data = array ();
-
 $sql = "SELECT * 
 		FROM tmodule_group ";
 $groups = db_get_all_rows_sql ($sql, true);
 
+$table->width = '98%';
 
-foreach ($groups as $id_group ) {
-	$data = array ();
-	$data[0] = 	$id_group["id_mg"];
-	$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' . ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
-	$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
-	
-	array_push ($table->data, $data);
+if(!empty($groups)) {
+	$table->head = array ();
+	$table->head[0] = __('ID');
+	$table->head[1] = __('Name');
+	$table->head[2] = __('Delete');
+	$table->align = array ();
+	$table->align[1] = 'left';
+	$table->align[2] = 'center';
+	$table->data = array ();
+
+	foreach ($groups as $id_group ) {
+		$data = array ();
+		$data[0] = 	$id_group["id_mg"];
+		$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' . ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
+		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+		
+		array_push ($table->data, $data);
+	}
+
+	html_print_table ($table);
 }
-
-html_print_table ($table);
+else{
+	echo "<div class='nf'>".__('There are no defined module groups')."</div>";
+}
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

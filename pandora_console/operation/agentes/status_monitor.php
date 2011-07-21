@@ -39,6 +39,10 @@ if (ENTERPRISE_NOT_HOOK !== $isFunctionPolicies) {
 	$subquery_enterprise = subquery_acl_enterprise();
 	$subquery_enterprise2 = subquery_acl_enterprise('AND', 'tagente.id_agente');
 }
+else {
+	$subquery_enterprise = '';
+	$subquery_enterprise2 = '';
+}
 
 ui_print_page_header ("Monitor detail", "images/brick.png", false);
 
@@ -200,7 +204,7 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
 	$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
 }
-else {
+elseif($user_groups != '') {
 	// User has explicit permission on group 1 ?
 	$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
 }

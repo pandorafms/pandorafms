@@ -299,6 +299,7 @@ if ($components === false)
 	$components = array ();
 
 unset ($table);
+
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Module name');
@@ -340,7 +341,13 @@ foreach ($components as $component) {
 	array_push ($table->data, $data);
 }
 
-html_print_table ($table);
+if(isset($data)) {
+	html_print_table ($table);
+}
+else {
+	echo "<div class='nf'>".__('There are no defined network components')."</div>";
+}
+
 
 echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -349,7 +356,7 @@ html_print_select (array (2 => __('Create a new network component'),
 	4 => __('Create a new plugin component'),
 	6 => __('Create a new WMI component')),
 	'id_component_type', '', '', '', '', '');
-html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+html_print_submit_button (__('Create'), 'crt', false, 'class="sub next" style="margin-left: 5px;"');
 echo '</div>';
 echo '</form>'
 ?>

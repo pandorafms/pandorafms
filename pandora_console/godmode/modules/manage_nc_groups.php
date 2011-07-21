@@ -85,6 +85,14 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'upd' => false,
 	'id_sg' => false));
 
+$filter = array ();
+$filter['offset'] = (int) get_parameter ('offset');
+$filter['limit'] = (int) $config['block_size'];
+	
+$groups = db_get_all_rows_filter ('tnetwork_component_group', $filter);
+if ($groups === false)
+	$groups = array ();
+	
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
@@ -102,14 +110,6 @@ $table->data = array ();
 
 $total_groups = db_get_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');
 $total_groups = $total_groups[0]['total'];
-
-$filter = array ();
-$filter['offset'] = (int) get_parameter ('offset');
-$filter['limit'] = (int) $config['block_size'];
-
-$groups = db_get_all_rows_filter ('tnetwork_component_group', $filter);
-if ($groups === false)
-	$groups = array ();
 
 ui_pagination ($total_groups, $url);
 
@@ -130,7 +130,13 @@ foreach ($groups as $group) {
 	array_push ($table->data, $data);
 }
 
-html_print_table ($table);
+if(isset($data)) {
+	html_print_table ($table);
+}
+else {
+	echo "<div class='nf'>".__('There are no defined component groups')."</div>";
+}
+
 
 echo '<form method="post">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

@@ -60,5 +60,10 @@ foreach ($osList as $os) {
 	$table->data[] = $data;
 }
 
-html_print_table($table);
+if(isset($data)) {
+	html_print_table($table);
+}
+else {
+	echo "<div class='nf'>".__('There are no defined operating systems')."</div>";
+}
 ?>

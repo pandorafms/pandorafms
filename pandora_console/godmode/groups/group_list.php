@@ -205,111 +205,125 @@ if ($delete_group) {
 		 
 }
 
-
-$table->width = '98%';
-$table->head = array ();
-$table->head[0] = __('Name');
-$table->head[1] = __('ID');
-$table->head[2] = __('Icon');
-$table->head[3] = __('Alerts');
-$table->head[4] = __('Actions');
-$table->align = array ();
-$table->align[2] = 'center';
-$table->align[4] = 'center';
-$table->data = array ();
-
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
-$iterator = 0;
+$table->width = '98%';
 
-foreach ($groups as $id_group => $group) {
-	if ($group['deep'] == 0) {
-		$table->rowstyle[$iterator] = '';
-	}
-	else {
-		if ($group['parent'] != 0) {
-			$table->rowstyle[$iterator] = 'display: none;';
+if(!empty($groups)) {
+	$table->head = array ();
+	$table->head[0] = __('Name');
+	$table->head[1] = __('ID');
+	$table->head[2] = __('Icon');
+	$table->head[3] = __('Alerts');
+	$table->head[4] = __('Actions');
+	$table->align = array ();
+	$table->align[2] = 'center';
+	$table->align[4] = 'center';
+	$table->data = array ();
+
+	$iterator = 0;
+
+	foreach ($groups as $id_group => $group) {
+		if ($group['deep'] == 0) {
+			$table->rowstyle[$iterator] = '';
 		}
-	}
-	
-	$symbolBranchs = '';
-	if ($group['id_grupo'] != 0) {
-		
-		//Make a list of parents this group
-		$end = false;
-		$unloop = true;
-		$parents = null;
-		$parents[] = $group['parent'];
-		while (!$end) {
-			$lastParent = end($parents);
-			if ($lastParent == 0) {
-				$end = true;
+		else {
+			if ($group['parent'] != 0) {
+				$table->rowstyle[$iterator] = 'display: none;';
 			}
-			else {
-				$unloop = true;
-				foreach ($groups as $id => $node) {
-					if ($node['id_grupo'] == 0) {
-						continue;
+		}
+		
+		$symbolBranchs = '';
+		if ($group['id_grupo'] != 0) {
+			
+			//Make a list of parents this group
+			$end = false;
+			$unloop = true;
+			$parents = null;
+			$parents[] = $group['parent'];
+			while (!$end) {
+				$lastParent = end($parents);
+				if ($lastParent == 0) {
+					$end = true;
+				}
+				else {
+					$unloop = true;
+					foreach ($groups as $id => $node) {
+						if ($node['id_grupo'] == 0) {
+							continue;
+						}
+						if ($node['id_grupo'] == $lastParent) {
+							array_push($parents, $node['parent']);
+							$unloop = false;
+						}
 					}
-					if ($node['id_grupo'] == $lastParent) {
-						array_push($parents, $node['parent']);
-						$unloop = false;
+					
+					//For exit of infinite loop
+					if ($unloop) {
+						break;
 					}
 				}
-				
-				//For exit of infinite loop
-				if ($unloop) {
-					break;
+			}
+			
+			$table->rowclass[$iterator] = 'parent_' . $group['parent'];
+			
+			//Print the branch classes (for close a branch with child branch in the
+			//javascript) of this parent as example:
+			//
+			// the tree (0(1,2(4,5),3))
+			// for the group 4 have the style "parent_4 branch_0 branch_2"
+			if (!empty($parents)) {
+				foreach ($parents as $idParent) {
+					$table->rowclass[$iterator] .= ' branch_' . $idParent;
+					$symbolBranchs .= ' symbol_branch_' . $idParent;
 				}
 			}
 		}
 		
-		$table->rowclass[$iterator] = 'parent_' . $group['parent'];
+		$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
 		
-		//Print the branch classes (for close a branch with child branch in the
-		//javascript) of this parent as example:
-		//
-		// the tree (0(1,2(4,5),3))
-		// for the group 4 have the style "parent_4 branch_0 branch_2"
-		if (!empty($parents)) {
-			foreach ($parents as $idParent) {
-				$table->rowclass[$iterator] .= ' branch_' . $idParent;
-				$symbolBranchs .= ' symbol_branch_' . $idParent;
-			}
+		if ($group['id_grupo'] == 0) {
+			$symbol = '-';
 		}
+		else {
+			$symbol = '+';
+		}
+		
+		if ($group['hash_branch']) {
+			$data[0] = '<strong>'.$tabulation . ' ' . 
+				'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
+		}
+		else {
+			$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre'], 60).'</strong>';
+		}
+		$data[1] = $group['id_grupo'];
+		$data[2] = ui_print_group_icon($group['id_grupo'], true);
+		$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
+		if ($group['id_grupo'] == 0) {
+			$data[4] = '';
+		}
+		else {
+			$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+			$data[4] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+		}
+		
+		array_push ($table->data, $data);
+		$iterator++;
 	}
-	
-	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
-	
-	if ($group['id_grupo'] == 0) {
-		$symbol = '-';
-	}
-	else {
-		$symbol = '+';
-	}
-	
-	if ($group['hash_branch']) {
-		$data[0] = '<strong>'.$tabulation . ' ' . 
-			'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
-	}
-	else {
-		$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre'], 60).'</strong>';
-	}
-	$data[1] = $group['id_grupo'];
-	$data[2] = ui_print_group_icon($group['id_grupo'], true);
-	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
-	if ($group['id_grupo'] == 0) {
-		$data[4] = '';
-	}
-	else {
-		$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
-		$data[4] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
-	}
-	
-	array_push ($table->data, $data);
-	$iterator++;
+
+	html_print_table ($table);
+}
+else {
+	echo "<div class='nf'>".__('There are no defined groups')."</div>";
 }
 
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+echo '</div>';
+echo '</form>';
+
 ?>
+
 <script type="text/javascript">
 function showBranch(parent) {
 	display = $('.parent_' + parent).css('display');
@@ -328,14 +342,3 @@ function showBranch(parent) {
 	}
 }
 </script>
-<?php
-
-html_print_table ($table);
-
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
-
-?>

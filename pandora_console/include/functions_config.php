@@ -650,7 +650,12 @@ function config_process_config () {
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($_POST['nick']));
 			$config['relative_path'] = $relative_path;
 		}
-	}	
+	}
+
+	if (!isset ($config['dbtype'])) {
+		config_update_value ('dbtype', 'mysql');
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

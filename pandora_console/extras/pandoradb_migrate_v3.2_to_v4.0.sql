@@ -122,7 +122,7 @@ UPDATE `tserver` SET `laststart` = "01-01-1970 00:00:00" WHERE `laststart` = "00
 UPDATE `tserver` SET `keepalive` = "01-01-1970 00:00:00" WHERE `keepalive` = "0000-00-00 00:00:00";
 UPDATE `ttrap` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
 UPDATE `tnews` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
-UPDATE `tserver_export` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
+UPDATE `tserver_export_data` SET `timestamp` = "01-01-1970 00:00:00" WHERE `timestamp` = "0000-00-00 00:00:00";
 
 -- -----------------------------------------------------
 -- Table `ttag`

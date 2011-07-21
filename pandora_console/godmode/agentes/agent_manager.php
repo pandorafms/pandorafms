@@ -245,9 +245,9 @@ else {
 	$display_icons = '';
 	$path_without = $path . $icon_path . ".default.png";
 	$path_default = $path . $icon_path . ".default.png";
-	$path_ok = $path . $icon_path . ".default.png";
-	$path_bad = $path . $icon_path . ".default.png";
-	$path_warning = $path . $icon_path . ".default.png";
+	$path_ok = $path . $icon_path . ".ok.png";
+	$path_bad = $path . $icon_path . ".bad.png";
+	$path_warning = $path . $icon_path . ".warning.png";
 }
 
 $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .

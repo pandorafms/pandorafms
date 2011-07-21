@@ -334,9 +334,9 @@ else {
 	$display_icons = '';
 	$path_without = $path . $icon_path . ".default.png";
 	$path_default = $path . $icon_path . ".default.png";
-	$path_ok = $path . $icon_path . ".default.png";
-	$path_bad = $path . $icon_path . ".default.png";
-	$path_warning = $path . $icon_path . ".default.png";
+	$path_ok = $path . $icon_path . ".ok.png";
+	$path_bad = $path . $icon_path . ".bad.png";
+	$path_warning = $path . $icon_path . ".warning.png";
 }
 
 $table->data[4][0] = __('Agent icon');

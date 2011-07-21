@@ -134,6 +134,9 @@ if ($export_profile) {
 }
 
 $result = db_get_all_rows_in_table ("tnetwork_profile", "name");
+if($result === false) {
+	$result = array();
+}
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;

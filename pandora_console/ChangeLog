@@ -1,5 +1,10 @@
 2011-07-21  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/incidents/incident.list.php: fixed table
+	displayed instead of a message for bug 3372155
+
+2011-07-21  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_users.php
 	extensions/module_groups.php
 	godmode/groups/modu_group_list.php

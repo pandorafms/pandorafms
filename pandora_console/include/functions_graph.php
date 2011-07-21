@@ -825,7 +825,7 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
  * @param integer width pie graph width
  * @param integer height pie graph height
  */
-function grafico_db_agentes_purge ($id_agent, $width, $height) {
+function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
 	

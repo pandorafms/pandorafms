@@ -1205,15 +1205,16 @@ function check_sql ($sql) {
 
 function check_login () {
 	global $config;
-
+	
 	if (!isset ($config["homedir"])) {
 		// No exists $config. Exit inmediatly
 		include("general/noaccess.php");
 		exit;
 	}
-
+	
 	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
 		if (is_user ($_SESSION["id_usuario"])) {
+			$config['id_user'] = $_SESSION["id_usuario"];
 			return 0;
 		}
 	}

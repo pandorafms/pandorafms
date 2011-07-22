@@ -51,7 +51,12 @@ if(!isInACL($_SERVER['REMOTE_ADDR'])){
 
 $groups = users_get_groups ($config["id_user"], "AR");
 //Otherwise select all groups the user has rights to.
-$sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+if(!empty($groups)) {
+	$sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+}
+else {
+	$sql_group_filter = "";
+}
 
 // Skip system messages if user is not PM
 if (!check_acl ($config["id_user"], 0, "PM")) {

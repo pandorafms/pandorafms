@@ -1,3 +1,8 @@
+2011-07-22  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_marquee.php: Fixed a sql error
+	of the events marquee when no groups in the system
+
 2011-07-21  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/users/profile_list.php

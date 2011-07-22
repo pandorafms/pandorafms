@@ -1,3 +1,8 @@
+2011-07-22 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: fixed the not login when open new window in some
+	cases.
+
 2011-07-22  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_marquee.php: Fixed a sql error

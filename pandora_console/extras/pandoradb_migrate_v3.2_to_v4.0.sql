@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_item` (
 ALTER TABLE `tusuario` ADD COLUMN `block_size` int(4) NOT NULL DEFAULT 20;
 ALTER TABLE `tusuario` ADD COLUMN `flash_chart` int(4) NOT NULL DEFAULT 1;
 ALTER TABLE `tusuario` ADD COLUMN `id_skin` int(10) unsigned NOT NULL;
+UPDATE `tusuario` SET `language` = "default" WHERE `language` IS NULL;
 
 -- -----------------------------------------------------
 -- Table `talert_actions`

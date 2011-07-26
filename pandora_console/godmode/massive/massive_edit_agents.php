@@ -163,7 +163,9 @@ if ($update_agents) {
 		db_pandora_audit("Masive management", "Update agent " . $id_agent, false, false, json_encode($fields));
 	}
 	else {
-		db_pandora_audit("Masive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
+		if (isset ($id_agent)) {
+			db_pandora_audit("Masive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
+		}
 	}
 	
 	

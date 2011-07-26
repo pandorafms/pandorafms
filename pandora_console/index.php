@@ -179,15 +179,11 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
 
-		// Set user language if provided, overriding System language
-		$userinfo = get_user_info ($config['id_user']);
-		if ($userinfo["language"] != ""){
-			$config['language'] = $userinfo["language"];
-		}
+		$user_language = get_user_language ($config['id_user']);
 
 		$l10n = NULL;
-		if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
-			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
+		if (file_exists ('./include/languages/'.$user_language.'.mo')) {
+			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
 			$l10n->load_tables();
 		}
 	}

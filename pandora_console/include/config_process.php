@@ -28,8 +28,6 @@ $pandora_version = 'v4.0dev';
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;
 
-$develop_bypass = 1;
-
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);
 	
@@ -89,7 +87,6 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 else {
 	$config["remote_addr"] = null;
 }
-$config['user_language'] = $config["language"];
 
 // Set a the system timezone default 
 if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
@@ -98,12 +95,8 @@ if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
 
 date_default_timezone_set($config["timezone"]);
 
-// Set user language if provided, overriding System language
 if (isset ($config['id_user'])){
 	$userinfo = get_user_info ($config['id_user']);
-	if ($userinfo["language"] != ""){
-		$config['user_language'] = $userinfo["language"];
-	}
 
 	// If block_size or flash_chart are provided then override global settings
 	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
@@ -121,8 +114,10 @@ if (isset ($config['id_user'])){
 
 $l10n = NULL; 
 
-if (file_exists ($config["homedir"]  . '/include/languages/'.$config["user_language"].'.mo')) {
-	$l10n = new gettext_reader (new CachedFileReader ($config["homedir"] . '/include/languages/'.$config["user_language"].'.mo'));
+$user_language = get_user_language ();
+
+if (file_exists ($config["homedir"]  . '/include/languages/'.$user_language.'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ($config["homedir"] . '/include/languages/'.$user_language.'.mo'));
 	$l10n->load_tables();
 }
 

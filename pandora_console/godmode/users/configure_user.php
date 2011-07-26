@@ -36,9 +36,6 @@ if (ENTERPRISE_NOT_HOOK !== enterprise_include('include/functions_policies.php')
 $id = get_parameter ('id', get_parameter ('id_user', '')); // ID given as parameter
 
 $user_info = get_user_info ($id);
-if ($user_info["language"] == ""){
-	$user_info["language"] = $config["language"];
-}
 
 if (! check_acl ($config['id_user'], 0, "UM")) {
 	db_pandora_audit("ACL Violation",
@@ -87,7 +84,7 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['phone'] = '';
 	$user_info['comments'] = '';
 	$user_info['is_admin'] = 0;
-	$user_info['language'] = $config["language"];
+	$user_info['language'] = 'default';
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$user_info['id_skin'] = '';
 	}
@@ -113,7 +110,7 @@ if ($create_user) {
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
-	$values['language'] = get_parameter ('language', $config["language"]);
+	$values['language'] = get_parameter ('language', 'default');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = (int) get_parameter ('skin', 0);
 	}
@@ -195,7 +192,7 @@ if ($update_user) {
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
-	$values['language'] = (string) get_parameter ('language', $config["language"]);
+	$values['language'] = (string) get_parameter ('language');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = get_parameter ('skin', 0);
 	}
@@ -300,7 +297,7 @@ $table->data[1][1] = html_print_input_text_extended ('fullname', $user_info['ful
 
 $table->data[2][0] = __('Language');
 $table->data[2][1] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
-	'language', $user_info["language"], '', '', '', true);
+	'language', $user_info['language'], '', __('Default'), 'default', true);
 
 if ($config['user_can_update_password']) {
 	$table->data[4][0] = __('Password');
@@ -367,7 +364,11 @@ $table->data[11][1] = html_print_select($values, 'flash_charts', $user_info["fla
 $table->data[12][0] = __('Block size for pagination');
 $table->data[12][1] = html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 
-echo '<form method="post">';
+if($id == $config['id_user']) {
+	$table->data[12][1] .= html_print_input_hidden('quick_language_change', 1, true);
+}
+
+echo '<form method="post" autocomplete="off">';
 
 html_print_table ($table);
 

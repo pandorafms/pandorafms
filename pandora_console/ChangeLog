@@ -1,3 +1,22 @@
+2011-07-26  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Set as default
+	the language of the admin when install
+
+	* include/config_process.php
+	include/functions.php
+	index.php
+	operation/users/user_edit.php
+	general/pandora_help.php
+	godmode/users/configure_user.php: Added default
+	option in the language combo when edit a user. If
+	this option is choose, this user will has the 
+	general setup language
+	Fixed too the problem of the help screens language
+	Bug: 3375174 
+
 2011-07-22 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions.php: fixed the not login when open new window in some

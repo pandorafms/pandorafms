@@ -24,11 +24,8 @@ include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 
 $id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
-$user_info = get_user_info ($id);
-if ($user_info["language"] == ""){
-	$user_info["language"] = $config["language"];
-}
 
+$user_info = get_user_info ($id);
 $id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
 
 if ((!check_acl ($config["id_user"], users_get_groups ($id), "UM")) AND ($id != $config["id_user"])){
@@ -138,10 +135,11 @@ html_print_input_text_extended ("phone", $user_info["phone"], '', '', '10', '30'
 
 echo '</td></tr><tr><td class="datos">'.__('Language').'</td><td class="datos2">';
 echo html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
-	'language', $user_info["language"], '', '', '', true);
+	'language', $user_info["language"], '', __('Default'), 'default', true);
 
 echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos">';
 html_print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
+html_print_input_hidden('quick_language_change', 1);
    
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))

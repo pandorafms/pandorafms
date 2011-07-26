@@ -29,8 +29,10 @@ require_once ("../include/functions_html.php");
 <?php
 $id = get_parameter ('id');
 
+$user_language = get_user_language ();
+
 /* Possible file locations */
-$safe_language = safe_url_extraclean ($config["language"], "en");
+$safe_language = safe_url_extraclean ($user_language, "en");
 $safe_id = safe_url_extraclean ($id, "");
 $files = array ($config["homedir"]."/include/help/".$safe_language."/help_".$safe_id.".php",
 	$config["homedir"].ENTERPRISE_DIR."/include/help/".$safe_language."/help_".$safe_id.".php",

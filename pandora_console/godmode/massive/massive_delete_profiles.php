@@ -57,12 +57,19 @@ if ($delete_profiles) {
 		foreach($profiles_id as $profile) {
 			foreach($groups_id as $group) {
 				foreach($users_id as $id_up) {
-					$user = (string) db_get_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
+					 if ($id_up == 0){
+						echo '<h3 class="error">'.__('Not deleted. You must select an existing user').'</h3>';
+						$result="";
+                                        }
+					else{
+						$user = (string) db_get_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
 
-					db_pandora_audit("User management",
-						"Deleted profile for user ".io_safe_input($user));
+						db_pandora_audit("User management",
+							"Deleted profile for user ".io_safe_input($user));
 
-					$result = profile_delete_user_profile ($user, $id_up);
+						$result = profile_delete_user_profile ($user, $id_up);
+					}
+					
 				}
 			}
 		}

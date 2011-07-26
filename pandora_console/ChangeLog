@@ -1,3 +1,7 @@
+2011-07-26  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* operation/agentes/alerts_status_functions.php: Update the alerts search with "Filter" button.
+
 2011-07-26  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

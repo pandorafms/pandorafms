@@ -252,7 +252,7 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, 
 		$pos_x = $pos_x + $range;
 	}
 	
-	$return = print_success_message (__('Agent successfully added to layout'), '', true);
+	$return = ui_print_success_message (__('Agent successfully added to layout'), '', true);
 	
 	return $return;
 }
@@ -271,8 +271,8 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, 
  */
 function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_modules)) {
-		$return = print_error_message (__('No modules selected'), '', true);
-		return false;
+		$return = ui_print_error_message (__('No modules selected'), '', true);
+		return $return;
 	}
 	
 	$id_modules = (array) $id_modules;
@@ -305,7 +305,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		$pos_x = $pos_x + $range;
 	}
 	
-	$return = print_success_message (__('Modules successfully added to layout'), '', true);
+	$return = ui_print_success_message (__('Modules successfully added to layout'), '', true);
 	
 	return $return;
 }

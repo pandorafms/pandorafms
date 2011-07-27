@@ -1,3 +1,7 @@
+2011-07-27  Sancho lerena <slerena@artica.es>
+
+	* operation/servers/view_server.php: Fixed position of create button.
+
 2011-07-27  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/module_groups.php

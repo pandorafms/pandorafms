@@ -20,6 +20,7 @@ global $config;
 
 require_once ("include/functions_servers.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
+include_graphs_dependencies();
 
 check_login ();
 

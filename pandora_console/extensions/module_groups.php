@@ -233,7 +233,7 @@ function mainModuleGroups() {
 			array_push($tableData,$row);
 		}
 		$table->data = $tableData;
-		echo "<div style='width:98%; overflow-x:scroll;'>";
+		echo "<div style='width:98%; overflow-x:auto;'>";
 		html_print_table($table);
 		echo "</div>";
 		

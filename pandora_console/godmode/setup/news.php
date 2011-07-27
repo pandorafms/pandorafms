@@ -32,12 +32,13 @@ ui_print_page_header (__('Site news management'), "", false, "", true);
 if (isset ($_POST["create"])) { // If create
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
+	$timestamp = db_get_value ('NOW()', 'tconfig_os', 'id_os', 1);
 	
 	$values = array(
 		'subject' => $subject,
 		'text' => $text,
 		'author' => $config["id_user"],
-		'timestamp' => NOW());
+		'timestamp' => $timestamp);
 	$id_link = db_process_sql_insert('tnews', $values);
 	
 	ui_print_result_message ($id_link,
@@ -49,8 +50,11 @@ if (isset ($_POST["update"])) { // if update
 	$id_news = (int) get_parameter ("id_news", 0);
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
+	//NOW() column exists in any table and always displays the current date and time, so let's get the value from a row in a table which can't be deleted.
+	//This way we prevent getting no value for this variable
+	$timestamp = db_get_value ('NOW()', 'tconfig_os', 'id_os', 1);
 	
-	$values = array('subject' => $subject, 'text' => $text, 'timestamp' => 'NOW()');
+	$values = array('subject' => $subject, 'text' => $text, 'timestamp' => $timestamp);
 	$result = db_process_sql_update('tnews', $values, array('id_news' => $id_news));
 
 	ui_print_result_message ($result,

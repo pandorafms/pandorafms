@@ -897,6 +897,7 @@ function ui_process_page_head ($string, $bitfield) {
 	<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
 	<meta name="robots" content="index, follow" />
 	<link rel="icon" href="images/pandora.ico" type="image/ico" />
+	<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
 	<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 
 	if ($config["language"] != "en") {

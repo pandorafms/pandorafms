@@ -155,7 +155,13 @@ switch ($action) {
 					$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
 				}
 				else if ($action == 'save') {
-					$idOrResult = db_process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
+					if($reportName != "" && $idGroupReport != "") {
+						$idOrResult = db_process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
+					}
+					else {
+						$idOrResult = false;
+					}
+					
 					if ($idOrResult === false) {
 						$resultOperationDB = false;
 					}
@@ -213,7 +219,7 @@ switch ($action) {
 							break;
 						}
 						
-						$id_gs = strstr($values ['id_gs'], '|', true);
+						$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
 						if ($id_gs !== false) {
 							$server_name = strstr($values ['id_gs'], '|');
 							$values ['id_gs'] = $id_gs;
@@ -305,8 +311,7 @@ switch ($action) {
 							$resultOperationDB = false;
 							break;
 						}
-						
-						$id_gs = strstr($values ['id_gs'], '|', true);
+						$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
 						if ($id_gs !== false) {
 							$server_name = strstr($values ['id_gs'], '|');
 							$values ['id_gs'] = $id_gs;

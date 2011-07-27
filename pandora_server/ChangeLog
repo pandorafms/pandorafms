@@ -1,3 +1,11 @@
+2011-07-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Read configuration for the new enterprise
+	  SNMP server.
+	
+	* lib/PandoraFMS/Core.pm: Added server type for the new enterprise SNMP
+	  server.
+
 2011-07-21  Sergio Martin <sergio.martin@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Fixed undeclared variable

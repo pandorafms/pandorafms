@@ -256,7 +256,7 @@ sub pandora_load_config {
 	$pa_config->{"nmap"} = "/usr/bin/nmap";
 
 	# braa for enterprise snmp server
-	$pa_config->{"braa"} = "/usr/bin/braa";
+	$pa_config->{"braa"} = "/usr/local/bin/braa";
 
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
@@ -465,6 +465,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmpconsole\s([0-9]*)/i) {
 			$pa_config->{"snmpconsole"} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^snmpserver\s([0-9]*)/i) {
+			$pa_config->{"snmpserver"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^alert_recovery\s([0-9]*)/i) {
 			$pa_config->{"alert_recovery"} = clean_blank($1);

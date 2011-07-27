@@ -655,7 +655,7 @@ if ($update_module || $create_module) {
 	
 	if($prediction_module < 3) {
 		unset($serialize_ops);
-		modules_delete_synthetic_operations($id_agent_module);
+		enterprise_hook('modules_delete_synthetic_operations', ($id_agent_module));
 	}
 	
 	$active_snmp_v3 = get_parameter('active_snmp_v3');

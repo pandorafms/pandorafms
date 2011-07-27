@@ -299,7 +299,7 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 		$output .= '>'.$nothing.'</option>';
 	}
 
-	if (!empty ($fields)) {
+	if (is_array($fields) && !empty ($fields)) {
 		if ($sort !== false) {
 			asort ($fields);
 		}

@@ -33,43 +33,44 @@ if (enterprise_include_once ('include/functions_metaconsole.php')) {
 	$servers = enterprise_hook("metaconsole_get_connection_names");
 }
 
+$idAgent = null;
+$idCustomGraph = null;
+$text = null;
+$header = null;
+$idCustom = null;
+$url = null;
+$field = null;
+$line = null;
+$group = 0;
+$group_by_agent = 0;
+$order_uptodown = 0;
+$show_resume = 0;
+$top_n = 0;
+$top_n_value = 10;
+$exception_condition = 0;
+$exception_condition_value = 10;
+$modulegroup = 0;
+$period = 86400;
+$only_display_wrong = 0;
+$monday = true;
+$tuesday = true;
+$wednesday = true;
+$thursday = true;
+$friday = true;
+$saturday = true;
+$sunday = true;
+$time_from = '00:00';
+$time_to = '23:59';
+$show_graph = 0;
+
 switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
 		$type = get_parameter('type', 'SLA');
-		$period = 86400;
-		$idAgent = null;
-		$idCustomGraph = null;
-		$text = null;
-		$header = null;
-		$idCustom = null;
-		$url = null;
-		$field = null;
-		$line = null;
 		$description = null;
 		$sql = null;
-		$group = 0;
-		$only_display_wrong = 0;
-		$monday = true;
-		$tuesday = true;
-		$wednesday = true;
-		$thursday = true;
-		$friday = true;
-		$saturday = true;
-		$sunday = true;
-		$time_from = '00:00';
-		$time_to = '23:59';
-		$group_by_agent = 0;
-		$order_uptodown = 0;
-		$show_resume = 0;
-		$top_n = 0;
-		$top_n_value = 10;
-		$exception_condition = 0;
-		$exception_condition_value = 10;
-		$show_graph = 0;
 		$show_in_two_columns = 0;
 		$show_in_landscape = 0;
-		$modulegroup = 0;
 		$server_name = '';
 		break;
 	default:

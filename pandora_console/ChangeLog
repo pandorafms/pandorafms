@@ -1,3 +1,8 @@
+2011-07-27  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php: Fixed shortcut icon link to avoid
+	favicon.ico miss error in the apache log
+
 2011-07-27  Sancho lerena <slerena@artica.es>
 
 	* operation/servers/view_server.php: Fixed position of create button.

@@ -204,6 +204,21 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "web";
 				$id_modulo = 0;
 				break;
+			case 10:
+				$server["img"] = html_print_image ("images/lightning_go.png", true, array ("title" => __('Event server')));
+				$server["type"] = "event";
+				$id_modulo = 2;
+				break;
+			case 11:
+				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Network enterprise server')));
+				$server["type"] = "network enterprise";
+				$id_modulo = 2;
+				break;
+			case 12:
+				$server["img"] = html_print_image ("images/snmp.png", true, array ("title" => __('SNMP enterprise server')));
+				$server["type"] = "snmp enterprise";
+				$id_modulo = 2;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";

@@ -1,3 +1,10 @@
+2011-07-27  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/module_groups.php
+	general/logon_ok.php: Change overflow-x:scroll by
+	overflow-x:auto to avoid the ugly scroll when no 
+	necessary
+
 2011-07-27  Sergio Martin <sergio.matin@artica.es>
 
 	* include/functions_html.php

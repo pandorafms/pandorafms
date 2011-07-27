@@ -60,7 +60,7 @@ echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
-html_print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();',
+html_print_select_groups(false, "AR", true, "ag_group", $ag_group, '',
 	'', '0', false, false, false, 'w130', false, 'width:150px;');
 
 echo "</td>";
@@ -74,13 +74,13 @@ $fields[3] = __('Unknown');
 $fields[4] = __('Not normal'); //default
 $fields[5] = __('Not init');
 
-html_print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1, false, false, true, '', false, 'width: 125px;');
+html_print_select ($fields, "status", $status, '', __('All'), -1, false, false, true, '', false, 'width: 125px;');
 echo '</td>';
 
 echo '<td valign="middle">'.__('Module group').'</td>';
 echo '<td valign="middle">';
 html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-	'modulegroup', $modulegroup, 'this.form.submit();',__('All'), 0, false, false, true, false, 'width: 100px;');
+	'modulegroup', $modulegroup, '',__('All'), 0, false, false, true, false, 'width: 100px;');
 
 echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
@@ -179,7 +179,7 @@ switch ($config["dbtype"]) {
 $modules = db_get_all_rows_sql($sql);
 
 html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
-	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
+	$ag_modulename, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
 
 echo '</td><td valign="middle" align="right">'.__('Search').'</td>';
 

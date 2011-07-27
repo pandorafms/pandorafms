@@ -58,7 +58,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$alert_standby['standby_off'] = __('Standby off');
 		
 	$table->data[0][2] = __('Status');
-	$table->data[0][3] = html_print_select ($alert_status_filter, "filter", $filter, '', '', '', true);;
+	$table->data[0][3] = html_print_select ($alert_status_filter, "filter", $filter, '', '', '', true);
 	$table->data[0][4] = '';
 	$table->data[1][0] = __('Free text for search')
 		. '<a href="#" class="tip">&nbsp;<span>' . __("Filter by agent name, module name, template name or action name") . '</span></a>';

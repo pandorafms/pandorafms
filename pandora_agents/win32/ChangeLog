@@ -1,3 +1,11 @@
+2011-07-28 Dario Rodriguez <dario.rodriguez@artica.es>
+	
+	* pandora_windows_service.h, pandora_windows_service.cc: Added proxy
+	mode feature.
+	* bin/PandoraAgent.exe: Created new compiled version with proxy mode 
+	feature.
+	* bin/pandora_agent.conf: Added new parameters to configure proxy mode.
+
 2011-07-28  Sancho Lerena <slerena@artica.es>
 
 	* bin/util/tentacle_server.exe: Tentacle server executable to use it

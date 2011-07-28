@@ -80,6 +80,8 @@ namespace Pandora {
 		void           pandora_run_broker (string config);
 		int 		   count_broker_agents();
 		void 		   check_broker_agents(string *all_conf);
+		int 		   lauchTentacleProxy();
+		int				killTentacleProxy();
 		
 		Pandora_Windows_Service     ();
 

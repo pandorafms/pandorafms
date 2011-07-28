@@ -1,3 +1,8 @@
+2011-07-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/events_list.php: Changed the event pagination query
+	  (was too slow).
+
 2011-07-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/config_process.php

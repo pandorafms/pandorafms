@@ -22,21 +22,29 @@ global $result_status;
 global $result_groups;
 global $result_resolutions;
 
-foreach($result_status['status'] as $st) {
-	$status[$st['id']] = $st['name'];
+if (isset ($result_status['status'])){
+
+	foreach($result_status['status'] as $st) {
+		$status[$st['id']] = $st['name'];
+	}
 }
 
 // Add special status cases
 $status[0] = __('Any');
 $status[-10] = __('Not closed');
 
-foreach($result_groups['group'] as $gr) {
-	$groups[$gr['id']] = $gr['name'];
+if (isset ($result_groups['group'])){
+	foreach($result_groups['group'] as $gr) {
+		$groups[$gr['id']] = $gr['name'];
+	}
 }
 
 $resolutions[0] = __('None');
-foreach($result_resolutions['resolution'] as $res) {
-	$resolutions[$res['id']] = $res['name'];
+
+if (isset ($result_resolutions['resolution'])){
+	foreach($result_resolutions['resolution'] as $res) {
+		$resolutions[$res['id']] = $res['name'];
+	}
 }
 
 echo '<form method="post">';
@@ -60,7 +68,9 @@ echo '<td>';
 html_print_select ($status, 'search_status', $search_status, '', '', 0, false);
 echo '</td>';
 echo '<td>';
+if (isset($groups)){
 html_print_select ($groups, 'search_group', $search_group, '', '', 0, false, false, false);
+}
 echo '</td>';
 echo '<td>';
 html_print_submit_button (__('Search'));

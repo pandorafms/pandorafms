@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 #include <pandora_agent_conf.h>
 #include <fstream>
+#include <unistd.h>
 
 using namespace std;
 using namespace Pandora;
@@ -81,6 +82,10 @@ Pandora_Windows_Service::setValues (const char * svc_name,
  * Destroys a Pandora_Windows_Service object.
  */
 Pandora_Windows_Service::~Pandora_Windows_Service () {
+	
+	if(conf->getValue("proxy_mode") != "") {
+		killTentacleProxy();
+	}
 
 	if (this->conf != NULL) {
 		delete this->conf;
@@ -206,6 +211,7 @@ Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	string name_agent, name;
+	string proxy_mode, server_ip;
 	int pos, num;
                 
 	setPandoraDebug (true);
@@ -262,6 +268,13 @@ Pandora_Windows_Service::pandora_init () {
 	
 	srand ((unsigned) time (0));
 	this->setSleepTime (this->interval);
+	
+	/*Check if proxy mode is set*/
+	proxy_mode = conf->getValue ("proxy_mode");
+
+	if (proxy_mode != "") {
+		lauchTentacleProxy();	
+	}
 
 	pandoraLog ("Pandora agent started");
 	
@@ -274,6 +287,70 @@ Pandora_Windows_Service::pandora_init () {
 		this->udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
 		((UDP_Server *)this->udp_server)->start ();
 	}
+}
+
+int
+Pandora_Windows_Service::killTentacleProxy() {
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;		
+	string kill_cmd;
+	
+	kill_cmd = "taskkill.exe /F /IM tentacle_server.exe";
+	
+	ZeroMemory (&si, sizeof (si));
+	ZeroMemory (&pi, sizeof (pi));
+	if (CreateProcess (NULL , (CHAR *)kill_cmd.c_str (), NULL, NULL, FALSE,
+		CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+		return -1;
+	}
+		
+
+}
+
+int 
+Pandora_Windows_Service::lauchTentacleProxy() {
+	string server_ip, server_port, proxy_max_connections, proxy_timeout;
+	string proxy_cmd;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;	
+	
+	/*Check if server proxy is localhost*/
+	server_ip = conf->getValue("server_ip");
+	
+	if (server_ip != "localhost") {
+		proxy_max_connections = conf->getValue("proxy_max_connection");
+
+		if (proxy_max_connections == "") {
+			proxy_max_connections = "10";
+		}
+		
+		proxy_timeout = conf->getValue("proxy_timeout");
+		
+		if (proxy_timeout == "") {
+			proxy_timeout = "1";
+		}
+		
+		server_port = conf->getValue("server_port");
+		
+		if (server_port == "") {
+			server_port = "41121";
+		}
+			
+		proxy_cmd = "tentacle_server.exe -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout + "-d";		
+
+		pandoraLog("Proxy mode enabled");
+		
+		ZeroMemory (&si, sizeof (si));
+		ZeroMemory (&pi, sizeof (pi));
+		if (CreateProcess (NULL , (CHAR *)proxy_cmd.c_str (), NULL, NULL, FALSE,
+			CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+			return -1;
+		}
+				
+	} else {
+		pandoraLog ("[error] You can not proxy to localhost");
+	}	
+
 }
 
 string

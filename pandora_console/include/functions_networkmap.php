@@ -618,10 +618,11 @@ function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'rad
  * @param int Networkmap id to get.
  * @param array Extra filter.
  * @param array Fields to get.
+ * @param bool Get only the map if is of the user ($config['id_user'])
  *
  * @return Networkmap with the given id. False if not available or readable.
  */
-function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = false) {
+function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = false, $check_user = true) {
 	global $config;
 	
 	$id_networkmap = safe_int ($id_networkmap);
@@ -631,7 +632,10 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 		$filter = array ();
 		
 	$filter['id_networkmap'] = $id_networkmap;
-	$filter['id_user'] = $config['id_user'];
+	
+	if($check_user) {
+		$filter['id_user'] = $config['id_user'];
+	}
 
 	$networkmap = db_get_row_filter ('tnetwork_map', $filter, $fields);
 		

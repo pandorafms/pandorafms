@@ -1,3 +1,8 @@
+2011-07-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_networkmap.php: Added new mode to 
+	get networkmap function to allow get the map of another user
+
 2011-07-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/events/events_list.php: Changed the event pagination query

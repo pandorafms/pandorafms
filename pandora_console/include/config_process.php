@@ -112,14 +112,7 @@ if (isset ($config['id_user'])){
 	}
 } 
 
-$l10n = NULL; 
-
-$user_language = get_user_language ();
-
-if (file_exists ($config["homedir"]  . '/include/languages/'.$user_language.'.mo')) {
-	$l10n = new gettext_reader (new CachedFileReader ($config["homedir"] . '/include/languages/'.$user_language.'.mo'));
-	$l10n->load_tables();
-}
+set_user_language();
 
 require_once ($ownDir . 'functions_extensions.php');
 

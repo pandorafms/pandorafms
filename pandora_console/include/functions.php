@@ -350,6 +350,22 @@ function get_user_language ($id_user = false) {
 	return $config['language'];
 }
 
+/**
+ * This function get the user language and set it on the system
+ */
+function set_user_language() {
+	global $config;
+	global $l10n;
+
+	$l10n = NULL;
+	$user_language = get_user_language ();
+
+	if (file_exists ('./include/languages/'.$user_language.'.mo')) {
+		$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
+		$l10n->load_tables();
+	}
+}
+
 /** 
  * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.

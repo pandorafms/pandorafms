@@ -19,16 +19,16 @@
 require_once ('../../include/config.php');
 require_once ('../../include/auth/mysql.php');
 
-if (! isset($_SESSION["id_user"])) {
+if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 	session_write_close();
 }
 
-require_once ($config["homedir"] . '/include/functions.php');
-require_once ($config["homedir"] . '/include/functions_db.php');
-require_once ($config["homedir"] . '/include/functions_reporting.php');
-require_once ($config["homedir"] . '/include/functions_graph.php');
-require_once ($config['homedir'] . "/include/functions_modules.php");
+require_once ($config['homedir'] . '/include/functions.php');
+require_once ($config['homedir'] . '/include/functions_db.php');
+require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_graph.php');
+require_once ($config['homedir'] . '/include/functions_modules.php');
 
 check_login ();
 

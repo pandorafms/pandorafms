@@ -1,3 +1,14 @@
+2011-07-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/config_process.php
+	include/functions.php
+	operation/agentes/stat_win.php
+	general/pandora_help.php: Create new functions to manage pandora
+	languages.
+	Fix pandora_help languages to use the user language, no always the
+	global language.
+	Fix som SESSION index little bugs
+
 2011-07-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/events/events_list.php: Hide agent details unless we have

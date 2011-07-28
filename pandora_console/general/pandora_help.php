@@ -27,9 +27,15 @@ require_once ("../include/functions_html.php");
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
 <body style="background-color: #fff; height: 100%; margin: -10 0;">
 <?php
+
 $id = get_parameter ('id');
 
-$user_language = get_user_language ();
+if (! isset($_SESSION['id_usuario'])) {
+	session_start();
+	session_write_close();
+}
+
+$user_language = get_user_language ($_SESSION['id_usuario']);
 
 /* Possible file locations */
 $safe_language = safe_url_extraclean ($user_language, "en");

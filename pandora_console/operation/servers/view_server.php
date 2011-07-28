@@ -90,5 +90,26 @@ foreach ($servers as $server) {
 	array_push ($table->data, $data);
 }
 
-html_print_table ($table);	
+html_print_table ($table);
+
+//Legend
+
+echo "<table>";
+echo "<tr><td colspan='5'>" . __('Legend') . "</td></tr>";
+echo "<tr>";
+echo '<td><span class="net">'.__('Network server').'</span></td>';
+echo '<td><span class="master">'.__('Master').'</span></td>';
+echo '<td><span class="data">'.__('Data server').'</span></td>';
+echo '<td><span class="binary">'.__('MD5 check').'</span></td>';
+echo '<td><span class="snmp">'.__('SNMP console').'</span></td>';
+echo '<td><span class="plugin">'.__('Plugin server').'</span></td>';
+echo "</tr><tr>";
+echo '<td><span class="recon_server">'.__('Recon server').'</span></td>';
+echo '<td><span class="wmi_server">'.__('WMI server').'</span></td>';
+echo '<td><span class="export_server">'.__('Export server').'</span></td>';
+echo '<td><span class="inventory_server">'.__('Inventory server').'</span></td>';
+echo '<td><span class="web_server">'.__('Web server').'</span></td>';
+echo '<td><span class="prediction">'.__('Prediction server').'</span></td>';
+echo "</tr></table>";
+
 ?>

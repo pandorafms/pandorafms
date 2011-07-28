@@ -1,3 +1,8 @@
+2011-07-28  Sancho Lerena <slerena@artica.es>
+
+	* bin/util/tentacle_server.exe: Tentacle server executable to use it
+	in the drone/proxy mode.
+
 2011-07-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module.h,

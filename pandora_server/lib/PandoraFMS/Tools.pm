@@ -23,6 +23,7 @@ use POSIX qw(setsid strftime);
 use POSIX;
 use PandoraFMS::Sendmail;	
 use HTML::Entities;
+use Encode;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -333,12 +334,19 @@ sub pandora_sendmail {
 
 	my %mail = ( To   => $to_address,
 			  Message => $message,
-			  Subject => $subject,
+			  Subject => encode('MIME-Header', $subject),
 			  'X-Mailer' => "Pandora FMS",
 			  Smtp    => $pa_config->{"mta_address"},
 			  Port    => $pa_config->{"mta_port"},
 			  From    => $pa_config->{"mta_from"},
 	);
+
+	# Check if message has non-ascii chars.
+	# non-ascii chars should be encoded in UTF-8.
+	if ($message =~ /[^[:ascii:]]/o) {
+		$mail{Message} = encode("UTF-8", $mail{Message});
+		$mail{'Content-Type'} = 'text/plain; charset="UTF-8"';
+	}
 
 	if ($pa_config->{"mta_user"} ne ""){
 		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };

@@ -1,3 +1,8 @@
+2011-07-29  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* unix/pandora_agent: Don't remove 1st line of the result of the PROC_CMDS,
+	  1st line isn't a header. Also fixed and simplified some commands.
+
 2011-07-18  Sergio Martin <sergio.martin@artica.es>
 
 	* unix/Linux/pandora_agent.conf: Change default memory modules to get it with free command

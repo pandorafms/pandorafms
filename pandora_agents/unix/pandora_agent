@@ -58,9 +58,9 @@ use constant AGENT_BUILD => '110629';
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
 	linux => 'cat /proc/meminfo | grep MemTotal: | awk \'{ print $2 }\'',
-	solaris => 'MEM=`prtconf | grep Memory | awk \'{print $3}\'` bash -c \'echo $(( 1024 * $MEM ))\'',
+	solaris => '/usr/sbin/prtconf | awk \'/Memory/ { print $3 * 1024 }\'',
 	hpux => 'swapinfo -t | grep memory | awk \'{print $2}\'',
-	freebsd => 'sysctl hw.physmem | awk \'{print $2 / 1024}\''
+	freebsd => '/sbin/sysctl hw.physmem | awk \'{print $2 / 1024}\'',
 };
 
 # Commands to retrieve free memory information in kB
@@ -68,7 +68,7 @@ use constant FREEMEMORY_CMDS => {
 	linux => 'cat /proc/meminfo | grep MemFree: | awk \'{ print $2 }\'',
 	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $5 }\'',
 	hpux => 'swapinfo -t | grep memory | awk \'{print $4}\'',
-	freebsd => 'vmstat -H 1 2 | tail -1 | awk \'{ print $5 }\''
+	freebsd => '/sbin/sysctl -n vm.stats.vm.v_page_size vm.stats.vm.v_free_count | tr "\n" " " | awk \'{ print $1 * $2 / 1024 }\'',
 };
 
 # Commands to retrieve cpu information
@@ -86,7 +86,7 @@ use constant PROC_CMDS => {
 	solaris => 'prstat 1 1 | awk \'NR > 1 {split ($10, ps, "/"); cpu = substr ($9, 1, length ($9) - 1); mem = substr ($3, 1, length ($3) - 1); print cpu, mem, ps[1]}\'',
 	hpux => 'ps -elf | awk \'NR > 1 {ps = ""; for (i = 15; i <= NF; ++i) {ps = (ps " " $i) }; print 0, $10, ps}\'',
 	aix => 'ps aux | awk \'NR > 1 {print $3, $6, $11}\'',
-	freebsd => 'ps -axw -o %cpu,%mem,command | awk \'NR > 1 {ps = ""; for (i = 3; i <= NF; ++i) {ps = (ps " " $i) }; print $1, $2, ps}\''
+	freebsd => 'ps axww -o %cpu= -o %mem= -o command= | sed -e "s/^ *//"',
 };
 
 # Commands to retrieve partition information in kB
@@ -1010,9 +1010,6 @@ sub load_procs () {
 	my $cmd = PROC_CMDS->{$OS};
 	my @procs = `$cmd`;
 	return undef unless ($? eq 0);
-
-	# Discard the header
-	shift (@procs);
 
 	# Parse process information
 	foreach my $proc (@procs) {

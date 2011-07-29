@@ -24,6 +24,7 @@ require_once($config['homedir'] . "/include/functions_users.php"); //Users funct
 require_once ($config['homedir'] . '/include/functions_groups.php');
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
+require_once ($config["homedir"] . '/include/functions_tags.php');
 
 check_login ();
 
@@ -34,7 +35,7 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
-$tag_search = get_parameter("tag", "");
+$tag = get_parameter("tag", "");
 
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
@@ -134,8 +135,8 @@ if ($event_view_hr > 0) {
 }
 
 //Search by tag
-if ($tag_search != "") {
-	$sql_post .= " AND tags LIKE '%".io_safe_input($tag_search)."%'";
+if ($tag != "") {
+	$sql_post .= " AND tags LIKE '%".io_safe_input($tag)."%'";
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
@@ -144,7 +145,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag_search=" . $tag_search . "&amp;offset=" . $offset;
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;offset=" . $offset;
 
 echo "<br>";
 //Link to toggle filter
@@ -243,7 +244,20 @@ html_print_select ($repeated_sel, "group_rep", $group_rep, '');
 echo "</td></tr>";
 echo "<tr><td>";
 echo __("Tag") . "</td><td>";
-html_print_input_text ('tag', $tag_search, '', 15);
+//html_print_input_text ('tag', $tag_search, '', 15);
+$tags = tags_search_tag();
+
+if($tags === false) {
+	$tags = array();
+}
+
+$tags_name = array();
+foreach($tags as $t) {
+	$tags_name[$t['name']] = $t['name'];
+}
+
+html_print_select ($tags_name, "tag", $tag, '', __('All'), "");
+
 echo "</td></tr>";
 
 echo '<tr><td colspan="4" style="text-align:right">';

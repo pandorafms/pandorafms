@@ -74,28 +74,31 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	//Submitted form
 	$name = get_parameter_post ("name");
 	$description = get_parameter_post ("description");
-	
-	if ($id_np > 0) {
-		//Profile exists
-		$values = array(
-			'name' => $name,
-			'description' => $description);
-		$result = db_process_sql_update('tnetwork_profile', $values, array('id_np' => $id_np));
+	if ($name != "") {		
+		if ($id_np > 0) {
+			//Profile exists
+			$values = array(
+				'name' => $name,
+				'description' => $description);
+			$result = db_process_sql_update('tnetwork_profile', $values, array('id_np' => $id_np));
 		
-		ui_print_result_message ($result !== false,
-			__('Successfully updated network profile'),
-			__('Error updating network profile'));
-	}
-	else {
-		//Profile doesn't exist
-		$values = array('name' => $name, 'description' => $description);
-		$result = db_process_sql_insert('tnetwork_profile', $values);
-		
-		ui_print_result_message ($result,
-			__('Successfully added network profile'),
-			__('Error adding network profile'));
-		$id_np = (int) $result; //Will return either 0 (in case of error) or an int
-	}
+			ui_print_result_message ($result !== false,
+				__('Successfully updated network profile'),
+				__('Error updating network profile'));
+		}
+		else {
+			//Profile doesn't exist
+			$values = array('name' => $name, 'description' => $description);
+			$result = db_process_sql_insert('tnetwork_profile', $values);
+			
+			ui_print_result_message ($result,
+				__('Successfully added network profile'),
+				__('Error adding network profile'));
+			$id_np = (int) $result; //Will return either 0 (in case of error) or an int
+		}
+	} else {
+		ui_print_result_message(false, "", _("Cannot create a template without name"));
+	}	
 
 }
 elseif ($id_np > 0) {

@@ -920,6 +920,10 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
 		$id_agent = db_get_all_rows_sql($sql);
 
+		if($id_agent == false) {
+			$id_agent = array();
+		}
+
 		$temp = array();
 		foreach ($id_agent as $item) {
 			$temp[] = $item['id_agente'];

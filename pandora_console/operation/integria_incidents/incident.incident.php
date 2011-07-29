@@ -21,26 +21,31 @@ global $result_groups;
 global $result_users;
 
 $resolutions[0] = __('None');
-foreach($result_resolutions['resolution'] as $res) {
-	$resolutions[$res['id']] = $res['name'];
+if (isset ($result_resolutions['resolution'])) {
+	foreach($result_resolutions['resolution'] as $res) {
+		$resolutions[$res['id']] = $res['name'];
+	}
 }
-
-foreach($result_status['status'] as $st) {
-	$status[$st['id']] = $st['name'];
+if (isset ($result_status['status'])) {
+	foreach($result_status['status'] as $st) {
+		$status[$st['id']] = $st['name'];
+	}
 }
-
-foreach($result_sources['source'] as $src) {
-	$sources[$src['id']] = $src['name'];
+if (isset ($result_sources['source'])) {
+	foreach($result_sources['source'] as $src) {
+		$sources[$src['id']] = $src['name'];
+	}
 }
-
-foreach($result_groups['group'] as $gr) {
-	$groups[$gr['id']] = $gr['name'];
+if (isset ($result_groups['group'])) {
+	foreach($result_groups['group'] as $gr) {
+		$groups[$gr['id']] = $gr['name'];
+	}
 }
-
-foreach($result_users['id_user'] as $usr) {
-	$users[$usr] = $usr;
+if (isset ($result_users['id_user'])) {
+	foreach($result_users['id_user'] as $usr) {
+		$users[$usr] = $usr;
+	}
 }
-
 if(!isset($result['id_incidencia'])) {
 	$result['titulo'] = '';
 	$result['sla_disabled'] = 0;
@@ -75,8 +80,9 @@ if(isset($result['id_incidencia'])) {
 else {
 	$table->data[1][2] = "";
 }
-
-$table->data[1][0] = "<b>".__('Group')."</b><br/>".html_print_select ($groups, 'group', $result['id_grupo'], '', '', 0, true, false, false);
+if (isset($groups)){
+	$table->data[1][0] = "<b>".__('Group')."</b><br/>".html_print_select ($groups, 'group', $result['id_grupo'], '', '', 0, true, false, false);
+}
 $table->data[1][1] = "<b>".__('Priority')."</b><br/>".html_print_select (incidents_get_priorities (), 'priority', $result['prioridad'], '', '', 0, true, false, false);
 $table->data[1][2] = "<b>".__('Creator')."</b><br/>".$result['id_creator'];
 

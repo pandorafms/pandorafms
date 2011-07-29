@@ -336,17 +336,17 @@ Pandora_Windows_Service::lauchTentacleProxy() {
 			server_port = "41121";
 		}
 			
-		proxy_cmd = "tentacle_server.exe -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout + "-d";		
-
-		pandoraLog("Proxy mode enabled");
+		proxy_cmd = "tentacle_server.exe -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout;		
 		
 		ZeroMemory (&si, sizeof (si));
 		ZeroMemory (&pi, sizeof (pi));
 		if (CreateProcess (NULL , (CHAR *)proxy_cmd.c_str (), NULL, NULL, FALSE,
 			CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+			pandoraLog("There was a problem lauching Tentacle Proxy");
 			return -1;
 		}
-				
+		
+		pandoraLog("Proxy mode enabled");				
 	} else {
 		pandoraLog ("[error] You can not proxy to localhost");
 	}	

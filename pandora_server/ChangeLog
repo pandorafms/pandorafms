@@ -1,3 +1,7 @@
+2011-07-29  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Send utf8 email properly. 
+
 2011-07-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Read configuration for the new enterprise

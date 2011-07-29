@@ -302,8 +302,12 @@ if(!empty($groups)) {
 			$data[4] = '';
 		}
 		else {
+			
 			$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
-			$data[4] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+			//Check if there is only a group to unable delete it
+			if ((count($groups) > 3) || (count($groups) <= 3 && $group['parent'] != 0)) {
+				$data[4] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+			}
 		}
 		
 		array_push ($table->data, $data);

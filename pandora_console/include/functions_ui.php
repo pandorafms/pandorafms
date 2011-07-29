@@ -23,6 +23,8 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions.php");
 require_once ($config['homedir'] . '/include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
+
 
 /**
  * Truncate a text to num chars (pass as parameter) and if flag show tooltip is
@@ -449,10 +451,13 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = 
  */
 function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '', $agent_style = false) {
 
+	global $config;
+
 	$actionText = "";
 	require_once ("include/functions_alerts.php");
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
-	
+	$id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
+
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if ($agent) {
 			$index = array('policy' => 0, 'standby' => 1, 'force_execution' => 2, 'agent_name' => 3, 'module_name' => 4,
@@ -469,7 +474,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		if ($agent) {
 			$index = array('standby' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 3,
 				'description' => 4, 'template' => 4, 'action' => 5, 'last_fired' => 6, 'status' => 7,
-				'validate' => 7);
+				'validate' => 8);
 		}
 		else {
 			$index = array('standby' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
@@ -618,13 +623,15 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	
 	$data[$index['status']] = ui_print_status_image($status, $title, true);
 	
-	if ($compound) {
-		$data[$index['validate']] = html_print_checkbox ("validate_compound[]", $alert["id"], false, true);
+	if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+		if ($compound) {
+			$data[$index['validate']] = html_print_checkbox ("validate_compound[]", $alert["id"], false, true);
+		}
+		else {
+			$data[$index['validate']] = html_print_checkbox ("validate[]", $alert["id"], false, true);
+		}
 	}
-	else {
-		$data[$index['validate']] = html_print_checkbox ("validate[]", $alert["id"], false, true);
-	}
-	
+
 	return $data;
 }
 

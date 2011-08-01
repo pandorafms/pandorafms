@@ -65,9 +65,14 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts,
 			'priority' => $priority);
-		$result = db_process_sql_insert('talert_snmp', $values);
+		if (!$source_ip || !$oid) {
+			$result = '';
+		}
+		else {
+			$result = db_process_sql_insert('talert_snmp', $values);
+		}
 		
-		if ($result === false) {
+		if (!$result) {
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
 		}
 		else {
@@ -75,15 +80,21 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 		}
 		
 	} else {
-		$sql = sprintf ("UPDATE talert_snmp SET
-			priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', agent = '%s', custom_oid = '%s',
-			oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d WHERE id_as = %d",
-			$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
-			$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
-		
-		$result = db_process_sql ($sql);
 
-		if ($result === false) {
+		if (!$source_ip || !$oid) {
+			$result = '';
+		}
+		else {
+			$sql = sprintf ("UPDATE talert_snmp SET
+				priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', agent = '%s', custom_oid = '%s',
+				oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d WHERE id_as = %d",
+				$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
+				$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
+		
+			$result = db_process_sql ($sql);
+		}
+
+		if (!$result) {
 			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
 		} else {
 			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';

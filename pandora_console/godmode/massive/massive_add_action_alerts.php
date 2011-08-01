@@ -66,7 +66,7 @@ $id_alert_compounds = (array) get_parameter ('id_alert_compounds');
 $add = (bool) get_parameter_post ('add');
 
 if ($add) {
-	if(empty($id_agents))
+	if(empty($id_agents) || $id_agents[0] == 0)
 		ui_print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
 	else {
 		$action = (int) get_parameter ('action');

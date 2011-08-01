@@ -44,7 +44,7 @@ if (is_ajax ()) {
 }
 
 function process_manage_add ($id_alert_template, $id_agents, $module_names) {
-	if (empty ($id_agents)) {
+	if (empty ($id_agents) || $id_agents[0] == 0) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
 		return false;
 	}

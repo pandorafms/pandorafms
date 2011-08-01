@@ -89,30 +89,35 @@ if ($update_profile) {
 	$alert_management = (bool) get_parameter ("alert_management");
 	$pandora_management = (bool) get_parameter ("pandora_management");
 	
-	$sql = sprintf ('UPDATE tperfil SET 
-		name = "%s", incident_view = %d, incident_edit = %d,
-		incident_management = %d, agent_view = %d, agent_edit = %d,
-		alert_edit = %d, user_management = %d, db_management = %d,
-		alert_management = %d, pandora_management = %d 	WHERE id_perfil = %d',
-		$name, $incident_view, $incident_edit, $incident_management,
-		$agent_view, $agent_edit, $alert_edit, $user_management,
-		$db_management, $alert_management, $pandora_management,
-		$id_profile);
-	$ret = db_process_sql ($sql);
-	if ($ret !== false) {
-		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
-			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
-			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
-			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
-			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
-			' Pandora Management: ' . $pandora_management;
-		db_pandora_audit("User management",
-			"Update profile ". $name, false, false, $info);
-		
-		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+	if ($name) {
+		$sql = sprintf ('UPDATE tperfil SET 
+			name = "%s", incident_view = %d, incident_edit = %d,
+			incident_management = %d, agent_view = %d, agent_edit = %d,
+			alert_edit = %d, user_management = %d, db_management = %d,
+			alert_management = %d, pandora_management = %d 	WHERE id_perfil = %d',
+			$name, $incident_view, $incident_edit, $incident_management,
+			$agent_view, $agent_edit, $alert_edit, $user_management,
+			$db_management, $alert_management, $pandora_management,
+			$id_profile);
+		$ret = db_process_sql ($sql);
+		if ($ret !== false) {
+			$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+				' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+				' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+				' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+				' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+				' Pandora Management: ' . $pandora_management;
+			db_pandora_audit("User management",
+				"Update profile ". $name, false, false, $info);
+			
+			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+		}
+		else {
+			echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
+		}
 	}
 	else {
-		echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
+		 echo '<h3 class="error"'.__('Profile name cannot be empty').'</h3>';
 	}
 	$id_profile = 0;
 }
@@ -143,22 +148,28 @@ if ($create_profile) {
 		'db_management' => $db_management,
 		'alert_management' => $alert_management,
 		'pandora_management' => $pandora_management);
-	$ret = db_process_sql_insert('tperfil', $values);
+
+	if ($name) {
+		$ret = db_process_sql_insert('tperfil', $values);
 	
-	if ($ret !== false) {
-		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
-		
-		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
-			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
-			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
-			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
-			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
-			' Pandora Management: ' . $pandora_management;
-		db_pandora_audit("User management",
-			"Created profile ". $name, false, false, $info);
+		if ($ret !== false) {
+			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+			
+			$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+				' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+				' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+				' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+				' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+				' Pandora Management: ' . $pandora_management;
+			db_pandora_audit("User management",
+				"Created profile ". $name, false, false, $info);
+		}
+		else {
+			echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
+		}
 	}
 	else {
-		echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
+		 echo '<h3 class="error"'.__('There was a problem creating this profile').'</h3>';
 	}
 	$id_profile = 0;
 }

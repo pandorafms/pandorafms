@@ -113,23 +113,29 @@ if ($create_action) {
 	$field3 = (string) get_parameter ('field3');
 	$group = (string) get_parameter ('group');
 	$action_threshold = (int) get_parameter ('action_threshold');
+        $name_check = db_get_value ('name', 'talert_actions', 'name', $name);
 
-	$result = alerts_create_alert_action ($name, $id_alert_command,
-		array ('field1' => $field1,
-			'field2' => $field2,
-			'field3' => $field3,
-			'id_group' => $group,
-			'action_threshold' => $action_threshold));
+	if ($name_check) {
+		$result = '';
+	}
+	else {
+		$result = alerts_create_alert_action ($name, $id_alert_command,
+			array ('field1' => $field1,
+				'field2' => $field2,
+				'field3' => $field3,
+				'id_group' => $group,
+				'action_threshold' => $action_threshold));
 		
-	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
-		' Action threshold: ' . $action_threshold;
+		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
+			' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
+			' Action threshold: ' . $action_threshold;
+	}
 		
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
 	}
 	else {
-		db_pandora_audit("Command management", "Fail try to create alert action", false, false, $info);
+		db_pandora_audit("Command management", "Fail try to create alert action", false, false);
 	}
 	
 	ui_print_result_message ($result,
@@ -174,13 +180,20 @@ if ($update_action) {
 	$values['field3'] = $field3;
 	$values['id_group'] = $group;
 	$values['action_threshold'] = $action_threshold;
+        $name_check = db_get_value ('name', 'talert_actions', 'name', $name);
 
-	$result = alerts_update_alert_action ($id, $values);
+
+	if (!$name || $name_check) {
+		$result = '';
+	}
+	else {
+		$result = alerts_update_alert_action ($id, $values);
 	
-	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
-		' Action threshold: ' . $action_threshold;
-		
+		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
+			' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
+			' Action threshold: ' . $action_threshold;
+	}
+
 	if ($result) {
 		db_pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));
 	}

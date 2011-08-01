@@ -178,6 +178,7 @@ function update_template ($step) {
 		$matches = (bool) get_parameter ('matches_value');
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
+		$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
 
 		$values = array ('name' => $name,
 				'type' => $type,
@@ -188,8 +189,13 @@ function update_template ($step) {
 				'id_group' => $id_group,
 				'matches_value' => $matches,
 				'priority' => $priority);
-		
-		$result = alerts_update_alert_template ($id,$values);
+
+		if (!$name || $name_check) {
+			$result = '';
+		}
+		else {
+			$result = alerts_update_alert_template ($id,$values);
+		}
 	}
 	elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
@@ -330,6 +336,7 @@ if ($create_template) {
 	$matches = (bool) get_parameter ('matches_value');
 	$priority = (int) get_parameter ('priority');
 	$id_group = get_parameter ("id_group");
+        $name_check = db_get_value ('name', 'talert_templates', 'name', $name);
 
 	switch ($config['dbtype']){
 		case "mysql":
@@ -354,8 +361,12 @@ if ($create_template) {
 					'field3_recovery' => ' ');
 			break;
 	}
-	$result = alerts_create_alert_template ($name, $type, $values);
-		
+	if (!$name_check) {
+		$result = alerts_create_alert_template ($name, $type, $values);
+	}
+	else {
+		$result = '';
+	}	
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
 	}

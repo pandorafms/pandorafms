@@ -1,5 +1,10 @@
 2011-08-02 Javier Lanz <javier.lanz@artica.es>
 
+	* images/skin/skin_default/include/styles/pandora.css: Removed old
+	links to non-existing images
+
+2011-08-02 Javier Lanz <javier.lanz@artica.es>
+
 	* extensions/agents_modules.php: Changed background color of the text
 	in the table header.
 

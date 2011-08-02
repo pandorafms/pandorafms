@@ -178,8 +178,8 @@ function mainAgentsModules() {
 			continue;
 		}
 		
-		$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
-		echo '<th width="22px">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
+		$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#90B165', 'FFF', 4, 0);
+		echo '<th width="22px" style ="background-color:#90B165 !important">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 	}
 	
 	if(($hor_offset + $block) < $nmodules) {

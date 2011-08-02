@@ -1,3 +1,10 @@
+2011-08-02 Javier Lanz <javier.lanz@artica.es>
+
+	* extensions/agents_modules.php: Changed background color of the text
+	in the table header.
+
+	Fixes: 3373927
+
 2011-07-29  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_list.php: Change the events free search tag

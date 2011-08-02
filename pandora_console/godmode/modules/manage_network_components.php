@@ -95,6 +95,7 @@ if ($create_component) {
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
+        $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -104,38 +105,44 @@ if ($create_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
+                $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	}
+	if ($name && !$name_check) {
 	
-	$id = network_components_create_network_component ($name, $type, $id_group, 
-		array ('description' => $description,
-			'module_interval' => $module_interval,
-			'max' => $max,
-			'min' => $min,
-			'tcp_send' => $tcp_send,
-			'tcp_rcv' => $tcp_rcv,
-			'tcp_port' => $tcp_port,
-			'snmp_oid' => $snmp_oid,
-			'snmp_community' => $snmp_community,
-			'id_module_group' => $id_module_group,
-			'id_modulo' => $id_modulo,
-			'id_plugin' => $id_plugin,
-			'plugin_user' => $plugin_user,
-			'plugin_pass' => $plugin_pass,
-			'plugin_parameter' => $plugin_parameter,
-			'max_timeout' => $max_timeout,
-			'history_data' => $history_data,
-			'min_warning' => $min_warning,
-			'max_warning' => $max_warning,
-			'str_warning' => $str_warning,
-			'min_critical' => $min_critical,
-			'max_critical' => $max_critical,
-			'str_critical' => $str_critical,
-			'min_ff_event' => $ff_event,
-			'custom_string_1' => $custom_string_1,
-			'custom_string_2' => $custom_string_2,
-			'custom_string_3' => $custom_string_3,
-			'post_process' => $post_process));
-	if ($id === false) {
+		$id = network_components_create_network_component ($name, $type, $id_group, 
+			array ('description' => $description,
+				'module_interval' => $module_interval,
+				'max' => $max,
+				'min' => $min,
+				'tcp_send' => $tcp_send,
+				'tcp_rcv' => $tcp_rcv,
+				'tcp_port' => $tcp_port,
+				'snmp_oid' => $snmp_oid,
+				'snmp_community' => $snmp_community,
+				'id_module_group' => $id_module_group,
+				'id_modulo' => $id_modulo,
+				'id_plugin' => $id_plugin,
+				'plugin_user' => $plugin_user,
+				'plugin_pass' => $plugin_pass,
+				'plugin_parameter' => $plugin_parameter,
+				'max_timeout' => $max_timeout,
+				'history_data' => $history_data,
+				'min_warning' => $min_warning,
+				'max_warning' => $max_warning,
+				'str_warning' => $str_warning,
+				'min_critical' => $min_critical,
+				'max_critical' => $max_critical,
+				'str_critical' => $str_critical,
+				'min_ff_event' => $ff_event,
+				'custom_string_1' => $custom_string_1,
+				'custom_string_2' => $custom_string_2,
+				'custom_string_3' => $custom_string_3,
+				'post_process' => $post_process));
+	}
+	else {
+	$id = '';
+	}
+	if ($id === false || !$id) {
 		ui_print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
@@ -150,6 +157,7 @@ if ($update_component) {
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
+        $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -159,45 +167,51 @@ if ($update_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
+		$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	}
-	
-	$result = network_components_update_network_component ($id,
-		array ('type' => $type,
-			'name' => $name,
-			'id_group' => $id_group,
-			'description' => $description,
-			'module_interval' => $module_interval,
-			'max' => $max,
-			'min' => $min,
-			'tcp_send' => $tcp_send,
-			'tcp_rcv' => $tcp_rcv,
-			'tcp_port' => $tcp_port,
-			'snmp_oid' => $snmp_oid,
-			'snmp_community' => $snmp_community,
-			'id_module_group' => $id_module_group,
-			'id_modulo' => $id_modulo,
-			'id_plugin' => $id_plugin,
-			'plugin_user' => $plugin_user,
-			'plugin_pass' => $plugin_pass,
-			'plugin_parameter' => $plugin_parameter,
-			'max_timeout' => $max_timeout,
-			'history_data' => $history_data,
-			'min_warning' => $min_warning,
-			'max_warning' => $max_warning,
-			'str_warning' => $str_warning,
-			'min_critical' => $min_critical,
-			'max_critical' => $max_critical,
-			'str_critical' => $str_critical,
-			'min_ff_event' => $ff_event,
-			'custom_string_1' => $custom_string_1,
-			'custom_string_2' => $custom_string_2,
-			'custom_string_3' => $custom_string_3,
-			'post_process' => $post_process));
-	if ($result === false) {
+	if ($name && !$name_check) {
+		$result = network_components_update_network_component ($id,
+			array ('type' => $type,
+				'name' => $name,
+				'id_group' => $id_group,
+				'description' => $description,
+				'module_interval' => $module_interval,
+				'max' => $max,
+				'min' => $min,
+				'tcp_send' => $tcp_send,
+				'tcp_rcv' => $tcp_rcv,
+				'tcp_port' => $tcp_port,
+				'snmp_oid' => $snmp_oid,
+				'snmp_community' => $snmp_community,
+				'id_module_group' => $id_module_group,
+				'id_modulo' => $id_modulo,
+				'id_plugin' => $id_plugin,
+				'plugin_user' => $plugin_user,
+				'plugin_pass' => $plugin_pass,
+				'plugin_parameter' => $plugin_parameter,
+				'max_timeout' => $max_timeout,
+				'history_data' => $history_data,
+				'min_warning' => $min_warning,
+				'max_warning' => $max_warning,
+				'str_warning' => $str_warning,
+				'min_critical' => $min_critical,
+				'max_critical' => $max_critical,
+				'str_critical' => $str_critical,
+				'min_ff_event' => $ff_event,
+				'custom_string_1' => $custom_string_1,
+				'custom_string_2' => $custom_string_2,
+				'custom_string_3' => $custom_string_3,
+				'post_process' => $post_process));
+	}
+	else {
+		$result = '';
+	}
+	if ($result === false || !$result) {
 		ui_print_error_message (__('Could not be updated'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
+
 	ui_print_success_message (__('Updated successfully'));
 	
 	$id = 0;

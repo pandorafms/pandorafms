@@ -145,13 +145,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$servers = array ();
 	}
 	if (check_acl ($config['id_user'], 0, "PM")) {
+
 		foreach ($servers as $serverItem) {
-			$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
+			$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = ui_print_string_substr($serverItem["name"], 16, true);
 		}
+
 		$menu["estado_server"]["sub"] = $sub;
 	}
-	//End of server view
-
 	//End of server view
 }
 

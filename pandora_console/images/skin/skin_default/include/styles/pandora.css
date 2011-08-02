@@ -30,7 +30,7 @@ svg * {
 	}
 body {
 	text-align: center;
-	background: #022F5C url(../../images/sendero/fondo.png) repeat-x top left;
+	background: #022F5C;
 }
 
 body.pure {
@@ -191,7 +191,7 @@ div#login {
 	margin: 0 auto;
 	margin-top: 200px;
 	width: 460px;
-	background: #CCCCCC url(../../images/sendero/fondo_login.png) repeat-x bottom left;
+	background: #CCCCCC;
 	border: 0px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
@@ -308,7 +308,7 @@ div#head {
 	width: 960px;
 	height: 64px;/*84px;*/ /*height: 60px;*/
 	padding-top: 1px;
-	background: #0359AF url(../../images/sendero/fondo_cabecera.png) repeat-x top left;
+	background: #0359AF;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
@@ -381,7 +381,7 @@ div#foot {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	text-align: center;
-	background: #CCC url(../../images/sendero/fondo_login.png) repeat-x bottom left;
+	background: #CCC;
 	width: 960px;
 	clear: both;
 	position: relative;
@@ -808,7 +808,7 @@ div.title_line {
 	min-height: 24px;
 	height: auto;
 	background:#ce5c00 none repeat scroll 0 0;
-	background: #E08D36 url(../../images/sendero/fondo_titulo02.gif) repeat-x bottom left;
+	background: #E08D36;
 	font-weight: bold;
 	color: #FFFFFF;
 	font-size: 14px;
@@ -831,7 +831,6 @@ div.title_line {
 
 #menu_tab_frame_view { /* barra de titulo color verde */
 	background-color: #51831B;
-	background-image: url(../../images/sendero/fondo_titulo01.gif);
 }
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
@@ -1657,22 +1656,18 @@ div.warn {
 
 #menu .tit.bg {
 	background-color: #51831B;
-	background-image: url(../../images/sendero/fondo_titulo01.gif);
 }
 
 #menu .tit.bg2 {
 	background-color: #E08D36;
-	background-image: url(../../images/sendero/fondo_titulo02.gif);
 }
 
 #menu .tit.bg3 {
 	background-color: #E08D36;
-	background-image: url(../../images/sendero/fondo_titulo02.gif);
 }
 
 #menu .tit.bg4 {
 	background-color: #3185E1;
-	background-image: url(../../images/sendero/fondo_titulo03.gif);
 }
 
 .menu {
@@ -1880,7 +1875,7 @@ ul.tree .tree_view {
 
 body.help_popup {
 	text-align: center;
-	background: #022F5C url(../../images/sendero/fondo.png) repeat-x top left;
+	background: #022F5C;
 }
 
 .help_popup .cont {

@@ -1,3 +1,11 @@
+2011-08-03  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* unix/Linux/pandora_agent.conf
+	unix/SunOS/pandora_agent.conf 
+	unix/FreeBSD/pandora_agent.conf
+	unix/HP-UX/pandora_agent.conf
+	unix/AIX/pandora_agent.conf: Changed comment delayed startup line.	
+
 2011-07-29  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* unix/pandora_agent: Don't remove 1st line of the result of the PROC_CMDS,

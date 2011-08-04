@@ -41,25 +41,35 @@ if ($create) {
 	$name = (string) get_parameter ('name');
 	$parent = (int) get_parameter ('parent');
 	
-	$result = db_process_sql_insert ('tnetwork_component_group',
-		array ('name' => $name,
-			'parent' => $parent));
-	ui_print_result_message ($result,
-		__('Successfully created'),
-		__('Could not be created'));
+	if ($name == '') {
+		ui_print_error_message (__('Could not be created. Blank name'));
+		require_once ('manage_nc_groups_form.php');
+		return;
+	} else {
+		$result = db_process_sql_insert ('tnetwork_component_group',
+			array ('name' => $name,
+				'parent' => $parent));
+		ui_print_result_message ($result,
+			__('Successfully created'),
+			__('Could not be created'));
+		}
 }
 
 if ($update) {
 	$name = (string) get_parameter ('name');
 	$parent = (int) get_parameter ('parent');
 	
-	$result = db_process_sql_update ('tnetwork_component_group',
-		array ('name' => $name,
-			'parent' => $parent),
-		array ('id_sg' => $id));
-	ui_print_result_message ($result,
-		__('Successfully updated'),
-		__('Not updated. Error updating data'));
+	if ($name == '') {
+                ui_print_error_message (__('Not updated. Blank name'));
+        } else {
+		$result = db_process_sql_update ('tnetwork_component_group',
+			array ('name' => $name,
+				'parent' => $parent),
+			array ('id_sg' => $id));
+		ui_print_result_message ($result,
+			__('Successfully updated'),
+			__('Not updated. Error updating data'));
+	}
 }
 
 if ($delete) {
@@ -70,7 +80,7 @@ if ($delete) {
 		__('Not deleted. Error deleting data'));
 }
 
-if ($id || $new) {
+if (($id || $new) && !$delete) {
 	require_once ('manage_nc_groups_form.php');
 	return;
 }

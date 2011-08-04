@@ -1,3 +1,10 @@
+2011-08-04 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/modules/manage_nc_groups.php: Fixed creating & updating
+	component gruops with blank names
+
+	Fixes: #3384668
+
 2011-08-02 Javier Lanz <javier.lanz@artica.es>
 
 	* images/skin/skin_default/include/styles/pandora.css: Removed old

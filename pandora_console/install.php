@@ -437,7 +437,7 @@ function install_step1_licence() {
 	}
 	else {
 		echo "<form method=post action='install.php?step=2'>";
-		echo "<textarea name='gpl2' cols=55 rows=15>";
+		echo "<textarea name='gpl2' cols=53 rows=15>";
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";

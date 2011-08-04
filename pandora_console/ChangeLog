@@ -1,5 +1,11 @@
 2011-08-04 Javier Lanz <javier.lanz@artica.es>
 
+	* godmode/setup/links.php: Fixed blank names creating & updating links
+
+	Fixes: #3371409
+
+2011-08-04 Javier Lanz <javier.lanz@artica.es>
+
 	* godmode/setup/os.php: Fixed blank names in OS names
 
 	Fixes: #3371409

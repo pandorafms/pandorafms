@@ -31,7 +31,9 @@ if (isset($_POST["create"])){ // If create
 	$name = get_parameter_post ("name");
 	$link = get_parameter_post ("link");
 	
-	$result = db_process_sql_insert("tlink", array('name' => $name, 'link' => $link));
+	$result = false;
+	if ($name != '')
+		$result = db_process_sql_insert("tlink", array('name' => $name, 'link' => $link));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem creating link')."</h3>";
@@ -45,8 +47,10 @@ if (isset($_POST["update"])){ // if update
 	$id_link = io_safe_input($_POST["id_link"]);
 	$name = io_safe_input($_POST["name"]);
 	$link = io_safe_input($_POST["link"]);
-	
-	$result = db_process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
+
+	$result = false;
+        if ($name != '')
+		$result = db_process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
 	
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem modifying link')."</h3>";

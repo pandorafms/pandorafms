@@ -62,17 +62,19 @@ switch ($action) {
 		if (($icon !== 0) && ($icon != '')) {
 			$values['icon_name'] = $icon;
 		}
-		$resultOrId = db_process_sql_insert('tconfig_os', $values);
+		$resultOrId = false;
+		if ($name != '')
+			$resultOrId = db_process_sql_insert('tconfig_os', $values);
 		
 		if ($resultOrId === false) {
-			$message = ui_print_error_message(__('Fail to create OS'), '', true);
+			$message = ui_print_error_message(__('Fail creating OS'), '', true);
 			$tab = 'builder';
 			$actionHidden = 'save';
 			$textButton = __('Create');
 			$classButton = 'class="sub next"';
 		}
 		else {
-			$message = ui_print_success_message(__('Success to create OS'), '', true);
+			$message = ui_print_success_message(__('Success creating OS'), '', true);
 			$tab = 'list';
 		}
 		break;
@@ -88,13 +90,19 @@ switch ($action) {
 		if (($icon !== 0) && ($icon != '')) {
 			$values['icon_name'] = $icon;
 		}
-		$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
+		$result = false;
+                if ($name != '')
+			$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
 		
-		$message = ui_print_result_message($result, __('Success to update OS'), __('Error to update OS'), '', true);
+		$message = ui_print_result_message($result, __('Success updatng OS'), __('Error updating OS'), '', true);
 		if ($result !== false) {
 			$tab = 'list';
 		}
-		
+		else {
+			$tab = 'builder';
+			$os = db_get_row_filter('tconfig_os', array('id_os' => $idOS));
+		        $name = $os['name'];
+		}
 		$actionHidden = 'update';
 		$textButton = __('Update');
 		$classButton = 'class="sub upd"';
@@ -110,7 +118,7 @@ switch ($action) {
 		else {
 			$result = (bool)db_process_sql_delete('tconfig_os', array('id_os' => $idOS));
 			
-			$message = ui_print_result_message($result, __('Success to delete'), __('Error to delete'), '', true);
+			$message = ui_print_result_message($result, __('Success deleting'), __('Error deleting'), '', true);
 		}
 		break;
 }

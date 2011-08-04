@@ -60,7 +60,9 @@ switch ($activeTab) {
 				
 				switch ($action) {
 					case 'update':
-						$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
+						$result = false;
+						if($values['name'] != "" && $values['background'])
+							$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
 						if ($result !== false && $values['background']) {
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully update.').'</h3>');

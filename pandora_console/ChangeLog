@@ -1,5 +1,12 @@
 2011-08-04 Javier Lanz <javier.lanz@artica.es>
 
+	* godmode/reporting/visual_console_builder.php: Fixed blank names in
+	maps in visual console builder
+
+	Fixes: #3371409
+
+2011-08-04 Javier Lanz <javier.lanz@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Fixed blank names in reports
 
 	Fixes: #3371409

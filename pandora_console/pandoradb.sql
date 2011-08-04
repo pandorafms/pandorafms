@@ -302,7 +302,8 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE,
-	UNIQUE (`id_agent_module`, `id_alert_template`)
+	UNIQUE (`id_agent_module`, `id_alert_template`),
+	INDEX force_execution (`force_execution`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
@@ -945,7 +946,8 @@ CREATE TABLE IF NOT EXISTS `tserver_export` (
   `directory` varchar(100) NOT NULL default '',
   `options` varchar(100) NOT NULL default '',
   `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Number of hours of diference with the server timezone' ,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  INDEX id_export_server (`id_export_server`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- id_export_server is real pandora fms export server process that manages this server

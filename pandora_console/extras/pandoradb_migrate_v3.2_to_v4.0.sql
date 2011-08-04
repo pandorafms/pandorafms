@@ -216,3 +216,14 @@ ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max'
 UPDATE tagente_modulo SET prediction_module = 2 WHERE custom_integer_1 <> 0 AND prediction_module <> 0;
 
 UPDATE tagente_modulo SET custom_integer_1 = prediction_module AND prediction_module = 1 WHERE custom_integer_1 = 0 AND prediction_module <> 0;
+
+-- -----------------------------------------------------
+-- Table `talert_template_modules`
+-- -----------------------------------------------------
+ALTER TABLE talert_template_modules ADD INDEX force_execution (`force_execution`);
+
+-- -----------------------------------------------------
+-- Table `tserver_export_data`
+-- -----------------------------------------------------
+ALTER TABLE tserver_export ADD INDEX id_export_server (`id_export_server`);
+

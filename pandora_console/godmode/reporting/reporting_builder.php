@@ -152,7 +152,12 @@ switch ($action) {
 				$description = get_parameter('description');
 				
 				if ($action == 'update') {
-					$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
+					if ($reportName != "" && $idGroupReport != ""){
+						$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
+					}
+					else {
+						$resultOperationDB = false;
+					}
 				}
 				else if ($action == 'save') {
 					if($reportName != "" && $idGroupReport != "") {

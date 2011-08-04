@@ -1,3 +1,9 @@
+2011-08-04 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Fixed blank names in reports
+
+	Fixes: #3371409
+
 2011-08-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* install.php: Improved css style in installer.	

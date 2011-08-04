@@ -1,3 +1,10 @@
+2011-08-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql,
+	  extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added two indexes to the
+	  database schema to improve queries on talert_template_modules and
+	  tserver_export. Thanks to Manuel Arostegui.
+
 2011-08-04 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/modules/manage_nc_groups.php: Fixed creating & updating

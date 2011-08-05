@@ -91,6 +91,7 @@ sub data_producer ($) {
 			AND tagente_modulo.prediction_module != 0
 			AND tagente_modulo.disabled = 0
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.id_modulo = 5
 			AND (tagente_modulo.flag = 1
 			  OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
 			ORDER BY last_execution_try ASC ', $pa_config->{'servername'});
@@ -103,6 +104,7 @@ sub data_producer ($) {
                                 AND tagente_modulo.disabled = 0
                                 AND tagente_modulo.prediction_module != 0
                                 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.id_modulo = 5
                                 AND (tagente_modulo.flag = 1 OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
                                 ORDER BY last_execution_try ASC', $pa_config->{'servername'});
 	}

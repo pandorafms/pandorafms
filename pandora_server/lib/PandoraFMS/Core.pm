@@ -2228,23 +2228,21 @@ sub pandora_process_policy_queue ($) {
 
 	while(1) {
 		my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
-		$operation = @{$operation}[0];
-		
-		if(defined($operation)) {
-			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
-				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
-			}
-			elsif($operation->{'operation'} eq 'delete') {
-				if($operation->{'id_agent'} == 0) {
-					enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
-				}
-				else {
-					enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
-				}
-			}
-			
-			enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
+		next unless (defined ($operation) && $operation ne '');
+
+		if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
+			enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
 		}
+		elsif($operation->{'operation'} eq 'delete') {
+			if($operation->{'id_agent'} == 0) {
+				enterprise_hook('pandora_purge_policy_agents', [$dbh, $pa_config, $operation->{'id_policy'}]);
+			}
+			else {
+				enterprise_hook('pandora_delete_agent_from_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}]);
+			}
+		}
+		
+		enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
 		
 		# Check the queue each 5 seconds
 		sleep (5);

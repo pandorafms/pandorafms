@@ -1,3 +1,8 @@
+2011-08-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Changed the return value of 
+	  get_first_policy_queue.
+
 2011-08-05  Koichiro KIKUCHI  <koichiro@rworks.jp>
 
 	* pandora_server.redhat.spec: Updated dependecies. Removed perl-XML-SAX

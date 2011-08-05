@@ -57,7 +57,9 @@ if ($update_tag && $id_tag != 0) {
 	$values['description'] = $description_tag;
 	$values['url'] = $url_tag;
 	
-	$result = tags_update_tag($values, 'id_tag = ' . $id_tag);
+	$result = false;
+	if ($values['name'] != '')
+		$result = tags_update_tag($values, 'id_tag = ' . $id_tag);
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('Error updating tag').'</h3>';
@@ -80,7 +82,9 @@ if ($create_tag) {
 	$data['url'] = $url_tag;
 	
 	// DB insert
-	$return_create = tags_create_tag ($data);
+	$return_create = false;
+	if ($data['name'] != '')
+		$return_create = tags_create_tag ($data);
 
 	if ($return_create === false) {
 		echo '<h3 class="error">'.__('Error creating tag').'</h3>';

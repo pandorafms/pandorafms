@@ -105,15 +105,16 @@ else {
 		$id_recon_script = get_parameter ("update_reconscript", 0);
 		$reconscript_name = get_parameter ("form_name", "");
 		$reconscript_description = get_parameter ("form_description", "");
-		$reconscript_script = get_parameter ("form_script", "");
-		
+		$reconscript_script = get_parameter ("form_script", "");		
 	
 		$sql_update ="UPDATE trecon_script SET 
 		name = '$reconscript_name',  
 		description = '$reconscript_description', 
 		script = '$reconscript_script' 
 		WHERE id_recon_script = $id_recon_script";
-		$result = process_sql ($sql_update);	
+		$result = false;
+		if ($reconscript_name != '' && $reconscript_script != '')
+			$result = db_process_sql ($sql_update);	
 		if (! $result) {
 			echo "<h3 class='error'>".__('Problem updating')."</h3>";
 		} else {
@@ -131,10 +132,11 @@ else {
 			'name' => $reconscript_name,
 			'description' => $reconscript_description,
 			'script' => $reconscript_script);
-		$result = db_process_sql_insert('trecon_script', $values);
+		$result = false;
+		if ($values['name'] != '' && $values['script'] != '')
+			$result = db_process_sql_insert('trecon_script', $values);
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem creating')."</h3>";
-			echo $sql_insert;
 		}
 		else {
 			echo "<h3 class='suc'>".__('Created successfully')."</h3>";

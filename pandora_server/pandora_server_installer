@@ -97,7 +97,7 @@ install () {
 		echo " "
 		echo "For CentOS / RHEL do: "
 		echo " "
-		echo "	# yum install perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI nmap "
+		echo "	# yum install perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI nmap "
 		echo " "
 		echo "For OpenSUSE / SLES do : "
 		echo " "

@@ -163,7 +163,9 @@ else {
 			'plugin_type' => $plugin_plugin_type,
 			'pass_opt' => $plugin_pass_opt); 
 		
-		$result =db_process_sql_update('tplugin', $values, array('id' => $plugin_id));
+		$result = false;
+		if ($values['name'] != '' && $values['execute'] != '')
+			$result = db_process_sql_update('tplugin', $values, array('id' => $plugin_id));
 		
 		if (! $result) {
 			echo "<h3 class='error'>".__('Problem updating plugin')."</h3>";
@@ -196,11 +198,12 @@ else {
 			'pass_opt' => $plugin_pass_opt,
 			'plugin_type' => $plugin_plugin_type);
 		
-		$result = db_process_sql_insert('tplugin', $values);
+		$result = false;
+		if ($values['name'] != '' && $values['execute'] != '')
+			$result = db_process_sql_insert('tplugin', $values);
 		
 		if (! $result) {
 			echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
-			echo $sql_insert;
 		}
 		else {
 			echo "<h3 class='suc'>".__('Plugin created successfully')."</h3>";

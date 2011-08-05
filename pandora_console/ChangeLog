@@ -1,5 +1,12 @@
 2011-08-05 Javier Lanz <javier.lanz@artica.es>
 
+	* godmode/servers/plugin.php: Fixed blank names creating & updating
+	pluings
+
+	Fixes: #3371409
+
+2011-08-05 Javier Lanz <javier.lanz@artica.es>
+
 	* godmode/servers/recon_script.php: Fixed blank names creating and
 	updating reconscripts
 

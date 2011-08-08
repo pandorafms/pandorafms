@@ -106,6 +106,7 @@ ALTER TABLE tusuario_perfil ADD `id_policy` int(10) unsigned NOT NULL default 0;
 -- -----------------------------------------------------
 
 ALTER TABLE `tevento` MODIFY `event_type` enum('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown';
+ALTER TABLE tevento ADD INDEX criticity (`criticity`);
 
 -- -----------------------------------------------------
 -- Change the value "0000-00-00 00:00:00" that Pandora use as zero or null date value
@@ -178,7 +179,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN (`unit` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD COLUMN (`str_warning` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD COLUMN (`str_critical` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD INDEX module (`id_modulo`);
-ALTER TABLE `tagente_modulo` ADD INDEX nombre (`nombre`);
+ALTER TABLE `tagente_modulo` ADD INDEX nombre (`nombre` (255));
 
 -- -----------------------------------------------------
 -- Table `tevento`
@@ -228,3 +229,8 @@ ALTER TABLE talert_template_modules ADD INDEX force_execution (`force_execution`
 -- -----------------------------------------------------
 ALTER TABLE tserver_export ADD INDEX id_export_server (`id_export_server`);
 
+-- -----------------------------------------------------
+-- Table `ttrap`
+-- -----------------------------------------------------
+ALTER TABLE ttrap ADD INDEX timestamp (`timestamp`);
+ALTER TABLE ttrap ADD INDEX status (`status`);

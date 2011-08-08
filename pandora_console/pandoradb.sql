@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   KEY `id_tipo_modulo` (`id_tipo_modulo`),
   KEY `disabled` (`disabled`),
   KEY `module` (`id_modulo`),
-  KEY `nombre` (`nombre`)
+  KEY `nombre` (`nombre` (255))
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- snmp_oid is also used for WMI query
@@ -429,7 +429,8 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`utimestamp`,`id_evento`),
-  KEY `idx_agentmodule` (`id_agentmodule`)
+  KEY `idx_agentmodule` (`id_agentmodule`),
+  INDEX criticity (`criticity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Criticity: 0 - Maintance (grey)
@@ -723,7 +724,9 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `text` varchar(255) default '',
   `description` varchar(255) default '',
   `severity` tinyint(4) unsigned NOT NULL default '2',
-  PRIMARY KEY  (`id_trap`)
+  PRIMARY KEY  (`id_trap`),
+  INDEX timestamp (`timestamp`),
+  INDEX status (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tusuario` (

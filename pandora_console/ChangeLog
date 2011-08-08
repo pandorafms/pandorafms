@@ -1,5 +1,10 @@
 2011-08-08  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandoradb.sql, extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added a
+	  few more indexes suggested by Manuel Arostegui. Thanks a lot!
+
+2011-08-08  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandoradb.sql, extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added an
 	  index on tagente_modulo.nombre to improve alert listings. Thanks to
 	  Manuel Arostegui. 

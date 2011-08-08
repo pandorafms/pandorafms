@@ -57,6 +57,11 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);	
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
+	$default_block_size = get_parameter ("default_block_size", 0);
+	if($default_block_size) {
+		$upd_info["block_size"] = 0;
+	}
+	
 	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
 
 	if ( !empty ($password_new)) {
@@ -164,7 +169,16 @@ echo '</td></tr><tr><td class="datos">'.__('Flash charts').'</td><td class="dato
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 echo html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 echo '</td></tr><tr><td class="datos">'.__('Block size for pagination').'</td><td class="datos2">';
-echo html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
+if($user_info["block_size"] == 0) {
+	$block_size = $config["global_block_size"];
+}
+else {
+	$block_size = $user_info["block_size"];
+}
+
+echo html_print_input_text ('block_size', $block_size, '', 5, 5, true);
+echo html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
+echo __('Default').' ('.$config["global_block_size"].')';
 
 echo '</td></tr></table>';
 
@@ -209,3 +223,21 @@ if (!empty ($table->data)) {
 	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
 }
 ?>
+
+<script language="javascript" type="text/javascript">
+$(document).ready (function () {
+	check_default_block_size()
+	$("#checkbox-default_block_size").change(function() {
+		check_default_block_size();
+	});
+	
+	function check_default_block_size() {
+		if($("#checkbox-default_block_size").attr('checked')) {
+			$("#text-block_size").attr('disabled', true);
+		}
+		else {
+			$("#text-block_size").removeAttr('disabled');
+		}
+	}
+});
+</script>

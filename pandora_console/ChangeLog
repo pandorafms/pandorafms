@@ -1,3 +1,11 @@
+2011-08-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/config_process.php
+	operation/users/user_edit.php
+	godmode/setup/setup_visuals.php: Fixed global block size
+	edition and user config default block size setting
+	for bug 3388207
+
 2011-08-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	* images/skin/skin_default/include/styles/pandora.css
 	include/styles/pandora.css: pagination margin is very small in some 

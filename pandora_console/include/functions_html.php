@@ -1206,15 +1206,18 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	
 	if (!isset ($options["alt"]) && isset ($options["title"])) {
 		$options["alt"] = io_safe_input_html($options["title"]); //Set alt to title if it's not set
-	} elseif (!isset ($options["alt"])) {
-		$options["alt"] = "";
-	}
+	}// elseif (!isset ($options["alt"])) {
+	//	$options["alt"] = "";
+	//}
 
 	if (!empty ($style)) {
 		$output .= 'style="'.$style.'" ';
 	}
-	
-	$output .= 'alt="'.io_safe_input_html ($options['alt']).'" />';
+
+	if (isset($options["alt"]))	
+		$output .= 'alt="'.io_safe_input_html ($options['alt']).'" />';
+	else
+		$output .= '/>';
 	
 	if (!$return) {
 		echo $output;

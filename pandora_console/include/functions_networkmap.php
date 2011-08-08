@@ -460,7 +460,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 
 	
 	if ($simple == 0){
-		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true).'</TD></TR>
+		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
 		 <TR><TD>'.$module['nombre'].'</TD></TR></TABLE>>,
 		 shape="circle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';

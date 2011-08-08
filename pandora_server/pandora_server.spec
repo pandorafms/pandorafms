@@ -159,6 +159,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /var/spool/pandora/data_in
 /var/spool/pandora/data_in/md5
 /var/spool/pandora/data_in/collections
+/var/spool/pandora/data_in/conf
 
 %defattr(750,pandora,root)
 /etc/pandora

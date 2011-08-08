@@ -1,3 +1,7 @@
+2011-08-08 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_server.spec: Fixed permissions of data_in/conf/ folder
+
 2011-08-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Changed the return value of 

@@ -25,7 +25,7 @@ require_once ("../include/functions_html.php");
 ?>
 </title></head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
-<body style="background-color: #fff; height: 100%; margin: -10 0;">
+<body style="background-color: #555555; height: 100%; margin: -10 0;">
 <?php
 
 $id = get_parameter ('id');

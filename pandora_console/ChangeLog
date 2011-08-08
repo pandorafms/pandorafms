@@ -1,3 +1,8 @@
+2011-08-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css
+	general/pandora_help.php: Fixes style in help popups.
+
 2011-08-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php: Improved tooltip link to

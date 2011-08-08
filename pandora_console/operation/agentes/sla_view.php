@@ -126,7 +126,7 @@ if ($result !== false) {
 	foreach ($result as $sla_data) {
 		$data = array ();
 		$data[0] = ui_print_moduletype_icon ($modules[$sla_data["id_agent_module"]]["id_tipo_modulo"], true);
-		$data[1] = print_string_substr ($modules[$sla_data["id_agent_module"]]["nombre"], 25, true);
+		$data[1] = ui_print_string_substr ($modules[$sla_data["id_agent_module"]]["nombre"], 25, true);
 		$data[1] .= "(".$sla_data["sla_min"]." / ".$sla_data["sla_max"]." / ".$sla_data["sla_limit"].")";
 		$data[2] = format_numeric (reporting_get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';
 		$status = modules_get_agentmodule_status ($sla_data["id_agent_module"]);

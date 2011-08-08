@@ -1,3 +1,8 @@
+2011-08-08 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/agentes/sla_view.php: Fixed a bug related to a function
+	with a wrong name. 
+
 2011-08-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/config_process.php

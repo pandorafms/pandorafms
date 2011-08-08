@@ -177,7 +177,8 @@ CREATE TABLE IF NOT EXISTS `ttag_event` (
 ALTER TABLE `tagente_modulo` ADD COLUMN (`unit` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD COLUMN (`str_warning` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD COLUMN (`str_critical` text DEFAULT '');
-ALTER TABLE `tagente_modulo` ADD INDEX module(id_modulo);
+ALTER TABLE `tagente_modulo` ADD INDEX module (`id_modulo`);
+ALTER TABLE `tagente_modulo` ADD INDEX nombre (`nombre`);
 
 -- -----------------------------------------------------
 -- Table `tevento`

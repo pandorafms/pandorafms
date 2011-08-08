@@ -64,7 +64,7 @@ $table->data[6][0] = __('Style template');
 $table->data[6][1] = html_print_select (themes_get_css (), 'style', $config["style"].'.css', '', '', '', true);
 
 $table->data[7][0] = __('Block size for pagination');
-$table->data[7][1] = html_print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
+$table->data[7][1] = html_print_input_text ('block_size', $config["global_block_size"], '', 5, 5, true);
 
 $table->data[8][0] = __('Use round corners');
 $table->data[8][1] = __('Yes').'&nbsp;'.html_print_radio_button ('round_corner', 1, '', $config["round_corner"], true).'&nbsp;&nbsp;';

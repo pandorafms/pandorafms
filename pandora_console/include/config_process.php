@@ -95,6 +95,9 @@ if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
 
 date_default_timezone_set($config["timezone"]);
 
+// Save the global block size
+$config["global_block_size"] = $config["block_size"];
+
 if (isset ($config['id_user'])){
 	$userinfo = get_user_info ($config['id_user']);
 

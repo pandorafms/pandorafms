@@ -9,7 +9,7 @@
 
 <br><br>
 
-<table width=750px><tr>
+<table width="750px" style="display:inline"><tr>
 	<td class="f9i"><?php html_print_image("images/status_sets/default/agent_ok.png", false, array("title" => "すべての監視項目が正常", "alt" => "すべての監視項目が正常")); ?></td><td>すべての監視項目が正常</td>
 	<td class="f9i"><?php html_print_image("images/status_sets/default/module_critical.png", false, array("title" => "1つ以上の監視項目で障害", "alt" => "1つ以上の監視項目で障害")); ?></td><td>1つ以上の監視項目で障害</td>
 	<td class="f9i"><?php html_print_image("images/status_sets/default/module_warning.png", false, array("title" => "緑/赤 の状態変化発生", "alt" => "緑/赤 の状態変化発生")); ?></td><td>緑/赤 の状態変化発生</td>

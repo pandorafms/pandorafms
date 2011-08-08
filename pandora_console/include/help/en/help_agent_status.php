@@ -19,7 +19,7 @@ Possible values of an <b>agent status</b> are:
 
 <br><br>
 
-<table width="750px">
+<table width="750px" style="display:inline">
 <tr>
 	<td class="f9i"><?php html_print_image("images/status_sets/default/module_critical.png", false, array("title" => "At least one monitor fails", "alt" => "At least one monitor fails")); ?><?php html_print_image("images/status_sets/faces/module_critical.png", false, array("title" => "At least one monitor fails", "alt" => "At least one monitor fails")); ?></td><td>At least one monitor fails</td>
 	<td class="f9i"><?php html_print_image("images/status_sets/default/module_warning.png", false, array("title" => "Change between Green/Red state", "alt" => "Change between Green/Red state")); ?><?php html_print_image("images/status_sets/faces/module_warning.png", false, array("title" => "Change between Green/Red state", "alt" => "Change between Green/Red state")); ?></td><td>Change between Green/Red state</td>

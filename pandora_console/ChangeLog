@@ -1,5 +1,13 @@
 2011-08-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/help/en/help_agent_status.php
+	include/help/es/help_agent_status.php
+	include/help/ja/help_agent_status.php: Fixes style on this view. 
+
+	Fixes: #3371438
+
+2011-08-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/styles/pandora.css
 	general/pandora_help.php: Fixes style in help popups.
 

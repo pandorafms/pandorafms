@@ -1,3 +1,8 @@
+2011-08-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php: Improved tooltip link to
+	avoid automatic go to the top of the page
+
 2011-08-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_html.php

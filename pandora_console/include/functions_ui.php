@@ -1207,7 +1207,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
  * @return string HTML code if return parameter is true.
  */
 function ui_print_help_tip ($text, $return = false) {
-	$output = '<a href="#" class="tip">&nbsp;<span>'.$text.'</span></a>';
+	$output = '<a href="javascript:" class="tip">&nbsp;<span>'.$text.'</span></a>';
 	
 	if ($return)
 		return $output;

@@ -1,3 +1,10 @@
+2011-08-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	* images/skin/skin_default/include/styles/pandora.css
+	include/styles/pandora.css: pagination margin is very small in some 
+	places.
+
+	Fixes: #3388210 	
+
 2011-08-05 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/servers/plugin.php: Fixed blank names creating & updating

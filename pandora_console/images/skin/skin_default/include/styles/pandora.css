@@ -1773,6 +1773,7 @@ div.warn {
 
 .pagination {
 	text-align: center;	
+	margin-bottom: 5px;
 }
 
 input#text-agent_name, input#text-agent {

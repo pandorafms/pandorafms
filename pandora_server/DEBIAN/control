@@ -1,5 +1,5 @@
-package: PandoraFMS-Server
-Version: 3.2
+package: pandorafms-server
+Version: 4.0
 Architecture: all
 Priority: optional
 Section: admin

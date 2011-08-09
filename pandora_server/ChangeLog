@@ -1,3 +1,7 @@
+2011-08-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/control: fixed the name of package and update version number.
+
 2011-08-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandora_server.spec: Fixed permissions of data_in/conf/ folder

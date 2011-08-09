@@ -1,5 +1,5 @@
-package: PandoraFMS-Agent
-Version: 3.2
+package: pandorafms-agent
+Version: 4.0
 Architecture: all
 Priority: optional
 Section: admin

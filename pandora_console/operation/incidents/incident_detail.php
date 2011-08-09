@@ -18,7 +18,6 @@
 global $config;
 require_once ("include/functions_incidents.php");
 require_once ("include/functions_events.php"); //To get events group information
-require_once ($config['homedir'] . "/include/functions_users.php");
 
 check_login ();
 
@@ -34,7 +33,7 @@ $actualizacion = get_system_time ();
 
 // EDITION MODE
 if (isset ($_GET["id"])) {
-	$id_inc = (int) get_parameter_get ("id", 0);
+	$id_inc = (int) get_parameter ("id", 0);
 	
 	// Obtain group of this incident
 	$row = db_get_row ("tincidencia","id_incidencia",$id_inc);
@@ -54,13 +53,10 @@ if (isset ($_GET["id"])) {
 	
 	// Note add - everybody that can read incidents, can add notes
 	if (isset ($_GET["insertar_nota"])) {
-		$nota = get_parameter_post ("nota");
+		$nota = get_parameter ("nota");
 
-		$values = array(
-			'id_usuario' => $config["id_user"],
-			'id_incident' => $id_inc,
-			'nota' => $nota);
-		$id_nota = db_process_sql_insert('tnota', $values);
+		$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')",$config["id_user"],$id_inc, $nota);
+		$id_nota = db_process_sql ($sql, "insert_id");
 
 		if ($id_nota !== false) {
 			incidents_process_touch ($id_inc);
@@ -72,7 +68,7 @@ if (isset ($_GET["id"])) {
 
 	// Delete note
 	if (isset ($_POST["delete_nota"])) {
-		$id_nota = get_parameter_post ("delete_nota", 0);
+		$id_nota = get_parameter ("delete_nota", 0);
 		$note_user = incidents_get_notes_author ($id_nota);
 		if (((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($note_user == $config["id_user"])) OR ($id_owner == $config["id_user"])) { 
 		// Only admins (manage incident) or owners can modify
@@ -91,10 +87,10 @@ if (isset ($_GET["id"])) {
 
 	// Delete file
 	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
-		$file_id = (int) get_parameter_post ("delete_file", 0);
+		$file_id = (int) get_parameter ("delete_file", 0);
 		$filename = db_get_value ("filename", "tattachment", "id_attachment", $file_id);
-		
-		$result = db_process_sql_delete('tattachment', array('id_attachment' => $file_id));
+		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
+		$result = db_process_sql ($sql);
 		
 		if (!empty ($result)) {
 			unlink ($config["attachment_store"]."/pand".$file_id."_".$filename);
@@ -108,7 +104,7 @@ if (isset ($_GET["id"])) {
 
 	// Upload file
 	if ((check_acl ($config["id_user"], $id_grupo, "IW") == 1) AND isset ($_GET["upload_file"]) AND ($_FILES['userfile']['name'] != "")) {
-		$description = get_parameter_post ("file_description", __('No description available'));
+		$description = get_parameter ("file_description", __('No description available'));
 		
 		// Insert into database
 		$filename = io_safe_input ($_FILES['userfile']['name']);
@@ -126,20 +122,16 @@ if (isset ($_GET["id"])) {
 			}
 		}
 		
-		$values = array(
-			'id_incidencia' => $id_inc,
-			'id_usuario' => $config["id_user"],
-			'filename' => $filename,
-			'description' => $description,
-			'size' => $filesize);
-		$id_attachment = db_process_sql_insert('tattachment', $values);
+		$sql = sprintf ("INSERT INTO tattachment (id_incidencia, id_usuario, filename, description, size) 
+			VALUES (%d, '%s', '%s', '%s', %d)", $id_inc, $config["id_user"],$filename,$description,$filesize);
+
+		$id_attachment = db_process_sql ($sql,"insert_id");
 
 		// Copy file to directory and change name
 		if ($id_attachment !== false) {
 			$nombre_archivo = $config["attachment_store"]."/pand".$id_attachment."_".$filename;
 			$result = copy ($_FILES['userfile']['tmp_name'], $nombre_archivo);
-		}
-		else {
+		} else {
 			echo '<h3 class="error">'.__('File could not be saved due to database error').'</h3>';
 			$result = false;
 		}
@@ -147,9 +139,8 @@ if (isset ($_GET["id"])) {
 		if ($result !== false) {
 			unlink ($_FILES['userfile']['tmp_name']);
 			incidents_process_touch ($id_inc);
-		}
-		else {
-			db_process_sql_delete('tattachment', array('id_attachment' => $id_attachment));
+		} else {
+			db_process_sql ("DELETE FROM tattachment WHERE id_attachment = ".$id_attachment);
 		}
 		
 		ui_print_result_message ($result,
@@ -170,7 +161,7 @@ elseif (isset ($_GET["insert_form"])) {
 	$id_creator = $config["id_user"];
 	
 	if (isset ($_GET["from_event"])) {
-		$event = get_parameter_get ("from_event");
+		$event = get_parameter ("from_event");
 		$titulo = events_get_description ($event);
 		$id_grupo = events_get_group ($event);
 		$origen = "Pandora FMS event";
@@ -242,8 +233,7 @@ echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
-}
-else {
+} else {
 	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td></tr>';
@@ -262,8 +252,7 @@ foreach ($return as $row) {
 // Only owner could change source or user with Incident management privileges
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135');
-}
-else {
+} else {
 	html_print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
@@ -341,7 +330,7 @@ if (isset ($id_inc)) {
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = html_print_image("images/page_white_text.png", true, array("border" => '0')); 
-		$data[1] = __('Author').': ' . ui_print_username ($row["id_usuario"], true).' (' . ui_print_timestamp ($row["timestamp"], true).')';
+		$data[1] = __('Author').': '.ui_print_username ($row["id_usuario"], true).' ('.ui_print_timestamp ($row["timestamp"], true).')';
 		array_push ($table->data, $data);
 		
 		$data = array ();

@@ -1,3 +1,10 @@
+2011-08-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/groups/group_list.php: Added db_clean_cache() in order
+	to refresh query results in this view.  
+
+	Fixes: #3388480
+
 2011-08-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql, extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added

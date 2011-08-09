@@ -204,8 +204,8 @@ if ($delete_group) {
 	}
 		 
 }
-
-$groups = users_get_groups_tree ($config['id_user'], "AR", true);
+db_clean_cache();
+$groups = users_get_groups_tree ($config['id_user'], "AR", true); 
 $table->width = '98%';
 
 if(!empty($groups)) {

@@ -34,17 +34,17 @@ function users_extension_main_god ($god = true) {
 		case "mysql":
 			$sql = "SELECT id_usuario, ip_origen, fecha, accion
 				FROM tsesion
-				WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
+				WHERE descripcion = '" . io_safe_input('Logged in') . "' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
 		break;
 		case "postgresql":
 			$sql = "SELECT id_usuario, ip_origen, fecha, accion
 				FROM tsesion
-				WHERE descripcion = 'Logged in' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, accion";
+				WHERE descripcion = '" . io_safe_input('Logged in') . "' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, accion";
 		break;
 		case "oracle":
 			$sql = "SELECT id_usuario, ip_origen, fecha, accion
 				FROM tsesion
-				WHERE to_char(descripcion) = 'Logged in' AND utimestamp > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 3600) GROUP BY id_usuario, ip_origen,fecha, accion";
+				WHERE to_char(descripcion) = '" . io_safe_input('Logged in') . "' AND utimestamp > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 3600) GROUP BY id_usuario, ip_origen,fecha, accion";
 		break;
 	}
 	
@@ -56,7 +56,7 @@ function users_extension_main_god ($god = true) {
 	else {
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;
-		$table->width = 600;
+		$table->width = '98%';
 		$table->class = "databox";
 		$table->size = array ();
 		$table->data = array ();

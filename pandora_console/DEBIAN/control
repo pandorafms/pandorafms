@@ -1,5 +1,5 @@
-package: PandoraFMS-Console
-Version: 3.2
+package: pandorafms-console
+Version: 4.0
 Architecture: all
 Priority: optional
 Section: admin

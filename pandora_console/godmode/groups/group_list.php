@@ -111,28 +111,35 @@ if ($create_group) {
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	$skin = (string) get_parameter ('skin');
+$check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
+
 	
 	/*Check if name field is empty*/
 	if ($name != "") {
-		$values = array(
-			'nombre' => $name,
-			'icon' => substr ($icon, 0, -4),
-			'parent' => $id_parent,
-			'disabled' => $alerts_disabled,
-			'custom_id' => $custom_id,
-			'id_skin' => $skin
-		);
+		if (!$check){
+			$values = array(
+				'nombre' => $name,
+				'icon' => substr ($icon, 0, -4),
+				'parent' => $id_parent,
+				'disabled' => $alerts_disabled,
+				'custom_id' => $custom_id,
+				'id_skin' => $skin
+			);
 		
-		$result = db_process_sql_insert('tgrupo', $values);
-	}
-	else {
-		$result = false;
-	}
-	
-	if ($result) {
-		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
+			$result = db_process_sql_insert('tgrupo', $values);
+			if ($result) {
+				echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
+			} else {
+				echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
+			}
+		} else {
+			echo "<h3 class='error'>".__('Each group must have a different name')."</h3>";
+		}
 	} else {
-		echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";	}
+		//$result = false;
+		echo "<h3 class='error'>".__('Group must have a name')."</h3>";
+	}
+
 }
 
 /* Update group */

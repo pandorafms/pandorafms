@@ -1,3 +1,7 @@
+2011-08-09  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/groups/group_list.php: Added groups must have a name and be unique.
+
 2011-08-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/groups/group_list.php: Added db_clean_cache() in order

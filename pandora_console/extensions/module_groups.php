@@ -25,17 +25,17 @@ if (is_ajax ()) {
 	$get_info_alert_module_group = (bool)get_parameter('get_info_alert_module_group');
 	$module_group = (int)get_parameter('module_group');
 	$id_agent_group = (int)get_parameter('id_agent_group');
-	
+
+	$data = false;	
 	if ($get_info_alert_module_group) {
 		$agents = agents_get_group_agents($id_agent_group);
-		if (!empty($agents)) {
-			$alerts = agents_get_alerts_simple($agents);
-			
+		if (!empty($agents)) { 
+			$alerts = agents_get_alerts_simple($agents); 
 			foreach ($alerts as $alert) {
 				$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
-				
 				if ($module_group == $module['id_module_group']) {
 					if ($alert["times_fired"] > 0) {
+						$data = true;
 						echo '<strong>' . __('Number fired of alerts').': </strong> ' . $alert["times_fired"] . '<br />';
 						$agent = db_get_row('tagente', 'id_agente', $module['id_agente']);
 						echo '<strong>' . __('Agent').': </strong>';
@@ -45,7 +45,6 @@ if (is_ajax ()) {
 						$template = db_get_row('talert_templates', 'id' , $alert['id_alert_template']);
 						echo '<strong>' . __('Alert template') . ': </strong>';
 						echo io_safe_output($template['name']) . '<br />';
-						
 						$sql = 'SELECT *
 							FROM talert_template_module_actions AS t1
 								INNER JOIN talert_actions AS t2 ON t1.id_alert_action = t2.id
@@ -69,7 +68,16 @@ if (is_ajax ()) {
 					}
 				}
 			}
+			if(!$data){
+				echo '<i>These module/s have no alerts or alert/s are not fired</i>';
+			}
 		}
+		else{
+			echo '<i>No available data</i>';
+		}
+	}
+	else{
+		echo '<i>No available data</i>';
 	}
 }
  

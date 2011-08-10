@@ -420,6 +420,11 @@ sub parse_conf_modules($) {
 		# Collection
 		} elsif ($line =~ /^\s*file_collection\s+(.+)$/) {
 			my $collection = $1;
+			
+			# Prevent path traversal attacks
+			if ($collection !~ m/(\.\.)|\//) {
+				$Collections{$collection} = 0;
+			}
 		# Min critical
 		} elsif ($line =~ /^\s*module_min_critical\s+(.*)\s*$/) {
 			$module->{'min_critical'} = $1;
@@ -516,7 +521,7 @@ sub read_config (;$) {
 			
 			# Remove trailing spaces
 			$Conf{$1} =~ s/\s*$//;
-		}		
+		}	
 	}
 
 	# Module, plugin and collection definition

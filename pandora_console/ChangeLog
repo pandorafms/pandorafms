@@ -1,3 +1,7 @@
+2011-08-10 Javier Lanz <javier.lanz@artica.es>
+
+	* operation/agentes/exportdata.php: Fixed an ugly spelling mistake
+
 2011-08-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_config.php: Fixed premature warning message about db

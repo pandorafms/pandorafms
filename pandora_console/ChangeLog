@@ -1,3 +1,8 @@
+2011-08-10  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: fixed execution the generation when
+	it is empty.
+
 2011-08-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql: Added
@@ -39,6 +44,11 @@
 	maintenance over a new installation.
 
 	Fixes: #3371197
+
+2011-08-10  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: fixed execution the generation when
+	it is empty.
 
 2011-08-10  Miguel de Dios  <miguel.dedios@artica.es>
 

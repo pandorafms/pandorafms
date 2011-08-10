@@ -714,10 +714,14 @@ function config_check (){
 
     $db_maintance = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'");
     $now = date("U");
-
+    
+    // First action in order to know if it's a new installation or db maintenance never have been executed 
+    $first_action = db_get_value_filter('utimestamp', 'tsesion', array('1' => '1', 'order' => 'id_sesion ASC'));
+    $fresh_installation = $now - $first_action;
+    
     $resta = $now - $db_maintance;
     // ~ about 50 hr
-    if (($db_maintance == "") OR ($resta > 190000)){
+    if (($resta > 190000 AND $fresh_installation> 190000)){
             $config["alert_cnt"]++;
             $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Database maintance problem").'</h3>';
             $_SESSION["alert_msg"] .= __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible').'</h3>';

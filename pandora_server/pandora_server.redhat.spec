@@ -26,7 +26,7 @@ Requires:           coreutils
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-XML-Simple net-snmp-utils
 Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           perl-IO-Socket-INET6
+Requires:           perl-IO-Socket-INET6 perl-Socket6
 Requires:           nmap wmic sudo
 
 %description

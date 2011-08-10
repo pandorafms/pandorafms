@@ -129,9 +129,41 @@ if ($delete_group) {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-$sql = "SELECT * 
-		FROM tmodule_group ";
-$groups = db_get_all_rows_sql ($sql, true);
+$total_groups = db_get_num_rows('SELECT * FROM tmodule_group');
+
+$url = ui_get_url_refresh (array ('offset' => false));
+
+$offset = (int)get_parameter('offset', 0);
+
+ui_pagination($total_groups, $url, $offset);
+
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = "SELECT * 
+			FROM tmodule_group
+			ORDER BY name ASC
+			LIMIT " . $offset . ", " . $config['block_size'];
+		break;
+	case "postgresql":
+		$sql = "SELECT * 
+			FROM tmodule_group
+			ORDER BY name ASC
+			LIMIT " . $config['block_size'] . " OFFSET " . $offset;
+		break;
+	case "oracle":
+	    $set = array ();
+	    $set['limit'] = $config["block_size"];
+	    $set['offset'] = $offset;
+	    
+	    $sql = "SELECT * 
+	   		FROM tmodule_group
+	    	ORDER BY name ASC";
+	    
+	    $sql = oracle_recode_query ($sql, $set);
+	    break;
+}
+	
+$groups = db_get_all_rows_sql($sql);
 
 $table->width = '98%';
 

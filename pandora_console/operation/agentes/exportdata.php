@@ -394,7 +394,7 @@ $(document).ready (function () {
 		success: function(msg){
 			if (msg.length == 0) {
 				$("#text-agent").css ('background-color', '#FF8080');
-				$("#text-agent").val("<?php echo __("None agent in this category");?>");
+				$("#text-agent").val("<?php echo __("No agents in this category");?>");
 				$("#text-agent").attr("disabled", true);
 				$("#text-agent").css ('color', '#000000');
 				inputActive = false;

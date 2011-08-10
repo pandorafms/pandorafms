@@ -145,6 +145,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `id_agente` int(10) unsigned NOT NULL default '0',
   `id_tipo_modulo` smallint(5) NOT NULL default '0',
   `descripcion` TEXT NOT NULL default '',
+  `extended_info` TEXT NOT NULL default '',
   `nombre` text NOT NULL default '',
   `unit` text default '',
   `id_policy_module` INTEGER unsigned NOT NULL default '0',

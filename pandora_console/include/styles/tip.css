@@ -1,7 +1,6 @@
 a.tip {
 	cursor: help;
-	background: url(../../images/tip.png) no-repeat;
-	padding: 5px 2px 5px 12px;
+	padding: 5px 2px 5px 2px;
 }
 a.help {
 	cursor: help;

@@ -1,3 +1,19 @@
+2011-08-10  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: New sensor as agent type. Updated version.
+
+	* include/graphs/functions_gd.php: Progressbar has a fixed font size.
+
+	* include/functions_config.php: By default now gets a fontsize 
+	called "Smallfont"; ideal to be used with our graphs instead the
+	other. Size is also smaller as default.
+
+	* godmode/servers/manage_recontask.php: Fixed broken code (matching
+	for NULL, now works).
+
+	* godmode/servers/manage_recontask_form.php: Altered some default values
+	to be better.
+
 2011-08-10 Javier Lanz <javier.lanz@artica.es>
 
 	* operation/agentes/exportdata.php: Fixed an ugly spelling mistake

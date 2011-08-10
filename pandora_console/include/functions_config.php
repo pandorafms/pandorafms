@@ -437,7 +437,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['fontpath'])) {
-		config_update_value ( 'fontpath', $config['homedir'].'/include/fonts/unicode.ttf');
+		config_update_value ( 'fontpath', $config['homedir'].'/include/fonts/smallfont.ttf');
 	}
 
 	if (!isset ($config['style'])) {

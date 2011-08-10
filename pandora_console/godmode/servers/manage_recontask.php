@@ -127,12 +127,13 @@ if (isset($_GET["update"])) {
 	$where = array('id_rt' => $id);
 	
 	if ($name != "") {
-		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 			$result = db_process_sql_update('trecon_task', $values, $where);
-		elseif ($id_recon_script != 0)
+		elseif ($id_recon_script != 'NULL')
 			$result = db_process_sql_update('trecon_task', $values, $where);
-		else 
-			$result = false;
+		else  {
+			$result = false; 
+        }
 	}
 	else
 		$result = false;
@@ -172,16 +173,19 @@ if (isset($_GET["create"])) {
 		'parent_recursion' => $parent_recursion
 		);
 
+    $reason = "";
 	if ($name != "") {
-		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
 			$result = db_process_sql_insert('trecon_task', $values);
+            $reason = __("Network provided is not correct");
 		}
-		elseif ($id_recon_script != 0) {
+		elseif ($id_recon_script != 'NULL') {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
-		else 
+		else {
 			$result = false;
+        }
 	}
 	else
 		$result = false;
@@ -191,6 +195,7 @@ if (isset($_GET["create"])) {
 	}
 	else {
 		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
+        echo $reason;
 	}
 }
 
@@ -290,7 +295,7 @@ if ($result !== false) {
 	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
 }
 
-echo '<div class="action-buttons" style="width: 700px">';
+echo '<div class="action-buttons" style="width: 99%;">';
 echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';
 echo html_print_submit_button (__('Create'),"crt",false,'class="sub next"',true);
 echo '</form>';

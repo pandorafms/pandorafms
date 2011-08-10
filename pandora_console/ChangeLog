@@ -1,3 +1,7 @@
+2011-08-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css: Fixed height on css header attributes.
+
 2011-08-10  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/groups/modu_group_list.php: added pagination to list.

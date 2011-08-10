@@ -47,8 +47,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('days_compact','15'),
 ('graph_res','5'),
 ('step_compact','1'),
-('db_scheme_version','4.0-dev'),
-('db_scheme_build','PD110122'),
+('db_scheme_version','4.0RC1'),
+('db_scheme_build','PD110810'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -100,7 +100,7 @@ INSERT INTO `tconfig_os` VALUES
 (10,'Other','Other SO','so_other.png'),
 (11,'Network','Pandora FMS Network Agent','network.png'),
 (12,'Web Server','Web Server/Application','network.png'),
-(13,'Octopods','Octopods Pandora FMS Hardware Agent','network.png'),
+(13,'Sensor',' Pandora FMS Hardware Agent (Sensor)','network.png'),
 (14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png'),
 (15,'Android','Android agent','android.png');
 UNLOCK TABLES;

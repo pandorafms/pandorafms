@@ -1,3 +1,8 @@
+2011-08-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Added support for custom module tags
+	  (stored in column extended_info).
+
 2011-08-10  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec, pandora_server.redhat.spec: Added perl-Socket6

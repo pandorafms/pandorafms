@@ -24,7 +24,7 @@ use threads;
 use threads::shared;
 use Thread::Semaphore;
 
-use IO::Socket::INET;
+use IO::Socket::INET6;
 use HTML::Entities;
 use POSIX qw(strftime);
 
@@ -161,11 +161,12 @@ sub pandora_query_tcp ($$$$$$$$) {
         for ($counter =0; $counter < $pa_config->{'tcp_checks'}; $counter++){
 	        my $temp; my $temp2;
 	        my $tam;
-	        my $handle=IO::Socket::INET->new(
+	        my $handle=IO::Socket::INET6->new(
 		        Proto=>"tcp",
 		        PeerAddr=>$ip_target,
 		        Timeout=>$pa_config->{'tcp_timeout'},
 		        PeerPort=>$tcp_port,
+			Multihomed=>1,
 		        Blocking=>0 ); # Non blocking !!, very important !
 		        
 	        if (defined ($handle)){

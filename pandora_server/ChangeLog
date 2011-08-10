@@ -1,3 +1,10 @@
+2011-08-11  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec: Removed perl-XML-SAX and added perl-XML-Simple.
+	Updated RPM descripcion and version for upcoming RC1 :-)
+
+	* pandora_server.redhat.spec: Updated version for upcoming RC1 :-)
+
 2011-08-10  Junichi Satoh <junichi@rworks.jp>
 
 	* pandora_server.spec, pandora_server.redhat.spec: Added

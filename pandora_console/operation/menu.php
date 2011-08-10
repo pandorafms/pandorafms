@@ -295,6 +295,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["icon"] = $operationModeMenu['icon'];
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["sec"] = 'extensions';
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["extension"] = true;
+					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["extension"] = $extension['enterprise'];
 					$menu[$operationModeMenu['fatherId']]['hasExtensions'] = true;
 				}
 			}

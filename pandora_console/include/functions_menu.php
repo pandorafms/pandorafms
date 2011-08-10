@@ -144,9 +144,26 @@ function menu_print_menu (&$menu) {
 				else $secExtensionBool = false;
 				
 				if ($secExtensionBool) {
-					$imageIcon = 'images/extensions.png';
-					if (strlen($sub["icon"]) > 0)
-						$imageIcon ='extensions/'.$sub["icon"];
+					$imageIconDefault = 'images/extensions.png';
+					if (strlen($sub["icon"]) > 0) {
+						$icon_enterprise = false;
+						if (isset($sub['enterprise'])) {
+							$icon_enterprise = (bool)$sub['enterprise'];
+						}
+					
+						if ($icon_enterprise) {
+							$imageIcon ='enterprise/extensions/'.$sub["icon"];
+						}
+						else {
+							$imageIcon ='extensions/'.$sub["icon"];
+						}
+						
+						if (!file_exists(realpath($imageIcon)))
+							$imageIcon = $imageIconDefault;
+					}
+					else {
+						$imageIcon = $imageIconDefault;
+					}
 					
 					$submenu_output .= '<div style="background: url('.$imageIcon.') no-repeat; width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
 				}

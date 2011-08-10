@@ -256,6 +256,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
+					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
+					
 					$menu[$extmenu['fatherId']]['hasExtensions'] = true;
 				}
 			}

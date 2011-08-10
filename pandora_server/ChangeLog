@@ -1,5 +1,9 @@
 2011-08-10 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* DEBIAN/control: Fixed a bug with dependences.
+
+2011-08-10 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* DEBIAN/control: Added libsocket6-perl libio-socket-inet6-perl
 	packages to dependence  
 

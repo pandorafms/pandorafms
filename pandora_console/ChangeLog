@@ -1,4 +1,12 @@
-2011-08-11  Sancho Lerena <slerena@artica.es>
+2011-08-10  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_menu.php, operation/menu.php, godmode/menu.php: fixed
+	when set a icon in a enterprise extension for the entry in menu. And added
+	the feature to set a default icon when the icon not exists.
+	
+	Fixes: #3388452
+
+2011-08-10  Sancho Lerena <slerena@artica.es>
 
 	* include/styles/pandora.css: Removed black line in header.
 

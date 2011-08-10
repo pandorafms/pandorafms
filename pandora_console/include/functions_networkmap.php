@@ -48,14 +48,23 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 
 	$filter = array ();
 	$filter['disabled'] = 0;
-	if ($group >= 1)
+	if ($group >= 1) {
 		$filter['id_grupo'] = $group;
-
-	// Get agent data
-	$agents = agents_get_agents ($filter,
-		array ('id_grupo, nombre, id_os, id_parent, id_agente'));
+		
+		$agents = agents_get_agents ($filter,
+			array ('id_grupo, nombre, id_os, id_parent, id_agente'));
+	}
+	else if ($group == -666) {
+		$agents = false;
+	}
+	else {
+		$agents = agents_get_agents ($filter,
+			array ('id_grupo, nombre, id_os, id_parent, id_agente'));
+	}
+	
 	if ($agents === false)
-		return false;
+		//return false;
+		$agents = array();
 	
 	// Open Graph
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
@@ -103,9 +112,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 		$node_count++;
 	}
 	
-	if (empty ($nodes)) {
-		return false;
-	}
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
@@ -136,7 +142,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 	}
 
 	// Create a central node if orphan nodes exist
-	if (count ($orphans)) {
+	if (count ($orphans) || empty ($nodes)) {
 		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple);
 	}
 

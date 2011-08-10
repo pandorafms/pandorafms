@@ -102,14 +102,14 @@ install () {
 		echo "For OpenSUSE / SLES do : "
 		echo " "
 		echo "	# zypper install install nmap perl-DBD-mysql perl-DBI perl-HTML-Parser 
-perl-HTML-Encoding perl-HTML-Tree perl-NetAddr-IP 
+perl-HTML-Encoding perl-HTML-Tree perl-NetAddr-IP perl-IO-Socket-INET6
 perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		echo " "
 		echo "	You also will need to install (optionally) xprobe2 and wmiclient from rpm (download from our website)"
 		echo " "
 		echo "For FreeBSD do : "
 		echo " "
-		echo "  Install perl5.8 from ports with thread enabled."
+		echo "  Install perl5.8 or later from ports with thread enabled."
 		echo "  (perl-5.8.x.pkg can not be used.)"
 		echo "  # cd /usr/ports/lang/perl5.8"
 		echo "  # make config"
@@ -118,12 +118,12 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		echo "  # make install"
 		echo " "
 		echo "  Install following tools from ports. Don't use packages."
-		echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-HTML-Parser p5-DBD-mysql"
+		echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-HTML-Parser p5-DBD-mysql p5-IO-Socket-INET6"
 		echo "  Optional: nmap xprobe"
 		echo " "
 		echo "To get it from source through CPAN do"
 		echo " "
-		echo "	$ cpan Time::Local DBI XML::Simple IO::Socket Time::HiRes NetAddr::IP HTML::Entities"
+		echo "	$ cpan Time::Local DBI XML::Simple IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6"
 		echo " "
 		rm output
 	else

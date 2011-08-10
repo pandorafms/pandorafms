@@ -29,7 +29,7 @@ $_SESSION["alert_msg"] = "";
 config_check();
 
 ?>
-<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
+<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
 	<tr>
 		<td rowspan="2">
 
@@ -87,7 +87,7 @@ config_check();
             echo '<a class="white_bold" href="index.php?bye=bye">';
             html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
             echo '</a></td>';
-		    echo '<td width="20%">';
+	    echo '<td width="20%">';
 
 		    if ($config["metaconsole"] == 0){
 			    echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';

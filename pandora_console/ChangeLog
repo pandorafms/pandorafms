@@ -1,3 +1,12 @@
+2011-08-11  Sancho Lerena <slerena@artica.es>
+
+	* include/styles/pandora.css: Removed black line in header.
+
+	* images/pandora_header_logo_enterprise.png,
+	images/pandora_header_logo.png,
+        general/header.php: Resized images and added a few pixels to let
+	chrome render better the header on default style.
+
 2011-08-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css: Fixed height on css header attributes.

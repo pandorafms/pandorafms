@@ -1,5 +1,13 @@
 2011-08-10  Junichi Satoh <junichi@rworks.jp>
 
+	* pandora_server.spec, pandora_server.redhat.spec: Added
+	perl-IO-Socket-INET6 to Requires.
+
+	* pandora_server_installer: Added IO::Socket::INET6 to dependency
+	messages.
+
+2011-08-10  Junichi Satoh <junichi@rworks.jp>
+
 	* lib/PandoraFMS/NetworkServer.pm: Added support for IPv6 tcp check.
 
 2011-08-09  Miguel de Dios  <miguel.dedios@artica.es>

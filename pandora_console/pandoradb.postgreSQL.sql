@@ -151,6 +151,7 @@ CREATE TABLE "tagente_modulo" (
 	"id_agente" INTEGER NOT NULL default 0,
 	"id_tipo_modulo" INTEGER NOT NULL default 0,
 	"descripcion" TEXT NOT NULL default '',
+	"extended_info" TEXT NOT NULL default '',
 	"nombre" TEXT NOT NULL default '',
 	"unit" TEXT default '',
 	"id_policy_module" INTEGER NOT NULL default 0,

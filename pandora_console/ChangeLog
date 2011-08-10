@@ -1,3 +1,18 @@
+2011-08-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql: Added
+	  a new column to store extended module information.
+
+	* operation/agentes/status_monitor.php,
+	  operation/agentes/estado_monitores.php: Added help tips to display
+	  extended module information.
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	  godmode/agentes/agent_manager.php,
+	  include/styles/tip.css,
+	  include/functions_ui.php: Added support for help tips with custom
+	  images.
+
 2011-08-10  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: New sensor as agent type. Updated version.

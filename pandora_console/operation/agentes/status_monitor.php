@@ -270,6 +270,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
+			tagente_modulo.extended_info,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
 		break;
 	case "postgresql":
@@ -292,6 +293,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
+			tagente_modulo.extended_info,
 			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT " . $config["block_size"] . " OFFSET " . $offset;
 		break;
 	case "oracle":
@@ -316,6 +318,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
+			tagente_modulo.extended_info,
 			tagente_estado.utimestamp AS utimestamp".$sql;
 		$sql = oracle_recode_query ($sql, $set);
 		break;
@@ -432,6 +435,9 @@ foreach ($result as $row) {
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
 	$data[3] = ui_print_truncate_text($row["module_name"],30,false,true,false);
+	if ($row["extended_info"] != "") {
+		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
+	}
 
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
 

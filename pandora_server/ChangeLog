@@ -1,3 +1,10 @@
+2011-08-10  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec, pandora_server.redhat.spec: Added perl-Socket6
+	package.
+
+	* Config.pm: Updated version to 4.0RC1
+
 2011-08-10 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* DEBIAN/control: Fixed a bug with dependences.
@@ -17,7 +24,7 @@
 	* pandora_server_installer: Fixed wrong permission flag for
 	directory data_in/conf
 
-2011-08-11  Sancho Lerena <slerena@artica.es>
+2011-08-10  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Removed perl-XML-SAX and added perl-XML-Simple.
 	Updated RPM descripcion and version for upcoming RC1 :-)

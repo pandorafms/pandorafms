@@ -1,5 +1,10 @@
 2011-08-10 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* DEBIAN/control: Added libsocket6-perl libio-socket-inet6-perl
+	packages to dependence  
+
+2011-08-10 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* Makefile.PL: Added IO::Socket::INET6 and Socket to
 	installer dependecies check.
 

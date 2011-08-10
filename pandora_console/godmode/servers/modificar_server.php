@@ -124,7 +124,7 @@ else {
 			
 			$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">'.$server["name"].'</a>';
 			$data[1] = $server_status;
-			$data[2] = substr ($server["description"], 0, 25);
+			$data[2] = ui_print_string_substr ($server["description"], 25, true);
 			$data[3] = $server['img'];
 			$data[4] = human_time_comparation ($server["laststart"]);
 			$data[5] = human_time_comparation ($server["keepalive"]);

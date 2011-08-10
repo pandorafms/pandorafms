@@ -1,3 +1,9 @@
+2011-08-10  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/groups/modu_group_list.php: added pagination to list.
+	
+	Fixes: #3389009
+
 2011-08-09 Javier Lanz <javier.lanz@artica.es>
 
 	* operation/incidents/incident.incident.php,

@@ -21,7 +21,10 @@ function main_net_tools () {
 
 	$id_agente = get_parameter ("id_agente");
 	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
-
+	if ($ip == "") {
+		echo "<h3 class=error>The agent hasn't got IP</h3>";
+		return;
+	}
     echo "<div>";
     echo "<form name='actionbox' method='post'>";
     echo "<table class=databox width=650>";

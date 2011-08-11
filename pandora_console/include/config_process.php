@@ -95,8 +95,9 @@ if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
 
 date_default_timezone_set($config["timezone"]);
 
-// Save the global block size
+// Save the global values
 $config["global_block_size"] = $config["block_size"];
+$config["global_flash_charts"] = $config["flash_charts"];
 
 if (isset ($config['id_user'])){
 	$userinfo = get_user_info ($config['id_user']);
@@ -104,8 +105,10 @@ if (isset ($config['id_user'])){
 	// If block_size or flash_chart are provided then override global settings
 	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
 		$config["block_size"] = $userinfo["block_size"];
+	
 	if ($userinfo["flash_chart"] != -1)
 		$config["flash_charts"] = $userinfo["flash_chart"];			
+	html_debug_print($config["flash_charts"]);
 
 	// Each user could have it's own timezone)
 	if (isset($userinfo["timezone"])) {

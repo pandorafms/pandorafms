@@ -1,5 +1,11 @@
 2011-08-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/config_process.php
+	godmode/setup/setup_visuals.php: Fixed flash charts setup editor
+	and user editor and set priority between both
+
+2011-08-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php
 	operation/incidents/incident_statistics.php: Fixed flash graphs
 	into incidents statistics and added the group All to the Pie

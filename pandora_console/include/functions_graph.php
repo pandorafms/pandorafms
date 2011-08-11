@@ -1092,11 +1092,21 @@ function graphic_incident_group () {
 		$max_items);
 	$incidents = db_get_all_rows_sql ($sql);
 	
+	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents
+		FROM tincidencia
+		WHERE tincidencia.id_grupo = 0');
+		
+	$incidents_all = db_get_value_sql($sql);
+		
 	if($incidents == false) {
 		$incidents = array();
 	}
 	foreach ($incidents as $incident) {		
 		$data[$incident['nombre']] = $incident['n_incidents'];
+	}
+	
+	if($incidents_all > 0) {
+		$data[__('All')] = $incidents_all;
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
@@ -1358,7 +1368,6 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 	
 	$count = 0;
 	foreach ($data_result as $data_item) {
-		html_debug_print($data_item);
 		$count++;
 	    switch ($type) {
 	        case 'sql_graph_vbar': // vertical bar

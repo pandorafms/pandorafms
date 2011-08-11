@@ -142,8 +142,8 @@ $urlImage = 'http://';
 if ($config['https']) {
 	$urlImage = 'https://';
 }
-$urlImage .= $config['dbhost'] . $config['homeurl'] . '/';
-	
+$urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
+
 // log4x doesnt support flash yet
 //
 switch ($graph_type) {

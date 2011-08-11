@@ -1,3 +1,8 @@
+2011-08-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* extensions/net_tools.php: Fixed a small bug related with agent
+	without IP  
+
 2011-08-11  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/stat_win.php: Fixed bad url build with 

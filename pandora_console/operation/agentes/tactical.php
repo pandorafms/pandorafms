@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -170,27 +170,27 @@ if($is_admin) {
 	$cells[0][0] = __('Local modules rate');
 	$cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
 	$cells[0]["color"] = "#729fcf";
-	$cells[0]["href"] = "";
+	$cells[0]["href"] = "javascript:";
 
 	$cells[1][0] = __('Remote modules rate');
 	$cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
 	$cells[1]["color"] = "#729fcf";
-	$cells[1]["href"] = "";
+	$cells[1]["href"] = "javascript:";
 
 	$cells[2][0] = __('Local modules');
 	$cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
 	$cells[2]["color"] = "#3465a4";
-	$cells[2]["href"] = "";
+	$cells[2]["href"] = "javascript:";
 
 	$cells[3][0] = __('Remote modules');
 	$cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
 	$cells[3]["color"] = "#3465a4";
-	$cells[3]["href"] = "";
+	$cells[3]["href"] = "javascript:";
 
 	$cells[4][0] = __('Total running modules');
 	$cells[4][1] = format_numeric($server_performance ["total_modules"]);
 	$cells[4]["color"] = "#000";
-	$cells[4]["href"] = "";
+	$cells[4]["href"] = "javascript:";
 
 	print_cells_temp ($cells);
 }
@@ -206,12 +206,12 @@ $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&r
 $cells[1][0] = __('Uninitialized modules');
 $cells[1][1] = $data["server_sanity"] . "%";
 $cells[1]["color"] = "#ef2929";
-$cells[1]["href"] = "index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60";
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=5";
 
 $cells[2][0] = __('Agents unknown');
 $cells[2][1] = $data["agents_unknown"];
 $cells[2]["color"] = "#aaa";
-$cells[2]["href"] = "";
+$cells[2]["href"] = "javascript:";
 
 
 print_cells_temp ($cells);
@@ -274,8 +274,7 @@ if($is_admin) {
 		}
 		
 		if ($server["type"] != "snmp") {
-			$data[3] =
-				progress_bar($server["load"], 80, 20);	
+			$data[3] = progress_bar($server["load"], 80, 20);	
 
 			if ($server["type"] != "recon"){
 				$data[4] = $server["lag_txt"];

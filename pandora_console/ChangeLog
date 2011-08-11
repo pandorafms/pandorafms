@@ -1,3 +1,8 @@
+2011-08-11  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/stat_win.php: Fixed bad url build with 
+	database host value. Now with SERVER_NAME from $_SERVER 
+
 2011-08-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* godmode/modules/manage_nc_groups.php: Fixed some problems with pagination 

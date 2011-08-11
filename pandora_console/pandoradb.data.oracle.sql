@@ -575,11 +575,3 @@ treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count
 COMMIT;
 END;;
 
---
--- Dumping data for table `tskin`
---
-BEGIN
-LOCK TABLE tskin IN EXCLUSIVE MODE;
-INSERT INTO tskin VALUES (1,'skin&#x20;default', 'skin_default', 'Default&#x20;skin&#x20;for&#x20;Pandora&#x20;FMS&#x20;web&#x20;console', 1);
-COMMIT;
-END;;

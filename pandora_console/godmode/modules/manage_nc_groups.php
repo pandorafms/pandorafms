@@ -85,7 +85,6 @@ if (($id || $new) && !$delete) {
 	return;
 }
 
-
 $url = ui_get_url_refresh (array ('offset' => false,
 	'create' => false,
 	'update' => false,
@@ -93,12 +92,13 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'new' => false,
 	'crt' => false,
 	'upd' => false,
-	'id_sg' => false));
+	'id' => false));
 
 $filter = array ();
+
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
-	
+
 $groups = db_get_all_rows_filter ('tnetwork_component_group', $filter);
 if ($groups === false)
 	$groups = array ();
@@ -133,6 +133,7 @@ foreach ($groups as $group) {
 	$data[2] = '<form method="post" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false" style="display: inline">';
 	$data[2] .= html_print_input_hidden ('delete', 1, true);
 	$data[2] .= html_print_input_hidden ('id', $group['id_sg'], true);
+	$data[2] .= html_print_input_hidden ('offset', 0, true);
 	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true,
 		array ('title' => __('Delete')));
 	$data[2] .= '</form>';

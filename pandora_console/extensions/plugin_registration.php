@@ -41,7 +41,7 @@ function pluginreg_extension_main () {
 		
 		return;
 	} 	
-	
+
 	$config["plugin_store"] = $config["attachment_store"] . "/plugin";
 	$zip = zip_open($_FILES['plugin_upload']['tmp_name']);
 
@@ -115,45 +115,34 @@ function pluginreg_extension_main () {
 	
 	$create_id = db_process_sql_insert('tplugin', $values);
 	
-	$values = array(
-		'name' => io_safe_input ($ini_array["plugin_definition"]["name"]),
-		'description' => io_safe_input ($ini_array["plugin_definition"]["description"]),
-		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
-		'execute' => io_safe_input ($exec_path),
-		'net_dst_opt' => $ini_array["plugin_definition"]["ip_opt"],
-		'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
-		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
-		'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
-		'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
-	$create_id = db_process_sql_insert('tplugin', $values);
-
 	for ($ax=1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++){
 		$label = "module".$ax;
-		
+
 		$values = array(
 			'name' => io_safe_input ($ini_array[$label]["name"]),
 			'description' => io_safe_input ($ini_array[$label]["description"]),
 			'id_group' => $ini_array[$label]["id_group"],
 			'type' => $ini_array[$label]["type"],
-			'max' => $ini_array[$label]["max"],
-			'min' => $ini_array[$label]["min"],
-			'module_interval' => $ini_array[$label]["module_interval"],
+			'max' => isset($ini_array[$label]["max"]) ? $ini_array[$label]["max"] : '',
+			'min' => isset($ini_array[$label]["min"]) ? $ini_array[$label]["min"] : '',
+			'module_interval' => isset($ini_array[$label]["module_interval"]) ? $ini_array[$label]["module_interval"] : '',
 			'id_module_group' => $ini_array[$label]["id_module_group"],
 			'id_modulo' => $ini_array[$label]["id_modulo"], 
 			'plugin_user' => io_safe_input ($ini_array[$label]["plugin_user"]),
 			'plugin_pass' => io_safe_input ($ini_array[$label]["plugin_pass"]),
 			'plugin_parameter' => io_safe_input ($ini_array[$label]["plugin_parameter"]),
-			'max_timeout' => $ini_array[$label]["max_timeout"],
-			'history_data' => $ini_array[$label]["history_data"],
-			'min_warning' => $ini_array[$label]["min_warning"],
-			'max_warning' => $ini_array[$label]["max_warning"],
-			'str_warning' => $ini_array[$label]["str_warning"],
-			'min_critical' => $ini_array[$label]["min_critical"],
-			'max_critical' => $ini_array[$label]["max_critical"],
-			'str_critical' => $ini_array[$label]["str_critical"],
-			'min_ff_event' => $ini_array[$label]["min_ff_event"],
-			'tcp_port' => $ini_array[$label]["tcp_port"],
+			'max_timeout' => isset($ini_array[$label]["max_timeout"]) ? $ini_array[$label]["max_timeout"] : '',
+			'history_data' => isset($ini_array[$label]["history_data"]) ? $ini_array[$label]["history_data"] : '',
+			'min_warning' => isset($ini_array[$label]["min_warning"]) ? $ini_array[$label]["min_warning"] : '',
+			'max_warning' => isset($ini_array[$label]["max_warning"]) ? $ini_array[$label]["max_warning"] : '',
+			'str_warning' => isset($ini_array[$label]["str_warning"]) ? $ini_array[$label]["str_warning"] : '',
+			'min_critical' => isset($ini_array[$label]["min_critical"]) ? $ini_array[$label]["min_critical"] : '',
+			'max_critical' => isset($ini_array[$label]["max_critical"]) ? $ini_array[$label]["max_critical"] : '',
+			'str_critical' => isset($ini_array[$label]["str_critical"]) ? $ini_array[$label]["str_critical"] : '',
+			'min_ff_event' => isset($ini_array[$label]["min_ff_event"]) ? $ini_array[$label]["min_ff_event"] : '',
+			'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
 			'id_plugin' => $create_id);
+
 		db_process_sql_insert('tnetwork_component', $values);
 		
 		echo "<h3 class=suc>".__("Module plugin registered"). " : ". $ini_array[$label]["name"] ."</h2>";

@@ -1,3 +1,7 @@
+2011-08-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Fixed a couple of typos.
+
 2011-08-12  Sergio Martin <sergio.martin@artica.es>
 
 	* bin/pandora_server: Fixed policy queue when the server is launched

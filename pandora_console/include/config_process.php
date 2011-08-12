@@ -108,7 +108,6 @@ if (isset ($config['id_user'])){
 	
 	if ($userinfo["flash_chart"] != -1)
 		$config["flash_charts"] = $userinfo["flash_chart"];			
-	html_debug_print($config["flash_charts"]);
 
 	// Each user could have it's own timezone)
 	if (isset($userinfo["timezone"])) {

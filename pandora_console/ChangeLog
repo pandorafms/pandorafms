@@ -1,3 +1,7 @@
+2011-08-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_tags.php: Fixed false value in foreach
+
 2011-08-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/agentes/estado_agente.php: Fixed: Agent Search engine fails with blank at the beginning or end.

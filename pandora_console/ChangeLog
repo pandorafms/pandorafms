@@ -1,5 +1,9 @@
 2011-08-12 Javier Lanz <javier.lanz@artica.es>
 
+	* include/config_process.php: Removed a forgotten html_debug_print call
+
+2011-08-12 Javier Lanz <javier.lanz@artica.es>
+
 	* operation/agentes/exportdata.php: Fixed calculating process to get
 	module data within a period.
 

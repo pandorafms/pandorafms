@@ -211,7 +211,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 				//Buffer to get data, anyway this will report a memory exhaustin
 
 				while ($work_end <= $end) {
-					$work_end = $work_end + $work_period;
 
 					$data = array (); // Reinitialize array for each module chunk
 					if ($export_type == "avg") {
@@ -265,6 +264,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 					$output = "";
 					unset($data);
 					unset($data_single);
+					$work_end = $work_end + $work_period;
 				}
 			unset ($output);
 			$output = "";

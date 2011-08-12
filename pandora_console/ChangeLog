@@ -1,3 +1,7 @@
+2011-08-12  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* operation/agentes/estado_agente.php: Fixed: Agent Search engine fails with blank at the beginning or end.
+
 2011-08-12 Javier Lanz <javier.lanz@artica.es>
 
 	* operation/agentes/exportdata.php: Fixed table style to page width 

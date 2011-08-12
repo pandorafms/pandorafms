@@ -116,7 +116,7 @@ while ($row = db_get_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo
 
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
-$search = io_safe_output(get_parameter ("search", ""));
+$search = trim(io_safe_output(get_parameter ("search", "")));
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);

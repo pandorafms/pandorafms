@@ -264,6 +264,11 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 	$errn = 0;
 	
 	$values = array();
+	
+	if($tags == false) {
+		$tags = array();
+	}
+	
 	foreach ($tags as $tag){
 		//Protect against default insert
 		if (empty($tag))

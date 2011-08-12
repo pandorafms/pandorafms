@@ -256,7 +256,7 @@ sub pandora_load_config {
 	$pa_config->{"nmap"} = "/usr/bin/nmap";
 
 	# braa for enterprise snmp server
-	$pa_config->{"braa"} = "/usr/local/bin/braa";
+	$pa_config->{"braa"} = "/usr/bin/braa";
 
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";

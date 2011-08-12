@@ -1,3 +1,11 @@
+2011-08-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Added enterprise configuration tokens to
+	  the default conf.
+
+	* lib/PandoraFMS/Config.pm: Changed the default location of the braa
+	  binary.
+
 2011-08-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Added support for custom module tags

@@ -192,15 +192,15 @@ if (enterprise_load (\%Config) == 0) {
 	print_message (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
 }
 
-# Start thread to patrol policy queue
-if ($Config{'pandora_master'} == 1) {
-	my $thr = threads->create('pandora_process_policy_queue', (\%Config));
-}
-
 # Daemonize and put in background
 if ($Config{'daemon'} == 1) {
 	print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n", 1);
 	pandora_daemonize (\%Config);
+}
+
+# Start thread to patrol policy queue
+if ($Config{'pandora_master'} == 1) {
+	my $thr = threads->create('pandora_process_policy_queue', (\%Config));
 }
 
 # Start the servers

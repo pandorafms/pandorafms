@@ -1,3 +1,14 @@
+2011-08-13  Sancho Lerena <slerena@artica.es>
+
+    * lib/Core.pm: get_agent_from_addr() function is now in Core because
+    is used in trap alert functions. Implemented in pandora_execute_action() 
+    the internal command "Generate event" was missing. Also altered the way a 
+    complex trap is matched, now search for Value, Custom Value and Custom OID.
+    If an action containing a "event" command is the target, skip the creation
+    of a event to inform of SNMP alert firing.
+
+    * lib/ReconServer.pm: get_agent_from_addr() moved to Core.pm  
+
 2011-08-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Fixed a couple of typos.

@@ -166,6 +166,7 @@ our @EXPORT = qw(
 	pandora_server_statistics
 	pandora_self_monitoring
 	pandora_process_policy_queue
+    get_agent_from_addr
 	@ServerTypes
 	);
 
@@ -173,6 +174,22 @@ our @EXPORT = qw(
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
 our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
+
+
+##########################################################################
+# Return the agent given the IP address.
+##########################################################################
+sub get_agent_from_addr ($$) {
+	my ($dbh, $ip_address) = @_;
+
+	return 0 if (! defined ($ip_address) || $ip_address eq '');
+
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM taddress, taddress_agent, tagente
+	                                    WHERE tagente.id_agente = taddress_agent.id_agent
+	                                    AND taddress_agent.id_a = taddress.id_a
+	                                    AND ip = ?', $ip_address);
+	return $agent
+}
 
 ##########################################################################
 =head2 C<< pandora_generate_alerts (I<$pa_config> I<$data> I<$status> I<$agent> I<$module> I<$utimestamp> I<$dbh>  I<$timestamp> I<$extra_macros> I<$last_data_value>) >>
@@ -757,6 +774,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	# Internal event
 	} elsif ($action->{'name'} eq "Pandora FMS Event") {
+        $field1 = subst_alert_macros ($field1, \%macros);
+    	pandora_event ($pa_config, $field1, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, 0, 0, "alert_fired", 0, $dbh);
 
 	# Unknown
 	} else {
@@ -765,7 +784,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Update action last execution date
 	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_template_module_actions'})) {
-		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ? WHERE id = ?', time (), $action->{'id_alert_template_module_actions'});
+		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
+ WHERE id = ?', time (), $action->{'id_alert_template_module_actions'});
 	}
 }
 
@@ -1602,8 +1622,17 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		# Custom OID/value
 		my $custom_oid = $alert->{'custom_oid'};
 		if ($custom_oid ne '') {
-			next if ($trap_custom_value !~ m/^$custom_oid$/i && $trap_custom_oid !~ m/^$custom_oid$/i);
-			$alert_data .= "CUSTOM OID: $custom_oid ";
+            if ($trap_value =~ m/^$custom_oid$/i){
+                $alert_data .= " Trap Value: $trap_value";
+   
+            } elsif ($trap_custom_value =~ m/^$custom_oid$/i){
+                $alert_data .= " Trap Value: $trap_custom_value";
+
+            } elsif ($trap_custom_oid =~ m/^$custom_oid$/i){
+                $alert_data .= " Trap Value: $trap_custom_oid";
+            } else {
+                next;
+            }
 		}
 
 		# Agent IP
@@ -1645,11 +1674,27 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'priority' => $alert->{'priority'},
 			);
 
-			my %agent = (
-				'nombre' => $trap_agent,
-				'direccion' => $trap_agent,
-				'comentarios' => '',
-			);
+            my %agent;
+
+            my $this_agent = get_agent_from_addr ($dbh, $trap_agent);
+            if (defined($this_agent)){
+                %agent = ( 
+    				'nombre' => $this_agent->{'nombre'},
+    				'id_agente' => $this_agent->{'id_agente'},
+    				'direccion' => $trap_agent,
+    				'id_grupo' => $this_agent->{'id_grupo'},
+    				'comentarios' => ''
+    			);
+            } else {
+    			%agent = (
+    				'nombre' => $trap_agent,
+    				'direccion' => $trap_agent,
+    				'comentarios' => '',
+                    'id_agente' =>  0,
+                    'id_grupo' => 0
+    			);
+            }            
+            
 
 			# Execute alert
 			my $action = get_db_single_row ($dbh, 'SELECT *
@@ -1658,11 +1703,14 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 							AND talert_actions.id = ?', $alert->{'id_alert'});
 
 			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_custom_oid . " " . $trap_custom_value;
+
 			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
 
-			# Generate an event
-			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+			# Generate an event, ONLY if our alert action is different from generate an event.
+            if ($action->{'id_alert_command'} != 3){
+    			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
 					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
+           }
 
 			# Update alert status
 			db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',

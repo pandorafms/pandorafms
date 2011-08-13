@@ -405,28 +405,13 @@ sub guess_os {
 }
 
 ##########################################################################
-# Return the agent given the IP address.
-##########################################################################
-sub get_agent_from_addr ($$) {
-	my ($dbh, $ip_address) = @_;
-
-	return 0 if (! defined ($ip_address) || $ip_address eq '');
-
-	my $agent = get_db_single_row ($dbh, 'SELECT * FROM taddress, taddress_agent, tagente
-	                                    WHERE tagente.id_agente = taddress_agent.id_agent
-	                                    AND taddress_agent.id_a = taddress.id_a
-	                                    AND ip = ?', $ip_address);
-	return $agent
-}
-
-##########################################################################
 # Update recon task status.
 ##########################################################################
 sub update_recon_task ($$$) {
 	my ($dbh, $id_task, $status) = @_;
 
 	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $status, $id_task);
-}
+} 
 
 ##########################################################################
 # Create network profile modules for the given agent.

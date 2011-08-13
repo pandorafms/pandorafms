@@ -1,3 +1,12 @@
+2011-08-13  Sancho lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Added default action "Pandora FMS event".
+
+	* godmode/alerts/alert_actions.php: Fixed bug when update an action
+	and name is the same.
+
+	* godmode/snmpconsole/snmp_alert.php: Fixed witdh of field1.
+
 2011-08-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_tags.php: Fixed false value in foreach

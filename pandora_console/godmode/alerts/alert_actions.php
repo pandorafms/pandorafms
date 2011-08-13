@@ -113,7 +113,7 @@ if ($create_action) {
 	$field3 = (string) get_parameter ('field3');
 	$group = (string) get_parameter ('group');
 	$action_threshold = (int) get_parameter ('action_threshold');
-        $name_check = db_get_value ('name', 'talert_actions', 'name', $name);
+    $name_check = db_get_value ('name', 'talert_actions', 'name', $name);
 
 	if ($name_check) {
 		$result = '';
@@ -180,10 +180,8 @@ if ($update_action) {
 	$values['field3'] = $field3;
 	$values['id_group'] = $group;
 	$values['action_threshold'] = $action_threshold;
-        $name_check = db_get_value ('name', 'talert_actions', 'name', $name);
 
-
-	if (!$name || $name_check) {
+	if (!$name) {
 		$result = '';
 	}
 	else {

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -65,12 +65,8 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts,
 			'priority' => $priority);
-		if (!$source_ip || !$oid) {
-			$result = '';
-		}
-		else {
+
 			$result = db_process_sql_insert('talert_snmp', $values);
-		}
 		
 		if (!$result) {
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
@@ -80,19 +76,13 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 		}
 		
 	} else {
-
-		if (!$source_ip || !$oid) {
-			$result = '';
-		}
-		else {
-			$sql = sprintf ("UPDATE talert_snmp SET
+		$sql = sprintf ("UPDATE talert_snmp SET
 				priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', agent = '%s', custom_oid = '%s',
 				oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d WHERE id_as = %d",
 				$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
 				$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
 		
-			$result = db_process_sql ($sql);
-		}
+		$result = db_process_sql ($sql);
 
 		if (!$result) {
 			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
@@ -210,11 +200,11 @@ if (isset ($_GET["update_alert"])) {
 		
 	// Alert fields
 	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)').'</td><td class="datos">';
-	html_print_input_text ("al_field1", $al_field1, '', 30);
+	html_print_input_text ("al_field1", $al_field1, '', 50);
 	echo '</td></tr>';
 	
 	echo '<tr><td class="datos2">'.__('Field #2 (Single Line)').'</td><td class="datos2">';
-	html_print_input_text ("al_field2", $al_field2, '', 30);
+	html_print_input_text ("al_field2", $al_field2, '', 50);
 	echo '</td></tr>';
 	
 	echo '<tr><td class="datos" valign="top">'.__('Field #3 (Full Text)').'<td class="datos">';

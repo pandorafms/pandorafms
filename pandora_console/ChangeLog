@@ -1,3 +1,11 @@
+2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, operation/agentes/stat_win.php: fixeds to
+	show always units, and now show only avg by default, and now run the
+	showing baseline again.
+	
+	Fixes: #3390113
+
 2011-08-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.oracle.sql

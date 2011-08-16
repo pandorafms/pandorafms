@@ -96,6 +96,15 @@ function getTermEle(ele) {
 	}
 	return ele;
 }
+
+function show_others() {
+	if (!$("#checkbox-avg_only").attr('checked')) {
+		$("#hidden-show_other").val(1);
+	}
+	else {
+		$("#hidden-show_other").val(0);
+	}
+}
 //-->
 </script>
 </head>
@@ -111,7 +120,11 @@ if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 
 $period = get_parameter ( "period", 3600);
 $draw_alerts = get_parameter("draw_alerts", 0);
-$avg_only = get_parameter ("avg_only", 0);
+$avg_only = get_parameter ("avg_only", 1);
+$show_other = (bool)get_parameter('show_other', false);
+if ($show_other) {
+	$avg_only = 0;
+}
 $period = get_parameter ("period", 86400);
 $id = get_parameter ("id", 0);
 $width = get_parameter ("width", 555);
@@ -186,7 +199,8 @@ html_print_input_text ("refresh", $refresh, '', 5);
 
 echo '&nbsp;&nbsp;&nbsp;'.__('Avg. Only');
 
-html_print_checkbox ("avg_only", 1, (bool) $avg_only);
+html_print_checkbox ("avg_only", 1, (bool) $avg_only, false, false, 'show_others()');
+html_print_input_hidden('show_other', 0);
 
 echo '<tr><td>'.__('Begin date').'</td><td>';
 

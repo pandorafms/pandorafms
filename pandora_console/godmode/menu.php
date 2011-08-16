@@ -119,6 +119,8 @@ if (check_acl($config['id_user'], 0, "LW")) {
 	$menu["gsnmpconsole"]["id"] = "god-snmpc";
 	
 	$sub = array ();
+	
+	$sub['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 	//$sub["godmode/snmpconsole/snmp_alert"]["text"] = __('Component groups');
 	$sub['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
 	enterprise_hook ('snmpconsole_submenu');

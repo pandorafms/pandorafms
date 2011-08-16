@@ -1,5 +1,10 @@
 2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/estado_monitores.php: erased the notice php messages
+	when $module["extended_info"] is empty.
+
+2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/snmpconsole/snmp_view.php, godmode/menu.php,
 	godmode/snmpconsole/snmp_trap_generator.php: moved the form to generate
 	traps into godmode in the submenu "Manage SNMP console".

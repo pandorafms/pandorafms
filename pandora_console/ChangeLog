@@ -1,3 +1,8 @@
+2011-08-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_servers.php: Renamed enterprise ICMP and SNMP
+	  servers in the server view.
+
 2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/db/db_sanity.php: fixes the notice php messages and warnings php

@@ -210,13 +210,13 @@ function servers_get_info ($id_server = -1) {
 				$id_modulo = 2;
 				break;
 			case 11:
-				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Network enterprise server')));
-				$server["type"] = "network enterprise";
+				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Enterprise ICMP server')));
+				$server["type"] = "enterprise icmp";
 				$id_modulo = 2;
 				break;
 			case 12:
-				$server["img"] = html_print_image ("images/snmp.png", true, array ("title" => __('SNMP enterprise server')));
-				$server["type"] = "snmp enterprise";
+				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Enterprise SNMP server')));
+				$server["type"] = "enterprise snmp";
 				$id_modulo = 2;
 				break;
 			default:

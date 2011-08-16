@@ -2275,6 +2275,9 @@ sub pandora_process_policy_queue ($) {
 						$pa_config{'dbuser'}, $pa_config{'dbpass'});
 
 	while(1) {
+		# Check the queue each 5 seconds
+		sleep (5);
+		
 		my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
 		next unless (defined ($operation) && $operation ne '');
 
@@ -2291,9 +2294,6 @@ sub pandora_process_policy_queue ($) {
 		}
 		
 		enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
-		
-		# Check the queue each 5 seconds
-		sleep (5);
 	}	
 }
 

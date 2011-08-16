@@ -1,3 +1,9 @@
+2011-08-16  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	bin/pandora_server: Improved Enterprise check to the policy queue
+	thread and fix a memory problem in the queue patrol loop
+
 2011-08-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: When reading module tags use

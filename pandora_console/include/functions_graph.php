@@ -34,6 +34,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	
+	enterprise_include_once("include/functions_reporting.php");
+	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -122,19 +124,24 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($data[0]['utimestamp'] == $datelimit) {
 		$previous_data = $data[0]['datos'];
 		$j++;
-	} else {
+	}
+	else {
 		$previous_data = 0;
 	}
 
 	// Get baseline data
-	$baseline_data = array ();
-	if ($baseline == 1) {
-		$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
-		if ($baseline_data === ENTERPRISE_NOT_HOOK) {
-			$baseline_data = array ();
+	if ($baseline) {
+		$baseline_data = array ();
+		if ($baseline == 1) {
+			$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
+			if ($baseline_data === ENTERPRISE_NOT_HOOK) {
+				$baseline_data = array ();
+			}
 		}
 	}
-
+	
+	$units = modules_get_unit($agent_module_id);
+	
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
@@ -210,20 +217,37 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		
 		// Data
 		if ($count > 0) {
-			$chart[$timestamp]['sum'] = $total;
-			$chart[$timestamp]['min'] = $interval_min;
-			$chart[$timestamp]['max'] = $interval_max;
+			if ($avg_only) {
+				$chart[$timestamp]['sum'] = $total;
+			}
+			else {
+				$chart[$timestamp]['sum'] = $total;
+				$chart[$timestamp]['min'] = $interval_min;
+				$chart[$timestamp]['max'] = $interval_max;
+			}
 			$previous_data = $total;
 		// Compressed data
-		} else {
+		}
+		else {
 			if ($uncompressed_module || ($timestamp > time ())) {
-				$chart[$timestamp]['sum'] = 0;
-				$chart[$timestamp]['min'] = 0;
-				$chart[$timestamp]['max'] = 0;
-			} else {
-				$chart[$timestamp]['sum'] = $previous_data;
-				$chart[$timestamp]['min'] = $previous_data;
-				$chart[$timestamp]['max'] = $previous_data;
+				if ($avg_only) {
+					$chart[$timestamp]['sum'] = 0;
+				}
+				else {
+					$chart[$timestamp]['sum'] = 0;
+					$chart[$timestamp]['min'] = 0;
+					$chart[$timestamp]['max'] = 0;
+				}
+			}
+			else {
+				if ($avg_only) {
+					$chart[$timestamp]['sum'] = $previous_data;
+				}
+				else {
+					$chart[$timestamp]['sum'] = $previous_data;
+					$chart[$timestamp]['min'] = $previous_data;
+					$chart[$timestamp]['max'] = $previous_data;
+				}
 			}
 		}
 		
@@ -238,12 +262,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		if($show_alerts) {
 			$chart[$timestamp]['alert'] = $alert_value;
 		}
-		$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
-		if ($chart[$timestamp]['baseline'] == NULL) {
-			$chart[$timestamp]['baseline'] = 0;
-		}		
-		$units = modules_get_unit($agent_module_id);
-		$chart[$timestamp]['unit'] = 0;
+		if ($baseline) {
+			$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
+			if ($chart[$timestamp]['baseline'] == NULL) {
+				$chart[$timestamp]['baseline'] = 0;
+			}
+		}
+		
+		if (!empty($units)) {
+			$chart[$timestamp]['unit'] = 0;
+		}
 	}
 	
 	// Return chart data and don't draw

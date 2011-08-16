@@ -1,3 +1,10 @@
+2011-08-16  Sancho Lerena <slerena@artica.es>
+
+	* extensions/vnc_view.php,
+	images/vnc.png: New version of VNC extension, to operate with remote plugin
+	instead local one. Add a lot of docs about this extension and remote management
+	with Pandora. Removed old stuff on SSH extension due problems reported.
+
 2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php, operation/agentes/stat_win.php: fixeds to

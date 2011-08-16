@@ -486,7 +486,7 @@ CREATE TABLE tevento (
 	id_alert_am NUMBER(10, 0) default 0 NOT NULL,
 	criticity NUMBER(10, 0) default 0 NOT NULL,
 	user_comment CLOB,
-	tags CLOB NOT NULL,
+	tags CLOB,
 	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
 );
 CREATE INDEX tevento_id_1_idx ON tevento(id_agente, id_evento);

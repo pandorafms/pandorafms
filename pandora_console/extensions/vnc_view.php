@@ -18,14 +18,9 @@ function vnc_view() {
 	$idAgent = (int)get_parameter('id_agente', 0);
 	$ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 
-	echo '<applet code="VncViewer.class" archive="extensions/vnc/VncViewer.jar" width="750" height="800">';
-	echo '<param name="Host" value="'.$ipAgent.'">';
-	echo '<param name="Port" value="5901">';
-	echo '<param name="Scaling factor" value="75">';
-	echo '</applet>';
-
-/* 	<iframe width="95%" height="500px" src="http://<?php echo $ipAgent;?>:5801"></iframe> */
+	echo "<iframe src='http://$ipAgent:5800' width='100%' height=550>";
+	echo "</iframe>";
 }
 
-extensions_add_opemode_tab_agent('vnc_view', __('VNC view'), 'images/computer.png', 'vnc_view');
+extensions_add_opemode_tab_agent('vnc_view', __('VNC view'), 'images/vnc.png', 'vnc_view');
 ?>

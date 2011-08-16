@@ -1,3 +1,8 @@
+2011-08-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: When reading module tags use
+	  get_tag_value to avoid trouble with empty tags.
+
 2011-08-13  Sancho Lerena <slerena@artica.es>
 
     * lib/Core.pm: get_agent_from_addr() function is now in Core because

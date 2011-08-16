@@ -458,9 +458,9 @@ sub process_module_data ($$$$$$$$$) {
 	# Read tags
 	while (my ($tag, $value) = each (%{$data})) {
 		if (defined ($tags->{$tag})) {
-			$module_conf->{$tag} = $value->[0];
+			$module_conf->{$tag} = get_tag_value ($data, $tag, '');
 		} else {
-			$module_conf->{'extended_info'} .= "$tag: " . $value->[0] . '<br/>';
+			$module_conf->{'extended_info'} .= "$tag: " . get_tag_value ($data, $tag, '') . '<br/>';
 		}
 	}
 	

@@ -1,5 +1,12 @@
 2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/db/db_sanity.php: fixes the notice php messages and warnings php
+	messages. And fixed the uninitialised modules erasing.
+	
+	Fixes: #3392431
+
+2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/estado_monitores.php: erased the notice php messages
 	when $module["extended_info"] is empty.
 

@@ -149,7 +149,7 @@ function mainModuleGroups() {
 		$table->align[0] = 'right'; //Align to right the first column.
 		$table->style[0] = 'color: #ffffff; background-color: #778866; font-weight: bolder;';
 		$table->head = $head;
-		$table->width = '95%';
+		$table->width = '98%';
 		
 		//The content of table
 		$tableData = array();

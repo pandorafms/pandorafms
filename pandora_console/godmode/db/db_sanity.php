@@ -40,7 +40,7 @@ if ($sanity == 1) {
 	}
 	
 	foreach ($rows as $row) {
-		$id_agente_modulo = $row[0];
+		$id_agente_modulo = $row['id_agente_modulo'];
 		$id_agente = $row["id_agente"];
 		// check if exist in tagente_estado and create if not
 		$sql = "SELECT COUNT(*) FROM tagente_estado 
@@ -68,7 +68,7 @@ if ($sanity == 1) {
 		
 		if ($rows !== false) {
 			$row = reset($rows);
-			$count = $rows['count'];
+			$count = $row['count'];
 			
 			if ($count == 0) {
 				echo "Deleting non-existing module $id_agente_modulo in state table <br>";
@@ -87,9 +87,9 @@ elseif ($sanity == 2) {
 	}
 	
 	foreach ($rows as $row) {
-		echo "Deleting non init module $id_agente_modulo <br>";
+		echo "Deleting non init module " . $row['id_agente_modulo'] ." <br>";
 		
-		db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $row['id_agente_modulo']));
+		modules_delete_agent_module($row['id_agente_modulo']);
 	}
 	echo "Deleting bad module (id 0)<br>";
 	

@@ -1,5 +1,13 @@
 2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.js: fixed the warning in
+	the apache logs, and show the percentile bar correctly in the visual console
+	editor.
+	
+	Fixes: #3389967
+
+2011-08-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/styles/pandora.css,
 	images/skin/skin_default/include/styles/pandora.css, general/header.php:
 	change the color of autorefresh in header.

@@ -699,7 +699,7 @@ function getPercentileBar(id_data) {
 	else
 		var percentile = 100;
 	
-	var img = 'include/graphs/fgraph.php?graph_type=progressbar&height=15&' + 
+	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
 		'width=' + width_percentile + '&mode=1&progress=' + percentile + '&font=' + font;
 	
 	return img;

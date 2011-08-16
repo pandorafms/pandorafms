@@ -291,7 +291,6 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			unset ($nodes[$node_id]);
 			continue;
 		}
-
 		switch($node['type']){
 			case 'group':
 				$graph .= networkmap_create_group_node ($node , $simple, $font_size)."\n\t\t";
@@ -304,7 +303,6 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 				break;
 		}
 	}
-
 	// Define edges
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph

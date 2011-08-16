@@ -1041,25 +1041,33 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				$details = "nombre";
 				break;
 			case "oracle":
-				$details = "dbms_lob.substr(nombre,4000,1) as nombre";		
+				$details = "nombre"; 		
+				break;
 		}
 	}
 	else { 
 		if ($config['dbtype'] == 'oracle'){
-			$details_new = array(); 
-			foreach ($details as $detail){
-				if ($detail == 'nombre')
-					$details_new[] = 'dbms_lob.substr(nombre,4000,1) as nombre';
+			$details_new = array();
+			if (is_array($details)){
+				foreach ($details as $detail){
+					if ($detail == 'nombre')
+						$details_new[] = 'dbms_lob.substr(nombre,4000,1) as nombre';
+					else
+						$details_new[] = $detail;
+				}
+			}
+			else{
+				if ($details == 'nombre')
+					$details_new = 'dbms_lob.substr(nombre,4000,1) as nombre';
 				else
-					$details_new[] = $detail;
+					$details_new = $details;
 			}
 			
-			$details = io_safe_input ($details_new);
+			$details = io_safe_input ($details);
 		}
 		else
 			$details = io_safe_input ($details);
 	}
-
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":

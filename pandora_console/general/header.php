@@ -122,7 +122,7 @@ config_check();
 			$ignored_params = array ('agent_config' => false, 'code' => false);
 			if ($config["refr"]) {
 				$ignored_params['refr'] = 0;
-				echo '<a id="autorefresh" class="white_grey_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
 				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				echo '</a>';
 			}

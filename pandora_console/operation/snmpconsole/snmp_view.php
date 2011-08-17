@@ -316,7 +316,7 @@ ui_toggle($filter, __('Toggle filter(s)'));
 unset ($table);
 
 // Prepare index for pagination
-$trapcount = db_get_sql ("SELECT COUNT(*) FROM ttrap " . $whereSubquery);
+$trapcount = db_get_sql ("SELECT COUNT(id_trap) FROM ttrap " . $whereSubquery);
 
 $urlPagination = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=" . $filter_agent
 	. "&filter_oid=" . $filter_oid . "&filter_severity=" . $filter_severity
@@ -328,7 +328,7 @@ echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&se
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = '95%';
+$table->width = '99%';
 $table->class = "databox";
 $table->head = array ();
 $table->size = array ();
@@ -461,10 +461,10 @@ if ($traps !== false) {
 		$data[8] = "";
 		
 		if (empty ($trap["status"]) && check_acl ($config["id_user"], 0, "IW")) {
-			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a>';
+			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
 		}
 		if (check_acl ($config["id_user"], 0, "IM")) {
-			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a>';
+			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 		}
 		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
 		

@@ -151,12 +151,12 @@ sub pandora_snmptrapd {
 				$value = limpia_cadena ($value);
 
 				my ($custom_oid, $custom_type, $custom_value) = ('', '', '');
-				($custom_oid, $custom_type, $custom_value) = ($1, $2, limpia_cadena ($3)) if ($data =~ m/([0-9\.]*)\s\=\s([A-Za-z0-9]*)\:\s(.+)/);
+
+                # custom_type, custom_value is not used since 4.0 version, all custom data goes on custom_oid
+                $custom_oid = $data;
 
 				# Try to save as much information as possible if the trap could not be parsed
 				$oid = $type_desc if ($oid eq '' || $oid eq '.');
-				$custom_value = $type_desc if ($custom_oid eq '' || $custom_oid eq '.');
-				$custom_value = $data if ($custom_value eq '');
 
 				# Insert the trap into the DB
 				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $self->getServerID (), $dbh]))) {
@@ -165,7 +165,7 @@ sub pandora_snmptrapd {
 					logger ($pa_config, "Received SNMP Trap from $source", 4);
 
 					# Evaluate alerts for this trap
-					pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $value, $custom_oid, $custom_value, $dbh);
+					pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $value, $custom_oid, $dbh);
 				}
 			}
 			

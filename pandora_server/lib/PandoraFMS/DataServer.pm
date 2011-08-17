@@ -241,10 +241,12 @@ sub process_xml_data ($$$$$) {
 				my $doc = $xs1->XMLin($content);
 				$position_description = safe_input ($doc->{result}{content});
 
-			} else {
-				$position_description = ''; # Default value
 			}
 		}
+
+        if (!defined($position_description)){
+            $position_description = "";
+        }
 
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
 	}

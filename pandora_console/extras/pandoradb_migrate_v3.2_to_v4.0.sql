@@ -238,6 +238,16 @@ ALTER TABLE ttrap ADD INDEX timestamp (`timestamp`);
 ALTER TABLE ttrap ADD INDEX status (`status`);
 
 -- -----------------------------------------------------
+-- Table `talert_snmp`
+-- -----------------------------------------------------
+
+ALTER TABLE `talert_snmp` MODIFY COLUMN `custom_oid` text DEFAULT '';
+
+
+ALTER TABLE ttrap ADD INDEX timestamp (`timestamp`);
+
+
+-- -----------------------------------------------------
 -- Table `tconfig_os`
 -- -----------------------------------------------------
 INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('VMware', 'VMware Architecture', 'so_vmware.png');

@@ -216,7 +216,7 @@ CREATE TABLE "talert_snmp" (
 	"description" varchar(255) default '',
 	"alert_type" SMALLINT NOT NULL default 0,
 	"agent" varchar(100) default '',
-	"custom_oid" varchar(200) default '',
+	"custom_oid" text default '',
 	"oid" varchar(255) NOT NULL default '',
 	"time_threshold" INTEGER NOT NULL default 0,
 	"times_fired" SMALLINT NOT NULL default 0,

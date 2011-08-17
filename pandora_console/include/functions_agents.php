@@ -1035,15 +1035,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 
 	if (empty ($details)) {
-		switch ($config['dbtype']){
-			case "mysql":
-			case "postgresql":		
-				$details = "nombre";
-				break;
-			case "oracle":
-				$details = "nombre"; 		
-				break;
-		}
+		$details = "nombre";
 	}
 	else { 
 		if ($config['dbtype'] == 'oracle'){

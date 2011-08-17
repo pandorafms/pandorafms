@@ -1,5 +1,10 @@
 2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/modificar_agente.php: added better message when could
+	delete agent with remote config.
+
+2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_agents.php: check if Pandora can delete the conf and md5
 	file in function "agents_delete_agent"
 	

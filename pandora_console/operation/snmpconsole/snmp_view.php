@@ -428,10 +428,10 @@ if ($traps !== false) {
 		}
 		
 		//Custom		
-		if (empty ($trap["value_custom"])) {
+		if (empty ($trap["oid_custom"])) {
 			$data[4] = __('N/A');
 		} else {
-			$data[4] = ui_print_truncate_text($trap["value_custom"], 15, false);
+			$data[4] = ui_print_truncate_text($trap["oid_custom"], 25, false);
 		}
 	
 		//User
@@ -474,11 +474,15 @@ if ($traps !== false) {
 		
 		//Hiden file for description
 		$string = '<table border="0" width="90%">
-			<tr><td align="left" valign="top" width="15%"><b>' . __('Custom OID:') . '</b></td><td align="left">' . $trap['oid_custom'] . '</td></tr>'
-			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>'
-			 . '<tr><td align="left" valign="top">' . '<b>' . __('Value Custom:') . '</td><td align="left"> ' . $trap['value_custom'] . '</td></tr>'
-			 . '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>'
-			 . '</table>';
+			<tr><td align="left" valign="top" width="15%"><b>' . __('Custom data:') . '</b></td><td align="left">' . $trap['oid_custom'] . '</td></tr>'
+			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>';
+
+        if ($trap["description"] != ""){
+            $string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
+        }
+
+        $string .=  '</table>';
+
 		$data = array($string); //$data = array($trap['description']);
 		$idx++;
 		$table->rowclass[$idx] = 'trap_info_' . $trap['id_trap'];

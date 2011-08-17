@@ -185,26 +185,32 @@ if (isset ($_GET["update_alert"])) {
 	
 	// OID
 	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
-	html_print_input_text ("oid", $oid, '', 30);
+	html_print_input_text ("oid", $oid, '', 50);
 	echo '</td></tr>';
 
-	// OID Custom
-	echo '<tr id="tr-custom_value"><td class="datos">'.__('Custom Value')."/".__("OID").'</td><td class="datos">';
-	html_print_input_text ("custom_value", $custom_value, '', 30);
+	// Custom
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom data');
+    echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
+
 	echo '</td></tr>';
 
 	// SNMP Agent
 	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
-	html_print_input_text ("source_ip", $source_ip, '', 30);
+	html_print_input_text ("source_ip", $source_ip, '', 20);
 	echo '</td></tr>';
 		
 	// Alert fields
-	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)').'</td><td class="datos">';
-	html_print_input_text ("al_field1", $al_field1, '', 50);
+	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)');
+    echo ui_print_help_icon ("snmp_alert_field1", true);
+    echo '</td><td class="datos">';
+	html_print_input_text ("al_field1", $al_field1, '', 60);
 	echo '</td></tr>';
 	
 	echo '<tr><td class="datos2">'.__('Field #2 (Single Line)').'</td><td class="datos2">';
-	html_print_input_text ("al_field2", $al_field2, '', 50);
+	html_print_input_text ("al_field2", $al_field2, '', 60);
 	echo '</td></tr>';
 	
 	echo '<tr><td class="datos" valign="top">'.__('Field #3 (Full Text)').'<td class="datos">';

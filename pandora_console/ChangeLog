@@ -1,3 +1,17 @@
+2011-08-17  Sancho lerena  <slerena@artica.es>
+
+	* pandoradb.oracle.sql,
+	pandoradb.postgreSQL.sql,
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	pandoradb.sql: custom_oid now is text instead varchar(200).
+	This allows alerts with huge regexp inside :-)
+
+	* operation/snmpconsole/snmp_view.php: Custom info now is
+	shown in only one label (Custom Data). Minor changes on layout.
+
+	* godmode/snmpconsole/snmp_alert.php: Added help, resized controls
+	and some other minor adjustments.
+
 2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_html.php, include/functions_networkmap.php,

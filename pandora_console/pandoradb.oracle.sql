@@ -234,7 +234,7 @@ CREATE TABLE talert_snmp (
 	description VARCHAR2(255) default '',
 	alert_type NUMBER(5, 0) default 0 NOT NULL,
 	agent VARCHAR2(100) default '',
-	custom_oid VARCHAR2(200) default '',
+	custom_oid CLOB default '',
 	oid VARCHAR2(255) default '',
 	time_threshold NUMBER(10, 0) default 0 NOT NULL,
 	times_fired NUMBER(5, 0) default 0 NOT NULL,

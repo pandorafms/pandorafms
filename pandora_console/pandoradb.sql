@@ -214,7 +214,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
   `description` varchar(255) default '',
   `alert_type` int(2) unsigned NOT NULL default '0',
   `agent` varchar(100) default '',
-  `custom_oid` varchar(200) default '',
+  `custom_oid` text default '',
   `oid` varchar(255) NOT NULL default '',
   `time_threshold` int(11) NOT NULL default '0',
   `times_fired` int(2) unsigned NOT NULL default '0',

@@ -1,3 +1,12 @@
+2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php, include/functions_networkmap.php,
+	include/functions_ui.php: fixed to use the name of file in tconfig_os
+	instead the id for icon networkmap.
+
+	* images/networkmap/*: renamed the image files to use the names of
+	tconfig_os.
+
 2011-08-17 Sancho Lerena  <slerena@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: SQL optimization and

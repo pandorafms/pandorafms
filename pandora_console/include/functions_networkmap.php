@@ -433,11 +433,8 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
 
 	if ($simple == 0){
 		// Set node icon
-		if (file_exists (html_print_image('images/networkmap/'.$agent['id_os'].'.png', true, false, true, true))) { 
-			$img_node = 'images/networkmap/'.$agent['id_os'].'.png';
-		} else {
-			$img_node = 'images/networkmap/0.png';
-		}
+		$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true);
+		$img_node = str_replace('/pandora_console/', '', $img_node);
 
 		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . html_print_image($img_node, true, false, false, true) . '</TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,

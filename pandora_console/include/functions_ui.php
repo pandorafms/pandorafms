@@ -390,18 +390,34 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * 
  * @return string HTML with icon of the OS
  */
-function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true) {
+function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false) {
+	$subfolter = 'os_icons';
+	if ($networkmap) {
+		$subfolter = 'networkmap';		
+	}
+	
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
-		return "-";
+		if ($only_src) {
+			$output = html_print_image("images/".$subfolter."/unknown.png", false, false, true);
+		}
+		else {
+			return "-";
+		}
 	}
 	
-	if ($apply_skin)
-		$output = html_print_image("images/os_icons/".$icon, true, array("alt" => $os_name, "title" => $os_name)); 
+	if ($apply_skin) {
+		if ($only_src) {
+			$output = html_print_image("images/".$subfolter."/".$icon, true, false, true);
+		}
+		else {
+			$output = html_print_image("images/".$subfolter."/".$icon, true, array("alt" => $os_name, "title" => $os_name));
+		}
+	}
 	else
 		//$output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
-		$output = "images/os_icons/" . $icon;
+		$output = "images/".$subfolter."/" . $icon;
 	
 	if ($name === true) {
 		$output .= ' - '.$os_name;

@@ -679,7 +679,8 @@ function config_check (){
     }
 
     // Get remote file dir.
-    $remote_config = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'remote_config'");
+    $remote_config = db_get_value_filter('value', 'tconfig', array('token' => 'remote_config'));
+
     if (defined ('PANDORA_ENTERPRISE')){
 
         if (!is_writable ($remote_config)){
@@ -711,8 +712,7 @@ function config_check (){
     }
 
     // Check database maintance
-
-    $db_maintance = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'");
+    $db_maintance = db_get_value_filter ('value', 'tconfig', array('token' => 'db_maintance')); 
     $now = date("U");
     
     // First action in order to know if it's a new installation or db maintenance never have been executed 
@@ -727,7 +727,7 @@ function config_check (){
             $_SESSION["alert_msg"] .= __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible').'</h3>';
     }
     
-    $fontpath = db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'fontpath'");
+    $fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
     if (($fontpath == "") OR (!file_exists ($fontpath))) {
         $config["alert_cnt"]++;
         $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Default font doesnt exist").'</h3>';

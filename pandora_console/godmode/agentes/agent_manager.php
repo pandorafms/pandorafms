@@ -14,6 +14,9 @@
 // GNU General Public License for more details.
 
 if (is_ajax ()) {
+
+	global $config;
+
 	$search_parents = (bool) get_parameter ('search_parents');
 	
 	if ($search_parents) {
@@ -23,7 +26,16 @@ if (is_ajax ()) {
 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
 		
 		$filter = array ();
-		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+		
+		switch ($config['db_type']){
+			case "mysql":
+			case "postgresql":
+				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+				break;
+			case "oracle":
+				$filter[] = '(upper(nombre) LIKE upper("%'.$string.'%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
+				break;
+		}
 		$filter[] = 'id_agente != '.$id_agent;
 		
 		$agents = agents_get_agents ($filter, array ('nombre', 'direccion'));

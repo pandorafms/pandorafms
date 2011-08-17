@@ -51,13 +51,15 @@ $search = get_parameter ("search", "");
 
 $agent_to_delete = (int)get_parameter('borrar_agente');
 
+$result = null;
+
 if (!empty($agent_to_delete)) {
 	$id_agente = $agent_to_delete;
 	$agent_name = agents_get_name ($id_agente);
 	$id_grupo = agents_get_agent_group($id_agente);
 	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
-		agents_delete_agent($id_agentes);
+		$result = agents_delete_agent($id_agentes);
 		db_pandora_audit("Agent management", "Delete Agent " . $agent_name);
 	}
 	else {
@@ -71,6 +73,10 @@ if (!empty($agent_to_delete)) {
 
 // Header
 ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true);
+
+if (isset($result)) {
+	ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));
+}
 
 // Show group selector
 if (isset($_POST["ag_group"])) {

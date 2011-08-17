@@ -1,5 +1,15 @@
 2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_agents.php: check if Pandora can delete the conf and md5
+	file in function "agents_delete_agent"
+	
+	* godmode/agentes/modificar_agente.php: show message of result from the
+	deleting action.
+	
+	Fixes: #3392526
+
+2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php,
 	godmode/reporting/visual_console_builder.php,
 	godmode/reporting/visual_console_builder.editor.js,

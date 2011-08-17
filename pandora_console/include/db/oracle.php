@@ -468,7 +468,6 @@ function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND
 	$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s) WHERE rownum < 2",
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
-	
 	$result = db_get_all_rows_sql ($sql);
 
 	if ($result === false)
@@ -570,12 +569,24 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 
 	$i = 1;
 	$max = count ($values);
-	foreach ($values as $field => $value) {
+	foreach ($values as $field => $value) { 
 		if ($i == 1) {
 			$query .= ' ( ';
-		}		
-	
-		if (is_numeric ($field)) {
+		}	
+		if ($field == '1' AND $value == '1'){
+			$query .= sprintf("'%s' = '%s'", $field, $value);
+
+			if ($i < $max) {
+                                $query .= ' '.$join.' ';
+                        }
+                        if ($i == $max) {
+                                $query .= ' ) ';
+                        }                       
+                        $i++; 
+                        continue;
+
+		}	
+		else if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
 				
@@ -592,7 +603,7 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 		if (is_null ($value)) {
 			$query .= sprintf ("%s IS NULL", $field);
 		}
-		elseif (is_int ($value) || is_bool ($value)) {
+		elseif (is_int ($value) || is_bool ($value)) { 
 			$query .= sprintf ("%s = %d", $field, $value);
 		}
 		else if (is_float ($value) || is_double ($value)) {
@@ -619,7 +630,7 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 			else if ($value[0] == '%') {
 				$query .= sprintf ("%s LIKE '%s'", $field, $value);
 			}
-			else {
+			else{ 
 				$query .= sprintf ("%s = '%s'", $field, $value);
 			}
 		}
@@ -632,7 +643,6 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 		}
 		$i++;
 	}
-
 	return (! empty ($query) ? $prefix: '').$query.$limit.$group.$order;
 }
 
@@ -688,7 +698,6 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
  * clause of an SQL sentence.
  **/
 function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
-
 	$fields = array ();
 
 	if (! is_array ($values) || empty($sql)) {
@@ -806,7 +815,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 		$i++;
 	}
 
-	$result = $pre_query.$sql.$query.$limit.$group.$order.$post_query;
+	$result = $pre_query.$sql.$query.$limit.$group.$order.$post_query; 
 	if ($return){
 		return $result;
 	}

@@ -342,6 +342,9 @@ foreach ($modules as $module) {
 		}
 		echo "</td>";
 	}
+	else{
+		echo "<td></td>";
+	}
 	
 	if ($module["id_tipo_modulo"] == 24) { // Log4x
 		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;</td>";
@@ -394,7 +397,6 @@ foreach ($modules as $module) {
 
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=3600&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=60','hour_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_h.png", true, array("border" => '0', "alt" => "")) . '</a>';
-
 	}
 	
 	

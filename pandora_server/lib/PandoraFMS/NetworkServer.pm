@@ -44,6 +44,7 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared = new Thread::Semaphore;
 my $TaskSem :shared = new Thread::Semaphore (0);
+my $SNMPSem :shared = new Thread::Semaphore (1);
 
 ########################################################################################
 # Network Server class constructor.
@@ -291,9 +292,8 @@ sub pandora_snmp_get_command ($$$$$$$$$) {
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
 
-sub pandora_query_snmp ($$) {
-	my $pa_config = $_[0];
-	my $module = $_[1];
+sub pandora_query_snmp ($$$) {
+	my ($pa_config, $module, $dbh) = @_;
 
 	my $snmp_version = $module->{"tcp_send"}; # (1, 2, 2c or 3)
 	my $snmp3_privacy_method = $module->{"custom_string_1"}; # DES/AES
@@ -305,6 +305,11 @@ sub pandora_query_snmp ($$) {
 	my $snmp_community = $module->{"snmp_community"};
 	my $snmp_target = $module->{"ip_target"};
 	my $snmp_oid = $module->{"snmp_oid"};
+	return (undef, 0) unless ($snmp_oid ne '');
+	if ($snmp_oid =~ m/[a-zA-Z]/) {
+		$snmp_oid = translate_obj ($dbh, $snmp_oid, $module->{"id_agente_modulo"});
+		return (undef, 0) unless ($snmp_oid ne '');
+	}
 
 	my $snmp_timeout = $pa_config->{"snmp_timeout"};
 	my $snmp_retries = $pa_config->{'snmp_checks'};
@@ -417,7 +422,7 @@ sub exec_network_module ($$$$) {
 				($id_tipo_modulo == 16) || 
 				($id_tipo_modulo == 17)) {
 
-			($module_data, $module_result) = pandora_query_snmp ($pa_config, $module);
+			($module_data, $module_result) = pandora_query_snmp ($pa_config, $module, $dbh);
 
 		    if ($module_result == 0) { # A correct SNMP Query
 			    # SNMP_DATA_PROC
@@ -479,6 +484,24 @@ sub exec_network_module ($$$$) {
 		# Modules who cannot connect or something go bad, update last_execution_try field
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 	}
+}
+
+###############################################################################
+# Convert a text obj tag to an OID and update the module configuration.
+###############################################################################
+sub translate_obj ($$$) {
+	my ($dbh, $obj, $module_id) = @_;
+
+	# SNMP is not thread safe
+	$SNMPSem->down ();
+	my $oid = SNMP::translateObj ($obj);
+	$SNMPSem->up ();
+	
+	# Update module configuration
+	$oid = '' unless defined ($oid);
+	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
+	
+	return $oid;
 }
 
 1;

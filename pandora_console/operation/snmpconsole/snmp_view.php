@@ -398,7 +398,7 @@ if ($traps !== false) {
 		// Agent matching source address
 		$agent = agents_get_agent_with_ip ($trap['source']);
 		if ($agent === false) {
-			if (! check_acl ($config["id_user"], 0, "AW")) {
+			if (! check_acl ($config["id_user"], 0, "AR")) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	

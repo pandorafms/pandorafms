@@ -72,11 +72,21 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 	// Parse agents
 	$nodes = array ();
 	$node_count = 1;
+	
+	// Add node
+	$node_ref = array();
+	foreach ($agents as $agent) {
+		// Add node
+		$node_ref[$agent['id_agente']] = $node_count;
+		$node_count++;
+	}
+	
+	$node_count = 1;
 
 	foreach ($agents as $agent) {
 		// Save node parent information to define edges later
 		if ($agent['id_parent'] != "0") {
-			$parents[$node_count] = $agent['id_parent'];
+			$parents[$node_count] = $node_ref[$agent['id_parent']];
 		} else {
 			$orphans[$node_count] = 1;
 		}

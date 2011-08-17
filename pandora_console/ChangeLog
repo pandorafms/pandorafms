@@ -1,3 +1,8 @@
+2011-08-17 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_networkmap.php: Fixed a bug with topology map
+
+
 2011-08-17 Javier Lanz <javier.lanz@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: Fixed an style icon small bug

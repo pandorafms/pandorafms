@@ -1144,15 +1144,15 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$skin_path = enterprise_hook('skins_get_image_path',array($src));
 		if ($skin_path)
-			$src = $skin_path;		
+			$src = $skin_path;	
 	}
 
 	// path to image (relative or absolute)
 	$src = ($relative? '' : $config["homeurl"] . '/') . $src;
 
 	// Only return src field of image
-	if ($return_src){
-		if (!$return){ 
+	if ($return_src) {
+		if (!$return) { 
 			echo io_safe_input($src); 
 			return; 
 		}

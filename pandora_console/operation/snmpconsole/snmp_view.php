@@ -525,9 +525,9 @@ echo html_print_image("images/pixel_gray.png", true, array("width" => "20", "hei
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Action') . '</h3>';
-echo html_print_image("images/ok.png", true, array("width" => "20", "height" => "20")) . ' - ' .__('Validate');
+echo html_print_image("images/ok.png", true) . ' - ' .__('Validate');
 echo '<br />';
-echo html_print_image("images/cross.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Delete');
+echo html_print_image("images/cross.png", true) . ' - ' . __('Delete');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>'.__('Legend').'</h3>';

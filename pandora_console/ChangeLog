@@ -1,5 +1,8 @@
 2011-08-17 Sancho Lerena  <slerena@artica.es>
 
+	* snmp_wizard.png: New icon for new feature SNMP Wizard in 
+	agent godmode (taken from enterprise massive SNMP module).
+
 	* operation/snmpconsole/snmp_view.php: Fixed small ACL bug.
 
 2011-08-17 Dario Rodriguez <dario.rodriguez@artica.es>

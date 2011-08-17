@@ -103,6 +103,7 @@ INSERT INTO `tconfig_os` VALUES
 (13,'Sensor',' Pandora FMS Hardware Agent (Sensor)','network.png'),
 (14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png'),
 (15,'Android','Android agent','android.png');
+(16, 'VMware', 'VMware Architecture', 'so_vmware.png');
 UNLOCK TABLES;
 
 

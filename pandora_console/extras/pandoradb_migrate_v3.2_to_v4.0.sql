@@ -236,3 +236,8 @@ ALTER TABLE tserver_export ADD INDEX id_export_server (`id_export_server`);
 -- -----------------------------------------------------
 ALTER TABLE ttrap ADD INDEX timestamp (`timestamp`);
 ALTER TABLE ttrap ADD INDEX status (`status`);
+
+-- -----------------------------------------------------
+-- Table `tconfig_os`
+-- -----------------------------------------------------
+INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('VMware', 'VMware Architecture', 'so_vmware.png');

@@ -1,3 +1,10 @@
+2011-08-17 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandoradb_data.sql, images/os_icons/so_vmware.png, 
+	images/os_icons/so_vmware_small.png, 
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added new icon for VMware
+	architectures.
+
 2011-08-16  Sancho Lerena <slerena@artica.es>
 
 	* extensions/vnc_view.php,

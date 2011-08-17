@@ -1,3 +1,17 @@
+2011-08-17  Sancho Lerena <slerena@artica.es>
+
+	* SNMPServer.pm: Custom value and custom type are not used anymore.
+	All extended info comes into custom_oid which stores now all the
+	raw info.
+
+	* Core.pm: pandora_evaluate_snmp_alerts() function now uses complex
+	regular expression and new macros to allow complex SNMP trap alerts
+	which takes information from the trap info and puts on the alert.
+
+	* DataServer.pm: Fixed notice about undefined GIS position desc.
+
+	* pandora_db.pl: Version update.
+
 2011-08-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Convert text obj tags to OIDs.

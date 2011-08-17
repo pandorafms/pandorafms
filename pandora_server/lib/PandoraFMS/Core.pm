@@ -1590,15 +1590,16 @@ sub pandora_module_keep_alive_nd {
 }
 
 ##########################################################################
-=head2 C<< pandora_evaluate_snmp_alerts (I<$pa_config>, I<$trap_id>, I<$trap_agent>, I<$trap_oid>, I<$trap_oid_text>, I<$value>, I<$trap_custom_oid>, I<$trap_custom_value>, I<$dbh>) >> 
+=head2 C<< pandora_evaluate_snmp_alerts (I<$pa_config>, I<$trap_id>, I<$trap_agent>, I<$trap_oid>, I<$trap_oid_text>, I<$value>, I<$trap_custom_oid>, I<$dbh>) >> 
 
 Execute alerts that apply to the given SNMP trap.
 
 =cut
 ##########################################################################
-sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
+sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
-		$trap_oid_text, $trap_value, $trap_custom_oid, $trap_custom_value, $dbh) = @_;
+		$trap_oid_text, $trap_value, $trap_custom_oid, $dbh) = @_;
+
 
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp');
@@ -1613,27 +1614,56 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
 
 		# OID
+        # Decode first, could be a complex regexp !
+        $alert->{'oid'} = decode_entities($alert->{'oid'});
 		my $oid = $alert->{'oid'};
 		if ($oid ne '') {
 			next if ($trap_oid !~ m/^$oid$/i && $trap_oid_text !~ m/^$oid$/i);
 			$alert_data .= "OID: $oid ";
 		}
 
-		# Custom OID/value
-		my $custom_oid = $alert->{'custom_oid'};
-		if ($custom_oid ne '') {
-            if ($trap_value =~ m/^$custom_oid$/i){
-                $alert_data .= " Trap Value: $trap_value";
-   
-            } elsif ($trap_custom_value =~ m/^$custom_oid$/i){
-                $alert_data .= " Trap Value: $trap_custom_value";
+        # Specific SNMP Trap alert macros for regexp selectors in trap info
+        my $snmp_f1 = "";
+        my $snmp_f2 = "";
+        my $snmp_f3 = "";
 
-            } elsif ($trap_custom_oid =~ m/^$custom_oid$/i){
-                $alert_data .= " Trap Value: $trap_custom_oid";
+		# Custom OID/value
+        # Decode first, this could be a complex regexp !
+
+        $alert->{'custom_oid'} = decode_entities($alert->{'custom_oid'});
+		my $custom_oid = $alert->{'custom_oid'};
+
+		if ($custom_oid ne '') {
+            if ($trap_custom_oid =~ m/^$custom_oid$/i){
+                $alert_data .= " Custom: $trap_custom_oid";
+
+                # Let's capture some data using regexp selectors !
+
+                if (defined($1)){
+                    $snmp_f1 = $1;
+                }
+                if (defined($2)){
+                    $snmp_f2 = $2;
+                }
+                if (defined($3)){
+                    $snmp_f3 = $3;
+                }
+
             } else {
                 next;
             }
 		}
+
+        # SANCHO DEBUG
+
+        my %macros;
+        $macros{_snmp_f1_} = $snmp_f1;
+        $macros{_snmp_f2_} = $snmp_f2;
+        $macros{_snmp_f3_} = $snmp_f3;
+
+        $alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
+        $alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
+        $alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
 
 		# Agent IP
 		my $agent = $alert->{'agent'};
@@ -1702,7 +1732,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 							WHERE talert_actions.id_alert_command = talert_commands.id
 							AND talert_actions.id = ?', $alert->{'id_alert'});
 
-			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_custom_oid . " " . $trap_custom_value;
+			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_custom_oid;
 
 			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
 

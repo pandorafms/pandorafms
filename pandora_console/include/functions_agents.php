@@ -1574,10 +1574,18 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 				// Agent remote configuration editor
 				$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
-				@unlink ($file_name);
+				
+				$error = !@unlink ($file_name);
 
-				$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
-				@unlink ($file_name);
+				if (!$error) {
+					$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
+					$error = !@unlink ($file_name);
+				}
+				
+				if ($error) {
+					db_pandora_audit( "Agent management",
+						"Error: Deleted agent '$agent_name', the error is in the delete conf or md5.");
+				}
 			}
 		}
 
@@ -1590,7 +1598,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 
 		/* Break the loop on error */
 		if ($error)
-		break;
+			break;
 	}
 
 	if ($error) {

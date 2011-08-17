@@ -306,6 +306,52 @@ function createAction() {
 				validate = false;
 			}
 			break;
+		case 'percentile_bar':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
+				validate = false;
+			}
+			if ((values['max_percentile'] == '')) {
+				alert($("#message_alert_no_max_percentile").html());
+				validate = false;
+			}
+			if ((values['width_percentile'] == '')) {
+				alert($("#message_alert_no_width_percentile").html());
+				validate = false;
+			}
+			break;
+		case 'module_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
+				validate = false;
+			}
+			if ((values['period'] == 0)) {
+				alert($("#message_alert_no_period").html());
+				validate = false;
+			}
+			break;
+		case 'simple_value':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
+				validate = false;
+			}
+			if ((values['process_simple_value'] == 0)) {
+				alert($("#message_alert_no_process").html());
+				validate = false;
+			}
+			break;
 	}
 	
 	if (validate) {
@@ -523,6 +569,9 @@ function hiddenFields(item) {
 	
 	$("#agent_row").css('display', 'none');
 	$("#agent_row."  + item).css('display', '');
+	
+	$("#module_row").css('display', 'none');
+	$("#module_row."  + item).css('display', '');
 	
 	$("#process_value_row").css('display', 'none');
 	$("#process_value_row."  + item).css('display', '');	
@@ -974,6 +1023,7 @@ function updateDB(type, idElement , values, event) {
 			{
 				switch (type) {
 					case 'module_graph':
+						$("#image_" + idElement).attr("src", getModuleGraph(idElement));
 					case 'static_graph':
 					case 'percentile_bar':
 					case 'simple_value':
@@ -990,8 +1040,10 @@ function updateDB(type, idElement , values, event) {
 							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
 						}
 						$("#" + idElement).css('color', values['label_color']);
+						found = false;
 						jQuery.each(lines, function(i, line) {
 							if (lines[i]['id'] == idElement) {
+								found = true;
 								if (values['parent'] == 0) {
 									lines.splice(i);
 								}
@@ -1005,6 +1057,15 @@ function updateDB(type, idElement , values, event) {
 								}
 							}
 						});
+						
+						if (!found) {
+							var line = {"id": idElement,
+									"node_begin":  values['parent'],
+									"node_end": idElement,
+									"color": visual_map_get_color_line_status(idElement) };
+							lines.push(line);
+						}
+						
 						refresh_lines(lines, 'background');
 						break;
 					case 'background':

@@ -295,6 +295,12 @@ echo "</form>";
 echo '<span style="display: none" id="message_alert_no_label_no_image">' . __('No image or name defined.') .'</span>';
 echo '<span style="display: none" id="message_alert_no_label">' . __('No label defined.') .'</span>';
 echo '<span style="display: none" id="message_alert_no_image">' . __('No image defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_process">' . __('No process defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_max_percentile">' . __('No Max value defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_width_percentile">' . __('No width defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_period">' . __('No period defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_agent">' . __('No agent defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_module">' . __('No module defined.') .'</span>';
 
 ui_require_css_file ('color-picker');
 

@@ -794,7 +794,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 								$id_service . '&offset=0">';
 							$endTagA = true;
-						}				
+						}
+						elseif ($layout_data['id_layout_linked'] > 0) {
+	
+							// Link to a map
+							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							$endTagA = true;
+						}
 					}
 
 					echo '<strong>'.$layout_data['label']. ' ';
@@ -870,7 +876,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 								$id_service . '&offset=0">';
 							$endTagA = true;
-						}			
+						}
+						elseif ($layout_data['id_layout_linked'] > 0) {
+	
+							// Link to a map
+							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							$endTagA = true;
+						}		
 					}
 						
 					echo $layout_data['label'];

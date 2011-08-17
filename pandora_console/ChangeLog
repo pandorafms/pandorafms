@@ -1,3 +1,13 @@
+2011-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php: fixes more things, see
+	the item in sourceforge tracker.
+	
+	Fixes: #3389987
+
 2011-08-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.oracle.sql: Added columns 'module_action_threshold' and 

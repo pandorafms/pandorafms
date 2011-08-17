@@ -126,6 +126,10 @@ switch ($activeTab) {
 					$values['height'] = get_parameter('height_' . $id, 0);
 					$values['pos_x'] = get_parameter('left_' . $id, 0);
 					$values['pos_y'] = get_parameter('top_' . $id, 0);
+					$type = db_get_value('type', 'tlayout_data', 'id', $id);
+					if ($type == 1) {
+						$values['period'] = get_parameter('period_' . $id, 0);
+					}
 					$agentName = get_parameter('agent_' .  $id, '');
 					$values['id_agent'] = agents_get_agent_id($agentName);
 					$values['id_agente_modulo'] = get_parameter('module_' . $id, 0);

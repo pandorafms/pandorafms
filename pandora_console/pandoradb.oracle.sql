@@ -353,7 +353,9 @@ CREATE TABLE talert_template_module_actions (
 	id_alert_template_module NUMBER(10, 0) NOT NULL REFERENCES talert_template_modules(id) ON DELETE CASCADE, 
 	id_alert_action NUMBER(10, 0) NOT NULL REFERENCES talert_actions(id) ON DELETE CASCADE, 
 	fires_min NUMBER(10, 0) default 0 NOT NULL,
-	fires_max NUMBER(10, 0) default 0 NOT NULL 
+	fires_max NUMBER(10, 0) default 0 NOT NULL,
+	module_action_threshold NUMBER(10, 0) default 0 NOT NULL,
+  	last_execution NUMBER(18, 0) default 0 NOT NULL 
 );
 
 CREATE SEQUENCE talert_template_modu_actions_s INCREMENT BY 1 START WITH 1;

@@ -1,5 +1,8 @@
 2011-08-17 Sancho Lerena  <slerena@artica.es>
 
+	* operation/snmpconsole/snmp_view.php: SQL optimization and
+	added space between icons.
+
 	* snmp_wizard.png: New icon for new feature SNMP Wizard in 
 	agent godmode (taken from enterprise massive SNMP module).
 

@@ -165,7 +165,7 @@ function servers_get_info ($id_server = -1) {
 				$id_modulo = 2;
 				break;
 			case 2:
-				$server["img"] = html_print_image ("images/snmp.png", true, array ("title" => __('SNMP server')));
+				$server["img"] = html_print_image ("images/snmp.png", true, array ("title" => __('SNMP Trap server')));
 				$server["type"] = "snmp";
 				$id_modulo = 0;
 				break;

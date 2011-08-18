@@ -448,8 +448,25 @@ function modules_format_delete_log4x($id)
  * @return array An array with module information
  */
 function modules_get_agentmodule ($id_agentmodule) {
-	return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+	global $config;
+		
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql": 
+			return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+			break;
+		case "oracle":
+			$fields = db_get_all_rows_filter('USER_TAB_COLUMNS', 'TABLE_NAME = \'TAGENTE_MODULO\' AND COLUMN_NAME <> \'MAX_CRITICAL\' AND COLUMN_NAME <> \'MIN_CRITICAL\' AND COLUMN_NAME <> \'POST_PROCESS\' AND COLUMN_NAME <> \'MAX_WARNING\' AND COLUMN_NAME <> \'MIN_WARNING\'', 'COLUMN_NAME');
+			foreach ($fields as $field){
+				$fields_[] = $field['column_name'];
+			}
+			$fields = implode(',', $fields_);
+			$result = db_process_sql("SELECT TO_NUMBER(MAX_CRITICAL) as max_critical, TO_NUMBER(MIN_CRITICAL) as min_critical, TO_NUMBER(MAX_WARNING) as max_warning, TO_NUMBER(MIN_WARNING) as  min_warning, TO_NUMBER(POST_PROCESS) as post_process, " . $fields . " FROM tagente_modulo WHERE id_agente_modulo = " . $id_agentmodule);
+			return $result[0];
+			break;
+	}
 }
+
 
 /**
  * Get a id of module from his name and the agent id

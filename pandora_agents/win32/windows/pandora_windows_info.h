@@ -38,6 +38,7 @@ namespace Pandora_Windows_Info {
 	string  getOSVersion      ();
 	string  getOSBuild        ();
 	string  getSystemName     ();
+	string  getSystemAddress  ();
 	string  getSystemPath     ();
 	HANDLE *getProcessHandles (string name, int *num_procs);
     string  getRegistryValue  (HKEY root, const string treepath, const string keyname);

@@ -356,7 +356,7 @@ Pandora_Windows_Service::lauchTentacleProxy() {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value, xml;
+	string        agent_name, os_name, os_version, encoding, value, xml, address;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	
@@ -396,6 +396,19 @@ Pandora_Windows_Service::getXmlHeader () {
 	if (timestamp[0] != '\0') {
 		xml += "\" timestamp=\"";
 		xml += timestamp; 
+	}
+	
+	// Get agent address
+	address = conf->getValue ("address");
+	if (address != "") {
+		if(address == "auto") {
+			address = Pandora_Windows_Info::getSystemAddress ();
+		}
+		
+		if(address != "") {
+			xml += "\" address=\"";
+			xml += address;
+		}
 	}
 
 	xml += "\" interval=\"" + conf->getValue ("interval") +

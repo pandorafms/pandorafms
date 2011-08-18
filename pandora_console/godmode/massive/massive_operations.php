@@ -56,13 +56,6 @@ if($policies_options != -1) {
 	$options_policies = array_merge($options_policies, $policies_options);
 }
 
-$modules_snmp_options = enterprise_hook('massive_modules_snmp_options');
-
-if($modules_snmp_options != -1) {
-	$options_modules = array_merge($options_modules, $modules_snmp_options);
-}
-
-
 if (in_array($option, array_keys($options_alerts))) {
 	$tab = 'massive_alerts';
 }

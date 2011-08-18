@@ -2,6 +2,13 @@
 
 	Merged bugfix from trunk.
 	
+	* include/functions.php: fixed the snmpwalk for version 3, the function
+	need empty string instead null.
+
+2011-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+	
 	* include/javascript/pandora_modules.js: fixed get the parameters
 	snmp3_auth_method and snmp3_privacy_method.
 

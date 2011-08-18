@@ -49,6 +49,37 @@ if (is_ajax ()) {
 		return;
  	}
  	
+	$get_modules_json_for_multiple_snmp = (bool) get_parameter("get_modules_json_for_multiple_snmp", 0);
+	if ($get_modules_json_for_multiple_snmp) {
+		$idSNMP = get_parameter('id_snmp');
+		$snmp = json_decode(html_entity_decode(get_parameter('snmp_json')),true);
+	
+		$oid_snmp = array();
+		$out = false;
+		foreach($idSNMP as $id) {
+			foreach($snmp[$id] as $key => $value){
+				
+				// Check if it has "ifXXXX" syntax and skip it 
+				if (! preg_match  ( "/if/", $key)) {
+					continue;
+				}
+
+				$oid_snmp[$value['oid']] = $key;
+			}
+
+			if($out === false){
+				$out = $oid_snmp;
+			}
+			else{
+				$out = array_intersect($out,$oid_snmp);
+			}
+
+			$oid_snmp = array();
+		}
+
+		echo json_encode($out);
+	}
+	    
  	return;
 }
 // Load global vars

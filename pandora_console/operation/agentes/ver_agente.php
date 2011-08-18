@@ -596,6 +596,23 @@ $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab,
 
 foreach($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
+		
+		//VMware extension is only available for VMware OS
+		if ($extension['extension_ope_tab']['id'] === "vmware_manager") {
+			
+			//Check if OS is vmware
+			$id_os = db_get_value("id_os", "tconfig_os", "name", "VMware");
+			if ($id_os != $agent['id_os']) {
+				continue;
+			}
+			
+			//This extension is only for virtual machines
+			if (strpos($agent['nombre'], "VM_") !== 0) {
+				continue;
+			}
+			
+		}
+		
 		$image = $extension['extension_ope_tab']['icon'];
 		$name = $extension['extension_ope_tab']['name'];
 		$id = $extension['extension_ope_tab']['id'];

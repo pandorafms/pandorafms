@@ -341,9 +341,6 @@ function snmp_explorer() {
     ui_require_jquery_file ('bgiframe');
     ui_require_jquery_file ('autocomplete');
 
-// OJO CON ESTO... debe funcionar en la open !
-//    ui_require_javascript_file ('pandora_snmp', ENTERPRISE_DIR.'/include/javascript/');
-
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

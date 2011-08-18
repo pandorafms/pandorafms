@@ -83,17 +83,18 @@ $ips = array();
 $addresses = agents_get_addresses ($id_agente);
 $address = agents_get_address($id_agente);
 
+foreach($addresses as $k => $add) {
+	if($add == $address) {
+		unset($addresses[$k]);
+	}
+}
+
+echo $address;
+
 if (!empty($addresses)) {
-	$ips = $addresses;
+	ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses));
 }
 
-if (!empty($address)) {
-	$ips = array_merge((array)agents_get_address ($id_agente), $ips);
-}
-
-$ips = array_unique($ips);
-
-html_print_select($ips, "not_used", agents_get_address ($id_agente));
 echo '</td></tr>';
 
 //OS

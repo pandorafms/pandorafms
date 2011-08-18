@@ -1,3 +1,9 @@
+2011-08-18  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_generalagente.php: Changed the 
+	IP address view in the agent info from a useless combo 
+	to a text with the main addres and help_tip with the others
+
 2011-08-17  Sancho lerena  <slerena@artica.es>
 
 	* pandoradb.oracle.sql,

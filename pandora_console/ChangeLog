@@ -1,5 +1,11 @@
 2011-08-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager_editor_network.php: disabled snmp community
+	when set the version 3, and added tooltip to show help in Auth and privacy
+	pass about the eight characters minimum.
+
+2011-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: fixed the snmpwalk for version 3, the function
 	need empty string instead null.
 

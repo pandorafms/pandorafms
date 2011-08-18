@@ -1,5 +1,10 @@
 2011-08-18 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/menu.php: Fixed a bug which hide extension icons.
+	Fixes: 3393214
+
+2011-08-18 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/agentes/ver_agente.php: Added feature to show vmware manager
 	extension tab only when the agent is a virtual machine.
 

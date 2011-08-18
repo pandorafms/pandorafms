@@ -1,3 +1,11 @@
+2011-08-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Fixed the execution of SNMP v3
+	  modules.
+
+	* lib/PandoraFMS/DataServer.pm: Merged from trunk. Fixed the update
+	  of module configuration tokens from the XML data file.
+
 2011-07-07  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Merge from trunk a fix of file collections

@@ -263,9 +263,9 @@ function configure_modules_form () {
 			"snmp_version": $('#snmp_version').val(),
 			"snmp3_auth_user": $('input[name=snmp3_auth_user]').val(),
 			"snmp3_security_level": $('#snmp3_security_level').val(),
-			"snmp3_auth_method": $('snmp3_auth_method').val(),
+			"snmp3_auth_method": $('#snmp3_auth_method').val(),
 			"snmp3_auth_pass": $('input[name=snmp3_auth_pass]').val(),
-			"snmp3_privacy_method": $('snmp3_privacy_method').val(),
+			"snmp3_privacy_method": $('#snmp3_privacy_method').val(),
 			"snmp3_privacy_pass": $('input[name=snmp3_privacy_pass]').val()
 			},
 			function (data, status) {

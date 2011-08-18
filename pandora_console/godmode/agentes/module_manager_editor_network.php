@@ -149,7 +149,7 @@ if (!isset($id_agent_module)) {
 $data = array();
 $data[0] = __('Auth user');
 $data[1] = print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
-$data[2] = __('Auth password');
+$data[2] = __('Auth password') . print_help_tip(__("The pass length must be eight character minimum."), true);
 $data[3] = print_input_text ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
 $data[3] .= print_input_hidden('active_snmp_v3', 0, true);
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row1'] = 'display: none;';
@@ -158,7 +158,7 @@ push_table_simple($data, 'field_snmpv3_row1');
 $data = array();
 $data[0] = __('Privacy method');
 $data[1] = print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true);
-$data[2] = __('privacy pass');
+$data[2] = __('Privacy pass') . print_help_tip(__("The pass length must be eight character minimum."), true);
 $data[3] = print_input_text ('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true);
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row2'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row2');
@@ -181,12 +181,14 @@ $(document).ready (function () {
 			$("#simple-field_snmpv3_row2").attr("style", "");
 			$("#simple-field_snmpv3_row3").attr("style", "");
 			$("input[name=active_snmp_v3]").val(1);
+			$("input[name=snmp_community]").attr("disabled", true);
 		}
 		else {
 			$("#simple-field_snmpv3_row1").css("display", "none");
 			$("#simple-field_snmpv3_row2").css("display", "none");
 			$("#simple-field_snmpv3_row3").css("display", "none");
 			$("input[name=active_snmp_v3]").val(0);
+			$("input[name=snmp_community]").attr("disabled", false);
 		}
 	});
 });

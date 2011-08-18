@@ -1,3 +1,15 @@
+2011-08-18  Sergio Martin <sergio.martin@artica.es>
+
+	* win32/windows/pandora_windows_info.h
+	win32/windows/pandora_wmi.cc
+	win32/windows/pandora_wmi.h
+	win32/windows/pandora_windows_info.cc
+	win32/bin/PandoraAgent.exe
+	win32/bin/pandora_agent.conf
+	win32/pandora_windows_service.cc: Added to the windows agent
+	the address token with manual (specified address) and auto 
+	(detecting from WMI the address) modes
+
 2011-08-10  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* unix/pandora_agent.php: Fixed error reading collections of the configuration file.

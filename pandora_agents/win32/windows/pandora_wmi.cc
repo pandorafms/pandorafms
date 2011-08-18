@@ -1188,3 +1188,43 @@ Pandora_Wmi::getServices (list<string> &rows) {
 	}
 	return num_objects;
 }
+
+/** 
+ * Get the system address
+ * 
+ * @return The system address
+ */
+string
+Pandora_Wmi::getSystemAddress () {
+    CDhInitialize init;
+	CDispPtr      wmi_svc =  NULL, nic_info = NULL;
+    VARIANT ip_addresses;
+	char         *caption  = NULL, *mac_address = NULL;
+	string        ret = "";
+
+ 	try {
+					   pandoraLog ("0");
+
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &nic_info, wmi_svc,
+				     L".ExecQuery(%S)",
+				     L"SELECT IPAddress FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True"));
+
+		FOR_EACH (nic_info_item, nic_info, NULL) {
+		    dhGetValue (L"%v", &ip_addresses, nic_info_item,
+				    L".IPAddress");
+			
+		    if (&ip_addresses != NULL)
+		    {
+               ret = getIPs(&ip_addresses);
+			   if(ret != "0.0.0.0") {
+					break;
+			   }
+            }			
+		} NEXT_THROW (nic_info_item);
+	} catch (string errstr) {
+		pandoraLog ("runWMIQuery error. %s", errstr.c_str ());
+	}
+
+	return ret;
+}

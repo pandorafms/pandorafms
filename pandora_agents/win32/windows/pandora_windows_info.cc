@@ -68,6 +68,16 @@ Pandora_Windows_Info::getSystemName () {
 }
 
 /** 
+ * Get the address of the running system.
+ * 
+ * @return The system IP address.
+ */
+string
+Pandora_Windows_Info::getSystemAddress () {
+	return Pandora_Wmi::getSystemAddress ();
+}
+
+/** 
  * Get the system path of the running operating system.
  * 
  * @return The system path of the operating system.

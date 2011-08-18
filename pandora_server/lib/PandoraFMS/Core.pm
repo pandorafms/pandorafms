@@ -166,7 +166,7 @@ our @EXPORT = qw(
 	pandora_server_statistics
 	pandora_self_monitoring
 	pandora_process_policy_queue
-    get_agent_from_addr
+	get_agent_from_addr
 	@ServerTypes
 	);
 
@@ -2433,8 +2433,11 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" </module>";
 
 	my $load_average = load_average();
-	my $free_mem = free_mem();;
+	$load_average = '' unless defined ($load_average);
+	my $free_mem = free_mem();
+	$free_mem = '' unless defined ($load_average);
 	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
+	$free_disk_spool = '' unless defined ($free_disk_spool);
 	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = 0 AND name = '".$pa_config->{"servername"}."'");
 
 	# Number of unknown agents

@@ -1,3 +1,8 @@
+2011-08-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/Core.pm: Fixed some warnings on undefined values.
+
 2011-08-17  Sancho Lerena <slerena@artica.es>
 
 	* SNMPServer.pm: Custom value and custom type are not used anymore.

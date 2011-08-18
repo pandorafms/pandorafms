@@ -1,3 +1,8 @@
+2011-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: fixed the snmpwalk for version 3, the function
+	need empty string instead null.
+
 2011-08-18  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_servers.php: SNMP Server is SNMP Trap server.

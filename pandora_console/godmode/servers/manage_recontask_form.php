@@ -27,6 +27,21 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ($config['homedir'].'/include/functions_users.php');
 
+if (is_ajax ()) {
+	$get_explanation = (bool) get_parameter('get_explanation', 0);
+	
+	if ($get_explanation) {
+		$id = (int) get_parameter('id', 0);
+		
+		$explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id);
+		
+		echo io_safe_output($explanation);
+		
+		return;
+	}
+	return;
+}
+
 if (isset ($_GET["update"])) { // Edit mode
 	$id_rt = (int) get_parameter_get ("update");
 	$row = db_get_row ("trecon_task","id_rt",$id_rt);
@@ -151,7 +166,8 @@ $table->data[5][1] = html_print_select_from_sql ('SELECT id_np, name FROM tnetwo
 
 // Recon script
 $table->data[6][0] = "<b>".__('Recon script');
-$table->data[6][1] = html_print_select_from_sql ('SELECT id_recon_script, name FROM trecon_script', "id_recon_script", $id_recon_script, '', '', '', true);
+$table->data[6][1] = html_print_select_from_sql ('SELECT id_recon_script, name FROM trecon_script', 
+	"id_recon_script", $id_recon_script, 'get_explanation_recon_script($(\'#id_recon_script\').val())', '', '', true);
 
 
 // OS
@@ -179,42 +195,52 @@ $table->data[10][1] = html_print_select ($values, "create_incident", $create_inc
 $table->data[11][0] = "<b>".__('SNMP Default community');
 $table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
 
+// SNMP default community
+$table->data[11][0] = "<b>".__('SNMP Default community');
+$table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
+
+
+$table->data[12][0] = "<b>" . __('Explanation') . "</b>";
+$table->data[12][1] = "<span id='spinner_layour' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
+"</span>" . html_print_textarea('explanation', 4, 40, '', 'style="width: 288px;"', true);
+
+
 // Field1
-$table->data[12][0] = "<b>".__('Script field #1');
-$table->data[12][1] =  html_print_input_text ('field1', $field1, '', 40, 0, true);
+$table->data[13][0] = "<b>".__('Script field #1');
+$table->data[13][1] =  html_print_input_text ('field1', $field1, '', 40, 0, true);
 
 // Field2
-$table->data[13][0] = "<b>".__('Script field #2');
-$table->data[13][1] =  html_print_input_text ('field2', $field2, '', 40, 0, true);
+$table->data[14][0] = "<b>".__('Script field #2');
+$table->data[14][1] =  html_print_input_text ('field2', $field2, '', 40, 0, true);
 
 // Field3
-$table->data[14][0] = "<b>".__('Script field #3');
-$table->data[14][1] =  html_print_input_text ('field3', $field3, '', 40, 0, true);
+$table->data[15][0] = "<b>".__('Script field #3');
+$table->data[15][1] =  html_print_input_text ('field3', $field3, '', 40, 0, true);
 
 // Field4
-$table->data[15][0] = "<b>".__('Script field #4');
-$table->data[15][1] =  html_print_input_text ('field4', $field4, '', 40, 0, true);
+$table->data[16][0] = "<b>".__('Script field #4');
+$table->data[16][1] =  html_print_input_text ('field4', $field4, '', 40, 0, true);
 
 
 // Comments
-$table->data[16][0] = "<b>".__('Comments');
-$table->data[16][1] =  html_print_input_text ('description', $description, '', 45, 0, true);
+$table->data[17][0] = "<b>".__('Comments');
+$table->data[17][1] =  html_print_input_text ('description', $description, '', 45, 0, true);
 
 // OS detection
-$table->data[17][0] = "<b>".__('OS detection');
-$table->data[17][1] =  html_print_checkbox ('os_detect', 1, $os_detect, true);
+$table->data[18][0] = "<b>".__('OS detection');
+$table->data[18][1] =  html_print_checkbox ('os_detect', 1, $os_detect, true);
 
 // Name resolution
-$table->data[18][0] = "<b>".__('Name resolution');
-$table->data[18][1] =  html_print_checkbox ('resolve_names', 1, $resolve_names, true);
+$table->data[19][0] = "<b>".__('Name resolution');
+$table->data[19][1] =  html_print_checkbox ('resolve_names', 1, $resolve_names, true);
 
 // Parent detection
-$table->data[19][0] = "<b>".__('Parent detection');
-$table->data[19][1] =  html_print_checkbox ('parent_detection', 1, $parent_detection, true);
+$table->data[20][0] = "<b>".__('Parent detection');
+$table->data[20][1] =  html_print_checkbox ('parent_detection', 1, $parent_detection, true);
 
 // Parent recursion
-$table->data[20][0] = "<b>".__('Parent recursion');
-$table->data[20][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true);
+$table->data[21][0] = "<b>".__('Parent recursion');
+$table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true);
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
@@ -246,6 +272,9 @@ $(document).ready (function () {
 		if(this.value == 'recon_script') {
 				$(".recon_script").attr ('style', '');
 				$(".network_sweep").attr ('style', 'display:none');
+				$("#textarea_explanation").css('display', 'none');
+				$("#spinner_layour").css('display', '');
+				get_explanation_recon_script($("#id_recon_script").val());
 		}
 		else if(this.value == 'network_sweep') {
 				$(".network_sweep").attr ('style', '');
@@ -253,5 +282,19 @@ $(document).ready (function () {
 		}
 	});
 });
+
+function get_explanation_recon_script(id) {
+	jQuery.post ("ajax.php",
+		{"page" : "godmode/servers/manage_recontask_form",
+		"get_explanation" : 1,
+		"id" : id
+		},
+		function (data, status) {
+			$("#spinner_layour").css('display', 'none');
+			$("#textarea_explanation").css('display', '');
+			$("#textarea_explanation").val(data);
+		}
+	);
+}
 /* ]]> */
 </script>

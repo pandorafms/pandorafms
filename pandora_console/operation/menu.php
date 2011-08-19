@@ -31,6 +31,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	enterprise_hook ('metaconsole_menu');
 	enterprise_hook ('dashboard_menu');
 	enterprise_hook ('services_menu');
+	enterprise_hook ('networkmap_console');
 
 	//View agents
 	$menu["estado"]["text"] = __('View agents');

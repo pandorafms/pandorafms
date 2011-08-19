@@ -1,3 +1,8 @@
+2011-08-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/styles/menu.css, operation/menu.php, images/plotchart.png: move
+	to the upper level the Networkmap Console, and added image icon.
+
 2011-08-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: add more explanation in the

@@ -2435,7 +2435,7 @@ sub pandora_self_monitoring ($$) {
 	my $load_average = load_average();
 	$load_average = '' unless defined ($load_average);
 	my $free_mem = free_mem();
-	$free_mem = '' unless defined ($load_average);
+	$free_mem = '' unless defined ($free_mem);
 	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
 	$free_disk_spool = '' unless defined ($free_disk_spool);
 	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = 0 AND name = '".$pa_config->{"servername"}."'");

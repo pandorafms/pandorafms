@@ -1,3 +1,7 @@
+2011-08-19  Koichiro KIKUCHI  <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Fixed typo.
+
 2011-08-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm,

@@ -1,3 +1,15 @@
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_agent.conf: Ready to get the server string from the
+	installer
+
+	* installer/pandora.mpi: Updated installer, version, some strings
+	and added the question to get the agent group.
+
+	* installer/pandora.ico: New icon for windows shortcuts. Nice! :)
+
+	* pandora.cc: Updated version.
+
 2011-08-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_plugin.cc: Set a virtually infinite timeout

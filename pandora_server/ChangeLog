@@ -1,3 +1,9 @@
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control
+	pandora_server/DEBIAN/make_deb_package.sh: Updated version.
+
+
 2011-08-19  Koichiro KIKUCHI  <koichiro@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed typo.

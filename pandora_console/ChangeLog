@@ -1,6 +1,15 @@
 2011-08-19  Sancho Lerena <slerena@artica.es>
 
-	*  pandora_console.spec
+	* pandoradb_data.sql: Added recon script SNMP by default.
+
+	* DEBIAN/control,
+	DEBIAN/make_deb_package.sh: Updated version (4.0RC1)
+
+	* operation/agentes/graphs.php: By default will show only AVG graphs.
+
+	* config_process.php: Updated version.
+
+	* pandora_console.spec, 
 	pandora_console.redhat.spec: Updated specs for 4.0RC1 release.
 
 2011-08-19  Sancho Lerena <slerena@artica.es>

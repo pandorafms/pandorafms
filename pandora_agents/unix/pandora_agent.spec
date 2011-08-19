@@ -2,7 +2,7 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     3.2
+%define version     4.0RC1
 %define release     1
 
 Summary:            Pandora FMS Linux agent, PERL version
@@ -14,7 +14,7 @@ Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://pandorafms.org
 Group:              System/Monitoring
-Packager:           Manuel Arostegui <manuel@todo-linux.com>
+Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch

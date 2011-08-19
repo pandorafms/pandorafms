@@ -1,3 +1,7 @@
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agents/unix/pandora_agent.spec: Updated spec.
+
 2011-07-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Set additional module configuration parameters

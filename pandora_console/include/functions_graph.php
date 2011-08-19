@@ -730,6 +730,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	$time = array ();
 	$data = array ();
 	
+	$empty_data = true;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
@@ -755,13 +756,21 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 						'utimestamp > '.$bottom,
 						'utimestamp < '.$top));
 				break;
-		}	
+		}
+		
+		if ($data[$name]['data'] != 0) {
+			$empty_data = false;
+		}
 	}
 	
-	echo area_graph($config['flash_charts'], $data, $width, $height,
-		null, null, null, "images/image_problem.opaque.png", "", "", "",
-		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], "");
+	if ($empty_data)
+		echo fs_error_image();
+	else {
+		echo area_graph($config['flash_charts'], $data, $width, $height,
+			null, null, null, "images/image_problem.opaque.png", "", "", "",
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], "");
+	}
 }
 
 /**

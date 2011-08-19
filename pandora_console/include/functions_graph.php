@@ -1362,6 +1362,15 @@ function grafico_eventos_usuario ($width, $height) {
 		$events = array();
 	}
 	
+	foreach($events as $event) {
+		if($event['id_usuario'] == '0') {
+			$data[__('System')] = $event['events'];
+		}
+		else {
+			$data[$event['id_usuario']] = $event['events'];
+		}
+	}
+
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);

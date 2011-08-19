@@ -87,6 +87,9 @@
 	background-position: 4px 8px;
 }
 /* Icons specified here */
+#icon_oper-networkconsole {
+ 	background-image: url(../../images/plotchart.png);
+}
 #icon_oper-dashboard {
  	background-image: url(../../images/house.png);
 }

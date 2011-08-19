@@ -1,3 +1,8 @@
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process.php: Fixed problem with timezone on page load
+	in setup.
+
 2011-08-19  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_graph.php: in function "graphic_agentaccess" fixed when

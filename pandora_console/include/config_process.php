@@ -25,6 +25,8 @@
 $build_version = 'PC110121';
 $pandora_version = 'v4.0dev';
 
+date_default_timezone_set("Europe/Berlin");
+
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;
 
@@ -78,6 +80,12 @@ require_once ($ownDir. 'functions_config.php');
 
 config_process_config();
 
+// Set a the system timezone default 
+if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
+	$config["timezone"] = "Europe/Berlin";
+}
+date_default_timezone_set($config["timezone"]);
+
 require_once ($ownDir . 'streams.php');
 require_once ($ownDir . 'gettext.php');
 
@@ -87,13 +95,6 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 else {
 	$config["remote_addr"] = null;
 }
-
-// Set a the system timezone default 
-if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
-	$config["timezone"] = "Europe/Berlin";
-}
-
-date_default_timezone_set($config["timezone"]);
 
 // Save the global values
 $config["global_block_size"] = $config["block_size"];

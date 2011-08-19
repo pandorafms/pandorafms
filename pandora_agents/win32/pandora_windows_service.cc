@@ -83,11 +83,10 @@ Pandora_Windows_Service::setValues (const char * svc_name,
  */
 Pandora_Windows_Service::~Pandora_Windows_Service () {
 	
-	if(conf->getValue("proxy_mode") != "") {
-		killTentacleProxy();
-	}
-
 	if (this->conf != NULL) {
+		if(conf->getValue("proxy_mode") != "") {
+			killTentacleProxy();
+		}
 		delete this->conf;
 	}
 	

@@ -1,5 +1,12 @@
 2011-08-19  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/servers/manage_recontask_form.php: add more explanation in the
+	scripts when select script.
+	
+	Fixes: #3393861
+
+2011-08-19  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php: Fixed event graph by user
 	into event statistics
 

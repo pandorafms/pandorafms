@@ -2,7 +2,7 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     3.2
+%define version     4.0RC1
 %define release     1
 
 %define httpd_name      httpd
@@ -36,6 +36,7 @@ Requires:           php-mysql, php-ldap, php-mbstring, php, php-common
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
 Requires:           graphviz
 Provides:           %{name}-%{version}
+
 
 %description
 The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the final user, and that will allows you to administer the system.

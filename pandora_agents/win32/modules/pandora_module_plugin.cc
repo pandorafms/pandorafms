@@ -19,7 +19,8 @@
 
 #include "pandora_module_plugin.h"
 #include "../pandora_strutils.h"
-#include <windows.h> 
+#include <windows.h>
+#include <limits.h>
 
 using namespace Pandora;
 using namespace Pandora_Strutils;
@@ -34,6 +35,7 @@ using namespace Pandora_Modules;
 Pandora_Module_Plugin::Pandora_Module_Plugin (string name, string plugin)
 					 : Pandora_Module_Exec ("plugin", plugin) {
 	this->setKind (module_plugin_str);
+	this->setTimeout (INT_MAX);
 }
 
 /** 

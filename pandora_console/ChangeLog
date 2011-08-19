@@ -1,5 +1,10 @@
 2011-08-19  Sancho Lerena <slerena@artica.es>
 
+	*  pandora_console.spec
+	pandora_console.redhat.spec: Updated specs for 4.0RC1 release.
+
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
 	* include/config_process.php: Fixed problem with timezone on page load
 	in setup.
 

@@ -1,5 +1,12 @@
 2011-08-19  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: in function "graphic_agentaccess" fixed when
+	the graph is empty, now show the standar Pandora image "no data to show".
+	
+	Fixes: #3393224
+
+2011-08-19  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/styles/menu.css, operation/menu.php, images/plotchart.png: move
 	to the upper level the Networkmap Console, and added image icon.
 

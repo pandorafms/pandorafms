@@ -18,8 +18,7 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
-PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-BuildRequires:      sysvinit cron rsyslog sysconfig
+PreReq:             /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 Requires:           coreutils unzip
 AutoReq:            0
 Provides:           %{name}-%{version}
@@ -67,10 +66,9 @@ fi
 rm -Rf $RPM_BUILD_ROOT
 
 %pre
-if [ "`id pandora | grep uid | wc -l`" = 0 ]
-then
-        /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
-fi
+/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+exit 0
+
 
 %post
 if [ ! -d /etc/pandora ] ; then

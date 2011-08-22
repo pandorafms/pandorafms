@@ -1,3 +1,9 @@
+2011-08-22  Sergio Martin <sergio.martin@artica.es>
+
+	* win32/bin/PandoraAgent.exe: Updated the executable
+	with the last code build fixing "runWMIQuery error"
+	for bug 3394721
+
 2011-08-18  Sergio Martin <sergio.martin@artica.es>
 
 	* win32/windows/pandora_windows_info.h

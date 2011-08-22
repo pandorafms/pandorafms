@@ -76,7 +76,7 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 		$conttotal ++;
 	}
 	
-	if ($countSuccess > 0) {
+	if ($contsuccess > 0) {
 		db_pandora_audit("Masive management", "Add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
 	}
 	else {

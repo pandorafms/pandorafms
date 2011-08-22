@@ -49,6 +49,7 @@ if (is_ajax ()) {
 }
 
 $update_agents = get_parameter ('update_agents', 0);
+$recursion = get_parameter ('recursion');
 
 if ($update_agents) {
 	$values = array();
@@ -186,12 +187,16 @@ $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '85%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true);
+$table->data[0][2] = __('Group recursion');
+$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
@@ -509,13 +514,21 @@ $(document).ready (function () {
 			delay: 200
 		}
 	);
+
+	var recursion;
+	$("#checkbox-recursion").click(function (){
+		recursion = this.checked ? 1 : 0;
+		$("#id_group").trigger("change");
+	});
 	
 	$("#id_group").pandoraSelectGroupAgent ({
-		agentSelect: "select#id_agents"
+		agentSelect: "select#id_agents",
+		recursion: function() {return recursion}
 	});
 	
 	$("#id_group").pandoraSelectGroupAgentDisabled ({
-		agentSelect: "select#id_agents"
+		agentSelect: "select#id_agents",
+		recursion: function() {return recursion}
 	});
 });
 </script>

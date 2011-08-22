@@ -305,7 +305,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
  *
  * @return array All the agents which have a module with the name given.
  */
-function modules_get_agents_with_module_name ($module_name, $id_group, $filter = false, $fields = 'tagente.*') {
+function modules_get_agents_with_module_name ($module_name, $id_group, $filter = false, $fields = 'tagente.*', $childGroups = false) {
 	if (empty ($module_name))
 		return false;
 	
@@ -313,7 +313,7 @@ function modules_get_agents_with_module_name ($module_name, $id_group, $filter =
 		$filter = array ();
 	$filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
 	$filter['tagente_modulo.nombre'] = $module_name;
-	$filter['tagente.id_agente'] = array_keys (agents_get_group_agents ($id_group, false, "none"));
+	$filter['tagente.id_agente'] = array_keys (agents_get_group_agents ($id_group, false, "none", false, $childGroups));
 	
 	return db_get_all_rows_filter ('tagente, tagente_modulo',
 		$filter, $fields);

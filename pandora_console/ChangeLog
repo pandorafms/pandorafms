@@ -1,3 +1,8 @@
+2011-08-22  SAncho Lerena <slerena@ærtica.es>
+
+	* pandora_console.spec: Updated spec for being used in Suse build
+	service.
+
 2011-08-19  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Added recon script SNMP by default.

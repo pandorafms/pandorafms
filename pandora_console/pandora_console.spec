@@ -20,12 +20,12 @@ Release:            %{release}
 License:            GPL
 Vendor:             Artica ST <info@artica.es>
 Source0:            %{name}-%{version}.tar.gz
-URL:                http://www.pandorafms.com
-Group:              Productivity/Networking/Web/Utilities
-Packager:           Manuel Arostegui <manuel@todo-linux.com>
+URL:                http://www.pandorafms.org
+Group:              System/Monitoring
+Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:              /srv/www/htdocs
 BuildRoot:          %{_tmppath}/%{name}
-BuildArchitectures: noarch
+BuildArch:          noarch
 AutoReq:            0
 Requires:           apache2, apache2-mod_php5
 Requires:           php >= 4.3.0
@@ -84,4 +84,4 @@ rm -Rf %{prefix}/pandora_console
 %{prefix}/pandora_console
 
 %defattr(770,pandora,www)
-/var/spool/pandora/data_in
+/var/spool/pandora

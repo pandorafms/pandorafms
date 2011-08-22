@@ -17,8 +17,9 @@ Group:              System/Monitoring
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-buildroot
-BuildArchitectures: noarch 
-Requires(pre):      /usr/sbin/useradd
+BuildArch:          noarch 
+PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+BuildRequires:      sysvinit cron rsyslog sysconfig
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
@@ -85,12 +86,15 @@ rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 rm -fr $RPM_BUILD_ROOT
 
 %pre
-/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+if [ "`id pandora | grep uid | wc -l`" = 0 ]
+then
+	/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+fi
+
 if [ -e "/etc/pandora/pandora_server.conf" ]
 then
 	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
 fi
-exit 0
 
 %post
 chkconfig pandora_server on 

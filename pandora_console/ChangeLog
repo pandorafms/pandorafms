@@ -1,3 +1,13 @@
+2011-08-22  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/javascript/jquery.pandora.controls.js,
+	godmode/groups/group_list.php,
+	godmode/massive/massive_delete_agents.php,
+	godmode/massive/massive_edit_agents.php,
+	godmode/massive/massive_delete_modules.php,
+	include/functions_modules.php: Added group recursion feature,
+	it allows to search agents in child groups.
+	
 2011-08-22  SAncho Lerena <slerena@ærtica.es>
 
 	* pandora_console.spec: Updated spec for being used in Suse build

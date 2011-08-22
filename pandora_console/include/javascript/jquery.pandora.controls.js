@@ -7,6 +7,7 @@
 		pandoraSelectGroupAgent: new function() {
 			this.defaults = {
 				agentSelect: "select#id_agent",
+				recursion: 0,
 				loading: "#agent_loading",
 				callbackBefore: dummyFunc,
 				callbackPre: dummyFunc,
@@ -33,7 +34,8 @@
 						jQuery.post ("ajax.php",
 							{"page" : "godmode/groups/group_list",
 							"get_group_agents" : 1,
-							"id_group" : this.value
+							"id_group" : this.value,
+							"recursion" : config.recursion
 							},
 							function (data, status) {
 								jQuery.each (data, function (id, value) {
@@ -60,6 +62,7 @@
 		pandoraSelectGroupAgentDisabled: new function() {
 			this.defaults = {
 				agentSelect: "select#id_agent",
+				recursion: 0,
 				loading: "#agent_loading",
 				callbackBefore: dummyFunc,
 				callbackPre: dummyFunc,
@@ -87,7 +90,8 @@
 							{"page" : "godmode/groups/group_list",
 							"get_group_agents" : 1,
 							"disabled" : 1,
-							"id_group" : this.value
+							"id_group" : this.value,
+							"recursion" : config.recursion
 							},
 							function (data, status) {
 								jQuery.each (data, function (id, value) {

@@ -34,11 +34,13 @@ if (is_ajax ()) {
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
 		$module_name = (string) get_parameter ('module_name');
+		$recursion = (int) get_parameter ('recursion');
 		
 		$agents_modules = modules_get_agents_with_module_name ($module_name, $id_group,
 			array ('delete_pending' => 0,
 				'tagente_modulo.disabled' => 0),
-			array ('tagente.id_agente', 'tagente.nombre'));
+			array ('tagente.id_agente', 'tagente.nombre'),
+			$recursion);
 		
 		echo json_encode (index_array ($agents_modules, 'id_agente', 'nombre'));
 		return;
@@ -79,6 +81,7 @@ function process_manage_delete ($module_name, $id_agents) {
 $id_group = (int) get_parameter ('id_group');
 $id_agents = (array) get_parameter ('id_agents');
 $module_name = (string) get_parameter ('module_name');
+$recursion = get_parameter ('recursion');
 
 $delete = (bool) get_parameter_post ('delete');
 
@@ -104,7 +107,9 @@ $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '85%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
 
 $table->data = array ();
 
@@ -121,6 +126,8 @@ $table->data[0][1] = html_print_select($modulesSelect,
 $table->data[1][0] = __('Group');
 $table->data[1][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true, false, true, '', empty ($module_name));
+$table->data[1][2] = __('Group recursion');
+$table->data[1][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
 $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
@@ -159,6 +166,12 @@ $(document).ready (function () {
 			$("#id_group, #id_agents").disable ();
 		}
 	});
+
+	$("#checkbox-recursion").click(function () {
+		if ($("#module_name").attr ("value") != "") {
+			$("#id_group").trigger("change");
+		}
+	});
 	
 	$("#id_group").change (function () {
 		var $select = $("#id_agents").disable ();
@@ -169,7 +182,8 @@ $(document).ready (function () {
 			{"page" : "godmode/massive/massive_delete_modules",
 			"get_agents" : 1,
 			"id_group" : this.value,
-			"module_name" : $("#module_name").attr ("value")
+			"module_name" : $("#module_name").attr ("value"),
+			"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0
 			},
 			function (data, status) {
 				options = "";

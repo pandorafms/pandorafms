@@ -66,6 +66,7 @@ if (is_ajax ()) {
 		$disabled = (int) get_parameter ('disabled', 0);
 		$search = (string) get_parameter ('search', '');
 		$keycount = (int) get_parameter ('keycount', 0);
+		$recursion = (int) get_parameter ('recursion', 0);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
@@ -81,7 +82,7 @@ if (is_ajax ()) {
 		}
 			
 		$agents['keycount'] = $keycount;
-		$agents = $agents + agents_get_group_agents ($id_group, $filter, "none");
+		$agents = $agents + agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
 		echo json_encode ($agents);
 		return;
 	}

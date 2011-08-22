@@ -1,3 +1,7 @@
+2011-08-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Read the configuration option snmp_threads.
+
 2011-08-22  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Update of spec to be used in Opensuse Build

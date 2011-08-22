@@ -608,6 +608,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^event_window\s([0-9]*)/i) {
 			$pa_config->{'event_window'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^snmp_threads\s([0-9]*)/i) {
+			$pa_config->{'snmp_threads'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^block_size\s([0-9]*)/i) {
 			$pa_config->{'block_size'}= clean_blank($1);
 		}

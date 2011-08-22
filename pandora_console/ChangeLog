@@ -1,3 +1,8 @@
+2011-08-22  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: fixed the create relative image for
+	other installations such as in other paths into www directory.
+
 2011-08-22  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/javascript/jquery.pandora.controls.js,

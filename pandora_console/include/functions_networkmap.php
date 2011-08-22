@@ -404,6 +404,8 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 
 // Returns a node definition
 function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
+	global $config;
+	
 	$status = agents_get_status($agent['id_agente']);
 
 	// Set node status
@@ -434,13 +436,14 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
 	if ($simple == 0){
 		// Set node icon
 		$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true);
-		$img_node = str_replace('/pandora_console/', '', $img_node);
+		$img_node = str_replace($config['homeurl'] . '/', '', $img_node);
 
 		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . html_print_image($img_node, true, false, false, true) . '</TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
-	} else {
+	}
+	else {
 		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
 	return $node;
@@ -475,7 +478,8 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 		 <TR><TD>'.$module['nombre'].'</TD></TR></TABLE>>,
 		 shape="circle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
-	} else {
+	}
+	else {
 		$node = $module['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="circle", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
 	}
 	return $node;

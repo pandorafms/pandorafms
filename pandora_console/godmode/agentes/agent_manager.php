@@ -27,7 +27,7 @@ if (is_ajax ()) {
 		
 		$filter = array ();
 		
-		switch ($config['db_type']){
+		switch ($config['dbtype']){
 			case "mysql":
 			case "postgresql":
 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';

@@ -301,8 +301,8 @@ END;;
 --
 BEGIN
 LOCK TABLE tnews IN EXCLUSIVE MODE;
-INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (1,'admin','Welcome to Pandora FMS 3.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.<br><br>The Pandora FMS Team.',current_timestamp);
-INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (2,'admin','New GIS Feature','Try our new GIS representation, activate GIS in Setup to see new available options.',current_timestamp);
+INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (1,'admin','Welcome to Pandora FMS 34.0','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.<br><br>The Pandora FMS Team.',current_timestamp);
+INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',current_timestamp);
 COMMIT;
 END;;
 

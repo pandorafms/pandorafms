@@ -1,3 +1,8 @@
+2011-08-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: added parameter to cut the names
+	by default is true.
+
 2011-08-23  KIKUCHI Koichiro  <koichiro@rworks.jp>
 
 	* operation/agentes/exportdata.php: Fixed format character for default

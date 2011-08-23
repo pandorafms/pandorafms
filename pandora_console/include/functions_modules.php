@@ -302,6 +302,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
  * @param int Group id of the agents. False will be any group.
  * @param array Extra filter.
  * @param mixed Fields to be returned. All agents field by default
+ * @param bool Flag to search agents in child groups.
  *
  * @return array All the agents which have a module with the name given.
  */

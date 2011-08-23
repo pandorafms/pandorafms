@@ -430,7 +430,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	}
 
 	// Short name
-	$name = io_safe_output(strtolower ($agent["nombre"]));
+	$name = io_safe_output($agent["nombre"]);
 	if ((strlen ($name) > 16) && ($cut_names)) {
 		$name = substr ($name, 0, 16) . '...';
 	}

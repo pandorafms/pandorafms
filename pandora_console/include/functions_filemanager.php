@@ -464,7 +464,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	
 	$files = filemanager_list_dir ($real_directory);
 	
-	$table->width = '90%';
+	$table->width = '98%';
 	$table->class = 'listing';
 	
 	$table->colspan = array ();

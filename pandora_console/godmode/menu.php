@@ -55,6 +55,8 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	
 	$sub["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
 	
+	$sub["godmode/massive/massive_operations&amp;tab=massive_users"]["text"] = __('Users operations');
+	
 	enterprise_hook('massivepolicies_submenu');
 	
 	$menu["gmassive"]["sub"] = $sub;

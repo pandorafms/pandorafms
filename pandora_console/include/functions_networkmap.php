@@ -42,7 +42,9 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 }
 
 // Generate a dot graph definition for graphviz
-function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $id_networkmap = 0, $show_snmp_modules = 0) {
+function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12,
+	$layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0,
+	$regen = 1, $pure = 0, $id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true) {
 	$parents = array();
 	$orphans = array();
 
@@ -133,7 +135,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 
 		switch($node['type']){
 			case 'agent':
-				$graph .= networkmap_create_agent_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, $cut_names)."\n\t\t";
 				break;
 			case 'module':
 				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
@@ -403,7 +405,7 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 }
 
 // Returns a node definition
-function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
+function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true) {
 	global $config;
 	
 	$status = agents_get_status($agent['id_agente']);
@@ -429,7 +431,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10) {
 
 	// Short name
 	$name = io_safe_output(strtolower ($agent["nombre"]));
-	if (strlen ($name) > 16) {
+	if ((strlen ($name) > 16) && ($cut_names)) {
 		$name = substr ($name, 0, 16) . '...';
 	}
 

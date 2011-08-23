@@ -14,7 +14,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
--- Database Data for Pandora FMS 3.2
+-- Database Data for Pandora FMS 4.0dev
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -262,8 +262,12 @@ SELECT setval('tusuario_perfil_id_up_seq', (SELECT (SELECT MAX(id_up) FROM tusua
 INSERT INTO "tperfil" VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1);
 SELECT setval('tperfil_id_perfil_seq', (SELECT (SELECT MAX(id_perfil) FROM tperfil)));
 
-INSERT INTO "tnews" ("id_news", "author", "subject", "text", "timestamp") VALUES (1,'admin','Welcome to Pandora FMS 3.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
-(2,'admin','New GIS Feature','Try our new GIS representation, activate GIS in Setup to see new available options.',NOW());
+--
+-- Dumping data for table "tnews"
+--
+
+INSERT INTO "tnews" ("id_news", "author", "subject", "text", "timestamp") VALUES (1,'admin','Welcome to Pandora FMS 4.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
+(2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',NOW());
 SELECT setval('tnews_id_news_seq', (SELECT (SELECT MAX(id_news) FROM tnews)));
 
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');

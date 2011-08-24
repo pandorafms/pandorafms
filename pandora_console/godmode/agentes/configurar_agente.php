@@ -905,8 +905,8 @@ if ($delete_module) { // DELETE agent module !
 if ($duplicate_module) { // DUPLICATE agent module !
 	$id_duplicate_module = (int) get_parameter_get ("duplicate_module",0);
 	$result = modules_copy_agent_module_to_agent ($id_duplicate_module,
-				modules_get_agentmodule_agent($id_duplicate_module),
-				__('copy of').' '.modules_get_agentmodule_name($id_duplicate_module));
+		modules_get_agentmodule_agent($id_duplicate_module),
+		io_safe_input(__('copy of').' '.modules_get_agentmodule_name($id_duplicate_module)));
 	
 	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	

@@ -1,3 +1,13 @@
+2011-08-24  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor.php: added javascript alert message
+	when the name in field and remote config is different.
+	
+	Fixes: #3397306
+
+	* godmode/agentes/configurar_agente.php: fixed when copy a module the name
+	now is safe input type.
+
 2011-08-24  Sancho Lerena <slerena@artica.es>
 
 	* include/help/en/help_snmp_alert_field1.php: New help page.

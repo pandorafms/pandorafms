@@ -265,6 +265,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 }
 global $__code_from;
 $__code_from = 'modules';
+$remote_conf = false;
 switch ($moduletype) {
 	case "dataserver":
 	case 1:
@@ -281,7 +282,8 @@ switch ($moduletype) {
 		if ($config['enterprise_installed'] && $remote_conf) {
 			if($id_agent_module) {
 				enterprise_include_once('include/functions_config_agents.php');
-				$configuration_data = enterprise_hook('config_agents_get_module_from_conf', array($id_agente, modules_get_agentmodule_name($id_agent_module)));
+				$configuration_data = enterprise_hook('config_agents_get_module_from_conf',
+					array($id_agente, io_safe_output(modules_get_agentmodule_name($id_agent_module))));
 			}
 			enterprise_include ('godmode/agentes/module_manager_editor_data.php');
 		}
@@ -358,10 +360,27 @@ if ($id_agent_module) {
 	html_print_input_hidden ('update_module', 1);
 	html_print_input_hidden ('id_agent_module', $id_agent_module);
 	html_print_input_hidden ('id_module_type', $id_module_type);
-} else {
+	
+	if ($config['enterprise_installed'] && $remote_conf) {
+		?>
+		<script type="text/javascript">
+		var check_remote_conf = true;
+		</script>
+		<?php
+	}
+}
+else {
 	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	html_print_input_hidden ('id_module', $moduletype);
 	html_print_input_hidden ('create_module', 1);
+	
+	if ($config['enterprise_installed'] && $remote_conf) {
+		?>
+		<script type="text/javascript">
+		var check_remote_conf = true;
+		</script>
+		<?php
+	}
 }
 echo '</div>';
 echo '</form>';
@@ -383,6 +402,24 @@ var no_plugin_lang = "<?php echo __('No plug-in provided') ?>";
 
 $(document).ready (function () {
 	configure_modules_form ();
+
+	$("#module_form").submit(function() {
+		if (check_remote_conf) {
+			//Check the name
+			name = $("#text-name").val();
+			remote_config = $("#textarea_configuration_data").val();
+
+			regexp_name = new RegExp('module_name\\s*' + name+"\n");
+
+			if (remote_config.match(regexp_name)) return true;
+			else {
+				alert("<?php echo __("Error, The field name and name in module_name in data configuration are difrerent.");?>");
+				return false;
+			}
+		}
+
+		return true;
+	});
 });
 /* ]]> */
 </script>

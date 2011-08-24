@@ -1,5 +1,12 @@
 2011-08-24  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/NmapParser.pm: Added to repository. Patched
+	  Nmap::Parser. See http://search.cpan.org/dist/Nmap-Parser/.
+
+	* lib/PandoraFMS/ReconServer.pm: Use Nmap::Parser.
+
+2011-08-24  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DataServer.pm: Exclude the datalist tag from the
 	  module's extended_info.
 

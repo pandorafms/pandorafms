@@ -1,3 +1,10 @@
+2011-08-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.preview.php: fixed the include of
+	php file.
+	
+	Fixes: #3396828
+
 2011-08-23  Sancho Lerena <slerena@artica.es>
 
 	* pandora_migrate_v3.2_to_v4.0.sql: Missing some alter sentences

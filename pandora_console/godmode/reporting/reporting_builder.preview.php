@@ -30,7 +30,7 @@ if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 }
 
 // Include with the functions to calculate each kind of report.
-require ("include/functions_reporting.php");
+require_once ("include/functions_reporting.php");
 require_once ('include/functions_modules.php');
 
 // Check if the report is a private report.

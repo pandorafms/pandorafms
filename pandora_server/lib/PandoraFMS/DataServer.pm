@@ -452,7 +452,8 @@ sub process_module_data ($$$$$$$$$) {
 	# Supported tags
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
 	            'min' => 0, 'descripcion' => 0, 'post_process' => 0, 'module_interval' => 0, 'min_critical' => 0,
-	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0};
+	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0,
+	            'datalist' => 0};
 
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';

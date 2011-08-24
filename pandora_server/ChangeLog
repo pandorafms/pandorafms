@@ -1,3 +1,8 @@
+2011-08-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Exclude the datalist tag from the
+	  module's extended_info.
+
 2011-08-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Read the configuration option snmp_threads.

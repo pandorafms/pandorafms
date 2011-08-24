@@ -62,11 +62,11 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 				case "mysql":
 				case "postgresql":
 					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
-				array('id_agente_modulo' => $id_module, 'disabled' => true));
+					array('id_agente_modulo' => $id_module, 'disabled' => true));
 					break;
 				case "oracle":
 					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
-				array('id_agente_modulo' => $id_module, 'disabled' => true), 'AND', false);
+					array('id_agente_modulo' => $id_module, 'disabled' => true), 'AND', false);
 					break;
 			}					
 		}
@@ -133,6 +133,22 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 			$result = db_process_sql_insert ('tagente_estado', $values, false);
 			break;
 	}
+	
+	if ($result !== false) { 
+		//Added the config data if necesary
+		enterprise_include_once('include/functions_config_agents.php');
+		
+		$id_agente = modules_get_agentmodule_agent($id_agent_module);
+		
+		$agent_md5 = md5 (agents_get_name($id_agente), false);
+		$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
+		
+		if ($remote_conf) {
+			$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
+				array($id_agente, $id_agent_module, $id_new_module));
+		}
+	}
+	
 	if ($result === false)
 		return false;
 	

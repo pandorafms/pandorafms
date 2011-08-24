@@ -19,13 +19,13 @@ require_once ("../include/config.php");
 require_once ("../include/functions.php");
 require_once ("../include/functions_html.php");
 ?>
-<html style="height:100%; margin: 0 0;"><head><title>
+<html style="height:100%; margin-top: 25px; margin-left: 15px; margin-right: 15px;"><head><title>
 <?php
 	echo __('Pandora FMS help system');
 ?>
 </title></head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
-<body style="background-color: #555555; height: 100%; margin: -10 0;">
+<body style="background-color: #555555; height: 100%; ">
 <?php
 
 $id = get_parameter ('id');
@@ -67,10 +67,10 @@ if (! $id || ! file_exists ($help_file)) {
 /* Show help */
 echo '<div id="main_help">';
 echo '<div>';
-echo '<span style="float:left; margin: 0px; padding: 0px">';
+echo '<span style="float:left; margin: 20px; padding: 0px">';
 echo html_print_image('images/pandora_textlogo.png', true, array("border" => '0'));
 echo "</span>";
-echo '<p style="text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
+echo '<p style="padding-right: 20px; padding-top: 20px; text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
 echo '</div>';
 echo '<hr width="100%" size="1" />';
 echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
@@ -78,7 +78,7 @@ echo '<div style="font-size: 12px; margin-left: 30px; margin-right:25px;">';
 require_once ($help_file);
 echo '</div>';
 echo '<br /><br /><hr width="100%" size="1" />';
-echo '<div style="background-color: #6E6E6E; font-family: verdana, arial; font-size: 11px;">';
+echo '<div style="padding: 15px; background-color: #6E6E6E; font-family: verdana, arial; font-size: 11px;">';
 include ('footer.php');
 echo '</div>';
 ?>

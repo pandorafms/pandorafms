@@ -1,3 +1,13 @@
+2011-08-24  Sancho Lerena <slerena@artica.es>
+
+	* include/help/en/help_snmp_alert_field1.php: New help page.
+
+	* include/help/en/help_module_definition.php: Fixed odd chars.
+
+	* images/groups_small/g_: Deleted unused icons.
+	
+	* images/groups_small/transmit.ok.png: Added margins and padding.
+	
 2011-08-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_modules.php: added the call to enterprise function for

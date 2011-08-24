@@ -36,6 +36,9 @@ use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
 use PandoraFMS::GIS qw(get_reverse_geoip_sql get_reverse_geoip_file get_random_close_point);
 
+# Patched Nmap::Parser. See http://search.cpan.org/dist/Nmap-Parser/.
+use PandoraFMS::NmapParser;
+
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 
@@ -128,38 +131,30 @@ sub data_consumer ($$) {
 	}
 
 	# Call nmap
-	my $nmap = $pa_config->{'nmap'};
-	my $subnet = $task->{'subnet'};
-	my @output = `$nmap -nsP $subnet`;
-	if ($? != 0) {
+	my $np = new Nmap::Parser;
+	eval {
+		$np->parsescan($pa_config->{'nmap'},'-nsP', ($task->{'subnet'}));
+	};
+	if ($@) {
 		update_recon_task ($dbh, $task_id, -1);
 		return;
 	}
 
-	# Parse nmap output
-	my $addr = '';
-	my $found_hosts = {};
-	foreach my $line (@output) {
-		chomp ($line);
-		
-		if ($line =~ m/Nmap scan report for (\S+).*/) {
-			$addr = $1;
-		} elsif ($line =~ m/Host is up \((\S+)s.*/) {
-			next unless ($addr ne '');
-			$found_hosts->{$addr} = 1;	
-			$addr = '';
-		}
-	}
-
-	# Process found hosts
+	# Parse scanned hosts
+	my $module_hash;
+	my @up_hosts = $np->all_hosts ('up');
+	my $total_up = scalar (@up_hosts);
 	my $progress = 0;
-	my $added = '';
-	my $total_hosts = scalar (keys (%{$found_hosts}));
-	foreach my $addr (keys (%{$found_hosts})) {
+	my $added_hosts = '';
+	foreach my $host (@up_hosts) {
 		$progress++;
 		
+		# Get agent address
+		my $addr = $host->addr();
+		next unless ($addr ne '0');
+		
 		# Update the recon task or break if it does not exist anymore
-		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_hosts / 100))) eq '0E0');
+		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_up / 100))) eq '0E0');
        
 		# Does the host already exist?
 		my $agent = get_agent_from_addr ($dbh, $addr);
@@ -282,19 +277,19 @@ sub data_consumer ($$) {
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
 
 		# Generate an event
-        pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
-                       $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
+		pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
+		               $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 		
-        $added .= $addr . ' ';
+		$added_hosts .= "$addr ";
 	}
 
 	# Create an incident with totals
-	if ($total_hosts > 0 && $task->{'create_incident'} == 1) {
-		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($total_hosts) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
+	if ($added_hosts ne '' && $task->{'create_incident'} == 1) {
+		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($added_hosts) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
 		if ($task->{'id_network_profile'} > 0) {
 			$text .= "Aditionally, and following instruction for this task, agent(s) has been created, with modules assigned to network component profile [" . get_nc_profile_name ($dbh, $task->{'id_network_profile'}) . "]. Please check this agent as soon as possible to verify it.";
 		}
-		$text .= "\n\nThis is the list of IP addresses found: \n\n$added";
+		$text .= "\n\nThis is the list of IP addresses found: \n\n$added_hosts";
 		pandora_create_incident ($pa_config, $dbh, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
 	}
 
@@ -378,7 +373,7 @@ sub tcp_scan ($$$) {
 	my ($pa_config, $host, $portlist) = @_;
 	
 	my $nmap = $pa_config->{'nmap'};
-    my $output = `$nmap -p$portlist $host | grep open | wc -l`;
+	my $output = `$nmap -p$portlist $host | grep open | wc -l`;
 	return 0 if ($? != 0);
 	return $output;
 }

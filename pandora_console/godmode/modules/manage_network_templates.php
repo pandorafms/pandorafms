@@ -34,6 +34,7 @@ require_once ('include/functions_network_profiles.php');
 
 $delete_profile = (bool) get_parameter ('delete_profile');
 $export_profile = (bool) get_parameter ('export_profile');
+$multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
 if ($delete_profile) { // if delete
 	$id = (int) get_parameter ('delete_profile');
@@ -42,6 +43,29 @@ if ($delete_profile) { // if delete
 	ui_print_result_message ($result,
 		__('Template successfully deleted'),
 		__('Error deleting template'));
+}
+
+if ($multiple_delete) {
+	$ids = (array)get_parameter('delete_multiple', array());
+	
+	db_process_sql_begin();
+	
+	foreach ($ids as $id) {
+		$result = network_profiles_delete_network_profile ($id);
+		
+		if ($result === false) {
+			db_process_sql_rollback();
+			break;
+		}
+	}
+	
+	if ($result !== false) {
+		db_process_sql_commit();
+	}
+		
+	ui_print_result_message ($result,
+		__('Successfully multiple deleted'),
+		__('Not deleted. Error deleting multiple data'));
 }
 
 if ($export_profile) {
@@ -146,10 +170,11 @@ $table->class = "databox";
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Description');
-$table->head[2] = __('Action');
+$table->head[2] = __('Action') .
+	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->size = array ();
 $table->size[1] = '65%';
-$table->size[2] = '10%';
+$table->size[2] = '15%';
 
 $table->align = array ();
 $table->align[2] = "center";
@@ -169,15 +194,20 @@ foreach ($result as $row) {
 		'&delete_profile=1&delete_profile=' . $row['id_np'] . '" ' .
 		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a>';
 	$data[2] .= '&nbsp;&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
-		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/lightning_go.png", true) . '</a>';
+		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/lightning_go.png", true) . '</a>' .
+		html_print_checkbox_extended ('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
 	
 	array_push ($table->data, $data);
 }
 
 if (!empty ($table->data)) {
 	echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates">';
+	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo '</form>';
+	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+	echo "</div>";
+	echo "</form>";
 } else {
 	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';	
 }
@@ -188,3 +218,13 @@ html_print_submit_button (__('Create'), "crt", '', 'class="sub next"');
 echo '</div></form>';
 
 ?>
+<script type="text/javascript">
+function check_all_checkboxes() {
+	if ($("input[name=all_delete]").attr('checked')) {
+		$(".check_delete").attr('checked', true);
+	}
+	else {
+		$(".check_delete").attr('checked', false);
+	}
+}
+</script>

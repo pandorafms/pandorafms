@@ -74,6 +74,7 @@ $delete_component = (bool) get_parameter ('delete_component');
 $new_component = (bool) get_parameter ('new_component');
 $duplicate_network_component = (bool) get_parameter ('duplicate_network_component');
 $delete_multiple = (bool) get_parameter('delete_multiple');
+$multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
 if ($duplicate_network_component) {
 	$source_id = (int) get_parameter ('source_id');
@@ -228,6 +229,31 @@ if ($delete_component) {
 	$id = 0;
 }
 
+if ($multiple_delete) {
+	$ids = (array)get_parameter('delete_multiple', array());
+	
+	db_process_sql_begin();
+	
+	foreach ($ids as $id) {
+		$result = network_components_delete_network_component ($id);
+		
+		if ($result === false) {
+			db_process_sql_rollback();
+			break;
+		}
+	}
+	
+	if ($result !== false) {
+		db_process_sql_commit();
+	}
+		
+	ui_print_result_message ($result,
+		__('Successfully multiple deleted'),
+		__('Not deleted. Error deleting multiple data'));
+	
+	$id = 0;
+}
+
 if ($id || $new_component) {
 	include_once ('godmode/modules/manage_network_components_form.php');
 	return;
@@ -322,9 +348,10 @@ $table->head[2] = __('Interval');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
-$table->head[6] = __('Action');
+$table->head[6] = __('Action') .
+	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->size = array ();
-$table->size[6] = '50px';
+$table->size[6] = '60px';
 $table->align[6] = 'center';
 $table->data = array ();
 
@@ -350,13 +377,20 @@ foreach ($components as $component) {
 	$data[6] .= '&nbsp;&nbsp;<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . 
 		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
-		html_print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>';
+		html_print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .
+		html_print_checkbox_extended ('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
 	
 	array_push ($table->data, $data);
 }
 
 if(isset($data)) {
+	echo "<form method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&search_id_group=0search_string='>";
+	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
+	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+	echo "</div>";
+	echo "</form>";
 }
 else {
 	echo "<div class='nf'>".__('There are no defined network components')."</div>";
@@ -374,3 +408,13 @@ html_print_submit_button (__('Create'), 'crt', false, 'class="sub next" style="m
 echo '</div>';
 echo '</form>'
 ?>
+<script type="text/javascript">
+function check_all_checkboxes() {
+	if ($("input[name=all_delete]").attr('checked')) {
+		$(".check_delete").attr('checked', true);
+	}
+	else {
+		$(".check_delete").attr('checked', false);
+	}
+}
+</script>

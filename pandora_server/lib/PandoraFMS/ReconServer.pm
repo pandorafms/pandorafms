@@ -131,7 +131,7 @@ sub data_consumer ($$) {
 	}
 
 	# Call nmap
-	my $np = new Nmap::Parser;
+	my $np = new PandoraFMS::NmapParser;
 	eval {
 		$np->parsescan($pa_config->{'nmap'},'-nsP', ($task->{'subnet'}));
 	};
@@ -304,66 +304,82 @@ sub data_consumer ($$) {
 sub get_host_parent {
 	my ($pa_config, $host, $dbh, $group, $max_depth, $resolve, $os_detect) = @_;
 
-	# Recursive exit condition
-	return 0 if ($max_depth == 0);
-
 	# Call nmap
-	my $nmap = $pa_config->{'nmap'};
-	#my $traceroutetimeout = $pa_config->{'networktimeout'};
-	my @output = `$nmap --traceroute -nsP $host`;
-	return 0 if ($? != 0);
+	my $np = new PandoraFMS::NmapParser;
+	eval {
+		$np->parsescan($pa_config->{'nmap'},'-nsP --traceroute', ($host));
+	};
+	if ($@) {
+		return 0;
+	}
 
-	# Parse nmap output
-	my $parent_addr = '';
-	foreach my $line (@output) {
-		chomp ($line);
+	# Get hops
+	my ($h) = $np->all_hosts ();
+	return 0 unless defined ($h);
+	my @all_hops = $h->all_trace_hops ();
+	my @hops;
+	
+	# Skip target host
+	pop (@all_hops);
+	
+	# Save the last max_depth hosts in reverse order
+	for (my $i = 0; $i < $max_depth; $i++) {
+		my $hop = pop (@all_hops);
+		last unless defined ($hop);
+		push (@hops, $hop);
+	}
+
+	# Parse hops from first to last
+	my $parent_id = 0;
+	for (my $i = 0; $i < $max_depth; $i++) {
+		my $hop = pop (@hops);
+		last unless defined ($hop);
 		
-		if ($line =~ m/\d+\s+\S+\s+ms\s+(\S+)/) {
-			next if ($1 eq '*' || $1 eq $host);
-			$parent_addr = $1;
+		# Get host information
+		my $host_addr = $hop->ipaddr ();
+
+		# Check if the host exists
+		my $agent_id = get_agent_from_addr ($dbh, $host_addr);
+		if (defined ($agent_id)) {
+			# Move to the next host
+			$parent_id = $agent_id;
+			next;
 		}
-	}
+
+
+		# Add the new address if it does not exist
+		my $addr_id = get_addr_id ($dbh, $host_addr);
+		$addr_id = add_address ($dbh, $host_addr) unless ($addr_id > 0);
 	
-	# No parent found
-	return 0 if ($parent_addr eq '');
+		# Should not happen
+		if ($addr_id <= 0) {		
+				logger($pa_config, "Could not add address '$host_addr'", 1);
+				return 0;
+		}
+
+		# Get the host's name
+		my $host_name = undef;
+		if ($resolve == 1){
+			$host_name = gethostbyaddr(inet_aton($host_addr), AF_INET);
+		}
+		$host_name = $host_addr unless defined ($host_name);
+		
+		# Detect host's OS
+		my $id_os = 11;
+		if ($os_detect == 1) {
+			$id_os = guess_os ($pa_config, $host_addr);
+		}
 	
-	# Check if the parent host exists
-	my $parent = get_agent_from_addr ($dbh, $parent_addr);
-	my $parent_id = defined ($parent) ? $parent->{'id_agente'} : 0;
-	return $parent_id if ($parent_id > 0);
-
-	# Add the new address if it does not exist
-	my $addr_id = get_addr_id ($dbh, $parent_addr);
-	$addr_id = add_address ($dbh, $parent_addr) unless ($addr_id > 0);
-	
-	# Should not happen
-	if ($addr_id <= 0) {		
-			logger($pa_config, "Could not add address '$parent_addr'", 1);
-			return 0;
+		# Create the host
+		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
+		$agent_id = 0 unless defined ($parent_id);
+		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+			          VALUES (?, ?)', $addr_id, $agent_id);
+		
+		# Move to the next host
+		$parent_id = $agent_id;
 	}
-
-	# Get the parent's name
-	my $parent_name = undef;
-	if ($resolve == 1){
-		$parent_name = gethostbyaddr(inet_aton($parent_addr), AF_INET);
-	}
-	$parent_name = $parent_addr unless defined ($parent_name);
-	
-	# Detect parent's OS
-	my $id_os = 11;
-	if ($os_detect == 1) {
-		$id_os = guess_os ($pa_config, $parent_addr);
-	}
-
-	# Get the parent's parent
-	my $parent_parent = get_host_parent ($pa_config, $parent_addr, $dbh, $group, $max_depth-1, $resolve, $os_detect);
-
-	# Create the parent
-	my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $parent_name, $parent_addr, $group, $parent_parent, $id_os, '', 300, $dbh);
-	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		          VALUES (?, ?)', $addr_id, $agent_id);
-
-	return $agent_id;
+	return $parent_id;
 }
 
 ##############################################################################

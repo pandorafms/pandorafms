@@ -79,6 +79,11 @@ $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 
 $table->data[1][0] = __('Icon');
 $files = list_files ('images/groups_small/', "png", 1, 0);
+foreach ($files as $key => $f) {//Remove from the list the non-desired .png files
+	if (strpos ($f, '.bad.png') !== false || strpos ($f, '.default.png') !== false || strpos ($f, '.ok.png') !== false || strpos ($f, '.warning.png') !== false) {
+		unset ($files[$key]);
+	}
+}
 $table->data[1][1] = html_print_select ($files, 'icon', $icon, '', 'None', '', true);
 $table->data[1][1] .= ' <span id="icon_preview">';
 if ($icon) {

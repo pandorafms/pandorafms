@@ -1,6 +1,21 @@
 2011-08-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
-	* ggodmode/modules/manage_network_templates.php,
+	* extensions/update_manager.php: check if the field "update_server_path" in
+	the table is the last path for Pandora v4 and update.
+	
+	* extensions/update_manager/main.php: rewrite the text to message for show
+	only Pandora FMS instead the Pandora FMS vX.
+	
+	*extensions/update_manager/sql/update_manager.sql,
+	extensions/update_manager/sql/update_manager.postgreSQL.sql,
+	extensions/update_manager/sql/update_manager.oracle.sql: update the
+	"update_server_path" to Pandora v4.
+
+	Fixes: #3394754
+
+2011-08-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_templates.php,
 	godmode/modules/manage_network_components.php,
 	godmode/modules/manage_nc_groups.php: added checkboxes in the elements in
 	the list and main checkbox to select all checkboxes, for to multiple delete.

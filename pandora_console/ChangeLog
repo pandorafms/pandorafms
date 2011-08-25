@@ -1,5 +1,11 @@
 2011-08-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/agentes/datos_agente.php: change the width of data table. 
+
+	Fixes: #3398098
+
+2011-08-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/update_manager.php: check if the field "update_server_path" in
 	the table is the last path for Pandora v4 and update.
 	

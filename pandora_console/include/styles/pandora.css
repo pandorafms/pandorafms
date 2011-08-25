@@ -913,8 +913,9 @@ a.big_data {
 	text-align: center;
 	font-weight: bold;
 	padding: 8px;
-	margin-top: 10px;
-	width: 98%;
+	margin-left: -1%;
+	width: 101%;
+	z-index: -1;
 }
 
 .notify a {

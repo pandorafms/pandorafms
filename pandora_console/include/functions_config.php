@@ -688,14 +688,14 @@ function config_check (){
             $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
         }
 
-        $remote_config = $remote_config . "/conf";
-        if (!is_writable ($remote_config)){
+        $remote_config_conf = $remote_config . "/conf";
+        if (!is_writable ($remote_config_conf)){
             $config["alert_cnt"]++;
             $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
         }
 
-        $remote_config = $remote_config . "/collections";
-        if (!is_writable ($remote_config)){
+        $remote_config_col = $remote_config . "/collections";
+        if (!is_writable ($remote_config_col)){
             $config["alert_cnt"]++;
             $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
         }

@@ -1,3 +1,13 @@
+2011-08-25  Tomas Palacios  <tomas.palacios@artica.es>
+
+	* pandora_server/pandora_server.spec
+	pandora_server/pandora_server.redhat.spec
+	pandora_server/pandora_server_installer
+	pandora_server/Makefile.PL
+	pandora_server/DEBIAN/control: Added perl-XML-Twig, perl-SNMP
+	and a missing libio-socket-inet6-perl reference.
+
+
 2011-08-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NmapParser.pm: Added to repository. Patched

@@ -36,6 +36,7 @@ $update = (bool) get_parameter ('update');
 $delete = (bool) get_parameter ('delete');
 $new = (bool) get_parameter ('new');
 $id = (int) get_parameter ('id');
+$multiple_delete = (bool)get_parameter('multiple_delete', 0);
 	
 if ($create) {
 	$name = (string) get_parameter ('name');
@@ -75,12 +76,43 @@ if ($update) {
 if ($delete) {
 	$result = db_process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
+		
+	if ($result !== false) $result = true;
+	else $result = false;
+		
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
 }
 
-if (($id || $new) && !$delete) {
+if ($multiple_delete) {
+	$ids = (array)get_parameter('delete_multiple', array());
+	
+	db_process_sql_begin();
+	
+	foreach ($ids as $id) {
+		$result = db_process_sql_delete ('tnetwork_component_group',
+			array ('id_sg' => $id));
+		
+		if ($result === false) {
+			db_process_sql_rollback();
+			break;
+		}
+	}
+	
+	if ($result !== false) {
+		db_process_sql_commit();
+	}
+	
+	if ($result !== false) $result = true;
+	else $result = false;
+		
+	ui_print_result_message ($result,
+		__('Successfully multiple deleted'),
+		__('Not deleted. Error deleting multiple data'));
+}
+
+if (($id || $new) && !$delete && !$multiple_delete) {
 	require_once ('manage_nc_groups_form.php');
 	return;
 }
@@ -107,15 +139,16 @@ $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Parent');
-$table->head[2] = __('Action');
+$table->head[2] = __('Action') .
+	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
 $table->align[2] = 'center';
 $table->size = array ();
 $table->size[0] = '50%';
-$table->size[1] = '50%';
-$table->size[2] = '40px';
+$table->size[1] = '40%';
+$table->size[2] = '80px';
 $table->data = array ();
 
 $total_groups = db_get_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');
@@ -130,19 +163,22 @@ foreach ($groups as $group) {
 	
 	$data[1] = network_components_get_group_name ($group['parent']);
 	
-	$data[2] = '<form method="post" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false" style="display: inline">';
-	$data[2] .= html_print_input_hidden ('delete', 1, true);
-	$data[2] .= html_print_input_hidden ('id', $group['id_sg'], true);
-	$data[2] .= html_print_input_hidden ('offset', 0, true);
-	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true,
-		array ('title' => __('Delete')));
-	$data[2] .= '</form>';
+	$data[2] = "<a onclick='if(confirm('" . __('Are you sure?') . "')) return true; else return false;' 
+		href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 
+		html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete'))) . "</a>" .
+		html_print_checkbox_extended ('delete_multiple[]', $group['id_sg'], false, false, '', 'class="check_delete"', true);
 	
 	array_push ($table->data, $data);
 }
 
 if(isset($data)) {
+	echo "<form method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups'>";
+	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
+	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+	echo "</div>";
+	echo "</form>";
 }
 else {
 	echo "<div class='nf'>".__('There are no defined component groups')."</div>";
@@ -156,3 +192,13 @@ html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 ?>
+<script type="text/javascript">
+function check_all_checkboxes() {
+	if ($("input[name=all_delete]").attr('checked')) {
+		$(".check_delete").attr('checked', true);
+	}
+	else {
+		$(".check_delete").attr('checked', false);
+	}
+}
+</script>

@@ -1,3 +1,12 @@
+2011-08-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* ggodmode/modules/manage_network_templates.php,
+	godmode/modules/manage_network_components.php,
+	godmode/modules/manage_nc_groups.php: added checkboxes in the elements in
+	the list and main checkbox to select all checkboxes, for to multiple delete.
+	
+	Fixes: #3390017
+
 2011-08-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css: Fixes style in notify css element.

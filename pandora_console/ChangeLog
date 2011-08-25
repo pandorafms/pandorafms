@@ -1,3 +1,10 @@
+2011-08-25 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_config.php: Fixed checking if remote configuration
+	directory is not writtable for the console.
+
+	Fixes: #3396471
+
 2011-08-25  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/massive/massive_copy_modules.php: Added group recursion

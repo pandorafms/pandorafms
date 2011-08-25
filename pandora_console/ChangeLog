@@ -1,3 +1,8 @@
+2011-08-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/massive/massive_copy_modules.php: Added group recursion
+	feature, it allows to search agents in child groups.
+
 2011-08-24  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor.php: added javascript alert message

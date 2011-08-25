@@ -33,6 +33,8 @@ $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');
 $destiny_id_group = (int) get_parameter ('destiny_id_group');
 $destiny_id_agents = (array) get_parameter ('destiny_id_agent', array ());
+$source_recursion = get_parameter ('source_recursion');
+$destiny_recursion = get_parameter ('destiny_recursion');
 
 $do_operation = (bool) get_parameter ('do_operation');
 
@@ -58,24 +60,28 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
-$table->size[0] = '15%';
-$table->size[1] = '35%';
-$table->size[2] = '15%';
-$table->size[3] = '35%';
+$table->size[0] = '10%';
+$table->size[1] = '30%';
+$table->size[2] = '10%';
+$table->size[3] = '10%';
+$table->size[4] = '10%';
+$table->size[5] = '30%';
 
 /* Source selection */
 $table->id = 'source_table';
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'source_id_group', $source_id_group,
 	false, '', '', true);
-$table->data[0][2] = __('Agent');
-$table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';
-$table->data[0][2] .= html_print_image ("images/spinner.png", true);
-$table->data[0][2] .= '</span>';
-$table->data[0][3] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
+$table->data[0][2] = __('Group recursion');
+$table->data[0][3] = html_print_checkbox ("source_recursion", 1, $source_recursion, true, false);
+$table->data[0][4] = __('Agent');
+$table->data[0][4] .= ' <span id="source_agent_loading" class="invisible">';
+$table->data[0][4] .= html_print_image ("images/spinner.png", true);
+$table->data[0][4] .= '</span>';
+$table->data[0][5] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
-//$table->data[0][3] = html_print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
+//$table->data[0][5] = html_print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
 //	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 //	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 
@@ -148,10 +154,15 @@ echo '</fieldset>';
 /* Destiny selection */
 $table->id = 'destiny_table';
 $table->data = array ();
+$table->size[0] = '20%';
+$table->size[1] = '30%';
+$table->size[2] = '20%';
+$table->size[3] = '30%';
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select ($groups, 'destiny_id_group', $destiny_id_group,
 	false, '', '', true);
-
+$table->data[0][2] = __('Group recursion');
+$table->data[0][3] = html_print_checkbox ("destiny_recursion", 1, $destiny_recursion, true, false);
 $table->data[1][0] = __('Agent');
 $table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image ("images/spinner.png", true);
@@ -179,13 +190,27 @@ ui_require_jquery_file ('pandora.controls');
 /* <![CDATA[ */
 var module_alerts;
 $(document).ready (function () {
+	var source_recursion;
+	$("#checkbox-source_recursion").click(function (){
+		source_recursion = this.checked ? 1 : 0;
+		$("#source_id_group").trigger("change");
+	});
+
 	$("#source_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#source_id_agent",
+		recursion: function() {return source_recursion},
 		loading: "#source_agent_loading"
 	});
 	
+	var destiny_recursion;
+	$("#checkbox-destiny_recursion").click(function (){
+		destiny_recursion = this.checked ? 1 : 0;
+		$("#destiny_id_group").trigger("change");
+	});
+
 	$("#destiny_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#destiny_id_agent",
+		recursion: function() {return destiny_recursion},
 		loading: "#destiny_agent_loading",
 		callbackPost: function (id, value, option) {
 			if ($("#source_id_agent").fieldValue ().in_array (id)) {

@@ -185,6 +185,8 @@ echo '</div>';
 
 echo "</form><br />";
 
+$table->width = '98%';
+
 //
 $index = 0;
 foreach($columns as $col => $attr){

@@ -929,7 +929,7 @@ function mysql_db_process_sql_begin() {
  */
 function mysql_db_process_sql_commit() {
 	mysql_query ('COMMIT');
-	mysql_query ('SET AUTOCOMMIT = 0');
+	mysql_query ('SET AUTOCOMMIT = 1');
 }
 
 /**

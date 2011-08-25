@@ -1,3 +1,11 @@
+2011-08-25  Sergio Martin <sergio.martin@artica.es>
+
+	* include/db/mysql.php: Fixed a bug in the sql_commit
+	function to reset the database to autocommit mode
+
+	* include/functions_tags.php: Added a missed sql_begin call
+	to the tags creation function
+
 2011-08-25 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_config.php: Fixed checking if remote configuration

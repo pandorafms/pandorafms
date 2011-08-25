@@ -1,3 +1,5 @@
+# Modified for Pandora FMS.
+
 # Copyright (c) <2003-2011> <Anthony G. Persaud>
 
 # MIT License
@@ -20,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-package Nmap::Parser;
+package PandoraFMS::NmapParser;
 
 use strict;
 use XML::Twig;
@@ -189,7 +191,7 @@ sub addr_sort {
 #MAIN SCAN INFORMATION
 sub get_session {
     my $self = shift;
-    my $obj  = Nmap::Parser::Session->new( $self->{SESSION} );
+    my $obj  = PandoraFMS::NmapParser::Session->new( $self->{SESSION} );
     return $obj;
 }
 
@@ -248,7 +250,7 @@ sub _nmaprun_start_tag_hdlr {
     $D{$$}{SESSION}{start_str}    = $tag->{att}->{startstr};
     $D{$$}{SESSION}{xml_version}  = $tag->{att}->{xmloutputversion};
     $D{$$}{SESSION}{scan_args}    = $tag->{att}->{args};
-    $D{$$}{SESSION} = Nmap::Parser::Session->new( $D{$$}{SESSION} );
+    $D{$$}{SESSION} = PandoraFMS::NmapParser::Session->new( $D{$$}{SESSION} );
 
     $twig->purge;
 
@@ -340,7 +342,7 @@ sub _host_tag_hdlr {
     }
 
     #CREATE HOST OBJECT FOR USER
-    $D{$$}{HOSTS}{$id} = Nmap::Parser::Host->new( $D{$$}{HOSTS}{$id} );
+    $D{$$}{HOSTS}{$id} = PandoraFMS::NmapParser::Host->new( $D{$$}{HOSTS}{$id} );
 
     if ( $D{callback}{is_registered} ) {
         &{ $D{callback}{coderef} }( $D{$$}{HOSTS}{$id} );
@@ -512,7 +514,7 @@ sub __host_os_tag_hdlr {
           $os_fingerprint->{'att'}->{'fingerprint'}
           if ( defined $os_fingerprint );
 
-        #This will go in Nmap::Parser::Host::OS
+        #This will go in PandoraFMS::NmapParser::Host::OS
         my $osmatch_index = 0;
         for my $osmatch ( $os_tag->children('osmatch') ) {
             $os_hashref->{osmatch_name}[$osmatch_index] =
@@ -646,7 +648,7 @@ sub __host_trace_tag_hdlr {
         for my $hop_tag ( $trace_tag->children('hop') ) {
 
             # Copy the known hop attributes, they will go in
-            # Nmap::Parser::Host::TraceHop
+            # PandoraFMS::NmapParser::Host::TraceHop
             my %hop_data;
             $hop_data{$_} = $hop_tag->{att}->{$_} for qw( ttl rtt ipaddr host );
             delete $hop_data{rtt} if $hop_data{rtt} !~ /^[\d.]+$/;
@@ -682,7 +684,7 @@ sub __host_trace_error_tag_hdlr {
 # NMAP::PARSER::SESSION
 #/*****************************************************************************/
 
-package Nmap::Parser::Session;
+package PandoraFMS::NmapParser::Session;
 use vars qw($AUTOLOAD);
 
 sub new {
@@ -750,7 +752,7 @@ sub postscripts {
 # NMAP::PARSER::HOST
 #/*****************************************************************************/
 
-package Nmap::Parser::Host;
+package PandoraFMS::NmapParser::Host;
 use vars qw($AUTOLOAD);
 
 sub new {
@@ -811,7 +813,7 @@ sub all_trace_hops {
     my $self = shift;
 
     return unless defined $self->{trace}->{hops};
-    return map { Nmap::Parser::Host::TraceHop->new( $_ ) }
+    return map { PandoraFMS::NmapParser::Host::TraceHop->new( $_ ) }
       @{ $self->{trace}->{hops} };
 }
 
@@ -892,7 +894,7 @@ sub tcp_service {
         warn "[Nmap-Parser] No port number passed to tcp_service()\n";
         return undef;
     }
-    return Nmap::Parser::Host::Service->new(
+    return PandoraFMS::NmapParser::Host::Service->new(
         $self->{ports}{tcp}{$portid}{service} );
 }
 
@@ -903,14 +905,14 @@ sub udp_service {
         warn "[Nmap-Parser] No port number passed to udp_service()\n";
         return undef;
     }
-    return Nmap::Parser::Host::Service->new(
+    return PandoraFMS::NmapParser::Host::Service->new(
         $self->{ports}{udp}{$portid}{service} );
 
 }
 
 #usually the first one is the highest accuracy
 
-sub os_sig { return Nmap::Parser::Host::OS->new( $_[0]->{os} ); }
+sub os_sig { return PandoraFMS::NmapParser::Host::OS->new( $_[0]->{os} ); }
 
 #Support for:
 #tcpsequence_class, tcpsequence_values, tcpsequence_index,
@@ -948,7 +950,7 @@ sub AUTOLOAD {
 # NMAP::PARSER::HOST::SERVICE
 #/*****************************************************************************/
 
-package Nmap::Parser::Host::Service;
+package PandoraFMS::NmapParser::Host::Service;
 use vars qw($AUTOLOAD);
 
 sub new {
@@ -989,7 +991,7 @@ sub AUTOLOAD {
 # NMAP::PARSER::HOST::OS
 #/*****************************************************************************/
 
-package Nmap::Parser::Host::OS;
+package PandoraFMS::NmapParser::Host::OS;
 use vars qw($AUTOLOAD);
 
 sub new {
@@ -1054,7 +1056,7 @@ sub _get_info {
 # NMAP::PARSER::HOST::TRACEHOP
 #/*****************************************************************************/
 
-package Nmap::Parser::Host::TraceHop;
+package PandoraFMS::NmapParser::Host::TraceHop;
 use vars qw($AUTOLOAD);
 
 sub new {
@@ -1091,32 +1093,32 @@ __END__
 
 =head1 NAME
 
-Nmap::Parser - parse nmap scan data with perl
+PandoraFMS::NmapParser - parse nmap scan data with perl
 
 =head1 SYNOPSIS
 
-  use Nmap::Parser;
-  my $np = new Nmap::Parser;
+  use PandoraFMS::NmapParser;
+  my $np = new PandoraFMS::NmapParser;
   
   $np->parsescan($nmap_path, $nmap_args, @ips);
     #or
   $np->parsefile($file_xml);
   
   my $session    = $np->get_session();
-    #a Nmap::Parser::Session object
+    #a PandoraFMS::NmapParser::Session object
     
   my $host       = $np->get_host($ip_addr);
-    #a Nmap::Parser::Host object
+    #a PandoraFMS::NmapParser::Host object
     
   my $service = $host->tcp_service(80);
-    #a Nmap::Parser::Host::Service object
+    #a PandoraFMS::NmapParser::Host::Service object
     
   my $os         = $host->os_sig();
-    #a Nmap::Parser::Host::OS object
+    #a PandoraFMS::NmapParser::Host::OS object
  
  #---------------------------------------
  
- my $np2 = new Nmap::Parser;
+ my $np2 = new PandoraFMS::NmapParser;
  
  $np2->callback(\&my_callback);
  
@@ -1127,7 +1129,7 @@ Nmap::Parser - parse nmap scan data with perl
  sub my_callback {
  
    my $host = shift;
-    #Nmap::Parser::Host object
+    #PandoraFMS::NmapParser::Host object
     #.. see documentation for all methods ...
 
  }
@@ -1148,26 +1150,26 @@ The latest version of this module can be found on here L<https://github.com/aper
 
 This module has an internal framework to make it easy to retrieve the desired information of a scan.
 Every nmap scan is based on two main sections of informations: the scan session, and the scan information of all hosts.
-The session information will be stored as a Nmap::Parser::Session object. This object will contain its own methods
-to obtain the desired information. The same is true for any hosts that were scanned using the Nmap::Parser::Host object.
-There are two sub objects under Nmap::Parser::Host. One is the Nmap::Parser::Host::Service object which will be used to obtain
-information of a given service running on a given port. The second is the Nmap::Parser::Host::OS object which contains the
+The session information will be stored as a PandoraFMS::NmapParser::Session object. This object will contain its own methods
+to obtain the desired information. The same is true for any hosts that were scanned using the PandoraFMS::NmapParser::Host object.
+There are two sub objects under PandoraFMS::NmapParser::Host. One is the PandoraFMS::NmapParser::Host::Service object which will be used to obtain
+information of a given service running on a given port. The second is the PandoraFMS::NmapParser::Host::OS object which contains the
 operating system signature information (OS guessed names, classes, osfamily..etc).
 
-  Nmap::Parser                        -- Core parser
+  PandoraFMS::NmapParser                        -- Core parser
      |
-     +--Nmap::Parser::Session         -- Nmap scan session information
+     +--PandoraFMS::NmapParser::Session         -- Nmap scan session information
      |  
-     +--Nmap::Parser::Host            -- General host information
+     +--PandoraFMS::NmapParser::Host            -- General host information
      |  |
-     |  |-Nmap::Parser::Host::Service -- Port service information
+     |  |-PandoraFMS::NmapParser::Host::Service -- Port service information
      |  |
-     |  |-Nmap::Parser::Host::OS      -- Operating system signature information
+     |  |-PandoraFMS::NmapParser::Host::OS      -- Operating system signature information
 
 
 =head1 METHODS
 
-=head2 Nmap::Parser
+=head2 PandoraFMS::NmapParser
 
 The main idea behind the core module is, you will first parse the information
 and then extract data. Therefore, all parse*() methods should be executed before
@@ -1198,7 +1200,7 @@ to scan. parsescan() will automagically run the nmap scan and parse the informat
 
 If you wish to save the xml output from parsescan(), you must call cache_scan() method B<BEFORE>
 you start the parsescan() process. This is done to conserve memory while parsing. cache_scan() will
-let Nmap::Parser know to save the output before parsing the xml since Nmap::Parser purges everything that has
+let PandoraFMS::NmapParser know to save the output before parsing the xml since PandoraFMS::NmapParser purges everything that has
 been parsed by the script to conserve memory and increase speed.
 
 I<See section EXAMPLES for a short tutorial>
@@ -1243,21 +1245,21 @@ it resets the mode to normal (no callback).
 
 =item B<get_session()>
 
-Obtains the Nmap::Parser::Session object which contains the session scan information.
+Obtains the PandoraFMS::NmapParser::Session object which contains the session scan information.
 
 =item B<get_host($ip_addr)>
 
-Obtains the Nmap::Parser::Host object for the given $ip_addr.
+Obtains the PandoraFMS::NmapParser::Host object for the given $ip_addr.
 
 =item B<del_host($ip_addr)>
 
-Deletes the stored Nmap::Parser::Host object whose IP is $ip_addr.
+Deletes the stored PandoraFMS::NmapParser::Host object whose IP is $ip_addr.
 
 =item B<all_hosts()>
 
 =item B<all_hosts($status)>
 
-Returns an array of all the Nmap::Parser::Host objects for the scan. If the optional
+Returns an array of all the PandoraFMS::NmapParser::Host objects for the scan. If the optional
 status is given, it will only return those hosts that match that status. The status
 can be any of the following: C<(up|down|unknown|skipped)>
 
@@ -1277,7 +1279,7 @@ version of the list.
 
 =back
 
-=head2 Nmap::Parser::Session
+=head2 PandoraFMS::NmapParser::Session
 
 This object contains the scan session information of the nmap scan.
 
@@ -1334,7 +1336,7 @@ Returns the version of nmap xml file.
 
 =back
 
-=head2 Nmap::Parser::Host
+=head2 PandoraFMS::NmapParser::Host
 
 This object represents the information collected from a scanned host.
 
@@ -1409,7 +1411,7 @@ contains only the part of the path that could be determined.
 
 =item B<all_trace_hops()>
 
-Returns an array of Nmap::Parser::Host::TraceHop objects representing the path
+Returns an array of PandoraFMS::NmapParser::Host::TraceHop objects representing the path
 to the target host. This array may be empty if Nmap did not perform the
 traceroute for some reason (same network, for example).
 
@@ -1427,8 +1429,8 @@ Returns the port used to perform the traceroute.
 
 =item B<os_sig()>
 
-Returns an Nmap::Parser::Host::OS object that can be used to obtain all the
-Operating System signature (fingerprint) information. See Nmap::Parser::Host::OS
+Returns an PandoraFMS::NmapParser::Host::OS object that can be used to obtain all the
+Operating System signature (fingerprint) information. See PandoraFMS::NmapParser::Host::OS
 for more details.
 
  $os = $host->os_sig;
@@ -1529,8 +1531,8 @@ for example, 'closed|filtered', it will appear on this list as well.
 
 =item B<udp_service($portid)>
 
-Returns the Nmap::Parser::Host::Service object of a given service running on port,
-provided by $portid. See Nmap::Parser::Host::Service for more info. 
+Returns the PandoraFMS::NmapParser::Host::Service object of a given service running on port,
+provided by $portid. See PandoraFMS::NmapParser::Host::Service for more info. 
 
  $svc = $host->tcp_service(80);
  $svc->name;
@@ -1539,11 +1541,11 @@ provided by $portid. See Nmap::Parser::Host::Service for more info.
 
 =back
 
-=head3 Nmap::Parser::Host::Service
+=head3 PandoraFMS::NmapParser::Host::Service
 
 This object represents the service running on a given port in a given host. This
 object is obtained by using the tcp_service($portid) or udp_service($portid) method from the
-Nmap::Parser::Host object. If a portid is given that does not exist on the given
+PandoraFMS::NmapParser::Host object. If a portid is given that does not exist on the given
 host, these functions will still return an object (so your script doesn't die).
 Its good to use tcp_ports() or udp_ports() to see what ports were collected.
 
@@ -1608,10 +1610,10 @@ script with that name, or undef if that script was not run.
 
 =back
 
-=head3 Nmap::Parser::Host::OS
+=head3 PandoraFMS::NmapParser::Host::OS
 
 This object represents the Operating System signature (fingerprint) information
-of the given host. This object is obtained from an Nmap::Parser::Host object
+of the given host. This object is obtained from an PandoraFMS::NmapParser::Host object
 using the C<os_sig()> method. One important thing to note is that the order of OS
 names and classes are sorted by B<DECREASING ACCURACY>. This is more important than
 alphabetical ordering. Therefore, a basic call
@@ -1707,13 +1709,13 @@ index starts at 0.
 
 =back
 
-=head3 Nmap::Parser::Host::TraceHop
+=head3 PandoraFMS::NmapParser::Host::TraceHop
 
 This object represents a router on the IP path towards the destination or the
 destination itself. This is similar to what the C<traceroute> command outputs.
 
-Nmap::Parser::Host::TraceHop objects are obtained through the
-C<all_trace_hops()> and C<trace_hop()> Nmap::Parser::Host methods.
+PandoraFMS::NmapParser::Host::TraceHop objects are obtained through the
+C<all_trace_hops()> and C<trace_hop()> PandoraFMS::NmapParser::Host methods.
 
 =over 4
 
@@ -1740,7 +1742,7 @@ The host name of this hop, if known.
 
 I think some of us best learn from examples. These are a couple of examples to help
 create custom security audit tools using some of the nice features
-of the Nmap::Parser module. Hopefully this can double as a tutorial. 
+of the PandoraFMS::NmapParser module. Hopefully this can double as a tutorial. 
 More tutorials (articles) can be found at L<http://anthonypersaud.com/category/nmap-parser/>
 
 =head2 Real-Time Scanning
@@ -1749,9 +1751,9 @@ You can run a nmap scan and have the parser parse the information automagically.
 The only constraint is that you cannot use '-oX', '-oN', or '-oG' as one of your
 arguments for nmap command line parameters passed to parsescan().
 
- use Nmap::Parser;
+ use PandoraFMS::NmapParser;
 
- my $np = new Nmap::Parser;
+ my $np = new PandoraFMS::NmapParser;
  my @hosts = @ARGV; #get hosts from cmd line
 
  #runs the nmap command with hosts and parses it automagically
@@ -1765,8 +1767,8 @@ arguments for nmap command line parameters passed to parsescan().
 If you would like to run the scan using parsescan() but also save the scan xml output,
 you can use cache_scan(). You must call cache_scan() BEFORE you initiate the parsescan() method.
 
- use Nmap::Parser;
- my $np = new Nmap::Parser;
+ use PandoraFMS::NmapParser;
+ my $np = new PandoraFMS::NmapParser;
 
  #telling np to save output
  $np->cache_scan('nmap.localhost.xml'); 
@@ -1775,7 +1777,7 @@ you can use cache_scan(). You must call cache_scan() BEFORE you initiate the par
 
 =head2 Callbacks
 
-This is probably the easiest way to write a script with using Nmap::Parser,
+This is probably the easiest way to write a script with using PandoraFMS::NmapParser,
 if you don't need the general scan session information. During the parsing
 process, the parser will obtain information of every host. The
 callback function (in this case 'booyah()')  is called after the parsing of
@@ -1784,8 +1786,8 @@ information of the host it had sent to the callback. This callback function is
 called for every host that the parser encounters. I<The callback function must be
 setup before parsing>
 
- use Nmap::Parser;
- my $np = new Nmap::Parser;
+ use PandoraFMS::NmapParser;
+ my $np = new PandoraFMS::NmapParser;
 
  
  $np->callback( \&booyah );
@@ -1794,7 +1796,7 @@ setup before parsing>
     # or use parsescan()
 
  sub booyah {
-    my $host = shift; #Nmap::Parser::Host object, just parsed
+    my $host = shift; #PandoraFMS::NmapParser::Host object, just parsed
     print 'IP: ',$host->addr,"\n";
 	 # ... do more stuff with $host ...
 
@@ -1805,7 +1807,7 @@ setup before parsing>
 
 =head2 Multiple Instances - (C<no less 'of'; my $self>)
 
-Using multiple instances of Nmap::Parser is extremely useful in helping
+Using multiple instances of PandoraFMS::NmapParser is extremely useful in helping
 audit/monitor the network B<P>olicy (ohh noo! its that 'P' word!).
 In this example, we have a set of hosts that had been scanned previously for tcp
 services where the image was saved in I<base_image.xml>. We now will scan the
@@ -1814,10 +1816,10 @@ same hosts, and compare if any new tcp have been open since then
 (ooh noo! The 'C' word too!).
 
 
- use Nmap::Parser;
+ use PandoraFMS::NmapParser;
  use vars qw($nmap_exe $nmap_args @ips);
- my $base = new Nmap::Parser;
- my $curr = new Nmap::Parser;
+ my $base = new PandoraFMS::NmapParser;
+ my $curr = new PandoraFMS::NmapParser;
  
  
  $base->parsefile('base_image.xml'); #load previous state
@@ -1848,7 +1850,7 @@ same hosts, and compare if any new tcp have been open since then
 =head2 Discussion Forum
 
 If you have questions about how to use the module, or any of its features, you
-can post messages to the Nmap::Parser module forum on CPAN::Forum.
+can post messages to the PandoraFMS::NmapParser module forum on CPAN::Forum.
 L<https://github.com/apersaud/Nmap-Parser/issues>
 
 =head2 Bug Reports and Enhancements
@@ -1864,7 +1866,7 @@ Please remove any important IP addresses for security reasons. It saves time in 
 
  nmap, XML::Twig
 
-The Nmap::Parser page can be found at: L<https://github.com/apersaud/Nmap-Parser>.
+The PandoraFMS::NmapParser page can be found at: L<https://github.com/apersaud/Nmap-Parser>.
 It contains the latest developments on the module. The nmap security scanner
 homepage can be found at: L<http://www.insecure.org/nmap/>.
 

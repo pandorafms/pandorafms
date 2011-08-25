@@ -1,3 +1,11 @@
+2011-08-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NmapParser.pm: Updated package name to integrate
+	  Nmap::Parser into Pandora FMS.
+
+	* lib/PandoraFMS/ReconServer.pm: Removed recursive calls. Now parent
+	  hosts are detected with a single call to nmap via Nmap::Parser.
+
 2011-08-25  Tomas Palacios  <tomas.palacios@artica.es>
 
 	* pandora_server/pandora_server.spec

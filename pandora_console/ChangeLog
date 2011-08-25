@@ -1,3 +1,9 @@
+2011-08-25 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/groups/configure_group.php: Removed the non-desired icons
+
+	Fixes: #3397548
+
 2011-08-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/db/mysql.php: Fixed a bug in the sql_commit

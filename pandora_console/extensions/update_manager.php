@@ -33,9 +33,22 @@ function update_settings_database_connection () {
 function pandora_update_manager_install () {
 	global $config;
 	
-	if (isset ($config['update_manager_installed']))
+	if (isset ($config['update_manager_installed'])) {
+		$update_server_path = db_get_value('value', 'tupdate_settings', '`key`', 'update_server_path');
+		
+		if ($update_server_path != '/pandoraupdate4/server.php') {
+			$result = db_process_sql_update('tupdate_settings',
+				array('value' => '/pandoraupdate4/server.php'),
+				array('key' => 'update_server_path'));
+			
+			if ($result === false) {
+				db_pandora_audit("ERROR update extension", "Error in the update the extension 'update manager' when update the 'update_server_path' field.");
+			}
+		}
+		
 		/* Already installed */
 		return;
+	}
 	
 	load_update_manager_lib ();
 	

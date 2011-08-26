@@ -1,3 +1,10 @@
+2011-08-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css
+	operation/events/events_list.php: Fixed css style on th view.
+
+	Fixes: #3394739
+
 2011-08-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/datos_agente.php: change the width of data table. 

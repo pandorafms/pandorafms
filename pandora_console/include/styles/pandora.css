@@ -861,6 +861,9 @@ div#main_pure {
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
+	height: auto;
+	width: 98%;
+	position: absolute;
 }
 #table-agent-configuration radio {
 	margin-right: 40px;

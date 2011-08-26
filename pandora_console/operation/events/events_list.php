@@ -453,28 +453,32 @@ foreach ($result as $event) {
 	// Event description
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
 	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
-	$data[1] .= '<span style="font-size: 7.5pt;">' . io_safe_output($event["evento"]) . '</span>';
+	$data[1] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
 	$data[1] .= '</a></span>';
 
+	$data[2] = '<span style="color: #000000">';
 	if ($event["event_type"] == "system") {
-		$data[2] = __('System');
+		$data[2] .= __('System');
 	}
 	elseif ($event["id_agente"] > 0) {
 		// Agent name
-		$data[2] = ui_print_agent_name ($event["id_agente"], true);
+		$data[2] .= ui_print_agent_name ($event["id_agente"], true);
 	}
 	else {
-		$data[2] = __('Alert').__('SNMP');
+		$data[2] .= __('Alert').__('SNMP');
 	}
+	$data[2] .= '</span>';
 	
 	//Time
+	$data[3] = '<span style="color: #000000">';
 	if ($group_rep == 1) {
-		$data[3] = ui_print_timestamp ($event['timestamp_rep'], true);
+		$data[3] .= ui_print_timestamp ($event['timestamp_rep'], true);
 	}
 	else {
-		$data[3] = ui_print_timestamp ($event["timestamp"], true);
+		$data[3] .= ui_print_timestamp ($event["timestamp"], true);
 	}
-	
+	$data[3] .= '</span>';
+
 	//Actions
 	$data[4] = '';
 	// Validate event

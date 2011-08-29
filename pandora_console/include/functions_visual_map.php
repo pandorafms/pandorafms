@@ -467,6 +467,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	
 	if ($layout_datas !== false) {
 		foreach ($layout_datas as $layout_data) {
+			$id_agent = 0;
 			$layout_data['label'] = io_safe_output($layout_data['label']);
 			// ****************************************************************
 			// Get parent status (Could be an agent, module, map, others doesnt have parent info)

@@ -1,3 +1,10 @@
+2011-08-29 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* modules/pandora_module_factory.cc: Fixed a bug collecting some module
+	parameters like min_warning, max_warning, min_ff_event, etc.
+
+	Fixes: 3396949
+
 2011-08-19  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_agent.conf: Ready to get the server string from the

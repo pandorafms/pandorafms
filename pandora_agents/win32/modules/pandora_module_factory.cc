@@ -105,7 +105,7 @@ parseLine (string line, string token) {
 			retstr = " ";
 		}
 	}
-	
+
 	return retstr;
 }
 
@@ -199,7 +199,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		string line;
 		
 		line = trim (*iter);
-		
+
 		if (module_name == "") {
 			module_name = parseLine (line, TOKEN_NAME);
 		}
@@ -258,22 +258,22 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 			module_post_process = parseLine (line, TOKEN_POST_PROCESS);
 		}
 		if (module_min_critical == "") {
-			module_post_process = parseLine (line, TOKEN_MIN_CRITICAL);
+			module_min_critical = parseLine (line, TOKEN_MIN_CRITICAL);
 		}
 		if (module_max_critical == "") {
-			module_post_process = parseLine (line, TOKEN_MAX_CRITICAL);
+			module_max_critical = parseLine (line, TOKEN_MAX_CRITICAL);
 		}
 		if (module_min_warning == "") {
-			module_post_process = parseLine (line, TOKEN_MIN_WARNING);
+			module_min_warning = parseLine (line, TOKEN_MIN_WARNING);
 		}
 		if (module_max_warning == "") {
-			module_post_process = parseLine (line, TOKEN_MAX_WARNING);
+			module_max_warning = parseLine (line, TOKEN_MAX_WARNING);
 		}
 		if (module_disabled == "") {
-			module_post_process = parseLine (line, TOKEN_DISABLED);
+			module_disabled = parseLine (line, TOKEN_DISABLED);
 		}
 		if (module_min_ff_event == "") {
-			module_post_process = parseLine (line, TOKEN_MIN_FF_EVENT);
+			module_min_ff_event = parseLine (line, TOKEN_MIN_FF_EVENT);
 		}
 		if (module_description == "") {
 			module_description = parseLine (line, TOKEN_DESCRIPTION);

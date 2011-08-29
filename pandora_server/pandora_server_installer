@@ -118,7 +118,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 		echo "  # make install"
 		echo " "
 		echo "  Install following tools from ports. Don't use packages."
-		echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-XML-Twig p5-HTML-Parser p5-SNMP p5-DBD-mysql p5-IO-Socket-INET6"
+		echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-XML-Twig p5-HTML-Parser p5-Net-SNMP p5-DBD-mysql p5-IO-Socket-INET6"
 		echo "  Optional: nmap xprobe"
 		echo " "
 		echo "To get it from source through CPAN do"

@@ -1,3 +1,7 @@
+2011-08-29  Junichi Satoh <junichi@rworks.jp>
+
+	* pandora_server_installer: Fixed a typo in comments for FreeBSD.
+
 2011-08-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Added status to supported tags.

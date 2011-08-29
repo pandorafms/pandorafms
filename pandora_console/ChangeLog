@@ -1,5 +1,12 @@
 2011-08-29  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/reporting/map_builder.php: wrote the source code for copy the
+	relationships between a copy of items in a visual console.
+	
+	Fixes: #3400124
+
+2011-08-29  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_visual_map.php: fixed the clean $id_agent var for
 	each iteration.
 	

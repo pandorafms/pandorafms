@@ -63,17 +63,29 @@ if ($copy_layout) {
 		// Return from DB the items of the source layout
 		$data_layout_src = db_get_all_rows_filter ("tlayout_data", "id_layout = " . $id_layout);
 		
-		if(!empty($data_layout_src)){
-			for ($a=0;$a < count($data_layout_src); $a++) { 
+		if(!empty($data_layout_src)) {
+			
+			//By default the id parent 0 is always 0.
+			$id_relations = array(0 => 0);
+			
+			for ($a=0; $a < count($data_layout_src); $a++) { 
 				
 				// Changing the source id by the new visual console id
 				$data_layout_src[$a]['id_layout'] = $idNewVisualConsole;
+				
+				$old_id = $data_layout_src[$a]['id'];
 				
 				// Unsetting the source's id
 				unset($data_layout_src[$a]['id']);
 			
 				// Configure the cloned Console
 				$result = db_process_sql_insert('tlayout_data', $data_layout_src[$a]);
+				
+				$id_relations[$old_id] = 0;
+				
+				if ($result !== false) {
+					$id_relations[$old_id] = $result; 
+				}
 				
 				if($result)
 					$ninsert++;
@@ -83,9 +95,22 @@ if ($copy_layout) {
 				
 			// If the number of inserts is correct, the copy is completed
 			if ($ninsert == $inserts) {
+				
+				//Update the ids of parents
+				$items = db_get_all_rows_filter ("tlayout_data", "id_layout = " . $idNewVisualConsole);
+				
+				foreach ($items as $item) {
+					$new_parent = $id_relations[$item['parent_item']];
+					
+					db_process_sql_update('tlayout_data',
+						array('parent_item' => $new_parent), array('id' => $item['id']));
+				}
+				
+				
 				echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
 				db_clean_cache();
-			} else {
+			}
+			else {
 				echo '<h3 class="error">'.__('Not copied. Error copying data').'</h3>';
 			}
 		}

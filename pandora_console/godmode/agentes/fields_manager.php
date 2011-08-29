@@ -40,18 +40,13 @@ $display_on_front = (int) get_parameter ('display_on_front', 0);
 /* Create field */
 if ($create_field) {
 	/*Check if name field is empty*/
-	if ($name != "") {
+	if ($name == ""){
+		echo "<h3 class='error'>".__('The name must not be empty')."</h3>";
+	} else if ($name == db_get_value ('name', 'tagent_custom_fields', 'name', $name)) {
+		echo "<h3 class='error'>".__('The name must be unique')."</h3>";
+	} else {
 		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
-	}
-	else {
-		$result = false;
-	}
-	
-	if ($result) {
-		echo "<h3 class='suc'>".__('Field successfully created')."</h3>"; 
-	}
-	else {
-		echo "<h3 class='error'>".__('There was a problem creating field')."</h3>";
+		echo "<h3 class='suc'>".__('Field successfully created')."</h3>";
 	}
 }
 

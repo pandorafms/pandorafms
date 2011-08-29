@@ -1,3 +1,11 @@
+2011-08-29  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/agentes/configurar_agente.php: added in the call
+	"config_agents_write_module_in_conf" the parameter to disabled local
+	modulo.
+	
+	Fixes: #3400159
+
 2011-08-29  Vanessa Gil  <vanessa.gil@artica.es>
 
 	*godmode/agentes/fields_manager.php: Fixed: is possible to create custom fields with the same name.

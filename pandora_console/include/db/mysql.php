@@ -937,7 +937,7 @@ function mysql_db_process_sql_commit() {
  */
 function mysql_db_process_sql_rollback() {
 	mysql_query ('ROLLBACK ');
-	mysql_query ('SET AUTOCOMMIT = 0');
+	mysql_query ('SET AUTOCOMMIT = 1');
 }
 
 /**

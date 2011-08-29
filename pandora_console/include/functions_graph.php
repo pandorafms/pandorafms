@@ -1532,7 +1532,8 @@ function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 	$count = 0;
 	$num_vlines = 0;
 	foreach ($data as $name => $value) {
-		if ($count++ % $step == 0) {
+			
+		if (($step >= 1) && ($count++ % $step == 0)) {
 			$show_name = '1';
 			$num_vlines++;
 		} else {

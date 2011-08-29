@@ -25,6 +25,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sys/stat.h>
 
 #include "pandora_module.h"
 #include "boost/regex.h"
@@ -40,10 +41,13 @@ namespace Pandora_Modules {
         string source;
         ifstream file;
         regex_t regexp;
-        void restart ();
+        off_t size;
+        unsigned char no_seek_eof;
+        void restart (unsigned char seek_eof);
+        
 
 	public:
-		Pandora_Module_Regexp (string name, string source, string pattern);
+		Pandora_Module_Regexp (string name, string source, string pattern, unsigned char no_seek_eof);
 		virtual ~Pandora_Module_Regexp ();
 		void run ();
 	};

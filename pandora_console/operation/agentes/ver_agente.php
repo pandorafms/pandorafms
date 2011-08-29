@@ -111,12 +111,14 @@ if (is_ajax ()) {
 			FROM tagente_modulo t1, talert_template_modules t2
 			WHERE t2.id_agent_module = t1.id_agente_modulo
 				AND delete_pending = 0
+				AND id_alert_template = '.$id_template.'
 				AND id_agente IN (' . implode(',', $idAgents) . ') AND (
 					SELECT count(nombre)
 					FROM tagente_modulo t3, talert_template_modules t4
 					WHERE t4.id_agent_module = t3.id_agente_modulo
 						AND delete_pending = 0 AND t1.nombre = t3.nombre
-						AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+						AND id_agente IN (' . implode(',', $idAgents) . ')
+						AND id_alert_template = '.$id_template.') = (' . count($idAgents) . ')');
 		
 		if ($nameModules == false) {
 			$nameModules = array();

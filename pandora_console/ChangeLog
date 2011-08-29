@@ -1,3 +1,9 @@
+2011-08-29 Javier Lanz <javier.lanz@artica.es>
+
+	* operation/agentes/ver_agente.php: Fixed a bug filling modules combo
+
+	Fixes: #3397520
+
 2011-08-29  Sergio Martin <sergio.martin@artica.es>
 
 	* images/attachment_del.png: Added new icon to policy queue

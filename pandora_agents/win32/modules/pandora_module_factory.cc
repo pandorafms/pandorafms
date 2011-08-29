@@ -92,6 +92,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_CRONTAB       ("module_crontab ")
 #define TOKEN_CRONINTERVAL  ("module_cron_interval ")
 #define TOKEN_PRECONDITION  ("module_precondition ")
+#define TOKEN_NOSEEKEOF     ("module_noseekeof ")
 
 string
 parseLine (string line, string token) {
@@ -137,7 +138,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_plugin, module_save, module_condition, module_precondition;
 	string                 module_crontab, module_cron_interval, module_post_process;
 	string                 module_min_critical, module_max_critical, module_min_warning, module_max_warning;
-	string                 module_disabled, module_min_ff_event;
+	string                 module_disabled, module_min_ff_event, module_noseekeof;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -190,6 +191,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_max_warning   = "";
 	module_disabled      = "";
 	module_min_ff_event  = "";
+	module_noseekeof  = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -359,6 +361,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_cron_interval == "") {
 			module_cron_interval = parseLine (line, TOKEN_CRONINTERVAL);
 		}
+		if (module_noseekeof == "") {
+			module_noseekeof = parseLine (line, TOKEN_NOSEEKEOF);
+		}
 
 		iter++;
 	}
@@ -447,7 +452,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_tcpcheck != "") {
 		module = new Pandora_Module_Tcpcheck (module_name, module_tcpcheck, module_port, module_timeout);
 	} else if (module_regexp != "") {
-		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern);
+		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern, (unsigned char) atoi (module_noseekeof.c_str ()));
 	} else if (module_plugin != "") {
 		module = new Pandora_Module_Plugin (module_name, module_plugin);
 	} else {

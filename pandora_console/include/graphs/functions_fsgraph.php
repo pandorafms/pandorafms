@@ -520,7 +520,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 }
 
 // Returns a 2D column chart
-function fs_2d_column_chart ($data, $width, $height) {
+function fs_2d_column_chart ($data, $width, $height, $homeurl = '') {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -539,7 +539,6 @@ function fs_2d_column_chart ($data, $width, $height) {
 	}
 	
 	$step = round($ndata/$xdata_display);
-	
 	
 	if(is_array(reset($data))) {
 	 	$data2 = array();
@@ -591,7 +590,7 @@ function fs_2d_column_chart ($data, $width, $height) {
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/graphs/FusionCharts/FCF_Column2D.swf');
+	return get_chart_code ($chart, $width, $height, $homeurl . 'include/graphs/FusionCharts/FCF_Column2D.swf');
 }
 
 // Returns a BAR Horizontalchart

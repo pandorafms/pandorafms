@@ -1,5 +1,10 @@
 2011-08-29  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/massive/massive_add_alerts.php: Added group recursion
+	feature, it allows to search agents in child groups.
+
+2011-08-29  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/help/ja/help_snmp_alert_field1.php: Added a new help file.
 
 2011-08-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

@@ -31,11 +31,12 @@ require_once($config['homedir'] . '/include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_agents = (bool) get_parameter ('get_agents');
+	$recursion = (int) get_parameter ('recursion');
 	
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
 		
-		$agents_alerts = agents_get_group_agents ($id_group);
+		$agents_alerts = agents_get_group_agents ($id_group, false, "", false, $recursion);
 		
 		echo json_encode ($agents_alerts);
 		return;
@@ -93,6 +94,7 @@ $id_group = (int) get_parameter ('id_group', -1);
 $id_agents = get_parameter ('id_agents');
 $module_names = get_parameter ('module');
 $id_alert_template = (int) get_parameter ('id_alert_template');
+$recursion = get_parameter ('recursion');
 
 $add = (bool) get_parameter_post ('add');
 
@@ -119,8 +121,8 @@ $table->data = array ();
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', 0,
 	'', 'Select', -1, true, false, true, '', false, 'width:180px;');
-$table->data[0][2] = '';
-$table->data[0][3] = '';
+$table->data[0][2] = __('Group recursion');
+$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
@@ -162,6 +164,10 @@ ui_require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	$("#checkbox-recursion").click(function (){
+		$("#id_group").trigger("change");
+	});
+
 	$("#id_agents").change(agent_changed_by_multiple_agents);
 
 	$("#id_group").change (function () {
@@ -172,7 +178,8 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_add_alerts",
 			"get_agents" : 1,
-			"id_group" : this.value
+			"id_group" : this.value,
+			"recursion" : $("#checkbox-recursion").attr("checked") ? 1 : 0
 			},
 			function (data, status) {
 				options = "";

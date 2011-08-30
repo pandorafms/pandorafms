@@ -1,5 +1,10 @@
 2011-08-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/users/configure_user.php: Now action state is showed
+	when update user action is performed.
+
+2011-08-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/users/configure_user.php: Reload page to update skin.
 
 2011-08-30  Miguel de Dios  <miguel.dedios@artica.es>

@@ -73,7 +73,12 @@ $create_user = (bool) get_parameter ('create_user');
 $add_profile = (bool) get_parameter ('add_profile');
 $delete_profile = (bool) get_parameter ('delete_profile');
 $update_user = (bool) get_parameter ('update_user');
+$status = get_parameter ('status', -1);
 
+// Reset status var if current action is not update_user
+if ($new_user || $create_user || $add_profile || $delete_profile || $update_user){
+	$status = -1;
+}
 
 if ($new_user && $config['admin_can_add_user']) {
 	$user_info = array ();
@@ -201,9 +206,6 @@ if ($update_user) {
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 
 	$res1 = update_user ($id, $values);
-
-	// Reload page to update skin
-	header ('location:' . $config['homeurl'] . '/index.php?sec=gusuarios&sec2=godmode/users/configure_user&id=' . $id);
 	
 	if ($config['user_can_update_password']) {
 		$password_new = (string) get_parameter ('password_new', '');
@@ -246,6 +248,20 @@ if ($update_user) {
 	}
 	
 	$user_info = $values;
+
+	// Reload page to update skin
+	if ($res1){
+		header ('location:' . $config['homeurl'] . '/index.php?sec=gusuarios&sec2=godmode/users/configure_user&id=' . $id . "&status=1");
+	}
+	else{
+		header ('location:' . $config['homeurl'] . '/index.php?sec=gusuarios&sec2=godmode/users/configure_user&id=' . $id . "&status=0");
+	}
+}
+
+if ($status != -1){
+	ui_print_result_message ($status,
+		__('User info successfully updated'),
+		__('Error updating user info (no change?)'));	
 }
 
 if ($add_profile) {

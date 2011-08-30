@@ -1,5 +1,11 @@
 2011-08-30  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_standby_alerts.php: Added group recursion
+	feature, it allows to search agents in child groups.
+
+2011-08-30  Junichi Satoh  <junichi@rworks.jp>
+
 	* godmode/agentes/modificar_agente.php: Fixed group recursion does
 	not work with IE8.
 

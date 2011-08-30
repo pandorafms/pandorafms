@@ -1,3 +1,7 @@
+2011-08-30  Tomas Palacios  <tomas.palacios@artica.es>
+
+	* pandora_server/pandora_server_installer: Added missing Perl Socket6 references.
+
 2011-08-29  Junichi Satoh <junichi@rworks.jp>
 
 	* pandora_server_installer: Fixed a typo in comments for FreeBSD.

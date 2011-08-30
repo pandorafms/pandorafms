@@ -1,3 +1,11 @@
+2011-08-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_regexp.cc,
+	  modules/pandora_module_regexp.h,
+	  modules/pandora_module_factory.cc: Merged from trunk. Check file size
+	  to detect if the file was truncated. Added a new configuration token
+	  to avoid seeking to the eof.
+
 2011-03-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_regexp.cc: Merged from trunk. Added support

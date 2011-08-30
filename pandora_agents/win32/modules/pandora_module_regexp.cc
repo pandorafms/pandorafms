@@ -36,11 +36,12 @@ using namespace Pandora_Modules;
  * @param source File to search.
  * @param pattern Regular expression to match.
  */
-Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string pattern)
+Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string pattern, unsigned char no_seek_eof)
 	: Pandora_Module (name) {
  
     this->source = source;
- 
+	this->no_seek_eof = no_seek_eof;
+	
     // Compile the regular expression
     if (regcomp (&this->regexp, pattern.c_str (), REG_EXTENDED) != 0) {
        pandoraLog ("Invalid regular expression %s", pattern.c_str ());
@@ -48,12 +49,15 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
  
     // Open the file and skip to the end
     this->file.open (source.c_str ());
-    if (this->file.is_open ()) {
+    if (this->file.is_open () && no_seek_eof == 0) {
         this->file.seekg (0, ios_base::end);
     } else {
         pandoraLog ("Error opening file %s", source.c_str ());
     }
  
+	// Set file size to 0
+	this->size = 0;
+	
 	this->setKind (module_regexp_str);
 }
 
@@ -71,7 +75,8 @@ Pandora_Module_Regexp::run () {
 	string line;
 	ostringstream output;
     Module_Type type;
- 
+	struct stat file_stat; 
+   
     type = this->getTypeInt ();
 
 	// Run
@@ -83,9 +88,18 @@ Pandora_Module_Regexp::run () {
 
     // Check if the file could be opened
     if (! file.is_open () || ! file.good ()) {
-        this->restart ();
-        return;
+        this->restart (this->no_seek_eof);
     }
+	
+	// Check if the file was truncated
+	if (this->no_seek_eof == 0 && stat (this->source.c_str (), &file_stat ) == 0) {
+		if (file_stat.st_size < this->size) {
+			this->restart (1);
+		}
+		
+		// Save current file size
+		this->size = file_stat.st_size;
+	}
 
     // Read new lines
     count = 0;
@@ -119,17 +133,24 @@ Pandora_Module_Regexp::run () {
 
     // Clear the EOF flag
     file.clear ();
+    
+    // Next time the file will be opened again and read from the start
+    if (this->no_seek_eof == 1) {
+		this->file.close();
+	}
 }
 
 /**
  * Closes, re-opens and seeks to the end of the current file.
  */
 void
-Pandora_Module_Regexp::restart () {
+Pandora_Module_Regexp::restart (unsigned char no_seek_eof) {
     this->file.close ();
     this->file.open (this->source.c_str ());
     if (this->file.is_open ()) {
-        this->file.seekg (0, ios_base::end);
+		if (no_seek_eof == 0) {
+			this->file.seekg (0, ios_base::end);
+		}
         return;
     }
     

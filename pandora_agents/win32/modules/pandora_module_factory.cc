@@ -84,6 +84,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_CONDITION     ("module_condition ")
 #define TOKEN_CRONTAB       ("module_crontab ")
 #define TOKEN_CRONINTERVAL  ("module_cron_interval ")
+#define TOKEN_NOSEEKEOF     ("module_noseekeof ")
 
 string
 parseLine (string line, string token) {
@@ -127,7 +128,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
 	string                 module_plugin, module_save, module_condition;
-	string                 module_crontab, module_cron_interval;
+	string                 module_crontab, module_cron_interval, module_noseekeof;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -309,6 +310,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_cron_interval == "") {
 			module_cron_interval = parseLine (line, TOKEN_CRONINTERVAL);
 		}
+		if (module_noseekeof == "") {
+			module_noseekeof = parseLine (line, TOKEN_NOSEEKEOF);
+		}
 
 		iter++;
 	}
@@ -397,7 +401,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_tcpcheck != "") {
 		module = new Pandora_Module_Tcpcheck (module_name, module_tcpcheck, module_port, module_timeout);
 	} else if (module_regexp != "") {
-		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern);
+		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern, (unsigned char) atoi (module_noseekeof.c_str ()));
 	} else if (module_plugin != "") {
 		module = new Pandora_Module_Plugin (module_name, module_plugin);
 	} else {

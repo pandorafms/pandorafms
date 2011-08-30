@@ -520,7 +520,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 }
 
 // Returns a 2D column chart
-function fs_2d_column_chart ($data, $width, $height, $homeurl = '') {
+function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false) {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -549,15 +549,23 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '') {
 			if (($count % $step) == 0) {
 				$show_name = '1';
 			}
-
+			
 			$chart->addCategory($i, //'');
 					'hoverText=' . $i .  
 					';showName=' . $show_name);
 			
 			$c = 0;
+			$previous = false;
 			foreach($values as $i2 => $value) {
+				if ($reduce_data_columns) {
+					if ($previous !== false) {
+						if ($previous == $value) continue;
+					}
+				}
 				$data2[$i2][$i] = $value;
 				$c++;
+				
+				$previous = $value;
 			}
 		}
 		$data = $data2;

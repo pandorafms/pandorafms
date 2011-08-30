@@ -1,3 +1,9 @@
+2011-08-30  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php, include/graphs/functions_fsgraph.php,
+	include/graphs/fgraph.php: added the parameter $reduce_data_columns by
+	default false for to use in vertical columns graph.
+
 2011-08-30  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/estado_agente.php: Fixed URL injection replacing

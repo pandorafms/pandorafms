@@ -2075,18 +2075,10 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	
 	$legend = null;
 	
-	//TODO FIX
-	
 	return vbar_graph($flash_chart, $chart, $width, $height, $color,
 		$legend, "", "", $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']);
-	
-		//old
-	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], "");
+		$config['fontpath'], $config['font_size'], '', true, 1, true);
 }
 
 function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,

@@ -156,10 +156,10 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors, $font,
 
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $homedir="",
-	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1) {
+	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false) {
 		
 	if($flash_chart) {
-		echo fs_2d_column_chart ($chart_data, $width, $height, $homedir);
+		echo fs_2d_column_chart ($chart_data, $width, $height, $homedir, $reduce_data_columns);
 	}
 	else {
 		$graph = array();

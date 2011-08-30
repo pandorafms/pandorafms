@@ -112,12 +112,11 @@ echo "<td valign='top'>
 <input name='uptbutton' type='submit' class='sub upd' value='".__('Show')."'>
 </noscript>
 </td>
-</form>
 <td valign='top'>";
 echo __('Group recursion') . ': ';
 html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
-echo "</td><td valign='top'>";
+echo "</td></form><td valign='top'>";
 echo __('Free text for search (*)');
 echo "</td><td>";
 

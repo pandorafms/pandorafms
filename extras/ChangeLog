@@ -1,3 +1,10 @@
+2011-08-30  Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
+
+	* scripts/webserver
+	scripts/webserver/pandora_webserver.pl
+	scripts/webserver/PandoraFMS_Monitorizacion_Webserver.odt: Added files
+	with webserver plugin and documentation.
+
 2011-05-04  Sancho Lerena <slerena@artica.es>
 
 	* scripts/mail_transfer: Added new script to send/receive XML data

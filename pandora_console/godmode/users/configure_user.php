@@ -74,6 +74,7 @@ $add_profile = (bool) get_parameter ('add_profile');
 $delete_profile = (bool) get_parameter ('delete_profile');
 $update_user = (bool) get_parameter ('update_user');
 
+
 if ($new_user && $config['admin_can_add_user']) {
 	$user_info = array ();
 	$id = '';
@@ -200,6 +201,9 @@ if ($update_user) {
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 
 	$res1 = update_user ($id, $values);
+
+	// Reload page to update skin
+	header ('location:' . $config['homeurl'] . '/index.php?sec=gusuarios&sec2=godmode/users/configure_user&id=' . $id);
 	
 	if ($config['user_can_update_password']) {
 		$password_new = (string) get_parameter ('password_new', '');

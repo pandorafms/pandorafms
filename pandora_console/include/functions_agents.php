@@ -540,7 +540,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 		echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
 		switch ($config['dbtype']) {
 			case "mysql":
-			case "postgresql":		
+			case "postgresql":
 				db_process_sql ('COMMIT');
 				break;
 			case "oracle":
@@ -592,15 +592,15 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
  * @param bool Wheter to return the modules indexed by the id_agente_modulo or
  * not. Default is indexed.
  * Example:
-<code>
-Both are similars:
-$modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
-$modules = agents_get_modules ($id_agent, false, 'disabled = 0');
+ <code>
+ Both are similars:
+ $modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
+ $modules = agents_get_modules ($id_agent, false, 'disabled = 0');
 
-Both are similars:
-$modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
-$modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
-</code>
+ Both are similars:
+ $modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+ $modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+ </code>
  *
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
@@ -617,7 +617,7 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 				WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0
 					AND t1.nombre = t3.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
 	}
-		
+	
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
@@ -668,15 +668,15 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
  * @param bool Wheter to return the modules indexed by the id_agente_modulo or
  * not. Default is indexed.
  * Example:
-<code>
-Both are similars:
-$modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
-$modules = agents_get_modules ($id_agent, false, 'disabled = 0');
+ <code>
+ Both are similars:
+ $modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
+ $modules = agents_get_modules ($id_agent, false, 'disabled = 0');
 
-Both are similars:
-$modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
-$modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
-</code>
+ Both are similars:
+ $modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+ $modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+ </code>
  *
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
@@ -1010,6 +1010,17 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 							break;
 					}
 				}
+				else if (strstr($value, '666=666', true) == '') {
+					switch ($config['dbtype']) {
+						case "mysql":
+						case "postgresql":
+							array_push ($fields, ' '.$value);
+							break;
+						case "oracle":
+							array_push ($fields, ' '.$value);
+							break;
+					}
+				}
 				else {
 					switch ($config["dbtype"]) {
 						case "mysql":
@@ -1018,7 +1029,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 						case "postgresql":
 							array_push ($fields, $field.' = \''.$value.'\'');
 							break;
-						case "oracle":					
+						case "oracle":
 							if (is_int ($value) ||is_float ($value)||is_double ($value))
 								array_push ($fields, $field.' = '.$value.'');
 							else
@@ -1262,7 +1273,7 @@ function agents_give_agentmodule_flag ($id_agent_module) {
  * @param string IP address to assign
  */
 function agents_add_address ($id_agent, $ip_address) {
-	global $config;	
+	global $config;
 
 	// Check if already is attached to agent
 	switch ($config["dbtype"]) {

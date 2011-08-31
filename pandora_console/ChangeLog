@@ -1,3 +1,7 @@
+2011-08-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/users/user_edit.php: Reload page to update skin.
+
 2011-08-30 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* include/functions_api.php: Fixed join parameter to avoid

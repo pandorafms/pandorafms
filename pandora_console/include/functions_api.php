@@ -298,7 +298,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 						INNER JOIN (SELECT *
 							FROM tagente_estado
 							WHERE id_agente = ' . $agent['id_agente'] . ') AS t2
-						ON t1.id_agente = t2.id_agente');
+						ON t1.id_agente_modulo = t2.id_agente_modulo');
 				
 				if ($modules === false) $modules = array();
 				$modules = str_replace('\n', $returnReplace, $modules);

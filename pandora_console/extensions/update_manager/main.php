@@ -71,68 +71,72 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 		}
 		
 		$package = um_package_info_from_paths ($tempDir);
-			
-		$settings = um_db_load_settings ();
-
-		if($settings->current_update >= $package->id) {
-			$error = '<h5 class="error">'.__('Your system version is higher or equal than the loaded package').'</h5>';
+		if ($package === false) {
+			$error = '<h5 class="error">'.__('Error, the file package is empty or corrupted.').'</h5>';
 		}
-		else {
-			$binary_paths = um_client_get_files ($tempDir."binary/");
-			
-			foreach($binary_paths as $key => $paths) {
-				foreach($paths as $index => $path) {
-					$tempDir_scaped = preg_replace('/\//', '\/', $tempDir."binary");
-					$binary_paths[$key][$index] = preg_replace('/^'.$tempDir_scaped.'/', ' ', $path);
-				}
-			}
-
-			$code_paths = um_client_get_files ($tempDir."code/");
-			
-			foreach($code_paths as $key => $paths) {
-				foreach($paths as $index => $path) {
-					$tempDir_scaped = preg_replace('/\//', '\/', $tempDir."code");
-					$code_paths[$key][$index] = preg_replace('/^'.$tempDir_scaped.'/', ' ', $path);
-				}
-			}
-			
-			$sql_paths = um_client_get_files ($tempDir);
-			foreach($sql_paths as $key => $paths) {
-				foreach($paths as $index => $path) {
-					if($path != $tempDir || ($key == 'info_package' && $path == $tempDir)) {
-						unset($sql_paths[$key]);
-					}
-				}
-			}
-
-			$updates_binary = array();
-			$updates_code = array();
-			$updates_sql = array();
-			
-			if(!empty($binary_paths)) {
-				$updates_binary = um_client_update_from_paths ($binary_paths, $tempDir, $package->id, 'binary');
-			}
-			if(!empty($code_paths)) {
-				$updates_code = um_client_update_from_paths ($code_paths, $tempDir, $package->id, 'code');
-			}
-			if(!empty($sql_paths)) {
-				$updates_sql = um_client_update_from_paths ($sql_paths, $tempDir, $package->id, 'sql');
-			}
-
-			um_delete_directory($tempDir);
-
-			$updates= array_merge((array) $updates_binary, (array) $updates_code, (array) $updates_sql);
-
-			$package->updates = $updates;
-
+		else {	
 			$settings = um_db_load_settings ();
-
-			if(um_client_upgrade_to_package ($package, $settings, true)) {
-					echo '<h5 class="suc">'.__('Successfully upgraded').'.</h5>';
-					$settings = um_db_load_settings ();
+	
+			if($settings->current_update >= $package->id) {
+				$error = '<h5 class="error">'.__('Your system version is higher or equal than the loaded package').'</h5>';
 			}
 			else {
-					echo '<h5 class="error">'.__('Cannot be upgraded').'</h5>';
+				$binary_paths = um_client_get_files ($tempDir."binary/");
+				
+				foreach($binary_paths as $key => $paths) {
+					foreach($paths as $index => $path) {
+						$tempDir_scaped = preg_replace('/\//', '\/', $tempDir."binary");
+						$binary_paths[$key][$index] = preg_replace('/^'.$tempDir_scaped.'/', ' ', $path);
+					}
+				}
+	
+				$code_paths = um_client_get_files ($tempDir."code/");
+				
+				foreach($code_paths as $key => $paths) {
+					foreach($paths as $index => $path) {
+						$tempDir_scaped = preg_replace('/\//', '\/', $tempDir."code");
+						$code_paths[$key][$index] = preg_replace('/^'.$tempDir_scaped.'/', ' ', $path);
+					}
+				}
+				
+				$sql_paths = um_client_get_files ($tempDir);
+				foreach($sql_paths as $key => $paths) {
+					foreach($paths as $index => $path) {
+						if($path != $tempDir || ($key == 'info_package' && $path == $tempDir)) {
+							unset($sql_paths[$key]);
+						}
+					}
+				}
+	
+				$updates_binary = array();
+				$updates_code = array();
+				$updates_sql = array();
+				
+				if(!empty($binary_paths)) {
+					$updates_binary = um_client_update_from_paths ($binary_paths, $tempDir, $package->id, 'binary');
+				}
+				if(!empty($code_paths)) {
+					$updates_code = um_client_update_from_paths ($code_paths, $tempDir, $package->id, 'code');
+				}
+				if(!empty($sql_paths)) {
+					$updates_sql = um_client_update_from_paths ($sql_paths, $tempDir, $package->id, 'sql');
+				}
+	
+				um_delete_directory($tempDir);
+	
+				$updates= array_merge((array) $updates_binary, (array) $updates_code, (array) $updates_sql);
+	
+				$package->updates = $updates;
+	
+				$settings = um_db_load_settings ();
+	
+				if(um_client_upgrade_to_package ($package, $settings, true)) {
+						echo '<h5 class="suc">'.__('Successfully upgraded').'.</h5>';
+						$settings = um_db_load_settings ();
+				}
+				else {
+						echo '<h5 class="error">'.__('Cannot be upgraded').'</h5>';
+				}
 			}
 		}
 	}

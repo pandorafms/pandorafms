@@ -1,5 +1,13 @@
 2011-08-31  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/main.php: fixed when the file is corrupted or
+	empty.
+	
+	Fixes: #3400237
+
+2011-08-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions.php: fixed in function "string2image" when generate a
 	image in other location, now have one more parameter, $homeurl, by default
 	empty string.

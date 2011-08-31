@@ -1,5 +1,12 @@
 2011-08-31  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/massive/massive_edit_modules.php: fixed when is selected "any"
+	agent, with white space run fine.
+	
+	Fixes: #3401591
+
+2011-08-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_agents.php: fixed the fields as sql operations as field.
 	
 	Fixes: #3400237

@@ -24,6 +24,7 @@ include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 
 $id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
+$status = get_parameter ("status", -1); // Flag to print action status message
 
 $user_info = get_user_info ($id);
 $id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
@@ -86,8 +87,24 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 			__('Error updating user info'));
 	}
 
+	// Reload page to update skin
+        if ($return){
+                header ('location:' . $config['homeurl'] . '/index.php?sec=usuarios&sec2=operation/users/user_edit&status=1');
+        }
+        else{
+                header ('location:' . $config['homeurl'] . '/index.php?sec=usuarios&sec2=operation/users/user_edit&status=0');
+        }
+
 	$user_info = $upd_info;
 }
+
+// Prints action status for current message 
+if ($status != -1){
+	ui_print_result_message ($status,
+       		__('User info successfully updated'),
+             	__('Error updating user info'));
+}
+
 
 echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
 

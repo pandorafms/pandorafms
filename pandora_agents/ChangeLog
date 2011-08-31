@@ -1,3 +1,9 @@
+2011-08-31 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
+
+	* unix/plugins/grep_log
+	shellscript/linux/plugins/grep_log: Changed parse_log
+	function in order to retrieve token correctly.
+
 2011-08-22  Sergio Martin <sergio.martin@artica.es>
 
 	* win32/bin/PandoraAgent.exe: Updated the executable

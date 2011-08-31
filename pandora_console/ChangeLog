@@ -1,3 +1,10 @@
+2011-08-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_alerts.php: Fixed alerts_get_agents_with_alert_template
+	function in order to not retrieve delete modules.
+
+	Fixes: #3401666
+
 2011-08-31  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/libupdate_manager_client.php,

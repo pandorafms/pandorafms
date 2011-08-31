@@ -373,14 +373,20 @@ function um_client_print_update ($update, $settings) {
 }
 
 function um_package_info_from_paths ($tmpDir) {
-	$f = fopen($tmpDir.'info_package', "r");
-	$f_content = fread($f, filesize($tmpDir.'info_package'));
-	fclose($f);
-	$f_array = array();
+	$f = @fopen($tmpDir.'info_package', "r");
 
-	unset($f_content->status);
+	if ($f !== false) {
+		$f_content = fread($f, filesize($tmpDir.'info_package'));
+		fclose($f);
+		$f_array = array();
 	
-	return json_decode($f_content);
+		unset($f_content->status);
+		
+		return json_decode($f_content);
+	}
+	else {
+		return false;
+	}
 }
 
 function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type) {

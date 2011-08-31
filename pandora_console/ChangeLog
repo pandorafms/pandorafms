@@ -1,3 +1,9 @@
+2011-08-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions.php: fixed in function "string2image" when generate a
+	image in other location, now have one more parameter, $homeurl, by default
+	empty string.
+
 2011-08-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/users/user_edit.php: Reload page to update skin.

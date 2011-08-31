@@ -1205,7 +1205,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
  */
 function string2image($string, $width, $height, $fontsize = 3, 
 			$degrees = '0', $bgcolor = '#FFFFFF', $textcolor = '#000000', 
-			$padding_left = 4, $padding_top = 1) {
+			$padding_left = 4, $padding_top = 1, $home_url = '') {
 				
 	global $config;
 				
@@ -1222,12 +1222,14 @@ function string2image($string, $width, $height, $fontsize = 3,
 	$stringFile = str_replace('/', '___', $string);
 	
 	// Generate the image
-	$file_url = 'attachment/string2image-'.$stringFile.'.gif';
+	$file_url = $config['attachment_store'] . '/string2image-'.$stringFile.'.gif';
 	imagegif($rotated, $file_url);
 	imagedestroy($rotated);
 	
 	$file_url = str_replace('#','%23',$file_url);
 	$file_url = str_replace('%','%25',$file_url);
+	$file_url = str_replace($config['attachment_store'], $home_url . 'attachment', $file_url);
+	
 	return $file_url;
 }
 

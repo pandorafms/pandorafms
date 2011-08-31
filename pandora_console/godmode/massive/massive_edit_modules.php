@@ -51,16 +51,25 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	// Whether to update module tag info
 	$update_tags = get_parameter('id_tag', false);
 	
+
+	
+if (array_search(0, $agents_select) !== false) {
+	$modules = db_get_all_rows_filter ('tagente_modulo',
+		array ('nombre' => $module_name),
+		array ('id_agente_modulo'));
+}
+else {
 	$modules = db_get_all_rows_filter ('tagente_modulo',
 		array ('id_agente' => $agents_select,
 			'nombre' => $module_name),
 		array ('id_agente_modulo'));
+}
 	
 	db_process_sql_begin ();
-
+	
 	if ($modules === false)
 		return false;
-		
+	
 	foreach ($modules as $module) {
 		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true, $update_tags);
 		

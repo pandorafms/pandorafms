@@ -169,7 +169,7 @@ sub parse_log () {
 	                                     $!);
 
 	# Go to starting position
-	seek(LOGFILE, $Idx_pos, 0);
+	seek(LOGFILE, 0, 0);
 
 	print (stdout "<module>\n");
 	print (stdout "<name><![CDATA[" . $Module_name . "]]></name>\n");

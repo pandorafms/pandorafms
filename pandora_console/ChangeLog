@@ -1,3 +1,8 @@
+2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php: changed function strstr() for 
+	substr() in agents_get_modules function.
+
 2011-09-01  Sergio Martin <sergio.martin@artica.es>
 
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added delete_pending

@@ -1,5 +1,12 @@
 2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/incidents/incident_detail.php: fixed the entities in the name
+	of file in the action to upload and delete.
+	
+	Fixes: #3397447
+
+2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_agents.php: added the other part of logical expression
 	in the patch of strstr. 
 

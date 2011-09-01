@@ -1,5 +1,10 @@
 2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_agents.php: added the other part of logical expression
+	in the patch of strstr. 
+
+2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_users.php: added the function "users_get_first_group"
 	another parameter, $all_group, to return all group or not, by default is
 	true.

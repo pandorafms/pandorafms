@@ -1,3 +1,8 @@
+2011-09-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Kill snmptrapd if it's already running
+	  when the SNMP Console starts and launch it again. Fixes bug #3402392.
+
 2011-09-01  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Improve the delete modules

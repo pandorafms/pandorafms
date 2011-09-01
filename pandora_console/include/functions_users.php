@@ -158,11 +158,20 @@ function users_get_groups_tree($id_user = false, $privilege = "AR", $returnAllGr
  *
  * @param string User id
  * @param string The privilege to evaluate
+ * @param bool $all_group Flag to return all group, by default true;
  *
  * @return array The first group where the user has certain privileges.
  */
-function users_get_first_group ($id_user = false, $privilege = "AR") {
-	return array_shift (array_keys (users_get_groups ($id_user, $privilege)));
+function users_get_first_group ($id_user = false, $privilege = "AR", $all_group = true) {
+	$groups = array_keys (users_get_groups ($id_user, $privilege));
+
+	$return = array_shift($groups);
+	
+	if ((!$all_group) && ($return == 0)) {
+		$return = array_shift($groups);
+	}
+	
+	return $return;
 }
 
 /**

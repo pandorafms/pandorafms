@@ -1,9 +1,13 @@
 2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* ChangeLog: sorry I mistake the number of bug in Sourceforge tracker.
+
+2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_graph.php: fixed to show empty graph in new
 	installations without data.
 	
-	Fixes: #3371197
+	Fixes: #3371518
 
 2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

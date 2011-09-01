@@ -1,5 +1,10 @@
 2011-09-01  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Improve the delete modules
+	function to do the same actions of the console
+
+2011-09-01  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl
 	util/recon_scripts/snmpdevices.pl: Fixed entities conversions
 

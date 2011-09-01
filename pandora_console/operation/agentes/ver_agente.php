@@ -126,7 +126,7 @@ if (is_ajax ()) {
 		
 		$result = array();
 		foreach($nameModules as $nameModule) {
-			$result[] = $nameModule['nombre'];
+			$result[] = io_safe_output($nameModule['nombre']);
 		}
 		
 		echo json_encode($result);

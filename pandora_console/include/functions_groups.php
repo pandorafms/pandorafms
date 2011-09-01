@@ -368,7 +368,13 @@ function groups_get_icon ($id_group) {
 		return 'world';
 	}
 	else {
-		return (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+		
+		if ($icon == '') {
+			$icon = 'without_group';	
+		}
+		
+		return $icon;
 	}
 }
 

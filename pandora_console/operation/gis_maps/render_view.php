@@ -167,7 +167,7 @@ if ($layers != false) {
 			$status = agents_get_status($idAgent);
 			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
-			gis_add_agent_point($layer['layer_name'], $agentName, $coords['stored_latitude'],
+			gis_add_agent_point($layer['layer_name'], io_safe_output($agentName), $coords['stored_latitude'],
 				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info', $parent);
 		}
 	}

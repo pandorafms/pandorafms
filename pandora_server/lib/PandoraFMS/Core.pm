@@ -1327,8 +1327,11 @@ sub pandora_delete_module ($$;$) {
 	# Delete templates asociated to the module
 	db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $module_id);
 
+	# Delete events asociated to the module
+	db_do ($dbh, 'DELETE FROM tevento WHERE id_agentmodule = ?', $module_id);
+
 	# Set pending delete the module
-	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ?', $module_id);
+	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1, nombre = "delete_pending" WHERE id_agente_modulo = ?', $module_id);
 
 	my $agent_id = get_module_agent_id($dbh, $module_id);
 	

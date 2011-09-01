@@ -82,8 +82,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			if (! check_acl ($config["id_user"], $gisMap["group_id"], "IR")) {
 				continue;
 			}
-			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr ($gisMap["map_name"], 0, 15);
-			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["title"] = $gisMap["map_name"];
+			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
+			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["title"] = io_safe_output($gisMap["map_name"]);
 			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
 		}
 		

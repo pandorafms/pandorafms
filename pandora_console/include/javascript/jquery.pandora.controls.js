@@ -39,12 +39,14 @@
 							},
 							function (data, status) {
 								jQuery.each (data, function (id, value) {
-									config.callbackPre ();
-									option = $("<option></option>")
-										.attr ("value", id)
-										.html (value);
-									config.callbackPost (id, value, option);
-									$(config.agentSelect).append (option);
+									if (id !== 'keycount'){
+										config.callbackPre ();
+										option = $("<option></option>")
+											.attr ("value", id)
+											.html (value);
+										config.callbackPost (id, value, option);
+										$(config.agentSelect).append (option);
+									}
 								});
 								$(config.loading).hide ();
 								$select.enable ();

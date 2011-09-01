@@ -910,7 +910,11 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query), 0, true);
 
 	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
-
+	
+	if ($data[__("Today")] == 0 && $data["1 ".__("Week")] == 0 && 
+		$data["1 ".__("Month")] == 0 && $data["3 ".__("Months")] == 0 && $data[__("Older")] == 0) {
+		return html_print_image('images/image_problem.png', true);
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",

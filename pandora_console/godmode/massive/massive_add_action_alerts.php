@@ -117,7 +117,7 @@ if ($add) {
 						$results = false;
 				}
 			
-				db_pandora_audit("Masive management", "Add alert action " . $id_agent, false, false, 'Agents: ' . 
+				db_pandora_audit("Masive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
 					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
 					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Action: ' . $action);
 				
@@ -153,7 +153,7 @@ $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
-	'id_agents[]', 0, false, '', '', true, true);
+	'id_agents[]', 0, false, __('Any'), '', true, true);
 
 if (empty($id_agents)) {
 	$alert_templates = '';

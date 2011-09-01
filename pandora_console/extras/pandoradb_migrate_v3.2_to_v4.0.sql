@@ -228,6 +228,12 @@ UPDATE tagente_modulo SET prediction_module = 2 WHERE custom_integer_1 <> 0 AND 
 UPDATE tagente_modulo SET custom_integer_1 = prediction_module AND prediction_module = 1 WHERE custom_integer_1 = 0 AND prediction_module <> 0;
 
 -- -----------------------------------------------------
+-- Table `tagente_modulo` to set delete_pending name to the delete pending modules to clean possible database errors
+-- -----------------------------------------------------
+
+UPDATE tagente_modulo SET nombre = 'delete_pending' WHERE delete_pending = 1;
+
+-- -----------------------------------------------------
 -- Table `talert_template_modules`
 -- -----------------------------------------------------
 ALTER TABLE talert_template_modules ADD INDEX force_execution (`force_execution`);

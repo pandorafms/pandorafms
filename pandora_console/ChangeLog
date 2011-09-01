@@ -1,5 +1,9 @@
 2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* images/without_group.png: Added image to groups without icon.
+
+2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/javascript/jquery.pandora.controls.js: Filter keycount variable
 	in pandoraSelectGroupAgent javascript function.
 	* godmode/massive/massive_add_action_alerts.php: Added 'Any' label to

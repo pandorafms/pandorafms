@@ -1,3 +1,8 @@
+2011-09-01  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl
+	util/recon_scripts/snmpdevices.pl: Fixed entities conversions
+
 2011-08-30  Tomas Palacios  <tomas.palacios@artica.es>
 
 	* pandora_server/pandora_server_installer: Added missing Perl Socket6 references.

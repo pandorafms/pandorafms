@@ -68,21 +68,6 @@ sub show_help {
 }
 
 ##########################################################################
-# Return the ID of the agent with the given IP.
-##########################################################################
-sub get_agent_from_addr ($$) {
-	my ($dbh, $ip_address) = @_;
-
-	return 0 if (! defined ($ip_address) || $ip_address eq '');
-
-	my $agent_id = get_db_value ($dbh, 'SELECT id_agent FROM taddress, taddress_agent, tagente
-	                                    WHERE tagente.id_agente = taddress_agent.id_agent
-	                                    AND taddress_agent.id_a = taddress.id_a
-	                                    AND ip = ?', $ip_address);
-	return (defined ($agent_id)) ? $agent_id : -1;
-}
-
-##########################################################################
 # Get SNMP response.
 ##########################################################################
 sub get_snmp_response ($$$) {
@@ -288,6 +273,7 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 		
 		# Remove forbidden caracters
 		$interface =~ s/\"|\n|\<|\>|\&|\[|\]//g;
+		$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, 'Interface'.$interface, $addr, $target_group, 0, 11, '', 300, $dbh);
 		 
 		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_snmp_proc", "Operative status for $interface at position $ax. IP Address: $ip_address", $conf);
 			

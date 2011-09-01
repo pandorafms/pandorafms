@@ -168,8 +168,8 @@ sub parse_log () {
 	open(LOGFILE, $Log_file) || error_msg("Error opening file $Log_file: " .
 	                                     $!);
 
-	# Go to starting position
-	seek(LOGFILE, 0, 0);
+	# Go to starting position. 
+	seek(LOGFILE, $Idx_pos, 0);
 
 	print (stdout "<module>\n");
 	print (stdout "<name><![CDATA[" . $Module_name . "]]></name>\n");

@@ -1,3 +1,11 @@
+2011-09-01  Sancho Lerena <slerena@artica.es>
+
+	* unix/plugins/grep_log,
+	shellscript/linux/plugins/grep_log: Restored previous code because
+	it needs to start searching on the last position known. First time
+	plugin starts, seek to the final position to avoid fire old events
+	detected in the log. Plugin only gives new events once starts to work
+
 2011-08-31 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
 
 	* unix/plugins/grep_log

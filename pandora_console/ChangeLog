@@ -1,5 +1,14 @@
 2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* images/groups_small/without_group.bad.png
+	images/groups_small/without_group.ok.png
+	images/groups_small/without_group.png
+	images/groups_small/without_group.warning.png
+	images/groups_small/without_group.default.png: Added state icons
+	for gis maps.
+
+2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* images/without_group.png: Added image to groups without icon.
 
 2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

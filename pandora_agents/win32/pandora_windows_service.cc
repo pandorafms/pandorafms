@@ -355,7 +355,7 @@ Pandora_Windows_Service::lauchTentacleProxy() {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value, xml, address;
+	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	
@@ -364,6 +364,9 @@ Pandora_Windows_Service::getXmlHeader () {
 	if (agent_name == "") {
 		agent_name = Pandora_Windows_Info::getSystemName ();
 	}
+
+	// Get parent agent name
+	parent_agent_name = conf->getValue ("parent_agent_name");
 	
 	// Get timestamp
 	ctime = time(0);
@@ -413,7 +416,8 @@ Pandora_Windows_Service::getXmlHeader () {
 	xml += "\" interval=\"" + conf->getValue ("interval") +
 	       "\" os_name=\"" + os_name +
 	       "\" os_version=\"" + os_version +
-	       "\" group=\"" + conf->getValue ("group") + "\">\n";
+	       "\" group=\"" + conf->getValue ("group") +
+	       "\" parent_agent_name=\"" + conf->getValue ("parent_agent_name") + "\">\n";
 	return xml;
 }
 

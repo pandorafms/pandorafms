@@ -135,7 +135,7 @@ if ($edit_filter > -2) {
 		$data[1] = $row['filter'];
 		$data[2] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
 				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-				'&nbsp;&nbsp;<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
+				'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
 				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 		array_push ($table->data, $data);
 	}

@@ -1,3 +1,8 @@
+2011-09-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/snmpconsole/snmp_filters.php: Added confirmation message in 
+	delete action.
+
 2011-09-01  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/modules/manage_nc_groups.php: fixed the javascript to promt to

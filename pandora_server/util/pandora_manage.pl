@@ -1219,7 +1219,7 @@ sub pandora_manage_main ($$$) {
 			
 			my $configuration_data = "";
 
-			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
+			my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 			exist_check($policy_id,'policy',$policy_name);
 			
 			my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
@@ -1237,7 +1237,7 @@ sub pandora_manage_main ($$$) {
 			
 			my $configuration_data = "";
 
-			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
+			my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 			exist_check($policy_id,'policy',$policy_name);
 			
 			# Flag as disabled the policy alerts

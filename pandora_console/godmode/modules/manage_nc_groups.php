@@ -163,9 +163,9 @@ foreach ($groups as $group) {
 	
 	$data[1] = network_components_get_group_name ($group['parent']);
 	
-	$data[2] = "<a onclick='if(confirm('" . __('Are you sure?') . "')) return true; else return false;' 
+	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 
-		html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete'))) . "</a>" .
+		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $group['id_sg'], false, false, '', 'class="check_delete"', true);
 	
 	array_push ($table->data, $data);

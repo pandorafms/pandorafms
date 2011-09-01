@@ -100,7 +100,11 @@ if (!function_exists ('mime_content_type')) {
 			finfo_close ($finfo);
 			return $mimetype;
 		} else {
-			return 'application/octet-stream';
+			$temp = exec ("file ".$filename);
+			if (isset($temp) && $temp != '')
+				return $temp;
+			else
+				return 'application/octet-stream';
 		}
 	}
 }
@@ -883,11 +887,11 @@ function filemanager_get_file_info ($filepath) {
 		$info['mime'] = MIME_DIR;
 		$info['is_dir'] = true;
 		$info['size'] = 0;
-	} else if (strpos ($info['mime_extend'], 'image') === 0) {
+	} else if (strpos ($info['mime_extend'], 'image') !== false) {
 		$info['mime'] = MIME_IMAGE;
 	} else if (in_array ($info['mime_extend'], $zip_mimes)) {
 		$info['mime'] = MIME_ZIP;
-	} else if (strpos ($info['mime_extend'], 'text') === 0) {
+	} else if (strpos ($info['mime_extend'], 'text') !== false) {
 		$info['mime'] = MIME_TEXT;
 	}
 	

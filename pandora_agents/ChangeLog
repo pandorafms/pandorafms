@@ -1,3 +1,7 @@
+2011-09-01  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* win32/pandora_windows_service.php: Add information about the parent agent name to xml file.
+
 2011-09-01  Sancho Lerena <slerena@artica.es>
 
 	* unix/plugins/grep_log,

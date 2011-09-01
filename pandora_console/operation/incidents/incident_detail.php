@@ -93,7 +93,7 @@ if (isset ($_GET["id"])) {
 		$result = db_process_sql ($sql);
 		
 		if (!empty ($result)) {
-			unlink ($config["attachment_store"]."/pand".$file_id."_".$filename);
+			unlink ($config["attachment_store"]."/pand".$file_id."_".io_safe_output($filename));
 			incidents_process_touch ($id_inc);
 		}
 		
@@ -129,7 +129,7 @@ if (isset ($_GET["id"])) {
 
 		// Copy file to directory and change name
 		if ($id_attachment !== false) {
-			$nombre_archivo = $config["attachment_store"]."/pand".$id_attachment."_".$filename;
+			$nombre_archivo = $config["attachment_store"]."/pand".$id_attachment."_".$_FILES['userfile']['name'];
 			$result = copy ($_FILES['userfile']['tmp_name'], $nombre_archivo);
 		} else {
 			echo '<h3 class="error">'.__('File could not be saved due to database error').'</h3>';

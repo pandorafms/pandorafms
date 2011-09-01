@@ -1011,7 +1011,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					}
 				}
 				//else if (strstr($value, '666=666', true) == '') {
-				else if (substr ($value, 0, strpos ($value, '666=666'))){
+				else if (substr ($value, 0, strpos ($value, '666=666'))  == '') {
 					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":

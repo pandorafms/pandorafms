@@ -63,6 +63,12 @@ $config['start_time'] = microtime (true);
 
 $ownDir = dirname(__FILE__) . '/';
 
+//Set by default the MySQL connection for DB, because in older Pandora have not
+//this token in the config.php
+if (!isset($config['dbtype'])) {
+	$config['dbtype'] = 'mysql';
+}
+
 require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir . 'functions.php');
 

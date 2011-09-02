@@ -538,7 +538,7 @@ function install_step3() {
 
 	echo "
 	<div id='install_container'>
-	<div id='wizard' style='height: 635px;'>
+	<div id='wizard' style='height: 655px;'>
 		<div id='install_box'>
 			<h2>Environment and database setup</h2>
 			<p>

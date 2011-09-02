@@ -335,10 +335,10 @@ sub parse_conf_modules($) {
 			my $action = $1;
 			$module->{'precon'} = 1;
 			# Numeric comparison
-			if ($action =~ /^\s*([<>!=]+)\s+(\d+\.\d*)\s+(.*)$/) {
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s+(.*)$/) {
 				push (@{$module->{'precondition'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
 			# Interval
-			} elsif ($action =~ /^\s*[(]\s*(\d+\.\d*)\s*,\s*(\d+\.\d*)\s*[)]\s+(.*)$/) {
+			} elsif ($action =~ /^\s*[(]\s*(\d+(?:\.\d*)?)\s*,\s*(\d+(?:\.\d*)?)\s*[)]\s+(.*)$/) {
 				push (@{$module->{'precondition'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
 			# Regular expression
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
@@ -392,10 +392,10 @@ sub parse_conf_modules($) {
 		} elsif ($line =~ /^\s*module_condition\s+(.*)$/) {
 			my $action = $1;
 			# Numeric comparison
-			if ($action =~ /^\s*([<>!=]+)\s+(\d+\.\d*)\s+(.*)$/) {
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s+(.*)$/) {
 				push (@{$module->{'conditions'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
 			# Interval
-			} elsif ($action =~ /^\s*[(]\s*(\d+\.\d*)\s*,\s*(\d+\.\d*)\s*[)]\s+(.*)$/) {
+			} elsif ($action =~ /^\s*[(]\s*(\d+(?:\.\d*)?)\s*,\s*(\d+(?:\.\d*)?)\s*[)]\s+(.*)$/) {
 				push (@{$module->{'conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
 			# Regular expression
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {

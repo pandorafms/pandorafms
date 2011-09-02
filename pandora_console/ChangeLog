@@ -1,3 +1,11 @@
+2011-09-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/config_process.php: set by default the mysql connection type
+	because in older isntallations update to 4 have not this token in
+	config.php.
+	
+	Fixes: #3395947
+
 2011-09-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_alerts.php: fixed alerts_get_alert_agent_module_actions()

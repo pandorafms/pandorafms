@@ -906,11 +906,11 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
 		$subquery_enterprise = subquery_acl_enterprise();
 	}
-
+	
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
-
+		
 		if(empty($groups)) {
 			return array();
 		}
@@ -975,8 +975,8 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
-			$fields = array ();
-			foreach ($filter as $field => $value) {
+			$fields = array (); 
+			foreach ($filter as $field => $value) { 
 				//Check <> operator
 				$operatorDistin = false;
 				if (strlen($value) > 2) {
@@ -1011,7 +1011,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					}
 				}
 				//else if (strstr($value, '666=666', true) == '') {
-				else if (substr ($value, 0, strpos ($value, '666=666'))  == '') {
+				else if (strncmp($value, '666=666', 7) == 0){
 					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":
@@ -1039,7 +1039,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					}
 				}
 			}
-			$where .= implode (' AND ', $fields);
+			$where .= implode (' AND ', $fields); 
 		}
 		else {
 			$where .= $filter;

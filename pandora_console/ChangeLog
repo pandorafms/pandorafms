@@ -1,3 +1,8 @@
+2011-09-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php: Fixed function agents_get_modules()
+	where modules are retrieve.
+
 2011-09-02  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/config_process.php: set by default the mysql connection type

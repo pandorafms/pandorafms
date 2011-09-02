@@ -318,7 +318,7 @@ if (! $id_agente) {
 	$table->size[2] = '15%';
 	$table->size[3] = '15%';
 	$table->size[4] = '2%';
-	$table->size[5] = '8%';
+	$table->size[5] = '9%';
 	
 /*	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '8%';

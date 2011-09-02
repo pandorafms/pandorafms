@@ -62,6 +62,7 @@ $id_group = (int) get_parameter ('id_group');
 $id_agents = get_parameter ('id_agents');
 $id_alert_templates = (array) get_parameter ('id_alert_templates');
 $id_alert_compounds = (array) get_parameter ('id_alert_compounds');
+$recursion = get_parameter ('recursion');
 
 $add = (bool) get_parameter_post ('add');
 
@@ -141,12 +142,16 @@ $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '85%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true);
+$table->data[0][2] = __('Group recursion');
+$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
@@ -217,8 +222,15 @@ ui_require_jquery_file ('pandora.controls');
 $(document).ready (function () {
 	update_alerts();
 
+	var recursion;
+	$("#checkbox-recursion").click(function (){
+		recursion = this.checked ? 1 : 0;
+		$("#id_group").trigger("change");
+	});
+
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
+		recursion: function() {return recursion},
 		callbackPost: function () {
 			var $select_template = $("#id_alert_templates").disable ();
 			var $select_compound = $("#id_alert_compounds").disable ();

@@ -1,3 +1,9 @@
+2011-09-02  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/massive/massive_add_action_alerts.php,
+	godmode/massive/massive_delete_action_alerts.php: Added group recursion
+	feature, it allows to search agents in child groups.
+
 2011-09-01 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_filemanager.php: Improved detecting mime types

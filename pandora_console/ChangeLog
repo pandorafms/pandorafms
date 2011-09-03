@@ -1,3 +1,11 @@
+2011-09-03  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/massive/massive_delete_alerts.php,
+	godmode/massive/massive_edit_modules.php,
+	operation/agentes/ver_agente.php: Added group recursion	feature,
+	it allows to search agents in child groups. These three changes
+	are contributed by Yusuke Arai. Thanks!
+
 2011-09-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* install.php: Fixed css style in this view.

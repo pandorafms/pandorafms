@@ -31,13 +31,27 @@ require_once ($config['homedir'].'/include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_agents = (bool) get_parameter ('get_agents');
+	$recursion = (int) get_parameter ('recursion');
 	
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
 		$id_alert_template = (int) get_parameter ('id_alert_template');
 		
-		$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
-			false, array ('tagente.nombre', 'tagente.id_agente'));
+		if ($recursion) {
+			$groups = groups_get_id_recursive($id_group, true);
+		}
+		else {
+			$groups = array($id_group);
+		}
+
+		$agents_alerts = array();
+		foreach( $groups as $group ) {
+			$agents_alerts_one_group = alerts_get_agents_with_alert_template ($id_alert_template, $group,
+					false, array ('tagente.nombre', 'tagente.id_agente'));
+			if (is_array($agents_alerts_one_group)) {
+				$agents_alerts = array_merge($agents_alerts, $agents_alerts_one_group);
+			}
+		}
 		
 		echo json_encode (index_array ($agents_alerts, 'id_agente', 'nombre'));
 		return;
@@ -133,8 +147,8 @@ $table->data[0][3] = '';
 $table->data[1][0] = __('Group');
 $table->data[1][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
 	'', '', '', true, false, true, '', $id_alert_template == 0);
-$table->data[1][2] = '';
-$table->data[1][3] = '';
+$table->data[1][2] = __('Group recursion');
+$table->data[1][3] = html_print_checkbox ("recursion", 1, false, true, false);
 
 $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
@@ -189,6 +203,7 @@ $(document).ready (function () {
 			{"page" : "godmode/massive/massive_delete_alerts",
 			"get_agents" : 1,
 			"id_group" : this.value,
+			"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
 			"id_alert_template" : $("#id_alert_template").attr ("value")
 			},
 			function (data, status) {
@@ -202,6 +217,10 @@ $(document).ready (function () {
 			},
 			"json"
 		);
+	});
+
+	$("#checkbox-recursion").click(function (){
+		$("#id_group").trigger("change");
 	});
 });
 /* ]]> */

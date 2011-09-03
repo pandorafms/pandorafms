@@ -45,18 +45,21 @@ if (is_ajax ()) {
 
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
+		$recursion = (int) get_parameter ('recursion', 0);
 
-		if($id_group > 0)
-			$filter = sprintf(" WHERE id_grupo = %d", $id_group);
+		if($id_group > 0) {
+			$groups = array($id_group);
+			if ($recursion) {
+				$groups = array_merge($groups, groups_get_id_recursive($id_group, true));
+			}
+		}
 		else {
 			$groups_orig = users_get_groups();
 
-			$a = 0;
 			$groups = array_keys($groups_orig);
-			
-			$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
 		}
 
+		$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
 		$agents = db_get_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
 
 		echo json_encode($agents);

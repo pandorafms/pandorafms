@@ -95,7 +95,7 @@ $agents_select = get_parameter('agents');
 $agents_id = get_parameter('id_agents');
 $modules_select = get_parameter('module');
 $selection_mode = get_parameter('selection_mode', 'modules');
-
+$recursion = get_parameter('recursion');
 
 $update = (bool) get_parameter_post ('update');
 
@@ -204,7 +204,7 @@ $table->style[2] = 'font-weight: bold';
 $table->rowstyle = array ();
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '35%'; /* Fixed using javascript */
+$table->size[1] = '35%';
 $table->size[2] = '15%';
 $table->size[3] = '35%';
 if (! $module_type) {
@@ -278,7 +278,8 @@ $groups = groups_get_all(true);
 $groups[0] = __('All');
 $table->colspan[2][1] = 2;
 $table->data[2][1] = html_print_select ($groups, 'groups_select',
-	'', true, __('Select'), -1, true, false, true);
+	'', true, __('Select'), -1, true, false, true).
+        ' '.__('Group recursion').' '.html_print_checkbox ("recursion", 1, false, true, false);
 $table->data[2][3] = __('Select all modules of this group').' '.html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $table->rowstyle[3] = 'vertical-align: top;';
@@ -446,7 +447,7 @@ $(document).ready (function () {
 	function show_form() {
 		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "35%");
 		$("#form_edit input[type=text]").attr ("value", "");
-		$("#form_edit input[type=checkbox]").removeAttr ("checked");
+		$("#form_edit input[type=checkbox]").not ("#checkbox-recursion").removeAttr ("checked");
 		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
 	}
 	
@@ -475,6 +476,9 @@ $(document).ready (function () {
 						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 					}
 				}
+			}
+			else if(this.id == "checkbox-recursion"){
+				$("#groups_select").trigger("change");
 			}
 			else {
 				if(this.checked) {
@@ -527,6 +531,7 @@ $(document).ready (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
+				"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
 				"id_group" : this.value
 				},
 				function (data, status) {

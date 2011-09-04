@@ -1,3 +1,8 @@
+2011-09-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm, lib/PandoraFMS/Core.pm: Fixed policy queue (was
+	  not working properly).
+
 2011-09-02  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandora_server/conf/pandora_server.conf: Added update parent line to the configuration file.

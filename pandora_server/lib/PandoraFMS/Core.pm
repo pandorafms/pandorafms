@@ -1137,28 +1137,25 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_create_template_module(I<$pa_config>, I<$id_agent_module>, I<$id_alert_template>, I<$dbh>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
+=head2 C<< pandora_create_template_module(I<$pa_config>, I<$dbh>, I<$id_agent_module>, I<$id_alert_template>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
 
 Create a template module.
 
 =cut
 ##########################################################################
 sub pandora_create_template_module ($$$$;$$$) {
-	my ($pa_config, $id_agent_module, $id_alert_template, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
+	my ($pa_config, $dbh, $id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby) = @_;
 	
 	$id_policy_alerts = 0 unless defined $id_policy_alerts;
 	$disabled = 0 unless defined $disabled;
 	$standby = 0 unless defined $standby;
 	
 	my $module_name = get_module_name($dbh, $id_agent_module);
- 	logger($pa_config, "Creating alert of template '$id_alert_template' on agent module '$module_name'.", 10);
-
-	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`) VALUES ($id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby)");
-	return $dbh->{'mysql_insertid'};
+	return db_insert ($dbh, 'id', "INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`) VALUES (?, ?, ?, ?, ?)", $id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby);
 }
 
 ##########################################################################
-=head2 C<< pandora_update_template_module(I<$pa_config>, I<$id_alert>, I<$dbh>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
+=head2 C<< pandora_update_template_module(I<$pa_config>, I<$dbh>, I<$id_alert>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
 
 Update a template module.
 
@@ -1166,17 +1163,13 @@ Update a template module.
 ##########################################################################
 
 sub pandora_update_template_module ($$$;$$$) {
-	my ($pa_config, $id_alert, $dbh, $id_policy_alerts, $disabled, $standby) = @_;
+	my ($pa_config, $dbh, $id_alert, $id_policy_alerts, $disabled, $standby) = @_;
 	
 	$id_policy_alerts = 0 unless defined $id_policy_alerts;
 	$disabled = 0 unless defined $disabled;
 	$standby = 0 unless defined $standby;
 	
-	#my $module_name = get_module_name($dbh, $id_agent_module);
- 	#logger($pa_config, "Update alert of template '$id_alert_template' on agent module '$module_name'.", 10);
-
-	$dbh->do("UPDATE talert_template_modules SET `id_policy_alerts` = '$id_policy_alerts', `disabled` =  '$disabled', `standby` =  '$standby' WHERE id = $id_alert");
-	return $dbh->{'mysql_insertid'};
+	db_do ($dbh, "UPDATE talert_template_modules SET `id_policy_alerts` = ?, `disabled` =  ?, `standby` = ? WHERE id = ?", $id_policy_alerts, $disabled, $standby, $id_alert);
 }
 
 ##########################################################################
@@ -1364,10 +1357,7 @@ sub pandora_create_module_from_hash ($$$) {
 sub pandora_update_module_from_hash ($$$$$) {
 	my ($pa_config, $parameters, $where_column, $where_value, $dbh) = @_;
 	
- 	logger($pa_config, "Updating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
-
 	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, $where_column, $where_value);
-
 	return $module_id;
 }
 

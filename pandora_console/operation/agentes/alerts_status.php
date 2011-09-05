@@ -84,7 +84,7 @@ else {
 }
 
 if ($alert_validate) {
-	if (check_acl ($config["id_user"], $id_group, "LW") == 0) {
+	if (check_acl ($config["id_user"], $id_group, "AW") == 0) {
                 echo '<h3 class="error">'.__('Insufficient permissions to validate alerts').'</h3>';
 	}
 	else {
@@ -267,7 +267,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
-        	if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+        if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[9] = __('Validate');
 		}	
 		$table->align[8] = 'center';
@@ -295,7 +295,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-	        if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+	    if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[8] = __('Validate');
 		}
 		$table->align[7] = 'center';
@@ -328,7 +328,7 @@ else
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-	        if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+	        if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[8] = __('Validate');
 		}
 		$table->align[7] = 'center';
@@ -354,7 +354,7 @@ else
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[7] = __('Validate');
 		}
 		$table->align[6] = 'center';
@@ -421,7 +421,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 
-if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 	if (count($alerts['alerts_simple']) > 0 || count($alerts['alerts_combined']) > 0) {
 		echo '<div class="action-buttons" style="width: '.$table->width.';">';
 		html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);

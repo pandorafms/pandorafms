@@ -1,3 +1,8 @@
+2011-09-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/setup/gis_step_2.php: Changed style in titles to match
+	new style pattern.
+	
 2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/gis_maps/configure_gis_map.php: fixed the form to create or

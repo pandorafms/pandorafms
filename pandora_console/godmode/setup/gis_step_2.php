@@ -159,7 +159,7 @@ $table->data[2][1] = html_print_input_text ('num_levels_zoom', $mapConnection_nu
 $table->data[3][0] = __('Default zoom level') . ui_print_help_tip (__('Zoom level used when the map is opened'), true). ":";
 $table->data[3][1] = html_print_input_text ('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
 
-echo "<h3>" . __('Basic configuration') . "</h3>";
+echo "<h4>" . __('Basic configuration') . "</h4>";
 html_print_table($table);
 
 $table->width = '60%';
@@ -170,7 +170,7 @@ $types["Static_Image"] = __('Static Image');
 $table->data[0][0] = __('Type') . ":";
 $table->data[0][1] = html_print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", __('Please select the connection type'), 0, true);
 
-echo "<h3>" . __('Map connection type') . "</h3>";
+echo "<h4>" . __('Map connection type') . "</h4>";
 html_print_table ($table);
 
 $optionsConnectionTypeTable = '';
@@ -275,7 +275,7 @@ if ($mapConnectionData != null) {
 
 echo "<div id='form_map_connection_type'>" . $optionsConnectionTypeTable . "</div>";
 
-echo "<h3>" . __('Preview to select the center of the map and the default position of an agent without gis data') . "</h3>";
+echo "<h4>" . __('Preview to select the center of the map and the default position of an agent without gis data') . "</h4><br>";
 html_print_button(__("Load preview map"),'button_refresh', false, 'refreshMapView();', 'class="sub"');
 echo "<br /><br />";
 echo "<div id='map' style='width: 300px; height: 300px; border: 1px solid black; float: left'></div>";

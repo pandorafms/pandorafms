@@ -71,7 +71,7 @@ echo '<span style="float:left; margin: 20px; padding: 0px">';
 echo html_print_image('images/pandora_textlogo.png', true, array("border" => '0'));
 echo "</span>";
 echo '<p style="padding-right: 20px; padding-top: 20px; text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
-echo '</div>';
+echo '</div><br>';
 echo '<hr width="100%" size="1" />';
 echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
 echo '<div style="font-size: 12px; margin-left: 30px; margin-right:25px;">';

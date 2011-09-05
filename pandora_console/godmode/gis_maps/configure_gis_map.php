@@ -298,6 +298,7 @@ switch ($action) {
 }
 
 $table->width = '98%';
+
 $table->data = array ();
 $table->valign[0] = 'top';
 
@@ -361,6 +362,24 @@ $table->data[8][1] = html_print_input_text ('map_default_latitude', $map_default
 
 $table->data[9][0] = __('Default Altitude') . ':';
 $table->data[9][1] = html_print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
+
+echo '<div class="action-buttons" style="margin-top: 20px; width: '.$table->width.'">';
+switch ($action) {
+	case 'save_new':
+	case 'edit_map':
+	case 'update_saved':
+		if (!empty($invalidFields)) {
+			html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+		}
+		else {
+			html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
+		}
+		break;
+	case 'new_map':
+		html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
+		break;
+}
+echo '</div>';
 
 html_print_table($table);
 

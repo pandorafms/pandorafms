@@ -1,5 +1,11 @@
 2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* general/logon_ok.php: change the text to be a correct sentence.
+	
+	Fixex: #3394390
+
+2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/help/en/help_action_threshold.php,
 	include/help/es/help_action_threshold.php: added help for threshold from
 	the wiki documentation.

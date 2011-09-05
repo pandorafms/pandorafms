@@ -1,5 +1,11 @@
 2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/agentes/alerts_status.php: change the user rights to validate
+	alert, before it was "LW" and now it is "AW". This new user rights tell me
+	Sancho.
+
+2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* general/logon_ok.php: change the text to be a correct sentence.
 	
 	Fixex: #3394390

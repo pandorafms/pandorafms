@@ -1,3 +1,12 @@
+2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/agentes/planned_downtime.php: fixed to avoid create or update
+	"Planned downtimes" with empty names or all white spaces or identical name
+	to others. And disabled the button to add agent in the "Planned downtimes"
+	when in the list of agents in group is none.
+	
+	Fixes: #3371256
+
 2011-09-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/pandora_help.php: Fixed visualization error on this view.

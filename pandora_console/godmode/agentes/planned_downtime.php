@@ -97,7 +97,6 @@ if ($create_downtime || $update_downtime) {
 	$description = (string) get_parameter ('description');
 	$name = (string) get_parameter ('name');
 	$check = db_get_value ('name', 'tplanned_downtime', 'name', $name);
-	$subcheck = db_get_value ('name', 'tplanned_downtime', 'id_group', $id_group);
 	
 	$datetime_from = strtotime ($date_from.' '.$time_from);
 	$datetime_to = strtotime ($date_to.' '.$time_to);
@@ -108,7 +107,7 @@ if ($create_downtime || $update_downtime) {
 	else {
 		$sql = '';
 		if ($create_downtime) {
-			if ($name) {
+			if (trim(io_safe_output($name)) != '') {
 				if (!$check) {
 					$values = array(
 						'name' => $name,
@@ -128,8 +127,8 @@ if ($create_downtime || $update_downtime) {
 			}
 		}
 		else if ($update_downtime) {
-			if ($name) {
-				if (!$check || $subcheck == $name) {
+			if (trim(io_safe_output($name)) != '') {
+				if (!$check) {
 					$values = array(
 						'name' => $name,
 						'description' => $description,
@@ -160,15 +159,17 @@ if ($create_downtime || $update_downtime) {
 			if($create_downtime && $name && !$check) {
 				echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 			}
-			else if ($update_downtime && $name && !$check || $subcheck == $name) {
+			else if ($update_downtime && $name && !$check) {
 				echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 			}
 		}
 	}
 }
 
+
+////////////////////////////////
 // Show create / update form
-	
+////////////////////////////////
 	if (($first_create != 0) OR ($first_update != 0)){
 		// Have any data to show ?
 		if ($id_downtime > 0) {
@@ -269,12 +270,18 @@ if ($create_downtime || $update_downtime) {
 			ORDER by tagente.nombre", $id_downtime);
 		$downtimes = db_get_all_rows_sql ($sql);
 		$data = array ();
-		if ($downtimes)
+		if ($downtimes) {
 			foreach ($downtimes as $downtime) {		
 				if (check_acl ($config["id_user"], $downtime['id_grupo'], "AR")) {
 					$data[$downtime['id_agente']] = $downtime['nombre'];
 				}
 			}
+		}
+		
+		$disabled_add_button = false;
+		if (empty($data)) {
+			$disabled_add_button = true;
+		}
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
 
@@ -288,7 +295,7 @@ if ($create_downtime || $update_downtime) {
 	
 		echo html_print_select ($data, "id_agent[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 		echo "<br /><br /><br />";
-		html_print_submit_button (__('Add'), '', false, 'class="sub next"',false);
+		html_print_submit_button (__('Add'), '', $disabled_add_button, 'class="sub next"',false);
 		echo "</form>";
 		echo "</table>";
 		

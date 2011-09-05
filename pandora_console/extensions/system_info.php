@@ -331,7 +331,8 @@ function mainSystemInfo() {
 		}
 
 		$url = '<a href="' .$http.$_SERVER['HTTP_HOST'].$config["homeurl"].'/attachment/last_info.zip">' . __('System info file zipped') . '</a>';
-		echo '<b>' . __('File:') . '</b> ' . $url;
+		echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
+		echo '<b>' . __('Location:') . '</b> ' . $zipArchive;
     	
 		$zip = new ZipArchive;
 		

@@ -1,3 +1,8 @@
+2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* operation/agentes/alerts_status.php: added to hidde the validate alert
+	for user who have not user rights "AW".
+
 2011-08-31 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* include/functions_api.php: Merged from trunk. Fixed join parameter

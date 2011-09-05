@@ -21,6 +21,12 @@
 use strict;
 use constant TSTAMP_FILE => '/tmp/pandora_inventory.tstamp';
 
+# Operation mode (LSHW or HWINFO)
+my $Mode;
+
+# Item separator
+my $Separator;
+
 # Parse module information
 sub get_module_data ($$$$) {
 	my ($name, $hwinfo, $keys, $modules) = @_;
@@ -28,7 +34,7 @@ sub get_module_data ($$$$) {
 
 	# Parse module data
 	while (my $line = shift (@{$hwinfo})) {
-		if ($line =~ /\s+\*\-/) {
+		if ($line =~ /$Separator/) {
 			unshift (@{$hwinfo}, $line);
 			last;
 		}
@@ -225,7 +231,14 @@ print FILE time ();
 close (FILE);
 
 # Retrieve hardware information
+$Mode = 'LSHW';
+$Separator = '';
 my @hwinfo = `lshw 2>/dev/null`;
+if ($? != 0) {
+	$Mode = 'HWINFO';
+	$Separator = 'Hardware Class:';
+	@hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
+}
 
 # Parse hardware information
 my %modules;
@@ -233,33 +246,60 @@ while (my $line = shift (@hwinfo)) {
 	chomp ($line);
 
 	# CPU
-	if ($line =~ /\*\-cpu/ && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
-		get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
+	if (($line =~ /\*\-cpu/ || $line =~ /Hardware Class: cpu/) && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
+		if ($Mode eq 'LSHW') {
+			get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
+		} else {
+			get_module_data ('CPU', \@hwinfo, ['Model', 'Vendor', 'Clock'], \%modules);
+		}
 	}
 
 	# RAM
-	if ($line =~ /\*\-bank/ && ($enable_all == 1 || $enabled{'ram'} == 1)) {
-		get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
+	if (($line =~ /\*\-bank/ || $line =~ /Hardware Class: memory/) && ($enable_all == 1 || $enabled{'ram'} == 1)) {
+		if ($Mode eq 'LSHW') {
+			get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
+		} else {
+			get_module_data ('RAM', \@hwinfo, ['Model', 'Memory Size'], \%modules);
+		}
 	}
 
 	# VIDEO
-	if ($line =~ /\*\-display/ && ($enable_all == 1 || $enabled{'video'} == 1)) {
-		get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+	if (($line =~ /\*\-display/ || $line =~ /Hardware Class: graphics card/) && ($enable_all == 1 || $enabled{'video'} == 1)) {
+		if ($Mode eq 'LSHW') {
+			get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+		} else {
+			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
+			get_module_data ('VIDEO', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
+		}
 	}
 
 	# NIC
-	if ($line =~ /\*\-network/ && ($enable_all == 1 || $enabled{'nic'} == 1)) {
-		get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+	if (($line =~ /\*\-network/ || $line =~ /Hardware Class: network/) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
+		if ($Mode eq 'LSHW') {
+			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+		} else {
+			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
+			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
+		}
 	}
 
 	# CDROM
-	if ($line =~ /\*\-cdrom/ && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
-		get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+	if (($line =~ /\*\-cdrom/ || $line =~ /Hardware Class: cdrom/) && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
+		if ($Mode eq 'LSHW') {
+			get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+		} else {
+			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
+			get_module_data ('CDROM', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
+		}
 	}
 
 	# HD
-	if ($line =~ /\*\-disk/ && ($enable_all == 1 || $enabled{'hd'} == 1)) {
-		get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
+	if (($line =~ /\*\-disk/ || $line =~ /Hardware Class: disk/) && ($enable_all == 1 || $enabled{'hd'} == 1)) {
+		if ($Mode eq 'LSHW') {
+			get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
+		} else {
+			get_module_data ('HD', \@hwinfo, ['Model', 'Serial ID', 'Size'], \%modules);
+		}
 	}
 }
 

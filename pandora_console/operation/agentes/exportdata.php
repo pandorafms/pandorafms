@@ -298,6 +298,7 @@ $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
 $table->class = "databox_color";
+$table->style[0] = 'vertical-align: top;';
 
 $table->data = array ();
 
@@ -344,6 +345,11 @@ if ($agent > 0) {
 	$modules = array ();
 }
 
+$disabled_export_button = false;
+if (empty($modules)) {
+	$disabled_export_button = true;
+}
+
 $table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w155', false);
 
 //Start date selector
@@ -374,7 +380,7 @@ html_print_table ($table);
 
 // Submit button
 echo '<div class="action-buttons" style="width:80%;">';
-	html_print_submit_button (__('Export'), 'export_btn', false, 'class="sub wand"');
+	html_print_submit_button (__('Export'), 'export_btn', $disabled_export_button, 'class="sub wand"');
 echo '</div></form>';
 
 ui_require_jquery_file ('pandora.controls');

@@ -77,7 +77,8 @@ $table->data[0][0] = __('Language code for Pandora');
 $table->data[0][1] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $current_system_lang , '', '', '', true);
 
-$table->data[1][0] = __('Remote config directory');
+$table->data[1][0] = __('Remote config directory') . ui_print_help_tip (__("Directory where agent remote configuration is stored."), true);
+
 $table->data[1][1] = html_print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
 
 $table->data[6][0] = __('Auto login (hash) password');
@@ -102,7 +103,7 @@ $table->data[11][0] = __('Enforce https');
 $table->data[11][1] = __('Yes').'&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
 
-$table->data[14][0] = __('Attachment store');
+$table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory where temporary data is stored."), true);
 $table->data[14][1] = html_print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
 
 $table->data[15][0] = __('IP list with API access') . 

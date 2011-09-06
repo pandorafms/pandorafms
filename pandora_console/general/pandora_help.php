@@ -78,7 +78,7 @@ echo '<div style="font-size: 12px; margin-left: 30px; margin-right:25px;">';
 require_once ($help_file);
 echo '</div>';
 echo '<br /><br /><hr width="100%" size="1" />';
-echo '<div style="padding: 15px; background-color: #6E6E6E; font-family: verdana, arial; font-size: 11px;">';
+echo '<div style="text-align: center; padding: 15px; background-color: #6E6E6E; font-family: verdana, arial; font-size: 11px;">';
 include ('footer.php');
 echo '</div>';
 ?>

@@ -26,6 +26,7 @@ $dest_user = get_parameter ("dest_user");
 $dest_group = get_parameter ("dest_group");
 $subject = get_parameter ("subject");
 $message = get_parameter ("mensaje");
+$send_message = (bool)get_parameter('send_mes', false);
 
 if (isset ($_GET["new_msg"])) 
 	ui_print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
@@ -44,9 +45,16 @@ if (isset ($_POST["delete_message"])) {
 		__('Could not be deleted'));
 }
 
+$message_sended = false;
+
 if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 	// Create message
 	$return = messages_create_message ($config["id_user"], $dest_user, $subject, $message);
+	
+	if ($return) {
+		$message_sended = true;
+	}
+	
 	ui_print_result_message ($return,
 		__('Message successfully sent to user %s', get_user_fullname ($dest_user)),
 		__('Error sending message to user %s', get_user_fullname ($dest_user)));
@@ -55,9 +63,18 @@ if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 	// Create message to groups
 	$return = messages_create_group ($config["id_user"], $dest_group, $subject, $message);
+	
+	if ($return) {
+		$message_sended = true;
+	}
+	
 	ui_print_result_message ($return,
 		__('Message successfully sent'),
 		__('Error sending message to group %s', groups_get_name ($dest_group)));
+}
+
+if ($send_message && !$message_sended) {
+	ui_print_error_message("Error sending message, please choose group or user.");
 }
 
 if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
@@ -72,7 +89,7 @@ if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
 	}
 }
 
-if (isset ($_GET["new_msg"])) { //create message
+if (isset ($_GET["new_msg"]) || ($send_message && !$message_sended)) { //create message
 
 // Header
 //	ui_print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
@@ -165,7 +182,7 @@ if (isset ($_GET["new_msg"])) { //create message
 	return;
 } 
 
-if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {	
+if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"]) && !($send_message && !$message_sended)) {	
 //	if (empty ($config["pure"]) && !is_ajax ()) {
 //		ui_print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
 //	}

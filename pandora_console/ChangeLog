@@ -1,5 +1,12 @@
 2011-09-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/messages/message.php: now show more error messages in case the
+	user error or group error.
+	
+	Fixes: #3371451
+
+2011-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* operation/extensions.php: update the style of page.
 	
 	Fixes: #3371523

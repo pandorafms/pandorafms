@@ -132,6 +132,10 @@
 #icon_oper-extensions, #icon_god-extensions {
 	background-image: url(../../images/extensions.png);
 }
+#icon_oper-networkconsole {
+        background-image: url(../../images/plotchart.png);
+}
+
 
 /* Godmode images */
 #icon_god-gismaps {

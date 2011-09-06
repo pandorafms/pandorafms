@@ -196,3 +196,19 @@ input.login {
 .databox_login {
 	color: #000000;
 }
+
+/*CALENDAR TOOLTIP STYLE*/
+
+/* Calendar background */
+table.scw {
+        background-color:  #505050;
+}
+
+
+/* Today selector */                                      
+td.scwFoot {
+        background-color: #505050;
+        color: #000;
+}
+
+

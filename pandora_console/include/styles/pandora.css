@@ -1283,7 +1283,7 @@ div#logo_text3 {
 
 /* Calendar background */
 table.scw {
-	background-color:  #000;
+	background-color:  #daedae;
 }
 
 /* Week number heading */
@@ -1291,10 +1291,14 @@ td.scwWeekNumberHead {
 	color: #000;
 }
 
-/* Today selector */                                      +
+td.scwWeek {
+	color: #000 !important;
+}
+
+/* Today selector */                                      
 td.scwFoot {
-	background-color: #000;
-	color: #FFFFFF;
+	background-color: #daedae;
+	color: #000;
 }
 
 td.scwFootDisabled {
@@ -1303,5 +1307,10 @@ td.scwFootDisabled {
 }
 
 tfoot.scwFoot {
-	color: #FFFFFF;
+	color: #000;
 }
+
+.scwFoot :hover{
+        color: #FFA500 !important;
+}
+

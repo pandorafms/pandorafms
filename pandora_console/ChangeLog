@@ -1,3 +1,9 @@
+2011-09-06 Javier Lanz <javier.lanz@artica.es>
+
+	* include/help/en/help_timesource.php: Changed a wee translation bug
+	and fixed style format
+	* godmode/setup/setup.php: Fixed a field name, written properly.
+
 2011-09-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/styles/pandora.css,

@@ -1,3 +1,7 @@
+2011-09-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NmapParser.pm: Remove nmap warnings from output.
+
 2011-09-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Disable ICMP and SNMP enterprise servers

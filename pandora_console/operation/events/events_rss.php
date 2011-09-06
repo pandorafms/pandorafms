@@ -213,18 +213,20 @@ else {
 	$lastbuild = (int) $result[0]['unix_timestamp'];
 }
 
-$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'; // ' <?php ' -- Fixes highlighters thinking that the closing tag is PHP
-$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'; 
-$rss_feed .= '<channel><title>Pandora RSS Feed</title><description>Latest events on Pandora</description>';
-$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, $lastbuild).'</lastBuildDate>'; //Last build date is the last event - that way readers won't mark it as having new posts
-$rss_feed .= '<link>'.$url.'</link>'; //Link back to the main Pandora page
-$rss_feed .= '<atom:link href="'.io_safe_input ($selfurl).'" rel="self" type="application/rss+xml" />'; //Alternative for Atom feeds. It's the same.
+$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>' . "\n"; // ' <?php ' -- Fixes highlighters thinking that the closing tag is PHP
+$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n"; 
+$rss_feed .= '<channel>'. "\n";
+$rss_feed .= '<title>Pandora RSS Feed</title>'. "\n";
+$rss_feed .= '<description>Latest events on Pandora</description>' . "\n";
+$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, $lastbuild).'</lastBuildDate>'. "\n"; //Last build date is the last event - that way readers won't mark it as having new posts
+$rss_feed .= '<link>'.$url.'</link>'. "\n"; //Link back to the main Pandora page
+$rss_feed .= '<atom:link href="'.io_safe_input ($selfurl).'" rel="self" type="application/rss+xml" />'. "\n";; //Alternative for Atom feeds. It's the same.
 
 if (empty ($result)) {
 	$result = array();
 	$rss_feed .= '<item><guid>'.io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events').'</guid><title>No results</title>';
 	$rss_feed .= '<description>There are no results. Click on the link to see all Pending events</description>';
-	$rss_feed .= '<link>'.io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events').'</link></item>';
+	$rss_feed .= '<link>'.io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events').'</link></item>'. "\n";
 }
 
 foreach ($result as $row) {
@@ -244,26 +246,26 @@ foreach ($result as $row) {
 	
 //This is mandatory
 	$rss_feed .= '<item><guid>';
-	$rss_feed .= io_safe_input ($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row['event_id']);
+	$rss_feed .= io_safe_input($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row['event_id']);
 	$rss_feed .= '</guid><title>';
 	$rss_feed .= $agent_name;
 	$rss_feed .= '</title><description>';
-	$rss_feed .= io_safe_input ($row['event_descr']);
+	$rss_feed .= $row['event_descr'];
 	if($row['validated'] == 1) {
-		$rss_feed .= io_safe_input ('<br /><br />').'Validated by ' . io_safe_input ($row['validated_by']);
+		$rss_feed .= io_safe_input('<br /><br />'.'Validated by ' . $row['validated_by']);
 	}
 	$rss_feed .= '</description><link>';
-	$rss_feed .= io_safe_input ($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row["event_id"]);
+	$rss_feed .= io_safe_input($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row["event_id"]);
 	$rss_feed .= '</link>';
 
 //The rest is optional
 	$rss_feed .= '<pubDate>' . date(DATE_RFC822, $row['unix_timestamp']) . '</pubDate>';
 	
 //This is mandatory again
-	$rss_feed .= '</item>';
+	$rss_feed .= '</item>' . "\n";
 }
 
-$rss_feed .= "</channel></rss>";
+$rss_feed .= "</channel>\n</rss>\n";
 
 echo $rss_feed;
 ?>

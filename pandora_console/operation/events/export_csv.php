@@ -112,11 +112,11 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	
 	echo $event["timestamp"];
 	echo ",";
-	echo agents_get_name($event["id_agente"]);
+	echo io_safe_output(agents_get_name($event["id_agente"]));
 	echo ",";
 	echo groups_get_name($event["id_grupo"]);
 	echo ",";
-	echo $event["evento"];
+	echo io_safe_output($event["evento"]);
 	echo ",";
 	echo $event["estado"];
 	echo ",";

@@ -490,13 +490,9 @@
                                         'font-weight:       bold;'      +
                                         'vertical-align:    middle;}'   +
             '/* Blend the colours into your page here...    */'         +
-            '/* Calendar background */'                                 +
-            'table.scw                  {background-color:  #6666CC;}'  +
             '/* Drag Handle */'                                         +
             'td.scwDrag                 {background-color:  #9999CC;'   +
                                         'color:             #CCCCFF;}'  +
-            '/* Week number heading */'                                 +
-            'td.scwWeekNumberHead       {color:             #6666CC;}'  +
             '/* Week day headings */'                                   +
             'td.scwWeek                 {color:             #CCCCCC;}'  +
             '/* Week numbers */'                                        +
@@ -515,9 +511,6 @@
             '/* Day outside the current month */'                       +
             'td.scwCellsExMonth         {background-color:  #CCCCCC;'   +
                                         'color:             #666666;}'  +
-            '/* Today selector */'                                      +
-            'td.scwFoot                 {background-color:  #6666CC;'   +
-                                        'color:             #FFFFFF;}'  +
             '/* MouseOver/Hover formatting '                            +
             '       If you want to "turn off" any of the formatting '   +
             '       then just set to the same as the standard format'   +
@@ -573,8 +566,6 @@
             '/* Day outside the current month */'                       +
             'td.scwCellsExMonthDisabled {background-color:  #999999;'   +
                                         'color:             #666666;}'  +
-            'td.scwFootDisabled         {background-color:  #6666CC;'   +
-                                        'color:             #FFFFFF;}'  +
         '</style>'
                     );
 

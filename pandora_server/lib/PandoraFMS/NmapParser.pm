@@ -145,7 +145,7 @@ sub parsescan {
     else {
         $cmd = "$nmap $args -v -v -v -oX - " . ( join ' ', @ips );
         open $FH,
-          "$cmd |" || die "[Nmap-Parser] Could not perform nmap scan - $!";
+          "$cmd 2>/dev/null |" || die "[Nmap-Parser] Could not perform nmap scan - $!";
         $self->parse($FH);
         close $FH;
     }

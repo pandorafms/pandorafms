@@ -1,5 +1,11 @@
 2011-09-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* general/pandora_help.php: changet the text align of footer.
+	
+	Fixes: #3371432
+
+2011-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* operation/messages/message.php: now show more error messages in case the
 	user error or group error.
 	

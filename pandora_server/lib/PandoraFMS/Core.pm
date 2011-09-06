@@ -633,11 +633,10 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 		@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
 					WHERE tevent_alert_action.id_alert_action = talert_actions.id
 					AND talert_actions.id_alert_command = talert_commands.id
-					AND tevent_alert_action.id = ?
+					AND tevent_alert_action.id_event_alert = ?
 					AND ((fires_min = 0 AND fires_max = 0)
 					OR (? >= fires_min AND ? <= fires_max))', 
-					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
-
+					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});
 		# Get default action
 		if ($#actions < 0) {
 			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands

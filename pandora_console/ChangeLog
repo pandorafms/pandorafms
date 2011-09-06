@@ -1,3 +1,10 @@
+2011-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* operation/events/events_rss.php, operation/events/export_csv.php: fixed
+	the output html entities and html entities of html entities.
+	
+	Fixes: #3389980
+
 2011-09-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/setup/setup.php: Avoiding wrong integria inventory object data.

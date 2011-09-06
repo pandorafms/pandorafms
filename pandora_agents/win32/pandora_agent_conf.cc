@@ -109,7 +109,7 @@ Pandora::Pandora_Agent_Conf::parseFile(string path_file, Collection *aux){
 void
 writeBrokerConf(string path_broker, string filename, string name_broker){
 	ifstream     file_conf (filename.c_str ());
-	ofstream     file_broker (path_broker.c_str ());
+	ofstream     file_broker ((Pandora::getPandoraInstallDir ()+path_broker).c_str ());
 	string       buffer;
 	string		 comp;
 	unsigned int pos;
@@ -199,12 +199,13 @@ Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 					all_conf[position] = Pandora::getPandoraInstallDir () + path_broker;	
 					position += 1;
 
-					ifstream     file_br (path_broker.c_str ());
+					ifstream     file_br ((Pandora::getPandoraInstallDir () + path_broker).c_str ());
 					/* Check if already exists the configuration file*/
-					if (!file_br){
-						file_br.close();
+						if (!file_br.is_open()){
 						writeBrokerConf(path_broker, filename, name_broker);
-					}	
+						} else {
+							file_br.close();
+						}	
 				}
 
 			/*Check if is a collection*/

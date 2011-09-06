@@ -1278,3 +1278,30 @@ div#logo_text3 {
 .pagination {
 	margin-top: 4px;
 }
+
+/*CALENDAR TOOLTIP STYLE*/
+
+/* Calendar background */
+table.scw {
+	background-color:  #000;
+}
+
+/* Week number heading */
+td.scwWeekNumberHead {
+	color: #000;
+}
+
+/* Today selector */                                      +
+td.scwFoot {
+	background-color: #000;
+	color: #FFFFFF;
+}
+
+td.scwFootDisabled {
+	background-color: #000;
+	color: #FFFFFF;
+}
+
+tfoot.scwFoot {
+	color: #FFFFFF;
+}

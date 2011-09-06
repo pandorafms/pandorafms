@@ -1322,18 +1322,33 @@ function grafico_eventos_total($filter = "") {
 	
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 0 $filter";
 	$data[__('Maintenance')] = db_get_sql ($sql);
+	if ($data[__('Maintenance')] == 0) {
+		unset($data[__('Maintenance')]);
+	}
 	
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 1 $filter";
 	$data[__('Informational')] = db_get_sql ($sql);
+	if ($data[__('Informational')] == 0) {
+		unset($data[__('Informational')]);
+	}
 
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 2 $filter";
 	$data[__('Normal')] = db_get_sql ($sql);
+	if ($data[__('Normal')] == 0) {
+		unset($data[__('Normal')]);
+	}
 
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 3 $filter";
 	$data[__('Warning')] = db_get_sql ($sql);
+	if ($data[__('Warning')] == 0) {
+		unset($data[__('Warning')]);
+	}
 
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 4 $filter";
 	$data[__('Critical')] = db_get_sql ($sql);
+	if ($data[__('Critical')] == 0) {
+		unset($data[__('Critical')]);
+	}
 	
 	asort ($data);
 	

@@ -1,5 +1,12 @@
 2011-09-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/modules/manage_network_templates.php: Added description titles
+	to action buttons on this view.
+
+	Fixes: #3373300
+
+2011-09-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/styles/pandora_forms.css
 	include/styles/pandora_minimal.css
 	include/styles/pandora_black.css

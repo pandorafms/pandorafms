@@ -56,3 +56,40 @@ fieldset br {
 	position:relative;
 	left:80%;
 }
+
+/*CALENDAR TOOLTIP STYLE*/
+
+/* Calendar background */
+table.scw {
+        background-color:  #daedae;
+}
+
+/* Week number heading */
+td.scwWeekNumberHead {
+        color: #000;
+}
+
+td.scwWeek {
+        color: #000 !important;
+}
+
+/* Today selector */
+td.scwFoot {
+        background-color: #daedae;
+        color: #000;
+}
+
+td.scwFootDisabled {
+        background-color: #000;
+        color: #FFFFFF;
+}
+
+tfoot.scwFoot {
+        color: #000;
+}
+
+.scwFoot :hover{
+        color: #FFA500 !important;
+}
+
+

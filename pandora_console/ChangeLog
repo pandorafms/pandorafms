@@ -1,3 +1,13 @@
+2011-09-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora_forms.css
+	include/styles/pandora_minimal.css
+	include/styles/pandora_black.css
+	include/styles/pandora.css: Changed style for calendar.
+
+	* images/skin/skin_default/include/styles/menu.css: Added icon for 
+	networkmap with skin configuration.
+
 2011-09-06 Javier Lanz <javier.lanz@artica.es>
 
 	* include/help/en/help_timesource.php: Changed a wee translation bug

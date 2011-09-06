@@ -122,3 +122,39 @@ tr.rowOdd:hover {
 .disabled_module {
 	color: #98c2ed;
 }
+
+/*CALENDAR TOOLTIP STYLE*/
+
+/* Calendar background */
+table.scw {
+        background-color:  #FFF;
+}
+
+/* Week number heading */
+td.scwWeekNumberHead {
+        color: #000;
+}
+
+td.scwWeek {
+        color: #000 !important;
+}
+
+/* Today selector */
+td.scwFoot {
+        background-color: #FFF;
+        color: #000;
+}
+
+td.scwFootDisabled {
+        background-color: #000;
+        color: #FFFFFF;
+}
+
+tfoot.scwFoot {
+        color: #000;
+}
+
+.scwFoot :hover{
+        color: #FFA500 !important;
+}
+

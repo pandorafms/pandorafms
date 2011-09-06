@@ -95,7 +95,7 @@ $sources["system"] = __('System');
 $sources["sql"] = __('Database');
 $table->data[9][1] = html_print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
 
-$table->data[10][0] = __('Automatic update check');
+$table->data[10][0] = __('Automatic check for updates');
 $table->data[10][1] = __('Yes').'&nbsp;'.html_print_radio_button ('autoupdate', 1, '', $config["autoupdate"], true).'&nbsp;&nbsp;';
 $table->data[10][1] .= __('No').'&nbsp;'.html_print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
 

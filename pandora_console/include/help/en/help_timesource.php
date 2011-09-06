@@ -3,10 +3,10 @@
  * @package Include/help/en
  */
 ?>
-<h1>Origen de tiempo</h1>
+<h1>Time Source</h1>
 
 <p>
-What source to use for the time. This can be (for now) either the local system (System) or database (Database).<br /><br />
+What source to use for the time. This can be (for now) either the local system (System) or database (Database).<br />
 </p>
 <p>
 This is useful when your database is not on the same system as your webserver or your Pandora FMS servers. 

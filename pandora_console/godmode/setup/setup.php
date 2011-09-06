@@ -134,18 +134,28 @@ if($config["integria_enabled"]) {
 	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories");
 	$invent = explode("\n",$invent);
 	$inventories = array();
-	foreach($invent as $inv) {
-		if($inv == '') {
-			continue;
-		}
-		$invexp = explode(',',$inv);
-		if(substr($invexp[1], 0, 1) == '"' && substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
-			$invexp[1] = substr($invexp[1], 1, strlen($invexp[1])-2);
-		}
-
-		$inventories[$invexp[0]] = $invexp[1];
+	$bad_input = false;
+	foreach($invent as $inv){
+                // This avoid wrong integria inventory object
+                if (stristr($inv, 'ERROR 404') !== false){
+                        $inventories[""] = __('None');
+                        $bad_input = true; 
+		        break;
+                }
 	}
-	
+	if (!$bad_input){
+		foreach($invent as $inv) {
+			if($inv == '') {
+				continue;
+			}
+			$invexp = explode(',',$inv);
+			if(substr($invexp[1], 0, 1) == '"' && substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
+				$invexp[1] = substr($invexp[1], 1, strlen($invexp[1])-2);
+			}
+
+			$inventories[$invexp[0]] = $invexp[1];
+		}
+	}
 	$table->data[21][0] = __('Integria inventory');
 	$table->data[21][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
 }

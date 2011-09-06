@@ -189,12 +189,12 @@ foreach ($result as $row) {
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));
 	$data[2] .= html_print_input_image ("export_profile", "images/lightning_go.png",
-		$row["id_np"], '', true);
+		$row["id_np"], '', true, array('title' => 'Export'));
 	$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
 		'&delete_profile=1&delete_profile=' . $row['id_np'] . '" ' .
-		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a>';
+		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array('title' => __('Delete'))) . '</a>';
 	$data[2] .= '&nbsp;&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
-		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/lightning_go.png", true) . '</a>' .
+		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/lightning_go.png", true, array('title' => __('Export'))) . '</a>' .
 		html_print_checkbox_extended ('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
 	
 	array_push ($table->data, $data);

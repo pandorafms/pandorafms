@@ -124,26 +124,49 @@ $table->data[18][1] = __('Yes').'&nbsp;'.html_print_radio_button ('integria_enab
 $table->data[18][1] .= __('No').'&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
 
 if($config["integria_enabled"]) {
+       require_once('include/functions_incidents.php');
+        $invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
+     	$bad_input = false;
+	// Wrong connection to api, bad password
+	if (empty($invent)){
+                $bad_input = true;
+        }
+
+        $inventories = array();   
+	// Right connection but  theres is no inventories 
+	if ($invent == 'false'){
+		unset($invent);
+		$invent = array();
+	}
+	// Checks if URL is right
+	else{
+		$invent = explode("\n",$invent);
+	}
+	// Wrong URL 
+	if ((strripos($config['integria_url'], '.php') !== false)){
+		$bad_input = true;
+	}
+	// Check page result and detect errors
+	else{ 
+        	foreach($invent as $inv){
+                	if ((stristr($inv, 'ERROR 404') !== false) OR (stristr($inv, 'Status 404') !== false) OR (stristr($inv, 'Internal Server Error') !== false)){
+                        	$inventories[""] = __('None'); 
+                       		$bad_input = true; 
+                        	break;
+                	}
+        	}
+	}
 	$table->data[19][0] = __('Integria URL');
-	$table->data[19][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true);
+	$table->data[19][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
+	// If something goes wrong
+	if ($bad_input){
+		$table->data[19][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
+	}
 
 	$table->data[20][0] = __('Integria API password');
 	$table->data[20][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
 	
-	require_once('include/functions_incidents.php');
-	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories");
-	$invent = explode("\n",$invent);
-	$inventories = array();
-	$bad_input = false;
-	foreach($invent as $inv){
-                // This avoid wrong integria inventory object
-                if (stristr($inv, 'ERROR 404') !== false){
-                        $inventories[""] = __('None');
-                        $bad_input = true; 
-		        break;
-                }
-	}
-	if (!$bad_input){
+	if (!$bad_input){ 
 		foreach($invent as $inv) {
 			if($inv == '') {
 				continue;

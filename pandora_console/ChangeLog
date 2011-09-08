@@ -1,5 +1,9 @@
 2011-09-08  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_api.php: fixed the array key for module name.
+
+2011-09-08  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_api.php: fixed in function "otherParameter2Filter" the
 	simbol of timestamp comparation and separate the AND operator. And added
 	2 more filters, the "limit" and the "offset".

@@ -27,6 +27,7 @@ use Thread::Semaphore;
 use IO::Socket::INET6;
 use HTML::Entities;
 use POSIX qw(strftime);
+use SNMP;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';

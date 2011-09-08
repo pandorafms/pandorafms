@@ -871,11 +871,19 @@ function otherParameter2Filter($other) {
 	}
 	
 	if (($other['data'][6] != null) && ($other['data'][6] != -1)) {
-		$filterString .= ' AND utimestamp => ' . $other['data'][6];
+		$filterString .= ' AND utimestamp >= ' . $other['data'][6];
 	}
 	
 	if (($other['data'][7] != null) && ($other['data'][7] != -1)) {
-		$filterString .= 'AND utimestamp <= ' . $other['data'][7];
+		$filterString .= ' AND utimestamp <= ' . $other['data'][7];
+	}
+	
+	if ($other['data'][8] != null) {
+		$filterString .= ' LIMIT ' . $other['data'][8];
+	}
+	
+	if ($other['data'][9] != null) {
+		$filterString .= ' OFFSET ' . $other['data'][9];
 	}
 	
 	return $filterString;

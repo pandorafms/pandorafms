@@ -2719,12 +2719,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_unshift($table2->head, __('Date'));
 			
 			$datelimit = $report["datetime"] - $content['period'];
-			
+		
 			$result = db_get_all_rows_sql('SELECT *
-				FROM tagente_datos_string
-				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-					AND utimestamp > ' . $datelimit . '
-					AND utimestamp <= ' . $report["datetime"]);
+                                FROM tagente_datos
+                                WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+                                        AND utimestamp > ' . $datelimit . '
+                                        AND utimestamp <= ' . $report["datetime"]);
+			// Adds string data if there is no numeric data	
+			if ((count($result) >= 0) or (!$result)){
+				$result = db_get_all_rows_sql('SELECT *
+					FROM tagente_datos_string
+					WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+						AND utimestamp > ' . $datelimit . '
+						AND utimestamp <= ' . $report["datetime"]);
+			}
 			if ($result === false) {
 				$result = array();
 			}

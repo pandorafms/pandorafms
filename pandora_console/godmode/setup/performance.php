@@ -67,7 +67,7 @@ $table->data[7][1] = html_print_input_text ('days_compact', $config["days_compac
 $table->data[8][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[8][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[9][0] = __('SLA period (seconds)');
+$table->data[9][0] = __('SLA period (seconds)') . ui_print_help_tip(__('You can see this in SLA agent tab.'), true);;
 $table->data[9][1] = html_print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
 
 $table->data[10][0] = __('Default hours for event view');
@@ -81,7 +81,7 @@ $table->data[12][0] = __('Use realtime statistics');
 $table->data[12][1] = __('Yes').'&nbsp;'.html_print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
 $table->data[12][1] .= __('No').'&nbsp;'.html_print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
 
-$table->data[13][0] = __('Batch statistics period (secs)');
+$table->data[13][0] = __('Batch statistics period (secs)') . ui_print_help_tip(__('If realtime statistics are disabled, statistics interval resfresh will be set here.'), true);
 $table->data[13][1] = html_print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
 
 $table->data[14][0] = __('Use agent access graph') . ui_print_help_icon("agent_access", true);

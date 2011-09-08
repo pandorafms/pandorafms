@@ -85,7 +85,7 @@ $table->data[10][1] = html_print_select($fonts, 'fontpath', $config["fontpath"],
 $table->data[11][0] = __('Font size');
 $table->data[11][1] = html_print_select(range(1, 15), 'font_size', $config["font_size"], '', '', 0, true); 
 
-$table->data[12][0] = __('Flash charts');
+$table->data[12][0] = __('Flash charts') . ui_print_help_tip(__('Whether to use Flash charts or static PNG graphs'), true);
 $table->data[12][1] = __('Yes').'&nbsp;'.html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
 $table->data[12][1] .= __('No').'&nbsp;'.html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
 

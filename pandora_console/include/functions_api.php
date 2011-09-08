@@ -839,7 +839,7 @@ function otherParameter2Filter($other) {
 	
 	$idAgentModulo = null;
 	if ($other['data'][3] != '') {
-		$filterModule = array('nombre' => $other['data'][2]);
+		$filterModule = array('nombre' => $other['data'][3]);
 		if ($idAgent != null) {
 			$filter['id_agente'] = $idAgent;
 		}

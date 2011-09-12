@@ -2725,14 +2725,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
                                 WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
                                         AND utimestamp > ' . $datelimit . '
                                         AND utimestamp <= ' . $report["datetime"]);
+			
 			// Adds string data if there is no numeric data	
-			if ((count($result) >= 0) or (!$result)){
+			if ((count($result) < 0) or (!$result)){ 
 				$result = db_get_all_rows_sql('SELECT *
 					FROM tagente_datos_string
 					WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
 						AND utimestamp > ' . $datelimit . '
 						AND utimestamp <= ' . $report["datetime"]);
-			}
+			} 
 			if ($result === false) {
 				$result = array();
 			}
@@ -2740,7 +2741,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table2->data = array();
 			foreach ($result as $row) {
 				$date = date ($config["date_format"], $row['utimestamp']);
-				$serialized = $row['datos'];
+				$serialized = $row['datos']; 
 				$rowsUnserialize = explode($content['line_separator'], $serialized);
 				foreach ($rowsUnserialize as $rowUnser) {
 					$columnsUnserialize = explode($content['column_separator'], $rowUnser);

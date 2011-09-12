@@ -824,7 +824,7 @@ function set_new_user($id, $thrash2, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => __('Create user.')));
 }
 
-function otherParameter2Filter($other) {
+function otherParameter2Filter($other, $array = false) {
 	$filter = array();
 
 	if (($other['data'][1] != null) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
@@ -871,22 +871,47 @@ function otherParameter2Filter($other) {
 	}
 	
 	if (($other['data'][6] != null) && ($other['data'][6] != -1)) {
-		$filterString .= ' AND utimestamp >= ' . $other['data'][6];
+		if ($array) {
+			$filter['utimestamp']['>'] = $other['data'][6];
+		}
+		else {
+			$filterString .= ' AND utimestamp >= ' . $other['data'][6];
+		}
 	}
 	
 	if (($other['data'][7] != null) && ($other['data'][7] != -1)) {
-		$filterString .= ' AND utimestamp <= ' . $other['data'][7];
+		if ($array) {
+			$filter['utimestamp']['<'] = $other['data'][7];
+		}
+		else {
+			$filterString .= ' AND utimestamp <= ' . $other['data'][7];
+		}
 	}
 	
 	if ($other['data'][8] != null) {
-		$filterString .= ' LIMIT ' . $other['data'][8];
+		if ($array) {
+			$filter['limit'] = $other['data'][8];
+		}
+		else {
+			$filterString .= ' LIMIT ' . $other['data'][8];
+		}
 	}
 	
 	if ($other['data'][9] != null) {
-		$filterString .= ' OFFSET ' . $other['data'][9];
+		if ($array) {
+			$filter['offset'] = $other['data'][9];
+		}
+		else {
+			$filterString .= ' OFFSET ' . $other['data'][9];
+		}
 	}
 	
-	return $filterString;
+	if ($array) {
+		return $filter;
+	}
+	else {
+		return $filterString;
+	}
 }
 
 /**
@@ -1426,14 +1451,222 @@ function set_event_validate_filter($trash1, $trash2, $other, $trash3) {
 	}
 }
 
+function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db) {
+	global $config;
+	
+	//By default.
+	$status = 3;
+	$search = '';
+	$event_type = '';
+	$severity = -1;
+	$id_agent = -1;
+	$id_agentmodule = -1;
+	$id_alert_am = -1;
+	$id_event = -1;
+	$id_user_ack = 0;
+	$event_view_hr = 0;
+	$tag = '';
+	$group_rep = 0;
+	$offset = 0;
+	$pagination = 40;
+	$utimestamp_upper = 0;
+	$utimestamp_bottom = 0;
+	
+	$filter = otherParameter2Filter($other, true);
+	
+	if (isset($filter['criticity']))
+		$severity = $filter['criticity'];
+	if (isset($filter['id_agente']))
+		$id_agent = $filter['id_agente'];
+	if (isset($filter['id_agentmodule']))
+		$id_agentmodule = $filter['id_agentmodule'];
+	if (isset($filter['id_alert_am']))
+		$id_alert_am = $filter['id_alert_am'];
+	if (isset($filter['id_usuario']))
+		$id_user_ack = $filter['id_usuario'];
+	if (isset($filter['limit']))
+		$pagination = $filter['limit'];
+	if (isset($filter['offset']))
+		$offset = $filter['offset'];
+	
+	
+	//TODO MOVE THIS CODE AND THE CODE IN pandora_console/operation/events/events_list.php
+	//to a function.
+	
+	$groups = users_get_groups ($user_in_db, "IR");
+	
+	$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+	
+	// Skip system messages if user is not PM
+	if (!check_acl ($user_in_db, 0, "PM")) {
+		$sql_post .= " AND id_grupo != 0";
+	}
+	
+	switch($status) {
+		case 0:
+		case 1:
+		case 2:
+			$sql_post .= " AND estado = ".$status;
+			break;
+		case 3:
+			$sql_post .= " AND (estado = 0 OR estado = 2)";
+			break;
+	}
+	
+	if ($search != "") {
+		$sql_post .= " AND evento LIKE '%".io_safe_input($search)."%'";
+	}
+	
+	if ($event_type != "") {
+		// If normal, warning, could be several (going_up_warning, going_down_warning... too complex
+		// for the user so for him is presented only "warning, critical and normal"
+		if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+			$sql_post .= " AND event_type LIKE '%$event_type%' ";
+		}
+		elseif ($event_type == "not_normal") {
+			$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+		}
+		else {
+			$sql_post .= " AND event_type = '".$event_type."'";
+		}
+	
+	}
+	
+	if ($severity != -1)
+		$sql_post .= " AND criticity = ".$severity;
+	
+	if ($id_agent != -1)
+		$sql_post .= " AND id_agente = ".$id_agent;
+	
+	if ($id_agentmodule != -1)
+		$sql_post .= " AND id_agentmodule = ".$id_agentmodule;
+	
+	if ($id_alert_am != -1)
+		$sql_post .= " AND id_alert_am = ".$id_alert_am;
+	
+	if ($id_event != -1)
+		$sql_post .= " AND id_evento = ".$id_event;
+	
+	if ($id_user_ack != "0")
+		$sql_post .= " AND id_usuario = '".$id_user_ack."'";
+	
+	if ($utimestamp_upper != 0)
+		$sql_post .= " AND utimestamp >= ".$utimestamp_upper;
+	
+	if ($utimestamp_bottom != 0)
+		$sql_post .= " AND utimestamp <= ".$utimestamp_bottom;
+	
+	if ($event_view_hr > 0) {
+		$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+		$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
+	}
+	
+	//Search by tag
+	if ($tag != "") {
+		$sql_post .= " AND tags LIKE '%".io_safe_input($tag)."%'";
+	}
+	
+	if ($group_rep == 0) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = "SELECT *
+					FROM tevento
+					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+				break;
+			case "postgresql":
+				$sql = "SELECT *
+					FROM tevento
+					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
+				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				$sql = "SELECT *
+					FROM tevento
+					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC"; 
+				$sql = oracle_recode_query ($sql, $set);
+				break;
+		}
+	}
+	else {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				db_process_sql ('SET group_concat_max_len = 9999999');
+				$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+				        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+					FROM tevento
+					WHERE 1=1 ".$sql_post."
+					GROUP BY evento, id_agentmodule
+					ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+				break;
+			case "postgresql":
+				$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
+				        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+					FROM tevento
+					WHERE 1=1 ".$sql_post."
+					GROUP BY evento, id_agentmodule
+					ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				// TODO: Remove duplicate user comments
+				$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
+					FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
+					(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
+					id_agentmodule, COUNT(*) AS event_rep, MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+					LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep 
+					FROM tevento 
+					WHERE 1=1 ".$sql_post." 
+					GROUP BY to_char(evento), id_agentmodule) b 
+					WHERE a.id_evento=b.id_evento AND 
+					to_char(a.evento)=to_char(b.evento) 
+					AND a.id_agentmodule=b.id_agentmodule";
+				$sql = oracle_recode_query ($sql, $set);
+				break;
+		}
+	
+	}
+	
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {//Default values
+			$separator = ';';
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+	}
+	
+	$result = db_get_all_rows_sql ($sql);
+	
+	$data['type'] = 'array';
+	$data['data'] = $result;
+	
+	returnData($returnType, $data, $separator);
+	
+	return;
+}
+
 /**
  * 
  * @param $trash1
  * @param $trah2
  * @param $other
  * @param $returnType
+ * @param $user_in_db
  */
-function get_events($trash1, $trash2, $other, $returnType) {
+function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
+	if ($user_in_db !== null) {
+		get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		return;
+	}
+	
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');

@@ -1,3 +1,14 @@
+2011-09-12  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control: Updated version to 4.0 (final).
+
+	* pandora_server.spec: Updated version. Added mibs package 
+	for dependency (Snmp mibs needed to be installed!), without
+	that, network server and some scripts won't run properly.
+
+	* pandora_server.redhat.spec,
+	lib/PandoraFMS/Config.pm: Updated version to 4.0 final.
+
 2011-09-12  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* DEBIAN/control: Added dependence of snmp-mibs-downloader

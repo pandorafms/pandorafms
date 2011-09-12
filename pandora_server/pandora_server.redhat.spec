@@ -2,7 +2,7 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     4.0RC1
+%define version     4.0
 %define release     1
 
 Summary:            Pandora FMS Server

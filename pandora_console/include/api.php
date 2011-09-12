@@ -28,15 +28,23 @@ $otherSerialize = get_parameter('other');
 $otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
 $password = get_parameter('pass', '');
+$user = get_parameter('user', '');
 
 $other = parseOtherParameter($otherSerialize, $otherMode);
 
 $apiPassword = db_get_value_filter('value', 'tconfig', array('token' => 'api_password'));
 
 $correctLogin = false;
+$user_in_db = null;
 if (!empty($apiPassword)) {
-	if ($password === $apiPassword) {
+	if (($password === $apiPassword) && (empty($user))) {
 		$correctLogin = true;
+	}
+	else {
+		$user_in_db = process_user_login($user, $password);
+		if ($user_in_db !== false) {
+			$correctLogin = true;
+		}
 	}
 }
 else {
@@ -52,7 +60,7 @@ if ($correctLogin) {
 		if (!function_exists($op.'_'.$op2))
 			returnError('no_exist_operation', $returnType);
 		else {
-			call_user_func($op.'_'.$op2, $id, $id2, $other, $returnType);
+			call_user_func($op.'_'.$op2, $id, $id2, $other, $returnType, $user_in_db);
 		}
 	}
 }

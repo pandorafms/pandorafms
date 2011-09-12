@@ -95,7 +95,10 @@ sub process_module_snmp ($$$$$$$$$){
 	$parameters{'id_tipo_modulo'} = get_module_id ($dbh,$module_type_name);
 	$parameters{'nombre'} = safe_input($module_name);
 	$parameters{'descripcion'} = $module_description;
-	$parameters{'id_agente'} = get_agent_from_addr ($dbh, $addr);
+	
+	my $agent = get_agent_from_addr ($dbh, $addr);
+
+	$parameters{'id_agente'} = $agent->{'id_agente'};
 	$parameters{'ip_target'} = $addr;
 	$parameters{'tcp_send'} = 1;
 	$parameters{'snmp_community'} = $target_community;
@@ -248,7 +251,7 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 	# Get interface indexes
 		
 	my $interface_indexes = `/usr/bin/snmpwalk -Ouvq -c '$target_community' -v 1 $addr ifIndex 2>/dev/null`;
-
+	
 	my @ids = split("\n", $interface_indexes);
 
 	foreach my $ax (@ids) {
@@ -273,7 +276,6 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 		
 		# Remove forbidden caracters
 		$interface =~ s/\"|\n|\<|\>|\&|\[|\]//g;
-		$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, 'Interface'.$interface, $addr, $target_group, 0, 11, '', 300, $dbh);
 		 
 		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_snmp_proc", "Operative status for $interface at position $ax. IP Address: $ip_address", $conf);
 			

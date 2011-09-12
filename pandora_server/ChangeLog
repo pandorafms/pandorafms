@@ -1,3 +1,8 @@
+2011-09-12  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandora_server/util/pandora_manage.pl: Applied Kosaka's patch to store
+	data in DB with encoding in HTML entities.
+
 2011-08-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Fixed the execution of SNMP v3

@@ -584,7 +584,7 @@ sub pandora_manage_main ($$$) {
 			print "[INFO] Creating agent '$agent_name'\n\n";
 			
 			$address = '' unless defined ($address);
-			$description = '' unless defined ($description);
+			$description = (defined ($description) ? safe_input($description)  : '' );	# safe_input() might be better at pandora_create_agent() (when passing 'description' to db_insert())
 			$interval = 300 unless defined ($interval);
 			
 			my $id_group = get_group_id($dbh,$group_name);
@@ -678,7 +678,7 @@ sub pandora_manage_main ($$$) {
 			my %parameters;
 			
 			$parameters{'id_tipo_modulo'} = $module_type_id;
-			$parameters{'nombre'} = $module_name;
+			$parameters{'nombre'} = safe_input($module_name);
 			$parameters{'id_agente'} = $agent_id;
 		
 			# Optional parameters
@@ -688,7 +688,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 			$parameters{'history_data'} = $history_data unless !defined ($history_data);
-			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 			$parameters{'min'} = $min unless !defined ($min);
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -745,7 +745,7 @@ sub pandora_manage_main ($$$) {
 			my %parameters;
 			
 			$parameters{'id_tipo_modulo'} = $module_type_id;
-			$parameters{'nombre'} = $module_name;
+			$parameters{'nombre'} = safe_input($module_name);
 			$parameters{'id_agente'} = $agent_id;
 			$parameters{'ip_target'} = $module_address;
 		
@@ -757,7 +757,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 			$parameters{'history_data'} = $history_data unless !defined ($history_data);
 			$parameters{'tcp_port'} = $module_port unless !defined ($module_port);
-			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 			$parameters{'min'} = $min unless !defined ($min);
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -803,7 +803,7 @@ sub pandora_manage_main ($$$) {
 			my %parameters;
 			
 			$parameters{'id_tipo_modulo'} = $module_type_id;
-			$parameters{'nombre'} = $module_name;
+			$parameters{'nombre'} = safe_input($module_name);
 			$parameters{'id_agente'} = $agent_id;
 			$parameters{'ip_target'} = $module_address;
 			$parameters{'tcp_port'} = $module_port;
@@ -816,7 +816,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 			$parameters{'history_data'} = $history_data unless !defined ($history_data);
-			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 			$parameters{'min'} = $min unless !defined ($min);
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -877,7 +877,7 @@ sub pandora_manage_main ($$$) {
 			my %parameters;
 			
 			$parameters{'id_tipo_modulo'} = $module_type_id;
-			$parameters{'nombre'} = $module_name;
+			$parameters{'nombre'} = safe_input($module_name);
 			$parameters{'id_agente'} = $agent_id;
 			$parameters{'ip_target'} = $module_address;
 			$parameters{'tcp_port'} = $module_port;
@@ -893,7 +893,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 			$parameters{'history_data'} = $history_data unless !defined ($history_data);
-			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 			$parameters{'min'} = $min unless !defined ($min);
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -1071,7 +1071,7 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 4, 1);
 			my ($user_name,$password,$is_admin,$comments) = @ARGV[2..5];
 						
-			$comments = '' unless defined ($comments);
+			$comments = (defined ($comments) ? safe_input($comments)  : '' );
 			
 			print "[INFO] Creating user '$user_name'\n\n";
 			

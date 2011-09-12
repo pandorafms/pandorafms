@@ -93,7 +93,7 @@ install () {
 		echo "The complete installation guide is at: http://openideas.info/wiki/index.php?title=Pandora"
 		echo " "
 		echo "Debian-based distribution do:"
-		echo "	# apt-get install snmp snmpd libio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libsnmp-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2"
+		echo "	# apt-get install snmp snmpd libio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libsnmp-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 snmp-mibs-downloader"
 		echo " "
 		echo "For CentOS / RHEL do: "
 		echo " "

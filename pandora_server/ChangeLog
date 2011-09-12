@@ -1,3 +1,8 @@
+2011-09-12  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_remote_agent.sh: New remote agent script to do customized
+	deployments creating XML files from external scriptfiles. See docs.
+
 2011-09-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandora_server/util/pandora_manage.pl: Applied Kosaka's patch to store

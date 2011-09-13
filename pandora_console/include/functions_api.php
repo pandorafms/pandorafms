@@ -847,13 +847,13 @@ function otherParameter2Filter($other) {
 	
 	$idAgentModulo = null;
 	if ($other['data'][3] != '') {
-		$filterModule = array('nombre' => $other['data'][2]);
+		$filterModule = array('nombre' => $other['data'][3]);
 		if ($idAgent != null) {
-			$filter['id_agente'] = $idAgent;
+			$filterModule['id_agente'] = $idAgent;
 		}
 		$idAgentModulo = get_db_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
 		if ($idAgentModulo !== false) {
-			$filter['id_agentmodule'] = $idAgentModule;
+			$filter['id_agentmodule'] = $idAgentModulo;
 		}
 	}
 	

@@ -1,3 +1,8 @@
+2011-09-13  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk. Fixed module name
+	filtering in 'get events' does not work correctly.
+
 2011-09-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/alerts_status.php: added to hidde the validate alert

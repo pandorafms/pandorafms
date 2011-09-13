@@ -121,7 +121,10 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						foreach($data['data'] as $dataContent) {
-							echo implode($separator, $dataContent) . "\n";
+							$clean = array_map(
+								function($item) {return io_safe_output($item);},
+								$dataContent);
+							echo implode($separator, $clean) . "\n";
 						}
 					}
 					break;

@@ -1016,6 +1016,9 @@ sub load_procs () {
 	my @procs = `$cmd`;
 	return undef unless ($? eq 0);
 
+	# Clear past process infomation
+	%Procs = ();
+
 	# Parse process information
 	foreach my $proc (@procs) {
 
@@ -1161,6 +1164,9 @@ sub module_cpuproc ($) {
 
 	# Check module parameters
 	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_procs ();
 
 	return () unless defined ($Procs{$module->{'params'}}) and defined ($Procs{$module->{'params'}}{'cpu'});
 	return ($Procs{$module->{'params'}}{'cpu'});

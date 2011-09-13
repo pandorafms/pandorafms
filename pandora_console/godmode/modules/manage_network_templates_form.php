@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@ ui_print_page_header (__('Module management')." &raquo; ".__('Module template ma
 
 $id_np = get_parameter ("id_np", -1); //Network Profile
 $ncgroup = get_parameter ("ncgroup", -1); //Network component group
+$ncfilter = get_parameter ("ncfilter", ''); //Network component group
 $id_nc = get_parameter ("components", array ());
 
 if (isset ($_GET["delete_module"])) { 
@@ -199,7 +200,7 @@ if ($id_np > 0) {
 	if (!empty ($table->data)) {
 		echo '<form name="component_delete" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&delete_module=1">';
 		html_print_table ($table);
-		echo '<div style="width:98%; text-align:right">';
+		echo '<div style="width:'.$table->width.'; text-align:right">';
 		html_print_submit_button (__('Delete'), "delbutton", false, 'class="sub delete" onClick="if (!confirm(\'Are you sure?\')) return false;"');
 		echo '</div></form>';
 	}
@@ -207,11 +208,25 @@ if ($id_np > 0) {
 	
 	echo "<h4 style='margin-top:0px !important;'>".__('Add modules')."</h4>";
 	
-	//Here should be a form to filter group
-
+	unset($table);
+	
+	$table->head = array ();
+	$table->data = array ();
+	$table->align = array ();
+	$table->width = '98%';
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+	
 	//The form to submit when adding a list of components
-	echo '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
-	echo '<div style="width:540px"><a name="filter"></a>';
+	
+	$filter = '<form name="filter_component" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&ncgroup='.$ncgroup.'&id_np='.$id_np.'#filter">';
+	$filter .= html_print_input_text ('ncfilter', $ncfilter, '', 50, 255, true);
+	$filter .= '&nbsp;'.html_print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
+	$filter .= '</form>';
+	
+	$group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
+	$group_filter .= '<div style="width:540px"><a name="filter"></a>';
 	$result = db_get_all_rows_in_table ("tnetwork_component_group","name");
 	if($result === false) {
 		$result = array();
@@ -232,18 +247,15 @@ if ($id_np > 0) {
 		$groups_compound[$row["id_sg"]] .= $row["name"];
 	}
 	
-	html_print_select ($groups_compound, "ncgroup", $ncgroup, 'javascript:this.form.submit();', __('Group')." - ".__('All'), -1, false, false, true, '" style="width:350px');
-	echo '<noscript>';
-	html_print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"');
-	echo '</noscript></div></form>';
+	$group_filter .= html_print_select ($groups_compound, "ncgroup", $ncgroup, 'javascript:this.form.submit();', __('Group')." - ".__('All'), -1, true, false, true, '" style="width:350px');
+
+	$group_filter .= '</div></form>';
 	
-	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-	echo '<div style="width: 98%">';
 	if ($ncgroup > 0) {
-		$sql = sprintf ("SELECT id_nc, name, id_group FROM tnetwork_component WHERE id_group = %d ORDER BY name", $ncgroup);
+		$sql = sprintf ("SELECT id_nc, name, id_group FROM tnetwork_component WHERE id_group = %d AND name LIKE '%".$ncfilter."%' ORDER BY name", $ncgroup);
 	}
 	else {
-		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component ORDER BY name"; 
+		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component WHERE name LIKE '%".$ncfilter."%' ORDER BY name"; 
 	}
 
 	$result = db_get_all_rows_sql ($sql);
@@ -255,10 +267,21 @@ if ($id_np > 0) {
 		$components[$row["id_nc"]] = $row["name"];
 	}
 
-	html_print_select ($components, "components[]", $id_nc, '', '', -1, false, true, false, '" style="width:350px');
-	echo "&nbsp;&nbsp;";
+	$components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
+	$components_select .= html_print_select ($components, "components[]", $id_nc, '', '', -1, true, true, false, '" style="width:350px');
+	
+	$table->data[0][0] = __('Filter');
+	$table->data[0][1] = $filter;
+	$table->data[1][0] = __('Group');
+	$table->data[1][1] = $group_filter;
+	$table->data[2][0] = __('Components');
+	$table->data[2][1] = $components_select;
+	
+	html_print_table($table);
+	
+	echo '<div style="width:'.$table->width.'; text-align:right">';
 	html_print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
-	echo "</div></form>";
+	echo '</div></form>';	
 }
 
 ?>

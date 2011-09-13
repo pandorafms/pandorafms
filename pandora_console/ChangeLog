@@ -1,3 +1,8 @@
+2011-09-13  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/modules/manage_network_templates_form.php: Added component
+	name filter to component templates form to bug 3406374
+
 2011-09-13  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_api.php: Fixed module name filtering in

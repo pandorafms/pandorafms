@@ -1,5 +1,12 @@
 2011-09-13  Sergio Martin <sergio.martin@artica.es>
 
+	* images/status_sets/faces/module_no_data.png
+	images/status_sets/color_text/module_no_data.png: Duplicated 
+	agent_no_data status images to module_no_data in color_text
+	and faces sets for bug 3408420
+
+2011-09-13  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/modules/manage_network_templates_form.php: Added component
 	name filter to component templates form to bug 3406374
 

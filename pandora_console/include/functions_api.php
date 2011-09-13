@@ -841,11 +841,11 @@ function otherParameter2Filter($other, $array = false) {
 	if ($other['data'][3] != '') {
 		$filterModule = array('nombre' => $other['data'][3]);
 		if ($idAgent != null) {
-			$filter['id_agente'] = $idAgent;
+			$filterModule['id_agente'] = $idAgent;
 		}
 		$idAgentModulo = db_get_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
 		if ($idAgentModulo !== false) {
-			$filter['id_agentmodule'] = $idAgentModule;
+			$filter['id_agentmodule'] = $idAgentModulo;
 		}
 	}
 	

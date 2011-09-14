@@ -139,7 +139,7 @@ sub parsescan {
             "$nmap $args -v -v -v -oX "
           . $self->{cache_file} . " "
           . ( join ' ', @ips );
-        `$cmd`;    #remove output from STDOUT
+        `$cmd 2> /dev/null`;    #remove output from STDOUT
         $self->parsefile( $self->{cache_file} );
     }
     else {

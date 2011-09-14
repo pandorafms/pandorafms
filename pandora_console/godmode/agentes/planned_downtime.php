@@ -54,7 +54,7 @@ $groups = users_get_groups ();
 $only_alerts = (bool) get_parameter ('only_alerts', 0);
 
 // Header
-ui_print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
+ui_print_page_header (__("Planned Downtime") . ui_print_help_icon ('planned_downtime', true), "images/god1.png", false, "", true, "");
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent == 1){
@@ -231,7 +231,6 @@ if ($create_downtime || $update_downtime) {
 		}
 	
 		//Editor form
-		echo '<h3>'.__('Planned Downtime Form').' '.ui_print_help_icon ('planned_downtime', true).'</h3>';
 		html_print_table ($table);
 		
 		html_print_input_hidden ('id_agent', $id_agent);
@@ -252,7 +251,7 @@ if ($create_downtime || $update_downtime) {
 
 		echo "<td valign=top>";
 		// Show available agents to include into downtime
-		echo '<h3>'.__('Available agents').':</h3>';
+		echo '<h4>'.__('Available agents').':</h4>';
 	
 		$filter_group = get_parameter("filter_group", 0);
 		
@@ -300,7 +299,7 @@ if ($create_downtime || $update_downtime) {
 		echo "</table>";
 		
 		//Start Overview of existing planned downtime
-		echo '<h3>'.__('Agents planned for this downtime').':</h3>';
+		echo '<h4>'.__('Agents planned for this downtime').':</h4>';
 		
 		$sql = sprintf ("SELECT tagente.nombre, tplanned_downtime_agents.id,
 				tagente.id_os, tagente.id_agente, tagente.id_grupo,

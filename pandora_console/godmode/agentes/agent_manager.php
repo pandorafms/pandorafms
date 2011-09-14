@@ -274,7 +274,7 @@ $arraySelectIcon = array();
 foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
-$table->data[4][0] = __('Agent icon');
+$table->data[4][0] = __('Agent icon') . ui_print_help_tip(__('Agent icon for GIS Maps.'), true);
 if($icon_path == '') {
 	$display_icons = 'none';
 	// Hack to show no icon. Use any given image to fix not found image errors

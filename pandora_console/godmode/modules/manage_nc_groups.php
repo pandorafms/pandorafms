@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__('Module management').' &raquo; '. __('Component group management'), "", false, "", true);
+ui_print_page_header (__('Module management').' &raquo; '. __('Component group management'), "", false, "component_groups", true);
 
 
 require_once ('include/functions_network_components.php');
@@ -76,8 +76,11 @@ if ($update) {
 if ($delete) {
 	$result = db_process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
+
+	$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));
+
 		
-	if ($result !== false) $result = true;
+	if (($result !== false) and ($result1 !== false)) $result = true;
 	else $result = false;
 		
 	ui_print_result_message ($result,
@@ -93,8 +96,10 @@ if ($multiple_delete) {
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tnetwork_component_group',
 			array ('id_sg' => $id));
-		
-		if ($result === false) {
+
+		$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));	
+	
+		if (($result === false) or ($result1 === false)) {
 			db_process_sql_rollback();
 			break;
 		}

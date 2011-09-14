@@ -1,3 +1,8 @@
+2011-09-14 Dario Rodriguez <dario.rodriguez@artica.es>
+	
+	* bin/util/tentacle_server.exe: Tentacle Proxy temporal
+	with temporal patch for Windows Platforms.
+
 2011-08-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_regexp.cc,

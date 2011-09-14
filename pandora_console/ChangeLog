@@ -1,3 +1,41 @@
+2011-09-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/en/help_gis_tab.php
+	include/help/en/help_local_component.php
+	include/help/en/help_component_groups.php
+	include/help/en/help_collection_tab.php
+	include/help/en/help_inventory_tab.php
+	include/help/en/help_snmp_explorer.php
+	include/help/en/help_collections.php
+	include/help/en/help_template_tab.php
+	include/help/en/help_service_management_edit.php
+	include/help/es/help_service_elements_management.php
+	include/help/es/help_gis_tab.php
+	include/help/es/help_view_services_detail.php
+	include/help/es/help_component_groups.php
+	include/help/es/help_collection_tab.php
+	include/help/es/help_inventory_tab.php
+	include/help/es/help_snmp_explorer.php
+	include/help/es/help_collections.php
+	include/help/es/help_template_tab.php
+	include/help/es/help_service_management_edit.php
+	include/help/es/help_view_services.php
+	include/help/es/help_services_management.php: Added new contextual helps.
+
+	* include/help/en/help_service_elements_management.php
+	include/help/en/help_view_services_detail.php
+	include/help/en/help_services_management.php: Modified contextual helps.
+
+	* include/help/en/help_service_elements_management.php
+	include/help/en/help_view_services_detail.php
+	include/help/en/help_services_management.php
+	godmode/agentes/planned_downtime.php
+	godmode/agentes/agent_manager.php
+	godmode/modules/manage_network_components.php: Added contextual helps.
+
+	* godmode/modules/manage_nc_groups.php: Fixed delete action over component groups when they
+	have child components groups.
+
 2011-09-08  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed output of api without html entities.

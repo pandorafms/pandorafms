@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "", true);
+ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
 
 require_once ('include/functions_network_components.php');
 

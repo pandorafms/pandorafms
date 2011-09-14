@@ -321,24 +321,29 @@ if ($id_agente) {
 			$tab_description = '- '. __('Setup'); 
 			break;
 		case "collection":
-			$tab_description = '- ' . __('Collection');
+			$tab_description = '- ' . __('Collection') . ui_print_help_icon('collection_tab', true);
 			break;
 		case "inventory":
-			$tab_description = '- ' . __('Inventory');
+			$tab_description = '- ' . __('Inventory') . ui_print_help_icon('inventory_tab', true);
 			break;	
 		case "module":
 			$tab_description = '- '. __('Modules');
 			break;
 		case "alert":
-			$tab_description = '- ' . __('Alert');
+			$tab_description = '- ' . __('Alert') . ui_print_help_icon('manage_alert_list', true);
 			break;
 		case "template":
-			$tab_description = '- ' . __('Templates');
+			$tab_description = '- ' . __('Templates') . ui_print_help_icon('template_tab', true);
 			break;	
 		case "gis":
-			$tab_description = '- ' . __('Gis');
+			$tab_description = '- ' . __('Gis') . ui_print_help_icon('gis_tab', true);
 			break;
 		case "extension":
+			$id_extension = get_parameter('id_extension', '');
+			switch ($id_extension){
+				case "snmp_explorer":
+					$tab_description = '- ' . __('SNMP explorer') . ui_print_help_icon('snmp_explorer', true);
+				}
 			break;
 		default:
 

@@ -235,11 +235,14 @@ sub process_xml_data ($$$$$) {
 				# Change here URL to make request to a local openstreetmap server
 				my $content = get ('http://nominatim.openstreetmap.org/reverse?format=csv&lat='.$latitude.'&lon='.$longitude.'&zoom=18&addressdetails=1&email=info@pandorafms.org');
 
-				# Yep, I need to parse the XML output.
-
-				my $xs1 = XML::Simple->new();
-				my $doc = $xs1->XMLin($content);
-				$position_description = safe_input ($doc->{result}{content});
+                if ((defined($content)) && ($content ne "")){ 
+				    # Yep, I need to parse the XML output.
+				    my $xs1 = XML::Simple->new();
+				    my $doc = $xs1->XMLin($content);
+				    $position_description = safe_input ($doc->{result}{content});
+                } else {
+				    $position_description = "";
+                }
 
 			}
 		}

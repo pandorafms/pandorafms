@@ -61,7 +61,7 @@ $form_filter .= "<td>".__('Agents')."</td><td>";
 $src_code = html_print_image('images/lightning.png', true, false, true);
 $form_filter .= html_print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
 array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true);
-$form_filter .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+$form_filter .=  ui_print_help_tip(__('Type at least two characters to search'), true); //'<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 $form_filter .= "</td>\n";
 
 

@@ -176,7 +176,19 @@ if (isset($name))
 	$head .= " - ".$name;
 
 // Header
-ui_print_page_header ($head, "", false, "", true, $buttons);
+$tab = get_parameter("tab", "");
+switch ($tab){
+	case "main": 
+		ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
+		break;
+	case "graph_editor":
+		ui_print_page_header ($head, "", false, "graph_editor", true, $buttons);
+                break;
+	case "preview":
+		ui_print_page_header ($head, "", false, "graph_view", true, $buttons);
+                break;
+}
+
 
 if($add_graph)
 	ui_print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));

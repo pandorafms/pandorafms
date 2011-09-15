@@ -1434,7 +1434,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
-	echo '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search the module.") . '</span></a>';
+	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 
 	$output = ob_get_clean();
 	

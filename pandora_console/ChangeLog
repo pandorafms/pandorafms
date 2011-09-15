@@ -1,3 +1,69 @@
+2011-09-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/en/help_visual_console_editor_editor_tab.php
+	include/help/en/help_reporting_list_items_tab.php
+	include/help/en/help_alert_template.php
+	include/help/en/help_alert_action.php
+	include/help/en/help_alert_command.php
+	include/help/en/help_alert_compound.php
+	include/help/en/help_reporting_wizard_sla_tab.php
+	include/help/en/help_reporting_wizard_tab.php
+	include/help/en/help_graph_view.php
+	include/help/en/help_module_linking.php
+	include/help/en/help_visual_console_editor_list_elements_tab.php
+	include/help/en/help_visual_console_editor_data_tab.php
+	include/help/en/help_policy_agent.php
+	include/help/en/help_profile.php
+	include/help/en/help_visual_console_editor_wizard_tab.php
+	include/help/en/help_graph_builder.php
+	include/help/en/help_event_alert.php
+	include/help/en/help_external_alert.php
+	include/help/en/help_visual_console_editor_preview_tab.php
+	include/help/en/help_reporting_item_editor_tab.php
+	include/help/en/help_snmp_alert_custom.php
+	include/help/en/help_reporting_preview_tab.php
+	include/help/en/help_policy_queue.php
+	include/help/en/help_snmp_alert.php
+	include/help/en/help_graph_editor.php
+	include/help/en/help_reporting_global_tab.php
+	include/help/es/help_visual_console_editor_editor_tab.php
+	include/help/es/help_reporting_list_items_tab.php
+	include/help/es/help_alert_template.php
+	include/help/es/help_alert_action.php
+	include/help/es/help_alert_command.php
+	include/help/es/help_alert_compound.php
+	include/help/es/help_reporting_wizard_sla_tab.php
+	include/help/es/help_reporting_wizard_tab.php
+	include/help/es/help_graph_view.php
+	include/help/es/help_module_linking.php
+	include/help/es/help_visual_console_editor_list_elements_tab.php
+	include/help/es/help_visual_console_editor_data_tab.php
+	include/help/es/help_policy_agent.php
+	include/help/es/help_profile.php
+	include/help/es/help_visual_console_editor_wizard_tab.php
+	include/help/es/help_graph_builder.php
+	include/help/es/help_event_alert.php
+	include/help/es/help_external_alert.php
+	include/help/es/help_visual_console_editor_preview_tab.php
+	include/help/es/help_reporting_item_editor_tab.php
+	include/help/es/help_snmp_alert_custom.php
+	include/help/es/help_reporting_preview_tab.php
+	include/help/es/help_policy_queue.php
+	include/help/es/help_snmp_alert.php
+	include/help/es/help_graph_editor.php
+	include/help/es/help_reporting_global_tab.php: New help pages.
+
+	* godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_list.builder.php
+	godmode/alerts/alert_commands.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/users/profile_list.php
+	godmode/modules/manage_network_templates.php
+	godmode/reporting/graph_builder.php: Added contextual alerts.
+
 2011-09-14  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions.php: cleaned source code style.

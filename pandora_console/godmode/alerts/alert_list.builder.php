@@ -49,7 +49,7 @@ if (! $id_agente) {
 	$src_code = html_print_image('images/lightning.png', true, false, true);
 	$table->data['agent'][1] = html_print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+	. ui_print_help_tip(__('Type at least two characters to search'), true);
 }
 
 $table->data[0][0] = __('Module');

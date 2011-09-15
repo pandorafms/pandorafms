@@ -52,7 +52,7 @@ $enable_alert = (int) get_parameter ('enable_alert');
 $disable_alert = (int) get_parameter ('disable_alert');
 
 // Header
-ui_print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/god2.png", false, "alert_compound", true);
 
 if ($update_compound) {
 	$id = (int) get_parameter ('id');

@@ -500,6 +500,11 @@ sub pandora_manage_main ($$$) {
         elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);
 			my $group_name = @ARGV[2];
+			
+			# Remove spaces
+			$group_name =~ s/^\s+//;
+			$group_name =~ s/\s*$//;
+			
 			my $id_group;
 			
 			if($group_name eq "All") {
@@ -517,6 +522,11 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--enable_group') {
 			param_check($ltotal, 1);
 			my $group_name = @ARGV[2];
+			
+			# Remove spaces
+			$group_name =~ s/^\s+//;
+			$group_name =~ s/\s*$//;
+			
 			my $id_group;
 			
 			if($group_name eq "All") {
@@ -534,6 +544,11 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_agent') {
 			param_check($ltotal, 7, 3);
 			my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
 			print "[INFO] Creating agent '$agent_name'\n\n";
 			
 			$address = '' unless defined ($address);
@@ -549,6 +564,11 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_agent') {
 			param_check($ltotal, 1);
 			my $agent_name = @ARGV[2];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
 			$agent_name = decode_entities($agent_name);
 			print "[INFO] Deleting agent '$agent_name'\n\n";
 			
@@ -566,6 +586,13 @@ sub pandora_manage_main ($$$) {
 			
 			my $module_name_def;
 			my $module_type_def;
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
 			
 			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 				
@@ -731,6 +758,13 @@ sub pandora_manage_main ($$$) {
 			my $module_name_def;
 			my $module_type_def;
 			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
 			print "[INFO] Adding snmp module '$module_name' to agent '$agent_name'\n\n";
 			
 			# The get_module_id has wrong name. Change in future
@@ -802,6 +836,13 @@ sub pandora_manage_main ($$$) {
 			my $module_name_def;
 			my $module_type_def;
 			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
 			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 			
 			# The get_module_id has wrong name. Change in future
@@ -859,6 +900,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_module') {
 			param_check($ltotal, 2);
 			my ($module_name,$agent_name) = @ARGV[2..3];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
 			print "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -900,6 +949,17 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_template_module') {
 			param_check($ltotal, 3);
 			my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
+			$template_name =~ s/^\s+//;
+			$template_name =~ s/\s*$//;
+			
 			print "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -908,12 +968,23 @@ sub pandora_manage_main ($$$) {
 			exist_check($module_id,'module',$module_name);
 			my $template_id = get_template_id($dbh,$template_name);
 			exist_check($template_id,'template',$template_name);
-				
+			
 			pandora_create_template_module ($conf, $module_id, $template_id, $dbh);
 		}
 		elsif ($param eq '--delete_template_module') {
 			param_check($ltotal, 3);
 			my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
+			$template_name =~ s/^\s+//;
+			$template_name =~ s/\s*$//;
+			
 			print "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -931,6 +1002,20 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_template_action') {
 			param_check($ltotal, 6, 2);
 			my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max) = @ARGV[2..7];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
+			$template_name =~ s/^\s+//;
+			$template_name =~ s/\s*$//;
+			
+			$action_name =~ s/^\s+//;
+			$action_name =~ s/\s*$//;
+			
 			print "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -959,6 +1044,20 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_template_action') {
 			param_check($ltotal, 4);
 			my ($action_name,$template_name,$module_name,$agent_name) = @ARGV[2..5];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
+			$template_name =~ s/^\s+//;
+			$template_name =~ s/\s*$//;
+			
+			$action_name =~ s/^\s+//;
+			$action_name =~ s/\s*$//;
+			
 			print "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
 		
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -977,6 +1076,17 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--data_module') {
 			param_check($ltotal, 5, 1);
 			my ($server_name,$agent_name,$module_name,$module_type,$datetime) = @ARGV[2..6];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
+			$server_name =~ s/^\s+//;
+			$server_name =~ s/\s*$//;
+			
 			my $utimestamp;
 			
 			if(defined($datetime)) {
@@ -1018,6 +1128,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_user') {
 			param_check($ltotal, 4, 1);
 			my ($user_name,$password,$is_admin,$comments) = @ARGV[2..5];
+			
+			# Remove spaces
+			$user_name =~ s/^\s+//;
+			$user_name =~ s/\s*$//;
 						
 			$comments = (defined ($comments) ? safe_input($comments)  : '' );
 			
@@ -1028,6 +1142,11 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_user') {
 			param_check($ltotal, 1);
 			my $user_name = @ARGV[2];
+			
+			# Remove spaces
+			$user_name =~ s/^\s+//;
+			$user_name =~ s/\s*$//;
+			
 			print "[INFO] Deleting user '$user_name' \n\n";
 			
 			my $result = pandora_delete_user($dbh,$user_name);
@@ -1036,6 +1155,16 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_profile') {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
+			
+			# Remove spaces
+			$user_name =~ s/^\s+//;
+			$user_name =~ s/\s*$//;
+			
+			$profile_name =~ s/^\s+//;
+			$profile_name =~ s/\s*$//;
+			
+			$group_name =~ s/^\s+//;
+			$group_name =~ s/\s*$//;
 			
 			my $id_profile = get_profile_id($dbh,$profile_name);
 			exist_check($id_profile,'profile',$profile_name);
@@ -1058,6 +1187,16 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
 			
+			# Remove spaces
+			$user_name =~ s/^\s+//;
+			$user_name =~ s/\s*$//;
+			
+			$profile_name =~ s/^\s+//;
+			$profile_name =~ s/\s*$//;
+			
+			$group_name =~ s/^\s+//;
+			$group_name =~ s/\s*$//;
+			
 			my $id_profile = get_profile_id($dbh,$profile_name);
 			exist_check($id_profile,'profile',$profile_name);
 			
@@ -1079,6 +1218,16 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 8, 3);
 			my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name) = @ARGV[2..9];
 			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$event =~ s/^\s+//;
+			$event =~ s/\s*$//;
+			
+			$group_name =~ s/^\s+//;
+			$group_name =~ s/\s*$//;
+
 			$event_status = 0 unless defined($event_status);
 			$severity = 0 unless defined($severity);
 			
@@ -1117,6 +1266,16 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 7, 6);
 			my ($agent_name, $module_name, $datetime_min, $datetime_max, $user_name, $criticity, $template_name) = @ARGV[2..8];
+			
+			# Remove spaces
+			$agent_name =~ s/^\s+//;
+			$agent_name =~ s/\s*$//;
+			
+			$module_name =~ s/^\s+//;
+			$module_name =~ s/\s*$//;
+			
+			$template_name =~ s/^\s+//;
+			$template_name =~ s/\s*$//;
 			
 			my $id_agent = '';
 			my $id_agentmodule = '';
@@ -1165,6 +1324,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_incident') {
 			param_check($ltotal, 7, 1);
 			my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
+			
+			# Remove spaces
+			$group_name =~ s/^\s+//;
+			$group_name =~ s/\s*$//;
 						
 			my $id_group = get_group_id($dbh,$group_name);
 			exist_check($id_group,'group',$group_name);
@@ -1175,6 +1338,13 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_data') {
 			param_check($ltotal, 3, 1);
 			my ($opt, $name, $name2) = @ARGV[2..4];
+			
+			# Remove spaces
+			$name =~ s/^\s+//;
+			$name =~ s/\s*$//;
+			
+			$name2 =~ s/^\s+//;
+			$name2 =~ s/\s*$//;
 		
 			if($opt eq '-m' || $opt eq '--m') {
 				# Delete module data
@@ -1234,6 +1404,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--disable_policy_alerts') {
 			param_check($ltotal, 1);
 			my $policy_name = @ARGV[2];
+			
+			# Remove spaces
+			$policy_name =~ s/^\s+//;
+			$policy_name =~ s/\s*$//;
 			
 			my $configuration_data = "";
 

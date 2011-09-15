@@ -1424,6 +1424,15 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			this->modules->goNext ();
 		}
 	}
+	
+this->elapsed_transfer_time += this->interval;
+	
+if (this->elapsed_transfer_time >= this->transfer_interval) {
+	this->elapsed_transfer_time = 0;
+	if (!server_addr.empty ()) {
+		this->sendXml (this->modules);
+	}
+}
 	return;
 }
 

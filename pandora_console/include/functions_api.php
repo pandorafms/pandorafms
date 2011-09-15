@@ -20,6 +20,7 @@ require_once('functions_agents.php');
 require_once('functions_modules.php');
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . "/include/functions.php");
+include_once($config['homedir'] . "/include/functions_events.php");
 
 /**
  * Parse the "other" parameter.
@@ -1574,14 +1575,16 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 			case "mysql":
 				$sql = "SELECT *,
 					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name
+					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+					(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
 					FROM tevento
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 				break;
 			case "postgresql":
 				$sql = "SELECT *,
 					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name
+					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+					(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
 					FROM tevento
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
 				break;
@@ -1591,7 +1594,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 				$set['offset'] = $offset;
 				$sql = "SELECT *,
 					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name
+					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+					(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
 					FROM tevento
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC"; 
 				$sql = oracle_recode_query ($sql, $set);
@@ -1653,6 +1657,46 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	}
 	
 	$result = db_get_all_rows_sql ($sql);
+	
+	if ($result !== false) {
+		//Add the description and image
+		foreach ($result as $key => $row) {
+			$row['description_event'] = events_print_type_description($row["event_type"], true);
+			$row['img_description'] = events_print_type_img ($row["event_type"], true, true);
+			$row['criticity_name'] = get_priority_name ($row["criticity"]);
+			if ($config['https']) {
+				$urlImage = 'https://';
+			}
+			else {
+				$urlImage = "http://";
+			}
+			
+			$urlImage = $urlImage.$_SERVER['HTTP_HOST'].$config["homeurl"];
+			switch ($row["criticity"]) {
+				default:
+				case 0:
+					$img_sev = $urlImage . "/images/status_sets/default/severity_maintenance.png";
+					break;
+				case 1:
+					$img_sev = $urlImage . "/images/status_sets/default/severity_informational.png";
+					break;
+				case 2:
+					$img_sev = $urlImage . "/images/status_sets/default/severity_normal.png";
+					break;
+				case 3:
+					$img_sev = $urlImage . "/images/status_sets/default/severity_warning.png";
+					break;
+				case 4:
+					$img_sev = $urlImage . "/images/status_sets/default/severity_critical.png";
+					break;
+			}
+			$row['img_criticy'] = $img_sev;
+			
+			$result[$key] = $row;
+		}
+	}
+	
+	//html_debug_print($result);
 	
 	$data['type'] = 'array';
 	$data['data'] = $result;

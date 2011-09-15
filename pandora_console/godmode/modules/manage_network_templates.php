@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
+ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "template_tab", true);
 
 
 require_once ('include/functions_network_profiles.php');

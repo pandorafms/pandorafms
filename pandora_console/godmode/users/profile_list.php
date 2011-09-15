@@ -45,7 +45,7 @@ $buttons[$tab]['active'] = true;
 
 
 // Header
-ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true, $buttons);
+ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "profile", true, $buttons);
 
 $delete_profile = (bool) get_parameter ('delete_profile');
 $create_profile = (bool) get_parameter ('create_profile');

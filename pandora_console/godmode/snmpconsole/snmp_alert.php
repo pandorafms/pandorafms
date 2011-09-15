@@ -27,11 +27,11 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 // =============
 
 if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'), "images/computer_error.png", false, "", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'), "images/computer_error.png", false, "snmp_alert", true);
 } else if (isset ($_GET["update_alert"]) && $_GET["update_alert"] != "-1") {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "snmp_alert", true);
 } else if (isset ($_GET["submit"])) {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "snmp_alert", true);
 	$id_as = (int) get_parameter_get ("submit", -1);
 	$source_ip = (string) get_parameter_post ("source_ip");
 	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
@@ -92,7 +92,7 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 	}
 
 } else {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Alert overview'), "images/computer_error.png", false, "", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Alert overview'), "images/computer_error.png", false, "snmp_alert", true);
 }
 
 // From variable init

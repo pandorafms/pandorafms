@@ -1572,12 +1572,16 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	if ($group_rep == 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$sql = "SELECT *
+				$sql = "SELECT *,
+					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name
 					FROM tevento
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 				break;
 			case "postgresql":
-				$sql = "SELECT *
+				$sql = "SELECT *,
+					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name
 					FROM tevento
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
 				break;
@@ -1585,7 +1589,9 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 				$set = array();
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
-				$sql = "SELECT *
+				$sql = "SELECT *,
+					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name
 					FROM tevento
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC"; 
 				$sql = oracle_recode_query ($sql, $set);

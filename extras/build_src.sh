@@ -1,6 +1,6 @@
 #!/bin/bash
 CODEHOME=~/code/pandora/trunk
-CODEHOME_ENT=~/code/artica/code
+CODEHOME_ENT=~/code/artica
 RPMHOME=/usr/src/packages
 VERSION=$(grep 'my $pandora_version =' $CODEHOME/pandora_server/lib/PandoraFMS/Config.pm | awk '{print substr($4, 2, length($4) - 3)}')
 KEYGEN_VERSION=$(grep "%define version" $CODEHOME_ENT/updatemanager/keygen/pandora/pandora_keygen.spec | awk '{print $3}')
@@ -12,7 +12,7 @@ fi
 echo "Creating source tarballs in $RPMHOME/SOURCES"
 
 # Console
-cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz --exclude \.svn --exclude config.php --exclude enterprise --exclude \*\.po pandora_console || exit 1
+cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz --exclude \.svn --exclude config.php --exclude enterprise pandora_console || exit 1
 
 # Server
 cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_server-$VERSION.tar.gz --exclude \.svn pandora_server || exit 1

@@ -452,60 +452,127 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
  * 
  * @param string $type Event type from SQL 
  * @param bool $return Whether to return or print
+ * @param bool $only_url Flag to return only url of image, by default false.
  * 
  * @return string HTML with img 
  */
-function events_print_type_img ($type, $return = false) {
+function events_print_type_img ($type, $return = false, $only_url = false) {
+	global $config;
+	
 	$output = '';
 	
+	if ($config['https']) {
+		$urlImage = 'https://';
+	}
+	else {
+		$urlImage = "http://";
+	}
+	
+	$urlImage = $urlImage.$_SERVER['HTTP_HOST'].$config["homeurl"];
+	
 	switch ($type) {
-	case "alert_recovered": 
-		$output .= html_print_image ("images/error.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "alert_manual_validation": 
-		$output .= html_print_image ("images/eye.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "going_up_warning":
-		$output .= html_print_image ("images/b_yellow.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "going_down_critical":
-	case "going_up_critical": //This is to be backwards compatible
-		$output .= html_print_image ("images/b_red.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "going_up_normal":
-	case "going_down_normal": //This is to be backwards compatible
-		$output .= html_print_image ("images/b_green.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "going_down_warning":
-		$output .= html_print_image ("images/b_yellow.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "alert_fired":
-		$output .= html_print_image ("images/bell.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "system";
-		$output .= html_print_image ("images/cog.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "recon_host_detected";
-		$output .= html_print_image ("images/network.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "new_agent";
-		$output .= html_print_image ("images/wand.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
-	case "unknown": 
-	default:
-		$output .= html_print_image ("images/err.png", true,
-			array ("title" => events_print_type_description($type, true)));
-		break;
+		case "alert_recovered":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/error.png";
+			}
+			else {
+				$output .= html_print_image ("images/error.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "alert_manual_validation":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/eye.png";
+			}
+			else {
+				$output .= html_print_image ("images/eye.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "going_up_warning":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/b_yellow.png";
+			}
+			else {
+				$output .= html_print_image ("images/b_yellow.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "going_down_critical":
+		case "going_up_critical": //This is to be backwards compatible
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/b_red.png";
+			}
+			else {
+				$output .= html_print_image ("images/b_red.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "going_up_normal":
+		case "going_down_normal": //This is to be backwards compatible
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/b_green.png";
+			}
+			else {
+				$output .= html_print_image ("images/b_green.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "going_down_warning":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/b_yellow.png";
+			}
+			else {
+				$output .= html_print_image ("images/b_yellow.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "alert_fired":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/bell.png";
+			}
+			else { 
+				$output .= html_print_image ("images/bell.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "system":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/cog.png";
+			}
+			else {
+				$output .= html_print_image ("images/cog.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "recon_host_detected":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/network.png";
+			}
+			else {
+				$output .= html_print_image ("images/network.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "new_agent":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/wand.png";
+			}
+			else {
+				$output .= html_print_image ("images/wand.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
+		case "unknown": 
+		default:
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/err.png";
+			}
+			else {
+				$output .= html_print_image ("images/err.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
 	}
 	
 	if ($return)

@@ -1,4 +1,13 @@
-2011-09-08  Miguel de Dios  <miguel.dedios@artica.es>
+2011-09-14  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions.php: cleaned source code style.
+	
+	* include/functions_events.php: added the parameter to return only url
+	in function "events_print_type_img".
+	
+	* include/functions_api.php: now the api in getevents return more data.
+
+2011-09-14  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: added in the output of get events the agent
 	name and group name.

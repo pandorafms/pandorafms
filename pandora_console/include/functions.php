@@ -900,18 +900,24 @@ function get_priorities () {
  */
 function get_priority_name ($priority) {
 	switch ($priority) {
-	case 0: 
-		return __('Maintenance');
-	case 1: 
-		return __('Informational');
-	case 2: 
-		return __('Normal');
-	case 3: 
-		return __('Warning');
-	case 4: 
-		return __('Critical');
-	default: 
-		return __('All');
+		case 0: 
+			return __('Maintenance');
+			break;
+		case 1: 
+			return __('Informational');
+			break;
+		case 2: 
+			return __('Normal');
+			break;
+		case 3: 
+			return __('Warning');
+			break;
+		case 4: 
+			return __('Critical');
+			break;
+		default: 
+			return __('All');
+			break;
 	}
 }
 

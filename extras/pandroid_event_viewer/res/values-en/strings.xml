@@ -20,4 +20,16 @@
 	
     <string name="main_text">main text (value english)</string>
     <string name="list_text">list (value english)</string>
+    
+    <string name="system_str">System</string>
+    
+    <string name="empty_str">- Empty -</string>
+    <string name="all_str">All</string>
+    
+    <string name="tags_label_str">Tags</string>
+    <string name="comments_label_str">Comments</string>
+    <string name="group_label_str">Group</string>
+    <string name="agent_label_str">Agent name</string>
+    <string name="type_label_str">Type</string>
+    <string name="severity_label_str">Severity</string>
 </resources>

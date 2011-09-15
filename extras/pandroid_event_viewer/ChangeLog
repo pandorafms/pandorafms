@@ -1,3 +1,13 @@
+2011-09-15  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* res/layout/*: added new layout and some changes in other layout.
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more strings.
+	
+	* src/pandroid_event_viewer/pandorafms/*: some changes to show opened item
+	when make click in event list.
+
 2011-09-13  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* *.*: added first version of Pandroid Event Viewer.

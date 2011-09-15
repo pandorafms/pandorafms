@@ -20,4 +20,16 @@
 	
     <string name="main_text">main text (value spanish)</string>
     <string name="list_text">list (value spanish)</string>
+    
+    <string name="system_str">Sistema</string>
+    
+    <string name="empty_str">- Vacio -</string>
+    <string name="all_str">Todo</string>
+    
+    <string name="tags_label_str">Etiquetas</string>
+    <string name="comments_label_str">Comentarios</string>
+    <string name="group_label_str">Grupos</string>
+    <string name="agent_label_str">Nombre del agente</string>
+    <string name="type_label_str">Tipo</string>
+    <string name="severity_label_str">Severidad</string>
 </resources>

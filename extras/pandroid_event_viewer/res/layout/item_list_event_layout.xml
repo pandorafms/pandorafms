@@ -16,9 +16,10 @@
 -->
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
+	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
+	android:id="@+id/item_linear_layout"
 >
 	<RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
@@ -60,12 +61,12 @@
 			/>
 		</LinearLayout>
 	</RelativeLayout>
-	<ImageButton
+	<!--<ImageButton
 		android:id="@+id/icon_config"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:src="@drawable/config"
 		android:layout_weight="0"
 		android:layout_alignParentRight="@layout/item_list_event_layout"
-	/>
+	/>-->
 </LinearLayout>

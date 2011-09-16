@@ -53,6 +53,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         
         
         Intent i_main = new Intent(this, Main.class);
+        i_main.putExtra("object", this);
         
 		tabHost.addTab
 		(
@@ -183,7 +184,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	}
     }
     
-    private String convertStreamToString (InputStream is)
+    public String convertStreamToString (InputStream is)
     {
     	BufferedReader reader = new BufferedReader(new
     	InputStreamReader(is), 8*1024);

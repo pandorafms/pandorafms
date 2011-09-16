@@ -153,6 +153,32 @@ function isInACL($ip) {
 }
 
 //-------------------------DEFINED OPERATIONS FUNCTIONS-------------------------
+function get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {//Default values
+			$separator = ';';
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+	}
+	
+	$groups = users_get_groups ($user_in_db, "IR");
+	
+	$data_groups = array();
+	foreach ($groups as $id => $group) {
+		$data_groups[] = array($id, $group);
+	}
+	
+	$data['type'] = 'array';
+	$data['data'] = $data_groups;
+	
+	returnData($returnType, $data, $separator);
+}
 
 function get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
 {

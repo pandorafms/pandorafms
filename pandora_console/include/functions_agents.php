@@ -1191,14 +1191,16 @@ function agents_get_modules_data_count ($id_agent = 0) {
 	$count["total"] = 0;
 
 	$query[0] = "SELECT COUNT(*) FROM tagente_datos";
-
+	
 	foreach ($id_agent as $agent_id) {
 		//Init value
 		$count[$agent_id] = 0;
-		$modules = array_keys (agents_get_modules ($agent_id));
-		foreach ($query as $sql) {
+		$modules = array_keys (agents_get_modules ($agent_id)); 
+		foreach ($query as $sql) { 
 			//Add up each table's data
-			$count[$agent_id] += (int) db_get_sql ($sql." WHERE id_agente_modulo IN (".implode (",", $modules).")", 0, true);
+			//Avoid the count over empty array	
+			if (!empty($modules))
+				$count[$agent_id] += (int) db_get_sql ($sql." WHERE id_agente_modulo IN (".implode (",", $modules).")", 0, true);
 		}
 		//Add total agent count to total count
 		$count["total"] += $count[$agent_id];

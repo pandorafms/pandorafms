@@ -13,5 +13,4 @@
 <li type="circle">modificar el orden por medio de las flechas verdes de la izquierda de forma manual.</li>
 <li type="circle">modificar el orden de forma automatica en las celdas de la cabera con las flechas blancas, ordenando alfabeticamente por tipo de elemento, alfabeticamente por nombre del agente o alfabeticamente por el nombre del agente.</li>
 <li type="circle">eliminar el item haciendo click en el aspa roja.</li>
-</ul>
-~           
+</ul> 

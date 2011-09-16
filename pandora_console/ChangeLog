@@ -1,3 +1,8 @@
+2011-09-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/es/help_reporting_list_items_tab.php
+	godmode/reporting/graph_builder.php: Changed contextual helps.
+
 2011-09-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/help/en/help_visual_console_editor_editor_tab.php

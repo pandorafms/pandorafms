@@ -113,7 +113,9 @@ writeBrokerConf(string path_broker, string filename, string name_broker){
 	string       buffer;
 	string		 comp;
 	unsigned int pos;
-
+	int i; 
+	int ok;
+	
 	/* Read and set the file */
 	while (!file_conf.eof ()) {
 		/* Set the value from each line */
@@ -121,11 +123,19 @@ writeBrokerConf(string path_broker, string filename, string name_broker){
 		
 		pos = buffer.find("agent_name");
 		if (pos != string::npos){
-			comp = buffer.substr (0,12);
-			if (comp == "# agent_name"){
+			ok = 1;
+						
+			for(i=0; i < pos; i++) {
+	
+				if(buffer[i] != ' ' && buffer[i] != '\t' && buffer[i] != '#') {
+					ok = 0;
+				}
+			}
+			
+			if (ok) {
 				buffer = "agent_name "+name_broker+"\n";
-			}	
-		}
+			}
+		} 
 		
 		pos = buffer.find("broker_agent");
 		if (pos != string::npos){

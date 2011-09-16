@@ -37,7 +37,7 @@ $tab = (string) get_parameter ("tab", "list");
 $buttons = array(
 	'list' => array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=galertas&sec2=godmode/tag/tag&tab=list">' . 
+		'text' => '<a href="index.php?sec=gtag&sec2=godmode/tag/tag&tab=list">' . 
 			html_print_image ("images/god6.png", true, array ("title" => __('List tags'))) .'</a>'));
 
 $buttons[$tab]['active'] = true;

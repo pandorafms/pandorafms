@@ -1,0 +1,27 @@
+<?php
+/*
+* @package Include/help/en
+*/
+?>
+
+<h1>Server management</h1>
+
+<p>The Pandora FMS servers are the elements in charge of performing the existing checks. They verify them and change their status depending on the results. They are also in charge of triggering the alerts established to control the status of data.</p>
+
+<p>Pandora FMS's data server can work in high availability and/or load balancing modes. In a very large architecture, various Pandora FMS servers can be used at the same time, in order to handle large volumes of functionally or geographically distributed information.</p>
+
+<p>Pandora FMS servers are always on and permanently verify if any element has any problem and it is defined as alert. If this happens, it will execute the action defined in the alarm, such as sending an SMS, an e-mail, or triggering the execution of a script.</p> 
+
+<ul>
+<li type="circle">Data Server</li>
+<li type="circle">Network Server</li>
+<li type="circle">SNMP Server</li>
+<li type="circle">WMI Server</li>
+<li type="circle">Recognition Server</li>
+<li type="circle">Plugins Server</li>
+<li type="circle">Prediction Server</li>
+<li type="circle">WEB Test Server</li>
+<li type="circle">Export Server</li>
+<li type="circle">Inventory Server</li>
+</ul>
+

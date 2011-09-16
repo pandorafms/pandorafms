@@ -1,5 +1,15 @@
 2011-09-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/help/en/help_export_server.php
+	include/help/en/help_servers.php
+	include/help/es/help_export_server.php
+	include/help/es/help_servers.php: Added new contextual helps.
+
+	* godmode/servers/modificar_server.php
+	godmode/tag/edit_tag.php: Modified contextual helps.
+
+2011-09-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/help/es/help_reporting_list_items_tab.php
 	godmode/reporting/graph_builder.php: Changed contextual helps.
 

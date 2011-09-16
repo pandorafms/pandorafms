@@ -1,3 +1,7 @@
+2011-09-16  Sancho Lerena <slerena@artica.es>
+
+        *  extras/build_src.sh: Fixed bad path.
+
 2011-09-15  Sancho Lerena <slerena@artica.es>
 
 	*  extras/build_src.sh: Missing PO files was breaking lang. system

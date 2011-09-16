@@ -1,12 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/main_text"
-    />
+    <ScrollView
+		android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+	>
+	<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    >
+	    <TableLayout
+	    	android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+	    >
+	    	<TableRow>
+				<TextView
+					android:text="@string/agent_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="5dip"
+				/>
+				<EditText
+					android:id="@+id/agent_name"
+					android:layout_height="wrap_content"
+					android:singleLine="true"
+					android:editable="true"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+				/>
+	    	</TableRow>
+	    	<TableRow>
+				<TextView
+					android:text="@string/group_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="5dip"
+				/>
+				<Spinner
+					android:id="@+id/group_combo"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+				/>
+	    	</TableRow>
+	    	<TableRow>
+				<TextView
+					android:text="@string/severity_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="5dip"
+				/>
+				<Spinner
+					android:id="@+id/severity_combo"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+				/>
+	    	</TableRow>
+	    </TableLayout>
+	   	<TextView
+			android:text="@string/date_label_str"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingRight="5dip"
+		/>
+		<TimePicker
+			android:textSize="10sp"
+			android:id="@+id/time"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+		/>
+		<DatePicker
+			android:id="@+id/date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+		/>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		>
+			<Button
+				android:text="@string/reset_button_str"
+				android:id="@+id/button_reset"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+			/>
+			<Button
+				android:text="@string/search_button_str"
+				android:id="@+id/button_send"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+			/>
+		</LinearLayout>
+	</LinearLayout>
+	</ScrollView>	
 </LinearLayout>

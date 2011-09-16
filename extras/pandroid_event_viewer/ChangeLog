@@ -1,3 +1,16 @@
+2011-09-16  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
+	added to use the PandroidEventviewerActivity class in other parts in 
+	proyect.
+	
+	* src/pandroid_event_viewer/pandorafms/Main.java: work in progress in the
+	form, now only I need to write the filter call.
+	
+	* res/values/arrays.xml, res/values/strings.xml, res/values-en/arrays.xml,
+	res/values-en/strings.xml, res/values-es/arrays.xml,
+	res/values-es/strings.xml, res/layout/main.xml: added more values.
+
 2011-09-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/layout/*: added new layout and some changes in other layout.

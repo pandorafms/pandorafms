@@ -32,4 +32,8 @@
     <string name="agent_label_str">Agent name</string>
     <string name="type_label_str">Type</string>
     <string name="severity_label_str">Severity</string>
+    <string name="date_label_str">Date</string>
+    <string name="number_events_label_str">Number Events</string>
+	<string name="reset_button_str">Reset</string>
+    <string name="search_button_str">Search</string>
 </resources>

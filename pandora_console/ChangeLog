@@ -1,3 +1,16 @@
+2011-09-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_alert_action.php,
+	include/help/ja/help_alert_command.php,
+	include/help/ja/help_alert_compound.php,
+	include/help/ja/help_alert_template.php,
+	include/help/ja/help_collection_tab.php,
+	include/help/ja/help_collections.php,
+	include/help/ja/help_component_groups.php,
+	include/help/ja/help_event_alert.php,
+	include/help/ja/help_export_server.php,
+	include/help/ja/help_external_alert.php: Added new help files.
+
 2011-09-16 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: added the "getgroups" call.

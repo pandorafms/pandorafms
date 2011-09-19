@@ -10,5 +10,5 @@
 <ul>
 <li type="circle">Exception: This shows values of several modules that fulfill a logical operator.</li>
 <li type="circle">General: Show values of several modules ordered (ascending, descending, by agent name) or/and grouped by agent.</li>
-<li type="circle">Top n: Show a report of N elements of several modules ordered, displaying max, min or avg values on the report bottom.</li>
+<li type="circle">Top n: Shows N values discriminated by maximun, minimun or average over the total of modules selected, ordered ascending, descending or by agent name.</li>
 </ul>

@@ -1,5 +1,13 @@
 2011-09-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/help/en/help_reporting_global_tab.php
+	include/help/es/help_reporting_global_tab.php: Modified help file.
+	
+	* godmode/reporting/reporting_builder.item_editor.php: Added contextual 
+	helps.
+
+2011-09-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/help/en/help_network_map_enterprise.php
 	include/help/es/help_network_map_enterprise.php: Added new help files.
 	

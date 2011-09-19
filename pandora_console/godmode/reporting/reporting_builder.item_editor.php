@@ -374,7 +374,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_input_hidden('id_agent', $idAgent) .
 					html_print_input_text_extended ('agent', agents_get_name ($idAgent), 'text-agent', '', 30, 100, false, '',
 						array('style' => 'background: url(images/lightning.png) no-repeat right;'))
-						. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+						. ui_print_help_tip(__("Type at least two characters to search"), false);
 					html_print_input_hidden ('server_name', $server_name);
 				?>
 			</td>
@@ -439,7 +439,7 @@ html_print_input_hidden('id_item', $idItem);
 				 ?></td>
 		</tr>
 		<tr id="row_header" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Serialized header') . '<a href="#" class="tip">&nbsp;<span>' . __("The separator character is | .") . '</span></a>';?></td>
+			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
 			<td style=""><?php html_print_input_text('header', $header, '', 40, 90); ?></td>
 		</tr>
 		<tr id="row_custom" style="" class="datos">
@@ -455,11 +455,11 @@ html_print_input_hidden('id_item', $idItem);
 			<td style=""><?php html_print_input_text('url', $url, '', 40, 90); ?></td>
 		</tr>
 		<tr id="row_field_separator" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Field separator'); ?></td>
+			<td style="vertical-align: top;"><?php echo __('Field separator') . ui_print_help_tip(__("Separator for different fields in the serialized text chain"), true); ?></td>
 			<td style=""><?php html_print_input_text('field', $field, '', 2, 4); ?></td>
 		</tr>
 		<tr id="row_line_separator" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Line separator'); ?></td>
+			<td style="vertical-align: top;"><?php echo __('Line separator') . ui_print_help_tip(__("Separator in different lines (composed by fields) of the serialized text chain"), true); ?></td>
 			<td style=""><?php html_print_input_text('line', $line, '', 2, 4); ?></td>
 		</tr>
 		<tr id="row_group_by_agent" style="" class="datos">

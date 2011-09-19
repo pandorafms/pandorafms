@@ -517,7 +517,7 @@ html_print_input_hidden('id_item', $idItem);
 			
 		</tr>
 		<tr id="row_show_resume" style="" class="datos">
-			<td><?php echo __('Show resume');?></td>
+			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
 			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
 		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">

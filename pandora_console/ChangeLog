@@ -1,3 +1,22 @@
+2011-09-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_gis_tab.php,
+	include/help/ja/help_graph_builder.php,
+	include/help/ja/help_graph_editor.php,
+	include/help/ja/help_graph_view.php,
+	include/help/ja/help_inventory_tab.php,
+	include/help/ja/help_local_component.php,
+	include/help/ja/help_module_linking.php,
+	include/help/ja/help_policy_agent.php,
+	include/help/ja/help_policy_queue.php,
+	include/help/ja/help_profile.php,
+	include/help/ja/help_reporting_global_tab.php,
+	include/help/ja/help_reporting_item_editor_tab.php,
+	include/help/ja/help_reporting_list_items_tab.php,
+	include/help/ja/help_reporting_preview_tab.php,
+	include/help/ja/help_reporting_wizard_sla_tab.php,
+	include/help/ja/help_reporting_wizard_tab.php: Added new help files.
+
 2011-09-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alert_action.php,

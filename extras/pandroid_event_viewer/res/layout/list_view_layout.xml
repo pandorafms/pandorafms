@@ -14,11 +14,32 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 >
+	<LinearLayout
+		android:id="@+id/loading_layout"
+		android:orientation="horizontal"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+	>
+		<ProgressBar
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			style="?android:attr/progressBarStyleSmall"
+			android:paddingRight="10dip"
+		/>
+		<TextView
+			android:textColor="#ffffff"
+			android:text="@string/loading_label_str"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+		/>
+	</LinearLayout>
 	<ListView
 		android:id="@id/android:list"
 		android:layout_width="fill_parent"

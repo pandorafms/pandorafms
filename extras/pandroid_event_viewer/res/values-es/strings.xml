@@ -36,4 +36,14 @@
     <string name="number_events_label_str">Número de eventos</string>
     <string name="reset_button_str">Reserteo</string>
     <string name="search_button_str">Buscar</string>
+    <string name="loading_label_str">Cargando</string>
+    <string name="options_label_str">Opciones</string>
+    <string name="url_label_str">URL</string>
+    <string name="user_label_str">Usuario</string>
+    <string name="password_label_str">Contraseña</string>
+    <string name="update_button_str">Actualizar</string>
+    <string name="option_title_str">Opciones</string>
+    
+    <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
+    <string name="config_update_fail_str">Configuración no ha podido guardarse..</string>
 </resources>

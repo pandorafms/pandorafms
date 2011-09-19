@@ -14,9 +14,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Region.Op;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,11 +34,22 @@ import android.widget.TimePicker;
 public class Main extends Activity {
 	public PandroidEventviewerActivity object;
 	public HashMap<Integer, String> pandoraGroups;
+	public String url;
+	public String user;
+	public String password;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        SharedPreferences preferences = getSharedPreferences(
+            this.getString(R.string.const_string_preferences), 
+            Activity.MODE_PRIVATE);
+        
+        this.url = preferences.getString("url", "");
+        this.user = preferences.getString("user", "");
+        this.password = preferences.getString("password", "");
         
         Intent i = getIntent();
         this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
@@ -68,8 +85,32 @@ public class Main extends Activity {
 		});
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.options_button_menu_options:
+            	Intent i = new Intent(this, Options.class);
+            	
+            	startActivity(i);
+            	break;
+        }
+        
+        return true;
+    }
+    
     public void search_form() {
+    	//Clean the EventList
+    	this.object.eventList = new ArrayList<EventListItem>();
+    	this.object.loadInProgress = true;
     	
+    	TabActivity ta = (TabActivity) this.getParent();
+    	ta.getTabHost().setCurrentTab(1);
     }
     
     public void reset_form() {
@@ -98,12 +139,11 @@ public class Main extends Activity {
     	try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
     		
-	    	HttpPost httpPost = new HttpPost(
-	    		"http://192.168.70.112/pandora_console/include/api.php");
+	    	HttpPost httpPost = new HttpPost(this.url);
 	    	
 	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>(2);
-	    	parameters.add(new BasicNameValuePair("user", "admin"));
-	    	parameters.add(new BasicNameValuePair("pass", "pandora"));
+	    	parameters.add(new BasicNameValuePair("user", this.user));
+	    	parameters.add(new BasicNameValuePair("pass", this.password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "groups"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));

@@ -30,6 +30,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.R.bool;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import android.widget.TabHost;
 
 public class PandroidEventviewerActivity extends TabActivity implements Serializable {
 	public ArrayList<EventListItem> eventList;
+	public boolean loadInProgress;
 	
     /** Called when the activity is first created. */
     @Override
@@ -45,6 +47,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         super.onCreate(savedInstanceState);
         
         this.eventList = new ArrayList<EventListItem>();
+        this.loadInProgress = false;
         
         final TabHost tabHost = getTabHost();
         

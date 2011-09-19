@@ -10,23 +10,22 @@ import java.util.HashMap;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EventList extends ListActivity {
 	private ListView lv;
@@ -52,11 +51,37 @@ public class EventList extends ListActivity {
         
         setContentView(R.layout.list_view_layout);
         
+        this.toggleLoadingLayout();
+        
         lv = (ListView)findViewById(android.R.id.list);
         
         la = new MyAdapter(getBaseContext(), object);
         
         lv.setAdapter(la);
+    }
+    
+    public void onResume() {
+    	super.onResume();
+    	
+    	this.toggleLoadingLayout();
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+    
+    public void toggleLoadingLayout() {
+    	LinearLayout loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
+    	
+        if (this.object.loadInProgress) {
+        	loadingLayout.setVisibility(LinearLayout.VISIBLE);
+        }
+        else {
+        	loadingLayout.setVisibility(LinearLayout.GONE);
+        }
     }
     
     public Bitmap downloadFile(String fileUrl) {Log.e("downloadFile", fileUrl);

@@ -33,5 +33,6 @@
         </activity>
         <activity android:name=".Main"></activity>
         <activity android:name=".EventList"></activity>
+        <activity android:name=".Options" android:label="@string/option_title_str"></activity>
     </application>
 </manifest>

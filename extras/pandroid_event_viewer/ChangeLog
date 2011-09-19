@@ -1,3 +1,23 @@
+2011-09-19  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml: added Options activity. 
+
+	* src/pandroid_event_viewer/pandorafms/Options.java, res/layout/options.xml:
+	added ctivity Options to edit application preferences.  	
+
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java: added to hook for the
+	options activity.
+
+	* src/pandroid_event_viewer/pandorafms/EventList.java
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added some strings const.
+	
+	* res/menu/options_menu.xml: the sublayout for the option key.
+	
+	*res/layout/list_view_layout.xml: started to show dinamic load items.
+
 2011-09-16  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:

@@ -18,6 +18,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Region.Op;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,28 +29,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class Main extends Activity {
 	public PandroidEventviewerActivity object;
 	public HashMap<Integer, String> pandoraGroups;
-	public String url;
-	public String user;
-	public String password;
+	public Spinner comboSeverity;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        SharedPreferences preferences = getSharedPreferences(
-            this.getString(R.string.const_string_preferences), 
-            Activity.MODE_PRIVATE);
-        
-        this.url = preferences.getString("url", "");
-        this.user = preferences.getString("user", "");
-        this.password = preferences.getString("password", "");
         
         Intent i = getIntent();
         this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
@@ -58,17 +51,35 @@ public class Main extends Activity {
         
         setContentView(R.layout.main);
         
-        Spinner combo = (Spinner) findViewById(R.id.group_combo);
-        
-        this.setGroups(combo);
-        
-        combo = (Spinner) findViewById(R.id.severity_combo);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(
-                this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        combo.setAdapter(adapter);
-        
         final Button buttonReset = (Button) findViewById(R.id.button_reset);
+        final Button buttonSearch = (Button) findViewById(R.id.button_send);
+        
+        //Check if the user preferences it is set.
+        if ((object.user.length() == 0) && (object.password.length() == 0)
+        	&& (object.url.length() == 0)) {
+        	Toast toast = Toast.makeText(this.getApplicationContext(),
+        		this.getString(R.string.please_set_preferences_str),
+        		Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		buttonReset.setEnabled(false);
+    		buttonSearch.setEnabled(false);
+        }
+        else {
+            Spinner combo;
+            
+            buttonSearch.setEnabled(false);
+            buttonReset.setEnabled(false);
+            
+            new GetGroupsAsyncTask().execute();
+            
+            comboSeverity = (Spinner) findViewById(R.id.severity_combo);
+            ArrayAdapter adapter = ArrayAdapter.createFromResource(
+                    this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            comboSeverity.setAdapter(adapter);
+        }
+        
         buttonReset.setOnClickListener(new View.OnClickListener() {		
 			@Override
 			public void onClick(View v) {
@@ -76,7 +87,6 @@ public class Main extends Activity {
 			}
 		});
         
-        final Button buttonSearch = (Button) findViewById(R.id.button_send);
         buttonSearch.setOnClickListener(new View.OnClickListener() {		
 			@Override
 			public void onClick(View v) {
@@ -85,6 +95,84 @@ public class Main extends Activity {
 		});
     }
     
+    public ArrayList<String> getGroups() {
+    	ArrayList<String> array = new ArrayList<String>();
+    	
+		try {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+    		
+	    	HttpPost httpPost = new HttpPost(this.object.url);
+	    	
+	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>(2);
+	    	parameters.add(new BasicNameValuePair("user", this.object.user));
+	    	parameters.add(new BasicNameValuePair("pass", this.object.password));
+	    	parameters.add(new BasicNameValuePair("op", "get"));
+	    	parameters.add(new BasicNameValuePair("op2", "groups"));
+	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
+	    	parameters.add(new BasicNameValuePair("return_type", "csv"));
+	    	parameters.add(new BasicNameValuePair("other", ";"));
+	    	
+	    	UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
+	    	
+	    	httpPost.setEntity(entity);
+	    	
+	    	HttpResponse response = httpClient.execute(httpPost);
+	    	HttpEntity entityResponse = response.getEntity();
+	    	
+	    	String return_api = this.object.convertStreamToString(entityResponse.getContent());
+	    	
+	    	String[] lines = return_api.split("\n");
+	    	
+	    	for (int i= 0; i < lines.length; i++) {
+	    		String[] groups = lines[i].split(";", 21);
+	    		
+	    		this.pandoraGroups.put(new Integer(groups[0]), groups[1]);
+	    		
+	    		array.add(groups[1]);
+	    	}
+    	}
+    	catch (Exception e) {
+    		Log.e("ERROR THE ", e.getMessage());
+    	}
+		
+		return array;
+    }
+    
+    public class GetGroupsAsyncTask extends AsyncTask<Void, Void, Void> {
+    	public ArrayList<String> lista;
+    	
+		@Override
+		protected Void doInBackground(Void... params) {
+			lista = getGroups();
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void unused)
+		{
+			Spinner combo = (Spinner)findViewById(R.id.group_combo);
+	    	
+	    	ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
+		    	android.R.layout.simple_spinner_item,
+		    	lista);
+		    combo.setAdapter(spinnerArrayAdapter);
+		    combo.setSelection(0);
+		    
+		    ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_group);
+		    
+		    loadingGroup.setVisibility(ProgressBar.GONE);
+		    combo.setVisibility(Spinner.VISIBLE);
+		    
+		    Button buttonReset = (Button) findViewById(R.id.button_reset);
+	        Button buttonSearch = (Button) findViewById(R.id.button_send);
+	        
+	        buttonReset.setEnabled(true);
+	        buttonSearch.setEnabled(true);
+		}
+    }
+    
+    //For options
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -109,6 +197,8 @@ public class Main extends Activity {
     	this.object.eventList = new ArrayList<EventListItem>();
     	this.object.loadInProgress = true;
     	
+    	this.object.executeBackgroundGetEvents();
+    	
     	TabActivity ta = (TabActivity) this.getParent();
     	ta.getTabHost().setCurrentTab(1);
     }
@@ -132,54 +222,5 @@ public class Main extends Activity {
     	TimePicker timePicker = (TimePicker)findViewById(R.id.time);
     	timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
     	timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
-    }
-    
-    public void setGroups(Spinner combo) {
-    	
-    	try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-    		
-	    	HttpPost httpPost = new HttpPost(this.url);
-	    	
-	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>(2);
-	    	parameters.add(new BasicNameValuePair("user", this.user));
-	    	parameters.add(new BasicNameValuePair("pass", this.password));
-	    	parameters.add(new BasicNameValuePair("op", "get"));
-	    	parameters.add(new BasicNameValuePair("op2", "groups"));
-	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
-	    	parameters.add(new BasicNameValuePair("return_type", "csv"));
-	    	parameters.add(new BasicNameValuePair("other", ";"));
-	    	
-	    	UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
-	    	
-	    	httpPost.setEntity(entity);
-	    	
-	    	HttpResponse response = httpClient.execute(httpPost);
-	    	HttpEntity entityResponse = response.getEntity();
-	    	
-	    	String return_api = this.object.convertStreamToString(entityResponse.getContent());
-	    	
-	    	String[] lines = return_api.split("\n");
-	    	
-	    	ArrayList<String> array = new ArrayList<String>();
-	    	
-	    	for (int i= 0; i < lines.length; i++) {
-	    		String[] groups = lines[i].split(";", 21);
-	    		
-	    		this.pandoraGroups.put(new Integer(groups[0]), groups[1]);
-	    		
-	    		array.add(groups[1]);
-	    	}
-	    	
-	    	ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,
-	    		android.R.layout.simple_spinner_item,
-	    		array);
-	    	combo.setAdapter(spinnerArrayAdapter);
-    	}
-    	catch (Exception e) {
-    		Log.e("ERROR THE ", e.getMessage());
-    		
-    		return;
-    	}
     }
 }

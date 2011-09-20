@@ -46,4 +46,5 @@
     
     <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
     <string name="config_update_fail_str">Configuración no ha podido guardarse..</string>
+    <string name="please_set_preferences_str">Por favor configure sus preferencias, como la API URL, usuario y contraseña de su Pandora FMS.</string>
 </resources>

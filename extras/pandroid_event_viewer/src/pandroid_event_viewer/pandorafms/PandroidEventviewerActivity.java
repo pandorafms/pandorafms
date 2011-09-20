@@ -31,8 +31,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.R.bool;
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
@@ -40,19 +43,41 @@ import android.widget.TabHost;
 public class PandroidEventviewerActivity extends TabActivity implements Serializable {
 	public ArrayList<EventListItem> eventList;
 	public boolean loadInProgress;
+	public boolean getNewListEvents;
+	public String url;
+    public String user;
+    public String password;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        
+        SharedPreferences preferences = getSharedPreferences(
+        	this.getString(R.string.const_string_preferences), 
+        	Activity.MODE_PRIVATE);
+            
+        this.url = preferences.getString("url", "");
+        this.user = preferences.getString("user", "");
+        this.password = preferences.getString("password", "");
+        
         this.eventList = new ArrayList<EventListItem>();
         this.loadInProgress = false;
+        this.getNewListEvents = true;
         
         final TabHost tabHost = getTabHost();
         
+        //Check if the preferences is setted, if not show the option activity.
+        if ((user.length() == 0) && (password.length() == 0)
+        	&& (url.length() == 0)) {
+        	Intent i = new Intent(this, Options.class);
+        	
+        	startActivity(i);
+        }
         
-        test();
+        
+        executeBackgroundGetEvents();
         
         
         Intent i_main = new Intent(this, Main.class);
@@ -83,17 +108,16 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height=45;
     }
     
-    public void test() {
+    public void getEvents(boolean newEvents) {
     	
     	try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
     		
-	    	HttpPost httpPost = new HttpPost(
-	    		"http://192.168.70.112/pandora_console/include/api.php");
+	    	HttpPost httpPost = new HttpPost(this.url);
 	    	
-	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>(2);
-	    	parameters.add(new BasicNameValuePair("user", "admin"));
-	    	parameters.add(new BasicNameValuePair("pass", "pandora"));
+	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+	    	parameters.add(new BasicNameValuePair("user", this.user));
+	    	parameters.add(new BasicNameValuePair("pass", this.password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "events"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
@@ -210,5 +234,34 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	
     	return sb.toString();
     }
+    
+    public void executeBackgroundGetEvents() {
+    	new GetEventsAsyncTask().execute();
+    }
 
+    
+    public class GetEventsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			
+			if (getNewListEvents) {
+				getEvents(true);
+			}
+			else {
+				getEvents(false);
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void unused)
+		{
+			if (!isFinishing())
+			{
+				
+			}
+		}
+    }
 }

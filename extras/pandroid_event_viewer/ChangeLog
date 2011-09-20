@@ -1,3 +1,14 @@
+2011-09-20  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more strings.
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: wip
+	the background execution to get events,
+	
+	* src/pandroid_event_viewer/pandorafms/Main.java, res/layout/main.xml: added
+	code to get groups in background process.
+
 2011-09-19  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: added Options activity. 

@@ -46,4 +46,5 @@
     
     <string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>
+    <string name="please_set_preferences_str">Please set the preferences as the API URL, user and password for your Pandora FMS.</string>
 </resources>

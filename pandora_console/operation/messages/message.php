@@ -36,8 +36,8 @@ else
 	if (empty ($config["pure"]) && !is_ajax ())
 		ui_print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
 	
-if (isset ($_POST["delete_message"])) {
-	$id = (int) get_parameter_post ("delete_message");
+if (isset ($_GET["delete_message"])) {
+	$id = (int) get_parameter ("id");
 	$result = messages_delete_message ($id); //Delete message function will actually check the credentials
 	
 	ui_print_result_message ($result,
@@ -73,7 +73,9 @@ if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 		__('Error sending message to group %s', groups_get_name ($dest_group)));
 }
 
-if ($send_message && !$message_sended) {
+$new_msg = (bool) get_parameter("new_msg");
+
+if ($send_message && !$message_sended && !$new_msg) {
 	ui_print_error_message("Error sending message, please choose group or user.");
 }
 
@@ -117,7 +119,7 @@ if (isset ($_GET["new_msg"]) || ($send_message && !$message_sended)) { //create 
 	html_print_select_groups($config["id_user"], "AR", true, "dest_group", $dest_group, '', __('-Select group-'), false, false, false, '', false);
 	
 	echo '</td></tr><tr><td class="datos">'.__('Subject').':</td><td class="datos">';
-	html_print_input_text ("subject", $subject, '', 50, 70, false);
+	html_print_input_text ("subject", urldecode($subject), '', 50, 70, false);
 	
 	echo '</td></tr><tr><td class="datos2">'.__('Message').':</td><td class="datos">';
 	
@@ -175,7 +177,7 @@ if (isset ($_GET["new_msg"]) || ($send_message && !$message_sended)) { //create 
 	html_print_input_hidden ("dest_user", $message["sender"]);
 	html_print_input_hidden ("subject", urlencode ($new_subj));
 	html_print_input_hidden ("message", urlencode ($new_msg));
-	
+
 	echo '<div style="text-align:right; width:98%;">';
 	html_print_submit_button (__('Reply'), "reply_btn", false, 'class="sub next"'); 
 	echo '</div></form>';
@@ -253,7 +255,9 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"]) && !($send_messag
 			
 			$data[3] = ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
 			
-			$data[4] = html_print_input_image ("delete_message", "images/cross.png", $message_id, 'border:0px;', true);
+			$data[4] = '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&delete_message=1&id='.$message_id.'"
+		onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+			html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'; //"delete_message", "images/cross.png", $message_id, 'border:0px;', true);
 			array_push ($table->data, $data);
 		}
 

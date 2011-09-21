@@ -1,3 +1,8 @@
+2011-09-21 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: added code to get count of event when the api
+	is called for the "get_events".
+
 2011-09-21  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_list.php

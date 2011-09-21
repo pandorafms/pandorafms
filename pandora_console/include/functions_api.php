@@ -121,11 +121,13 @@ function returnData($returnType, $data, $separator = ';') {
 						}
 					}
 					else {
-						foreach($data['data'] as $dataContent) {
-							$clean = array_map(
-								function($item) {return io_safe_output($item);},
-								$dataContent);
-							echo implode($separator, $clean) . "\n";
+						if (!empty($data['data'])) {
+							foreach($data['data'] as $dataContent) {
+								$clean = array_map(
+									function($item) {return io_safe_output($item);},
+									$dataContent);
+								echo implode($separator, $clean) . "\n";
+							}
 						}
 					}
 					break;
@@ -936,6 +938,23 @@ function otherParameter2Filter($other, $array = false) {
 		}
 	}
 	
+	if (isset($other['data'][10]) && ($other['data'][10] != null)) {
+		if ($array) {
+			$filter['total'] = true;
+		}
+		else {
+			
+		}
+	}
+	else {
+		if ($array) {
+			$filter['total'] = false;
+		}
+		else {
+			
+		}
+	}
+	
 	if ($array) {
 		return $filter;
 	}
@@ -1503,6 +1522,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	$utimestamp_bottom = 0;
 	
 	$filter = otherParameter2Filter($other, true);
+	//html_debug_print($filter, true);
 	
 	if (isset($filter['criticity']))
 		$severity = $filter['criticity'];
@@ -1599,14 +1619,24 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	if ($group_rep == 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$sql = "SELECT *,
-					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
-					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
-					(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
-					FROM tevento
-					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+				if ($filter['total']) {
+					$sql = "SELECT COUNT(*)
+						FROM tevento
+						WHERE 1=1 ".$sql_post;
+				}
+				else {
+					$sql = "SELECT *,
+						(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
+						(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
+						(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
+						FROM tevento" .
+//FOR THE TEST THE API IN THE ANDROID
+//						"WHERE 1=1 ".$sql_post." ORDER BY id_evento ASC LIMIT ".$offset.",".$pagination;
+						"WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+				}
 				break;
 			case "postgresql":
+				//TODO TOTAL
 				$sql = "SELECT *,
 					(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
@@ -1615,6 +1645,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
 				break;
 			case "oracle":
+				//TODO TOTAL
 				$set = array();
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
@@ -1684,9 +1715,12 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	
 	$result = db_get_all_rows_sql ($sql);
 	
-	if ($result !== false) {
+	if (($result !== false) && (!$filter['total'])) {
 		//Add the description and image
 		foreach ($result as $key => $row) {
+			//FOR THE TEST THE API IN THE ANDROID
+			//$row['evento'] = $row['id_evento'];
+			
 			$row['description_event'] = events_print_type_description($row["event_type"], true);
 			$row['img_description'] = events_print_type_img ($row["event_type"], true, true);
 			$row['criticity_name'] = get_priority_name ($row["criticity"]);

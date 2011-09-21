@@ -140,7 +140,7 @@ if ($tag != "") {
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
-	rawurlencode($search) . "&amp;event_type=" . $event_type .
+	rawurlencode(io_safe_input($search)) . "&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
@@ -194,7 +194,7 @@ echo "</td></tr><tr>";
 
 // Free search
 echo "<td>".__('Free search')."</td><td>";
-html_print_input_text ('search', $search, '', 15);
+html_print_input_text ('search', io_safe_output($search), '', 15);
 echo '</td>';
 
 //Agent search
@@ -452,7 +452,7 @@ foreach ($result as $event) {
 	
 	// Event description
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
-	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
+	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode(io_safe_input($event["evento"])).'">';
 	$data[1] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
 	$data[1] .= '</a></span>';
 

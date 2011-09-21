@@ -168,13 +168,14 @@ $validate = (bool) get_parameter ("validate", 0);
 $section = (string) get_parameter ("section", "list");
 $text_agent = (string)get_parameter('text_agent', __("All"));
 
-$search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurldecode (get_parameter ("search")));
-$groups = users_get_groups ($config["id_user"], "IR");
+$search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
+
+users_get_groups ($config["id_user"], "IR");
 
 $ids = (array) get_parameter ("eventid", -1);
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
-	rawurlencode($search) . "&amp;event_type=" . $event_type .
+	io_safe_input($search) . "&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
@@ -192,14 +193,14 @@ if ($config["pure"] == 0) {
 				html_print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
 		'rss' => array('active' => false,
 			'text' => '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
-				'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+				'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
 				html_print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
 		'marquee' => array('active' => false,
 			'text' => '<a href="operation/events/events_marquee.php">' . 
 				html_print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
 		'csv' => array('active' => false,
 			'text' => '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
-				'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+				'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
 				html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>'),
 		'sound_event' => array('active' => false,
 			'text' => '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')

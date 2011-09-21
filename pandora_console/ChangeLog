@@ -1,3 +1,10 @@
+2011-09-21  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_list.php
+	operation/events/events.php: Fixed entities in free search 
+	filter of the events viewer when click an event name for
+	bug 3411533
+
 2011-09-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/javascript/jquery.pandora.controls.js: Fixed disabled agents

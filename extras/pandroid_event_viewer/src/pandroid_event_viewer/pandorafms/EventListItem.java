@@ -22,4 +22,6 @@ public class EventListItem {
 	public String description_image;
 	public String criticity_name;
 	public String criticity_image;
+	
+	public boolean opened; 
 }

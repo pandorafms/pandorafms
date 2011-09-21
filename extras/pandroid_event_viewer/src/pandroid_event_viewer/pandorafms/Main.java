@@ -2,8 +2,11 @@ package pandroid_event_viewer.pandorafms;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,8 +19,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Region.Op;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -196,6 +197,40 @@ public class Main extends Activity {
     	//Clean the EventList
     	this.object.eventList = new ArrayList<EventListItem>();
     	this.object.loadInProgress = true;
+    	
+    	//Get form data
+    	DatePicker datePicker = (DatePicker)findViewById(R.id.date);
+    	TimePicker timePicker = (TimePicker)findViewById(R.id.time);
+    	int day = datePicker.getDayOfMonth();
+    	int month = datePicker.getMonth() + 1;
+    	int year = datePicker.getYear();
+    	int hour = timePicker.getCurrentHour();
+    	int minute = timePicker.getCurrentMinute();
+    	Date date = new Date(year, month, day, minute, hour);
+    	this.object.timestamp = date.getTime() / 1000;
+    	
+    	EditText agentName = (EditText) findViewById(R.id.agent_name);
+    	String agentNameStr = agentName.getText().toString();
+    	
+    	this.object.id_group = 0;
+    	
+    	Spinner combo;
+    	int sel;
+    	combo = (Spinner) findViewById(R.id.group_combo);
+    	String selectedGroup = combo.getSelectedItem().toString();
+    	
+    	Iterator it = pandoraGroups.entrySet().iterator();
+    	while (it.hasNext()) {
+    		Map.Entry<Integer, String> e = (Map.Entry<Integer, String>)it.next();
+    		
+    		if (e.getValue().equals(selectedGroup)) {
+    			this.object.id_group = e.getKey();
+    		}
+    	}
+    	
+    	combo = (Spinner) findViewById(R.id.severity_combo);
+    	this.object.severity = combo.getSelectedItemPosition();
+    	
     	
     	this.object.executeBackgroundGetEvents();
     	

@@ -1,3 +1,18 @@
+2011-09-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/EventListItem.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip, now the list
+	events run fine, and get asynchronous events and added some checks.
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more strings.
+	
+	* res/layout/list_view_layout.xml,
+	res/layout/item_list_event_layout.xml: changes for to show the buttons and
+	messages.
+
 2011-09-20  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/values/strings.xml, res/values-en/strings.xml,

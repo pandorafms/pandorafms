@@ -43,6 +43,8 @@
     <string name="password_label_str">Contraseña</string>
     <string name="update_button_str">Actualizar</string>
     <string name="option_title_str">Opciones</string>
+    <string name="load_more_events_button_str">Cargar mas eventos</string>
+    <string name="empty_label_str">Lista vacia de eventos</string>
     
     <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
     <string name="config_update_fail_str">Configuración no ha podido guardarse..</string>

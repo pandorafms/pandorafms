@@ -22,7 +22,7 @@
 	android:id="@+id/item_linear_layout"
 >
 	<RelativeLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/content_event_item"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
@@ -61,12 +61,32 @@
 			/>
 		</LinearLayout>
 	</RelativeLayout>
-	<!--<ImageButton
-		android:id="@+id/icon_config"
+	<Button
+		android:id="@+id/button_load_more_events"
+		android:text="@string/load_more_events_button_str"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+	/>
+	<LinearLayout
+		android:id="@+id/loading_more_events"
+		android:orientation="horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:src="@drawable/config"
-		android:layout_weight="0"
-		android:layout_alignParentRight="@layout/item_list_event_layout"
-	/>-->
+		android:visibility="gone"
+	>
+		<ProgressBar
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			style="?android:attr/progressBarStyleSmall"
+			android:paddingRight="10dip"
+		/>
+		<TextView
+			android:textColor="#ffffff"
+			android:text="@string/loading_label_str"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+		/>
+	</LinearLayout>
 </LinearLayout>

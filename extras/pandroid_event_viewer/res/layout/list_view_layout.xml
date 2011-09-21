@@ -40,6 +40,21 @@
 			android:textStyle="bold"
 		/>
 	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/empty_list_layout"
+		android:orientation="horizontal"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+	>
+		<TextView
+			android:textColor="#ffffff"
+			android:text="@string/empty_label_str"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+		/>
+	</LinearLayout>
 	<ListView
 		android:id="@id/android:list"
 		android:layout_width="fill_parent"

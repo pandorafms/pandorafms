@@ -46,6 +46,8 @@
     <string name="password_label_str">Password</string>
     <string name="update_button_str">Update</string>
     <string name="option_title_str">Options</string>
+    <string name="load_more_events_button_str">Load more events</string>
+    <string name="empty_label_str">Empty list events</string>
     
 	<string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -41,12 +42,26 @@ import android.util.Log;
 import android.widget.TabHost;
 
 public class PandroidEventviewerActivity extends TabActivity implements Serializable {
+	//Data aplication
 	public ArrayList<EventListItem> eventList;
+	public long count_events;
+	
+	//Flags
 	public boolean loadInProgress;
 	public boolean getNewListEvents;
+	
+	//Configuration
 	public String url;
     public String user;
     public String password;
+    
+    //Parameters to search in the API
+    public String agentNameStr;
+    public int id_group;
+    public long timestamp;
+    public int severity;
+    public int pagination;
+    public long offset;
 	
     /** Called when the activity is first created. */
     @Override
@@ -62,6 +77,12 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.user = preferences.getString("user", "");
         this.password = preferences.getString("password", "");
         
+        this.timestamp = 1315015715;  //= new Date().getTime();
+        this.pagination = 20;
+        this.offset = 0;
+        this.agentNameStr = "";
+        this.severity = -1;
+        
         this.eventList = new ArrayList<EventListItem>();
         this.loadInProgress = false;
         this.getNewListEvents = true;
@@ -75,7 +96,9 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         	
         	startActivity(i);
         }
-        
+        else {
+        	this.loadInProgress = true;
+        }
         
         executeBackgroundGetEvents();
         
@@ -108,32 +131,88 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height=45;
     }
     
+    public String serializeParams2Api() {
+    	String return_var = "";
+    	
+    	return_var += ';'; //Separator for the csv
+    	return_var += "|";
+    	return_var += Integer.toString(this.severity); //Criticity or severity
+    	return_var += "|";
+    	return_var += this.agentNameStr; //The agent name
+    	return_var += "|";
+    	return_var += ""; //Name of module
+    	return_var += "|";
+    	return_var += ""; //Name of alert template
+    	return_var += "|";
+    	return_var += ""; //Id user
+    	return_var += "|";
+    	return_var += Long.toString(this.timestamp); //The minimun timestamp
+    	return_var += "|";
+    	return_var += ""; //The maximum timestamp
+    	return_var += "|";
+    	return_var += Integer.toString(this.pagination); //The pagination of list events
+    	return_var += "|";
+    	return_var += Long.toString(this.offset); //The offset of list events
+    	
+    	return return_var;
+    }
+    
     public void getEvents(boolean newEvents) {
     	
     	try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
+            UrlEncodedFormEntity entity;
+            HttpPost httpPost;
+            List<NameValuePair> parameters;
+            HttpResponse response;
+            HttpEntity entityResponse;
+            String return_api;
     		
-	    	HttpPost httpPost = new HttpPost(this.url);
+	    	httpPost = new HttpPost(this.url);
 	    	
-	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+	    	//Get total count.
+	    	parameters = new ArrayList<NameValuePair>();
 	    	parameters.add(new BasicNameValuePair("user", this.user));
 	    	parameters.add(new BasicNameValuePair("pass", this.password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "events"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
 	    	parameters.add(new BasicNameValuePair("return_type", "csv"));
-	    	parameters.add(new BasicNameValuePair("other", ";||||||1315015715||20|1"));
-	    	
-	    	UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
-	    	
+	    	parameters.add(new BasicNameValuePair("other", serializeParams2Api() + "|total"));
+	    	entity = new UrlEncodedFormEntity(parameters);
 	    	httpPost.setEntity(entity);
+	    	response = httpClient.execute(httpPost);
+	    	entityResponse = response.getEntity();
+	    	return_api = convertStreamToString(entityResponse.getContent());
+	    	return_api = return_api.replace("\n", "");
+	    	this.count_events = new Long(return_api).longValue();
 	    	
-	    	HttpResponse response = httpClient.execute(httpPost);
-	    	HttpEntity entityResponse = response.getEntity();
+	    	if (this.count_events == 0) {
+	    		return;
+	    	}
 	    	
-	    	String return_api = convertStreamToString(entityResponse.getContent());
+	    	//Get the list of events.
+	    	parameters = new ArrayList<NameValuePair>();
+	    	parameters.add(new BasicNameValuePair("user", this.user));
+	    	parameters.add(new BasicNameValuePair("pass", this.password));
+	    	parameters.add(new BasicNameValuePair("op", "get"));
+	    	parameters.add(new BasicNameValuePair("op2", "events"));
+	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
+	    	parameters.add(new BasicNameValuePair("return_type", "csv"));
+	    	parameters.add(new BasicNameValuePair("other", serializeParams2Api()));
+	    	entity = new UrlEncodedFormEntity(parameters);
+	    	httpPost.setEntity(entity);
+	    	response = httpClient.execute(httpPost);
+	    	entityResponse = response.getEntity();
+	    	
+	    	return_api = convertStreamToString(entityResponse.getContent());
+	    	Log.e("return_api", return_api);
 	    	
 	    	String[] lines = return_api.split("\n");
+	    	
+	    	if (return_api.length() == 0) {
+	    		return;
+	    	}
 	    	
 	    	for (int i= 0; i < lines.length; i++) {
 	    		String[] items = lines[i].split(";", 21);
@@ -201,6 +280,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    		event.criticity_name = items[19];
 	    		event.criticity_image = items[20];
 	    		
+	    		event.opened = false;
+	    		
 	    		this.eventList.add(event);
 	    	}
     	}
@@ -258,10 +339,19 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		@Override
 		protected void onPostExecute(Void unused)
 		{
-			if (!isFinishing())
-			{
+			Intent i = new Intent("eventlist.java");
+			
+			if (getNewListEvents) {
+				loadInProgress = false;
+				getNewListEvents = false;
 				
+				i.putExtra("load_more", 0);			
 			}
+			else {
+				i.putExtra("load_more", 1);
+			}
+			
+			getApplicationContext().sendBroadcast(i);	
 		}
     }
 }

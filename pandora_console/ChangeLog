@@ -1,3 +1,20 @@
+2011-09-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_servers.php,
+	include/help/ja/help_service_elements_management.php,
+	include/help/ja/help_service_management_edit.php,
+	include/help/ja/help_services_management.php,
+	include/help/ja/help_snmp_alert.php,
+	include/help/ja/help_snmp_alert_custom.php,
+	include/help/ja/help_snmp_explorer.php,
+	include/help/ja/help_template_tab.php,
+	include/help/ja/help_view_services_detail.php,
+	include/help/ja/help_visual_console_editor_data_tab.php,
+	include/help/ja/help_visual_console_editor_editor_tab.php,
+	include/help/ja/help_visual_console_editor_preview_tab.php,
+	include/help/ja/help_visual_console_editor_wizard_tab.php: Added new
+	help files.
+
 2011-09-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/messages/message.php: Fixed several mistakes on this 

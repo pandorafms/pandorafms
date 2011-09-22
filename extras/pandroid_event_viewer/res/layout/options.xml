@@ -76,6 +76,20 @@
 				android:inputType="textPassword"
 			/>
 		</TableRow>
+		<TableRow>
+			<TextView
+				android:textColor="#ffffff"
+				android:text="@string/refresh_time_label_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingRight="5dip"
+			/>
+			<Spinner
+				android:id="@+id/refresh_combo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+		</TableRow>
 	</TableLayout>
 	<Button
 		android:id="@+id/update_options" 

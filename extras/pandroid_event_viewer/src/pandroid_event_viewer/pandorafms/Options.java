@@ -2,22 +2,31 @@ package pandroid_event_viewer.pandorafms;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class Options extends Activity {
+	PandroidEventviewerActivity object;
+	
 	public String url;
 	public String user;
 	public String password;
+	public int refreshTimeKey;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        Intent i = getIntent();
+        this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
         
         setContentView(R.layout.options);
         
@@ -28,11 +37,19 @@ public class Options extends Activity {
         url = preferences.getString("url", "");
         user = preferences.getString("user", "");
         password = preferences.getString("password", "");
+        refreshTimeKey = preferences.getInt("refreshTimeKey", 3);
         
         EditText text = (EditText) findViewById(R.id.url);
         text.setText(url);
         text = (EditText) findViewById(R.id.user);
         text.setText(user);
+        
+        Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(
+                this, R.array.refresh_combo, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        combo.setAdapter(adapter);
+        combo.setSelection(refreshTimeKey);
         
         final Button buttonSearch = (Button) findViewById(R.id.update_options);
         buttonSearch.setOnClickListener(new View.OnClickListener() {		
@@ -58,10 +75,16 @@ public class Options extends Activity {
     	text = (EditText) findViewById(R.id.password);
     	editorPreferences.putString("password", text.getText().toString());
     	
+    	Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
+    	editorPreferences.putInt("refreshTimeKey", combo.getSelectedItemPosition());
+    	
     	Context context = this.getApplicationContext();
     	int duration = Toast.LENGTH_SHORT;
     	
     	if (editorPreferences.commit()) {
+    		//stopService(this.object.intent_service);
+    		//startService(this.object.intent_service);
+    		
     		Toast toast = Toast.makeText(context, this.getString(R.string.config_update_succesful_str), duration);
     		toast.show();
     	}

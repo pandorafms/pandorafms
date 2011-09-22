@@ -62,6 +62,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public int severity;
     public int pagination;
     public long offset;
+    
+    public Intent intent_service;
 	
     /** Called when the activity is first created. */
     @Override
@@ -77,7 +79,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.user = preferences.getString("user", "");
         this.password = preferences.getString("password", "");
         
-        this.timestamp = 1315015715;  //= new Date().getTime();
+        //this.timestamp = 1315015715;
+        this.timestamp = new Date().getTime() / 1000;
         this.pagination = 20;
         this.offset = 0;
         this.agentNameStr = "";
@@ -92,7 +95,9 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         //Check if the preferences is setted, if not show the option activity.
         if ((user.length() == 0) && (password.length() == 0)
         	&& (url.length() == 0)) {
+        	
         	Intent i = new Intent(this, Options.class);
+        	i.putExtra("object", this);
         	
         	startActivity(i);
         }
@@ -101,6 +106,11 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         }
         
         executeBackgroundGetEvents();
+        
+        //Start the background service for the notifications
+        //Intent intent_service = new Intent(this, PandroidEventviewerService.class);
+        intent_service = new Intent(this, PandroidEventviewerService.class);
+        startService(intent_service);
         
         
         Intent i_main = new Intent(this, Main.class);

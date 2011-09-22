@@ -48,6 +48,7 @@
     <string name="option_title_str">Options</string>
     <string name="load_more_events_button_str">Load more events</string>
     <string name="empty_label_str">Empty list events</string>
+    <string name="refresh_time_label_str">Refresh time watcher</string>
     
 	<string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>

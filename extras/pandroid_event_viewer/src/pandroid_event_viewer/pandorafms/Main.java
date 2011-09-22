@@ -17,7 +17,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -73,13 +77,13 @@ public class Main extends Activity {
             buttonReset.setEnabled(false);
             
             new GetGroupsAsyncTask().execute();
-            
-            comboSeverity = (Spinner) findViewById(R.id.severity_combo);
-            ArrayAdapter adapter = ArrayAdapter.createFromResource(
-                    this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            comboSeverity.setAdapter(adapter);
         }
+        
+        comboSeverity = (Spinner) findViewById(R.id.severity_combo);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(
+                this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        comboSeverity.setAdapter(adapter);
         
         buttonReset.setOnClickListener(new View.OnClickListener() {		
 			@Override
@@ -104,7 +108,7 @@ public class Main extends Activity {
     		
 	    	HttpPost httpPost = new HttpPost(this.object.url);
 	    	
-	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>(2);
+	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 	    	parameters.add(new BasicNameValuePair("user", this.object.user));
 	    	parameters.add(new BasicNameValuePair("pass", this.object.password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
@@ -121,6 +125,7 @@ public class Main extends Activity {
 	    	HttpEntity entityResponse = response.getEntity();
 	    	
 	    	String return_api = this.object.convertStreamToString(entityResponse.getContent());
+	    	Log.e("getGroups", return_api);
 	    	
 	    	String[] lines = return_api.split("\n");
 	    	
@@ -185,6 +190,7 @@ public class Main extends Activity {
         switch (item.getItemId()) {
             case R.id.options_button_menu_options:
             	Intent i = new Intent(this, Options.class);
+            	//FAIL//i.putExtra("object", object);
             	
             	startActivity(i);
             	break;

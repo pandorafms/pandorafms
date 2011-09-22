@@ -152,23 +152,29 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-
+db_clean_cache();
 // Get all module from agent
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-		$sql = sprintf ("
+/*		$sql = sprintf ("
 			SELECT *
 			FROM tagente_estado, tagente_modulo
 				LEFT JOIN tmodule_group
-				ON tmodule_group.id_mg = tagente_modulo.id_module_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.id_agente = %d 
 				AND tagente_modulo.disabled = 0
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_estado.utimestamp != 0 
 			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $order['field'], $order['order']);
+			", $id_agente, $order['field'], $order['order']);	*/
+		$sql = sprintf("
+			SELECT * FROM tagente_estado, (SELECT * FROM tagente_modulo WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0) tagente_modulo 
+				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND tagente_estado.utimestamp != 0  
+			ORDER BY %s  %s", $id_agente, $order['field'], $order['order']);
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":
@@ -190,7 +196,7 @@ switch ($config["dbtype"]) {
 			", $id_agente, $order['field'], $order['order']);
 		break;
 }
-
+//html_debug_print($sql);
 $modules = db_get_all_rows_sql ($sql);
 if (empty ($modules)) {
 	$modules = array ();

@@ -193,7 +193,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   KEY `id_tipo_modulo` (`id_tipo_modulo`),
   KEY `disabled` (`disabled`),
   KEY `module` (`id_modulo`),
-  KEY `nombre` (`nombre` (255))
+  KEY `nombre` (`nombre` (255)),
+  KEY `module_group` (`id_module_group`) using btree
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- snmp_oid is also used for WMI query

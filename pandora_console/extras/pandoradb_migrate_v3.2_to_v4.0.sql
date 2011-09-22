@@ -200,8 +200,6 @@ ALTER TABLE `tnetwork_map` ADD COLUMN `show_snmp_modules` TINYINT(1) UNSIGNED  N
 -- -----------------------------------------------------
 
 ALTER TABLE `trecon_task` ADD COLUMN `disabled` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;
-
-ALTER TABLE `trecon_task` ADD COLUMN `disabled` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `trecon_task` ADD COLUMN `os_detect` tinyint(1) unsigned default '0';
 ALTER TABLE `trecon_task` ADD COLUMN `resolve_names` tinyint(1) unsigned default '0';
 ALTER TABLE `trecon_task` ADD COLUMN `parent_detection` tinyint(1) unsigned default '0';
@@ -254,9 +252,6 @@ ALTER TABLE ttrap ADD INDEX status (`status`);
 -- -----------------------------------------------------
 
 ALTER TABLE `talert_snmp` MODIFY COLUMN `custom_oid` text DEFAULT '';
-
-
-ALTER TABLE ttrap ADD INDEX timestamp (`timestamp`);
 
 
 -- -----------------------------------------------------

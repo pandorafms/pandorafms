@@ -317,7 +317,7 @@ switch ($action) {
 							break;
 						}
 						$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
-						if ($id_gs !== false) {
+						if ($id_gs !== false && $id_gs !== '') {
 							$server_name = strstr($values ['id_gs'], '|');
 							$values ['id_gs'] = $id_gs;
 							$values['server_name'] = substr ($server_name, 1, strlen($server_name));

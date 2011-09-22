@@ -152,7 +152,6 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-db_clean_cache();
 // Get all module from agent
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -196,7 +195,6 @@ switch ($config["dbtype"]) {
 			", $id_agente, $order['field'], $order['order']);
 		break;
 }
-//html_debug_print($sql);
 $modules = db_get_all_rows_sql ($sql);
 if (empty ($modules)) {
 	$modules = array ();

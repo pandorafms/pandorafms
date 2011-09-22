@@ -123,9 +123,7 @@ function returnData($returnType, $data, $separator = ';') {
 					else {
 						if (!empty($data['data'])) {
 							foreach($data['data'] as $dataContent) {
-								$clean = array_map(
-									function($item) {return io_safe_output($item);},
-									$dataContent);
+								$clean = array_map("array_apply_io_safe_output", $dataContent);
 								echo implode($separator, $clean) . "\n";
 							}
 						}
@@ -134,6 +132,10 @@ function returnData($returnType, $data, $separator = ';') {
 			}
 			break;
 	}
+}
+
+function array_apply_io_safe_output($item) {
+	return io_safe_output($item);
 }
 
 /**

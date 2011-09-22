@@ -1,3 +1,7 @@
+2011-09-22  Junichi Satoh <junichi@rworks.jp>
+
+	* pandora_server_installer: Fixed invalid group settings.
+
 2011-09-15  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandora_server/util/pandora_manage.pl: Fixed bad behaviour of several

@@ -1,3 +1,20 @@
+2011-09-22  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml: added the lines for the service and broadcastreciver.
+	
+	*src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip, added the first
+	version of service to scan in background the event and other fixes and
+	devs.
+	
+	* res/values/arrays.xml, res/values/strings.xml, res/values-en/arrays.xml,
+	res/values-en/strings.xml, res/values-es/arrays.xml,
+	res/values-es/strings.xml, res/layout/options.xml: added more const.
+
 2011-09-21  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,

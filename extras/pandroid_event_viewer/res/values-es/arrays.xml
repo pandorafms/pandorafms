@@ -24,4 +24,27 @@
         <item>Alerta</item>
         <item>Critico</item>
 	</string-array>
+
+	<!-- Please change the code in the function convertRefreshTimeKeyToTime -->
+	<string-array name="refresh_combo">
+        <item>30 segundos</item>
+        <item>1 minuto</item>
+        <item>5 minutos</item>
+        <item>10 minutos</item>
+        <item>15 minutos</item>
+        <item>30 minutos</item>
+        <item>45 minutos</item>
+        <item>1 hora</item>
+        <item>1 hora y 30 minutos</item>
+        <item>2 horas</item>
+        <item>3 horas</item>
+        <item>4 horas</item>
+        <item>6 horas</item>
+        <item>8 horas</item>
+        <item>10 horas</item>
+        <item>12 horas</item>
+        <item>24 horas</item>
+        <item>36 horas</item>
+        <item>48 horas</item>
+	</string-array>
 </resources>

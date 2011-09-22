@@ -24,4 +24,27 @@
         <item>Warning</item>
         <item>Critical</item>
 	</string-array>
+	
+	<!-- Please change the code in the function convertRefreshTimeKeyToTime -->
+	<string-array name="refresh_combo">
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>45 minutes</item>
+        <item>1 hour</item>
+        <item>1 hour and 30 minutes</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>4 hours</item>
+        <item>6 hours</item>
+        <item>8 hours</item>
+        <item>10 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+        <item>36 hours</item>
+        <item>48 hours</item>
+	</string-array>
 </resources>

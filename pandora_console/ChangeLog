@@ -1,3 +1,8 @@
+2011-09-22 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the lost check for the timestamps in the
+	"get_events" call.
+
 2011-09-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/estado_monitores.php: Erased traces and db_clean_cache().

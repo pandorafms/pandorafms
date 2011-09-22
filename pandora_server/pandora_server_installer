@@ -216,15 +216,21 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 			id -g wwwrun 2> /dev/null
 			if [ $? -eq 0 ]
 			then
-				chown -R pandora:www $PANDORA_SPOOL
+				chown -R pandora:wwwrun $PANDORA_SPOOL
 			else
-				id -g apache 2> /dev/null
+				id -g www 2> /dev/null
 				if [ $? -eq 0 ]
 				then
-					chown -R pandora:apache $PANDORA_SPOOL
+					chown -R pandora:www $PANDORA_SPOOL
 				else
-					echo "No web server user found, some functionality might not perform correctly"
-					chown -R pandora:root $PANDORA_SPOOL
+					id -g apache 2> /dev/null
+					if [ $? -eq 0 ]
+					then
+						chown -R pandora:apache $PANDORA_SPOOL
+					else
+						echo "No web server user found, some functionality might not perform correctly"
+						chown -R pandora:root $PANDORA_SPOOL
+					fi
 				fi
 			fi
 		fi

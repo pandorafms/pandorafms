@@ -1,5 +1,11 @@
 2011-09-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added btree index on table
+	tagente_modulo.
+
+2011-09-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_monitores.php: Improved response time modifying
 	query over module agents.
 

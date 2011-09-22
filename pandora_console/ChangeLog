@@ -1,3 +1,8 @@
+2011-09-22 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: replaced the anonymous function for the named
+	function.
+
 2011-09-21 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: added code to get count of event when the api

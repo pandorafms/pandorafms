@@ -1540,6 +1540,14 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 		$pagination = $filter['limit'];
 	if (isset($filter['offset']))
 		$offset = $filter['offset'];
+	if ($filter['utimestamp']) {
+		if (isset($filter['utimestamp']['>'])) {
+			$utimestamp_upper = $filter['utimestamp']['>'];
+		}
+		if (isset($filter['utimestamp']['<'])) {
+			$utimestamp_bottom = $filter['utimestamp']['<'];
+		}
+	}
 	
 	
 	//TODO MOVE THIS CODE AND THE CODE IN pandora_console/operation/events/events_list.php
@@ -1633,8 +1641,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 						(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
 						FROM tevento" .
 //FOR THE TEST THE API IN THE ANDROID
-//						"WHERE 1=1 ".$sql_post." ORDER BY id_evento ASC LIMIT ".$offset.",".$pagination;
-						"WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+//						" WHERE 1=1 ".$sql_post." ORDER BY id_evento ASC LIMIT ".$offset.",".$pagination;
+						" WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 				}
 				break;
 			case "postgresql":
@@ -1716,6 +1724,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	}
 	
 	$result = db_get_all_rows_sql ($sql);
+	//html_debug_print($sql);
 	
 	if (($result !== false) && (!$filter['total'])) {
 		//Add the description and image

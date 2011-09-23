@@ -101,8 +101,15 @@ sub callback {
 sub parse {
     my $self = shift;
     $self->_init();
-    $self->{twig}->safe_parse(@_);
-    if ($@) { die $@; }
+    
+    eval {
+        $self->{twig}->safe_parse(@_);
+    };
+    
+    if ($@) {
+        return;
+    }
+    
     $self->_clean();
     $self->purge;
     return $self;

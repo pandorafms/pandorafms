@@ -35,7 +35,10 @@ import android.widget.Toast;
 public class EventList extends ListActivity {
 	private ListView lv;
 	private MyAdapter la;
+	
 	public PandroidEventviewerActivity object;
+	public Core core;
+	
 	public HashMap<Integer, Boolean> openedItem;
 	public HashMap<String, Bitmap> imgGroups;
 	public HashMap<String, Bitmap> imgSeverity;
@@ -56,6 +59,7 @@ public class EventList extends ListActivity {
         
         Intent i = getIntent();
         this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
+        this.core = (Core)i.getParcelableExtra("core");
         
         setContentView(R.layout.list_view_layout);
         
@@ -113,7 +117,8 @@ public class EventList extends ListActivity {
         switch (item.getItemId()) {
             case R.id.options_button_menu_options:
             	Intent i = new Intent(this, Options.class);
-            	i.putExtra("object", this.object);
+            	//FAIL//i.putExtra("object", object);
+            	i.putExtra("core", this.core);
             	
             	startActivity(i);
             	break;

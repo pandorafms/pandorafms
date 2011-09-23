@@ -14,19 +14,19 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class Options extends Activity {
-	PandroidEventviewerActivity object;
-	
 	public String url;
 	public String user;
 	public String password;
 	public int refreshTimeKey;
+	
+	public Core core;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         Intent i = getIntent();
-        this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
+        this.core = (Core)i.getParcelableExtra("core");
         
         setContentView(R.layout.options);
         
@@ -64,7 +64,6 @@ public class Options extends Activity {
     	SharedPreferences preferences = getSharedPreferences(
             this.getString(R.string.const_string_preferences), 
             Activity.MODE_PRIVATE);
-    	
     	SharedPreferences.Editor editorPreferences = preferences.edit();
     	
     	EditText text = (EditText) findViewById(R.id.url);
@@ -82,8 +81,8 @@ public class Options extends Activity {
     	int duration = Toast.LENGTH_SHORT;
     	
     	if (editorPreferences.commit()) {
-    		//stopService(this.object.intent_service);
-    		//startService(this.object.intent_service);
+    		this.core.stopServiceEventWatcher(getApplicationContext());
+    		this.core.startServiceEventWatcher(getApplicationContext());
     		
     		Toast toast = Toast.makeText(context, this.getString(R.string.config_update_succesful_str), duration);
     		toast.show();

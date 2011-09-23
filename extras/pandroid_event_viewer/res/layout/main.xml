@@ -118,6 +118,12 @@
 				android:layout_weight="1"
 			/>
 		</LinearLayout>
+		<Button
+			android:text="@string/set_as_filter_watcher_button_str"
+			android:id="@+id/button_set_as_filter_watcher"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+		/>
 	</LinearLayout>
 	</ScrollView>	
 </LinearLayout>

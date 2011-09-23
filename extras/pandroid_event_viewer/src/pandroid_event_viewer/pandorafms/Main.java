@@ -23,6 +23,7 @@ import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class Main extends Activity {
 	public PandroidEventviewerActivity object;
 	public HashMap<Integer, String> pandoraGroups;
 	public Spinner comboSeverity;
+	public Core core;
 	
     /** Called when the activity is first created. */
     @Override
@@ -51,6 +53,7 @@ public class Main extends Activity {
         
         Intent i = getIntent();
         this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
+        this.core = (Core)i.getParcelableExtra("core");
         
         this.pandoraGroups = new HashMap<Integer, String>();
         
@@ -58,6 +61,7 @@ public class Main extends Activity {
         
         final Button buttonReset = (Button) findViewById(R.id.button_reset);
         final Button buttonSearch = (Button) findViewById(R.id.button_send);
+        final Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
         
         //Check if the user preferences it is set.
         if ((object.user.length() == 0) && (object.password.length() == 0)
@@ -69,12 +73,14 @@ public class Main extends Activity {
     		
     		buttonReset.setEnabled(false);
     		buttonSearch.setEnabled(false);
+    		buttonbuttonSetAsFilterWatcher.setEnabled(false);
         }
         else {
             Spinner combo;
             
             buttonSearch.setEnabled(false);
             buttonReset.setEnabled(false);
+            buttonbuttonSetAsFilterWatcher.setEnabled(false);
             
             new GetGroupsAsyncTask().execute();
         }
@@ -96,6 +102,15 @@ public class Main extends Activity {
 			@Override
 			public void onClick(View v) {
 				search_form();
+			}
+		});
+        
+        buttonbuttonSetAsFilterWatcher.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				save_filter_watcher();
 			}
 		});
     }
@@ -124,7 +139,7 @@ public class Main extends Activity {
 	    	HttpResponse response = httpClient.execute(httpPost);
 	    	HttpEntity entityResponse = response.getEntity();
 	    	
-	    	String return_api = this.object.convertStreamToString(entityResponse.getContent());
+	    	String return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	Log.e("getGroups", return_api);
 	    	
 	    	String[] lines = return_api.split("\n");
@@ -172,9 +187,11 @@ public class Main extends Activity {
 		    
 		    Button buttonReset = (Button) findViewById(R.id.button_reset);
 	        Button buttonSearch = (Button) findViewById(R.id.button_send);
+	        Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 	        
 	        buttonReset.setEnabled(true);
 	        buttonSearch.setEnabled(true);
+	        buttonbuttonSetAsFilterWatcher.setEnabled(true);
 		}
     }
     
@@ -191,6 +208,7 @@ public class Main extends Activity {
             case R.id.options_button_menu_options:
             	Intent i = new Intent(this, Options.class);
             	//FAIL//i.putExtra("object", object);
+            	i.putExtra("core", this.core);
             	
             	startActivity(i);
             	break;
@@ -242,6 +260,56 @@ public class Main extends Activity {
     	
     	TabActivity ta = (TabActivity) this.getParent();
     	ta.getTabHost().setCurrentTab(1);
+    }
+    
+    public void save_filter_watcher() {
+    	String filterAgentName = "";
+    	int filterIDGroup = 0;
+    	int filterSeverity = -1;
+    	
+    	
+    	EditText agentName = (EditText) findViewById(R.id.agent_name);
+    	filterAgentName = agentName.getText().toString();
+    	
+    	Spinner combo;
+    	combo = (Spinner) findViewById(R.id.group_combo);
+    	String selectedGroup = combo.getSelectedItem().toString();
+    	
+    	Iterator it = pandoraGroups.entrySet().iterator();
+    	while (it.hasNext()) {
+    		Map.Entry<Integer, String> e = (Map.Entry<Integer, String>)it.next();
+    		
+    		if (e.getValue().equals(selectedGroup)) {
+    			filterIDGroup = e.getKey();
+    		}
+    	}
+    	
+    	combo = (Spinner) findViewById(R.id.severity_combo);
+    	filterSeverity = combo.getSelectedItemPosition();
+    	
+    	
+    	SharedPreferences preferences = getSharedPreferences(
+            this.getString(R.string.const_string_preferences), 
+            Activity.MODE_PRIVATE);
+    	SharedPreferences.Editor editorPreferences = preferences.edit();
+        	
+    	editorPreferences.putString("filterAgentName", filterAgentName);
+    	editorPreferences.putInt("filterIDGroup", filterIDGroup);
+    	editorPreferences.putInt("filterSeverity", filterSeverity);
+    	
+    	if (editorPreferences.commit()) {
+    		this.core.stopServiceEventWatcher(getApplicationContext());
+    		this.core.startServiceEventWatcher(getApplicationContext());
+    		
+    		Toast toast = Toast.makeText(getApplicationContext(),
+    			this.getString(R.string.filter_update_succesful_str), Toast.LENGTH_SHORT);
+    		toast.show();
+    	}
+    	else {
+    		Toast toast = Toast.makeText(getApplicationContext(),
+    			this.getString(R.string.filter_update_fail_str), Toast.LENGTH_SHORT);
+    		toast.show();
+    	}
     }
     
     public void reset_form() {

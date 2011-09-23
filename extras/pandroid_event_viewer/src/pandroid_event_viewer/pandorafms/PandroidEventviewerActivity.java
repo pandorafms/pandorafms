@@ -64,6 +64,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public long offset;
     
     public Intent intent_service;
+    
+    public Core core;
 	
     /** Called when the activity is first created. */
     @Override
@@ -108,13 +110,12 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         executeBackgroundGetEvents();
         
         //Start the background service for the notifications
-        //Intent intent_service = new Intent(this, PandroidEventviewerService.class);
-        intent_service = new Intent(this, PandroidEventviewerService.class);
-        startService(intent_service);
-        
+        this.core = new Core();
+        this.core.startServiceEventWatcher(getApplicationContext());
         
         Intent i_main = new Intent(this, Main.class);
         i_main.putExtra("object", this);
+        i_main.putExtra("core", this.core);
         
 		tabHost.addTab
 		(
@@ -193,7 +194,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	httpPost.setEntity(entity);
 	    	response = httpClient.execute(httpPost);
 	    	entityResponse = response.getEntity();
-	    	return_api = convertStreamToString(entityResponse.getContent());
+	    	return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	return_api = return_api.replace("\n", "");
 	    	this.count_events = new Long(return_api).longValue();
 	    	
@@ -215,7 +216,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	response = httpClient.execute(httpPost);
 	    	entityResponse = response.getEntity();
 	    	
-	    	return_api = convertStreamToString(entityResponse.getContent());
+	    	return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	Log.e("return_api", return_api);
 	    	
 	    	String[] lines = return_api.split("\n");
@@ -300,30 +301,6 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     		
     		return;
     	}
-    }
-    
-    public String convertStreamToString (InputStream is)
-    {
-    	BufferedReader reader = new BufferedReader(new
-    	InputStreamReader(is), 8*1024);
-    	StringBuilder sb = new StringBuilder();
-    	
-    	String line = null;
-    	try {
-    		while ((line = reader.readLine()) != null) {
-    			sb.append(line + "\n");
-    		}
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	} finally {
-    		try {
-    			is.close();
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	
-    	return sb.toString();
     }
     
     public void executeBackgroundGetEvents() {

@@ -259,3 +259,7 @@ ALTER TABLE `talert_snmp` MODIFY COLUMN `custom_oid` text DEFAULT '';
 -- Table `tconfig_os`
 -- -----------------------------------------------------
 INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('VMware', 'VMware Architecture', 'so_vmware.png');
+
+UPDATE tconfig SET value='4.0' WHERE token = 'db_scheme_version';
+UPDATE tconfig SET value='PD110923 (3.2 Migrate)' WHERE token = 'db_scheme_build';
+

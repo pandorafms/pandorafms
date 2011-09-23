@@ -1,3 +1,19 @@
+2011-09-23  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Update version and DB Build.
+
+	* DEBIAN/control,
+	DEBIAN/make_deb_package.sh
+	include/config.php
+	include/config_process.php
+	pandora_console_install
+	install.php
+	pandora_console.spec
+	pandora_console.redhat.spec: Updated version.
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Update version after
+	migrate.
+
 2011-09-23 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/status_monitor.php: fixed the query for to don't show

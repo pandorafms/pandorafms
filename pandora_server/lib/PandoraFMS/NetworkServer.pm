@@ -265,6 +265,12 @@ sub pandora_snmp_get_command ($$$$$$$$$) {
     # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
     my $OSNAME = $^O;
 
+
+    # This fixes problem in linux snmpget, because v2 must be submitted like 2c
+    if ($snmp_version eq "2"){
+	$snmp_version = "2c";
+    }
+
     # On windows, we need the snmpget command from net-snmp, already present on win agent
     # the call is the same than in linux
     if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){

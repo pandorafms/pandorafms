@@ -371,7 +371,7 @@ sub pandora_load_config ($) {
 	open (CFG, '< ' . $conf->{'_pandora_path'}) or die ("[ERROR] Could not open configuration file: $!\n");
 	while (my $line = <CFG>){
 		next unless ($line =~ /^(\S+)\s+(.*)\s+$/);
-		$conf->{$1} = $2;
+		$conf->{$1} =  clean_blank($2);
 	}
  	close (CFG);
 

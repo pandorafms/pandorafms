@@ -45,7 +45,7 @@ use PandoraFMS::Core;
 ################################################################################
 ################################################################################
 
-my $version = "3.0 PS091214";
+my $version = "4.0 PS110923";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE

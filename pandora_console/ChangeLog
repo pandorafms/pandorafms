@@ -1,3 +1,8 @@
+2011-09-23 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* operation/agentes/status_monitor.php: fixed the query for to don't show
+	the "not_init" modules.
+
 2011-09-23 Tomas Palacios <tomas.palacios@artica.es>
 
 	* include/languages: Updated language files.

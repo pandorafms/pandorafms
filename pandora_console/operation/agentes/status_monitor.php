@@ -239,7 +239,7 @@ elseif ($status == 4) { //Not normal
 	$sql .= " AND tagente_estado.estado <> 0";
 } 
 elseif ($status == 3) { //Unknown
-	$sql .= " AND tagente_estado.estado = 3";
+	$sql .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
 }
 elseif ($status == 5) { //Not init
 	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";	

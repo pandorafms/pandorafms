@@ -942,7 +942,16 @@ function otherParameter2Filter($other, $array = false) {
 	
 	if (isset($other['data'][10]) && ($other['data'][10] != null)) {
 		if ($array) {
-			$filter['total'] = true;
+			$filter['total'] = false;
+			$filter['more_criticity'] = false;
+			
+			if ($other['data'][10] == 'total') {
+				$filter['total'] = true;
+			}
+			
+			if ($other['data'][10] == 'more_criticity') {
+				$filter['more_criticity'] = true;
+			}
 		}
 		else {
 			
@@ -951,6 +960,7 @@ function otherParameter2Filter($other, $array = false) {
 	else {
 		if ($array) {
 			$filter['total'] = false;
+			$filter['more_criticity'] = false;
 		}
 		else {
 			
@@ -1634,6 +1644,11 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 						FROM tevento
 						WHERE 1=1 ".$sql_post;
 				}
+				else if ($filter['more_criticity']) {
+					$sql = "SELECT criticity
+						FROM tevento
+						WHERE 1=1 ".$sql_post." ORDER BY criticity DESC LIMIT 1";
+				}
 				else {
 					$sql = "SELECT *,
 						(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
@@ -1722,11 +1737,11 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 	}
-	
+	//html_debug_print($filter, true);
 	$result = db_get_all_rows_sql ($sql);
 	//html_debug_print($sql);
 	
-	if (($result !== false) && (!$filter['total'])) {
+	if (($result !== false) && (!$filter['total']) && (!$filter['more_criticity'])) {
 		//Add the description and image
 		foreach ($result as $key => $row) {
 			//FOR THE TEST THE API IN THE ANDROID

@@ -1,3 +1,29 @@
+2011-09-23  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip in the event
+	notification, now there are notifications and need that I develop the
+	hook to activity list event.
+	
+	* src/pandroid_event_viewer/pandorafms/Core.java: move some functions to
+	this file for use in other class.
+
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more string values. 
+	
+	* res/drawable-ldpi/criticity_0.png, res/drawable-ldpi/criticity_1.png, 
+	res/drawable-ldpi/criticity_2.png, res/drawable-ldpi/criticity_3.png, 
+	res/drawable-ldpi/criticity_4.png, res/drawable-ldpi/criticity_default.png:
+	added first version of icons for the notifications.
+	
+	* res/layout/main.xml: added a third button, the filter, to set the actual
+	search as filter for the background event watcher.
+
+
 2011-09-22  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: added the lines for the service and broadcastreciver.

@@ -46,8 +46,17 @@
     <string name="load_more_events_button_str">Cargar mas eventos</string>
     <string name="empty_label_str">Lista vacia de eventos</string>
     <string name="refresh_time_label_str">Refresco scanner eventos</string>
+    <string name="set_as_filter_watcher_button_str">Hacerlo filtro para scanner eventos</string>
     
     <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
     <string name="config_update_fail_str">Configuración no ha podido guardarse..</string>
     <string name="please_set_preferences_str">Por favor configure sus preferencias, como la API URL, usuario y contraseña de su Pandora FMS.</string>
+    <string name="filter_update_succesful_str">Actualizado filtro correctamente.</string>
+    <string name="filter_update_fail_str">Actualización filtro no ha podido guardarse.</string>
+    
+    <string name="notification_criticity_0_str">Hay %s eventos y todos son de Mantenimiento.</string>
+    <string name="notification_criticity_1_str">Hay %s eventos y algunos son Información.</string>
+    <string name="notification_criticity_2_str">Hay %s eventos y algunos son Normales.</string>
+    <string name="notification_criticity_3_str">Hay %s eventos y algunos son Aviso.</string>
+    <string name="notification_criticity_4_str">Hay %s eventos y algunos son Criticos.</string>
 </resources>

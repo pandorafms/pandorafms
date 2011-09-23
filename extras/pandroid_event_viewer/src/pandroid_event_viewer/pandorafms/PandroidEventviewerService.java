@@ -104,6 +104,7 @@ public class PandroidEventviewerService extends Service {
 	}
 	
 	public void onDestroy() {
+		Log.e("testService", "onDestroy");
 		alarmM.cancel(this.pendingI);
 	}
 }

@@ -40,6 +40,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 public class PandroidEventviewerActivity extends TabActivity implements Serializable {
 	//Data aplication
@@ -107,8 +108,6 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         	this.loadInProgress = true;
         }
         
-        executeBackgroundGetEvents();
-        
         //Start the background service for the notifications
         this.core = new Core();
         this.core.startServiceEventWatcher(getApplicationContext());
@@ -140,6 +139,63 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		
 		tabHost.getTabWidget().getChildAt(0).getLayoutParams().height=45;
 		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height=45;
+		
+    }
+    
+    public void onResume() {
+    	super.onResume();
+    	
+    	Intent i = getIntent();
+    	long count_events = i.getLongExtra("count_events", 0);
+    	int more_criticity = i.getIntExtra("more_criticity", -1);
+    	
+    	CharSequence text;
+    	
+    	Log.e("count_events", new Long(count_events).toString());
+    	
+    	if (count_events > 0) {
+    		switch (more_criticity) {
+	    		case 0:
+	    			text = getString(R.string.loading_events_criticity_0_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 1:
+	    			text = getString(R.string.loading_events_criticity_1_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 2:
+	    			text = getString(R.string.loading_events_criticity_2_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 3:
+	    			text = getString(R.string.loading_events_criticity_3_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 4:
+	    			text = getString(R.string.loading_events_criticity_4_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		default:
+	    			text = getString(R.string.loading_events_criticity_2_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    	}
+    		
+    		
+    		Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		//Set the time when the watcher find the events.
+            SharedPreferences preferences = getSharedPreferences(
+            	getString(R.string.const_string_preferences), 
+            	Activity.MODE_PRIVATE);
+            this.timestamp = preferences.getLong("previous_filterTimestamp", (new Date().getTime() / 1000));
+    		
+    		
+        	this.getTabHost().setCurrentTab(1);
+    	}
+    	
+    	executeBackgroundGetEvents();
     }
     
     public String serializeParams2Api() {
@@ -164,6 +220,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	return_var += Integer.toString(this.pagination); //The pagination of list events
     	return_var += "|";
     	return_var += Long.toString(this.offset); //The offset of list events
+    	
+    	Log.e("getEvents", return_var);
     	
     	return return_var;
     }
@@ -197,6 +255,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	return_api = return_api.replace("\n", "");
 	    	this.count_events = new Long(return_api).longValue();
+	    	Log.e("count_events", return_api);
 	    	
 	    	if (this.count_events == 0) {
 	    		return;
@@ -332,7 +391,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 				loadInProgress = false;
 				getNewListEvents = false;
 				
-				i.putExtra("load_more", 0);			
+				i.putExtra("load_more", 0);
 			}
 			else {
 				i.putExtra("load_more", 1);

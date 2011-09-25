@@ -1512,6 +1512,23 @@ function set_event_validate_filter($trash1, $trash2, $other, $trash3) {
 	}
 }
 
+function set_validate_events($id_event, $trash1, $other, $return_type, $user_in_db) {
+	$text = $other['data'];
+	
+	// Set off the standby mode when close an event
+	$event = events_get_event ($id_event);
+	alerts_agent_module_standby ($event['id_alert_am'], 0);
+	
+	$result = events_validate_event ($id_event, false, $text);
+	
+	if ($result) {
+		returnData('string', array('type' => 'string', 'data' => 'Correct validation'));
+	}
+	else {
+		returnError('error_validate_event', 'Error in validation operation.');
+	}
+}
+
 function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db) {
 	global $config;
 	

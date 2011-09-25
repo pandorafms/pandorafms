@@ -15,6 +15,9 @@
 
 require_once ("config.php");
 require_once("functions_api.php");
+
+global $config;
+
 enterprise_include_once ('include/functions_enterprise_api.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
@@ -43,6 +46,7 @@ if (!empty($apiPassword)) {
 	else {
 		$user_in_db = process_user_login($user, $password);
 		if ($user_in_db !== false) {
+			$config['id_user'] = $user_in_db;
 			$correctLogin = true;
 		}
 	}

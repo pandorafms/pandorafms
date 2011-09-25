@@ -130,6 +130,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     	long filterTimestamp = preferences.getLong("filterTimestamp", now);
     	SharedPreferences.Editor editorPreferences = preferences.edit();
     	editorPreferences.putLong("filterTimestamp", now); //Save for the next execution.
+    	editorPreferences.putLong("previous_filterTimestamp", filterTimestamp); //Save and the previous for the list.
     	editorPreferences.commit();
     	
     	
@@ -219,7 +220,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     	
     	
     	
-    	Intent notificationIntent = new Intent(context, Options.class);
+    	Intent notificationIntent = new Intent(context, PandroidEventviewerActivity.class);
+    	notificationIntent.putExtra("count_events", this.count_events);
+    	notificationIntent.putExtra("more_criticity", this.more_criticity);
+    	
     	PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
     	
     	CharSequence title = context.getString(R.string.pandroid_event_viewer_str);

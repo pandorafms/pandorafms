@@ -226,12 +226,14 @@ public class Main extends Activity {
     	DatePicker datePicker = (DatePicker)findViewById(R.id.date);
     	TimePicker timePicker = (TimePicker)findViewById(R.id.time);
     	int day = datePicker.getDayOfMonth();
-    	int month = datePicker.getMonth() + 1;
+    	int month = datePicker.getMonth();
     	int year = datePicker.getYear();
     	int hour = timePicker.getCurrentHour();
     	int minute = timePicker.getCurrentMinute();
-    	Date date = new Date(year, month, day, minute, hour);
-    	this.object.timestamp = date.getTime() / 1000;
+    	Calendar c = Calendar.getInstance();
+    	c.set(year, month, day, hour, minute);
+    	
+    	this.object.timestamp = c.getTimeInMillis() / 1000;
     	
     	EditText agentName = (EditText) findViewById(R.id.agent_name);
     	String agentNameStr = agentName.getText().toString();
@@ -253,9 +255,9 @@ public class Main extends Activity {
     	}
     	
     	combo = (Spinner) findViewById(R.id.severity_combo);
-    	this.object.severity = combo.getSelectedItemPosition();
+    	this.object.severity = combo.getSelectedItemPosition() - 1;
     	
-    	
+    	this.object.getNewListEvents = true;
     	this.object.executeBackgroundGetEvents();
     	
     	TabActivity ta = (TabActivity) this.getParent();

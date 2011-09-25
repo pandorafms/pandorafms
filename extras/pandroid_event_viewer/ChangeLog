@@ -1,3 +1,17 @@
+2011-09-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java: added
+	empty file for to work in this in the monday.
+	
+	* src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: added the hook to
+	list event from notification. And fixed the search.
+
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more strings values.
+
 2011-09-23  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
@@ -22,7 +36,6 @@
 	
 	* res/layout/main.xml: added a third button, the filter, to set the actual
 	search as filter for the background event watcher.
-
 
 2011-09-22  Miguel de Dios  <miguel.dedios@artica.es>
 	

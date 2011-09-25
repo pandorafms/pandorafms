@@ -43,7 +43,6 @@ public class EventList extends ListActivity {
 	public HashMap<String, Bitmap> imgGroups;
 	public HashMap<String, Bitmap> imgSeverity;
 	public HashMap<String, Bitmap> imgType;
-	public String test;
 	
 	private BroadcastReceiver onBroadcast;
 	
@@ -70,8 +69,6 @@ public class EventList extends ListActivity {
         la = new MyAdapter(getBaseContext(), object);
         
         lv.setAdapter(la);
-        
-        test = "666";
         
         onBroadcast = new BroadcastReceiver() {
 			
@@ -128,13 +125,18 @@ public class EventList extends ListActivity {
     }
     
     public void toggleLoadingLayout() {
-    	LinearLayout loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
+    	LinearLayout layout;
+    	
+    	layout = (LinearLayout) findViewById(R.id.empty_list_layout);
+		layout.setVisibility(LinearLayout.GONE);
+		
+		layout = (LinearLayout) findViewById(R.id.loading_layout);
     	
         if (this.object.loadInProgress) {
-        	loadingLayout.setVisibility(LinearLayout.VISIBLE);
+        	layout.setVisibility(LinearLayout.VISIBLE);
         }
         else {
-        	loadingLayout.setVisibility(LinearLayout.GONE);
+        	layout.setVisibility(LinearLayout.GONE);
         }
     }
     

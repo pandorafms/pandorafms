@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-sk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
 "PO-Revision-Date: 2011-07-27 21:25+0000\n"
 "Last-Translator: Stano Kobella <Stano110@azet.sk>\n"
 "Language-Team: Slovak <sk@li.org>\n"
@@ -15791,15 +15791,15 @@ msgstr "Správne vymazanie"
 msgid "Create user."
 msgstr "Vytvoriť používateľa."
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr "Vymazať používateľa."
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr "Pridať používateľský profil."
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr "Zmazať používateľský profil."
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
 "PO-Revision-Date: 2010-11-16 10:42+0000\n"
 "Last-Translator: Raul <Unknown>\n"
 "Language-Team: English (Australia) <en_AU@li.org>\n"
@@ -15765,15 +15765,15 @@ msgstr "Correct Delete"
 msgid "Create user."
 msgstr "Create user."
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr "Delete user."
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr "Add user profile."
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr "Delete user profile."
 

@@ -91,7 +91,7 @@ if ($update_command) {
 	$values['description'] = $description;
         $name_check = db_get_value ('name', 'talert_commands', 'name', $name);
 	
-	if (!$name || $name_check) {
+	if (!$name || !$name_check) {
 		$result = '';
 	}
 	else {

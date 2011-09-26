@@ -211,6 +211,13 @@ if (isset ($_GET["bye"])) {
 	exit ("</html>");
 }
 
+/**
+ * Load the basic configurations of extension and add extensions into menu.
+ * Load here, because if not, some extensions not load well, I don't why.
+ */
+extensions_load_extensions ($config['extensions']);
+
+
 // Header
 if ($config["pure"] == 0) {
 	echo '<div id="container"><div id="head">';
@@ -226,12 +233,6 @@ else {
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
 session_write_close (); 
-
-/**
- * Load the basic configurations of extension and add extensions into menu.
- * Load here, because if not, some extensions not load well, I don't why.
- */
-extensions_load_extensions ($config['extensions']);
 
 
 // Main block of content

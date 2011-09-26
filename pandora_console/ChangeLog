@@ -1,3 +1,8 @@
+2011-09-26 Sancho Lerena <slerena@artica.es>
+
+	* pandora_console/index.php: Developer mode disabled. 
+	Ready for 4.0 release !
+
 2011-09-26 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_graph.php: Fixed a problem with graphs which

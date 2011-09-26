@@ -1,3 +1,7 @@
+2011-09-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* install.php: Fixed height style attribute in step 3. 
+
 2011-09-25 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: added api call "set_validate_event".

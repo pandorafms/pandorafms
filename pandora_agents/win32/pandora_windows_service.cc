@@ -1288,6 +1288,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	/* Generate temporal filename */
 	random_integer = inttostr (rand());
 	tmp_filename = conf->getValue ("agent_name");
+	
 	if (tmp_filename == "") {
 		tmp_filename = Pandora_Windows_Info::getSystemName ();
 	}
@@ -1404,9 +1405,9 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			module = this->modules->getCurrentValue ();
 	
 			exe = module->evaluatePreconditions ();
-		
+			
 			if (exe == 0) return;
-	
+			
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 			if (module->checkCron () == 1) {
 				module->run ();
@@ -1430,6 +1431,7 @@ this->elapsed_transfer_time += this->interval;
 if (this->elapsed_transfer_time >= this->transfer_interval) {
 	this->elapsed_transfer_time = 0;
 	if (!server_addr.empty ()) {
+		
 		this->sendXml (this->modules);
 	}
 }
@@ -1446,6 +1448,8 @@ Pandora_Windows_Service::pandora_run () {
     int i, num;
 
 	pandoraDebug ("Run begin");
+	
+	pandora_init();
 
 	conf = this->getConf ();
 
@@ -1477,7 +1481,7 @@ Pandora_Windows_Service::pandora_run () {
 			Pandora_Module *module;
 		
 			module = this->modules->getCurrentValue ();
-	
+			
 			exe = module->evaluatePreconditions ();
 		
 			if (exe == 0) return;
@@ -1485,7 +1489,7 @@ Pandora_Windows_Service::pandora_run () {
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 			if (module->checkCron () == 1) {
 				module->run ();
-				Sleep(10);
+				Sleep(5);
 			}
 			
 			/* Save module data to an environment variable */
@@ -1505,6 +1509,7 @@ Pandora_Windows_Service::pandora_run () {
 	if (this->elapsed_transfer_time >= this->transfer_interval) {
 		this->elapsed_transfer_time = 0;
 		if (!server_addr.empty ()) {
+			
 		  this->sendXml (this->modules);
 		}
 	}
@@ -1516,7 +1521,7 @@ Pandora_Windows_Service::pandora_run () {
 	string all_conf[num];
 
 	check_broker_agents(all_conf);
-
+	
 	for (i=0;i<num;i++){
 		pandora_init_broker(all_conf[i]);
 		pandora_run_broker(all_conf[i]);

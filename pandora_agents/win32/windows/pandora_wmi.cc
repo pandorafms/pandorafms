@@ -1203,7 +1203,6 @@ Pandora_Wmi::getSystemAddress () {
 	string        ret = "";
 
  	try {
-					   pandoraLog ("0");
 
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &nic_info, wmi_svc,

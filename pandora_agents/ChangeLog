@@ -1,3 +1,10 @@
+2011-09-26  Sancho Lerena <slerena@artica.es>
+
+	* unix/DEBIAN/control
+	unix/DEBIAN/make_deb_package.sh
+	unix/pandora_agent.spec
+	unix/pandora_agent.redhat.spec: Updated version (4.0).
+
 2011-09-26  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/windows/pandora_wmi.cc: Removed trace.

@@ -922,34 +922,52 @@ function otherParameter2Filter($other, $array = false) {
 		}
 	}
 	
-	if ($other['data'][8] != null) {
+	if (($other['data'][8] != null) && ($other['data'][8] != -1)) {
 		if ($array) {
-			$filter['limit'] = $other['data'][8];
+			$filter['estado'] = $other['data'][8];
 		}
 		else {
-			$filterString .= ' LIMIT ' . $other['data'][8];
+			$filterString .= ' AND estado = ' . $other[8];
 		}
 	}
 	
-	if ($other['data'][9] != null) {
+	if (($other['data'][9] != null) && ($other['data'][9] != "")) {
 		if ($array) {
-			$filter['offset'] = $other['data'][9];
+			$filter['evento'] = $other['data'][9];
 		}
 		else {
-			$filterString .= ' OFFSET ' . $other['data'][9];
+			$filterString .= ' AND evento like "%' . $other[9] . '%"';
 		}
 	}
 	
-	if (isset($other['data'][10]) && ($other['data'][10] != null)) {
+	if ($other['data'][10] != null) {
+		if ($array) {
+			$filter['limit'] = $other['data'][10];
+		}
+		else {
+			$filterString .= ' LIMIT ' . $other['data'][10];
+		}
+	}
+	
+	if ($other['data'][11] != null) {
+		if ($array) {
+			$filter['offset'] = $other['data'][11];
+		}
+		else {
+			$filterString .= ' OFFSET ' . $other['data'][11];
+		}
+	}
+	
+	if (isset($other['data'][12]) && ($other['data'][12] != null)) {
 		if ($array) {
 			$filter['total'] = false;
 			$filter['more_criticity'] = false;
 			
-			if ($other['data'][10] == 'total') {
+			if ($other['data'][12] == 'total') {
 				$filter['total'] = true;
 			}
 			
-			if ($other['data'][10] == 'more_criticity') {
+			if ($other['data'][12] == 'more_criticity') {
 				$filter['more_criticity'] = true;
 			}
 		}
@@ -1563,6 +1581,10 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 		$id_alert_am = $filter['id_alert_am'];
 	if (isset($filter['id_usuario']))
 		$id_user_ack = $filter['id_usuario'];
+	if (isset($filter['estado']))
+		$status = $filter['estado'];
+	if (isset($filter['evento']))
+		$search = $filter['evento'];
 	if (isset($filter['limit']))
 		$pagination = $filter['limit'];
 	if (isset($filter['offset']))

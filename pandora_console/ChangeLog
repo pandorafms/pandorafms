@@ -1,3 +1,8 @@
+2011-09-26 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: added the call "get_events" the filters for the
+	free text in event description and status of event.
+
 2011-09-26 Sancho Lerena <slerena@artica.es>
 
 	* pandora_console/index.php: Developer mode disabled. 

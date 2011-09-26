@@ -189,25 +189,25 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		}
 		
 		// Set the title and time format
-		if ($period <= 3600) {
+		if ($period <= 21600) {
 			$title_period = __('Last hour');
-			$time_format = 'G:i:s';
+			$time_format = 'H:i:s';
 		}
-		elseif ($period <= 86400) {
+		elseif ($period < 86400) {
 			$title_period = __('Last day');
-			$time_format = 'G:i';
+			$time_format = 'H:i';
 		}
-		elseif ($period <= 604800) {
+		elseif ($period < 1296000) {
 			$title_period = __('Last week');
-			$time_format = 'M j';
+			$time_format = 'M d H:i';
 		}
-		elseif ($period <= 2419200) {
+		elseif ($period < 2592000) {
 			$title_period = __('Last month');
-			$time_format = 'M j';
+			$time_format = 'M d H\h';
 		} 
 		else {
 			$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-			$time_format = 'M j';
+			$time_format = 'M d H\h';
 		}
 
 		$timestamp_short = date($time_format, $timestamp);

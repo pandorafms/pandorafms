@@ -53,7 +53,7 @@ if (!$@) {
 }	
 
 use constant AGENT_VERSION => '4.0';
-use constant AGENT_BUILD => '110629';
+use constant AGENT_BUILD => '110923';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {

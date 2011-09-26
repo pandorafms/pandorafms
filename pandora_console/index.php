@@ -67,10 +67,6 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 	include_once (ENTERPRISE_DIR."/load_enterprise.php");
 }
 
-/**
- * Load the basic configurations of extension and add extensions into menu.
- */
-extensions_load_extensions ($config['extensions']);
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = 'https://' . $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
@@ -230,6 +226,12 @@ else {
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
 session_write_close (); 
+
+/**
+ * Load the basic configurations of extension and add extensions into menu.
+ * Load here, because if not, some extensions not load well, I don't why.
+ */
+extensions_load_extensions ($config['extensions']);
 
 
 // Main block of content

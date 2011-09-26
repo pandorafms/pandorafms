@@ -1,5 +1,7 @@
 2011-09-26  Sancho Lerena <slerena@artica.es>
 
+	* unix/HP-UX/pandora_agent.conf: Bad Disk module in HPUX
+
 	* unix/DEBIAN/control
 	unix/DEBIAN/make_deb_package.sh
 	unix/pandora_agent.spec

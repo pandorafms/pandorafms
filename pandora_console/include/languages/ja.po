@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
 "PO-Revision-Date: 2011-09-22 04:12+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -15864,15 +15864,15 @@ msgstr "削除しました。"
 msgid "Create user."
 msgstr "ユーザ作成"
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr "ユーザ削除"
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr "ユーザプロファイル追加"
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr "ユーザプロファイル削除"
 

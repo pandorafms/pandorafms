@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
 "PO-Revision-Date: 2011-09-21 12:39+0000\n"
 "Last-Translator: Tomas Palacios <Unknown>\n"
 "Language-Team: Español <artica@artica.es>\n"
@@ -15933,15 +15933,15 @@ msgstr "Borrado correcto"
 msgid "Create user."
 msgstr "crear usuario"
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr "borrar usuario"
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr "añadir perfil de usuario"
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr "Borrar perfil de usuario"
 

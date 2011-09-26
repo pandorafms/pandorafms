@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-ar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
 "PO-Revision-Date: 2011-01-10 12:36+0000\n"
 "Last-Translator: Ahmed Mohammed <Unknown>\n"
 "Language-Team: Arab <ar@li.org>\n"
@@ -15743,15 +15743,15 @@ msgstr "الحذف صحيح"
 msgid "Create user."
 msgstr "إنشاء مستخدم"
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr "حذف مستخدم"
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr "إضافة مستخدم للبروفيل"
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr "حذف مستخدم البروفيل"
 

@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
-"PO-Revision-Date: 2010-09-13 12:51+0000\n"
-"Last-Translator: pandora-drivers <Unknown>\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
+"PO-Revision-Date: 2011-09-26 08:13+0000\n"
+"Last-Translator: Christer Hjerpe <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-23 09:49+0000\n"
-"X-Generator: Launchpad (build 14012)\n"
+"X-Launchpad-Export-Date: 2011-09-26 13:36+0000\n"
+"X-Generator: Launchpad (build 14028)\n"
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
@@ -28,11 +28,11 @@ msgstr "av"
 
 #: ../../general/logon_ok.php:54
 msgid "ago"
-msgstr ""
+msgstr "sedan"
 
 #: ../../general/logon_ok.php:61
 msgid "No news articles at this moment"
-msgstr "Inga nya artiklar just nu"
+msgstr "Inga nyhetsartiklar tillgängliga"
 
 #: ../../general/logon_ok.php:79 ../../mobile/operation/agents/tactical.php:47
 #: ../../operation/agentes/tactical.php:92
@@ -100,39 +100,39 @@ msgstr ""
 #: ../../operation/agentes/tactical.php:124
 #: ../../enterprise/dashboard/widgets/tactical.php:99
 msgid "Monitors critical"
-msgstr ""
+msgstr "Monitorer kritiska"
 
 #: ../../general/logon_ok.php:111
 #: ../../mobile/operation/agents/tactical.php:66
 #: ../../operation/agentes/tactical.php:129
 #: ../../enterprise/dashboard/widgets/tactical.php:101
 msgid "Monitors warning"
-msgstr ""
+msgstr "Monitorer varnande"
 
 #: ../../general/logon_ok.php:116
 #: ../../mobile/operation/agents/tactical.php:68
 #: ../../operation/agentes/tactical.php:134
 #: ../../enterprise/dashboard/widgets/tactical.php:103
 msgid "Monitors normal"
-msgstr ""
+msgstr "Monitorer normala"
 
 #: ../../general/logon_ok.php:121
 #: ../../mobile/operation/agents/tactical.php:70
 #: ../../operation/agentes/tactical.php:139
 #: ../../enterprise/dashboard/widgets/tactical.php:105
 msgid "Monitors unknown"
-msgstr ""
+msgstr "Monitorer okända"
 
 #: ../../general/logon_ok.php:126
 #: ../../mobile/operation/agents/tactical.php:74
 #: ../../operation/agentes/tactical.php:149
 #: ../../enterprise/dashboard/widgets/tactical.php:109
 msgid "Alerts defined"
-msgstr ""
+msgstr "Alarm definierade"
 
 #: ../../general/logon_ok.php:131
 msgid "Users defined"
-msgstr ""
+msgstr "Användare definierade"
 
 #: ../../general/logon_ok.php:152
 msgid "This is your last activity in Pandora FMS console"
@@ -152,7 +152,7 @@ msgstr "Detta är dina senaste aktiviteter i Pandora FMS"
 #: ../../enterprise/godmode/setup/setup_auth.php:83
 #: ../../enterprise/godmode/setup/setup_auth.php:99
 msgid "User"
-msgstr ""
+msgstr "Användare"
 
 #: ../../general/logon_ok.php:161
 #: ../../mobile/operation/agents/view_alerts.php:36
@@ -15682,15 +15682,15 @@ msgstr ""
 msgid "Create user."
 msgstr ""
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr ""
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr ""
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr ""
 

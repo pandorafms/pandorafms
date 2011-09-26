@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-23 12:18+0200\n"
+"POT-Creation-Date: 2011-09-26 16:40+0200\n"
 "PO-Revision-Date: 2010-11-18 18:53+0000\n"
 "Last-Translator: Markus Birth <Unknown>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -15819,15 +15819,15 @@ msgstr "Erfolgreich gelöscht."
 msgid "Create user."
 msgstr "Benutzer erstellen."
 
-#: ../../include/functions_api.php:1830
+#: ../../include/functions_api.php:1862
 msgid "Delete user."
 msgstr "Benutzer löschen"
 
-#: ../../include/functions_api.php:1855
+#: ../../include/functions_api.php:1887
 msgid "Add user profile."
 msgstr "Benutzerprofil hinzufügen."
 
-#: ../../include/functions_api.php:1884
+#: ../../include/functions_api.php:1916
 msgid "Delete user profile."
 msgstr "Benutzerprofil löschen."
 

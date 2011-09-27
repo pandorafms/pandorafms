@@ -53,6 +53,7 @@
     <string name="please_set_preferences_str">Please set the preferences as the API URL, user and password for your Pandora FMS.</string>
     <string name="filter_update_succesful_str">Update filter sucessful.</string>
     <string name="filter_update_fail_str">Update filter is failed.</string>
+    <string name="validate_event_button_str">Validate Event</string>
     
 	<string name="notification_criticity_0_str">There are %s events and all in Maintenance state.</string>
     <string name="notification_criticity_1_str">There are %s events and some are in Informational state.</string>
@@ -65,4 +66,11 @@
     <string name="loading_events_criticity_2_str">Loading the %s events and some are in Normal state.</string>
     <string name="loading_events_criticity_3_str">Loading the %s events and some are in Warning state.</string>
     <string name="loading_events_criticity_4_str">Loading the %s events and some are in Critical state.</string>
+    
+    <string name="successful_validate_event_str">The event validation is successful.</string>
+    <string name="fail_validate_event_str">The event validation is failed.</string>
+    
+    <string name="status_label_str">Status</string>
+    <string name="event_search_label_str">Event search</string>
+    <string name="max_time_old_event_str">Max time old event</string>
 </resources>

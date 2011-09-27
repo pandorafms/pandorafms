@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -30,7 +32,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class EventList extends ListActivity {
 	private ListView lv;
@@ -66,7 +67,7 @@ public class EventList extends ListActivity {
         
         lv = (ListView)findViewById(android.R.id.list);
         
-        la = new MyAdapter(getBaseContext(), object);
+        la = new MyAdapter(getBaseContext(), object, core);
         
         lv.setAdapter(la);
         
@@ -93,14 +94,28 @@ public class EventList extends ListActivity {
 				}
 			}
 		};
+		
+		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
+    	
+    	this.toggleLoadingLayout();
+    	
+    	Log.e("EventList", "onCreate");
     }
     
     public void onResume() {
     	super.onResume();
+    	Log.e("EventList", "onResume");
+    	
     	
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
     	
     	this.toggleLoadingLayout();
+    }
+    
+    public void onConfigurationChanged(Configuration newConfig) { 
+    	super.onConfigurationChanged(newConfig);
+    	
+    	Log.e("EventList", "onConfigurationChanged");
     }
     
     @Override
@@ -248,14 +263,16 @@ public class EventList extends ListActivity {
     {
 		private Context mContext;
 		public PandroidEventviewerActivity object;
+		public Core core;
 		
 		public boolean showLoadingEvents;
 		
-		public MyAdapter(Context c, PandroidEventviewerActivity object)
+		public MyAdapter(Context c, PandroidEventviewerActivity object, Core core)
 		{
 			mContext = c;
 			
 			this.object = object;
+			this.core = core;
 			
 			showLoadingEvents = false;
 		}
@@ -408,12 +425,39 @@ public class EventList extends ListActivity {
 						setImageType(viewEventExtended, item.criticity_image, R.id.img_severity);
 					}
 					
+					
+			        final Button button;
+			        button = (Button)viewEventExtended.findViewById(R.id.validate_button_extended);
+			        OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
+			        clickListener.id_event = item.id_event;
+			        //clickListener.object = this.object;
+			        clickListener.core = this.core;
+			        button.setOnClickListener(clickListener);
+			        
+					
 					LinearLayout itemLinearLayout = (LinearLayout)view.findViewById(R.id.item_linear_layout);
 					itemLinearLayout.addView(viewEventExtended);
 				}
     		}
     		
     		return view;
+		}
+		
+		public class OnClickListenerButtonValidate implements OnClickListener {
+			public int id_event;
+			//public PandroidEventviewerActivity object;
+			public Core core;
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getApplicationContext(), PopupValidationEvent.class);
+            	i.putExtra("id_event", id_event);
+                //i.putExtra("object", this.object);
+                i.putExtra("core", this.core);
+            	
+            	startActivity(i);
+			}
+			
 		}
 		
     }

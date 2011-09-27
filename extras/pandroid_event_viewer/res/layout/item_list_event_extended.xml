@@ -154,4 +154,14 @@
 			android:text="- Empty -" 
 		/>
 	</TableRow>
+	<TableRow
+		android:gravity="right"
+	>
+			<Button
+				android:id="@+id/validate_button_extended"
+				android:text="@string/validate_event_button_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+	</TableRow>
 </TableLayout>

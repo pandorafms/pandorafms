@@ -14,10 +14,6 @@
 
 package pandroid_event_viewer.pandorafms;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,11 +27,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.R.bool;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,6 +59,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public int severity;
     public int pagination;
     public long offset;
+    public int status;
+    public String eventSearch;
     
     public Intent intent_service;
     
@@ -88,6 +86,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.offset = 0;
         this.agentNameStr = "";
         this.severity = -1;
+        this.status = -1;
+        this.eventSearch = "";
         
         this.eventList = new ArrayList<EventListItem>();
         this.loadInProgress = false;
@@ -140,6 +140,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		tabHost.getTabWidget().getChildAt(0).getLayoutParams().height=45;
 		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height=45;
 		
+		Log.e("PandroidEventviewerActivity", "onCreate");
     }
     
     public void onResume() {
@@ -196,6 +197,14 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	}
     	
     	executeBackgroundGetEvents();
+    	
+    	Log.e("PandroidEventviewerActivity", "onResume");
+    }
+    
+    public void onConfigurationChanged(Configuration newConfig) { 
+    	super.onConfigurationChanged(newConfig);
+    	
+    	Log.e("PandroidEventviewerActivity", "onConfigurationChanged");
     }
     
     public String serializeParams2Api() {
@@ -216,6 +225,10 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	return_var += Long.toString(this.timestamp); //The minimun timestamp
     	return_var += "|";
     	return_var += ""; //The maximum timestamp
+    	return_var += "|";
+    	return_var += this.status; //The status
+    	return_var += "|";
+    	return_var += this.eventSearch; //The free search in the text event description.
     	return_var += "|";
     	return_var += Integer.toString(this.pagination); //The pagination of list events
     	return_var += "|";

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 
 import android.content.Context;
 import android.content.Intent;
@@ -92,4 +93,70 @@ public class Core implements Parcelable{
     	
     	return sb.toString();
     }
+	
+	public long convertMaxTimeOldEventValuesToTimestamp(long timestamp, int arrayKey) {
+		long time = timestamp;
+		long return_var = 0;
+		
+		if (time == 0) {
+			Calendar c = Calendar.getInstance();
+			time = c.getTimeInMillis() / 1000;
+		}
+		
+		switch (arrayKey) {
+			case 0:
+				return_var = time - 30 * 60;
+				break;
+			case 1:
+				return_var = time - 60 * 60;
+				break;
+			case 2:
+				return_var = time - 2 * (60 * 60);
+				break;
+			case 3:
+				return_var = time - 3 * (60 * 60);
+				break;
+			case 4:
+				return_var = time - 4 * (60 * 60);
+				break;
+			case 5:
+				return_var = time - 5 * (60 * 60);
+				break;
+			case 6:
+				return_var = time - 8 * (60 * 60);
+				break;
+			case 7:
+				return_var = time - 10 * (60 * 60);
+				break;
+			case 8:
+				return_var = time - 12 * (60 * 60);
+				break;
+			case 9:
+				return_var = time - 24 * (60 * 60);
+				break;
+			case 10:
+				return_var = time - 2 * (24 * 60 * 60);
+				break;
+			case 11:
+				return_var = time - 3 * (24 * 60 * 60);
+				break;
+			case 12:
+				return_var = time - 4 * (24 * 60 * 60);
+				break;
+			case 13:
+				return_var = time - 5 * (24 * 60 * 60);
+				break;
+			case 14:
+				return_var = time - 7 * (24 * 60 * 60);
+				break;
+			case 15:
+				return_var = time - 2 * (7 * 24 * 60 * 60);
+				break;
+			case 16:
+				return_var = time - 30 * (24 * 60 * 60);
+				break;
+		}
+		
+		return return_var;
+	}
 }

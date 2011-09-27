@@ -47,4 +47,34 @@
         <item>36 horas</item>
         <item>48 horas</item>
 	</string-array>
+	
+	<string-array name="event_status_values">
+		<!-- You must subtract -1 -->
+		<item>Todo los eventos</item>
+		<item>Solo los nuevos</item>
+		<item>Solo los validados</item>
+		<item>Solo los en proceso</item>
+		<item>Solo los no validados</item>
+	</string-array>
+	
+	<!-- Please change the code in the function convertMaxTimeOldEventValuesToTimestamp -->
+	<string-array name="max_time_old_event_values">
+		<item>30 minutos</item>
+		<item>1 hora</item>
+		<item>2 horas</item>
+		<item>3 horas</item>
+		<item>4 horas</item>
+		<item>5 horas</item>
+		<item>8 horas</item>
+		<item>10 horas</item>
+		<item>12 horas</item>
+		<item>1 día</item>
+		<item>2 días</item>
+		<item>3 días</item>
+		<item>4 días</item>
+		<item>5 días</item>
+		<item>1 semana</item>
+		<item>2 semanas</item>
+		<item>1 mes</item>
+	</string-array>
 </resources>

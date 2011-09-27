@@ -1,3 +1,8 @@
+2011-09-27 Dario Rodriguez <dario.rodriguez@artica.es>
+	
+	* util/pandora_manage.pl: Changed way to create and event now is possible
+	to create an event without agent_name and without agent_module.
+
 2011-09-26  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandora_server/util/pandora_manage.pl: Fixed bad behaviour of several

@@ -80,7 +80,50 @@
 					android:layout_height="wrap_content"
 				/>
 	    	</TableRow>
+	    	<TableRow>
+				<TextView
+					android:text="@string/status_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="5dip"
+				/>
+				<Spinner
+					android:id="@+id/status_combo"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+				/>
+	    	</TableRow>
+	    	<TableRow>
+				<TextView
+					android:text="@string/event_search_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="5dip"
+				/>
+				<EditText
+					android:id="@+id/event_search_text"
+					android:layout_height="wrap_content"
+					android:singleLine="true"
+					android:editable="true"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+				/>
+	    	</TableRow>
+	    	<TableRow>
+				<TextView
+					android:text="@string/max_time_old_event_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="5dip"
+				/>
+				<Spinner
+					android:id="@+id/max_time_old_event_combo"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+				/>
+	    	</TableRow>
 	    </TableLayout>
+	    <!--
 	   	<TextView
 			android:text="@string/date_label_str"
 			android:layout_width="wrap_content"
@@ -98,6 +141,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 		/>
+		-->
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:orientation="horizontal"
 		    android:layout_width="fill_parent"

@@ -1,3 +1,23 @@
+2011-09-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml: change for avoid the crash when rotate mobile.
+	
+	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java,
+	src/pandroid_event_viewer/pandorafms/Core.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip and fixes, now it
+	is the first version funcionality of Pandora Event Viewer....I hope.
+	
+	* res/values/arrays.xml, res/values/strings.xml, res/values-en/arrays.xml,
+	res/values-en/strings.xml, res/values-es/arrays.xml,
+	res/values-es/strings.xml: added more strings and array values.
+	
+	* res/layout/main.xml, res/layout/item_list_event_extended.xml,
+	res/layout/popup_validation_event.xml: change and added layouts.
+
 2011-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java: added

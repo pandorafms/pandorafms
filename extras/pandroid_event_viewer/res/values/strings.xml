@@ -52,6 +52,7 @@
     <string name="empty_label_str">Empty list events</string>
     <string name="refresh_time_label_str">Refresh time watcher</string>
     <string name="set_as_filter_watcher_button_str">Set as filter for watcher</string>
+    <string name="validate_event_button_str">Validate Event</string>
     
 	<string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>
@@ -70,4 +71,11 @@
     <string name="loading_events_criticity_2_str">Loading the %s events and some are in Normal state.</string>
     <string name="loading_events_criticity_3_str">Loading the %s events and some are in Warning state.</string>
     <string name="loading_events_criticity_4_str">Loading the %s events and some are in Critical state.</string>
+    
+    <string name="successful_validate_event_str">The event validation is successful.</string>
+    <string name="fail_validate_event_str">The event validation is failed.</string>
+    
+    <string name="status_label_str">Status</string>
+    <string name="event_search_label_str">Event search</string>
+    <string name="max_time_old_event_str">Max time old event</string>
 </resources>

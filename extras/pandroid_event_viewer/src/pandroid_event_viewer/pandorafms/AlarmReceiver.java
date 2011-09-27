@@ -20,8 +20,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.SystemClock;
 import android.util.Log;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -34,7 +32,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
 		Log.e("OnetimeAlarmReceiver", "onReceive");
 		
 		checkNewEvents(context);
@@ -124,6 +121,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     	String filterAgentName = preferences.getString("filterAgentName", "");
     	int filterIDGroup = preferences.getInt("filterIDGroup", 0);
     	int filterSeverity = preferences.getInt("filterSeverity", -1);
+    	int filterStatus = preferences.getInt("filterStatus", -1);
+    	String filterEventSearch = preferences.getString("filterEventSearch", "");
+    	
     	
     	Calendar c = Calendar.getInstance();
     	long now = (c.getTimeInMillis() / 1000);
@@ -153,6 +153,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     	return_var += Long.toString(filterTimestamp); //The minimun timestamp
     	return_var += "|";
     	return_var += ""; //The maximum timestamp
+    	return_var += "|";
+    	return_var += filterStatus; //The status
+    	return_var += "|";
+    	return_var += filterEventSearch; //The free search in the text event description.
     	return_var += "|";
     	return_var += Integer.toString(0); //The pagination of list events
     	return_var += "|";

@@ -47,6 +47,7 @@
     <string name="empty_label_str">Lista vacia de eventos</string>
     <string name="refresh_time_label_str">Refresco scanner eventos</string>
     <string name="set_as_filter_watcher_button_str">Hacerlo filtro para scanner eventos</string>
+    <string name="validate_event_button_str">Validar Evento</string>
     
     <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
     <string name="config_update_fail_str">Configuración no ha podido guardarse..</string>
@@ -65,4 +66,11 @@
     <string name="loading_events_criticity_2_str">Cargando los %s eventos y algunos son Normales.</string>
     <string name="loading_events_criticity_3_str">Cargando los %s eventos y algunos son Aviso.</string>
     <string name="loading_events_criticity_4_str">Cargando los %s eventos y algunos son Criticos.</string>
+    
+    <string name="successful_validate_event_str">Validación del evento correcta.</string>
+    <string name="fail_validate_event_str">Validación del evento incorrecta.</string>
+    
+    <string name="status_label_str">Estado</string>
+    <string name="event_search_label_str">Buscar evento</string>
+    <string name="max_time_old_event_str">Máx tiempo de antiguedad</string>
 </resources>

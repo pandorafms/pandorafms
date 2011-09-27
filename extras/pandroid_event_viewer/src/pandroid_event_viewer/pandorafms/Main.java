@@ -1,8 +1,6 @@
 package pandroid_event_viewer.pandorafms;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,11 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.TabActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -33,11 +27,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class Main extends Activity {
@@ -91,6 +83,21 @@ public class Main extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         comboSeverity.setAdapter(adapter);
         
+        
+        Spinner combo;
+        combo = (Spinner) findViewById(R.id.status_combo);
+        adapter = ArrayAdapter.createFromResource(
+        	this, R.array.event_status_values, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        combo.setAdapter(adapter);
+        
+        combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
+        adapter = ArrayAdapter.createFromResource(
+        	this, R.array.max_time_old_event_values, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        combo.setAdapter(adapter);
+        
+        
         buttonReset.setOnClickListener(new View.OnClickListener() {		
 			@Override
 			public void onClick(View v) {
@@ -109,7 +116,6 @@ public class Main extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				save_filter_watcher();
 			}
 		});
@@ -223,6 +229,7 @@ public class Main extends Activity {
     	this.object.loadInProgress = true;
     	
     	//Get form data
+    	/*
     	DatePicker datePicker = (DatePicker)findViewById(R.id.date);
     	TimePicker timePicker = (TimePicker)findViewById(R.id.time);
     	int day = datePicker.getDayOfMonth();
@@ -234,13 +241,20 @@ public class Main extends Activity {
     	c.set(year, month, day, hour, minute);
     	
     	this.object.timestamp = c.getTimeInMillis() / 1000;
+    	*/
     	
-    	EditText agentName = (EditText) findViewById(R.id.agent_name);
-    	String agentNameStr = agentName.getText().toString();
+    	
+    	int timeKey = 0;
+    	Spinner combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
+    	timeKey = combo.getSelectedItemPosition();
+    	
+    	this.object.timestamp = this.core.convertMaxTimeOldEventValuesToTimestamp(0, timeKey);
+    	
+    	EditText text = (EditText) findViewById(R.id.agent_name);
+    	this.object.agentNameStr = text.getText().toString();
     	
     	this.object.id_group = 0;
     	
-    	Spinner combo;
     	int sel;
     	combo = (Spinner) findViewById(R.id.group_combo);
     	String selectedGroup = combo.getSelectedItem().toString();
@@ -257,6 +271,12 @@ public class Main extends Activity {
     	combo = (Spinner) findViewById(R.id.severity_combo);
     	this.object.severity = combo.getSelectedItemPosition() - 1;
     	
+    	combo = (Spinner)findViewById(R.id.status_combo);
+    	this.object.status = combo.getSelectedItemPosition() - 1;
+    	
+    	text = (EditText)findViewById(R.id.event_search_text);
+    	this.object.eventSearch = text.getText().toString();
+    	
     	this.object.getNewListEvents = true;
     	this.object.executeBackgroundGetEvents();
     	
@@ -268,10 +288,12 @@ public class Main extends Activity {
     	String filterAgentName = "";
     	int filterIDGroup = 0;
     	int filterSeverity = -1;
+    	int filterStatus = -1;
+    	String filterEventSearch = "";
     	
     	
-    	EditText agentName = (EditText) findViewById(R.id.agent_name);
-    	filterAgentName = agentName.getText().toString();
+    	EditText text = (EditText) findViewById(R.id.agent_name);
+    	filterAgentName = text.getText().toString();
     	
     	Spinner combo;
     	combo = (Spinner) findViewById(R.id.group_combo);
@@ -289,6 +311,12 @@ public class Main extends Activity {
     	combo = (Spinner) findViewById(R.id.severity_combo);
     	filterSeverity = combo.getSelectedItemPosition();
     	
+    	combo = (Spinner)findViewById(R.id.status_combo);
+    	filterStatus = combo.getSelectedItemPosition() - 1;
+    	
+    	text = (EditText)findViewById(R.id.event_search_text);
+    	filterEventSearch = text.getText().toString();
+    	
     	
     	SharedPreferences preferences = getSharedPreferences(
             this.getString(R.string.const_string_preferences), 
@@ -298,6 +326,8 @@ public class Main extends Activity {
     	editorPreferences.putString("filterAgentName", filterAgentName);
     	editorPreferences.putInt("filterIDGroup", filterIDGroup);
     	editorPreferences.putInt("filterSeverity", filterSeverity);
+    	editorPreferences.putInt("filterStatus", filterStatus);
+    	editorPreferences.putString("filterEventSearch", filterEventSearch);
     	
     	if (editorPreferences.commit()) {
     		this.core.stopServiceEventWatcher(getApplicationContext());
@@ -315,8 +345,8 @@ public class Main extends Activity {
     }
     
     public void reset_form() {
-    	EditText agentEditText = (EditText)findViewById(R.id.agent_name);
-    	agentEditText.setText("");
+    	EditText text = (EditText)findViewById(R.id.agent_name);
+    	text.setText("");
     	
     	Spinner combo = (Spinner) findViewById(R.id.group_combo);
     	combo.setSelection(0);
@@ -324,6 +354,16 @@ public class Main extends Activity {
     	combo = (Spinner) findViewById(R.id.severity_combo);
     	combo.setSelection(0);
     	
+    	combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
+    	combo.setSelection(0);
+    	
+    	combo = (Spinner)findViewById(R.id.status_combo);
+    	combo.setSelection(0);
+    	
+    	text = (EditText)findViewById(R.id.event_search_text);
+    	text.setText("");
+    	
+    	/*
     	Calendar c = Calendar.getInstance();
     	DatePicker datePicker = (DatePicker)findViewById(R.id.date);
     	datePicker.updateDate(c.get(Calendar.YEAR),
@@ -333,5 +373,6 @@ public class Main extends Activity {
     	TimePicker timePicker = (TimePicker)findViewById(R.id.time);
     	timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
     	timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
+    	*/
     }
 }

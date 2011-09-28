@@ -1,5 +1,11 @@
 2011-09-28  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_graph.php: Fixed graphs engine to fix
+	reports graphs swap between horizontal and vertical and 
+	pdf view for bugs 3414107 and 3414124
+
+2011-09-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/jquery.pandora.controls.js: Moved part
 	of the solution of last commit to the enterprise
  

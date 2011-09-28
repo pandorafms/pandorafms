@@ -130,7 +130,6 @@
 							"json"
 						);
 					});
-					$(this).trigger("change");
 				});
 
 			};

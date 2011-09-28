@@ -1,5 +1,10 @@
 2011-09-28  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/jquery.pandora.controls.js: Moved part
+	of the solution of last commit to the enterprise
+ 
+2011-09-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/jquery.pandora.controls.js: Fixed module 
 	select refresh from jquery controls to fix the graph widget
 	on dashboard

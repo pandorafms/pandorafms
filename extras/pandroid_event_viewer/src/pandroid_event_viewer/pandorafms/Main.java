@@ -90,12 +90,14 @@ public class Main extends Activity {
         	this, R.array.event_status_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         combo.setAdapter(adapter);
+        combo.setSelection(4);
         
         combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
         adapter = ArrayAdapter.createFromResource(
         	this, R.array.max_time_old_event_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         combo.setAdapter(adapter);
+        combo.setSelection(4);
         
         
         buttonReset.setOnClickListener(new View.OnClickListener() {		
@@ -127,11 +129,11 @@ public class Main extends Activity {
 		try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
     		
-	    	HttpPost httpPost = new HttpPost(this.object.url);
+	    	HttpPost httpPost = new HttpPost(this.object.url + "/include/api.php");
 	    	
 	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 	    	parameters.add(new BasicNameValuePair("user", this.object.user));
-	    	parameters.add(new BasicNameValuePair("pass", this.object.password));
+	    	parameters.add(new BasicNameValuePair("pass", this.object.password));Log.e("getGroups", this.object.password);
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "groups"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
@@ -355,10 +357,10 @@ public class Main extends Activity {
     	combo.setSelection(0);
     	
     	combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
-    	combo.setSelection(0);
+    	combo.setSelection(4);
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
-    	combo.setSelection(0);
+    	combo.setSelection(4);
     	
     	text = (EditText)findViewById(R.id.event_search_text);
     	text.setText("");

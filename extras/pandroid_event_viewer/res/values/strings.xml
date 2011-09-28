@@ -43,6 +43,7 @@
     <string name="search_button_str">Search</string>
     <string name="loading_label_str">Loading</string>
     <string name="options_label_str">Options</string>
+    <string name="refresh_label_str">Refresh</string>
     <string name="url_label_str">URL</string>
     <string name="user_label_str">User</string>
     <string name="password_label_str">Password</string>

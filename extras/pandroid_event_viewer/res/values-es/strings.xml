@@ -34,10 +34,11 @@
     <string name="severity_label_str">Severidad</string>
     <string name="date_label_str">Fecha</string>
     <string name="number_events_label_str">Número de eventos</string>
-    <string name="reset_button_str">Reserteo</string>
+    <string name="reset_button_str">Reseteo</string>
     <string name="search_button_str">Buscar</string>
     <string name="loading_label_str">Cargando</string>
     <string name="options_label_str">Opciones</string>
+    <string name="refresh_label_str">Refrescar</string>
     <string name="url_label_str">URL</string>
     <string name="user_label_str">Usuario</string>
     <string name="password_label_str">Contraseña</string>

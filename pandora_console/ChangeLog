@@ -1,5 +1,11 @@
 2011-09-28  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/setup/setup_auth.php: Fixed LDAP jquery problem
+	in spanish translation for bug 3411881. Improved to
+	charge the fields first time page is loaded
+
+2011-09-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php: Fixed graphs engine to fix
 	reports graphs swap between horizontal and vertical and 
 	pdf view for bugs 3414107 and 3414124

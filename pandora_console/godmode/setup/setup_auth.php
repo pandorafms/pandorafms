@@ -37,7 +37,7 @@ $table->width = '98%';
 $table->size[0] = '30%';
 
 $table->data[0][0] = __('Authentication method');
-$auth_methods = array ('mysql' => __('Local Pandora FMS'), __('ldap') => 'LDAP');
+$auth_methods = array ('mysql' => __('Local Pandora FMS'), 'ldap' => __('ldap'));
 enterprise_hook ('add_enterprise_auth_methods', array (&$auth_methods));
 $table->data[0][1] = html_print_select ($auth_methods, 'auth', $config['auth'], 'show_selected_rows ();', '', 0, true);
 
@@ -124,4 +124,6 @@ echo '</form>';
 			$("#text-autocreate_blacklist").attr("disabled", false);
 		}
 	}
+	
+	show_selected_rows();
 </script>

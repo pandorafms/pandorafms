@@ -91,14 +91,12 @@
 					this.config = $.extend (this.config, $.pandoraSelectAgentModule.defaults, settings);
 					
 					var config = this.config;
-
 					$(this).change (function () {
 						var $select = $(config.moduleSelect).disable ();
 						$(config.loading).show ();
 						$("option[value!=0]", $select).remove ();
 						if (! config.callbackBefore (this))
 							return;
-						
 						jQuery.post ('ajax.php', 
 							{"page": "operation/agentes/ver_agente",
 							"get_agent_modules_json": 1,
@@ -109,9 +107,19 @@
 							function (data) {
 								jQuery.each (data, function (i, value) {
 									config.callbackPre ();
-									option = $("<option></option>")
-										.attr ("value", value['id_agente_modulo'])
-										.html (js_html_entity_decode (value['nombre']));
+									// Get the selected item from hidden field
+									selected = $('#hidden-'+config.moduleSelect.attr('id')+'_selected').val();
+									if(selected == i) {
+										option = $("<option></option>")
+											.attr ("selected", "selected")
+											.attr ("value", value['id_agente_modulo'])
+											.html (js_html_entity_decode (value['nombre']));
+									}
+									else {
+										option = $("<option></option>")
+											.attr ("value", value['id_agente_modulo'])
+											.html (js_html_entity_decode (value['nombre']));
+									}
 									config.callbackPost (i, value, option);
 									$(config.moduleSelect).append (option);
 								});
@@ -122,7 +130,9 @@
 							"json"
 						);
 					});
+					$(this).trigger("change");
 				});
+
 			};
 		}
 	});

@@ -34,7 +34,7 @@ public class Options extends Activity {
         	this.getString(R.string.const_string_preferences), 
         	Activity.MODE_PRIVATE);
         
-        url = preferences.getString("url", "");
+        url = preferences.getString("url", "http://farscape.artica.es/pandora_console");
         user = preferences.getString("user", "");
         password = preferences.getString("password", "");
         refreshTimeKey = preferences.getInt("refreshTimeKey", 3);
@@ -81,8 +81,11 @@ public class Options extends Activity {
     	int duration = Toast.LENGTH_SHORT;
     	
     	if (editorPreferences.commit()) {
-    		this.core.stopServiceEventWatcher(getApplicationContext());
-    		this.core.startServiceEventWatcher(getApplicationContext());
+    		if (this.core != null) {
+    			Log.e("Options", "reset service");
+    			this.core.stopServiceEventWatcher(getApplicationContext());
+    			this.core.startServiceEventWatcher(getApplicationContext());
+    		}
     		
     		Toast toast = Toast.makeText(context, this.getString(R.string.config_update_succesful_str), duration);
     		toast.show();

@@ -47,6 +47,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 	        this.user = preferences.getString("user", "");
 	        this.password = preferences.getString("password", "");
 	        
+	        if ((user.length() == 0) && (password.length() == 0)
+	            	&& (url.length() == 0)) {
+	        	return;
+	        }
+	        
 	    	try {
 	            DefaultHttpClient httpClient = new DefaultHttpClient();
 	            UrlEncodedFormEntity entity;
@@ -56,7 +61,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 	            HttpEntity entityResponse;
 	            String return_api;
 	    		
-		    	httpPost = new HttpPost(this.url);
+		    	httpPost = new HttpPost(this.url + "/include/api.php");
 		    	
 		    	String parametersAPI = serializeParams2Api(context);
 		    	
@@ -121,7 +126,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     	String filterAgentName = preferences.getString("filterAgentName", "");
     	int filterIDGroup = preferences.getInt("filterIDGroup", 0);
     	int filterSeverity = preferences.getInt("filterSeverity", -1);
-    	int filterStatus = preferences.getInt("filterStatus", -1);
+    	int filterStatus = preferences.getInt("filterStatus", 4);
     	String filterEventSearch = preferences.getString("filterEventSearch", "");
     	
     	

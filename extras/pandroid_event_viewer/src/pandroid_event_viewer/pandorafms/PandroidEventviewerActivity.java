@@ -16,6 +16,7 @@ package pandroid_event_viewer.pandorafms;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -71,7 +72,6 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        
         SharedPreferences preferences = getSharedPreferences(
         	this.getString(R.string.const_string_preferences), 
         	Activity.MODE_PRIVATE);
@@ -80,14 +80,14 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.user = preferences.getString("user", "");
         this.password = preferences.getString("password", "");
         
-        //this.timestamp = 1315015715;
-        this.timestamp = new Date().getTime() / 1000;
+        Calendar c = Calendar.getInstance();
+        this.timestamp = (c.getTimeInMillis() / 1000) - (4 * 60 * 60);
         this.pagination = 20;
         this.offset = 0;
-        this.agentNameStr = "";
-        this.severity = -1;
-        this.status = -1;
-        this.eventSearch = "";
+        this.agentNameStr = preferences.getString("filterAgentName", "");
+        this.severity = preferences.getInt("filterSeverity", -1);
+        this.status = preferences.getInt("filterStatus", 4);
+        this.eventSearch = preferences.getString("filterEventSearch", "");
         
         this.eventList = new ArrayList<EventListItem>();
         this.loadInProgress = false;
@@ -108,8 +108,9 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         	this.loadInProgress = true;
         }
         
-        //Start the background service for the notifications
         this.core = new Core();
+        
+        //Start the background service for the notifications
         this.core.startServiceEventWatcher(getApplicationContext());
         
         Intent i_main = new Intent(this, Main.class);
@@ -119,8 +120,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		tabHost.addTab
 		(
 			tabHost.newTabSpec(getResources().getString(R.string.item_tab_main_text))
-			.setIndicator(getResources().getString(R.string.item_tab_main_text),
-				this.getResources().getDrawable(R.drawable.house)
+			.setIndicator(getResources().getString(R.string.item_tab_main_text)
 			)
 			.setContent(i_main)
 		);
@@ -131,8 +131,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		tabHost.addTab
 		(
 			tabHost.newTabSpec(getResources().getString(R.string.item_tab_event_list_text))
-			.setIndicator(getResources().getString(R.string.item_tab_event_list_text),
-				this.getResources().getDrawable(R.drawable.lightning_go)
+			.setIndicator(getResources().getString(R.string.item_tab_event_list_text)
 			)
 			.setContent(i_event_list)
 		);
@@ -191,17 +190,15 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
             	getString(R.string.const_string_preferences), 
             	Activity.MODE_PRIVATE);
             this.timestamp = preferences.getLong("previous_filterTimestamp", (new Date().getTime() / 1000));
+    	}    		
     		
-    		
-        	this.getTabHost().setCurrentTab(1);
-    	}
-    	
+        this.getTabHost().setCurrentTab(1);
     	executeBackgroundGetEvents();
     	
     	Log.e("PandroidEventviewerActivity", "onResume");
     }
     
-    public void onConfigurationChanged(Configuration newConfig) { 
+    public void onConfigurationChanged(Configuration newConfig) {
     	super.onConfigurationChanged(newConfig);
     	
     	Log.e("PandroidEventviewerActivity", "onConfigurationChanged");
@@ -250,7 +247,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
             HttpEntity entityResponse;
             String return_api;
     		
-	    	httpPost = new HttpPost(this.url);
+	    	httpPost = new HttpPost(this.url + "/include/api.php");
 	    	
 	    	//Get total count.
 	    	parameters = new ArrayList<NameValuePair>();

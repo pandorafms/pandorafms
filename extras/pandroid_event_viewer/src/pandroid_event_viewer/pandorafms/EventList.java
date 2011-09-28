@@ -7,11 +7,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EventList extends ListActivity {
 	private ListView lv;
@@ -78,6 +81,7 @@ public class EventList extends ListActivity {
 				Log.e("onReceive", "onReceive");
 				
 				int load_more = intent.getIntExtra("load_more", 0);
+				Log.e("load_more", "" + load_more);
 				
 				if (load_more == 1) {
 					la.showLoadingEvents = false;
@@ -121,7 +125,7 @@ public class EventList extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
+        inflater.inflate(R.menu.options_menu_list_events, menu);
         return true;
     }
     @Override
@@ -133,6 +137,13 @@ public class EventList extends ListActivity {
             	i.putExtra("core", this.core);
             	
             	startActivity(i);
+            	break;
+            case R.id.refresh_button_menu_options:
+            	Log.e("onOptionsItemSelected","refresh_button_menu_options");
+            	this.object.loadInProgress = true;
+            	this.object.getNewListEvents = true;
+            	this.toggleLoadingLayout();
+            	this.object.executeBackgroundGetEvents();
             	break;
         }
         
@@ -187,8 +198,14 @@ public class EventList extends ListActivity {
     		img = this.imgGroups.get(group_icon);
     	}
     	else {
+    		 SharedPreferences preferences = getApplicationContext().getSharedPreferences(
+    			getApplicationContext().getString(R.string.const_string_preferences), 
+	        	Activity.MODE_PRIVATE);
+    		            
+    		String url = preferences.getString("url", "");
+    		
     		img = this.downloadFile(
-    			"http://192.168.70.112/pandora_console/images/groups_small/" + group_icon + ".png");
+    			url + "/images/groups_small/" + group_icon + ".png");
     		
     		if (img != null) {
     			this.imgGroups.put(group_icon, img);

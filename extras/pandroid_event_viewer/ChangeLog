@@ -1,3 +1,22 @@
+2011-09-28  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip and fixes.
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more strings and array values. 
+	
+	* res/menu/options_menu_list_events.xml: added custom menu for event list.
+
+	* res/drawable-ldpi/refresh.png: icon for the refresh.
+	
+	* res/layout/main.xml, res/layout/options.xml: modify the layer.
+
+
 2011-09-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: change for avoid the crash when rotate mobile.

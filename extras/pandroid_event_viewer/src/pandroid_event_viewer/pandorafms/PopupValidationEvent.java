@@ -97,7 +97,7 @@ public class PopupValidationEvent extends Activity {
 	        HttpEntity entityResponse;
 	        String return_api;
 			
-	    	httpPost = new HttpPost(this.url);
+	    	httpPost = new HttpPost(this.url + "/include/api.php");
 	    	
 	    	//Set event validation.
 	    	parameters = new ArrayList<NameValuePair>();

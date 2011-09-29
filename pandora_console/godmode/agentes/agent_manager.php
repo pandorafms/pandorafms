@@ -51,9 +51,13 @@ if (is_ajax ()) {
  	
 	$get_modules_json_for_multiple_snmp = (bool) get_parameter("get_modules_json_for_multiple_snmp", 0);
 	if ($get_modules_json_for_multiple_snmp) {
+		require_once ('include/graphs/functions_utils.php');
+
 		$idSNMP = get_parameter('id_snmp');
-		$snmp = json_decode(html_entity_decode(get_parameter('snmp_json')),true);
-	
+		
+		$id_snmp_serialize = get_parameter('id_snmp_serialize');
+		$snmp = unserialize_in_temp($id_snmp_serialize, false);
+
 		$oid_snmp = array();
 		$out = false;
 		foreach($idSNMP as $id) {

@@ -1,3 +1,12 @@
+2011-09-29  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/snmp_explorer.php
+	godmode/agentes/agent_manager.php: Fixed timeout problem
+	with big machines changing the transfer to ajax data mode
+	to serialize way. Fixed little bugs as None option when 
+	are data and few checks to avoid errors when try create
+	modules without select any OID.
+
 2011-09-28  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/setup/setup_auth.php: Fixed LDAP jquery problem

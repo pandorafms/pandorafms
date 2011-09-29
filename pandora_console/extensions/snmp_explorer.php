@@ -19,6 +19,7 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 require_once ('include/functions_modules.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_reporting.php');
+require_once ('include/graphs/functions_utils.php');
 
 function snmp_explorer() {
 
@@ -91,6 +92,10 @@ function snmp_explorer() {
 
     if($create_modules) {	
 	    $interfaces = json_decode(html_entity_decode(get_parameter_post("snmp_json")), true);
+	    if(is_null($interfaces)) {
+			$interfaces = array();
+		}
+		
 	    $values = array();
 	
 	    if($tcp_port != ''){
@@ -122,7 +127,7 @@ function snmp_explorer() {
 			    }
 		    }
 	    }
-	    $modules = get_parameter('module');
+	    $modules = get_parameter('module', array());
 	    $id_snmp = get_parameter('id_snmp');
 
 	    if($id_snmp == false) {
@@ -201,10 +206,6 @@ function snmp_explorer() {
     // Create the interface list for the interface
     $interfaces_list = array();
     foreach($interfaces as $interface){
-	    /*foreach($interface as $key => $interf) {
-		    echo $key.": ".$interf['value']."<br>";
-	    }*/
-
         // Get the interface name, removing " " characters and avoid "blank" interfaces
         if (!isset($interface['ifName']) || $interface['ifName']['value'] == "")
             continue;
@@ -296,8 +297,10 @@ function snmp_explorer() {
 	    echo '<span id="form_interfaces">';
 	    echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 	    echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
+		
+	    $id_snmp_serialize = serialize_in_temp($interfaces, $config['id_user']."_snmp");
+	    html_print_input_hidden('id_snmp_serialize', $id_snmp_serialize);
 
-	    html_print_input_hidden('snmp_json',	htmlentities(json_encode($interfaces)));
 	    html_print_input_hidden('create_modules', 1);
 	    html_print_input_hidden('ip_target', $ip_target);
 	    html_print_input_hidden('tcp_port', $tcp_port);
@@ -383,32 +386,36 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 				{"page" : "godmode/agentes/agent_manager",
 				 "get_modules_json_for_multiple_snmp": 1,
 				 "id_snmp[]": idSNMP,
-				 "snmp_json": $("#hidden-snmp_json").val()
+				 "id_snmp_serialize": $("#hidden-id_snmp_serialize").val()
 				 },
 				 function (data) {
 					 $('#module').empty ();
-					 if (typeof($(document).data('text_for_module')) != 'undefined') {
-						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
-					 }
-					 else {
-						 if (typeof(data['any_text']) != 'undefined') {
-							 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-						 }
-						 else {
-							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-							 
-							 if (anyText == null) {
-								 anyText = 'Any';
-							 }
-							 
-							 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-						 }
-					 }
+					 c = 0;
 					 jQuery.each (data, function (i, val) {
 								  s = js_html_entity_decode(val);
 								  $('#module').append ($('<option></option>').html (s).attr ("value", i));
 								  $('#module').fadeIn ('normal');
+								  c++;
 								  });
+					 if(c == 0){
+						 if (typeof($(document).data('text_for_module')) != 'undefined') {
+							 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+						 }
+						 else {
+							 if (typeof(data['any_text']) != 'undefined') {
+								 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+							 }
+							 else {
+								 var anyText = $("#any_text").html(); //Trick for catch the translate text.
+								 
+								 if (anyText == null) {
+									 anyText = 'Any';
+								 }
+								 
+								 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+							 }
+						 }
+					 }
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
 					 $('#module').attr ('disabled', 0);

@@ -44,6 +44,7 @@
     <string name="update_button_str">Update</string>
     <string name="option_title_str">Options</string>
     <string name="refresh_label_str">Refresh</string>
+    <string name="about_label_str">About</string>
     <string name="load_more_events_button_str">Load more events</string>
     <string name="empty_label_str">Empty list events</string>
     <string name="refresh_time_label_str">Refresh time watcher</string>
@@ -74,4 +75,7 @@
     <string name="status_label_str">Status</string>
     <string name="event_search_label_str">Event search</string>
     <string name="max_time_old_event_str">Max time old event</string>
+    
+    <string name="licensed_under_gpl_str">Licensed under GPL</string>
+    <string name="develop_team_str">Develop team: Miguel de Dios</string>
 </resources>

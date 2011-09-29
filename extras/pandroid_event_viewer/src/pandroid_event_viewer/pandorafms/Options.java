@@ -43,6 +43,8 @@ public class Options extends Activity {
         text.setText(url);
         text = (EditText) findViewById(R.id.user);
         text.setText(user);
+        text = (EditText) findViewById(R.id.password);
+        text.setText(password);
         
         Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(

@@ -25,4 +25,9 @@
 		android:title="@string/refresh_label_str"
 		android:icon="@drawable/refresh"
 	/>
+	<item
+		android:id="@+id/about_button_menu_options"
+		android:title="@string/about_label_str"
+		android:icon="@drawable/about"
+	/>
 </menu>

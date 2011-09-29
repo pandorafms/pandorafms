@@ -62,6 +62,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public long offset;
     public int status;
     public String eventSearch;
+    public int filterLastTime;
     
     public Intent intent_service;
     
@@ -88,6 +89,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.severity = preferences.getInt("filterSeverity", -1);
         this.status = preferences.getInt("filterStatus", 4);
         this.eventSearch = preferences.getString("filterEventSearch", "");
+        this.filterLastTime = preferences.getInt("filterLastTime", 6);
         
         this.eventList = new ArrayList<EventListItem>();
         this.loadInProgress = false;

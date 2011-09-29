@@ -79,14 +79,12 @@
 		android:visibility="gone"
 	>
 		<TextView
-			android:textStyle="bold"
 			android:textColor="#000"
 			android:text="@string/agent_label_str"
 			android:paddingRight="5dip"
 		/>
 		<TextView
 			android:id="@+id/agent_text"
-			android:textStyle="bold"
 			android:textColor="#000"
 			android:text=""
 		/>
@@ -156,12 +154,12 @@
 	</TableRow>
 	<TableRow
 		android:gravity="right"
-	>
-			<Button
-				android:id="@+id/validate_button_extended"
-				android:text="@string/validate_event_button_str"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-			/>
+	> 
+		<Button
+			android:id="@+id/validate_button_extended"
+			android:text="@string/validate_event_button_str"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+		/>
 	</TableRow>
 </TableLayout>

@@ -441,7 +441,10 @@ public class EventList extends ListActivity {
 						//http://127.0.0.1/pandora_console/mobile/index.php?page=agent&id=1
 						//Log.e("url", this.object.url);
 						text.setText(Html.fromHtml(
-							"<a href='" + this.object.url + "/mobile/index.php?page=agent&id=" + item.id_agent
+							"<a href='" + this.object.url +
+							"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
+							//"/mobile/index.php?page=agent&id="
+							+ item.id_agent
 							+ "'>" + item.agent_name + "</a>"));
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 						//text.setText(item.agent_name);

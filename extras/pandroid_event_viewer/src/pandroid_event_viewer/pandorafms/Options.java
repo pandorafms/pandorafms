@@ -69,8 +69,12 @@ public class Options extends Activity {
     	SharedPreferences.Editor editorPreferences = preferences.edit();
     	
     	EditText text = (EditText) findViewById(R.id.url);
+    	String url = text.getText().toString();
+    	if (url.charAt(url.length() - 1) == '/') {
+    		url = url.substring(0, url.length() - 1);
+    	}
     	
-    	editorPreferences.putString("url", text.getText().toString());
+    	editorPreferences.putString("url", url);
     	text = (EditText) findViewById(R.id.user);
     	editorPreferences.putString("user", text.getText().toString());
     	text = (EditText) findViewById(R.id.password);

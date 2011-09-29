@@ -57,6 +57,13 @@
         	android:configChanges="orientation|keyboardHidden"
         >
         </activity>
+		<activity
+        	android:name=".About"
+        	android:label="@string/pandroid_event_viewer_str"
+        	android:configChanges="orientation|keyboardHidden"
+        	android:theme="@android:style/Theme.Dialog"
+        >
+        </activity>
         <activity
         	android:name=".PopupValidationEvent"
         	android:label="@string/validate_event_button_str"

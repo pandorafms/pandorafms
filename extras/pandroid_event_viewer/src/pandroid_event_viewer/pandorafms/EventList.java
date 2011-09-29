@@ -19,6 +19,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -130,9 +132,10 @@ public class EventList extends ListActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent i;
         switch (item.getItemId()) {
             case R.id.options_button_menu_options:
-            	Intent i = new Intent(this, Options.class);
+            	i = new Intent(this, Options.class);
             	//FAIL//i.putExtra("object", object);
             	i.putExtra("core", this.core);
             	
@@ -144,6 +147,10 @@ public class EventList extends ListActivity {
             	this.object.getNewListEvents = true;
             	this.toggleLoadingLayout();
             	this.object.executeBackgroundGetEvents();
+            	break;
+            case R.id.about_button_menu_options:
+            	i = new Intent(this, About.class);
+            	startActivity(i);
             	break;
         }
         
@@ -264,6 +271,7 @@ public class EventList extends ListActivity {
 		
 		Log.e("onListItemClick", new Integer(position).toString());
 		EventListItem item = this.object.eventList.get(position);
+		Log.e("onListItemClick", position + "");
 		item.opened = !item.opened;
 		this.object.eventList.set(position, item);
 		la.notifyDataSetChanged();
@@ -429,8 +437,14 @@ public class EventList extends ListActivity {
 						View row = viewEventExtended.findViewById(R.id.row_agent);
 						row.setVisibility(View.VISIBLE);
 						
-						text = (TextView)viewEventExtended.findViewById(R.id.type_text);
-						text.setText(item.description_event);
+						text = (TextView)viewEventExtended.findViewById(R.id.agent_text);
+						//http://127.0.0.1/pandora_console/mobile/index.php?page=agent&id=1
+						//Log.e("url", this.object.url);
+						text.setText(Html.fromHtml(
+							"<a href='" + this.object.url + "/mobile/index.php?page=agent&id=" + item.id_agent
+							+ "'>" + item.agent_name + "</a>"));
+						text.setMovementMethod(LinkMovementMethod.getInstance());
+						//text.setText(item.agent_name);
 						
 						setImageType(viewEventExtended, item.description_image, R.id.img_type);
 					}
@@ -442,15 +456,17 @@ public class EventList extends ListActivity {
 						setImageType(viewEventExtended, item.criticity_image, R.id.img_severity);
 					}
 					
-					
-			        final Button button;
+					Button button;
 			        button = (Button)viewEventExtended.findViewById(R.id.validate_button_extended);
+			        //button.setOnClickListener(this);
+			        
 			        OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
 			        clickListener.id_event = item.id_event;
 			        //clickListener.object = this.object;
 			        clickListener.core = this.core;
 			        button.setOnClickListener(clickListener);
 			        
+			        view.setOnClickListener(new OnItemClickListener(position, this.object));
 					
 					LinearLayout itemLinearLayout = (LinearLayout)view.findViewById(R.id.item_linear_layout);
 					itemLinearLayout.addView(viewEventExtended);
@@ -460,6 +476,22 @@ public class EventList extends ListActivity {
     		return view;
 		}
 		
+		private class OnItemClickListener implements OnClickListener{   	
+	    	private int mPosition;
+	    	private PandroidEventviewerActivity object;
+	    	OnItemClickListener(int position, PandroidEventviewerActivity object){
+	    		mPosition = position;
+	    		this.object = object;
+	    	}
+	    	@Override
+	    	public void onClick(View arg0) {
+	    		EventListItem item = this.object.eventList.get(mPosition);
+	    		item.opened = !item.opened;
+	    		this.object.eventList.set(mPosition, item);
+	    		la.notifyDataSetChanged();	
+	    	}		
+	    }
+		
 		public class OnClickListenerButtonValidate implements OnClickListener {
 			public int id_event;
 			//public PandroidEventviewerActivity object;
@@ -467,6 +499,7 @@ public class EventList extends ListActivity {
 			
 			@Override
 			public void onClick(View v) {
+				Log.e("id_event", "" + id_event);
 				Intent i = new Intent(getApplicationContext(), PopupValidationEvent.class);
             	i.putExtra("id_event", id_event);
                 //i.putExtra("object", this.object);

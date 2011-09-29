@@ -77,6 +77,10 @@ public class Main extends Activity {
             new GetGroupsAsyncTask().execute();
         }
         
+        SharedPreferences preferences = getSharedPreferences(
+            	this.getString(R.string.const_string_preferences), 
+            	Activity.MODE_PRIVATE);
+        
         comboSeverity = (Spinner) findViewById(R.id.severity_combo);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(
                 this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
@@ -97,7 +101,7 @@ public class Main extends Activity {
         	this, R.array.max_time_old_event_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         combo.setAdapter(adapter);
-        combo.setSelection(4);
+        combo.setSelection(preferences.getInt("filterLastTime", 6));
         
         
         buttonReset.setOnClickListener(new View.OnClickListener() {		
@@ -220,6 +224,10 @@ public class Main extends Activity {
             	
             	startActivity(i);
             	break;
+            case R.id.about_button_menu_options:
+            	i = new Intent(this, About.class);
+            	startActivity(i);
+            	break;
         }
         
         return true;
@@ -291,6 +299,7 @@ public class Main extends Activity {
     	int filterIDGroup = 0;
     	int filterSeverity = -1;
     	int filterStatus = -1;
+    	int filterLastTime = 0;
     	String filterEventSearch = "";
     	
     	
@@ -316,6 +325,9 @@ public class Main extends Activity {
     	combo = (Spinner)findViewById(R.id.status_combo);
     	filterStatus = combo.getSelectedItemPosition() - 1;
     	
+    	combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
+    	filterLastTime = combo.getSelectedItemPosition();
+    	
     	text = (EditText)findViewById(R.id.event_search_text);
     	filterEventSearch = text.getText().toString();
     	
@@ -330,6 +342,7 @@ public class Main extends Activity {
     	editorPreferences.putInt("filterSeverity", filterSeverity);
     	editorPreferences.putInt("filterStatus", filterStatus);
     	editorPreferences.putString("filterEventSearch", filterEventSearch);
+    	editorPreferences.putInt("filterLastTime", filterLastTime);
     	
     	if (editorPreferences.commit()) {
     		this.core.stopServiceEventWatcher(getApplicationContext());
@@ -357,7 +370,7 @@ public class Main extends Activity {
     	combo.setSelection(0);
     	
     	combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
-    	combo.setSelection(4);
+    	combo.setSelection(6);
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
     	combo.setSelection(4);

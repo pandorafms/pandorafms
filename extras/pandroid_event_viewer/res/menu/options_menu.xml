@@ -20,4 +20,9 @@
 		android:title="@string/options_label_str"
 		android:icon="@drawable/config"
 	/>
+	<item
+		android:id="@+id/about_button_menu_options"
+		android:title="@string/about_label_str"
+		android:icon="@drawable/about"
+	/>
 </menu>

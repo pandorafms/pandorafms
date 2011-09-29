@@ -1,3 +1,7 @@
+2011-09-29  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent.redhat.spec: Fixed wrong command paths in %prereq.
+
 2011-09-13  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent: Clear the old process information before

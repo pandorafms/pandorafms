@@ -18,7 +18,7 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
-PreReq:             /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
+PreReq:             /bin/sed /bin/grep /usr/sbin/useradd
 Requires:           coreutils unzip
 AutoReq:            0
 Provides:           %{name}-%{version}

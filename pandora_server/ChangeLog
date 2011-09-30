@@ -1,3 +1,8 @@
+2011-09-30  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Merged from trunk the possibility of 
+	create an event without Agent name
+
 2011-09-29  Sancho Lerena <slerena@artica.es>
 
 	* Core.pm,

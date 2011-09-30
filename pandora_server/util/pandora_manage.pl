@@ -1144,10 +1144,25 @@ sub pandora_manage_main ($$$) {
 				exist_check($id_group,'group',$group_name);
 			}
 			
-			my $id_agent = get_agent_id($dbh,$agent_name);
-			exist_check($id_agent,'agent',$agent_name);
-			my $id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
-			exist_check($id_agentmodule,'module',$module_name);
+			my $id_agent;
+			
+			if (defined($agent_name) && $agent_name ne "") {
+				$id_agent = get_agent_id($dbh,$agent_name);
+				exist_check($id_agent,'agent',$agent_name);
+				
+			} else {
+				$id_agent = 0;
+			}
+			
+			my $id_agentmodule;
+				
+			if (defined($module_name) && $module_name ne "") {				
+				$id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
+				exist_check($id_agentmodule,'module',$module_name);
+
+			} else {
+				$id_agentmodule = 0;
+			}
 			
 			my $id_alert_agent_module;
 						

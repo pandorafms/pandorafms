@@ -165,7 +165,7 @@ public class Main extends Activity {
 	    	}
     	}
     	catch (Exception e) {
-    		Log.e("ERROR THE ", e.getMessage());
+    		Log.e("ERROR getGroups ", e.getMessage());
     	}
 		
 		return array;
@@ -236,6 +236,7 @@ public class Main extends Activity {
     public void search_form() {
     	//Clean the EventList
     	this.object.eventList = new ArrayList<EventListItem>();
+    	Log.e("search_form", "" +this.object.eventList.size());
     	this.object.loadInProgress = true;
     	
     	//Get form data

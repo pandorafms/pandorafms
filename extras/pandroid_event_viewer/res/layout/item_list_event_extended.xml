@@ -37,6 +37,7 @@
 				android:layout_width="wrap_content"
 	    		android:layout_height="wrap_content"
 	    		android:layout_gravity="center"
+	    		android:paddingRight="5px"
 			/>
 			<TextView
 				android:id="@+id/severity_text"
@@ -64,6 +65,7 @@
 				android:layout_width="wrap_content"
 	    		android:layout_height="wrap_content"
 	    		android:layout_gravity="center"
+	    		android:paddingRight="5px"
 			/>
 			<TextView
 				android:id="@+id/type_text"
@@ -106,6 +108,7 @@
 				android:layout_width="wrap_content"
 	    		android:layout_height="wrap_content"
 	    		android:layout_gravity="center"
+	    		android:paddingRight="5px"
 			/>
 			<TextView
 				android:layout_weight="1"

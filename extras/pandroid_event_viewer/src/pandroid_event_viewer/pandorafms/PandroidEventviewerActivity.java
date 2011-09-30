@@ -87,7 +87,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.offset = 0;
         this.agentNameStr = preferences.getString("filterAgentName", "");
         this.severity = preferences.getInt("filterSeverity", -1);
-        this.status = preferences.getInt("filterStatus", 4);
+        this.status = preferences.getInt("filterStatus", 3);
         this.eventSearch = preferences.getString("filterEventSearch", "");
         this.filterLastTime = preferences.getInt("filterLastTime", 6);
         
@@ -298,6 +298,12 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	
 	    	for (int i= 0; i < lines.length; i++) {
 	    		String[] items = lines[i].split(";", 21);
+	    		
+	    		if (items.length != 21) {
+	    			this.count_events --; //Discount invalid.
+	    			if (this.count_events < 0) this.count_events = 0;
+	    			continue;
+	    		}
 	    		
 	    		EventListItem event = new EventListItem();
 	    		if (items[0].length() == 0) {

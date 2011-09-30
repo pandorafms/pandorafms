@@ -15,7 +15,7 @@
 // GNU General Public License for more details. 
 -->
 <resources>
-	<string name="item_tab_main_text">Principal</string>
+	<string name="item_tab_main_text">Filtro</string>
 	<string name="item_tab_event_list_text">Lista de eventos</string>
 	
     <string name="main_text">main text (value spanish)</string>
@@ -48,7 +48,7 @@
     <string name="load_more_events_button_str">Cargar mas eventos</string>
     <string name="empty_label_str">Lista vacia de eventos</string>
     <string name="refresh_time_label_str">Refresco scanner eventos</string>
-    <string name="set_as_filter_watcher_button_str">Hacerlo filtro para scanner eventos</string>
+    <string name="set_as_filter_watcher_button_str">Filtro por defecto</string>
     <string name="validate_event_button_str">Validar Evento</string>
     
     <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
@@ -78,4 +78,15 @@
     
     <string name="licensed_under_gpl_str">Licenciado bajo GPL</string>
     <string name="develop_team_str">Equipo de desarrollo: Miguel de Dios</string>
+    
+    <string name="alert_recovered_str">Alerta recuperada</string>
+    <string name="alert_manual_validation_str">Alerta validada manualmente</string>
+    <string name="going_up_warning_str">Cayendo de crítico a advertencia</string>
+    <string name="going_down_critical_str">Cayendo a estado crítico</string>
+    <string name="going_up_normal_str">Subiendo a estado normal</string>
+    <string name="going_down_warning_str">Cayendo de normal a advertencia</string>
+    <string name="alert_fired_str">Alerta lanzada</string>
+    <string name="recon_host_detected_str">El servidor Recon detectó un equipo nuevo</string>
+    <string name="new_agent_str">Agente nuevo creado</string>
+    <string name="unknown_str">Tipo desconocido:</string>
 </resources>

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -85,6 +86,19 @@ public class EventList extends ListActivity {
 				int load_more = intent.getIntExtra("load_more", 0);
 				Log.e("load_more", "" + load_more);
 				
+				Button button = (Button) findViewById(R.id.button_load_more_events);
+				Log.e("object.eventList.size", object.eventList.size() + "");
+				Log.e("object.count_events", object.count_events + "");
+				if (object.eventList.size() == 0) {
+					button.setVisibility(Button.GONE);
+				}
+				else if (((long)object.eventList.size()) >= object.count_events) {
+					button.setVisibility(Button.GONE);
+				}
+				else {
+					button.setVisibility(Button.VISIBLE);
+				}
+				
 				if (load_more == 1) {
 					la.showLoadingEvents = false;
 					la.notifyDataSetChanged();
@@ -145,6 +159,7 @@ public class EventList extends ListActivity {
             	Log.e("onOptionsItemSelected","refresh_button_menu_options");
             	this.object.loadInProgress = true;
             	this.object.getNewListEvents = true;
+            	this.object.eventList = new ArrayList<EventListItem>();
             	this.toggleLoadingLayout();
             	this.object.executeBackgroundGetEvents();
             	break;
@@ -352,7 +367,16 @@ public class EventList extends ListActivity {
     				}
     				else {
 	    				Button button = (Button)view.findViewById(R.id.button_load_more_events);
-	    				button.setVisibility(Button.VISIBLE);
+	    				
+	    				if (object.eventList.size() == 0) {
+	    					button.setVisibility(Button.GONE);
+	    				}
+	    				else if (((long)object.eventList.size()) >= object.count_events) {
+	    					button.setVisibility(Button.GONE);
+	    				}
+	    				else {
+	    					button.setVisibility(Button.VISIBLE);
+	    				}
 	    				
 	    				button.setOnClickListener(new View.OnClickListener() {		
 	    					@Override
@@ -438,19 +462,18 @@ public class EventList extends ListActivity {
 						row.setVisibility(View.VISIBLE);
 						
 						text = (TextView)viewEventExtended.findViewById(R.id.agent_text);
-						//http://127.0.0.1/pandora_console/mobile/index.php?page=agent&id=1
-						//Log.e("url", this.object.url);
 						text.setText(Html.fromHtml(
 							"<a href='" + this.object.url +
 							"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
-							//"/mobile/index.php?page=agent&id="
+							//"/mobile/index.php?page=agent&id=" //The link to Pandora Console Mobile
 							+ item.id_agent
 							+ "'>" + item.agent_name + "</a>"));
 						text.setMovementMethod(LinkMovementMethod.getInstance());
-						//text.setText(item.agent_name);
-						
-						setImageType(viewEventExtended, item.description_image, R.id.img_type);
 					}
+					
+					setImageType(viewEventExtended, item.description_image, R.id.img_type);
+					text = (TextView)viewEventExtended.findViewById(R.id.type_text);
+					text.setText(eventType2Text(item.event_type));
 					
 					if (item.criticity_name.length() != 0) {
 						text = (TextView)viewEventExtended.findViewById(R.id.severity_text);
@@ -477,6 +500,52 @@ public class EventList extends ListActivity {
     		}
     		
     		return view;
+		}
+		
+		private String eventType2Text(String type) {
+			String return_var;
+			
+			if (type.equals("alert_recovered")) {
+				return_var = getApplicationContext().getString(R.string.alert_recovered_str);
+			}
+			else if (type.equals("alert_manual_validation")) {
+				return_var = getApplicationContext().getString(R.string.alert_manual_validation_str);
+			}
+			else if (type.equals("going_up_warning")) {
+				return_var = getApplicationContext().getString(R.string.going_up_warning_str);
+			}
+			else if (type.equals("going_down_critical")) {
+				return_var = getApplicationContext().getString(R.string.going_down_critical_str);
+			}
+			else if (type.equals("going_up_critical")) {
+				return_var = getApplicationContext().getString(R.string.going_down_critical_str);
+			}
+			else if (type.equals("going_up_normal")) {
+				return_var = getApplicationContext().getString(R.string.going_up_normal_str);
+			}
+			else if (type.equals("going_down_normal")) {
+				return_var = getApplicationContext().getString(R.string.going_up_normal_str);
+			}
+			else if (type.equals("going_down_warning")) {
+				return_var = getApplicationContext().getString(R.string.going_down_warning_str);
+			}
+			else if (type.equals("alert_fired")) {
+				return_var = getApplicationContext().getString(R.string.alert_fired_str);
+			}
+			else if (type.equals("system")) {
+				return_var = getApplicationContext().getString(R.string.system_str);
+			}
+			else if (type.equals("recon_host_detected")) {
+				return_var = getApplicationContext().getString(R.string.system_str);
+			}
+			else if (type.equals("new_agent")) {
+				return_var = getApplicationContext().getString(R.string.new_agent_str);
+			}
+			else {
+				return_var = getApplicationContext().getString(R.string.unknown_str) + " " + type;
+			}
+			
+			return return_var;
 		}
 		
 		private class OnItemClickListener implements OnClickListener{   	

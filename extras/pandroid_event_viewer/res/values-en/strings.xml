@@ -15,7 +15,7 @@
 // GNU General Public License for more details. 
 -->
 <resources>
-	<string name="item_tab_main_text">Main</string>
+	<string name="item_tab_main_text">Filter</string>
 	<string name="item_tab_event_list_text">Event list</string>
 	
     <string name="main_text">main text (value english)</string>
@@ -48,7 +48,7 @@
     <string name="load_more_events_button_str">Load more events</string>
     <string name="empty_label_str">Empty list events</string>
     <string name="refresh_time_label_str">Refresh time watcher</string>
-    <string name="set_as_filter_watcher_button_str">Set as filter for watcher</string>
+    <string name="set_as_filter_watcher_button_str">Filter by default</string>
     
     <string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>
@@ -78,4 +78,15 @@
     
     <string name="licensed_under_gpl_str">Licensed under GPL</string>
     <string name="develop_team_str">Develop team: Miguel de Dios</string>
+    
+    <string name="alert_recovered_str">Alert recovered</string>
+    <string name="alert_manual_validation_str">Alert manually validated</string>
+    <string name="going_up_warning_str">Going from critical to warning</string>
+    <string name="going_down_critical_str">Going down to critical state</string>
+    <string name="going_up_normal_str">Going up to normal state</string>
+    <string name="going_down_warning_str">Going down from normal to warning</string>
+    <string name="alert_fired_str">Alert fired</string>
+    <string name="recon_host_detected_str">Recon server detected a new host</string>
+    <string name="new_agent_str">New agent created</string>
+    <string name="unknown_str">Unknown type:</string>
 </resources>

@@ -149,7 +149,7 @@ sub pandora_snmptrapd {
 					logger ($pa_config, "Received SNMP Trap from $source", 4);
 
 					# Evaluate alerts for this trap
-					pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $value, $custom_oid, $custom_value, $dbh);
+					pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $type, $oid, $value, $custom_oid, $custom_value, $dbh);
 				}
 			}
 			

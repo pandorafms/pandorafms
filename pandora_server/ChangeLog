@@ -1,3 +1,8 @@
+2011-09-29  Sancho Lerena <slerena@artica.es>
+
+	* Core.pm,
+	SNMPServer.pm: Now SNMP alerts passed the Trap Type on the _DATA_ macro
+
 2011-09-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandora_server/util/pandora_manage.pl: Applied Kosaka's patch to store

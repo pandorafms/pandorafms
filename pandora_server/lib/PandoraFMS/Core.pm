@@ -1364,8 +1364,8 @@ Execute alerts that apply to the given SNMP trap.
 
 =cut
 ##########################################################################
-sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
-	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
+sub pandora_evaluate_snmp_alerts ($$$$$$$$$$) {
+	my ($pa_config, $trap_id, $trap_agent, $trap_oid, $trap_type,  
 		$trap_oid_text, $trap_value, $trap_custom_oid, $trap_custom_value, $dbh) = @_;
 
 	# Get all SNMP alerts
@@ -1445,7 +1445,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 							WHERE talert_actions.id_alert_command = talert_commands.id
 							AND talert_actions.id = ?', $alert->{'id_alert'});
 
-			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_custom_oid . " " . $trap_custom_value;
+			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_type . " ". $trap_custom_oid . " " . $trap_custom_value;
 			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
 
 			# Generate an event

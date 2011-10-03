@@ -16,7 +16,6 @@ package pandroid_event_viewer.pandorafms;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +39,8 @@ import android.widget.TabHost;
 import android.widget.Toast;
 
 public class PandroidEventviewerActivity extends TabActivity implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	//Data aplication
 	public ArrayList<EventListItem> eventList;
 	public long count_events;
@@ -67,6 +68,9 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public Intent intent_service;
     
     public Core core;
+    
+    public boolean showOptionsFirstTime;
+    public boolean showTabListFirstTime;
 	
     /** Called when the activity is first created. */
     @Override
@@ -81,8 +85,31 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.user = preferences.getString("user", "");
         this.password = preferences.getString("password", "");
         
-        Calendar c = Calendar.getInstance();
-        this.timestamp = (c.getTimeInMillis() / 1000) - (4 * 60 * 60);
+        final TabHost tabHost = getTabHost();
+        
+        this.loadInProgress = false;
+        
+        this.core = new Core();
+        
+        //Check if the preferences is setted, if not show the option activity.
+        if ((user.length() == 0) && (password.length() == 0)
+        	&& (url.length() == 0)) {
+        	
+        	Intent i = new Intent(this, Options.class);
+        	//i.putExtra("object", this);
+        	i.putExtra("core", this.core);
+        	
+        	startActivity(i);
+        	
+        	this.showOptionsFirstTime = true;
+        }
+        else {
+        	this.loadInProgress = true;
+        	
+        	this.showOptionsFirstTime = false;
+        	this.showTabListFirstTime = true;
+        }
+        
         this.pagination = 20;
         this.offset = 0;
         this.agentNameStr = preferences.getString("filterAgentName", "");
@@ -90,30 +117,15 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         this.status = preferences.getInt("filterStatus", 3);
         this.eventSearch = preferences.getString("filterEventSearch", "");
         this.filterLastTime = preferences.getInt("filterLastTime", 6);
+        this.timestamp = this.core.convertMaxTimeOldEventValuesToTimestamp(0, this.filterLastTime);
         
         this.eventList = new ArrayList<EventListItem>();
-        this.loadInProgress = false;
         this.getNewListEvents = true;
         
-        final TabHost tabHost = getTabHost();
-        
-        //Check if the preferences is setted, if not show the option activity.
-        if ((user.length() == 0) && (password.length() == 0)
-        	&& (url.length() == 0)) {
-        	
-        	Intent i = new Intent(this, Options.class);
-        	i.putExtra("object", this);
-        	
-        	startActivity(i);
+        if (!this.showOptionsFirstTime) {
+        	//Start the background service for the notifications
+        	this.core.startServiceEventWatcher(getApplicationContext());
         }
-        else {
-        	this.loadInProgress = true;
-        }
-        
-        this.core = new Core();
-        
-        //Start the background service for the notifications
-        this.core.startServiceEventWatcher(getApplicationContext());
         
         Intent i_main = new Intent(this, Main.class);
         i_main.putExtra("object", this);
@@ -140,8 +152,6 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 		
 		tabHost.getTabWidget().getChildAt(0).getLayoutParams().height=45;
 		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height=45;
-		
-		Log.e("PandroidEventviewerActivity", "onCreate");
     }
     
     public void onResume() {
@@ -153,9 +163,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	
     	CharSequence text;
     	
-    	Log.e("count_events", new Long(count_events).toString());
-    	
     	if (count_events > 0) {
+    		//From the notificy
     		switch (more_criticity) {
 	    		case 0:
 	    			text = getString(R.string.loading_events_criticity_0_str)
@@ -195,15 +204,68 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	}    		
     		
         this.getTabHost().setCurrentTab(1);
-    	executeBackgroundGetEvents();
-    	
-    	Log.e("PandroidEventviewerActivity", "onResume");
+        
+        if (this.showTabListFirstTime) {
+        	executeBackgroundGetEvents();
+        	this.showTabListFirstTime = false;
+        }
     }
     
     public void onConfigurationChanged(Configuration newConfig) {
     	super.onConfigurationChanged(newConfig);
+    }
+    
+    public void onNewIntent(Intent intent) {
+    	//super.onNewIntent(intent);
     	
-    	Log.e("PandroidEventviewerActivity", "onConfigurationChanged");
+    	Toast toast = Toast.makeText(getApplicationContext(), "PANDORA FMS TEST", Toast.LENGTH_SHORT);
+		toast.show();
+		
+		Intent i = getIntent();
+    	long count_events = i.getLongExtra("count_events", 0);Log.e("onNewIntent", "" + count_events);
+    	int more_criticity = i.getIntExtra("more_criticity", -1);
+    	
+    	CharSequence text;
+    	
+    	if (count_events > 0) {
+    		//From the notificy
+    		switch (more_criticity) {
+	    		case 0:
+	    			text = getString(R.string.loading_events_criticity_0_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 1:
+	    			text = getString(R.string.loading_events_criticity_1_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 2:
+	    			text = getString(R.string.loading_events_criticity_2_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 3:
+	    			text = getString(R.string.loading_events_criticity_3_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		case 4:
+	    			text = getString(R.string.loading_events_criticity_4_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    		default:
+	    			text = getString(R.string.loading_events_criticity_2_str)
+	    				.replace("%s", new Long(count_events).toString());
+	    			break;
+	    	}
+    		
+    		
+    		toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+    		toast.show();
+    		
+    		//Set the time when the watcher find the events.
+            SharedPreferences preferences = getSharedPreferences(
+            	getString(R.string.const_string_preferences), 
+            	Activity.MODE_PRIVATE);
+            this.timestamp = preferences.getLong("previous_filterTimestamp", (new Date().getTime() / 1000));
+    	} 
     }
     
     public String serializeParams2Api() {
@@ -233,12 +295,19 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	return_var += "|";
     	return_var += Long.toString(this.offset); //The offset of list events
     	
-    	Log.e("getEvents", return_var);
+    	Log.e("serializeParams2Api", return_var);
     	
     	return return_var;
     }
     
     public void getEvents(boolean newEvents) {
+        SharedPreferences preferences = getSharedPreferences(
+        	this.getString(R.string.const_string_preferences), 
+        	Activity.MODE_PRIVATE);
+                
+        String url = preferences.getString("url", "");
+        String user = preferences.getString("user", "");
+        String password = preferences.getString("password", "");
     	
     	try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -249,12 +318,12 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
             HttpEntity entityResponse;
             String return_api;
     		
-	    	httpPost = new HttpPost(this.url + "/include/api.php");
+	    	httpPost = new HttpPost(url + "/include/api.php");
 	    	
 	    	//Get total count.
 	    	parameters = new ArrayList<NameValuePair>();
-	    	parameters.add(new BasicNameValuePair("user", this.user));
-	    	parameters.add(new BasicNameValuePair("pass", this.password));
+	    	parameters.add(new BasicNameValuePair("user", user));
+	    	parameters.add(new BasicNameValuePair("pass", password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "events"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
@@ -267,7 +336,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	return_api = return_api.replace("\n", "");
 	    	this.count_events = new Long(return_api).longValue();
-	    	Log.e("count_events", return_api);
+	    	Log.e("getEvents", return_api);
 	    	
 	    	if (this.count_events == 0) {
 	    		return;
@@ -275,8 +344,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	
 	    	//Get the list of events.
 	    	parameters = new ArrayList<NameValuePair>();
-	    	parameters.add(new BasicNameValuePair("user", this.user));
-	    	parameters.add(new BasicNameValuePair("pass", this.password));
+	    	parameters.add(new BasicNameValuePair("user", user));
+	    	parameters.add(new BasicNameValuePair("pass", password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "events"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
@@ -299,82 +368,82 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	for (int i= 0; i < lines.length; i++) {
 	    		String[] items = lines[i].split(";", 21);
 	    		
+    			EventListItem event = new EventListItem();
+    			
 	    		if (items.length != 21) {
-	    			this.count_events --; //Discount invalid.
-	    			if (this.count_events < 0) this.count_events = 0;
-	    			continue;
-	    		}
-	    		
-	    		EventListItem event = new EventListItem();
-	    		if (items[0].length() == 0) {
-	    			event.id_event = 0;
+	    			event.description_event = getApplication().getString(R.string.unknown_event_str);
 	    		}
 	    		else {
-	    			event.id_event = Integer.parseInt(items[0]);
+		    		if (items[0].length() == 0) {
+		    			event.id_event = 0;
+		    		}
+		    		else {
+		    			event.id_event = Integer.parseInt(items[0]);
+		    		}
+		    		if (items[1].length() == 0) {
+		    			event.id_agent = 0;
+		    		}
+		    		else {
+		    			event.id_agent = Integer.parseInt(items[1]);
+		    		}
+		    		event.id_user = items[2];
+		    		if (items[3].length() == 0) {
+		    			event.id_group = 0;
+		    		}
+		    		else {
+		    			event.id_group = Integer.parseInt(items[3]);
+		    		}
+		    		if (items[4].length() == 0) {
+		    			event.status = 0;
+		    		}
+		    		else {
+		    			event.status = Integer.parseInt(items[4]);
+		    		}
+		    		event.timestamp = items[5];
+		    		event.event = items[6];
+		    		if (items[7].length() == 0) {
+		    			event.utimestamp = 0;
+		    		}
+		    		else {
+		    			event.utimestamp = Integer.parseInt(items[7]);
+		    		}
+		    		event.event_type = items[8];
+		    		if (items[9].length() == 0) {
+		    			event.id_agentmodule = 0;
+		    		}
+		    		else {
+		    			event.id_agentmodule = Integer.parseInt(items[9]);
+		    		}
+		    		if (items[10].length() == 0) {
+		    			event.id_alert_am = 0;
+		    		}
+		    		else {
+		    			event.id_alert_am = Integer.parseInt(items[10]);
+		    		}
+		    		if (items[11].length() == 0) {
+		    			event.criticity = 0;
+		    		}
+		    		else {
+		    			event.criticity = Integer.parseInt(items[11]);
+		    		}
+		    		event.user_comment = items[12];
+		    		event.tags = items[13];
+		    		event.agent_name = items[14];
+		    		event.group_name = items[15];
+		    		event.group_icon = items[16];
+		    		event.description_event = items[17];
+		    		event.description_image = items[18];
+		    		event.criticity_name = items[19];
+		    		event.criticity_image = items[20];
+		    		
+		    		event.opened = false;
 	    		}
-	    		if (items[1].length() == 0) {
-	    			event.id_agent = 0;
-	    		}
-	    		else {
-	    			event.id_agent = Integer.parseInt(items[1]);
-	    		}
-	    		event.id_user = items[2];
-	    		if (items[3].length() == 0) {
-	    			event.id_group = 0;
-	    		}
-	    		else {
-	    			event.id_group = Integer.parseInt(items[3]);
-	    		}
-	    		if (items[4].length() == 0) {
-	    			event.status = 0;
-	    		}
-	    		else {
-	    			event.status = Integer.parseInt(items[4]);
-	    		}
-	    		event.timestamp = items[5];
-	    		event.event = items[6];
-	    		if (items[7].length() == 0) {
-	    			event.utimestamp = 0;
-	    		}
-	    		else {
-	    			event.utimestamp = Integer.parseInt(items[7]);
-	    		}
-	    		event.event_type = items[8];
-	    		if (items[9].length() == 0) {
-	    			event.id_agentmodule = 0;
-	    		}
-	    		else {
-	    			event.id_agentmodule = Integer.parseInt(items[9]);
-	    		}
-	    		if (items[10].length() == 0) {
-	    			event.id_alert_am = 0;
-	    		}
-	    		else {
-	    			event.id_alert_am = Integer.parseInt(items[10]);
-	    		}
-	    		if (items[11].length() == 0) {
-	    			event.criticity = 0;
-	    		}
-	    		else {
-	    			event.criticity = Integer.parseInt(items[11]);
-	    		}
-	    		event.user_comment = items[12];
-	    		event.tags = items[13];
-	    		event.agent_name = items[14];
-	    		event.group_name = items[15];
-	    		event.group_icon = items[16];
-	    		event.description_event = items[17];
-	    		event.description_image = items[18];
-	    		event.criticity_name = items[19];
-	    		event.criticity_image = items[20];
-	    		
-	    		event.opened = false;
-	    		
 	    		this.eventList.add(event);
 	    	}
+	    	//this.count_events = (long)this.eventList.size();
     	}
     	catch (Exception e) {
-    		Log.e("ERROR THE ", e.getMessage());
+    		Log.e("EXCEPTION PandroidEventviewerActivity getEvents", e.getMessage());
     		
     		return;
     	}
@@ -415,7 +484,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 				i.putExtra("load_more", 1);
 			}
 			
-			getApplicationContext().sendBroadcast(i);	
+			getApplicationContext().sendBroadcast(i);
 		}
     }
 }

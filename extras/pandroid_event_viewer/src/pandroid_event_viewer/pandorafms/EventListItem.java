@@ -23,5 +23,29 @@ public class EventListItem {
 	public String criticity_name;
 	public String criticity_image;
 	
-	public boolean opened; 
+	public boolean opened;
+	
+	public EventListItem() {
+		id_event = 0;
+		id_agent = 0;
+		id_user = "";
+		id_group = 0;
+		status = -1;
+		timestamp = "";
+		event = "";
+		utimestamp = 0;
+		event_type = "";
+		id_agentmodule = 0;
+		id_alert_am = 0;
+		criticity = 0;
+		user_comment = "";
+		tags = "";
+		agent_name = "";
+		group_name = "";
+		group_icon = "";
+		description_event = "";
+		description_image = "";
+		criticity_name = "";
+		criticity_image = "";
+	}
 }

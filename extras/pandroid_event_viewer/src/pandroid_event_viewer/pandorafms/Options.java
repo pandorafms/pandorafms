@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,13 +19,18 @@ public class Options extends Activity {
 	public int refreshTimeKey;
 	
 	public Core core;
+	public PandroidEventviewerActivity object;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         Intent i = getIntent();
-        this.core = (Core)i.getParcelableExtra("core");
+        this.core = (Core)i.getSerializableExtra("core");
+        //this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
+        //this.core = this.object.core;
+        
+        
         
         setContentView(R.layout.options);
         
@@ -47,7 +51,7 @@ public class Options extends Activity {
         text.setText(password);
         
         Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.refresh_combo, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         combo.setAdapter(adapter);
@@ -75,10 +79,13 @@ public class Options extends Activity {
     	}
     	
     	editorPreferences.putString("url", url);
+    	//this.object.url = url;
     	text = (EditText) findViewById(R.id.user);
     	editorPreferences.putString("user", text.getText().toString());
+    	//this.object.user = text.getText().toString();
     	text = (EditText) findViewById(R.id.password);
     	editorPreferences.putString("password", text.getText().toString());
+    	//this.object.password = text.getText().toString();
     	
     	Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
     	editorPreferences.putInt("refreshTimeKey", combo.getSelectedItemPosition());
@@ -88,7 +95,6 @@ public class Options extends Activity {
     	
     	if (editorPreferences.commit()) {
     		if (this.core != null) {
-    			Log.e("Options", "reset service");
     			this.core.stopServiceEventWatcher(getApplicationContext());
     			this.core.startServiceEventWatcher(getApplicationContext());
     		}

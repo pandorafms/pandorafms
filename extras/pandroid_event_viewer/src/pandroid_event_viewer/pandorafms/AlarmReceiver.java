@@ -32,8 +32,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.e("OnetimeAlarmReceiver", "onReceive");
-		
+		Log.e("AlarmReceiver", "onReceive");
 		checkNewEvents(context);
 	}
 	
@@ -79,7 +78,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		    	response = httpClient.execute(httpPost);
 		    	entityResponse = response.getEntity();
 		    	return_api = Core.convertStreamToString(entityResponse.getContent());
-		    	Log.e("checkNewEvents count", return_api);
+		    	
 		    	return_api = return_api.replace("\n", "");
 		    	this.count_events = new Long(return_api).longValue();
 		    	
@@ -98,7 +97,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 			    	response = httpClient.execute(httpPost);
 			    	entityResponse = response.getEntity();
 			    	return_api = Core.convertStreamToString(entityResponse.getContent());
-			    	Log.e("checkNewEvents criticity", return_api);
 			    	return_api = return_api.replace("\n", "");
 			    	this.more_criticity = new Integer(return_api).intValue();
 			    	
@@ -110,7 +108,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		    	
 	    	}
 	    	catch (Exception e) {
-	    		Log.e("ERROR THE ", e.getMessage());
+	    		Log.e("EXCEPTION checkNewEvents", e.getMessage());
 	    		
 	    		return;
 	    	}
@@ -167,8 +165,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     	return_var += "|";
     	return_var += Long.toString(0); //The offset of list events
     	
-    	Log.e("serializeParams2Api", return_var);
-    	
     	return return_var;
     }
 
@@ -224,12 +220,15 @@ public class AlarmReceiver extends BroadcastReceiver {
     	Notification notification = new Notification(icon, tickerText, when);
     	
     	
+    	notification.defaults |= Notification.DEFAULT_ALL;
+    	
     	
     	notification.flags |= Notification.FLAG_AUTO_CANCEL;
     	
     	
-    	
     	Intent notificationIntent = new Intent(context, PandroidEventviewerActivity.class);
+    	notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    	notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     	notificationIntent.putExtra("count_events", this.count_events);
     	notificationIntent.putExtra("more_criticity", this.more_criticity);
     	

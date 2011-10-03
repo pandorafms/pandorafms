@@ -1,7 +1,5 @@
 package pandroid_event_viewer.pandorafms;
 
-import java.util.Calendar;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -23,22 +21,24 @@ public class PandroidEventviewerService extends Service {
 	}
 
 	public void onCreate() {
-		Log.e("testService", "onCreate");
-		
       alarmM = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
       
       Intent intentAlarm = new Intent(this, AlarmReceiver.class);
       this.pendingI = PendingIntent.getBroadcast(this, 0, intentAlarm, 0);
       
-      alarmM.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), convertRefreshTimeKeyToTime(), this.pendingI);
+      int sleepTimeAlarm = convertRefreshTimeKeyToTime();
+      
+      Log.e("PandroidEventviewerService", "sleepTimeAlarm = " + sleepTimeAlarm);
+      
+      alarmM.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), sleepTimeAlarm, this.pendingI);
 	}
 	
 	public int convertRefreshTimeKeyToTime() {
 		int returnvar = 60 * 10;
 		
 		SharedPreferences preferences = getSharedPreferences(
-	        	this.getString(R.string.const_string_preferences), 
-	        	Activity.MODE_PRIVATE);
+	        this.getString(R.string.const_string_preferences), 
+	        Activity.MODE_PRIVATE);
 		
 		int refreshTimeKey = preferences.getInt("refreshTimeKey", 3);
 		
@@ -106,7 +106,6 @@ public class PandroidEventviewerService extends Service {
 	}
 	
 	public void onDestroy() {
-		Log.e("testService", "onDestroy");
 		alarmM.cancel(this.pendingI);
 	}
 }

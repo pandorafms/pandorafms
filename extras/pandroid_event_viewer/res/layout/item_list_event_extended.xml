@@ -164,5 +164,12 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 		/>
+		<TextView
+			android:id="@+id/validate_event_label"
+			android:textColor="#000"
+			android:textStyle="bold"
+			android:visibility="gone"
+			android:text="@string/validate_event_label_str"
+		/>
 	</TableRow>
 </TableLayout>

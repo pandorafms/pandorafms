@@ -89,4 +89,7 @@
     <string name="recon_host_detected_str">Recon server detected a new host</string>
     <string name="new_agent_str">New agent created</string>
     <string name="unknown_str">Unknown type:</string>
+    <string name="unknown_event_str">Unknown event</string>
+    
+    <string name="validate_event_label_str">Event validated</string>
 </resources>

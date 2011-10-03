@@ -44,7 +44,7 @@ public class PopupValidationEvent extends Activity {
         Intent i = getIntent();
         this.id_event = i.getIntExtra("id_event", -1);
     	//this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
-        this.core = (Core)i.getParcelableExtra("core");
+        this.core = (Core)i.getSerializableExtra("core");
         
         setContentView(R.layout.popup_validation_event);
         
@@ -117,11 +117,9 @@ public class PopupValidationEvent extends Activity {
 	    	if (return_api.startsWith("Correct validation")) {
 	    		return_var = true;
 	    	}
-	    	
-	    	Log.e("sendValidation", return_api);
     	}
     	catch (Exception e) {
-    		Log.e("ERROR THE ", e.getMessage());
+    		Log.e("EXCEPTION sendValidation", e.getMessage());
     	}
 		
 		return return_var;

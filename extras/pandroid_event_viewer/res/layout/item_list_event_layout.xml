@@ -27,8 +27,18 @@
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
 	>
+		<ImageView
+			android:layout_weight="0"
+			android:id="@+id/img_severity_colapse_item"
+			android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_gravity="center"
+    		android:padding="5px"
+		/>
 		<TextView
 			android:id="@+id/event_name"
+			
+			android:layout_toRightOf="@id/img_severity_colapse_item"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:textColor="#000"
@@ -40,6 +50,14 @@
 			android:orientation="horizontal"
 			android:layout_below="@id/event_name"
 		>
+			<ImageView
+				android:layout_weight="0"
+				android:id="@+id/img_group_colapse_item"
+				android:layout_width="wrap_content"
+	    		android:layout_height="wrap_content"
+	    		android:layout_gravity="center"
+	    		android:padding="5px"
+			/>
 			<TextView
 				android:id="@+id/agent_name"
 				android:layout_width="wrap_content"
@@ -49,15 +67,22 @@
 				android:textColorHighlight="#000"
 				android:layout_weight="1"
 			/>
+			<ImageView
+				android:layout_weight="0"
+				android:id="@+id/img_validate_colapse_item"
+				android:layout_width="wrap_content"
+	    		android:layout_height="wrap_content"
+	    		android:layout_gravity="center"
+	    		android:padding="5px"
+			/>
 			<TextView
 				android:id="@+id/timestamp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_toRightOf="@id/agent_name"
-				android:layout_below="@id/event_name"
 				android:textColor="#000"
 				android:textColorHighlight="#000"
 				android:layout_weight="0"
+				android:textSize="10sp"
 			/>
 		</LinearLayout>
 	</RelativeLayout>

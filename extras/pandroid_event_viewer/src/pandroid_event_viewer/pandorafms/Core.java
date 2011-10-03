@@ -4,25 +4,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.Calendar;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-public class Core implements Parcelable{
+public class Core implements Serializable {
+	private static final long serialVersionUID = 7071445033114548174L;
+	
 	public Intent intent_service;
 	//public Context context; //Fucking marshall exception
 	
 	public Core() {
 		intent_service = null;
 		//context = null; //Fucking marshall exception
-	}
-	
-	public Core(Parcel in) {
-		intent_service = (Intent)in.readValue(null);
-		//context = (Context)in.readValue(null); //Fucking marshall exception
 	}
 	
 	public void startServiceEventWatcher(Context context) {
@@ -36,9 +32,21 @@ public class Core implements Parcelable{
 	}
 	
 	public void stopServiceEventWatcher(Context context) {
+		if (intent_service == null) {
+			
+			intent_service = new Intent(context, PandroidEventviewerService.class);
+			//this.context = context; //Fucking marshall exception
+		}
+		
 		context.stopService(this.intent_service);
 	}
 	
+	///////////////////////
+	/*
+	public Core(Parcel in) {
+		intent_service = (Intent)in.readValue(null);
+		//context = (Context)in.readValue(null); //Fucking marshall exception
+	}
 	
 	public static final Parcelable.Creator<Core> CREATOR
 		= new Parcelable.Creator<Core>() {
@@ -68,6 +76,8 @@ public class Core implements Parcelable{
 		dest.writeValue(this.intent_service);
 		//dest.writeValue(this.context); //Fucking marshall exception
 	}
+	*/
+	///////////
 	
 	
 	public static String convertStreamToString (InputStream is)

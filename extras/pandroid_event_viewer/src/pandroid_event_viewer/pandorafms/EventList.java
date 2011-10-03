@@ -37,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class EventList extends ListActivity {
 	private ListView lv;
@@ -65,7 +64,7 @@ public class EventList extends ListActivity {
         
         Intent i = getIntent();
         this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
-        this.core = (Core)i.getParcelableExtra("core");
+        this.core = (Core)i.getSerializableExtra("core");
         
         setContentView(R.layout.list_view_layout);
         
@@ -81,14 +80,10 @@ public class EventList extends ListActivity {
 			
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				Log.e("onReceive", "onReceive");
-				
 				int load_more = intent.getIntExtra("load_more", 0);
-				Log.e("load_more", "" + load_more);
 				
 				Button button = (Button) findViewById(R.id.button_load_more_events);
-				Log.e("object.eventList.size", object.eventList.size() + "");
-				Log.e("object.count_events", object.count_events + "");
+				
 				if (object.eventList.size() == 0) {
 					button.setVisibility(Button.GONE);
 				}
@@ -100,42 +95,58 @@ public class EventList extends ListActivity {
 				}
 				
 				if (load_more == 1) {
+					LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
+					layout.setVisibility(LinearLayout.GONE);
 					la.showLoadingEvents = false;
-					la.notifyDataSetChanged();
 				}
 				else {
 					LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
 					layout.setVisibility(LinearLayout.GONE);
 					
-					if (object.count_events == 0) {
+					if (((int)object.count_events) == 0) {
 						layout = (LinearLayout) findViewById(R.id.empty_list_layout);
-						layout.setVisibility(LinearLayout.VISIBLE);	
+						layout.setVisibility(LinearLayout.VISIBLE);
 					}
 				}
+				
+				la.notifyDataSetChanged();
 			}
 		};
 		
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
     	
     	this.toggleLoadingLayout();
+    }
+    
+    public void onRestart() {
+    	super.onRestart();
     	
-    	Log.e("EventList", "onCreate");
+    	if (this.object.showOptionsFirstTime) {
+    		this.object.loadInProgress = true;
+    		toggleLoadingLayout();
+    		
+    		this.object.showOptionsFirstTime = false;
+    		this.object.executeBackgroundGetEvents();
+    	}
     }
     
     public void onResume() {
     	super.onResume();
-    	Log.e("EventList", "onResume");
-    	
     	
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
     	
     	this.toggleLoadingLayout();
+    	
+    	if (!this.object.loadInProgress) {
+    		if (((int)object.count_events) == 0) {
+    			LinearLayout layout = (LinearLayout) findViewById(R.id.empty_list_layout);
+    			layout.setVisibility(LinearLayout.VISIBLE);
+    		}
+    	}
     }
     
     public void onConfigurationChanged(Configuration newConfig) { 
     	super.onConfigurationChanged(newConfig);
-    	
-    	Log.e("EventList", "onConfigurationChanged");
     }
     
     @Override
@@ -150,13 +161,12 @@ public class EventList extends ListActivity {
         switch (item.getItemId()) {
             case R.id.options_button_menu_options:
             	i = new Intent(this, Options.class);
-            	//FAIL//i.putExtra("object", object);
+            	//i.putExtra("object", object);
             	i.putExtra("core", this.core);
             	
             	startActivity(i);
             	break;
             case R.id.refresh_button_menu_options:
-            	Log.e("onOptionsItemSelected","refresh_button_menu_options");
             	this.object.loadInProgress = true;
             	this.object.getNewListEvents = true;
             	this.object.eventList = new ArrayList<EventListItem>();
@@ -188,7 +198,7 @@ public class EventList extends ListActivity {
         }
     }
     
-    public Bitmap downloadFile(String fileUrl) {Log.e("downloadFile", fileUrl);
+    public Bitmap downloadFile(String fileUrl) {
           URL myFileUrl =null;          
           try {
                myFileUrl= new URL(fileUrl);
@@ -284,9 +294,8 @@ public class EventList extends ListActivity {
     {
 		super.onListItemClick(l, v, position, id);
 		
-		Log.e("onListItemClick", new Integer(position).toString());
 		EventListItem item = this.object.eventList.get(position);
-		Log.e("onListItemClick", position + "");
+		
 		item.opened = !item.opened;
 		this.object.eventList.set(position, item);
 		la.notifyDataSetChanged();
@@ -431,6 +440,20 @@ public class EventList extends ListActivity {
 				TextView timestamp = (TextView)view.findViewById(R.id.timestamp);
 				timestamp.setText(item.timestamp);
 				
+				if (item.criticity_image.length() != 0) 
+					setImageType(view, item.criticity_image, R.id.img_severity_colapse_item);
+				if (item.group_icon.length() != 0)
+					setImageGroup(view, item.group_icon, R.id.img_group_colapse_item);
+				
+				ImageView imgValidate = (ImageView)view.findViewById(R.id.img_validate_colapse_item);
+				if (item.status == 1) {
+					imgValidate.setImageResource(R.drawable.tick);
+				}
+				else {
+					imgValidate.setImageResource(R.drawable.tick_off);
+				}
+				
+				
 				//Show extended info
 				if (item.opened) {
 					View viewEventExtended;
@@ -450,7 +473,8 @@ public class EventList extends ListActivity {
 					if (item.group_name.length() != 0) {
 						text = (TextView)viewEventExtended.findViewById(R.id.group_text);
 						text.setText(item.group_name);
-						setImageGroup(viewEventExtended, item.group_icon, R.id.img_group);
+						if (item.group_icon.length() != 0)
+							setImageGroup(viewEventExtended, item.group_icon, R.id.img_group);
 					}
 					else {
 						//ALL
@@ -471,7 +495,8 @@ public class EventList extends ListActivity {
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}
 					
-					setImageType(viewEventExtended, item.description_image, R.id.img_type);
+					if (item.description_image.length() != 0)
+						setImageType(viewEventExtended, item.description_image, R.id.img_type);
 					text = (TextView)viewEventExtended.findViewById(R.id.type_text);
 					text.setText(eventType2Text(item.event_type));
 					
@@ -479,20 +504,34 @@ public class EventList extends ListActivity {
 						text = (TextView)viewEventExtended.findViewById(R.id.severity_text);
 						text.setText(item.criticity_name);
 						
-						setImageType(viewEventExtended, item.criticity_image, R.id.img_severity);
+						if (item.criticity_image.length() != 0)
+							setImageType(viewEventExtended, item.criticity_image, R.id.img_severity);
 					}
 					
 					Button button;
 			        button = (Button)viewEventExtended.findViewById(R.id.validate_button_extended);
-			        //button.setOnClickListener(this);
-			        
-			        OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
-			        clickListener.id_event = item.id_event;
-			        //clickListener.object = this.object;
-			        clickListener.core = this.core;
-			        button.setOnClickListener(clickListener);
-			        
-			        view.setOnClickListener(new OnItemClickListener(position, this.object));
+			        if (item.status == -1) {
+			        	//For unknow events
+			        	button.setVisibility(Button.GONE);
+			        	text = (TextView)viewEventExtended.findViewById(R.id.validate_event_label);
+			        	text.setText("");
+			        	text.setVisibility(TextView.VISIBLE);
+			        }
+			        else if (item.status != 1) {
+				        OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
+				        clickListener.id_event = item.id_event;
+				        clickListener.core = this.core;
+				        button.setOnClickListener(clickListener);
+				        view.setOnClickListener(new OnItemClickListener(position, this.object));
+				        
+				        text = (TextView)viewEventExtended.findViewById(R.id.validate_event_label);
+				        text.setVisibility(TextView.GONE);
+			        }
+			        else {
+			        	button.setVisibility(Button.GONE);
+			        	text = (TextView)viewEventExtended.findViewById(R.id.validate_event_label);
+			        	text.setVisibility(TextView.VISIBLE);
+			        }
 					
 					LinearLayout itemLinearLayout = (LinearLayout)view.findViewById(R.id.item_linear_layout);
 					itemLinearLayout.addView(viewEventExtended);
@@ -571,7 +610,6 @@ public class EventList extends ListActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Log.e("id_event", "" + id_event);
 				Intent i = new Intent(getApplicationContext(), PopupValidationEvent.class);
             	i.putExtra("id_event", id_event);
                 //i.putExtra("object", this.object);

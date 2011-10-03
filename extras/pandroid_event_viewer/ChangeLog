@@ -1,3 +1,25 @@
+2011-10-03  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml: added permission to vibrate mobile.
+	
+	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java,
+	src/pandroid_event_viewer/pandorafms/Core.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/EventListItem.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip and fixes.
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added more values.
+	
+	* res/drawable-ldpi/tick_off.png, res/drawable-ldpi/tick.png: added images.
+	
+	* res/layout/list_view_layout.xml, res/layout/item_list_event_layout.xml,
+	res/layout/item_list_event_extended.xml: wip and fixes.
+
 2011-09-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: level up the sdk requirements.

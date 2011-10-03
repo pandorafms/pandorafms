@@ -45,7 +45,7 @@ public class Main extends Activity {
         
         Intent i = getIntent();
         this.object = (PandroidEventviewerActivity)i.getSerializableExtra("object");
-        this.core = (Core)i.getParcelableExtra("core");
+        this.core = (Core)i.getSerializableExtra("core");
         
         this.pandoraGroups = new HashMap<Integer, String>();
         
@@ -127,17 +127,34 @@ public class Main extends Activity {
 		});
     }
     
+    public void onRestart() {
+    	super.onRestart();
+    	
+    	if (this.pandoraGroups.size() == 0) {
+    		Log.e("Main onRestart", "Main onRestart");
+    		new GetGroupsAsyncTask().execute();
+    	}
+    }
+    
     public ArrayList<String> getGroups() {
     	ArrayList<String> array = new ArrayList<String>();
+    	
+        SharedPreferences preferences = getSharedPreferences(
+            this.getString(R.string.const_string_preferences), 
+            Activity.MODE_PRIVATE);
+    	
+        String url = preferences.getString("url", "");
+        String user = preferences.getString("user", "");
+        String password = preferences.getString("password", "");
     	
 		try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
     		
-	    	HttpPost httpPost = new HttpPost(this.object.url + "/include/api.php");
+	    	HttpPost httpPost = new HttpPost(url + "/include/api.php");
 	    	
 	    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-	    	parameters.add(new BasicNameValuePair("user", this.object.user));
-	    	parameters.add(new BasicNameValuePair("pass", this.object.password));Log.e("getGroups", this.object.password);
+	    	parameters.add(new BasicNameValuePair("user", user));
+	    	parameters.add(new BasicNameValuePair("pass", password));
 	    	parameters.add(new BasicNameValuePair("op", "get"));
 	    	parameters.add(new BasicNameValuePair("op2", "groups"));
 	    	parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
@@ -152,7 +169,6 @@ public class Main extends Activity {
 	    	HttpEntity entityResponse = response.getEntity();
 	    	
 	    	String return_api = Core.convertStreamToString(entityResponse.getContent());
-	    	Log.e("getGroups", return_api);
 	    	
 	    	String[] lines = return_api.split("\n");
 	    	
@@ -165,7 +181,7 @@ public class Main extends Activity {
 	    	}
     	}
     	catch (Exception e) {
-    		Log.e("ERROR getGroups ", e.getMessage());
+    		Log.e("EXCEPTION ArrayList", e.getMessage());
     	}
 		
 		return array;
@@ -216,11 +232,12 @@ public class Main extends Activity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent i;
         switch (item.getItemId()) {
             case R.id.options_button_menu_options:
-            	Intent i = new Intent(this, Options.class);
-            	//FAIL//i.putExtra("object", object);
-            	i.putExtra("core", this.core);
+            	i = new Intent(this, Options.class);
+            	//i.putExtra("object", object);
+            	i.putExtra("core", new Core());
             	
             	startActivity(i);
             	break;
@@ -236,7 +253,7 @@ public class Main extends Activity {
     public void search_form() {
     	//Clean the EventList
     	this.object.eventList = new ArrayList<EventListItem>();
-    	Log.e("search_form", "" +this.object.eventList.size());
+    	
     	this.object.loadInProgress = true;
     	
     	//Get form data
@@ -321,7 +338,7 @@ public class Main extends Activity {
     	}
     	
     	combo = (Spinner) findViewById(R.id.severity_combo);
-    	filterSeverity = combo.getSelectedItemPosition();
+    	filterSeverity = combo.getSelectedItemPosition() - 1;
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
     	filterStatus = combo.getSelectedItemPosition() - 1;

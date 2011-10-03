@@ -206,5 +206,26 @@ $(document).ready (function () {
 			$("input[name=snmp_community]").attr("disabled", false);
 		}
 	});
+	
+	$("#select_snmp_oid").click (
+	function () {
+		$(this).css ("width", "auto"); 
+		$(this).css ("min-width", "180px"); 
+	});	
+	
+	$("#select_snmp_oid").blur (function () {
+		$(this).css ("width", "180px"); 
+	});
+	
+	$("#id_module_type").click (
+	function () {
+		$(this).css ("width", "auto"); 
+		$(this).css ("min-width", "180px"); 
+	});	
+	
+	$("#id_module_type").blur (function () {
+		$(this).css ("width", "180px"); 
+	});		
+	
 });
 </script>

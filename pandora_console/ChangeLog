@@ -1,3 +1,8 @@
+2011-10-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_network.php: Added Js in 
+	order to display combos correctly in IE.
+
 2011-09-29  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/snmp_explorer.php

@@ -80,6 +80,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		    	return_api = Core.convertStreamToString(entityResponse.getContent());
 		    	
 		    	return_api = return_api.replace("\n", "");
+		    	Log.e("AlarmReceiver checkNewEvents", "" + return_api);
 		    	this.count_events = new Long(return_api).longValue();
 		    	
 		    	//Check the event more critical
@@ -164,6 +165,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     	return_var += Integer.toString(0); //The pagination of list events
     	return_var += "|";
     	return_var += Long.toString(0); //The offset of list events
+    	
+    	Log.e("AlarmReceiver serializeParams2Api", return_var);
     	
     	return return_var;
     }

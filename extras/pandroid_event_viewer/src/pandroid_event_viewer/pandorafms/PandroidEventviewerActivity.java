@@ -157,7 +157,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     public void onResume() {
     	super.onResume();
     	
-    	Intent i = getIntent();
+    	/*Intent i = getIntent();
     	long count_events = i.getLongExtra("count_events", 0);
     	int more_criticity = i.getIntExtra("more_criticity", -1);
     	
@@ -202,7 +202,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
             	Activity.MODE_PRIVATE);
             this.timestamp = preferences.getLong("previous_filterTimestamp", (new Date().getTime() / 1000));
     	}    		
-    		
+    	*/	
         this.getTabHost().setCurrentTab(1);
         
         if (this.showTabListFirstTime) {
@@ -216,14 +216,10 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     }
     
     public void onNewIntent(Intent intent) {
-    	//super.onNewIntent(intent);
-    	
-    	Toast toast = Toast.makeText(getApplicationContext(), "PANDORA FMS TEST", Toast.LENGTH_SHORT);
-		toast.show();
+    	super.onNewIntent(intent);
 		
-		Intent i = getIntent();
-    	long count_events = i.getLongExtra("count_events", 0);Log.e("onNewIntent", "" + count_events);
-    	int more_criticity = i.getIntExtra("more_criticity", -1);
+    	long count_events = intent.getLongExtra("count_events", 0);
+    	int more_criticity = intent.getIntExtra("more_criticity", -1);
     	
     	CharSequence text;
     	
@@ -257,14 +253,25 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	}
     		
     		
-    		toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+    		Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
     		toast.show();
     		
-    		//Set the time when the watcher find the events.
+    		//Set the same parameters to extract the events of the notification.
             SharedPreferences preferences = getSharedPreferences(
             	getString(R.string.const_string_preferences), 
             	Activity.MODE_PRIVATE);
             this.timestamp = preferences.getLong("previous_filterTimestamp", (new Date().getTime() / 1000));
+            this.agentNameStr = preferences.getString("filterAgentName", "");
+        	this.id_group = preferences.getInt("filterIDGroup", 0);
+        	this.severity = preferences.getInt("filterSeverity", -1);
+        	this.status = preferences.getInt("filterStatus", 4);
+        	this.eventSearch = preferences.getString("filterEventSearch", "");
+            
+            this.getTabHost().setCurrentTab(1);
+            
+            this.loadInProgress = true;
+            this.getNewListEvents = true;
+            executeBackgroundGetEvents();
     	} 
     }
     
@@ -295,7 +302,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     	return_var += "|";
     	return_var += Long.toString(this.offset); //The offset of list events
     	
-    	Log.e("serializeParams2Api", return_var);
+    	Log.e("PandroidEventviewerActivity serializeParams2Api", return_var);
     	
     	return return_var;
     }
@@ -458,7 +465,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			
+			Log.e("GetEventsAsyncTask doInBackground", "doInBackground");
 			if (getNewListEvents) {
 				getEvents(true);
 			}

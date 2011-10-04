@@ -378,7 +378,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
     			EventListItem event = new EventListItem();
     			
 	    		if (items.length != 21) {
-	    			event.description_event = getApplication().getString(R.string.unknown_event_str);
+	    			event.event = getApplication().getString(R.string.unknown_event_str);
 	    		}
 	    		else {
 		    		if (items[0].length() == 0) {

@@ -30,7 +30,9 @@
 	-->
 
     <application android:icon="@drawable/pandorafms_logo"
-    	android:label="Pandroid Event viewer">
+    	android:label="Pandroid Event viewer"
+    	android:description="@string/pandroid_event_viewer_description_str"
+    >
         <activity
         	android:name=".PandroidEventviewerActivity"
 			android:label="Pandroid Event viewer"

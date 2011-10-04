@@ -68,8 +68,6 @@ public class Main extends Activity {
     		buttonbuttonSetAsFilterWatcher.setEnabled(false);
         }
         else {
-            Spinner combo;
-            
             buttonSearch.setEnabled(false);
             buttonReset.setEnabled(false);
             buttonbuttonSetAsFilterWatcher.setEnabled(false);
@@ -82,7 +80,7 @@ public class Main extends Activity {
             	Activity.MODE_PRIVATE);
         
         comboSeverity = (Spinner) findViewById(R.id.severity_combo);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         comboSeverity.setAdapter(adapter);
@@ -283,7 +281,6 @@ public class Main extends Activity {
     	
     	this.object.id_group = 0;
     	
-    	int sel;
     	combo = (Spinner) findViewById(R.id.group_combo);
     	String selectedGroup = combo.getSelectedItem().toString();
     	

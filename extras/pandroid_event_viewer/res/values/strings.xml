@@ -97,4 +97,5 @@
     <string name="unknown_event_str">Unknown event</string>
     
     <string name="validate_event_label_str">Event validated</string>
+    <string name="pandroid_event_viewer_description_str">DESCRIPTION PANDROID EVENT VIEWER</string>
 </resources>

@@ -92,5 +92,5 @@
     <string name="unknown_event_str">Evento desconocido</string>
     
     <string name="validate_event_label_str">Evento validado</string>
-    <string name="pandroid_event_viewer_description_str">DESCRIPTION PANDROID EVENT VIEWER</string>
+    <string name="pandroid_event_viewer_description_str">Pandroid Event es un visor de eventos gratuito para Pandora FMS, un sistema de monitorización OpenSource. Este vistor de eventos le mostará en tiempo real, todos los eventos del servidor, usando su API Web. Podrá validar eventos, buscar y ver detalles de cada evento desde su teléfono Android.</string>
 </resources>

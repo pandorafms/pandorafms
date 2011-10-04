@@ -1,3 +1,7 @@
+2011-10-04  SAncho Lerena <slerena@artica.es>
+
+	* strings.xml: Edited description.
+
 2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: added the reference to description.

@@ -76,21 +76,21 @@
     <string name="event_search_label_str">Buscar evento</string>
     <string name="max_time_old_event_str">Máx tiempo de antiguedad</string>
     
-    <string name="licensed_under_gpl_str">Licenciado bajo GPL</string>
-    <string name="develop_team_str">Equipo de desarrollo: Miguel de Dios</string>
+    <string name="licensed_under_gpl_str">Licenciado bajo GPL v2</string>
+    <string name="develop_team_str">Desarrado por: Miguel de Dios</string>
     
     <string name="alert_recovered_str">Alerta recuperada</string>
     <string name="alert_manual_validation_str">Alerta validada manualmente</string>
     <string name="going_up_warning_str">Cayendo de crítico a advertencia</string>
     <string name="going_down_critical_str">Cayendo a estado crítico</string>
     <string name="going_up_normal_str">Subiendo a estado normal</string>
-    <string name="going_down_warning_str">Cayendo de normal a advertencia</string>
+    <string name="going_down_warning_str">Cayendo a advertencia</string>
     <string name="alert_fired_str">Alerta lanzada</string>
-    <string name="recon_host_detected_str">El servidor Recon detectó un equipo nuevo</string>
+    <string name="recon_host_detected_str">El servidor recon detectó un equipo nuevo</string>
     <string name="new_agent_str">Agente nuevo creado</string>
     <string name="unknown_str">Tipo desconocido:</string>
     <string name="unknown_event_str">Evento desconocido</string>
     
     <string name="validate_event_label_str">Evento validado</string>
-    <string name="pandroid_event_viewer_description_str">Pandroid Event es un visor de eventos gratuito para Pandora FMS, un sistema de monitorización OpenSource. Este vistor de eventos le mostará en tiempo real, todos los eventos del servidor, usando su API Web. Podrá validar eventos, buscar y ver detalles de cada evento desde su teléfono Android.</string>
+    <string name="pandroid_event_viewer_description_str">Visor de eventos para Pandora FMS.</string>
 </resources>

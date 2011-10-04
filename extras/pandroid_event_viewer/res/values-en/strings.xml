@@ -74,17 +74,17 @@
     
     <string name="status_label_str">Status</string>
     <string name="event_search_label_str">Event search</string>
-    <string name="max_time_old_event_str">Max time old event</string>
+    <string name="max_time_old_event_str">Oldest event</string>
     
-    <string name="licensed_under_gpl_str">Licensed under GPL</string>
-    <string name="develop_team_str">Develop team: Miguel de Dios</string>
+    <string name="licensed_under_gpl_str">Licensed under GPLv2</string>
+    <string name="develop_team_str">Developer: Miguel de Dios</string>
     
     <string name="alert_recovered_str">Alert recovered</string>
     <string name="alert_manual_validation_str">Alert manually validated</string>
     <string name="going_up_warning_str">Going from critical to warning</string>
-    <string name="going_down_critical_str">Going down to critical state</string>
-    <string name="going_up_normal_str">Going up to normal state</string>
-    <string name="going_down_warning_str">Going down from normal to warning</string>
+    <string name="going_down_critical_str">Going to critical status</string>
+    <string name="going_up_normal_str">Going to normal status</string>
+    <string name="going_down_warning_str">Going to warning</string>
     <string name="alert_fired_str">Alert fired</string>
     <string name="recon_host_detected_str">Recon server detected a new host</string>
     <string name="new_agent_str">New agent created</string>
@@ -92,5 +92,5 @@
     <string name="unknown_event_str">Unknown event</string>
     
     <string name="validate_event_label_str">Event validated</string>
-    <string name="pandroid_event_viewer_description_str">Pandroid Event is a free event viewer for Pandora FMS, an OpenSource monitoring system. This event viewer will show you in real-time all new events coming from your Pandora FMS server, using its Web API. You will be able to validate, search and see event details from your Android phone.</string>
+    <string name="pandroid_event_viewer_description_str">Realtime event viewer for Pandora FMS.</string>
 </resources>

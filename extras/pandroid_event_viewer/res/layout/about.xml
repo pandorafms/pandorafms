@@ -21,25 +21,20 @@
     android:layout_height="fill_parent"
     android:padding="10dip"
 >
-	<LinearLayout
-		android:layout_width="fill_parent"
+	<ImageView
+		android:layout_weight="0"
+		android:id="@+id/img_logo_about"
+		android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:layout_gravity="center"
+   		android:padding="5px"
+   		android:src="@drawable/pandorafms_logo"
+	/>
+	<TextView
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-	>
-		<ImageView
-			android:layout_weight="0"
-			android:id="@+id/img_logo_about"
-			android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-    		android:layout_gravity="center"
-    		android:padding="5px"
-    		android:src="@drawable/pandorafms_logo"
-		/>
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Copyright (c) 2011 Artica"
-		/>
-	</LinearLayout>
+		android:text="Copyright (c) 2011 Artica"
+	/>
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"

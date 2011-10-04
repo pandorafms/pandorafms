@@ -1,5 +1,11 @@
 2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java
+	
+	* res/layout/about.xml: upload the file again.
+
+2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
 	fixed to show "unknow event" when fail the scan of events.
 	

@@ -271,6 +271,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
             
             this.loadInProgress = true;
             this.getNewListEvents = true;
+            this.eventList = new ArrayList<EventListItem>();
             executeBackgroundGetEvents();
     	} 
     }

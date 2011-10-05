@@ -131,7 +131,10 @@
 			android:text="1" 
 		/>
 	</TableRow>-->
-	<TableRow>
+	<TableRow
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+	>
 		<TextView
 			android:textColor="#000"
 			android:text="@string/comments_label_str"
@@ -141,6 +144,8 @@
 			android:id="@+id/comments_text"
 			android:textColor="#000"
 			android:text="- Empty -"
+			android:singleLine="false"
+			android:layout_width="wrap_content"
 		/>
 	</TableRow>
 	<TableRow>

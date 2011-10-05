@@ -92,7 +92,7 @@ public class Main extends Activity {
         	this, R.array.event_status_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         combo.setAdapter(adapter);
-        combo.setSelection(4);
+        combo.setSelection(3);
         
         combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
         adapter = ArrayAdapter.createFromResource(
@@ -294,9 +294,11 @@ public class Main extends Activity {
     	}
     	
     	combo = (Spinner) findViewById(R.id.severity_combo);
-    	this.object.severity = combo.getSelectedItemPosition() - 1;
+    	//this.object.severity = combo.getSelectedItemPosition() - 1;//The next version re-add please
+    	this.object.severity = combo.getSelectedItemPosition() - 2;
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
+    	Log.e("Main search_form", "status_combo = " + combo.getSelectedItemPosition());
     	this.object.status = combo.getSelectedItemPosition() - 1;
     	
     	text = (EditText)findViewById(R.id.event_search_text);
@@ -338,7 +340,8 @@ public class Main extends Activity {
     	filterSeverity = combo.getSelectedItemPosition() - 1;
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
-    	filterStatus = combo.getSelectedItemPosition() - 1;
+    	//filterStatus = combo.getSelectedItemPosition() - 1;//The next version re-add please
+    	filterStatus = combo.getSelectedItemPosition() - 2;
     	
     	combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
     	filterLastTime = combo.getSelectedItemPosition();

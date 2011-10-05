@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -339,7 +341,26 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	return_api = return_api.replaceAll("\\<.*?\\>", ""); //Clean html tags.
 	    	
 	    	//Work around for the crap of \n in this event bad xml
-	    	return_api = return_api.replaceAll("Unable to process XML data file.*?line 187 thread 5", "Bad XML");
+	    	//return_api = return_api.replaceAll("Unable to process XML data file [^\n]*\n[^\n]*line 187 thread .\n", "Bad XML");
+	    	
+	    	
+	    	
+	    	Pattern pattern = Pattern.compile("Unable to process XML data file '(.*)'");
+	    	Matcher matcher;
+	    	String filename;
+	    	
+	    	boolean endReplace = false; int i22 = 0;
+	    	while (!endReplace) { Log.e("loop", i22 + ""); i22++;
+	    		matcher = pattern.matcher(return_api);
+	    		
+	    		if (matcher.find()) {
+	    			filename = matcher.group(1);
+	    			return_api = return_api.replaceFirst("Unable to process XML data file[^\n]*\n[^\n]*line 187 thread .*\n", "Bad XML: " + filename);
+	    		}
+	    		else {
+	    			endReplace = true;
+	    		}
+	    	}
 	    	
 	    	Log.e("return_api", return_api);
 	    	

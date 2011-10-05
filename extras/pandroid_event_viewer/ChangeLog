@@ -1,5 +1,12 @@
 2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
+	fixed the events about BadXML with returns.
+	 
+	* res/values-es/strings.xml: fixed typo in the value "develop...".
+
+2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* src/pandroid_event_viewer/pandorafms/Main.java: fixed the status value
 	posprocess.
 

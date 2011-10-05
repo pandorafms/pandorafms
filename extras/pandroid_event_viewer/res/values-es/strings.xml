@@ -77,7 +77,7 @@
     <string name="max_time_old_event_str">Máx tiempo de antiguedad</string>
     
     <string name="licensed_under_gpl_str">Licenciado bajo GPL v2</string>
-    <string name="develop_team_str">Desarrado por: Miguel de Dios</string>
+    <string name="develop_team_str">Desarrollado por: Miguel de Dios</string>
     
     <string name="alert_recovered_str">Alerta recuperada</string>
     <string name="alert_manual_validation_str">Alerta validada manualmente</string>

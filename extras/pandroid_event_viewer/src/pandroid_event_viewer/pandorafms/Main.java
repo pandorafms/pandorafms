@@ -294,12 +294,12 @@ public class Main extends Activity {
     	}
     	
     	combo = (Spinner) findViewById(R.id.severity_combo);
-    	//this.object.severity = combo.getSelectedItemPosition() - 1;//The next version re-add please
-    	this.object.severity = combo.getSelectedItemPosition() - 2;
+    	this.object.severity = combo.getSelectedItemPosition() - 1;
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
     	Log.e("Main search_form", "status_combo = " + combo.getSelectedItemPosition());
-    	this.object.status = combo.getSelectedItemPosition() - 1;
+    	//this.object.status = combo.getSelectedItemPosition() - 1;//The next version re-add please
+    	this.object.status = combo.getSelectedItemPosition() - 0;
     	
     	text = (EditText)findViewById(R.id.event_search_text);
     	this.object.eventSearch = text.getText().toString();
@@ -341,7 +341,7 @@ public class Main extends Activity {
     	
     	combo = (Spinner)findViewById(R.id.status_combo);
     	//filterStatus = combo.getSelectedItemPosition() - 1;//The next version re-add please
-    	filterStatus = combo.getSelectedItemPosition() - 2;
+    	filterStatus = combo.getSelectedItemPosition() - 0;
     	
     	combo = (Spinner)findViewById(R.id.max_time_old_event_combo);
     	filterLastTime = combo.getSelectedItemPosition();

@@ -1,4 +1,13 @@
 2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* src/pandroid_event_viewer/pandorafms/Main.java: fixed the status value
+	posprocess.
+
+	* res/values/arrays.xml, res/values-en/arrays.xml, res/values-es/arrays.xml:
+	added comment with this change.
+
+2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* res/values/arrays.xml, res/values-en/arrays.xml,
 	res/values-es/arrays.xml: disabled the element search "all events" for the
 	actual version Pandora API.

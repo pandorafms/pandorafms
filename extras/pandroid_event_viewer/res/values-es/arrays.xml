@@ -52,7 +52,7 @@
 		<!-- You must subtract -1 -->
 		<!--<item>Todo los eventos</item> //The next version re-add please -->
 		
-		<!-- You must subtract -2 -->
+		<!-- You must subtract 0 -->
 		<item>Solo los nuevos</item>
 		<item>Solo los validados</item>
 		<item>Solo los en proceso</item>

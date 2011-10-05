@@ -2002,4 +2002,84 @@ function set_new_note_incident($id, $id2, $other, $thrash2) {
 	else
 		returnData('string', array('type' => 'string', 'data' => $idNote));
 }
+
+
+/**
+ * Disable a module, given agent and module name.
+ * 
+ * @param string $agent_name Name of agent.
+ * @param string $module_name Name of the module
+ * @param $thrash3 Don't use.
+ * @param $thrash4 Don't use.
+// http://localhost/pandora_console/include/api.php?op=set&op2=enable_module&id=garfio&id2=Status
+ */
+
+function set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) {
+	$id_agent = agents_get_agent_id($agent_name);
+	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
+    db_process_sql("UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = $id_agent_module");
+	returnData('string', array('type' => 'string', 'data' => __('Correct module disable')));
+}
+
+
+/**
+ * Enable a module, given agent and module name.
+ * 
+ * @param string $agent_name Name of agent.
+ * @param string $module_name Name of the module
+ * @param $thrash3 Don't use.
+ * @param $thrash4 Don't use.
+ */
+
+function set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
+	$id_agent = agents_get_agent_id($agent_name);
+	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
+    db_process_sql("UPDATE tagente_modulo SET disabled = 0 WHERE id_agente_modulo = $id_agent_module");
+	returnData('string', array('type' => 'string', 'data' => __('Correct module enable')));
+}
+
+
+/**
+ * Disable a alert 
+ * 
+ * @param string $agent_name Name of agent (for example "myagent")
+ * @param string $module_name Name of the module (for example "Host alive")
+ * @param string $template_name Name of the alert template (for example, "Warning event")
+ * @param $thrash4 Don't use.
+
+// http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert&id=garfio&id2=Status&other=Warning%20condition
+ */
+
+function set_disable_alert ($agent_name, $module_name, $template_name, $thrash4) {
+
+	$id_agent = agents_get_agent_id($agent_name);
+	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
+    $id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
+
+    db_process_sql("UPDATE talert_template_modules SET disabled = 1 WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+	returnData('string', array('type' => 'string', 'data' => "Correct alert disable"));
+}
+
+/**
+ * Enable a alert
+ * 
+ * @param string $agent_name Name of agent (for example "myagent")
+ * @param string $module_name Name of the module (for example "Host alive")
+ * @param string $template_name Name of the alert template (for example, "Warning event")
+ * @param $thrash4 Don't use.
+
+// http://localhost/pandora_console/include/api.php?op=set&op2=enable_alert&id=garfio&id2=Status&other=Warning%20condition
+ */
+
+function set_enable_alert ($agent_name, $module_name, $template_name, $thrash4) {
+
+	$id_agent = agents_get_agent_id($agent_name);
+	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
+    $id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
+
+    db_process_sql("UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+	returnData('string', array('type' => 'string', 'data' => "Correct alert enable"));
+}
+
+
 ?>

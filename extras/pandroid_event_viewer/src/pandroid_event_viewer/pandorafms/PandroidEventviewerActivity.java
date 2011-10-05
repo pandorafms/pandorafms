@@ -337,6 +337,10 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	
 	    	return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	return_api = return_api.replaceAll("\\<.*?\\>", ""); //Clean html tags.
+	    	
+	    	//Work around for the crap of \n in this event bad xml
+	    	return_api = return_api.replaceAll("Unable to process XML data file.*?line 187 thread 5", "Bad XML");
+	    	
 	    	Log.e("return_api", return_api);
 	    	
 	    	String[] lines = return_api.split("\n");

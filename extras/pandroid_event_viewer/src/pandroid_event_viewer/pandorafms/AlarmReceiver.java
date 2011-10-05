@@ -45,6 +45,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 	        this.url = preferences.getString("url", "");
 	        this.user = preferences.getString("user", "");
 	        this.password = preferences.getString("password", "");
+	        Calendar c = Calendar.getInstance();
+	    	long now = (c.getTimeInMillis() / 1000);
+	        long old_previous_filterTimestamp = preferences.getLong("previous_filterTimestamp", now);
 	        
 	        if ((user.length() == 0) && (password.length() == 0)
 	            	&& (url.length() == 0)) {
@@ -105,6 +108,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 		    	}
 		    	else {
 		    		this.more_criticity = -1;
+		    		
+		    		//Restore timestamp
+		    		SharedPreferences.Editor editorPreferences = preferences.edit();
+		        	editorPreferences.putLong("previous_filterTimestamp", old_previous_filterTimestamp);
+		        	editorPreferences.commit();
 		    	}
 		    	
 	    	}
@@ -125,7 +133,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     	String filterAgentName = preferences.getString("filterAgentName", "");
     	int filterIDGroup = preferences.getInt("filterIDGroup", 0);
     	int filterSeverity = preferences.getInt("filterSeverity", -1);
-    	int filterStatus = preferences.getInt("filterStatus", 4);
+    	int filterStatus = preferences.getInt("filterStatus", 3);
     	String filterEventSearch = preferences.getString("filterEventSearch", "");
     	
     	
@@ -135,7 +143,12 @@ public class AlarmReceiver extends BroadcastReceiver {
     	SharedPreferences.Editor editorPreferences = preferences.edit();
     	editorPreferences.putLong("filterTimestamp", now); //Save for the next execution.
     	editorPreferences.putLong("previous_filterTimestamp", filterTimestamp); //Save and the previous for the list.
-    	editorPreferences.commit();
+    	if (editorPreferences.commit()) {
+    		Log.e("AlarmReceiver serializeParams2Api", "YES COMMIT");
+    	}
+    	else {
+    		Log.e("AlarmReceiver serializeParams2Api", "NOT COMMIT");
+    	}
     	
     	
     	String return_var = "";

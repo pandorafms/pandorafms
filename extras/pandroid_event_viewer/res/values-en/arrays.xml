@@ -50,7 +50,9 @@
 	
 	<string-array name="event_status_values">
 		<!-- You must subtract -1 -->
-		<item>All event</item>
+		<!--<item>All event</item>//The next version re-add please -->
+		
+		<!-- You must subtract -2 -->
 		<item>Only new</item>
 		<item>Only validated</item>
 		<item>Only in process</item>

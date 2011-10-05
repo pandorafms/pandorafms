@@ -507,6 +507,9 @@ public class EventList extends ListActivity {
 							setImageType(viewEventExtended, item.criticity_image, R.id.img_severity);
 					}
 					
+					//Set the open and close the extended info event row action.
+					view.setOnClickListener(new OnItemClickListener(position, this.object));
+					
 					Button button;
 			        button = (Button)viewEventExtended.findViewById(R.id.validate_button_extended);
 			        if (item.status == -1) {
@@ -521,7 +524,6 @@ public class EventList extends ListActivity {
 				        clickListener.id_event = item.id_event;
 				        clickListener.core = this.core;
 				        button.setOnClickListener(clickListener);
-				        view.setOnClickListener(new OnItemClickListener(position, this.object));
 				        
 				        text = (TextView)viewEventExtended.findViewById(R.id.validate_event_label);
 				        text.setVisibility(TextView.GONE);

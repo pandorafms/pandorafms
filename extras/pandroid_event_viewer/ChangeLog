@@ -1,4 +1,17 @@
 2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
+	* res/values/arrays.xml, res/values-en/arrays.xml,
+	res/values-es/arrays.xml: disabled the element search "all events" for the
+	actual version Pandora API.
+	
+	* src/pandroid_event_viewer/pandorafms/AlarmReceiver.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: wip and fixes.
+	
+	* res/layout/item_list_event_extended.xml: added the style to comments for
+	avoid overflow in the width dimension.
+
+2011-10-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java
 	

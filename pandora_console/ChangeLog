@@ -1,3 +1,8 @@
+2011-10-05 Sancho Lerena <slerena@artica.es>
+
+	* functions_api.php: Added 4 new methods (enable/disable) alerts
+	and modules. Request 3415505 on tracker by Hirofumi Kosaka.
+
 2011-10-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php: Added Js in 

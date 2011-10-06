@@ -430,9 +430,9 @@ sub help_screen{
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add data server module to agent');
-	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass>]', 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add plug-in module to agent');
+	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold>]', 'Add snmp network module to agent');
+	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -660,7 +660,7 @@ sub pandora_manage_main ($$$) {
 
 			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 			$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-			$critical_max, $history_data, $definition_file) = @ARGV[2..17];
+			$critical_max, $history_data, $ff_threshold) = @ARGV[2..18];
 			
 			my $module_name_def;
 			my $module_type_def;
@@ -718,18 +718,19 @@ sub pandora_manage_main ($$$) {
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
 			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+			$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 
 			$parameters{'id_modulo'} = 2;	
 			
 			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--create_snmp_module') {
-			param_check($ltotal, 25, 19);
+			param_check($ltotal, 26, 20);
 
 			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
 			$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 			$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-			$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass) = @ARGV[2..26];
+			$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass, $ff_threshold) = @ARGV[2..27];
 			
 			my $module_name_def;
 			my $module_type_def;
@@ -779,6 +780,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'module_interval'} = $interval unless !defined ($interval);
 			$parameters{'snmp_community'} = $community unless !defined ($community);
 			$parameters{'snmp_oid'} = $oid unless !defined ($oid);
+			$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 			
 			if($version == 3) {
 				$parameters{'custom_string_1'} = $snmp3_priv_method;
@@ -795,12 +797,12 @@ sub pandora_manage_main ($$$) {
 			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--create_plugin_module') {
-			param_check($ltotal, 20, 11);
+			param_check($ltotal, 21, 12);
  
  			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
 			$user, $password, $parameters, $description, $module_group, $min, $max, $post_process, 
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-			$definition_file) = @ARGV[2..21];
+			$ff_threshold) = @ARGV[2..22];
 			
 			my $module_name_def;
 			my $module_type_def;
@@ -854,6 +856,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
 			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+			$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 
 			$parameters{'id_modulo'} = 4;	
 			

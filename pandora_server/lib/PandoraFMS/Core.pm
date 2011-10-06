@@ -728,8 +728,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_times_fired_ => $alert->{'times_fired'},
 				_alert_priority_ => $alert->{'priority'},
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
+				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
+				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
+				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
 				 );
 	

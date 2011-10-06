@@ -21,12 +21,16 @@ The following macros are available:
 <li>_alert_threshold_ : Alert threshold.</li>
 <li>_alert_times_fired_ : Number of times the alert has been fired.</li>
 <li>_module_ : Module name</li>
+<li>_modulegroup_ : Module group name.</li>
 <li>_moduledescription_ : Description of the module who fired the alert </li>
 <li>_alert_name_ : Alert name </li>
 <li>_alert_priority_ : Numerical alert priorityu </li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
+<li>_interval_ : Execution interval of the module. </li>
+<li>_target_ip_ : IP address of the target of the module.</li>
+<li>_target_port_ Port number of the target of the module.</li>
 
 </ul>
 <p>
@@ -34,3 +38,5 @@ The following macros are available:
 <p>
 Example: Agent _agent_ has fired alert _alert_ with data _data_
 </p>
+
+

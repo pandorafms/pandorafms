@@ -1,3 +1,8 @@
+2011-10-06  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/DB.pm: Added function to get module group name.
+	* lib/PandoraFMS/Core.pm: Added new alert macros.
+
 2011-09-29  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server/lib/PandoraFMS/SNMPServer.pm

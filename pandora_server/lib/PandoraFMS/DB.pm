@@ -56,6 +56,7 @@ our @EXPORT = qw(
 		get_group_name
 		get_module_agent_id
 		get_module_group_id
+		get_module_group_name
 		get_module_id
 		get_module_name
 		get_nc_profile_name
@@ -299,6 +300,15 @@ sub get_module_group_id ($$) {
 	
 	my $rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", safe_input($module_group_name));
 	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return module group name given the module group id.
+##########################################################################
+sub get_module_group_name ($$) {
+	my ($dbh, $module_group_id) = @_;
+
+	return get_db_value ($dbh, "SELECT name FROM tmodule_group WHERE id_mg = ?", $module_group_id);
 }
 
 ##########################################################################

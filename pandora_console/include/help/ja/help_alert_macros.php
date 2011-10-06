@@ -22,12 +22,16 @@
 <li>_alert_threshold_ : アラートのしきい値</li>
 <li>_alert_times_fired_ : アラートが発生した回数</li>
 <li>_module_ : モジュール名</li>
+<li>_modulegroup_ : モジュールグループ名</li>
 <li>_moduledescription_ : アラートが発生したモジュールの説明</li>
 <li>_alert_name_ : アラート名</li>
 <li>_alert_priority_ : アラート優先順位(数値)</li>
 <li>_id_agent_ : エージェントのID / Webコンソールへのリンクを生成するのに便利です</li>
 <li>_id_alert_ : アラートの(ユニークな)ID / 他のソフトウエアパッケージとの連携に利用できます</li>
 <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
+<li>_interval_ : モジュールの実行間隔</li>
+<li>_target_ip_ : モジュールの対象IPアドレス</li>
+<li>_target_port_ : モジュールの対象ポート</li>
 
 </ul>
 <p>

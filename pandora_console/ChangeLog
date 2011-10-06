@@ -1,3 +1,8 @@
+2011-10-06  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* include/help/en/help_alert_macros.php,
+	  include/help/ja/help_alert_macros.php: Added 4 new macros.
+
 2011-10-05 Sancho Lerena <slerena@artica.es>
 
 	* functions_api.php: Added 4 new methods (enable/disable) alerts

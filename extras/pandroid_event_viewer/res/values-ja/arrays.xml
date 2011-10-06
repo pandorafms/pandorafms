@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+-->
+<resources>
+	<string-array name="severity_array_values">
+		<!-- You must subtract -1 -->
+        <item>全て</item>
+        <item>メンテナンス</item>
+        <item>情報</item>
+        <item>正常</item>
+        <item>警告</item>
+        <item>障害</item>
+	</string-array>
+	
+	<!-- Please change the code in the function convertRefreshTimeKeyToTime -->
+	<string-array name="refresh_combo">
+        <item>30 秒</item>
+        <item>1 分</item>
+        <item>5 分</item>
+        <item>10 分</item>
+        <item>15 分</item>
+        <item>30 分</item>
+        <item>45 分</item>
+        <item>1 時間</item>
+        <item>1 時間 30 分</item>
+        <item>2 時間</item>
+        <item>3 時間</item>
+        <item>4 時間</item>
+        <item>6 時間</item>
+        <item>8 時間</item>
+        <item>10 時間</item>
+        <item>12 時間</item>
+        <item>24 時間</item>
+        <item>36 時間</item>
+        <item>48 時間</item>
+	</string-array>
+	
+	<string-array name="event_status_values">
+		<!-- You must subtract -1 -->
+		<!--<item>All event</item>//The next version re-add please -->
+		
+		<!-- You must subtract 0 -->
+		<item>新規のみ</item>
+		<item>承諾済のみ</item>
+		<item>処理中のみ</item>
+		<item>未承諾のみ</item>
+	</string-array>
+	
+	<!-- Please change the code in the function convertMaxTimeOldEventValuesToTimestamp -->
+	<string-array name="max_time_old_event_values">
+		<item>30 分</item>
+		<item>1 時間</item>
+		<item>2 時間</item>
+		<item>3 時間</item>
+		<item>4 時間</item>
+		<item>5 時間</item>
+		<item>8 時間</item>
+		<item>10 時間</item>
+		<item>12 時間</item>
+		<item>1 日</item>
+		<item>2 日</item>
+		<item>3 日</item>
+		<item>4 日</item>
+		<item>5 日</item>
+		<item>1 週間</item>
+		<item>2 週間</item>
+		<item>1 ヵ月</item>
+	</string-array>
+</resources>

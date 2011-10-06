@@ -1,3 +1,8 @@
+2011-10-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Restored the _id_alert_ macro. Thanks to
+	  Koichiro.
+
 2011-10-06  Koichiro KIKUCHI  <koichiro@rworks.jp>
 
 	* util/pandora_manage.pl: Added support for specifying ff_threthold

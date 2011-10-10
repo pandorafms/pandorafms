@@ -1,5 +1,10 @@
 2011-10-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/estado_ultimopaquete.php: Fixed layout in this 
+	view when module data is a string.
+
+2011-10-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_monitores.php: Fixed query to add module 
 	group in the agrupation. 
 

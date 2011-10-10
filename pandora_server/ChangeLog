@@ -1,3 +1,8 @@
+2011-10-10 Javier Lanz <javier.lanz@artica.es>
+
+	* util/pandora_manage.pl: Fixed a wee bug with 'group' parameter
+	creating events
+
 2011-09-30  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Merged from trunk the possibility of 

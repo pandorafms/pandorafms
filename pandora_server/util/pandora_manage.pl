@@ -1136,7 +1136,7 @@ sub pandora_manage_main ($$$) {
 			
 			my $id_group;
 			
-			if (!defined($group_name) || $group_name == "All") {
+			if (!defined($group_name) || $group_name eq "All") {
 				$id_group = 0;
 			}
 			else {

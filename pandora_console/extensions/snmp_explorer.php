@@ -91,8 +91,10 @@ function snmp_explorer() {
     }
 
     if($create_modules) {	
-	    $interfaces = json_decode(html_entity_decode(get_parameter_post("snmp_json")), true);
-	    if(is_null($interfaces)) {
+        $id_snmp_serialize = get_parameter_post('id_snmp_serialize');
+        $interfaces = unserialize_in_temp($id_snmp_serialize);
+   	    
+   	    if(!$interfaces) {
 			$interfaces = array();
 		}
 		

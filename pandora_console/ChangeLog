@@ -1,5 +1,10 @@
 2011-10-10  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/snmp_explorer.php: Updated missed fix in snmp explorer
+	to create the modules correctly
+
+2011-10-10  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/users/configure_user.php: Deleted old fix of juanma to
 	refresh skins when update to fix password update bug
 

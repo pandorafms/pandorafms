@@ -156,7 +156,7 @@ switch ($config["dbtype"]) {
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-/*		$sql = sprintf ("
+	/*	$sql = sprintf ("
 			SELECT *
 			FROM tagente_estado, tagente_modulo
 				LEFT JOIN tmodule_group
@@ -173,7 +173,7 @@ switch ($config["dbtype"]) {
 				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_estado.utimestamp != 0  
-			ORDER BY %s  %s", $id_agente, $order['field'], $order['order']);
+			ORDER BY tagente_modulo.id_module_group , %s  %s", $id_agente, $order['field'], $order['order']);	
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":

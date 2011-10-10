@@ -1,3 +1,10 @@
+2011-10-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/modificar_agente.php: Filter in this view is 
+	kept when an agent is deleted.
+	
+	Fixes: #3419823
+
 2011-10-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/group_view.php: Fixed bad style when a group's 

@@ -248,14 +248,6 @@ if ($update_user) {
 	}
 	
 	$user_info = $values;
-
-	// Reload page to update skin
-	if ($res1){
-		header ('location:' . $config['homeurl'] . '/index.php?sec=gusuarios&sec2=godmode/users/configure_user&id=' . $id . "&status=1");
-	}
-	else{
-		header ('location:' . $config['homeurl'] . '/index.php?sec=gusuarios&sec2=godmode/users/configure_user&id=' . $id . "&status=0");
-	}
 }
 
 if ($status != -1){

@@ -1,3 +1,8 @@
+2011-10-10 Tomas Palacios <tomas.palacios@artica.es>
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Updated to provide
+	additional compatibility with older versions of MySQL.
+
 2011-10-10  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/snmp_explorer.php: Updated missed fix in snmp explorer

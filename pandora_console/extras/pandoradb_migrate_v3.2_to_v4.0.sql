@@ -182,7 +182,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN (`str_critical` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD COLUMN (`extended_info` text DEFAULT '');
 ALTER TABLE `tagente_modulo` ADD INDEX module (`id_modulo`);
 ALTER TABLE `tagente_modulo` ADD INDEX nombre (`nombre` (255));
-CREATE INDEX `module_group` on tagente_modulo (`id_module_group`) using btree;
+CREATE INDEX `module_group` using btree on tagente_modulo (`id_module_group`);
 
 -- -----------------------------------------------------
 -- Table `tevento`

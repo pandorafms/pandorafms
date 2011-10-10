@@ -1,3 +1,8 @@
+2011-10-10 Javier Lanz <javier.lanz@artica.es>
+
+	* util/pandora_manage.pl: Fixed a wee bug with 'group' parameter
+	creating events
+
 2011-10-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Restored the _id_alert_ macro. Thanks to

@@ -373,11 +373,14 @@ foreach ($modules as $module) {
 		}
 		else {
 			
-			if (strlen($module["datos"]) > 0 ) $colspan = 2;
+			if (strlen($module["datos"]) > 0 ) $colspan = /*2*/ 1;
 			else $colspan= 1;
 			
 			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".io_safe_output($module["datos"])."'>";
 			echo substr(io_safe_output($module["datos"]),0,42);
+			if (strlen(io_safe_output($module["datos"])) > 42){
+				echo "...";
+			}
 		}
 		echo "</td>";
 			

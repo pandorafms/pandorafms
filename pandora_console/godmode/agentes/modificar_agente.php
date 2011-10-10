@@ -445,7 +445,7 @@ if ($agents !== false) {
 			$offsetArg = $offset;
 		
 		echo "<td class='$tdcolor' align='center' valign='middle'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-		borrar_agente=".$agent["id_agente"]."&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
+		borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
 		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a></td>";
 	}

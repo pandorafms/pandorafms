@@ -1,3 +1,7 @@
+2011-10-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* images/vmware.png: Added forgotten file.
+
 2011-10-10 Tomas Palacios <tomas.palacios@artica.es>
 
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Updated to provide

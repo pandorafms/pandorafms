@@ -88,6 +88,7 @@ sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),
 sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE"
 echo "Updating Pandora Console version..."
 sed -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
+sed -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
 echo "Updating Pandora Console installer version..."
 sed -e "s/\s*\$version\s*=.*/\$version = '$VERSION';/" "$CONSOLE_INSTALL_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_INSTALL_FILE"
 sed -e "s/\s*\$build\s*=.*/\$build = '$BUILD';/" "$CONSOLE_INSTALL_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_INSTALL_FILE"

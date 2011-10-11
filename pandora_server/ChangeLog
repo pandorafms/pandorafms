@@ -1,3 +1,8 @@
+2011-10-11  Junichi Satoh <junichi@rworks.jp>
+
+	* FreeBSD/pandora_server.conf: Synchronized with the generic
+	configuration file, conf/pandora_server.conf.
+
 2011-10-10 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* util/plugin/ipmi-plugin.pl: Added first version of ipmi plugin.

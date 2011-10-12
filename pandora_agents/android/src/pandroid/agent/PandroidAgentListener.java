@@ -1,38 +1,58 @@
 package pandroid.agent;
 
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.entity.StringEntity;
+
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Service;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.Criteria;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.hardware.SensorManager;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-
-
+import android.hardware.SensorManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.OutputStream;
-import java.util.Calendar;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.text.Html;
+import android.text.TextUtils;
+import android.util.Log;
 
 public class PandroidAgentListener extends Service {
     Handler h = new Handler();
@@ -42,6 +62,10 @@ public class PandroidAgentListener extends Service {
     String defaultServerAddr = "10.0.2.2";
     String defaultAgentName = "pandroidAgent";
     String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
+    String defaultTaskStatus = "disabled"; // "disabled" or "enabled"
+    String defaultMemoryStatus = "disabled"; // "disabled" or "enabled"
+    String defaultTask = "";
+    String defaultTaskHumanName = "";
     String lastGpsContactDateTime = "";
 
     boolean showLastXML = true;
@@ -52,6 +76,8 @@ public class PandroidAgentListener extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.e("PandroidAgentListener", "onStartCommand");
+		
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
         wakeLock.acquire();
@@ -59,6 +85,7 @@ public class PandroidAgentListener extends Service {
 		contact();
 		wakeLock.release();
 		stopSelf(startId);
+		
 	    return START_NOT_STICKY;
 	}
 
@@ -122,18 +149,62 @@ public class PandroidAgentListener extends Service {
 		String agentName = getSharedData("PANDROID_DATA", "agentName", defaultAgentName, "string");
 		String interval = getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer");
 		
-		buffer += "<agent_data description='' group='' os_name='android' os_version='2.1' interval='"+ interval +"' version='3.2RC1(Build 101103)' timestamp='" + getHumanDateTime(-1) + "' agent_name='" + agentName + "' timezone_offset='0'" + gpsData +">\n";
+		
+		
+		buffer += "<agent_data " +
+			"description='' group='' os_name='android' os_version='2.1' " +
+			"interval='"+ interval +"' version='4.0(Build 111012)' " + 
+			"timestamp='" + getHumanDateTime(-1) + "' agent_name='" + agentName + "' " +
+			"timezone_offset='0'" + gpsData +">\n";
+		
+		
 		
 		// Modules
-		buffer += buildmoduleXML("battery_level", "The actually device battery level", "generic_data", getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer"));		
 		String orientation = getSharedData("PANDROID_DATA", "orientation", "361", "float");
 		String proximity = getSharedData("PANDROID_DATA", "proximity", "-1.0", "float");
-			
+		String batteryLevel = getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer");
+		String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", "disabled", "string");
+		String taskRun = getSharedData("PANDROID_DATA", "taskRun", "false", "string");
+		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", "", "string");
+		taskHumanName = StringEscapeUtils.escapeHtml4(taskHumanName);
+		Log.e("taskHumanName", taskHumanName);
+		String task = getSharedData("PANDROID_DATA", "task", "", "string");
+		String memoryStatus = getSharedData("PANDROID_DATA", "memoryStatus", defaultMemoryStatus, "string");
+		String availableRamKb = getSharedData("PANDROID_DATA", "availableRamKb", "0" , "long");
+		String totalRamKb = getSharedData("PANDROID_DATA", "totalRamKb", "0", "long");
+		
+		buffer += buildmoduleXML("battery_level", "The actually device battery level", "generic_data", batteryLevel);	
+		
 		if(!orientation.equals("361.0")) {
 			buffer += buildmoduleXML("orientation", "The actually device orientation (in degrees)", "generic_data", orientation);		
 		}
+		
 		if(!proximity.equals("-1.0")) {
 			buffer += buildmoduleXML("proximity", "The actually device proximity detector (0/1)", "generic_data", proximity);		
+		}
+		
+		if (taskStatus.equals("enabled")) {
+			buffer += buildmoduleXML("taskStatus", "The Pandroid configuration watch task.", "generic_proc", "1");
+			buffer += buildmoduleXML("taskHumanName", "The task's human name.", "async_string", taskHumanName);
+			buffer += buildmoduleXML("task", "The task's package name.", "async_string", task);
+			if (taskRun.equals("true")) {
+				buffer += buildmoduleXML("taskRun", "The task is running.", "async_proc", "1");
+			}
+			else {
+				buffer += buildmoduleXML("taskRun", "The task is running.", "async_proc", "0");
+			}
+		}
+		else {
+			buffer += buildmoduleXML("taskStatus", "The Pandroid configuration watch task.", "generic_proc", "0");
+		}
+		
+		if (memoryStatus.equals("enabled")) {
+			buffer += buildmoduleXML("memoryStatus", "The Pandroid configuration watch memory.", "async_proc", "1");
+			buffer += buildmoduleXML("availableRamKb", "The available ram in Kb of device.", "async_data", availableRamKb);
+			buffer += buildmoduleXML("totalRamKb", "The total ram in Kb of device.", "async_data", totalRamKb);
+		}
+		else {
+			buffer += buildmoduleXML("memoryStatus", "The Pandroid configuration watch memory.", "async_proc", "1");
 		}
 		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
 		
@@ -146,16 +217,14 @@ public class PandroidAgentListener extends Service {
 	
     private void writeFile(String fileName, String textToWrite) {
     	try { // catches IOException below
-    	                        FileOutputStream fOut = openFileOutput(fileName,
-    	                                                                MODE_WORLD_READABLE);
-    	                        OutputStreamWriter osw = new OutputStreamWriter(fOut); 
-    	                        
-    	                        // Write the string to the file
-    	                        osw.write(textToWrite);
-    	                        /* ensure that everything is
-    	                         * really written out and close */
-    	                        osw.flush();
-    	                        osw.close();
+    		FileOutputStream fOut = openFileOutput(fileName, MODE_WORLD_READABLE);
+    		OutputStreamWriter osw = new OutputStreamWriter(fOut); 
+    		
+    		// Write the string to the file
+    		osw.write(textToWrite);
+    		/* ensure that everything is really written out and close */
+    		osw.flush();
+    		osw.close();
     	} catch (IOException e) {
 
     	}
@@ -207,8 +276,8 @@ public class PandroidAgentListener extends Service {
 			if(loc != null) {
 		        putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
 		        putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");			
-		        }
-			else {	
+		    }
+			else {
 	            putSharedData("PANDROID_DATA", "latitude", "181", "float");
 	            putSharedData("PANDROID_DATA", "longitude", "181", "float");
 	        }
@@ -301,6 +370,64 @@ public class PandroidAgentListener extends Service {
         }
         
         sensors();
+        getTaskStatus();
+        getMemoryStatus();
+	}
+	
+	private void getMemoryStatus() {
+		String memoryStatus = getSharedData("PANDROID_DATA", "memoryStatus", defaultMemoryStatus, "string");
+		long availableRamKb = 0;
+		long totalRamKb = 0;
+		
+		if (memoryStatus.equals("enabled")) {
+			MemoryInfo mi = new MemoryInfo();
+			ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+			activityManager.getMemoryInfo(mi);
+			availableRamKb = mi.availMem / 1024;
+			totalRamKb = 0;
+			
+			try {
+		        RandomAccessFile reader = new RandomAccessFile("/proc/meminfo", "r");
+		        
+		        String line = reader.readLine();
+		        line = line.replaceAll("[ ]+", " ");
+		        String[] tokens = line.split(" ");
+		        
+		        totalRamKb = Long.valueOf(tokens[1]);
+			}
+			catch (IOException ex) {
+		        ex.printStackTrace();
+		    }
+		}
+		
+		putSharedData("PANDROID_DATA", "availableRamKb", "" + availableRamKb, "long");
+		putSharedData("PANDROID_DATA", "totalRamKb", "" + totalRamKb, "long");
+	}
+	
+	private void getTaskStatus() {
+		String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", defaultTaskStatus, "string");
+		String task = getSharedData("PANDROID_DATA", "task", defaultTask, "string");
+		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", defaultTaskHumanName, "string");
+		String run = "false";
+		
+		if (taskStatus.equals("enabled")) {
+			if ((task.length() != 0) && (taskHumanName.length() != 0)) {
+				ActivityManager activityManager = (ActivityManager)getApplication().getSystemService(ACTIVITY_SERVICE);
+				List<RunningAppProcessInfo> runningAppProcessInfos = activityManager.getRunningAppProcesses();
+				PackageManager pm = getApplication().getPackageManager();
+				RunningAppProcessInfo runningAppProcessInfo;
+				
+				for (int i = 0; i < runningAppProcessInfos.size(); i++) {
+					runningAppProcessInfo = runningAppProcessInfos.get(i);
+					
+					if (task.equals(runningAppProcessInfo.processName)) {
+						run = "true";
+						break;
+					}
+				}
+			}
+		}
+		putSharedData("PANDROID_DATA", "taskRun", run, "string");
 	}
 	
     private void putSharedData(String preferenceName, String tokenName, String data, String type) {

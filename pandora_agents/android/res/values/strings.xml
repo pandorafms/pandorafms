@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="const_string_preferences">PANDROID_DATA</string>
+
 	<string name="app_name">Pandroid Agent</string>
 	<string name="interval">Interval:</string>
 	<string name="update">Update conf.</string>
@@ -9,10 +11,23 @@
 	<string name="confTitle">Pandroid Agent Configuration</string>
 	<string name="agent">Agent name:</string>
 	<string name="gpsReport">Report GPS data</string>
+	<string name="memoryReport">Report memory system</string>
+	<string name="taskReport">Report task</string>
 	<string name="gpsMode">GPS Mode</string>
 	<string name="gpsCurrent">Current position (high battery cost)</string>
 	<string name="summary">Current configuration:</string>
 	<string name="starStop">Restart</string>
 	<string name="gpsLast">Last known position</string>
 	<string name="loading">Loading...</string>
+	<string name="process">Process</string>
+	<string name="last_values">Last values</string>
+	<string name="latitude">Latitude</string>
+	<string name="longitude">Longitude</string>
+	<string name="battery_level">Battery Level</string>
+	<string name="orientation">Orientation</string>
+	<string name="proximity">Proximity</string>
+	<string name="incorrect_update">Unsucessful update options.</string>
+	<string name="correct_update">sucessful update options.</string>
+	<string name="task">Task</string>
+	<string name="memory">Memory</string>
 </resources>

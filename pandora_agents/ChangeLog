@@ -1,3 +1,38 @@
+2011-10-12  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* android/.classpath, android/libs/commons-lang3-3.0.1.jar: added the
+	library "org.apache.commons.lang".
+	
+	* android/AndroidManifest.xml: added the activities Status and Setup. And
+	apply theme the no titlebar to main activity.
+	
+	* android/res/drawable-hdpi/logo.png, android/res/drawable-hdpi/icon.png,
+	android/res/drawable-mdpi/logo.png, android/res/drawable-mdpi/icon.png:
+	removed the images with same size or quality for the subtypes devices.
+	
+	* android/res/layout/setup.xml, android/res/layout/status.xml: added the
+	layouts for the new activies.
+	
+	* android/res/values/strings.xml: added the new strings.
+	
+	* android/src/pandroid/agent/Setup.java,
+	android/src/pandroid/agent/Status.java: added the new activies.
+	
+	* android/src/pandroid/agent/Core.java: added utility class for the proyect.
+	
+	* android/src/pandroid/agent/PandroidAgent.java: added the lost comment
+	header with the license. started to modify to show as tabactivity and other
+	changes.
+	
+	* android/src/pandroid/agent/PandroidAgentTentacle.java: added the lost
+	comment header with the license.
+
+	* android/src/pandroid/agent/PandroidAgentListener.java: added the lost
+	comment header with the license. And wip for the new data to monitorice.
+	
+	* android/src/pandroid/agent/EventReceiver.java: added the lost comment
+	header with the license. And added some traces.
+
 2011-09-29  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* android/default.properties, android/AndroidManifest.xml: added permission

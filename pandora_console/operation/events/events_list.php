@@ -68,6 +68,8 @@ else {
 	}
 }
 
+$groups = users_get_groups($config['id_user'], 'IR');
+
 //Group selection
 if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed

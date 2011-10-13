@@ -1,3 +1,8 @@
+2011-10-13  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_list.php: Fixed events view sql 
+	error to no admin users for bug 3422861
+
 2011-10-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* images/vmware.png: Added forgotten file.

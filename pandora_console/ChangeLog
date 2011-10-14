@@ -1,3 +1,9 @@
+2011-10-14  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* include/help/en/help_alert_macros.php,
+	  include/help/ja/help_alert_macros.php: Added the new
+	  _plugin_parameters_ alert macro.
+
 2011-10-13  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_list.php: Fixed events view sql 

@@ -30,7 +30,8 @@ The following macros are available:
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
 <li>_target_ip_ : IP address of the target of the module.</li>
-<li>_target_port_ Port number of the target of the module.</li>
+<li>_target_port_ : Port number of the target of the module.</li>
+<li>_plugin_parameters_ : Plug-in Parameters of the module.</li>
 
 </ul>
 <p>

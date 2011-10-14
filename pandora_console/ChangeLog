@@ -1,3 +1,10 @@
+2011-10-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Fixed column 
+	width in this view.
+	
+	Fixes: #3423546
+
 2011-10-14  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* include/help/en/help_alert_macros.php,

@@ -736,6 +736,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
+				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {

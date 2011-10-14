@@ -119,6 +119,7 @@ $table_simple->data = array ();
 $table_simple->colspan = array ();
 $table_simple->style = array ();
 $table_simple->style[0] = 'font-weight: bold; vertical-align: top';
+$table_simple->style[1] = 'width: 40%';
 $table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 
 $table_simple->data[0][0] = __('Name');

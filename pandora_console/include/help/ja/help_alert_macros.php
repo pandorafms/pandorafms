@@ -32,6 +32,7 @@
 <li>_interval_ : モジュールの実行間隔</li>
 <li>_target_ip_ : モジュールの対象IPアドレス</li>
 <li>_target_port_ : モジュールの対象ポート</li>
+<li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
 
 </ul>
 <p>

@@ -53,11 +53,11 @@ class ViewServers {
 				$server_status = ui_print_status_image(STATUS_SERVER_OK, '', true);
 			}
 			$data[] = strip_tags($server["name"]);
-			$data[] = str_replace('images/', '../images/', $server['img']);
+			$data[] = str_replace('images/', '/images/', $server['img']);
 			$data[] = human_time_comparation ($server["laststart"], 'tiny');
 			$data[] = human_time_comparation ($server["keepalive"], 'tiny');
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img width="15" height="15"'), $server_status);
+				array('/images/status_sets', '<img width="15" height="15"'), $server_status);
 //			$this->system->debug($server["name"]);
 			
 			$table->data[] = $data;

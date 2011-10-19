@@ -1,3 +1,10 @@
+2011-10-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* mobile/operation/agents/monitor_status.php,
+	mobile/operation/agents/tactical.php,
+	mobile/operation/agents/view_alerts.php,
+	mobile/operation/servers/view_servers.php: Fixed 'img' paths.
+
 2011-10-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Fixed column 

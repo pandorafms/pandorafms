@@ -1,3 +1,8 @@
+2011-10-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Disable enterprise ICMP and SNMP servers
+	  by default.
+
 2011-10-20  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Fixed mistake in the last commit

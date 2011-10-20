@@ -236,9 +236,9 @@ sub pandora_load_config {
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
-	$pa_config->{"icmpserver"} = 1; # 4.0
+	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
-	$pa_config->{"snmpserver"} = 1; # 4.0
+	$pa_config->{"snmpserver"} = 0; # 4.0
 	$pa_config->{"snmp_threads"} = 3; # 4.0
 	$pa_config->{"block_size"} = 15; # 4.0
 	

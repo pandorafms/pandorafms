@@ -1,3 +1,10 @@
+2011-10-20  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Fixed safe_input and output to
+	convert manually several more extended ascii characters. 
+	Revert the last fix in safe_input because Junichi warn us the
+	danger of broke multibyte chars. Thanks Junichi.
+
 2011-10-19  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Fixed safe_input function to encode

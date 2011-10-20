@@ -1,5 +1,10 @@
 2011-10-20  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Fixed mistake in the last commit
+	adding parameter in wrong function (decode embed decode).
+
+2011-10-20  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Tools.pm: Fixed safe_input and output to
 	convert manually several more extended ascii characters. 
 	Revert the last fix in safe_input because Junichi warn us the

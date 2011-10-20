@@ -21,6 +21,16 @@
         
     	<service android:enabled="true" android:name="pandroid.agent.PandroidAgentListener" />
 		<receiver android:name="pandroid.agent.EventReceiver" />
+		<activity
+        	android:name=".About"
+        	android:label="@string/pandroid_agent_str"
+        	android:theme="@android:style/Theme.Dialog"
+        />
+		<activity
+        	android:name=".Help"
+        	android:label="@string/help_str"
+        	android:theme="@android:style/Theme.Dialog"
+        />
     </application>
     
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -29,6 +39,7 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.GET_TASKS"/>
+	<uses-permission android:name="android.permission.BATTERY_STATS"/>
 	
 	<uses-feature android:name="android.hardware.sensor.light" />
 	<uses-feature android:name="android.hardware.location" />

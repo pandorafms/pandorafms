@@ -76,8 +76,6 @@ public class PandroidAgentListener extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.e("PandroidAgentListener", "onStartCommand");
-		
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
         wakeLock.acquire();
@@ -167,7 +165,7 @@ public class PandroidAgentListener extends Service {
 		String taskRun = getSharedData("PANDROID_DATA", "taskRun", "false", "string");
 		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", "", "string");
 		taskHumanName = StringEscapeUtils.escapeHtml4(taskHumanName);
-		Log.e("taskHumanName", taskHumanName);
+		
 		String task = getSharedData("PANDROID_DATA", "task", "", "string");
 		String memoryStatus = getSharedData("PANDROID_DATA", "memoryStatus", defaultMemoryStatus, "string");
 		String availableRamKb = getSharedData("PANDROID_DATA", "availableRamKb", "0" , "long");
@@ -289,7 +287,13 @@ public class PandroidAgentListener extends Service {
     private void batteryLevel() {
         BroadcastReceiver batteryLevelReceiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
-                context.unregisterReceiver(this);
+            	try {
+            		context.unregisterReceiver(this);
+            	}
+            	catch (IllegalArgumentException e) {
+            		//None
+            	}
+                
                 int rawlevel = intent.getIntExtra("level", -1);
                 int scale = intent.getIntExtra("scale", -1);
                 if (rawlevel >= 0 && scale > 0) {
@@ -302,7 +306,6 @@ public class PandroidAgentListener extends Service {
     }
     
     private void sensors() {
-    	
     	// Sensor listeners
     	
         SensorEventListener orientationLevelReceiver = new SensorEventListener() {
@@ -346,14 +349,17 @@ public class PandroidAgentListener extends Service {
                 sensorManager.registerListener( 
                         orientationLevelReceiver, 
                         orientSensor,
-                        SensorManager.SENSOR_DELAY_UI );
+                        (20));
+                        //SensorManager.SENSOR_DELAY_UI );
         }
         
         if( proxSensor != null ) {
             sensorManager.registerListener( 
                     proximityLevelReceiver, 
                     proxSensor,
-                    SensorManager.SENSOR_DELAY_UI );
+                    //(defaultInterval * 1000000));
+                    (20));
+                    //SensorManager.SENSOR_DELAY_UI );
         }
     }
 
@@ -369,8 +375,8 @@ public class PandroidAgentListener extends Service {
             putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
         }
         
-        sensors();
-        getTaskStatus();
+        //sensors();
+        //getTaskStatus();
         getMemoryStatus();
 	}
 	

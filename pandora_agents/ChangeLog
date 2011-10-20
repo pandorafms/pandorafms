@@ -1,3 +1,24 @@
+2011-10-20  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml: added new activies and permission of batery.
+	
+	* src/pandroid/agent/PandroidAgent.java, src/pandroid/agent/Setup.java,
+	src/pandroid/agent/Status.java,
+	src/pandroid/agent/PandroidAgentListener.java,
+	src/pandroid/agent/EventReceiver.java, src/pandroid/agent/Help.java,
+	src/pandroid/agent/About.java: wip.
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: added strings and translations into spanish.
+
+	* res/menu/options_menu.xml: added a menu file.
+
+	* res/drawable-ldpi/help.png, res/drawable-ldpi/about.png,
+	res/drawable-ldpi/pandorafms_logo.png: added image files.
+
+	* res/layout/setup.xml, res/layout/status.xml, res/layout/help.xml,
+	res/layout/about.xml: wip and added the need layout for new activies.
+
 2011-10-12  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* android/.classpath, android/libs/commons-lang3-3.0.1.jar: added the

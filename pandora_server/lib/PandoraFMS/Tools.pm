@@ -90,7 +90,7 @@ sub pandora_trash_ascii {
 sub safe_input($) {
 	my $value = shift;
 
-	$value = encode_entities ($value);
+	$value = encode_entities ($value, "'<>&");
 		
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/\\/&#92;/gi;
@@ -137,7 +137,7 @@ sub safe_input($) {
 sub safe_output($) {
 	my $value = shift;
 
-	$value = decode_entities ($value, "'<>&");
+	$value = decode_entities ($value);
 		
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/&#92;/\\/gi;

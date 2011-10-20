@@ -112,6 +112,12 @@ sub safe_input($) {
 		my $hex = ascii_to_html($i);
 		$value =~ s/$pattern/$hex/gi;		
 	}
+	
+	for (my $i=128;$i<191;$i++) {
+		my $pattern = chr($i);
+		my $hex = ascii_to_html($i);
+		$value =~ s/$pattern/$hex/gi;		
+	}
 
 	#//Replace characteres for tildes and others
 	my $trans = get_html_entities();
@@ -131,7 +137,7 @@ sub safe_input($) {
 sub safe_output($) {
 	my $value = shift;
 
-	$value = decode_entities ($value);
+	$value = decode_entities ($value, "'<>&");
 		
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/&#92;/\\/gi;
@@ -152,6 +158,12 @@ sub safe_output($) {
 		my $pattern = chr($i);
 		my $hex = ascii_to_html($i);
 		$value =~ s/$hex/$pattern/gi;		
+	}
+	
+	for (my $i=128;$i<191;$i++) {
+		my $pattern = chr($i);
+		my $hex = ascii_to_html($i);
+		$value =~ s/$hex/$pattern/gi;	
 	}
 		
 	#//Replace characteres for tildes and others

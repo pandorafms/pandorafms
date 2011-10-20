@@ -3,14 +3,13 @@ package pandroid.agent;
 import java.util.Date;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class Status  extends Activity {
@@ -25,7 +24,6 @@ public class Status  extends Activity {
         Core.loadLastValues(getApplicationContext());
         showLastValues();
         updateLastContactInfo();
-        setButtonEvents();
         
         // Update the UI each second
         h.post(new Runnable() {
@@ -40,20 +38,29 @@ public class Status  extends Activity {
         });
     }
     
-	private void setButtonEvents() {
-        // Set update button events
-		/*
-        Button getButton = (Button) findViewById(R.id.get_xml);
+    //For options
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent i;
+        switch (item.getItemId()) {
+            case R.id.help_button_menu_options:
+            	i = new Intent(this, Help.class);
+            	startActivity(i);
+            	break;
+            case R.id.about_button_menu_options:
+            	i = new Intent(this, About.class);
+            	startActivity(i);
+            	break;
+        }
         
-        getButton.setOnClickListener(new OnClickListener() {
-        	public void onClick(View view) {
-        		updateLastXML();
-        		showLastValues();
-        		updateLastContactInfo();
-        	}
-        });
-        */
-	}
+        return true;
+    }
     
 	private void updateLastXML() {
 		/*
@@ -72,7 +79,6 @@ public class Status  extends Activity {
 	}
 	
 	private void updateLastContactInfo() {
-		//putSharedData("PANDROID_DATA", "lastContact", "-1", "long");
 		long lastContact = Core.lastContact;
 		int contactError = Core.contactError;
 
@@ -92,25 +98,25 @@ public class Status  extends Activity {
     	String stringAgo = "";
     	
     	if(lastContact == -1) {
-    		stringAgo = "Never.";
+    		stringAgo = getString(R.string.never_str);
     	}
     	else if(timeAgo == 0) {
-    		stringAgo = "Now.";
+    		stringAgo = getString(R.string.now_str);
     	}
     	else {
-        	stringAgo = timeAgo + " seconds ago.";
+        	stringAgo = timeAgo + " " + getString(R.string.seconds_str);
     	}
     	
         if(contactError == 1) {
         	TextView lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
     		lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
-    		lastContactInfo.setText("Contact error");
+    		lastContactInfo.setText(getString(R.string.conctact_error_str));
         	//stopAgentListener();
         }
         else {
         	TextView lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
     		lastContactInfo.setTextColor(Color.parseColor("#00FF00"));
-    		lastContactInfo.setText("Last Contact:\n" + stringAgo);
+    		lastContactInfo.setText(getString(R.string.last_contact_str) + stringAgo);
         }
 	}
 	
@@ -132,7 +138,7 @@ public class Status  extends Activity {
 		if (Core.batteryLevel != Core.CONST_INVALID_BATTERY_LEVEL) {
 			textView.setText("" + Core.batteryLevel);
 		}
-		
+		/*
 		textView = (TextView)findViewById(R.id.orientation_value_str);
 		textView.setText("");
 		
@@ -145,7 +151,9 @@ public class Status  extends Activity {
 		if (Core.proximity != Core.CONST_INVALID_PROXIMITY) {
 			textView.setText("" + Core.proximity);
 		}
+		*/
 		
+		/*
 		textView = (TextView)findViewById(R.id.task_value_str);
 		textView.setText("");
 		if (Core.taskStatus.equals("enabled") && Core.taskHumanName.length() != 0) {
@@ -158,16 +166,15 @@ public class Status  extends Activity {
 			}
 			textView.setText(text);		
 		}
+		*/
 		
 		textView = (TextView)findViewById(R.id.memory_value_str);
 		textView.setText("");
 		if (Core.memoryStatus.equals("enabled")) {
-			textView.setText("Avaliable: " + Core.availableRamKb + "Kb Total: " + Core.totalRamKb + "Kb");
-		}
-		
-		textView = (TextView)findViewById(R.id.proximity_value_str);
-		if (Core.proximity != Core.CONST_INVALID_PROXIMITY) {
-			textView.setText("" + Core.proximity);
+			String textMemory = getString(R.string.memory_avaliable_str);
+			textMemory = textMemory.replaceFirst("%i", "" + Core.availableRamKb);
+			textMemory = textMemory.replaceFirst("%i", "" + Core.totalRamKb);
+			textView.setText(textMemory);
 		}
 	}
 }

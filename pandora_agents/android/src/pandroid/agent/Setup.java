@@ -7,10 +7,14 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -37,8 +41,32 @@ public class Setup extends Activity {
 		
         Core.loadConf(getApplicationContext());
 		loadViews();
-		loadInBackgroundProcessInExecution();
+		//loadInBackgroundProcessInExecution();
 		setButtonEvents();
+    }
+    
+    //For options
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent i;
+        switch (item.getItemId()) {
+            case R.id.help_button_menu_options:
+            	i = new Intent(this, Help.class);
+            	startActivity(i);
+            	break;
+            case R.id.about_button_menu_options:
+            	i = new Intent(this, About.class);
+            	startActivity(i);
+            	break;
+        }
+        
+        return true;
     }
     
 	private void setButtonEvents() {
@@ -107,6 +135,7 @@ public class Setup extends Activity {
 		@Override
 		protected void onPostExecute(Void unused)
 		{
+			/*
 			Spinner combo = (Spinner)findViewById(R.id.processes_combo);
 			ArrayList<String> listProcess = new ArrayList<String>(listProcesses.keySet());
 			ArrayList<String> listProcessHuman = new ArrayList<String>(listProcesses.values());
@@ -148,6 +177,7 @@ public class Setup extends Activity {
 		    
 		    Button button = (Button)findViewById(R.id.update);
 		    button.setEnabled(true);
+		    */
 		}
     	
     }
@@ -182,6 +212,7 @@ public class Setup extends Activity {
         else
         	Core.memoryStatus = "disabled";
         
+        /*
         checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
         if (checkBox.isChecked()) {
         	Core.taskStatus = "enabled";
@@ -198,6 +229,7 @@ public class Setup extends Activity {
         	Core.task = "";
         	Core.taskHumanName = "";
         }
+        */
     }
     
 	private void loadViews(){
@@ -222,8 +254,9 @@ public class Setup extends Activity {
         
         checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
         checkBox.setChecked(Core.memoryStatus.equals("enabled"));
-        
+        /*
         checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
         checkBox.setChecked(Core.taskStatus.equals("enabled"));
+        */
 	}
 }

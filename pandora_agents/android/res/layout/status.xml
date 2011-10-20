@@ -102,7 +102,7 @@
 					android:layout_height="wrap_content"
 					android:layout_below="@id/battery_label_str"
 				/>
-				<TextView
+				<!--<TextView
 					android:id="@+id/orientation_label_str"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -124,16 +124,16 @@
 					android:text="@string/proximity"
 					android:textSize="14dip"
 					android:textStyle="bold"
-					android:layout_below="@id/orientation_value_str"
+					android:layout_below="@id/battery_value_str"
 				/>
 				<TextView
 					android:id="@+id/proximity_value_str"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_below="@id/proximity_label_str"
-				/>
+				/>-->
 			</RelativeLayout>
-			<TextView
+			<!--<TextView
 				android:id="@+id/task_label_str"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -145,7 +145,7 @@
 				android:id="@+id/task_value_str"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-			/>
+			/>-->
 			<TextView
 				android:id="@+id/memory_label_str"
 				android:layout_width="wrap_content"

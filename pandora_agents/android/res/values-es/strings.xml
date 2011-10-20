@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="const_string_preferences">PANDROID_DATA</string>
+
+	<string name="status_str">Estado</string>
+	<string name="setup_str">Configuración</string>
+	<string name="app_name">Agente Pandroid</string>
+	<string name="interval">Intervalo:</string>
+	<string name="update">Actualiza conf.</string>
+	<string name="reset">Por defecto</string>
+	<string name="serverAddr">Url del server:</string>
+	<string name="serverPort">Puerto del server:</string>
+	<string name="confTitle">Configuración del Agente Pandroid</string>
+	<string name="agent">Nombre Agente:</string>
+	<string name="gpsReport">Reporta datos GPS</string>
+	<string name="memoryReport">Reporta estado memoria</string>
+	<string name="taskReport">Reporta tareas</string>
+	<string name="gpsMode">Modo GPS</string>
+	<string name="gpsCurrent">Actual posición (alto consumo de batería)</string>
+	<string name="summary">Configuración actual:</string>
+	<string name="starStop">Reiniciar</string>
+	<string name="gpsLast">Última posición conocida</string>
+	<string name="loading">Cargando...</string>
+	<string name="process">Procesando</string>
+	<string name="last_values">Últimos valores</string>
+	<string name="latitude">Latitud</string>
+	<string name="longitude">Longitud</string>
+	<string name="battery_level">Nivel de batería</string>
+	<string name="orientation">Orientación</string>
+	<string name="proximity">Proximidad</string>
+	<string name="incorrect_update">Incorrecta actulización configuración.</string>
+	<string name="correct_update">Correcta actualización configuración.</string>
+	<string name="task">Tarea</string>
+	<string name="memory">Memoria</string>
+	<string name="help_label_str">Ayuda</string>
+	<string name="about_label_str">Sobre</string>
+	<string name="licensed_under_gpl_str">Licenciado bajo GPL v2</string>
+	<string name="develop_team_str">Desarrolladores: Sergio M. Zarzuelo, Miguel de Dios</string>
+	<string name="pandroid_agent_str">Agente Pandroid</string>
+	<string name="help_str">Ayuda</string>
+	<string name="memory_avaliable_str" formatted="false">Disponible: &#37;iKb Total: &#37;iKb</string>
+	<string name="never_str">Nunca.</string>
+	<string name="now_str">Ahora.</string>
+	<string name="seconds_str">segundos</string>
+	<string name="conctact_error_str">Error contacto</string>
+	<string name="last_contact_str">Último contacto:\n</string>
+	<string name="help_text_str">
+	&lt;p&gt;Un texto&lt;/p&gt;&lt;p&gt;Otro texto&lt;br/&gt;&lt;a href=&quot;http://google.es&quot;&gt;google&lt;/a&gt; el &lt;i&gt;texto&lt;/i&gt;&lt;/p&gt;
+	</string>
+</resources>

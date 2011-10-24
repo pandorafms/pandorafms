@@ -19,12 +19,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.entity.StringEntity;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -50,8 +50,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
 
 public class PandroidAgentListener extends Service {
@@ -181,8 +179,8 @@ public class PandroidAgentListener extends Service {
 			buffer += buildmoduleXML("proximity", "The actually device proximity detector (0/1)", "generic_data", proximity);		
 		}
 		
+		/*
 		if (taskStatus.equals("enabled")) {
-			buffer += buildmoduleXML("taskStatus", "The Pandroid configuration watch task.", "generic_proc", "1");
 			buffer += buildmoduleXML("taskHumanName", "The task's human name.", "async_string", taskHumanName);
 			buffer += buildmoduleXML("task", "The task's package name.", "async_string", task);
 			if (taskRun.equals("true")) {
@@ -192,17 +190,15 @@ public class PandroidAgentListener extends Service {
 				buffer += buildmoduleXML("taskRun", "The task is running.", "async_proc", "0");
 			}
 		}
-		else {
-			buffer += buildmoduleXML("taskStatus", "The Pandroid configuration watch task.", "generic_proc", "0");
-		}
+		*/
 		
 		if (memoryStatus.equals("enabled")) {
-			buffer += buildmoduleXML("memoryStatus", "The Pandroid configuration watch memory.", "async_proc", "1");
-			buffer += buildmoduleXML("availableRamKb", "The available ram in Kb of device.", "async_data", availableRamKb);
-			buffer += buildmoduleXML("totalRamKb", "The total ram in Kb of device.", "async_data", totalRamKb);
-		}
-		else {
-			buffer += buildmoduleXML("memoryStatus", "The Pandroid configuration watch memory.", "async_proc", "1");
+			
+			Float freeMemory = new Float((Float.valueOf(availableRamKb) / Float.valueOf(totalRamKb)) * 100.0);
+			
+			DecimalFormat formatPercent = new DecimalFormat("#.##");
+			buffer += buildmoduleXML("freeRamMemory", "The available ram in percent value.", "async_data",
+				formatPercent.format(freeMemory.doubleValue()));
 		}
 		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
 		
@@ -246,16 +242,19 @@ public class PandroidAgentListener extends Service {
     	
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);  
 		List<String> providers = lm.getProviders(true);
+		Log.e("PANDROID providers count", "" + providers.size());
 
 		/* Loop over the array backwards, and if you get an accurate location, then break out the loop*/
 		Location loc = null;
 
 		for (int i=providers.size()-1; i>=0; i--) {
+			Log.e("PANDROID providers", providers.get(i));
 		    loc = lm.getLastKnownLocation(providers.get(i));
 		    if (loc != null) break;
 		}
 
 		if (loc != null) {
+			Log.e("PANDROID", "loc != null");
 			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
 				lastGpsContactDateTime = getHumanDateTime(-1);
 			//}
@@ -270,16 +269,26 @@ public class PandroidAgentListener extends Service {
 			criteria.setBearingRequired(false);
 			criteria.setCostAllowed(true);
 			String bestProvider = lm.getBestProvider(criteria, true);
-			loc = lm.getLastKnownLocation(bestProvider);
-			if(loc != null) {
-		        putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
-		        putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");			
-		    }
-			else {
-	            putSharedData("PANDROID_DATA", "latitude", "181", "float");
-	            putSharedData("PANDROID_DATA", "longitude", "181", "float");
-	        }
-
+			
+			lm.requestLocationUpdates(bestProvider, defaultInterval, 1000,
+				new LocationListener() {
+					public void onLocationChanged(Location location) {
+						putSharedData("PANDROID_DATA", "latitude",
+							new Double(location.getLatitude()).toString(), "float");
+				        putSharedData("PANDROID_DATA", "longitude",
+				        	new Double(location.getLongitude()).toString(), "float");
+					}
+					public void onStatusChanged(String s, int i, Bundle bundle) {
+						
+					}
+					public void onProviderEnabled(String s) {
+						// try switching to a different provider
+					}
+					public void onProviderDisabled(String s) {
+						putSharedData("PANDROID_DATA", "enabled_location_provider",
+							"disabled", "string");
+					}
+				});
 		}
 		
     }
@@ -368,9 +377,11 @@ public class PandroidAgentListener extends Service {
         String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", defaultGpsStatus, "string");
         
         if(gpsStatus.equals("enabled")) {
+        	Log.e("PANDROID AGENT", "ENABLED");
 			gpsLocation();
         }
         else {
+        	Log.e("PANDROID AGENT", "DISABLED");
             putSharedData("PANDROID_DATA", "latitude", "181.0", "float");
             putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
         }

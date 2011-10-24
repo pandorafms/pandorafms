@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="const_string_preferences">PANDROID_DATA</string>
+
+	<string name="status_str">状態</string>
+	<string name="setup_str">設定</string>
+	<string name="app_name">Pandroid エージェント</string>
+	<string name="interval">間隔:</string>
+	<string name="update">設定の構成</string>
+	<string name="reset">デフォルト設定</string>
+	<string name="serverAddr">サーバアドレス:</string>
+	<string name="serverPort">サーバポート:</string>
+	<string name="confTitle">Pandroid エージェント設定</string>
+	<string name="agent">エージェント名:</string>
+	<string name="gpsReport">GPSデータレポート</string>
+	<string name="memoryReport">メモリシステムレポート</string>
+	<string name="taskReport">タスクレポート</string>
+	<string name="gpsMode">GPS モード</string>
+	<string name="gpsCurrent">現在の位置 (消費電力が大きいです)</string>
+	<string name="summary">現在の設定:</string>
+	<string name="starStop">再起動</string>
+	<string name="gpsLast">最新の位置</string>
+	<string name="loading">ロード中...</string>
+	<string name="process">プロセス</string>
+	<string name="last_values">最新の値</string>
+	<string name="latitude">緯度</string>
+	<string name="longitude">経度</string>
+	<string name="battery_level">バッテリー残量</string>
+	<string name="orientation">方位</string>
+	<string name="proximity">近傍</string>
+	<string name="incorrect_update">オプションの更新に失敗</string>
+	<string name="correct_update">オプションの更新に成功</string>
+	<string name="task">タスク</string>
+	<string name="memory">メモリ</string>
+	<string name="help_label_str">ヘルプ</string>
+	<string name="about_label_str">About</string>
+	<string name="licensed_under_gpl_str">GPL v2 ライセンス</string>
+	<string name="develop_team_str">開発者: Sergio M. Zarzuelo, Miguel de Dios</string>
+	<string name="pandroid_agent_str">Pandroid エージェント</string>
+	<string name="help_str">ヘルプ</string>
+	<string name="memory_avaliable_str" formatted="false">空き: &#37;iKb トータル: &#37;iKb</string>
+	<string name="never_str">なし</string>
+	<string name="now_str">今</string>
+	<string name="seconds_str">秒前</string>
+	<string name="conctact_error_str">接続エラー</string>
+	<string name="last_contact_str">最新の接続:\n</string>
+	<string name="help_text_str">
+	&lt;p&gt;テキスト&lt;/p&gt;&lt;p&gt;別テキスト&lt;br/&gt;&lt;a href=&quot;http://www.google.co.jp&quot;&gt;google&lt;/a&gt; &lt;i&gt;テキスト&lt;/i&gt;&lt;/p&gt;
+	</string>
+</resources>

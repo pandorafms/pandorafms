@@ -57,7 +57,9 @@
 		    	android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 		    >
-		    	<TableRow>
+		    	<TableRow
+		    		android:visibility="gone"
+		    	>
 					<TextView
 						android:text="@string/group_label_str"
 						android:layout_width="wrap_content"

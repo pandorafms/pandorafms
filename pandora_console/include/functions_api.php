@@ -1027,7 +1027,7 @@ function set_new_alert_template($id, $id2, $other, $trash1) {
 		
 		$values = array(
 			'id_agent_module' => $idAgentModule,
-			'id_alert_template' => $idActionTemplate);
+			'id_alert_template' => $idTemplate);
 		
 		$return = db_process_sql_insert('talert_template_modules', $values);
 		

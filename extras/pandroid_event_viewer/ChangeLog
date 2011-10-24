@@ -1,3 +1,9 @@
+2011-10-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* AndroidManifest.xml: update num version.
+
+	* res/layout/main.xml: hidden the group for this version.
+
 2011-10-06  Junichi Satoh  <junichi@rworks.jp>
 
 	* res/values-ja/arrays.xml, res/values-ja/strings.xml: Added Japanese

@@ -732,16 +732,6 @@ function html_print_button ($label = 'OK', $name = '', $disabled = false, $scrip
  * @return string HTML code if return parameter is true.
  */
 function html_print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
-	static $idcounter = array ();
-	
-	//If duplicate names exist, it will start numbering. Otherwise it won't
-	if (isset ($idcounter[$name])) {
-		$idcounter[$name]++;
-		$name = $name.$idcounter;
-	} else {
-		$idcounter[$name] = 0;
-	}
-	
 	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
 	//$output .= io_safe_input ($value);
 	$output .= ($value);

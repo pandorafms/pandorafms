@@ -411,7 +411,7 @@ $(document).ready (function () {
 
 			regexp_name = new RegExp('module_name\\s*' + name+"\n");
 
-			if (remote_config.match(regexp_name)) return true;
+			if (remote_config.match(regexp_name) || $("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) return true;
 			else {
 				alert("<?php echo __("Error, The field name and name in module_name in data configuration are difrerent.");?>");
 				return false;
@@ -419,6 +419,23 @@ $(document).ready (function () {
 		}
 
 		return true;
+	});
+	
+	function checkKeepaliveModule() {
+		// keepalive modules have id = 100
+		if($("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) {
+				$("#simple-configuration_data").hide();
+		}
+		else {
+				$("#simple-configuration_data").show();
+		}
+
+	}
+	
+	checkKeepaliveModule();
+	
+	$("#id_module_type").change (function () {
+		checkKeepaliveModule();
 	});
 });
 /* ]]> */

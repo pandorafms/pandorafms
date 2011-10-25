@@ -1,5 +1,10 @@
 2011-10-25  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/module_manager_editor.php: Fixed keep_alive
+	modules creation bug hidding the configuration data textarea 
+
+2011-10-25  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php: Deleted problematic name change
 	into textarea function
 

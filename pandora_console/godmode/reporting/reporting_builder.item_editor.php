@@ -51,7 +51,13 @@ $exception_condition = 0;
 $exception_condition_value = 10;
 $modulegroup = 0;
 $period = 86400;
+// Added support for projection graphs
+$period_pg = 432000; 	
+$projection_period = 432000;
 $only_display_wrong = 0;
+// Added support for prediction date report
+$min_interval = 0;
+$max_interval = 0;
 $monday = true;
 $tuesday = true;
 $wednesday = true;
@@ -90,6 +96,7 @@ switch ($action) {
 		$show_in_two_columns = $style['show_in_two_columns'];
 		$show_in_landscape = $style['show_in_landscape'];
 		$type = $item['type'];
+
 		switch ($type) {
 			case 'avg_value':
 				$period = $item['period'];
@@ -99,10 +106,26 @@ switch ($action) {
 				break;
 			case 'simple_baseline_graph':
 			case 'simple_graph':
+			case 'projection_graph':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
 				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
+				// 'top_n_value' field will be reused for projection report
+				if ($type == 'projection_graph'){
+					$projection_period = $item['top_n_value'];
+					$period_pg = $item['period'];
+				}
+				break;
+			case 'prediction_date':
+				$description = $item['description'];
+				$idAgentModule = $item['id_agent_module'];
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+				// 'top_n' field will be reused for prediction_date report
+				$max_interval = $item['top_n'];
+				// 'top_n_value' field will be reused for prediction_date report			
+				$min_interval = $item['top_n_value'];
+				$period_pg = $item['period'];
 				break;
 			case 'custom_graph':
 				$description = $item['description'];
@@ -297,6 +320,19 @@ $intervals[432000] = human_time_description_raw (432000);
 $intervals[1296000] = human_time_description_raw (1296000);
 $intervals[2592000] = human_time_description_raw (2592000);
 
+// Intervals for projection graph 
+$intervals_1 = array ();
+/*$intervals_1[300] = human_time_description_raw (300);
+$intervals_1[600] = human_time_description_raw (600);
+$intervals_1[86400] = human_time_description_raw (86400);*/
+$intervals_1[432000] = human_time_description_raw (432000);
+$intervals_1[1296000] = human_time_description_raw (1296000);
+$intervals_1[2592000] = human_time_description_raw (2592000);
+$intervals_1[5184000] = human_time_description_raw (5184000);
+$intervals_1[7776000] = human_time_description_raw (7776000);
+$intervals_1[10368000] = human_time_description_raw (10368000);
+$intervals_1[12960000] = human_time_description_raw (12960000);
+
 $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
@@ -326,6 +362,23 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
 			<td style=""><?php html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
 		</tr>
+		<tr id="row_period1" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
+			<td style=""><?php html_print_extended_select_for_time ($intervals_1, 'period1', $period_pg, '', '', '0', 10); echo __(" seconds."); ?></td>
+		</tr>	
+		<tr id="row_estimate" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Projection period'); ?></td>
+			<td style=""><?php html_print_extended_select_for_time ($intervals_1, 'period2', $projection_period, '', '', '0', 10); echo __(" seconds."); ?></td>
+		</tr>	
+		<tr id="row_interval" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_tip(__('Between this interval will be search the prediction date'), true); ?></td>
+			<td><?php
+				echo __('Max') . "&nbsp;";
+				html_print_input_text('max_interval', $max_interval, '', 5, 5);
+				echo "&nbsp;" . __('Min') . "&nbsp;";
+				html_print_input_text('min_interval', $min_interval, '', 5, 5);
+				?></td>			
+		</tr>		
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
 			<td><?php html_print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);?></td>
@@ -384,7 +437,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="max-width: 180px">
 				<?php
 				if($idAgent) {
-					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent;
+					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent . " AND  delete_pending = 0";
 					html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');
 				}
 				else {	
@@ -1010,6 +1063,9 @@ function chooseType() {
 	$("#row_agent").css('display', 'none');
 	$("#row_module").css('display', 'none');
 	$("#row_period").css('display', 'none');
+	$("#row_period1").css('display', 'none');
+	$("#row_estimate").css('display', 'none');
+	$("#row_interval").css('display', 'none');
 	$("#row_custom_graph").css('display', 'none');
 	$("#row_text").css('display', 'none');
 	$("#row_query").css('display', 'none');
@@ -1055,6 +1111,23 @@ function chooseType() {
 			$("#row_show_in_two_columns").css('display', '');
 			$("#row_show_in_landscape").css('display', '');
 			break;
+		case 'projection_graph':
+			$("#row_description").css('display', '');
+			$("#row_agent").css('display', '');
+			$("#row_module").css('display', '');
+			$("#row_period1").css('display', '');
+			$("#row_estimate").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			$("#row_show_in_landscape").css('display', '');
+			break;
+		case 'prediction_date':
+			$("#row_description").css('display', '');
+			$("#row_agent").css('display', '');
+			$("#row_period1").css('display', '');
+			$("#row_module").css('display', '');
+			$("#row_interval").css('display', '');
+			$("#row_show_in_two_columns").css('display', '');
+			break;			
 		case 'custom_graph':
 			$("#row_description").css('display', '');
 			$("#row_period").css('display', '');

@@ -32,6 +32,7 @@ include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 enterprise_include_once ('include/functions_metaconsole.php');
+include_once($config['homedir'] . "/include/functions_forecast.php");
 
 /** 
  * Get the average value of an agent module in a period of time.
@@ -2056,8 +2057,79 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			array_push ($table->data, $data);
 			
-			break;
+			break;		
+		case 'projection_graph':
+			//RUNNING
+			$table->colspan[1][0] = 4;
+			$data = array ();
+			$data[0] = $sizh.__('Projection graph').$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
+			array_push ($table->data, $data);
 			
+			// Put description at the end of the module (if exists)
+			$table->colspan[2][0] = 4;
+			if ($content["description"] != ""){
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			
+			$output_projection = forecast_projection_graph($content['id_agent_module'], $content['period'], $content['top_n_value']);
+			
+			$modules = array($content['id_agent_module']);
+			$weights = array();
+			$data[0] = 	graphic_combined_module(
+				$modules,
+				$weights,
+				$content['period'],
+				$sizgraph_w, $sizgraph_h,
+				'Projection%20Sample%20Graph',
+				'',
+				0,
+				0,
+				0,
+				$graph["stacked"],
+				$report["datetime"],
+				false,
+				'',
+				1,
+				// Important parameter, this tell to graphic_combined_module function that is a projection graph
+				$output_projection
+				);			
+			array_push ($table->data, $data);			
+			break;
+		case 'prediction_date':
+			//RUNNING
+			$table->colspan[1][0] = 4;
+			$data = array ();
+			$data[0] = $sizh.__('Prediction date').$sizhfin;
+			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false).$sizhfin;
+			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[2][0] = 4;
+			if ($content["description"] != ""){
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+						
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$value = forecast_prediction_date ($content['id_agent_module'], $content['top_n'], $content['top_n_value']);
+			
+			if ($value === false) {
+				$value = __('Unknown');
+			} else {
+				$value = date ('d M Y H:i:s', $value);
+			}
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+			array_push ($table->data, $data);
+			break;
 		case 'simple_baseline_graph':
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2079,6 +2151,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = grafico_modulo_sparse($layout_data['id_agente_modulo'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], '', true, 0, true, true);
+				
+			/*$data[0] = 	graphic_combined_module(
+				$modules,
+				$weights,
+				$content['period'],
+				$sizgraph_w, $sizgraph_h,
+				'Combined%20Sample%20Graph',
+				'',
+				0,
+				0,
+				0,
+				$graph["stacked"],
+				$report["datetime"]);	*/
+				
 			array_push ($table->data, $data);
 			
 			break;

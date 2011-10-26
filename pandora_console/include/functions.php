@@ -702,6 +702,8 @@ function get_report_types () {
 	$types['exception'] = __('Exception');
 	if ($config['metaconsole'] != 1)
 		$types['agent_module'] = __('Agents/Modules');
+	$types['projection_graph'] = __('Projection graph');
+	$types['prediction_date'] = __('Prediction date');
 //	$types['agent_detailed_event'] = __('Agent detailed event');
 //	$types['list_events_module'] = __('List events of module');
 //	$types['list_events_agent'] = __('List events of agent');

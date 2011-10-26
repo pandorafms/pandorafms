@@ -145,10 +145,11 @@ else {
 // Connect to the history DB
 if (isset($config['history_db_enabled'])) {
 	if ($config['history_db_enabled']) {
-		$config['history_db_connection'] = db_connect(
+		/*$config['history_db_connection'] =*/ db_connect(
 			$config['history_db_host'] . ':' . $config['history_db_port'],
+			$config['history_db_name'],
 			$config['history_db_user'],
-			$config['history_db_pass']);
+			$config['history_db_pass'], true);
 	}
 }
 

@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function mysql_connect_db($host = null, $db = null, $user = null, $pass = null) {
+function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null) {
 	global $config;
 	
 	if ($host === null)
@@ -28,15 +28,31 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null) 
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 
-	$config['dbconnection'] = mysql_connect($host, $user, $pass);
-	mysql_select_db($db, $config['dbconnection']);
+
+	$connect_id = mysql_connect($host, $user, $pass);
+	mysql_select_db($db, $connect_id);
 	
-	if (! $config['dbconnection']) {
+	if (! $connect_id) {
 		include ($config["homedir"]."/general/error_authconfig.php");
 		exit;
 	}
 	
-	return $config['dbconnection'];
+	if ($history){
+		$config['history_db_dbconnection'] = $connect_id;
+	}
+	else{
+		$config['dbconnection'] = $connect_id;
+	}	
+	//$config['dbconnection'] = mysql_connect($host, $user, $pass);
+	//mysql_select_db($db, $config['dbconnection']);
+
+	//if (! $config['dbconnection']) {
+	//	include ($config["homedir"]."/general/error_authconfig.php");
+	//	exit;
+	//}
+	
+	return $connect_id;
+	//return $config['dbconnection'];
 }
 
 function mysql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
@@ -50,13 +66,13 @@ function mysql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = t
 		$cache = $config["dbcache"];
 
 	// Read from the history DB if necessary
-	if ($search_history_db) {
+	if ($search_history_db) { 
 		$cache = false;
 		$history = false;
 		
 		if (isset($config['history_db_connection']))
 			$history = mysql_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
-			
+
 		if ($history === false) {
 			$history = array ();
 		}
@@ -266,10 +282,10 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 	}
 	else {
 		$start = microtime (true);
-		if ($dbconnection == '') {
+		if ($dbconnection == '') { 
 			$result = mysql_query ($sql);
 		}
-		else {
+		else { 
 			$result = mysql_query ($sql, $dbconnection);
 		}
 		$time = microtime (true) - $start;

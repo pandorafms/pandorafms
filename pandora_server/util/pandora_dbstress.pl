@@ -2,7 +2,7 @@
 ################################################################################
 # Pandora DB Stress tool
 ################################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-20011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
 
 use POSIX qw(strftime);
 
-# Configure here target (AGENT_ID for Stress)
+# Configure here your targets for stress testing
 
 my $target_module = -1; # -1 for all modules of that agent
 my $target_agent = -1;
@@ -32,6 +32,7 @@ my $target_days = 30;
 use strict;
 use DBI;			# DB interface with MySQL
 use Math::Trig;			# Math functions
+use Time::HiRes qw ( clock_gettime CLOCK_REALTIME);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -107,6 +108,7 @@ sub process_module($$$$$){
 	my $id_agentemodulo = $module->{'id_agente_modulo'};
 	my $target_name = $module->{'nombre'};
 	my $target_agent = $module->{'id_agente'};
+	my %data_object;
 
 	my $factor;
 
@@ -114,7 +116,10 @@ sub process_module($$$$$){
 	my $a; # loopcounter
 	my $b; # counter
 	print " [*] Processing module $target_name \n";
-	my $agent_name = get_agent_name ($dbh, $target_agent);
+	
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+	my $agent_name = $agent->{"nombre"};
+
 	my $err; # not used
 	# Init start time to now - target_days 
 	my $utimestamp = time () - (86400 * $target_days);
@@ -125,97 +130,82 @@ sub process_module($$$$$){
 
 	my $iterations = ($target_days * 24 * 60 * 60) / $target_interval;
 
-	print " [D] ID_AgenteMoludo $id_agentemodulo Interval $target_interval ModuleName $target_name Days $target_days Agent $target_agent \n";
+	print " [D] ID_AgenteMoludo $id_agentemodulo Interval $target_interval ModuleName $target_name Days $target_days Agent $agent->{'nombre'} \n";
 
-	open (LOG,">> pandora_dbstress.log");
-	# Generate MATH/Curve data for beautiful Drawings
-	if ( $target_name =~ /curve/i ){
-		# COS function to draw curves in a regular way
-		$b = 0;
-		$factor=rand(20);
-		for ($a=1;$a<$iterations;$a++){
+	my $modules_processed=0;
+	my $modules_processed_total=0;
+	my $ttime0 = clock_gettime(CLOCK_REALTIME);
+	my $ttime1 = clock_gettime(CLOCK_REALTIME);
+	my $ttime2;
+	my $ttime3;
+
+	$factor=rand(20);
+	$b = 0;
+	for ($a=1;$a<$iterations;$a++){
+
+		$utimestamp += $target_interval;
+		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+
+		# Generate MATH/Curve data for beautiful Drawings
+		if ( $target_name =~ /curve/i ){
+			# COS function to draw curves in a regular way
+
 			$valor = 1 + cos(deg2rad($b));
 			$b = $b + $factor/10;
 			if ($b > 180){
 				$b =0;
 			}
-			$utimestamp += $target_interval;
-			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+		
 			$valor = $valor * $b * 10;
 			$valor = sprintf("%.2f", $valor);
 			$valor =~ s/\,/\./g;
-			if (($a % 20) == 0) {
-				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
-			}
-			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
-			# print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_process_module ($pa_config, $valor, '', $module, '', '', $utimestamp, $dbh);
-			#pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);			
-			#pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh,$bUpdateDatos);
-			}
-	}
+		} #end_curve
 
-	# Generate pseudo-random data for changing drawings
-	if ( $target_name =~ /random/i ){
-		# Random values over line a static line
-		for ($a=1;$a<$iterations;$a++){
-			$valor = rand(15) + rand(15) + rand(15) + rand(15) + rand(15) + rand(15);
-			$valor = sprintf("%.2f", $valor);
-			$valor =~ s/\,/\./g; 
-			$utimestamp += $target_interval;
-			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-			if ($a % 20 == 0) {
-				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
-			}
-			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
-			#print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_process_module ($pa_config, $valor, '', $module, '', '', $utimestamp, $dbh);
-			#pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);			
-			#pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh,$bUpdateDatos);
-		}
 
-	}
-
-	# Generate pseudo-random data for boolean data
-	if ( $target_name =~ /boolean/i ){
-		for ($a=1;$a<$iterations;$a++){
+		# Generate pseudo-random data for boolean data
+		elsif ( $target_name =~ /boolean/i ){
 			$valor = rand(50);
 			if ($valor > 2){ 
 				$valor = 1;
 			} else {
 				$valor = 0;
 			}
-			$utimestamp += $target_interval;
-			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-			if ($a % 20 eq 0) {
-				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
-			}
-			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
-			#print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_process_module ($pa_config, $valor, '', $module, '', '', $utimestamp, $dbh);
-			#pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);
-			#pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,$valor,$dbh,$bUpdateDatos);
 		}
-
-	}
 	
-	# Generate pseudo-random data for boolean data
-	if ( $target_name =~ /text/i ){
-		for ($a=1;$a<$iterations;$a++){
-			$valor = pandora_trash_ascii (rand(100)+50);
+		# Generate pseudo-random data for boolean data
+		elsif ( $target_name =~ /text/i ){
+			$valor = pandora_trash_ascii (rand(100)+50);	
+		}
+
+		# Generate pseudo-random on other module name
+		else {
+			$valor = rand(15) + rand(15) + rand(15) + rand(15) + rand(15) + rand(15);
+			$valor = sprintf("%.2f", $valor);
+			$valor =~ s/\,/\./g; 
 			$utimestamp += $target_interval;
-			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-			if ($a % 20 eq 0) {
-				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
-			}
-			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
-			#print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_process_module ($pa_config, $valor, '', $module, '', '', $utimestamp, $dbh);
-			#pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);
-			#pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh,$bUpdateDatos);
+		}
+
+
+		$data_object{"data"} = $valor;
+
+		pandora_process_module ($pa_config, \%data_object, $agent, $module, '', $timestamp, $utimestamp, 1, $dbh, "");
+		pandora_update_agent($pa_config, $timestamp, $target_agent, $pa_config->{'servername'}.'_Data', $pa_config->{'version'}, -1, $dbh);
+
+		$modules_processed++;
+		$modules_processed_total++;
+		$ttime2 = clock_gettime(CLOCK_REALTIME);
+		$ttime3 = $ttime2 - $ttime1;
+		if ($ttime3 > 1){
+			$ttime3 = $modules_processed / $ttime3;
+			$ttime3 = sprintf("%.2f", $ttime3);
+			print "  -> Current rate: $ttime3 modules/sec \n";
+			$ttime1 = $ttime2;
+			$modules_processed=0;
 		}
 	}
 
-	close (LOG);
-	print "\n";
+	$ttime3 = $ttime2 - $ttime0;
+	$ttime3 = $modules_processed_total / $ttime3;
+	$ttime3 = sprintf("%.2f", $ttime3);
+	print "  <> Final rate: $ttime3 modules/sec \n";
 }

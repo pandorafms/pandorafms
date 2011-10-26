@@ -1,3 +1,10 @@
+2011-10-26  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_installer: Added "force" mode.
+
+	* util/pandora_dbstress.pl: Fixed broken code and better information
+	on module rate, now rendered in each second with a total average.
+
 2011-10-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Disable enterprise ICMP and SNMP servers

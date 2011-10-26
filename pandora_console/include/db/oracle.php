@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function oracle_connect_db($host = null, $db = null, $user = null, $pass = null) {
+function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null) {
 	global $config;
 	
 	if ($host === null)
@@ -28,18 +28,18 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null)
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to oci_pconnect().
-	$config['dbconnection'] = oci_connect($user, $pass, '//' . $host . '/' . $db);
+	$connect_id = oci_connect($user, $pass, '//' . $host . '/' . $db);
 	
-	if (! $config['dbconnection']) {
+	if (! $connect_id) {
 		include ($config["homedir"]."/general/error_authconfig.php");
 		exit;
 	}
 
 	// Set date and timestamp formats for this session
-	$datetime_tz_format = oci_parse($config['dbconnection'] , 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
-	$datetime_format = oci_parse($config['dbconnection'] , 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
-	$date_format = oci_parse($config['dbconnection'] , 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
-	$decimal_separator = oci_parse($config['dbconnection'] , 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
+	$datetime_tz_format = oci_parse($connect_id , 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+	$datetime_format = oci_parse($connect_id , 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+	$date_format = oci_parse($connect_id , 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+	$decimal_separator = oci_parse($connect_id , 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
 
 	oci_execute($datetime_tz_format);
 	oci_execute($datetime_format);
@@ -51,7 +51,14 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null)
 	oci_free_statement($date_format);
 	oci_free_statement($decimal_separator);
 	
-	return $config['dbconnection'];
+	if ($history){
+		$config['history_db_dbconnection'] = $connect_id;
+	}
+	else{
+		$config['dbconnection'] = $connect_id;
+	}		
+	
+	return $connect_id;
 }
 
 /** 

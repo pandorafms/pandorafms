@@ -42,7 +42,7 @@ if (! check_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 
 $table->cellpadding = 3;
 $table->cellspacing = 3;
-$table->width = 600;
+$table->width = '98%';
 $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
@@ -148,7 +148,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 $header_title = __('Received data from')." ".modules_get_agentmodule_agent_name ($module_id)." / ".modules_get_agentmodule_name ($module_id); 
 
-echo "<h3>".$header_title. "</h3>";
+echo "<h4>".$header_title. "</h4>";
 
 $intervals = array ();
 $intervals[3600] = human_time_description_raw (3600); // 1 hour
@@ -235,6 +235,7 @@ $(document).ready (function () {
                 spinnerSize: [20, 20, 0]
                 });
         $("#text-date_from, #text-date_to").datepicker ();
-        $.datepicker.regional["<?php echo $config['language']; ?>"];
+        $.datepicker.regional["<?php echo $config['language']; ?>"];        
 });
 </script>
+

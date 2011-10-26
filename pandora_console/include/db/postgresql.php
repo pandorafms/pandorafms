@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function postgresql_connect_db($host = null, $db = null, $user = null, $pass = null) {
+function postgresql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null) {
 	global $config;
 	
 	if ($host === null)
@@ -26,17 +26,24 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 	if ($pass === null)
 		$pass = $config["dbpass"];
 	
-	$config['dbconnection'] = pg_connect("host='" . $host . "'" .
+	$connect_id = pg_connect("host='" . $host . "'" .
 		" dbname='" . $db . "'" .
 		" user='" . $user . "'" .
 		" password='" . $pass . "'");
 	
-	if (! $config['dbconnection']) {
+	if (! $connect_id) {
 		include ($config["homedir"]."/general/error_authconfig.php");
 		exit;
 	}
 	
-	return $config['dbconnection'];
+	if ($history){
+		$config['history_db_dbconnection'] = $connect_id;
+	}
+	else{
+		$config['dbconnection'] = $connect_id;
+	}	
+	
+	return $connect_id;
 }
 
 /** 

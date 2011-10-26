@@ -1,5 +1,17 @@
 2011-10-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/db/postgresql.php
+	include/db/mysql.php
+	include/db/oracle.php
+	include/config_process.php
+	include/functions_db.php: Fixed historic database functionality. 
+
+	Fixes: #3423519
+
+	* operation/agentes/datos_agente.php: Fixed layout in this view.
+
+2011-10-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	include/functions_forecast.php
 	include/functions_reporting.php

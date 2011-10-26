@@ -1134,19 +1134,20 @@
 		* @access public
 		*/
 		function& send($msg, $timeout=0, $method='')
-		{
+		{				
 			// if user deos not specify http protocol, use native method of this client
 			// (i.e. method set during call to constructor)
 			if($method == '')
 			{
 				$method = $this->method;
 			}
-
+			
 			if(is_array($msg))
 			{
 				// $msg is an array of xmlrpcmsg's
+				
 				$r = $this->multicall($msg, $timeout, $method);
-				return $r;
+				//return $r;
 			}
 			elseif(is_string($msg))
 			{
@@ -1222,7 +1223,7 @@
 					$this->proxy_authtype
 				);
 			}
-
+			
 			return $r;
 		}
 
@@ -1268,14 +1269,14 @@
 				}
 			}
 			else
-			{
+			{				
 				$encoding_hdr = '';
 			}
 
 			// thanks to Grant Rauscher <grant7@firstworld.net> for this
 			$credentials='';
 			if($username!='')
-			{
+			{				
 				$credentials='Authorization: Basic ' . base64_encode($username . ':' . $password) . "\r\n";
 				if ($authtype != 1)
 				{
@@ -1285,13 +1286,13 @@
 
 			$accepted_encoding = '';
 			if(is_array($this->accepted_compression) && count($this->accepted_compression))
-			{
+			{				
 				$accepted_encoding = 'Accept-Encoding: ' . implode(', ', $this->accepted_compression) . "\r\n";
 			}
 
 			$proxy_credentials = '';
 			if($proxyhost)
-			{
+			{				
 				if($proxyport == 0)
 				{
 					$proxyport = 8080;
@@ -1371,28 +1372,28 @@
 				$fp=@fsockopen($connectserver, $connectport, $this->errno, $this->errstr);
 			}
 			if($fp)
-			{
+			{				
 				if($timeout>0 && function_exists('stream_set_timeout'))
 				{
 					stream_set_timeout($fp, $timeout);
 				}
 			}
 			else
-			{
+			{				
 				$this->errstr='Connect error: '.$this->errstr;
 				$r=new xmlrpcresp(0, $GLOBALS['xmlrpcerr']['http_error'], $this->errstr . ' (' . $this->errno . ')');
 				return $r;
 			}
 
 			if(!fputs($fp, $op, strlen($op)))
-			{
+			{				
 				fclose($fp);
 				$this->errstr='Write error';
 				$r=new xmlrpcresp(0, $GLOBALS['xmlrpcerr']['http_error'], $this->errstr);
 				return $r;
 			}
 			else
-			{
+			{				
 				// reset errno and errstr on succesful socket connection
 				$this->errstr = '';
 			}
@@ -1406,6 +1407,7 @@
 				$ipd.=fread($fp, 32768);
 			} while(!feof($fp));
 			fclose($fp);
+				
 			$r =& $msg->parseResponse($ipd, false, $this->return_type);
 			return $r;
 
@@ -2453,7 +2455,7 @@ xmlrpc_encode_entitites($this->errstr, $GLOBALS['xmlrpc_internalencoding'], $cha
 									print "<PRE>---INFLATED RESPONSE---[".strlen($data)." chars]---\n" . htmlentities($data) . "\n---END---</PRE>";
 								}
 								else
-								{
+								{			
 									error_log('XML-RPC: '.__METHOD__.': errors occurred when trying to decode the deflated data received from server');
 									$r = new xmlrpcresp(0, $GLOBALS['xmlrpcerr']['decompress_fail'], $GLOBALS['xmlrpcstr']['decompress_fail']);
 									return $r;

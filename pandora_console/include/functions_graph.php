@@ -71,6 +71,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
 		array ('datos', 'utimestamp'), 'AND', true);
+		
 	if ($data === false) {
 		$data = array ();
 	}
@@ -213,7 +214,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$timestamp_short = date($time_format, $timestamp);
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		$timestamp = $timestamp_short;
+		//$timestamp = $timestamp_short;
 		
 		// Data
 		if ($count > 0) {
@@ -221,6 +222,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$chart[$timestamp]['sum'] = $total;
 			}
 			else {
+				$chart[$timestamp]['utimestamp'] = $timestamp;
+				$chart[$timestamp]['datos'] = $total;
 				$chart[$timestamp]['sum'] = $total;
 				$chart[$timestamp]['min'] = $interval_min;
 				$chart[$timestamp]['max'] = $interval_max;
@@ -358,12 +361,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
  * @param int Show alerts in graph (set to 1)
  * @param int Pure mode (without titles) (set to 1)
  * @param int Date to start of getting info.
+ * @param mixed If is a projection graph this parameter will be module data with prediction data (the projection) 
+ * or false in other case.
  * 
  * @return Mixed 
  */
 function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 		$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
-		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1) {
+		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1, $projection = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -391,13 +396,35 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
 	}
-
+	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
-	$interval = (int) ($period / $resolution);
-	$module_number = count ($module_list);
+	$interval = (int) ($period / $resolution);	
+	
+	// If projection graph, fill with zero previous data to projection interval	
+	if ($projection != false){
+		$j = $datelimit;
+		$in_range = true;
+		while ($in_range){
+			$timestamp_f = date($time_format, $j);
+			//$timestamp_f = date('d M Y H:i:s', $j);
+			$before_projection[$timestamp_f] = 0;
+						
+			if ($j > $date){
+				$in_range = false;
+			}	
+			$j = $j + $interval;					
+		}	
+	}	
+
+	// Added support for projection graphs (normal_module + 1(prediction data))
+	if ($projection !== false){
+		$module_number = count ($module_list) + 1;
+	}else{
+		$module_number = count ($module_list);		
+	}
 
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//	     more interval, more resolution, and slower.
@@ -431,17 +458,46 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 
 	$long_index = array();
 	
+	if ($period <= 3600) {
+		$title_period = __('Last hour');
+		$time_format = 'G:i:s';
+	} elseif ($period <= 86400) {
+		$title_period = __('Last day');
+		$time_format = 'G:i';
+	} elseif ($period <= 604800) {
+		$title_period = __('Last week');
+		$time_format = 'M j';
+	} elseif ($period <= 2419200) {
+		$title_period = __('Last month');
+		$time_format = 'M j';
+	} else {
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+		$time_format = 'M j';
+	}	
+	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
-
-		$agent_module_id = $module_list[$i];
-		$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
-		$agent_id = agents_get_agent_id ($agent_name);
-		$module_name = modules_get_agentmodule_name ($agent_module_id);
-		$module_name_list[$i] = substr($agent_name, 0,80) ." / ".substr ($module_name, 0, 40);
-		$id_module_type = modules_get_agentmodule_type ($agent_module_id);
-		$module_type = modules_get_moduletype_name ($id_module_type);
-		$uncompressed_module = is_module_uncompressed ($module_type);
+		// If its a projection graph, first module will be data and second will be the projection
+		if ($projection != false and $i != 0){
+			$agent_module_id = $module_list[0];
+			$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
+			$agent_id = agents_get_agent_id ($agent_name);
+			$module_name = "projection for " . io_safe_output(modules_get_agentmodule_name ($agent_module_id));
+			$module_name_list[$i] = substr($agent_name, 0,80) ." / ".substr ($module_name, 0, 40);
+			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
+			$module_type = modules_get_moduletype_name ($id_module_type);
+			$uncompressed_module = is_module_uncompressed ($module_type);			
+		}else{
+			$agent_module_id = $module_list[$i];
+			$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
+			$agent_id = agents_get_agent_id ($agent_name);
+			$module_name = io_safe_output(modules_get_agentmodule_name ($agent_module_id));
+			$module_name_list[$i] = substr($agent_name, 0,80) ." / ".substr ($module_name, 0, 40);
+			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
+			$module_type = modules_get_moduletype_name ($id_module_type);
+			$uncompressed_module = is_module_uncompressed ($module_type);	
+		}
+						
 		if ($uncompressed_module) {
 			$avg_only = 1;
 		}
@@ -608,7 +664,14 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			}
 			$avg += $temp_graph_values[$timestamp_short];
 			
-			$graph_values[$i] = $temp_graph_values;
+			// Added to support projection graphs
+			if ($projection != false and $i != 0){
+					$projection_data = array();
+					$projection_data = array_merge($before_projection, $projection);
+					$graph_values[$i] = $projection_data;
+			}else{
+					$graph_values[$i] = $temp_graph_values;
+			}
 		}
 		
 		//Add the max, min and avg in the legend
@@ -619,7 +682,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$avg = format_for_graph($avg);
 		$units = modules_get_unit($agent_module_id);
 		
-		$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg, ". __("Units"). ": $units)";
+		if ($projection == false or ($projection != false and $i == 0)){
+			$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg, ". __("Units"). ": $units)";
+		}
 		
 		if ($weight_list[$i] != 1) {
 			//$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
@@ -632,8 +697,8 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		//$graph_values[$i] = $graph_values[$i];
 
 	}
-	
 	$temp = array();
+
 	foreach ($graph_values as $graph_group => $point) {
 		foreach ($point as $timestamp_point => $point_value) {
 			$temp[$timestamp_point][$graph_group] = $point_value;
@@ -665,13 +730,13 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
 	}
-	
+
 	$flash_charts = $config['flash_charts'];
 	
 	if ($only_image) {
 		$flash_charts = false;
 	}
-	
+		
 	switch ($stacked) {
 		case GRAPH_AREA:
 			$color = null;

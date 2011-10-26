@@ -189,12 +189,25 @@ switch ($action) {
 						$values = array();
 						$values['id_report'] = $idReport;
 						$values['description'] = get_parameter('description');
-						$values['period'] = get_parameter('period');
+						$values['type'] = get_parameter('type', null);
+						// Added support for projection graphs and prediction_date reports
+						// 'top_n_value' and 'top_n' fields will be reused for these types of report
+						if ($values['type'] == 'projection_graph'){
+							$values['period'] =  get_parameter('period1');
+							$values['top_n_value'] = get_parameter('period2');
+						}else if($values['type'] == 'prediction_date'){
+							$values['period'] = get_parameter('period1');
+							$values['top_n'] = get_parameter('max_interval');
+							$values['top_n_value'] =  get_parameter('min_interval');						
+						}else{
+							$values['period'] = get_parameter('period');
+							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+							$values['top_n_value'] = get_parameter('quantity');
+						}
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
-						$values['type'] = get_parameter('type', null);
 						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
@@ -208,8 +221,6 @@ switch ($action) {
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
 						$values['show_resume'] = get_parameter ('checkbox_show_resume');
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
-						$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-						$values['top_n_value'] = get_parameter('quantity');
 						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
 						$values['show_graph'] = get_parameter('combo_graph_options');
@@ -260,7 +271,20 @@ switch ($action) {
 						$values['id_report'] = $idReport;
 						$values['type'] = get_parameter('type', null);
 						$values['description'] = get_parameter('description');
-						$values['period'] = get_parameter('period');
+						// Support for projection graph and prediction_date reports
+						// 'top_n_value' and 'top_n' fields will be reused for these types of report
+						if ($values['type'] == 'projection_graph'){
+							$values['period'] = get_parameter('period1');
+							$values['top_n_value'] = get_parameter('period2');
+						}else if ($values['type'] == 'prediction_date'){
+							$values['period'] = get_parameter('period1');
+							$values['top_n'] = get_parameter('max_interval');
+							$values['top_n_value'] = get_parameter('min_interval');						
+						}else{
+							$values['period'] = get_parameter('period');
+							$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
+							$values['top_n_value'] = get_parameter('quantity');
+						}
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
@@ -301,8 +325,6 @@ switch ($action) {
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent',0);
 						$values['show_resume'] = get_parameter ('checkbox_show_resume',0);
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown',0);
-						$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
-						$values['top_n_value'] = get_parameter('quantity');
 						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
 						$values['show_graph'] = get_parameter('combo_graph_options');

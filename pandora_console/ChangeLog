@@ -1,5 +1,19 @@
 2011-10-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: Added 1 week 
+	interval for SLA reports.
+	
+	Fixes: #3426516
+	
+	* include/functions_forecast.php
+	include/functions_reporting.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Changed 
+	precission to float of max and min intervals on prediction date 
+	report.
+
+2011-10-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/agentes/agent_manager.php: Added confirmation at delete 
 	agent time.
 	

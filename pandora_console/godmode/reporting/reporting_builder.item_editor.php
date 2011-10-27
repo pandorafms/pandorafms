@@ -56,8 +56,8 @@ $period_pg = 432000;
 $projection_period = 432000;
 $only_display_wrong = 0;
 // Added support for prediction date report
-$min_interval = 0;
-$max_interval = 0;
+$min_interval = '0.00';
+$max_interval = '0.00';
 $monday = true;
 $tuesday = true;
 $wednesday = true;
@@ -123,8 +123,12 @@ switch ($action) {
 				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				// 'top_n' field will be reused for prediction_date report
 				$max_interval = $item['top_n'];
-				// 'top_n_value' field will be reused for prediction_date report			
 				$min_interval = $item['top_n_value'];
+				$intervals_text = $item['text'];
+				// Parse intervals text field
+				$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
+				$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);
+				// 'top_n_value' field will be reused for prediction_date report			
 				$period_pg = $item['period'];
 				break;
 			case 'custom_graph':
@@ -317,15 +321,14 @@ $intervals[300] = human_time_description_raw (300);
 $intervals[600] = human_time_description_raw (600);
 $intervals[86400] = human_time_description_raw (86400);
 $intervals[432000] = human_time_description_raw (432000);
+$intervals[604800] = human_time_description_raw (604800);
 $intervals[1296000] = human_time_description_raw (1296000);
 $intervals[2592000] = human_time_description_raw (2592000);
 
 // Intervals for projection graph 
 $intervals_1 = array ();
-/*$intervals_1[300] = human_time_description_raw (300);
-$intervals_1[600] = human_time_description_raw (600);
-$intervals_1[86400] = human_time_description_raw (86400);*/
 $intervals_1[432000] = human_time_description_raw (432000);
+$intervals_1[604800] = human_time_description_raw (604800);
 $intervals_1[1296000] = human_time_description_raw (1296000);
 $intervals_1[2592000] = human_time_description_raw (2592000);
 $intervals_1[5184000] = human_time_description_raw (5184000);
@@ -374,9 +377,9 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_tip(__('Between this interval will be search the prediction date'), true); ?></td>
 			<td><?php
 				echo __('Max') . "&nbsp;";
-				html_print_input_text('max_interval', $max_interval, '', 5, 5);
+				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				echo "&nbsp;" . __('Min') . "&nbsp;";
-				html_print_input_text('min_interval', $min_interval, '', 5, 5);
+				html_print_input_text('min_interval', $min_interval, '', 5, 10);
 				?></td>			
 		</tr>		
 		<tr id="row_only_display_wrong" style="" class="datos">

@@ -106,9 +106,9 @@ NUMERIC_VERSION=$(echo $VERSION | sed -e "s/\([0-9]*\.[0-9]*\).*/\1/")
 sed -n "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 sed -n "1h;1!H;\${;g;s/[\r\n]Version[\r\n]{[^\n\r]*}/\nVersion\n{$BUILD}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 if [ $NB == 1 ]; then
-	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-\<\%Version\%\>\-Setup\<\%Ext\%\>}}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-\<\%Version\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 else
-	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-Setup\<\%Ext\%\>}}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 fi
 
 rm -f "$TEMP_FILE"

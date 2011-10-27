@@ -1,5 +1,9 @@
 2011-10-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_update_version.sh: Fixed a typo.
+
+2011-10-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_update_version.sh: Include build number in the
 	  Windows agent installer for nightly builds.
 

@@ -1,3 +1,10 @@
+2011-10-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/agent_manager.php: Added confirmation at delete 
+	agent time.
+	
+	Fixes: #3419809
+
 2011-10-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/postgresql.php

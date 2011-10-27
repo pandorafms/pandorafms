@@ -1,3 +1,8 @@
+2011-10-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Include build number in deb package
+	  names for nightly builds.
+
 2011-10-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Update console build string.

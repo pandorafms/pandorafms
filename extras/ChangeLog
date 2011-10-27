@@ -1,5 +1,9 @@
 2011-10-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* build_src.sh: Create symlinks needed to build RPM packages.
+
+2011-10-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* build_src.sh: Include build number in tarballs for nightly builds.
 
 2011-10-27  Ramon Novoa  <rnovoa@artica.es>

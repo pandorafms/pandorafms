@@ -1,5 +1,9 @@
 2011-10-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* build_src.sh: Include build number in tarballs for nightly builds.
+
+2011-10-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_update_version.sh: Include build number in deb package
 	  names for nightly builds.
 

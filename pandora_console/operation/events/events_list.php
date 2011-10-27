@@ -622,6 +622,7 @@ foreach ($result as $event) {
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Group') . '</b></td><td align="left">';
 	$string .= ui_print_group_icon ($event["id_grupo"], true);
+	$string .= groups_get_name ($event["id_grupo"]);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	if ($group_rep == 0) {

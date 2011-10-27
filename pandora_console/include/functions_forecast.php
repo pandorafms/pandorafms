@@ -174,6 +174,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 			if ($current_ts - $last_timestamp >= 126144000){
 				return false;
 			} 
+			//html_debug_print(" Date " . $timestamp_f . " data: " . $output_data[$timestamp_f]);
 			// Found it
 			if ($max_value >= $output_data[$timestamp_f] and $min_value <= $output_data[$timestamp_f]){
 				return $current_ts;
@@ -191,16 +192,17 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
  * Return a date when the date interval is reached
  *
  * @param int Module id.
+ * @param int Given data period to make the prediction
  * @param int Max value in the interval.
  * @param int Min value in the interval. 
  * 
  * @return mixed timestamp with the prediction date or false
  */
-function forecast_prediction_date ($module_id, $max_value = 0, $min_value = 0){
+function forecast_prediction_date ($module_id, $period = 5184000, $max_value = 0, $min_value = 0){
 	// Checks interval
 	if ($min_value > $max_value){
 		return false;
 	}	
 	
-	return forecast_projection_graph($module_id, 5184000, false, $max_value, $min_value);
+	return forecast_projection_graph($module_id, $period, false, $max_value, $min_value);
 }

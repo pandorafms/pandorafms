@@ -184,6 +184,7 @@ switch ($action) {
 				$reportName = $report['name'];
 				$idGroupReport = $report['id_group'];
 				$description = $report['description'];
+				$good_format = false;
 				switch ($action) {
 					case 'update':
 						$values = array();
@@ -191,22 +192,33 @@ switch ($action) {
 						$values['description'] = get_parameter('description');
 						$values['type'] = get_parameter('type', null);
 						// Added support for projection graphs and prediction_date reports
-						// 'top_n_value' and 'top_n' fields will be reused for these types of report
+						// 'top_n_value','top_n' and 'text' fields will be reused for these types of report
 						if ($values['type'] == 'projection_graph'){
 							$values['period'] =  get_parameter('period1');
 							$values['top_n_value'] = get_parameter('period2');
+							$values['text'] = get_parameter('text');
+							$good_format = true;
 						}else if($values['type'] == 'prediction_date'){
 							$values['period'] = get_parameter('period1');
-							$values['top_n'] = get_parameter('max_interval');
-							$values['top_n_value'] =  get_parameter('min_interval');						
+							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+							$values['top_n_value'] = get_parameter('quantity');
+							$interval_max = get_parameter('max_interval');
+							$interval_min = get_parameter('min_interval');
+							// Checks intervals fields
+							if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+								$good_format = true;
+							}
+							$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
+							$values['text'] = $intervals;						
 						}else{
 							$values['period'] = get_parameter('period');
 							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
 							$values['top_n_value'] = get_parameter('quantity');
+							$values['text'] = get_parameter('text');
+							$good_format = true;
 						}
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
 						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
@@ -263,8 +275,13 @@ switch ($action) {
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
-						
-						$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
+		
+						if ($good_format){
+							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
+						}
+						else{
+							$resultOperationDB = false;
+						}
 						break;
 					case 'save':
 						$values = array();
@@ -272,22 +289,33 @@ switch ($action) {
 						$values['type'] = get_parameter('type', null);
 						$values['description'] = get_parameter('description');
 						// Support for projection graph and prediction_date reports
-						// 'top_n_value' and 'top_n' fields will be reused for these types of report
+						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
 						if ($values['type'] == 'projection_graph'){
 							$values['period'] = get_parameter('period1');
 							$values['top_n_value'] = get_parameter('period2');
+							$values['text'] = get_parameter('text');
+							$good_format = true;
 						}else if ($values['type'] == 'prediction_date'){
-							$values['period'] = get_parameter('period1');
-							$values['top_n'] = get_parameter('max_interval');
-							$values['top_n_value'] = get_parameter('min_interval');						
+							$values['period'] = get_parameter('period1');	
+							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+							$values['top_n_value'] = get_parameter('quantity');												
+							$interval_max = get_parameter('max_interval');
+							$interval_min = get_parameter('min_interval');
+							// Checks intervals fields
+							if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+								$good_format = true;
+							}
+							$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
+							$values['text'] = $intervals;												
 						}else{
 							$values['period'] = get_parameter('period');
 							$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 							$values['top_n_value'] = get_parameter('quantity');
+							$values['text'] = get_parameter('text');
+							$good_format = true;							
 						}
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
 						switch ($config['dbtype']){
 							case "mysql":
@@ -367,45 +395,50 @@ switch ($action) {
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
-						
-						$result = db_process_sql_insert('treport_content', $values);
-						
-						if ($result === false) {
-								$resultOperationDB = false;
-						}
-						else {
-							$idItem = $result;
+					
+						if ($good_format){
+							$result = db_process_sql_insert('treport_content', $values);
 							
-							switch ($config["dbtype"]) {
-								case "mysql":
-									$max = db_get_all_rows_sql('SELECT max(`order`) AS max 
-										FROM treport_content WHERE id_report = ' . $idReport . ';');
-									break;
-								case "postgresql":
-								case "oracle":
-									$max = db_get_all_rows_sql('SELECT max("order") AS max 
-										FROM treport_content WHERE id_report = ' . $idReport);
-									break;
-							}
-							if ($max === false) {
-								$max = 0;
+							if ($result === false) {
+									$resultOperationDB = false;
 							}
 							else {
-								$max = $max[0]['max'];
+								$idItem = $result;
+								
+								switch ($config["dbtype"]) {
+									case "mysql":
+										$max = db_get_all_rows_sql('SELECT max(`order`) AS max 
+											FROM treport_content WHERE id_report = ' . $idReport . ';');
+										break;
+									case "postgresql":
+									case "oracle":
+										$max = db_get_all_rows_sql('SELECT max("order") AS max 
+											FROM treport_content WHERE id_report = ' . $idReport);
+										break;
+								}
+								if ($max === false) {
+									$max = 0;
+								}
+								else {
+									$max = $max[0]['max'];
+								}
+								switch ($config["dbtype"]) {
+									case "mysql":
+										db_process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
+										break;
+									case "postgresql":
+									case "oracle":
+										db_process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
+										break;
+								}
+								$resultOperationDB = true;
 							}
-							switch ($config["dbtype"]) {
-								case "mysql":
-									db_process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
-									break;
-								case "postgresql":
-								case "oracle":
-									db_process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
-									break;
-							}
-							
-							$resultOperationDB = true;
+							break;
 						}
-						break;
+						// If fields dont have good format
+						else {
+							$resultOperationDB = false;
+						}
 				}
 				break;
 			default:

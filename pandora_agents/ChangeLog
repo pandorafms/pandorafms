@@ -1,3 +1,10 @@
+2011-10-28  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* android/AndroidManifest.xml: updated the number of version.
+	
+	* android/res/values/strings.xml, android/res/values-en/strings.xml,
+	android/res/values-es/strings.xml: added the help text in other languages.
+
 2011-10-27  Sancho Lerena <slerena@artica.es>
 
 	* res/values/strings.xml: Default string for "help" screen. 

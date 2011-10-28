@@ -644,9 +644,15 @@ sub update_module_configuration ($$$$) {
 			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?, min_critical = ?, max_critical = ?, min_warning = ?, max_warning = ?, disabled = ?, min_ff_event = ?, extended_info = ?
 				WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
 				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module_conf->{'min_critical'}, $module_conf->{'max_critical'}, $module_conf->{'min_warning'}, $module_conf->{'max_warning'}, $module_conf->{'disabled'}, $module_conf->{'min_ff_event'}, $module_conf->{'extended_info'}, $module->{'id_agente_modulo'});
-			return;
+			last;
 		}
 	}
+	
+	# Update module hash
+	foreach my $conf_token ('min', 'max', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info') {
+		$module->{$conf_token} = $module_conf->{$conf_token};
+	}
+	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 }
 
 1;

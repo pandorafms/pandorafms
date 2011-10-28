@@ -366,15 +366,15 @@ html_print_input_hidden('id_item', $idItem);
 			<td style=""><?php html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
 		</tr>
 		<tr id="row_period1" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
+			<td style="vertical-align: top;"><?php echo __('Period'); if ($type == 'projection_graph'){ echo ui_print_help_icon('projection_graph', true); }else{ echo ui_print_help_icon('prediction_date', true); } ?></td>
 			<td style=""><?php html_print_extended_select_for_time ($intervals_1, 'period1', $period_pg, '', '', '0', 10); echo __(" seconds."); ?></td>
 		</tr>	
 		<tr id="row_estimate" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Projection period'); ?></td>
+			<td style="vertical-align: top;"><?php echo __('Projection period') . ui_print_help_icon('projection_graph', true); ?></td>
 			<td style=""><?php html_print_extended_select_for_time ($intervals_1, 'period2', $projection_period, '', '', '0', 10); echo __(" seconds."); ?></td>
 		</tr>	
 		<tr id="row_interval" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_tip(__('Between this interval will be search the prediction date'), true); ?></td>
+			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
 			<td><?php
 				echo __('Max') . "&nbsp;";
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);

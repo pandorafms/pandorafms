@@ -1,3 +1,21 @@
+2011-10-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_network.php
+	godmode/modules/manage_network_components.php: Fixed network 
+	components creation and interface problems.
+	
+	Fixes: #3421589
+
+	* include/help/en/help_projection_graph.php
+	include/help/en/help_prediction_date.php
+	include/help/es/help_projection_graph.php
+	include/help/es/help_prediction_date.php
+	images/help/prediction_date.png
+	images/help/projection_periods.png
+	godmode/reporting/reporting_builder.item_editor.php: Added 
+	contextual help. Forgot to update Changelog.
+
 2011-10-28  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/snmp_explorer.php: Improved snmp explorer to use

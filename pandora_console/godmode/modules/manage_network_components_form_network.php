@@ -66,7 +66,7 @@ push_table_row($data, 'field_snmpv3_row1');
 $data = array();
 $data[0] = __('Privacy method');
 $data[1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true);
-$data[2] = __('privacy pass');
+$data[2] = __('Privacy pass');
 $data[3] = html_print_input_text ('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true);
 push_table_row($data, 'field_snmpv3_row2');
 
@@ -101,3 +101,4 @@ $table->colspan['tcp_receive'][1] = 3;
 
 push_table_row ($data, 'tcp_receive');
 ?>
+

@@ -158,7 +158,7 @@ if ($update_component) {
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
-        $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+        //$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -168,9 +168,9 @@ if ($update_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
-		$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+		//$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name); 
 	}
-	if ($name && !$name_check) {
+	if (!empty($name)) { 
 		$result = network_components_update_network_component ($id,
 			array ('type' => $type,
 				'name' => $name,

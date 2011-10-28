@@ -45,6 +45,7 @@
 	<string name="conctact_error_str">Error contacto</string>
 	<string name="last_contact_str">Último contacto:\n</string>
 	<string name="help_text_str">
-	&lt;p&gt;Un texto&lt;/p&gt;&lt;p&gt;Otro texto&lt;br/&gt;&lt;a href=&quot;http://google.es&quot;&gt;google&lt;/a&gt; el &lt;i&gt;texto&lt;/i&gt;&lt;/p&gt;
+		Pandroid Agent es un agente en Android para Pandora FMS. &lt;p&gt;
+		Pandora FMS es un sistema de monitorizaci&#243;n de prop&#243;sito general. Con el agente en Android puedes monitorizar GPS, cuanta batería le queda al dispositivo, memoria disponible o conocer con el sensor de proximidad si tienes el movil en tu oreja :-). Este podrá expandirse en el futuro para reportar si un proceso esta en ejecución, siendo muy útil para sistemas embebidos en servidores centrales. Tambien se puede expandir para obtener información de otras aplicaciones en el dispositivo o hacer otras cosas mas. El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
 </resources>

@@ -145,6 +145,12 @@ function snmp_explorer() {
 	    $result = false;
 	
 	    foreach($id_snmp as $id) {
+			if (isset($interfaces[$id]['ifName']) && $interfaces[$id]['ifName']['value'] != ""){
+					$ifname = $interfaces[$id]['ifName']['value'];
+			}
+			else if (isset($interfaces[$id]['ifDescr']) && $interfaces[$id]['ifDescr']['value'] != ""){
+					$ifname = $interfaces[$id]['ifDescr']['value'];
+			}
 		    foreach($modules as $module) {
          			
 			    $oid_array = explode('.',$module);
@@ -153,7 +159,7 @@ function snmp_explorer() {
 			
 			    // Get the name
 			    $name_array = explode('::',$oid_array[0]);
-			    $name = $name_array[1] . "_" . $interfaces[$id]['ifName']['value'];
+			    $name = $name_array[1] . "_" . $ifname;
 			
                 // Clean the name
                 $name = str_replace  ( "\""  , "" , $name);
@@ -209,10 +215,17 @@ function snmp_explorer() {
     $interfaces_list = array();
     foreach($interfaces as $interface){
         // Get the interface name, removing " " characters and avoid "blank" interfaces
-        if (!isset($interface['ifName']) || $interface['ifName']['value'] == "")
-            continue;
+        if (isset($interface['ifName']) && $interface['ifName']['value'] != ""){
+                $ifname = $interface['ifName']['value'];
+        }
+        else if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != ""){
+                $ifname = $interface['ifDescr']['value'];
+        }
+        else {
+                continue;
+        }
 
-	    $interfaces_list[$interface['ifIndex']['value']] = str_replace  ( "\""  , "" , $interface['ifName']['value']);
+	    $interfaces_list[$interface['ifIndex']['value']] = str_replace  ( "\""  , "" , $ifname);
 
     }
 

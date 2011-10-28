@@ -162,7 +162,7 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 	}
 	
 	my $net_addr_temp = $net_addr + 1;
-	if($net_addr eq $net_addr_temp) {
+	if($net_addr->broadcast eq $net_addr_temp) {
 		$last = 1;
 	}
 	

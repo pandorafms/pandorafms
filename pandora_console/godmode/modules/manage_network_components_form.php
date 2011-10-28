@@ -128,7 +128,7 @@ else if ($id_component_type == 4) {
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_plugin.php");
 }
-else if ($id_component_type == 2) {
+else if ($id_component_type == 2) { 
 	$categories = array (3, 4, 5);
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_network.php");
@@ -193,7 +193,7 @@ function type_change () {
 		document.component.snmp3_security_level.disabled=true;
 	}
 	// type 15-18- SNMP
-	if ((document.component.type.value > 14) && (document.component.type.value < 19 )) {
+	if ((document.component.type.value > 14) && (document.component.type.value < 19 )) { 
 		document.component.snmp_oid.style.background="#fff";
 		document.component.snmp_oid.style.disabled=false;
 		document.component.snmp_community.style.background="#fff";
@@ -309,6 +309,114 @@ function type_change () {
 		document.component.snmp3_security_level.disabled=true;
 	}
 }
+
+$(document).ready (function () {
+	$("#snmp_version").change(function () {
+		if (this.value == "3") {
+			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_auth_user]").attr("disabled", false);		
+			
+			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_auth_pass]").attr("disabled", false);				
+			
+			$("#snmp3_privacy_method").css({backgroundColor: '#fff'});	
+			$("#snmp3_privacy_method").attr("disabled", false);	
+		
+			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_privacy_pass]").attr("disabled", false);	
+			
+			$("#snmp3_auth_method").css({backgroundColor: '#fff'});	
+			$("#snmp3_auth_method").attr("disabled", false);			
+			
+			$("#snmp3_security_level").css({backgroundColor: '#fff'});	
+			$("#snmp3_security_level").attr("disabled", false);
+			
+			$("input[name=active_snmp_v3]").val(1);
+			$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
+			$("input[name=snmp_community]").attr("disabled",true);	
+		}
+		else {			
+			$("input[name=snmp3_auth_user]").val("");				
+			$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_auth_user]").attr("disabled", true);	
+			
+			$("input[name=snmp3_auth_pass]").val("");
+			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_auth_pass]").attr("disabled", true);				
+						
+			$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});	
+			$("#snmp3_privacy_method").attr("disabled", true);
+		
+			$("input[name=snmp3_privacy_pass]").val("");
+			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_privacy_pass]").attr("disabled", true);			
+
+			$("#snmp3_auth_method").css({backgroundColor: '#ddd'});	
+			$("#snmp3_auth_method").attr("disabled", true);
+
+			$("#snmp3_security_level").css({backgroundColor: '#ddd'});	
+			$("#snmp3_security_level").attr("disabled", true);
+
+			$("input[name=active_snmp_v3]").val(0);
+			$("input[name=snmp_community]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp_community]").attr("disabled", false);			
+			
+
+		}
+	});	
+
+	$("#type"). change(function () {
+		if ($("#snmp_version").value == "3") {
+			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_auth_user]").attr("disabled", false);		
+			
+			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_auth_pass]").attr("disabled", false);				
+			
+			$("#snmp3_privacy_method").css({backgroundColor: '#fff'});	
+			$("#snmp3_privacy_method").attr("disabled", false);	
+		
+			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_privacy_pass]").attr("disabled", false);	
+			
+			$("#snmp3_auth_method").css({backgroundColor: '#fff'});	
+			$("#snmp3_auth_method").attr("disabled", false);			
+			
+			$("#snmp3_security_level").css({backgroundColor: '#fff'});	
+			$("#snmp3_security_level").attr("disabled", false);
+			
+			$("input[name=active_snmp_v3]").val(1);
+			$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
+			$("input[name=snmp_community]").attr("disabled",true);	
+		}else{
+			$("input[name=snmp3_auth_user]").val("");				
+			$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_auth_user]").attr("disabled", true);	
+			
+			$("input[name=snmp3_auth_pass]").val("");
+			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_auth_pass]").attr("disabled", true);				
+						
+			$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});	
+			$("#snmp3_privacy_method").attr("disabled", true);
+		
+			$("input[name=snmp3_privacy_pass]").val("");
+			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_privacy_pass]").attr("disabled", true);			
+
+			$("#snmp3_auth_method").css({backgroundColor: '#ddd'});	
+			$("#snmp3_auth_method").attr("disabled", true);
+
+			$("#snmp3_security_level").css({backgroundColor: '#ddd'});	
+			$("#snmp3_security_level").attr("disabled", true);
+
+			$("input[name=active_snmp_v3]").val(0);
+			$("input[name=snmp_community]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp_community]").attr("disabled", false);	
+		}
+	});
+});
+
 <?php if ($id_component_type == 2) :?>
 type_change ();
 <?php endif; ?>

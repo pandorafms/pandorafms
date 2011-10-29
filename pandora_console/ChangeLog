@@ -1,3 +1,8 @@
+2011-10-29  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_projection_graph.php,
+	include/help/ja/help_prediction_date.php: Added new help files.
+
 2011-10-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/modules/manage_network_components_form.php

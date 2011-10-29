@@ -45,6 +45,7 @@
 	<string name="conctact_error_str">接続エラー</string>
 	<string name="last_contact_str">最新の接続:\n</string>
 	<string name="help_text_str">
-	&lt;p&gt;テキスト&lt;/p&gt;&lt;p&gt;別テキスト&lt;br/&gt;&lt;a href=&quot;http://www.google.co.jp&quot;&gt;google&lt;/a&gt; &lt;i&gt;テキスト&lt;/i&gt;&lt;/p&gt;
+		Pandroid エージェントは、Pandora FMS 用の Android エージェントです。&lt;p&gt;
+		Pandora FMS は統合監視システムです。Android エージェントでは、GPS の情報、バッテリーの残量、メモリ量、電話が耳の近くにあるかを知るための近傍センサー情報を取得することができます。指定したプロセスが動作しているかを確認するように将来拡張することもでき、タブレットからサーバに組み込みデバイスの情報を送るのに便利です。デバイスに入っている他のアプリケーションやデータを取得するようにしたり、その他さまざまな処理を拡張することもできます。ソースコードを提供しています。&lt;p&gt;Pandora FMS に関する詳細は以下を参照ください。&lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
 </resources>

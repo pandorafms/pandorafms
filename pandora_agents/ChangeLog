@@ -1,3 +1,12 @@
+2011-10-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* android/src/pandroid/agent/PandroidAgentListener.java: fixed type of
+	memory module.
+	
+	* android/res/values/strings.xml, android/res/values-en/strings.xml,
+	android/res/values-es/strings.xml: rewrote the help text for to erase the
+	references to proximity module.
+
 2011-10-29  Junichi Satoh  <junichi@rworks.jp>
 
 	* android/res/values-ja/strings.xml: Updated the help text.

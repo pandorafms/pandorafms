@@ -46,6 +46,6 @@
 	<string name="last_contact_str">Last Contact:\n</string>
 	<string name="help_text_str">
 		Pandroid Agent is an Android Pandora FMS agent for Pandora FMS. &lt;p&gt;
-		Pandora FMS is a general purpose monitoring system. With android agent you can get GPS information of your device, know how much battery left, memory on device, or using the proximity sensor to know if the phone is near your ear :-). This could be expanded in the future to report if a given process is running, very useful to use the agent on embedded devices on tablets to report to a central server. Also can be expanded to get information given by the user for other app and stored in the device or doing a lot of things more. Complete source code is provided.&lt;p&gt;See more about Pandora FMS at &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
+		Pandora FMS is a general purpose monitoring system. With android agent you can get GPS information of your device, know how much battery left, memory on device. This could be expanded in the future to report if a given process is running, very useful to use the agent on embedded devices on tablets to report to a central server. Also can be expanded to get information given by the user for other app and stored in the device or doing a lot of things more. Complete source code is provided.&lt;p&gt;See more about Pandora FMS at &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
 </resources>

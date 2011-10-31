@@ -197,7 +197,7 @@ public class PandroidAgentListener extends Service {
 			Float freeMemory = new Float((Float.valueOf(availableRamKb) / Float.valueOf(totalRamKb)) * 100.0);
 			
 			DecimalFormat formatPercent = new DecimalFormat("#.##");
-			buffer += buildmoduleXML("freeRamMemory", "The available ram in percent value.", "async_data",
+			buffer += buildmoduleXML("freeRamMemory", "The available ram in percent value.", "generic_data",
 				formatPercent.format(freeMemory.doubleValue()));
 		}
 		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);

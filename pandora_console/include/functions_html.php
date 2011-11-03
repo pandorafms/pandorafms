@@ -26,6 +26,7 @@ if (!isset($config)) {
 	for ($i = 0; $i < $levels; $i++) {
 		if(file_exists(str_repeat("../", $i) . 'config.php')) {
 			require_once(str_repeat("../", $i) . "config.php");
+			break; // Skip config.php loading after load the first one
 		}
 	}
 }

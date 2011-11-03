@@ -1,3 +1,8 @@
+2011-11-03  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_html.php:  Skip config.php loading after load 
+	the first one.
+
 2011-11-03  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php: Fixed graphs to adapt bottom 

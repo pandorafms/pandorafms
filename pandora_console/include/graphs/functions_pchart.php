@@ -714,7 +714,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 		$max_chars = $len; 
 	 	}
 	 }
-	 $margin_bottom = 10 * $max_chars;
+	 $margin_bottom = $font_size * $max_chars;
 	 
 	 $water_mark_height = 0;
 	 $water_mark_width = 0;
@@ -742,7 +742,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		 "GridG"=>200,
 		 "GridB"=>200,
 		 "DrawSubTicks"=>TRUE,
-		 "CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60, "XMargin" => 0);
+		 "CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60, "XMargin" => 0, "MinDivHeight" => 20);
 	 $myPicture->drawScale($scaleSettings);
 	 
 	 /* Turn on shadow computing */ 

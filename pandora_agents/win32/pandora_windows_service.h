@@ -47,6 +47,7 @@ namespace Pandora {
 		long                 transfer_interval;
 		bool                 started;
 		void                 *udp_server;
+		bool                 tentacle_proxy;
 		list<string> collection_disk;
 		
 		string        getXmlHeader    ();
@@ -74,13 +75,13 @@ namespace Pandora {
 		void	       checkCollections ();
 		void		   addCollectionsPath();
 		string         checkAgentName(string filename);
-		void           checkConfig (string file);
+		int           checkConfig (string file);
 		void		 purgeDiskCollections ();
 		void           pandora_init_broker (string file_conf);
 		void           pandora_run_broker (string config);
 		int 		   count_broker_agents();
 		void 		   check_broker_agents(string *all_conf);
-		int 		   lauchTentacleProxy();
+		int 		   launchTentacleProxy();
 		int				killTentacleProxy();
 		
 		Pandora_Windows_Service     ();

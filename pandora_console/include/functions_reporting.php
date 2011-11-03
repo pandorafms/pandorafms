@@ -1983,6 +1983,44 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	return $return;
 }	
 
+/**
+ *  This is the callback sorting function for SLA values descending
+ * 
+ *  @param array $a Array element 1 to compare
+ *  @param array $b Array element 2 to compare
+ * 
+ */
+function sla_value_desc_cmp($a, $b)
+{	
+	// This makes 'Unknown' values the lastest
+	if (preg_match('/^(.)*Unknown(.)*$/', $a[5]))
+		$a[6] = -1;
+		
+	if (preg_match('/^(.)*Unknown(.)*$/', $b[5]))
+		$b[6] = -1;
+		
+    return ($a[6] < $b[6])? 1 : 0;
+}
+
+/**
+ *  This is the callback sorting function for SLA values ascending
+ * 
+ *  @param array $a Array element 1 to compare
+ *  @param array $b Array element 2 to compare
+ * 
+ */
+function sla_value_asc_cmp($a, $b)
+{
+	// This makes 'Unknown' values the lastest
+	if (preg_match('/^(.)*Unknown(.)*$/', $a[5]))
+		$a[6] = -1;
+	
+	if (preg_match('/^(.)*Unknown(.)*$/', $b[5]))
+		$b[6] = -1;
+	
+    return ($a[6] > $b[6])? 1 : 0;
+}
+
 /** 
  * This function is used once, in reporting_viewer.php, the HTML report render
  * file. This function proccess each report item and write the render in the
@@ -2028,6 +2066,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	}
 	else {
 		$agent_name = agents_get_name($content['id_agent']);
+	}
+	
+	// Calculations in order to modify init date of the report
+	$date_init = get_parameter('date_init_' . $content['id_rc'], date ('Y-m-j',$report['datetime'] - $content['period']));
+	$time_init = get_parameter('time_init_' . $content['id_rc'], date ('h:iA',$report['datetime'] - $content['period']));
+	$datetime_init = strtotime ($date_init.' '.$time_init);
+	$new_interval = $report['datetime'] - $datetime_init; 
+	if ($new_interval != $content['period']) {
+		$content['period'] = $new_interval;
 	}
 	
 	switch ($content["type"]) {
@@ -2344,6 +2391,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$data[4] .= format_numeric ($sla_value, 2). "%";
 					}
 					$data[4] .= "</span>";
+					// This column will be used temporary for sort data
+					$data[6] = format_numeric ($sla_value, 2);
 					
 					array_push ($table1->data, $data);
 				}
@@ -2351,7 +2400,22 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					//Restore db connection
 					metaconsole_restore_db();
 				}
+			} 
+//html_debug_print($table1->data);
+			// SLA items sorted descending ()
+			if ($content['top_n'] == 2){
+				usort($table1->data, "sla_value_desc_cmp");
 			}
+			// SLA items sorted ascending
+			else if ($content['top_n'] == 1){
+				usort($table1->data, "sla_value_asc_cmp");				
+			}
+//html_debug_print($table1->data);			
+			// Delete temporary column used to sort SLA data
+			for ($i=0; $i < count($table1->data); $i++) {
+				unset($table1->data[$i][6]);		
+			}						
+			
 			$table->colspan[2][0] = 3;
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
@@ -3948,6 +4012,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	if (($config ['metaconsole'] == 1) && $server_name != '') {
 		metaconsole_restore_db();
 	}
+	
+	// Adds date/time control to update initial interval report
+	$table->colspan[3][0] = 3;
+//	$table->data[3][0] = '<form method="post" action="">';
+	$table->data[3][0] .= '<b>' . __('Date') . '</b>' . ui_print_help_tip(__('This is the report start date'), true) . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+	$table->data[3][0] .= html_print_input_text ('date_init_' . $content['id_rc'], $date_init, '', 12, 10, true). ' ';
+	$table->data[3][0] .= html_print_input_text ('time_init_' . $content['id_rc'], $time_init, '', 7, 7, true). ' ';
+	$table->data[3][0] .= html_print_submit_button (__('Update'), 'date_submit_init', false, 'class="sub next"', true);	
+	$table->data[3][0] .= html_print_input_hidden ('id_report_content_' . $content['id_rc'], 1, true);
+
+/*	if (!isset(get_parameter('id_rc_list')){
+		$table->data[3][0] .= html_print_input_hidden ('id_rc_list', $id_rc_list . ',' . $content['id_rc'], true);		
+	}*/
+//	$table->data[3][0] .= '</form>';
 }
 
 /** 

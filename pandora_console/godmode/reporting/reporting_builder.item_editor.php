@@ -27,6 +27,11 @@ $show_graph_options[0] = __('Only table');
 $show_graph_options[1] = __('Table & Graph');
 $show_graph_options[2] = __('Only graph');
 
+// SLA sorting options
+$show_sort_options = array();
+$show_sort_options[1] = __('Ascending');
+$show_sort_options[2] = __('Descending');
+
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
 require_once ($config['homedir'].'/include/functions_agents.php');
 if (enterprise_include_once ('include/functions_metaconsole.php')) {
@@ -150,6 +155,8 @@ switch ($action) {
 				$time_from = $item['time_from'];
 				$time_to = $item['time_to'];
 				$show_graph = $item['show_graph'];
+				// 'top_n' filed will be reused for SLA sort option
+				$sla_sorted_by = $item['top_n'];
 				break;
 			case 'monitor_report':
 				$description = $item['description'];
@@ -581,6 +588,10 @@ html_print_input_hidden('id_item', $idItem);
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
 				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
 		</tr>
+		<tr id="row_sort" style="" class="datos">
+			<td><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
+			<td><?php html_print_select ($show_sort_options, 'combo_sla_sort_options', $sla_sorted_by, '', __('None'), 0); ?></td>
+		</tr>		
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td><?php echo __('Show in landscape');?></td>
 			<td><?php html_print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
@@ -1097,6 +1108,7 @@ function chooseType() {
 	$("#row_show_in_landscape").css('display', 'none');
 	$("#row_module_group").css('display', 'none');
 	$("#row_servers").css('display', 'none');
+	$("#row_sort").css('display', 'none');
 		
 	switch (type) {
 		case 'event_report_group':
@@ -1146,6 +1158,7 @@ function chooseType() {
 			$("#row_only_display_wrong").css('display', '');
 			$("#row_show_graph").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
+			$("#row_sort").css('display', '');
 			break;
 		case 'monitor_report':
 			$("#row_description").css('display', '');

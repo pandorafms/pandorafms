@@ -78,7 +78,6 @@ $table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit', fal
 echo '<form method="post" action="">';
 html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
-echo '</form>';
 
 echo '<div id="loading">';
 echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
@@ -99,6 +98,10 @@ $(document).ready (function () {
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
 	$("#text-date").datepicker ();
+
+	$('[id^=text-date_init_]').datepicker ();
+	$('[id^=text-time_init_]').timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
+
 	$.datepicker.regional["<?php echo $config['language']; ?>"];
 });
 </script>
@@ -151,4 +154,5 @@ foreach ($contents as $content) {
 	echo "</div>";
 	flush ();
 }
+echo '</form>';
 ?>

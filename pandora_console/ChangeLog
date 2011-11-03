@@ -1,5 +1,11 @@
 2011-11-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_reporting.php
+	godmode/reporting/reporting_builder.preview.php: Changed begin date
+	function in order to make it global for all items of a report.
+
+2011-11-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	include/functions_forecast.php: Fixed X axis time format in graphs. 
 

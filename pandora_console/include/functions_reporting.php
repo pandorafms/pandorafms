@@ -2068,15 +2068,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$agent_name = agents_get_name($content['id_agent']);
 	}
 	
-	// Calculations in order to modify init date of the report
-	$date_init = get_parameter('date_init_' . $content['id_rc'], date ('Y-m-j',$report['datetime'] - $content['period']));
-	$time_init = get_parameter('time_init_' . $content['id_rc'], date ('h:iA',$report['datetime'] - $content['period']));
-	$datetime_init = strtotime ($date_init.' '.$time_init);
-	$new_interval = $report['datetime'] - $datetime_init; 
-	if ($new_interval != $content['period']) {
-		$content['period'] = $new_interval;
-	}
-	
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':
@@ -2401,7 +2392,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					metaconsole_restore_db();
 				}
 			} 
-//html_debug_print($table1->data);
+
 			// SLA items sorted descending ()
 			if ($content['top_n'] == 2){
 				usort($table1->data, "sla_value_desc_cmp");
@@ -2410,7 +2401,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else if ($content['top_n'] == 1){
 				usort($table1->data, "sla_value_asc_cmp");				
 			}
-//html_debug_print($table1->data);			
+			
 			// Delete temporary column used to sort SLA data
 			for ($i=0; $i < count($table1->data); $i++) {
 				unset($table1->data[$i][6]);		
@@ -4012,20 +4003,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	if (($config ['metaconsole'] == 1) && $server_name != '') {
 		metaconsole_restore_db();
 	}
-	
-	// Adds date/time control to update initial interval report
-	$table->colspan[3][0] = 3;
-//	$table->data[3][0] = '<form method="post" action="">';
-	$table->data[3][0] .= '<b>' . __('Date') . '</b>' . ui_print_help_tip(__('This is the report start date'), true) . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-	$table->data[3][0] .= html_print_input_text ('date_init_' . $content['id_rc'], $date_init, '', 12, 10, true). ' ';
-	$table->data[3][0] .= html_print_input_text ('time_init_' . $content['id_rc'], $time_init, '', 7, 7, true). ' ';
-	$table->data[3][0] .= html_print_submit_button (__('Update'), 'date_submit_init', false, 'class="sub next"', true);	
-	$table->data[3][0] .= html_print_input_hidden ('id_report_content_' . $content['id_rc'], 1, true);
-
-/*	if (!isset(get_parameter('id_rc_list')){
-		$table->data[3][0] .= html_print_input_hidden ('id_rc_list', $id_rc_list . ',' . $content['id_rc'], true);		
-	}*/
-//	$table->data[3][0] .= '</form>';
 }
 
 /** 

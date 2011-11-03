@@ -32,7 +32,8 @@ ui_print_page_header (__('Incident management'), "images/book_edit.png", false, 
 // Offset adjustment
 if (isset($_GET["offset"])) {
 	$offset = get_parameter ("offset");
-} else {
+}
+else {
 	$offset = 0;
 }
 
@@ -80,6 +81,7 @@ elseif ($action == "update") {
 	}
 	
 	$titulo = get_parameter ("titulo");
+	$titulo = io_safe_input(strip_tags(io_safe_output($titulo)));
 	$descripcion = get_parameter ("descripcion");
 	$origen = get_parameter ("origen_form");
 	$prioridad = get_parameter ("prioridad_form", 0);
@@ -99,7 +101,8 @@ elseif ($action == "update") {
 		__('Successfully updated'),
 		__('Could not be updated'));
 	
-} elseif ($action == "insert") {
+}
+elseif ($action == "insert") {
 	//Create incident
 	$grupo = get_parameter ("grupo_form", 1);
 	
@@ -110,7 +113,8 @@ elseif ($action == "update") {
 	}
 
 	// Read input variables
-	$titulo = get_parameter ("titulo"); 
+	$titulo = get_parameter ("titulo");
+	$titulo = io_safe_input(strip_tags(io_safe_output($titulo)));
 	$descripcion = get_parameter ("descripcion");
 	$origen = get_parameter ("origen_form");
 	$prioridad = get_parameter ("prioridad_form");
@@ -170,7 +174,8 @@ $result = db_get_all_rows_sql ($sql);
 if (empty ($result)) {
 	$result = array ();
 	$count = 0;
-} else {
+}
+else {
 	$count = count ($result);
 }
 

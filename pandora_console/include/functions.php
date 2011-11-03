@@ -42,6 +42,28 @@ define("MIN_WIDTH",300);
 define("MIN_HEIGHT",120);
 define("MIN_WIDTH_CAPTION",420);
 
+function check_refererer() {
+	global $config;
+	
+	$referer = '';
+	if (isset($_SERVER['HTTP_REFERER'])) {
+		$referer = $_SERVER['HTTP_REFERER'];
+	}
+	
+	$url = 'http://';
+	if ($config['https']) {
+		$url = 'https://';
+	}
+	$url .= $_SERVER['SERVER_NAME'] . $config["homeurl"];
+	
+	if (strpos($referer, $url) === 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 /**
  * Cleans an object or an array and casts all values as integers
  *

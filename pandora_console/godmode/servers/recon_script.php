@@ -36,6 +36,12 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	return;
 }
 
+if (!check_refererer()) {
+	require ("general/noaccess.php");
+
+	return;
+}
+
 $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");
 

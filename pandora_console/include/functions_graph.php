@@ -29,7 +29,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
 				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
-				$only_image = false, $homeurl = '', $ttl = 1) {
+				$only_image = false, $homeurl = '', $ttl = 1, $projection = false) {
 
 	global $config;
 	global $graphic_type;
@@ -214,8 +214,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$timestamp_short = date($time_format, $timestamp);
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		//$timestamp = $timestamp_short;
-		
+		if (!$projection){
+			$timestamp = $timestamp_short;
+		}
 		// Data
 		if ($count > 0) {
 			if ($avg_only) {

@@ -1,3 +1,12 @@
+2011-11-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_reporting.php
+	godmode/reporting/reporting_builder.preview.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Added selector
+	for report's items in order to choose the report begin date and
+	added combo for sort SLA elements. 
+
 2011-10-29  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_projection_graph.php,

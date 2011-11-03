@@ -41,7 +41,14 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
+	
 	return;
+}
+
+if (!check_refererer()) {
+	require ("general/noaccess.php");
+	
+	return;	
 }
 
 $tab = get_parameter('tab', 'user');

@@ -17,6 +17,14 @@
 function extension_uploader_extensions() {
 	global $config;
 	
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+				"Trying to access Group Management");
+		require ("general/noaccess.php");
+		
+		return;
+	}
+	
 	ui_print_page_header (__("Uploader extension"), "images/extensions.png", false, "", true, "");
 
 	$upload = (bool)get_parameter('upload', 0);

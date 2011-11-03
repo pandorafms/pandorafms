@@ -21,6 +21,7 @@ require_once ($config['homedir'].'/include/functions_tags.php');
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	db_pandora_audit("ACL Violation", "Trying to access Edit Tag");
 	require ("general/noaccess.php");
+	
 	return;
 }
 
@@ -31,6 +32,7 @@ $update_tag = (int) get_parameter ("update_tag", 0);
 $create_tag = (int) get_parameter ("create_tag", 0);
 $name_tag = (string) get_parameter ("name_tag", "");
 $description_tag = (string) get_parameter ("description_tag", "");
+$description_tag = io_safe_input(strip_tags(io_safe_output($description_tag)));
 $url_tag = (string) get_parameter ("url_tag", "");
 $tab = (string) get_parameter ("tab", "list");
 

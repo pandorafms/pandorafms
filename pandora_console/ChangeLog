@@ -1,3 +1,13 @@
+2011-11-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions.php: added function "check_refererer" for check
+	refererers in some places.
+	
+	* extensions/extension_uploader.php, extensions/dbmanager.php,
+	operation/incidents/incident.php, operation/incidents/incident_detail.php,
+	godmode/servers/recon_script.php, godmode/users/configure_user.php,
+	godmode/tag/edit_tag.php: securized this files to XSS and CSRF attacks. 
+
 2011-11-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_reporting.php

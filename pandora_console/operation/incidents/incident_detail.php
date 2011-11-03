@@ -86,14 +86,20 @@ if (isset ($_GET["id"])) {
 	}
 
 	// Delete file
-	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
+	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR
+		($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
 		$file_id = (int) get_parameter ("delete_file", 0);
 		$filename = db_get_value ("filename", "tattachment", "id_attachment", $file_id);
 		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
 		$result = db_process_sql ($sql);
 		
 		if (!empty ($result)) {
-			unlink ($config["attachment_store"]."/pand".$file_id."_".io_safe_output($filename));
+			if (file_exists($config['homedir'] . '/attachment/pand'.$row["id_attachment"].'_'.$row["filename"]. ".zip"))
+				unlink ($config["attachment_store"]."/pand".$file_id."_".io_safe_output($filename). ".zip");
+			else
+				unlink ($config["attachment_store"]."/pand".$file_id."_".io_safe_output($filename));
+			
+			
 			incidents_process_touch ($id_inc);
 		}
 		
@@ -123,15 +129,27 @@ if (isset ($_GET["id"])) {
 		}
 		
 		$sql = sprintf ("INSERT INTO tattachment (id_incidencia, id_usuario, filename, description, size) 
-			VALUES (%d, '%s', '%s', '%s', %d)", $id_inc, $config["id_user"],$filename,$description,$filesize);
+			VALUES (%d, '%s', '%s', '%s', %d)", $id_inc, $config["id_user"], $filename, $description, $filesize);
 
 		$id_attachment = db_process_sql ($sql,"insert_id");
 
 		// Copy file to directory and change name
 		if ($id_attachment !== false) {
-			$nombre_archivo = $config["attachment_store"]."/pand".$id_attachment."_".$_FILES['userfile']['name'];
-			$result = copy ($_FILES['userfile']['tmp_name'], $nombre_archivo);
-		} else {
+			$nombre_archivo = $config["attachment_store"]
+				. "/pand" . $id_attachment . "_" . $_FILES['userfile']['name'];
+			
+			
+			$zip = new ZipArchive;
+			
+			if ($zip->open($nombre_archivo.".zip", ZIPARCHIVE::CREATE) === true) {
+				$zip->addFile($_FILES['userfile']['tmp_name'], io_safe_output($filename));
+				$zip->close();
+			}
+			
+			
+			//$result = copy ($_FILES['userfile']['tmp_name'], $nombre_archivo);
+		}
+		else {
 			echo '<h3 class="error">'.__('File could not be saved due to database error').'</h3>';
 			$result = false;
 		}
@@ -139,7 +157,8 @@ if (isset ($_GET["id"])) {
 		if ($result !== false) {
 			unlink ($_FILES['userfile']['tmp_name']);
 			incidents_process_touch ($id_inc);
-		} else {
+		}
+		else {
 			db_process_sql ("DELETE FROM tattachment WHERE id_attachment = ".$id_attachment);
 		}
 		
@@ -169,7 +188,8 @@ elseif (isset ($_GET["insert_form"])) {
 	}
 	$prioridad = 0;
 	$id_grupo = 0;
-} else {
+}
+else {
 	db_pandora_audit("HACK","Trying to get to incident details in an unusual way");
 	require ("general/noaccess.php");
 	exit;
@@ -373,12 +393,19 @@ if (isset ($id_inc)) {
 	$table->align[3] = "center";
 
 	foreach ($result as $row) {
-		$data[0] = html_print_image("images/disk.png", true, array("border" => '0', "align" => "top")) . '&nbsp;&nbsp;<a target="_new" href="attachment/pand'.$row["id_attachment"].'_'.$row["filename"].'"><b>'.$row["filename"].'</b></a>';
+		if (file_exists($config['homedir'] . '/attachment/pand'.$row["id_attachment"].'_'.io_safe_output($row["filename"]). ".zip"))
+			$url = 'attachment/pand'.$row["id_attachment"].'_'.io_safe_output($row["filename"]). ".zip";
+		else
+			$url = 'attachment/pand'.$row["id_attachment"].'_'.io_safe_output($row["filename"]);
+				
+		$data[0] = html_print_image("images/disk.png", true, array("border" => '0', "align" => "top")) .
+			'&nbsp;&nbsp;<a target="_new" href="' . $url . '"><b>'.$row["filename"].'</b></a>';
 		$data[1] = $row["description"];
 		$data[2] = format_for_graph ($row["size"])."B";
 		if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 			$data[3] = html_print_input_image ("delete_file", "images/cross.png", $row["id_attachment"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
-		} else {
+		}
+		else {
 			$data[3] = '';
 		}
 		array_push ($table->data, $data);

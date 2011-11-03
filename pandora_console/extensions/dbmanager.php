@@ -88,6 +88,12 @@ function dbmgr_extension_main () {
 		require ("general/noaccess.php");
 		return;
 	}
+	
+	if (!check_refererer()) {
+		require ("general/noaccess.php");
+	
+		return;
+	}
 
 	$sql = (string) get_parameter ('sql');
 

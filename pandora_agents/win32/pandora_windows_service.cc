@@ -76,6 +76,7 @@ Pandora_Windows_Service::setValues (const char * svc_name,
 	this->transfer_interval     = this->interval;
 	this->elapsed_transfer_time = 0;
 	this->udp_server            = NULL;
+	this->tentacle_proxy        = false;
 }
 
 /** 
@@ -138,9 +139,12 @@ Pandora_Windows_Service::pandora_init_broker (string file_conf) {
 	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
 	this->conf->setFile (file_conf);
+	if (this->modules != NULL) {
+		delete this->modules;
+	}
 	this->modules = new Pandora_Module_List (file_conf);
 	
-	pandoraLog ("Pandora agent started");
+	pandoraDebug ("Pandora broker agent started");
 }
 
 int
@@ -212,6 +216,7 @@ Pandora_Windows_Service::pandora_init () {
 	string name_agent, name;
 	string proxy_mode, server_ip;
 	int pos, num;
+	static unsigned char first_run = 0;
                 
 	setPandoraDebug (true);
 
@@ -230,6 +235,9 @@ Pandora_Windows_Service::pandora_init () {
 	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
 	this->conf->setFile (all_conf);
+	if (this->modules != NULL) {
+		delete this->modules;
+	}
 	this->modules = new Pandora_Module_List (conf_file);
 	
 	name = checkAgentName(conf_file);
@@ -270,12 +278,9 @@ Pandora_Windows_Service::pandora_init () {
 	
 	/*Check if proxy mode is set*/
 	proxy_mode = conf->getValue ("proxy_mode");
-
-	if (proxy_mode != "") {
-		lauchTentacleProxy();	
+	if (proxy_mode != "" && this->tentacle_proxy == false) {
+		launchTentacleProxy();	
 	}
-
-	pandoraLog ("Pandora agent started");
 	
 	/* Launch UDP Server */
 	udp_server_enabled = conf->getValue ("udp_server");
@@ -286,6 +291,11 @@ Pandora_Windows_Service::pandora_init () {
 		this->udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
 		((UDP_Server *)this->udp_server)->start ();
 	}
+	
+	if (first_run == 0) {
+		first_run = 1;
+		pandoraLog ("Pandora agent started");
+	}
 }
 
 int
@@ -293,6 +303,10 @@ Pandora_Windows_Service::killTentacleProxy() {
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;		
 	string kill_cmd;
+	
+	if (this->tentacle_proxy == false) {
+		return 0;
+	}
 	
 	kill_cmd = "taskkill.exe /F /IM tentacle_server.exe";
 	
@@ -303,11 +317,11 @@ Pandora_Windows_Service::killTentacleProxy() {
 		return -1;
 	}
 		
-
+	this->tentacle_proxy = false;
 }
 
 int 
-Pandora_Windows_Service::lauchTentacleProxy() {
+Pandora_Windows_Service::launchTentacleProxy() {
 	string server_ip, server_port, proxy_max_connections, proxy_timeout;
 	string proxy_cmd;
 	PROCESS_INFORMATION pi;
@@ -345,6 +359,7 @@ Pandora_Windows_Service::lauchTentacleProxy() {
 			return -1;
 		}
 		
+		this->tentacle_proxy = true;
 		pandoraLog("Proxy mode enabled");				
 	} else {
 		pandoraLog ("[error] You can not proxy to localhost");
@@ -1105,7 +1120,7 @@ Pandora_Windows_Service::checkAgentName(string filename){
 	file.close();
 	return name_agent;
 }
-void
+int
 Pandora_Windows_Service::checkConfig (string file) {
 	int i, conf_size;
 	char *conf_str = NULL, *remote_conf_str = NULL, *remote_conf_md5 = NULL;
@@ -1115,7 +1130,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 	tmp = conf->getValue ("remote_config");
 	if (tmp != "1") {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Remote configuration disabled");
-		return;
+		return 0;
 	}
 
 	/* Get temporal directory */
@@ -1134,7 +1149,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 	/* Error getting agent name */
 	if (tmp.empty ()) {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error getting agent name");
-		return;
+		return 0;
 	}
 
 	Pandora_File::md5 (tmp.c_str(), tmp.size(), agent_md5);
@@ -1148,7 +1163,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 		if (conf_str != NULL) {
 			delete[] conf_str;
 		}
-		return;
+		return 0;
 	}
 
 	/* Compose file names from the agent name hash */
@@ -1179,7 +1194,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 		}
 	
 		delete[] conf_str;
-		return;
+		return 0;
 	}
 
 	delete[] conf_str;
@@ -1194,12 +1209,12 @@ Pandora_Windows_Service::checkConfig (string file) {
 			if (remote_conf_md5 != NULL) {
 				delete[] remote_conf_md5;
 			}		
-			return;		   	
+			return 0;		   	
 		}
 		Pandora_File::removeFile (tmp);
 	} catch (...) {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error checking remote configuration md5", tmp.c_str());
-		return;
+		return 0;
 	}
 
 	/* Check for configuration changes */
@@ -1215,7 +1230,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 
 	/* Configuration has not changed */
 	if (flag == 0) {
-		return;
+		return 0;
 	}
 
 	pandoraLog("Pandora_Windows_Service::checkConfig: Configuration for agent %s has changed", agent_name.c_str ());
@@ -1234,13 +1249,13 @@ Pandora_Windows_Service::checkConfig (string file) {
 		if (conf_str != NULL) {
 			delete[] conf_str;
 		}
-		return;
+		return 0;
 	}
 
 	delete[] conf_str;
 
 	/* Reload configuration */
-	this->pandora_init ();
+	return 1;
 }
 
 int
@@ -1388,7 +1403,9 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 
 	/* Check for configuration changes */
 	if (getPandoraDebug () == false) {
-		this->checkConfig (config);
+		if (this->checkConfig (config) == 1) {
+			pandora_init_broker (config);
+		}
 		this->checkCollections ();
 	}
 
@@ -1449,8 +1466,6 @@ Pandora_Windows_Service::pandora_run () {
 
 	pandoraDebug ("Run begin");
 	
-	pandora_init();
-
 	conf = this->getConf ();
 
  	/* Sleep if a startup delay was specified */
@@ -1466,7 +1481,9 @@ Pandora_Windows_Service::pandora_run () {
 		conf_file = Pandora::getPandoraInstallDir ();
 		conf_file += "pandora_agent.conf";
 		
-		this->checkConfig (conf_file);
+		if (this->checkConfig (conf_file) == 1) {
+			this->pandora_init ();
+		}
 		this->checkCollections ();
 	}
 
@@ -1517,14 +1534,18 @@ Pandora_Windows_Service::pandora_run () {
 	/* Get the interval value (in minutes) */
 	pandoraDebug ("Next execution on %d seconds", this->interval / 1000);
 
+	/* Load and execute brokers */
 	num = count_broker_agents();
 	string all_conf[num];
-
 	check_broker_agents(all_conf);
-	
 	for (i=0;i<num;i++){
 		pandora_init_broker(all_conf[i]);
 		pandora_run_broker(all_conf[i]);
+	}
+
+	/* Reload the original configuration */
+	if (num != 0) {
+		pandora_init ();
 	}
 
 	return;

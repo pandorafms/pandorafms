@@ -1,3 +1,9 @@
+2011-11-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.h,
+	  pandora_windows_service.cc: Several fixes to the proxy mode and
+	  broker agents.
+
 2011-09-23  Sancho Lerena <slerena@artica.es>
 
 	* installer/pandora.mpi: Updated string version in agent installer.

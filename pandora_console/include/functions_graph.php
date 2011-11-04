@@ -1514,6 +1514,10 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 	}
 	
 	$flash_charts = $config['flash_charts'];
+
+	if ($flash_charts){ 
+		include_flash_chart_script();
+	}
 	
 	if ($only_image) {
 		$flash_charts = false;

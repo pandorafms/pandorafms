@@ -341,9 +341,15 @@ function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image,
 
 function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $force_height = true,
-	$homedir="", $water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1) {
+	$homedir="", $water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $return = false) {
 	if($flash_chart) {
-		echo fs_2d_hcolumn_chart ($chart_data, $width, $height);
+		include_flash_chart_script();
+		if ($return){
+			return fs_2d_hcolumn_chart ($chart_data, $width, $height);
+		}
+		else{
+			echo fs_2d_hcolumn_chart ($chart_data, $width, $height);
+		}
 	}
 	else {
 		$graph = array();

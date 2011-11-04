@@ -204,7 +204,8 @@ if (is_ajax ()) {
 						SELECT count(nombre)
 						FROM tagente_modulo t2
 						WHERE delete_pending = 0 AND t1.nombre = t2.nombre
-							AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+							AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')
+				ORDER BY nombre');
 		
 			if ($nameModules == false) {
 				$nameModules = array();

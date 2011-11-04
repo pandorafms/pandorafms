@@ -1904,7 +1904,7 @@ sub get_module_status ($$$) {
 	my ($data, $module, $module_type) = @_;
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
-	my ($critical_str, $warning_str) = map { safe_output($_) } ($module->{'str_critical'}, $module->{'str_warning'});
+	my ($critical_str, $warning_str) = ($module->{'str_critical'}, $module->{'str_warning'});
 	
 	# Was the module status set in the XML data file?
 	if (defined ($module->{'status'})) {
@@ -1914,8 +1914,8 @@ sub get_module_status ($$$) {
 	}
 
 	# Set default critical max/min/str values
-	$critical_str = '' unless defined ($critical_str);
-	$warning_str = '' unless defined ($warning_str);
+	$critical_str = defined ($critical_str) ? safe_output($critical_str) : '';
+	$warning_str = defined ($warning_str)? safe_output($warning_str) : '';
 	
 	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);

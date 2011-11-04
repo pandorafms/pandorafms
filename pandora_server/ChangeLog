@@ -1,3 +1,8 @@
+2011-11-04  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Added missing safe_output to decode
+	  str_critical/str_warning.
+
 2011-10-28  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Fixed a bug related to main loop

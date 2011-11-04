@@ -1,3 +1,13 @@
+2011-11-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php 
+	 include/graphs/fgraph.php
+	 include/functions_reporting.php
+	 operation/agentes/ver_agente.php: Modules in 'top_n' reports are 
+	 sorted and graphs are displayed.
+	 
+	 Fixes: #3422013
+
 2011-11-03  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_html.php:  Skip config.php loading after load 

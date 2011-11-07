@@ -254,19 +254,51 @@ switch ($sortField) {
 		break;
 }
 
-$modules = db_get_all_rows_filter ('tagente_modulo',
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":	
+		$modules = db_get_all_rows_filter ('tagente_modulo',
+			array ('delete_pending' => 0,
+				'id_agente' => $id_agente,
+				'order' => $order,
+				'offset' => (int) get_parameter ('offset'),
+				'limit' => (int) $config['block_size']),
+			array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
+				'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
+				'disabled','max_warning', 'min_warning', 'str_warning',
+				'max_critical', 'min_critical', 'str_critical'));
+		break;
+	case "oracle":		
+		$set = array();
+		$set['limit'] = (int) $config["block_size"];
+		$set['offset'] = (int) get_parameter ('offset');
+		$sql = db_get_all_rows_filter('tagente_modulo',
+			array ('delete_pending' => 0,
+				'id_agente' => $id_agente,
+				'order' => $order),
+			array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'dbms_lob.substr(nombre,4000,1) nombre',
+				'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
+				'disabled','max_warning', 'min_warning', 'str_warning',
+				'max_critical', 'min_critical', 'str_critical'), 'AND', false, true);
+		$modules = oracle_recode_query ($sql, $set, 'AND', false);
+		break;
+}
+		
+$total_modules = db_get_all_rows_filter ('tagente_modulo',
 	array ('delete_pending' => 0,
 		'id_agente' => $id_agente,
 		'order' => $order),
-	array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
-		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-		'disabled','max_warning', 'min_warning', 'str_warning',
-		'max_critical', 'min_critical', 'str_critical'));
+	array ('count(*) total'));	
+	
+$total_modules = isset ($total_modules[0]['total']) ? $total_modules[0]['total'] : 0;	
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('No available data to show')."</div>";
 	return;
 }
+
+// Prepare pagination
+ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort)));
 
 $table->width = '98%';
 $table->head = array ();
@@ -291,6 +323,7 @@ $table->head[6] = __('Warn');
 
 $table->head[7] = __('Action');
 
+$table->rowstyle = array();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
@@ -330,9 +363,9 @@ foreach ($modules as $module) {
 	$data = array ();
 	if ($module['id_module_group'] != $last_modulegroup) {
 		$last_modulegroup = $module['id_module_group'];
-		
 		$data[0] = '<strong>'.modules_get_modulegroup_name ($last_modulegroup).'</strong>';
 		$i = array_push ($table->data, $data);
+		$table->rowstyle[$i - 1] = 'text-align: center';
 		$table->rowclass[$i - 1] = 'datos3';
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 				$table->colspan[$i - 1][0] = 8;

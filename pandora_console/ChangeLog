@@ -1,5 +1,13 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb.data.postgreSQL.sql
+	 pandoradb.data.oracle.sql
+	 pandoradb_data.sql: Changed value of block_size row in tusuario 
+	 table to 0 in order to make global configuration 
+	 of this parameter the default.
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/users/user_edit.php: Added contextual help for block 
 	size for pagination.
 

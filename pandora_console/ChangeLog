@@ -1,3 +1,10 @@
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Improvement over
+	module editor layout.
+	
+	Fixes: #3419810
+
 2011-11-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php 

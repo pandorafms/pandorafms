@@ -118,7 +118,7 @@ $table_simple->class = 'databox_color';
 $table_simple->data = array ();
 $table_simple->colspan = array ();
 $table_simple->style = array ();
-$table_simple->style[0] = 'font-weight: bold; vertical-align: top';
+$table_simple->style[0] = 'font-weight: bold; vertical-align: top; width: 26%';
 $table_simple->style[1] = 'width: 40%';
 $table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 

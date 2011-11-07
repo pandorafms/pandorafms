@@ -179,12 +179,25 @@ $modules = db_get_all_rows_filter ('tagente_modulo, tagente_estado',
 		'disabled' => 0,
 		'tagente_estado.utimestamp != 0',
 		'tagente_modulo.id_agente = '.$id_agente,
-		'order' => $order));
+		'order' => $order,
+		'offset' => (int) get_parameter ('offset'),
+		'limit' => (int) $config['block_size']));
+		
+$total_modules = db_get_all_rows_filter ('tagente_modulo',
+	array ('delete_pending' => 0,
+		'id_agente' => $id_agente,
+		'order' => $order),
+	array ('count(*) total'));	
+	
+$total_modules = isset ($total_modules[0]['total']) ? $total_modules[0]['total'] : 0;		
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
 	return;
 }
+
+// Prepare pagination
+ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente, 'tab' => 'data','sort_field' => $sortField, 'sort' => $sort)));
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 

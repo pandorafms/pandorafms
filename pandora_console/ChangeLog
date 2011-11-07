@@ -1,5 +1,12 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/estado_ultimopaquete.php
+	godmode/agentes/module_manager.php: Added pagination to this views.
+	
+	Fixes: #3417746
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/modules/manage_network_components_form.php: Fixed network 
 	components interface problems.
 	

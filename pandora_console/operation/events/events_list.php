@@ -467,7 +467,7 @@ foreach ($result as $event) {
 		$data[2] .= ui_print_agent_name ($event["id_agente"], true);
 	}
 	else {
-		$data[2] .= __('Alert').__('SNMP');
+		$data[2] .= '';
 	}
 	$data[2] .= '</span>';
 	

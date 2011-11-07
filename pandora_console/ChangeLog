@@ -1,5 +1,12 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: When an event doesn't have agent
+	associated then don't display AlertSNMP as agent name.
+	
+	Fixes: #3414380
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_ultimopaquete.php
 	godmode/agentes/module_manager.php: Added pagination to this views.
 	

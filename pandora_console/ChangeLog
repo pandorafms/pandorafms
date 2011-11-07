@@ -1,5 +1,10 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/users/user_edit.php: Added contextual help for block 
+	size for pagination.
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php: Improvement over
 	module editor layout.
 	

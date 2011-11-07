@@ -397,6 +397,10 @@ $(document).ready( function() {
 	});
 	
 	$("a.delete_event").click (function () {
+		confirmation = confirm("<?php echo __('Are you sure?'); ?>");
+		if (!confirmation){
+			return;
+		}
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
 		jQuery.post ("ajax.php",

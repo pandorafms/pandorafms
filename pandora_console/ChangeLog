@@ -1,5 +1,11 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events.php: Fixed confirmation in event deletion.
+	
+	Fixes: #3431148
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php: When an event doesn't have agent
 	associated then don't display AlertSNMP as agent name.
 	

@@ -1,5 +1,11 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/gis_maps/render_view.php: Fixed fullscreen mode.
+
+	Fixes: #3433780
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events.php: Fixed confirmation in event deletion.
 	
 	Fixes: #3431148

@@ -1,5 +1,14 @@
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/modules/manage_network_components_form.php: Fixed network 
+	components interface problems.
+	
+	Fixes: #3421733
+	
+	* pandoradb.data.oracle.sql: I forgot to upload from last commit.
+
+2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb.data.postgreSQL.sql
 	 pandoradb.data.oracle.sql
 	 pandoradb_data.sql: Changed value of block_size row in tusuario 

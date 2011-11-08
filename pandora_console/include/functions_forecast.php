@@ -42,6 +42,10 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	if (empty($module_data)){
 		return array();	
 	}
+	// Prevents bad behaviour over image error 
+	else if (!is_array($module_data) and preg_match('/^<img(.)*$/', $module_data)){
+		return;
+	}		
 			
 	// Data initialization
 	$sum_obs = 0;
@@ -56,6 +60,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	$cont = 1;
 	$data = array();
 	$table->data = array();	
+
 	// Creates data for calculation		
 	foreach ($module_data as $utimestamp => $row) {
 		if ($utimestamp == '') { continue; }	

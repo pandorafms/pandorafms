@@ -2117,6 +2117,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$output_projection = forecast_projection_graph($content['id_agent_module'], $content['period'], $content['top_n_value']);
 			
+			// If projection doesn't have data then don't draw graph
+			if ($output_projection ==  NULL){
+				$output_projection = false;
+			}
+			
 			$modules = array($content['id_agent_module']);
 			$weights = array();
 			$data[0] = 	graphic_combined_module(
@@ -2129,7 +2134,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				0,
 				0,
-				$graph["stacked"],
+				0,
 				$report["datetime"],
 				false,
 				'',

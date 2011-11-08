@@ -413,7 +413,7 @@ $(document).ready (function () {
 
 			if (remote_config.match(regexp_name) || $("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) return true;
 			else {
-				alert("<?php echo __("Error, The field name and name in module_name in data configuration are difrerent.");?>");
+				alert("<?php echo __("Error, The field name and name in module_name in data configuration are different.");?>");
 				return false;
 			}
 		}

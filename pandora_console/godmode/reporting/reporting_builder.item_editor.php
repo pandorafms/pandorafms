@@ -73,6 +73,7 @@ $sunday = true;
 $time_from = '00:00';
 $time_to = '23:59';
 $show_graph = 0;
+$sla_sorted_by = 0;
 
 switch ($action) {
 	case 'new':

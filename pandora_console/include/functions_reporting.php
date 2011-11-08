@@ -2194,7 +2194,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data = array ();
-			$data[0] = grafico_modulo_sparse($layout_data['id_agente_modulo'], $content['period'],
+			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], '', true, 0, true, true);
 				

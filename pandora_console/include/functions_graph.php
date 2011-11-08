@@ -109,7 +109,12 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	// Check available data
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
-			return fs_error_image ();
+			if (!$projection){
+				return false;
+			}
+			else{
+				return fs_error_image ();
+			}
 		}
 		graphic_error ();
 	}
@@ -421,7 +426,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}	
 
 	// Added support for projection graphs (normal_module + 1(prediction data))
-	if ($projection !== false){
+	if ($projection !== false){ 
 		$module_number = count ($module_list) + 1;
 	}else{
 		$module_number = count ($module_list);		

@@ -1,3 +1,11 @@
+2011-11-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 include/functions_forecast.php
+	 include/functions_reporting.php
+	 godmode/reporting/reporting_builder.preview.php: Fixed some 
+	 warnings in this views.
+
 2011-11-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/gis_maps/render_view.php: Fixed fullscreen mode.

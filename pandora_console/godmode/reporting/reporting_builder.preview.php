@@ -43,16 +43,15 @@ if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
 
+$datetime = strtotime ($date.' '.$time);
+$report["datetime"] = $datetime;
+
 // Calculations in order to modify init date of the report
 $date_init_less = strtotime(date ('Y-m-j')) - 86400;
 $date_init = get_parameter('date_init', date ('Y-m-j', $date_init_less));
 $time_init = get_parameter('time_init', date ('h:iA'));
 $datetime_init = strtotime ($date_init.' '.$time_init);
 $enable_init_date = get_parameter('enable_init_date', 0);
-$new_interval = $report['datetime'] - $datetime_init; 
-if ($new_interval != $content['period']) {
-	$content['period'] = $new_interval;
-}
 
 // Standard header
 
@@ -154,8 +153,6 @@ $(document).ready (function () {
 </script>
 
 <?php
-$datetime = strtotime ($date.' '.$time);
-$report["datetime"] = $datetime;
 
 if ($datetime === false || $datetime == -1) {
 	echo '<h3 class="error">'.__('Invalid date selected').'</h3>';

@@ -1,5 +1,13 @@
 2011-11-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_reporting.php:
+	 godmode/reporting/reporting_builder.item_editor.php: Fixed baseline
+	 graphs also fixed some warnings.
+	 
+	 Fixes: #3414446
+
+2011-11-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	 include/functions_forecast.php
 	 include/functions_reporting.php

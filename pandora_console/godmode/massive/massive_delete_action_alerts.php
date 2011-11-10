@@ -202,7 +202,7 @@ $actions = alerts_get_alert_actions ();
 $table->data[4][0] = __('Action');
 $table->data[4][1] = html_print_select ($actions, 'action', '', '', __('None'), 0, true);	
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" id="form_alert" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_action_alerts">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

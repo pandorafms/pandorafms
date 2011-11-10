@@ -140,7 +140,7 @@ $agents = modules_get_agents_with_module_name ($module_name, $id_group,
 $table->data[2][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" id="form_modules" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" >';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

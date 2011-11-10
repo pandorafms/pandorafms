@@ -203,7 +203,7 @@ $table->data[4][1] .= html_print_input_text ('fires_max', 0, '', 4, 10, true);
 $table->data[4][1] .= ui_print_help_icon ("alert-matches", true);
 $table->data[4][1] .= '</span>';
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_action_alerts">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

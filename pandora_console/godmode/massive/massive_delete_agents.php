@@ -110,7 +110,7 @@ $table->data[1][0] .= '</span>';
 $table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

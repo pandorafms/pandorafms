@@ -161,10 +161,10 @@ $table->data[2][1] = html_print_select (index_array ($agents_alerts, 'id_agente'
 $table->data[2][2] = __('Modules');
 $table->data[2][3] = html_print_select (array(), 'module[]',	'', false, '', '', true, true, false);
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_alerts" >';
 html_print_table ($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden ('delete', 1);
 html_print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
 echo '</div>';

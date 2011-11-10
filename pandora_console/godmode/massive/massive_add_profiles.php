@@ -93,7 +93,7 @@ $table->size[1] = '33%';
 $table->size[2] = '33%';
 
 $data = array ();
-$data[0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
+$data[0] = '<form method="post" id="form_profiles" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
 $data[0] .= html_print_select (profile_get_profiles (), 'profiles_id[]', '', '', '',
 	'', true, true, false, '', false, 'width: 100%');
 $data[1] = html_print_select_groups($config['id_user'], "UM", true,

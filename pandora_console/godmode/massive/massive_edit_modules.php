@@ -364,7 +364,7 @@ $table->data['edit8'][2] = __('Tags');
 $table->data['edit8'][3] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
 	'id_tag[]', $id_tag, '',__('None'),'0', true, true, false, false);
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

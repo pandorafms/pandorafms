@@ -1,4 +1,4 @@
-<?php
+F<?php
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
@@ -123,7 +123,7 @@ $table->size[3] = '15%';
 
 $table->data = array ();
 
-$table->data[0][0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=enable_disable_alerts&action=disable_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+$table->data[0][0] = '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=enable_disable_alerts&action=disable_alerts">';
 $table->data[0][0] .= html_print_input_hidden('id_alert_template_enabled', $id_alert_templates, true);
 
 $table->data[0][0] .= __('Group');

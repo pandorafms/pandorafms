@@ -131,6 +131,83 @@ $onheader['policies'] = $policiestab;
 
 ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
 
+// Checks if the PHP configuration is correctly
+if ((get_cfg_var("max_execution_time") != 0) or (get_cfg_var("max_input_time") != -1)){
+        echo '<div id="notify_conf" class="notify">';
+        echo __("In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>");
+        echo '</div>';
+}
+
+// Catch all submit operations in this view to display Wait banner
+$submit_action = get_parameter('go');
+$submit_update = get_parameter('updbutton');
+$submit_del = get_parameter('del');
+$submit_template_disabled = get_parameter('id_alert_template_disabled');
+$submit_template_enabled = get_parameter('id_alert_template_enabled');
+$submit_template_not_standby = get_parameter('id_alert_template_not_standby');
+$submit_template_standby = get_parameter('id_alert_template_standby');
+$submit_add = get_parameter('crtbutton');
+
+/*if (!empty($submit_action) or !empty($submit_update) or !empty($submit_del)
+	or !empty($submit_template_disabled) or !empty($submit_template_enabled)
+	or !empty($submit_template_not_standby) or !empty($submit_template_standby)
+	or !empty($submit_add)){*/
+	echo '<div id="loading" display="none">';
+	echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
+	echo '<strong>'.__('Please wait').'...</strong>';
+	echo '</div>';
+//}
+
+?>
+
+<script language="javascript" type="text/javascript">
+
+
+$(document).ready (function (){	
+
+	$('#manage_config_form').submit( function(){
+		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
+		if (confirm)
+			$("#loading").css("display", "");
+		else
+			return false;
+	});
+	
+	$('#form_edit').submit( function(){
+		$("#loading").css("display", "");
+	});
+	
+
+
+	$('[id^=form]').submit( function(){
+		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
+		if (confirm)
+			$("#loading").css("display", "");
+		else
+			return false;
+	});
+
+//	$('[id^=submit-]').click( function(){
+//		$("#loading").css("display", "");
+//	});	
+
+
+
+	$("#loading").css("display", "none");
+});
+
+//	$("#loading").slideUp ();
+
+	//$('[id^=submit]').click( function() {
+	//	console.log("DERER");
+	//	$("#loading").show ();
+	//});
+
+
+</script>
+
+<?php
+
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
 echo '<table border="0"><tr><td>';
 echo '</td><td>';

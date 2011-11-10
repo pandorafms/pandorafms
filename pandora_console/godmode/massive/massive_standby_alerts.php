@@ -125,7 +125,7 @@ $table->size[3] = '15%';
 $table->data = array ();
 
 $templates = alerts_get_alert_templates (false, array ('id', 'name'));
-$table->data[0][0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=standby_alerts&action=set_standby_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+$table->data[0][0] = '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=standby_alerts&action=set_standby_alerts">';
 $table->data[0][0] .= html_print_input_hidden('id_alert_template_not_standby', $id_alert_templates, true);
 $table->data[0][0] .= __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,

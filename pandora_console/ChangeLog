@@ -1,3 +1,20 @@
+2011-11-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_agents.php
+	godmode/massive/massive_enable_disable_alerts.php
+	godmode/massive/massive_operations.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_add_profiles.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/massive/massive_standby_alerts.php
+	godmode/massive/massive_add_action_alerts.php: Added spinner while
+	waiting to massive operations result and added check of PHP conf.
+
 2011-11-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/reporting/reporting_viewer.php: Added begin date control

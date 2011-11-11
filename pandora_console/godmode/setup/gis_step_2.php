@@ -305,7 +305,7 @@ $table->data[4][1] = html_print_input_text ('center_altitude', $mapConnection_ce
 $table->data[4][2] = html_print_input_text ('default_altitude', $mapConnection_defaultAltitude, '', 10, 10, true);
 html_print_table($table);
 
-echo '<div class="action-buttons" style="clear: left; width: 90%; float: left;">';
+echo '<div class="action-buttons" style="width: 90%; float: left;">';
 html_print_submit_button (__('Save'), '', false, 'class="sub save wand"');
 echo '</div>';
 echo "</form>";

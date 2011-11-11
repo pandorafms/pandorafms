@@ -1,3 +1,7 @@
+2011-11-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* godmode/setup/gis_step_2.php: Fixed a small bug with a button.
+
 2011-11-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/massive/massive_edit_agents.php: Added id field to form in

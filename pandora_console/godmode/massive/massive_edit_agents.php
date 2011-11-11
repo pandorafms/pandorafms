@@ -208,8 +208,7 @@ $all_agents = agents_get_group_agents ($id_group, array('disabled' => 1), "none"
 $table->data[1][1] = html_print_select ($all_agents,
 	'id_agents[]', 0, false, '', '', true, true);
 
-echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
-//echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
+echo '<form method="post" id="form_agent" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
 html_print_table ($table);
 
 $nombre_agente = "";

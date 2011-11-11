@@ -1,5 +1,10 @@
 2011-11-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/massive/massive_edit_agents.php: Added id field to form in
+	this view.
+
+2011-11-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/massive/massive_enable_disable_alerts.php
 	godmode/massive/massive_operations.php: Correct mistake from my last 
 	commit. 

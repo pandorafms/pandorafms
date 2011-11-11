@@ -1,4 +1,4 @@
-F<?php
+<?php
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================

@@ -174,11 +174,13 @@ $(document).ready (function (){
 	});
 	
 	$('#form_edit').submit( function(){
-		$("#loading").css("display", "");
+		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
+		if (confirm)
+			$("#loading").css("display", "");
+		else
+			return false;	
 	});
 	
-
-
 	$('[id^=form]').submit( function(){
 		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
 		if (confirm)
@@ -187,22 +189,8 @@ $(document).ready (function (){
 			return false;
 	});
 
-//	$('[id^=submit-]').click( function(){
-//		$("#loading").css("display", "");
-//	});	
-
-
-
 	$("#loading").css("display", "none");
 });
-
-//	$("#loading").slideUp ();
-
-	//$('[id^=submit]').click( function() {
-	//	console.log("DERER");
-	//	$("#loading").show ();
-	//});
-
 
 </script>
 

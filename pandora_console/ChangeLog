@@ -1,3 +1,8 @@
+2011-11-12  Junichi Satoh  <junichi@rworks.jp>
+
+	* general/logon_ok.php: Fixed bad representation that __('ago') is
+	shown when "Timestamp or time comparation" is set to timestamp.
+	
 2011-11-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* godmode/setup/gis_step_2.php: Fixed a small bug with a button.

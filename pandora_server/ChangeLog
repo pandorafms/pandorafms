@@ -1,3 +1,9 @@
+2011-11-15  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Small optimization in module deletion. Instead
+	delete module data, left in there to be deleted on "timestamp" deletion.
+	This is like 100 times faster!.
+
 2011-11-14  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Moved to functions each command bit of code

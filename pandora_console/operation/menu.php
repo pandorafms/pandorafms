@@ -94,7 +94,12 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//Visual console
 	$menu["visualc"]["text"] = __('Visual console');
 	$menu["visualc"]["sec2"] = "operation/visual_console/index";
-	$menu["visualc"]["refr"] = 60;
+	if (isset($config['refr'])){
+		$menu["visualc"]["refr"] = $config['refr'];
+	}
+	else{
+		$menu["visualc"]["refr"] = 60;
+	}
 	$menu["visualc"]["id"] = "oper-visualc";
 	
 	$sub = array ();
@@ -123,7 +128,12 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		}
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
-		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
+		if (isset($config['refr'])){
+			$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['refr'];
+		}
+		else{
+			$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
+		}	
 	}
 	
 	$menu["visualc"]["sub"] = $sub;
@@ -305,5 +315,5 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 }
 
 
-menu_print_menu ($menu);
+menu_print_menu ($menu, true);
 ?>

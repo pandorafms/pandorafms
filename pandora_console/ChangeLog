@@ -1,5 +1,10 @@
 2011-11-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/javascript/pandora.js: Added ajax callback for metaconsole
+	event search.
+
+2011-11-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_menu.php
 	 include/config_process.php
 	 operation/menu.php

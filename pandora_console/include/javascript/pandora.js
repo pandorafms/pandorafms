@@ -457,3 +457,49 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 			}
 		);
 }
+
+/**
+ * Autocomplete Agent box functions.
+ * 
+ * This function has all the necesary javascript to use the box with to autocomplete
+ * an agent name, and store it's id on a hidden field and fill a selector with the 
+ * modules from that agent.
+ * 
+ * @param id_agent_name id of the agent name box
+ * @param id_agent_id id of the hidden field to store the agent id
+ * @param id_agent_module_selector id of the selector for the modules of the agent.
+ */
+function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
+		$(id_agent_name).autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "include/ajax/agent",
+					search_agents: 1
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$(id_agent_name).css ('background-color', '#cc0000');
+					else
+						$(id_agent_name).css ('background-color', '');
+					if (data == "")
+						return false;
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[2]+'</span>';
+				},
+				delay: 200
+			}
+		);
+
+		// Callback from the autocomplete
+		$(id_agent_name).result (
+			function (e, data, formatted) {
+				//$(id_agent_module_selector).attr('disabled', false);
+				agent_id = data[1];
+				server_name = data[2];
+				$(id_server_name).val(server_name);
+				$(id_agent_id).val(agent_id);
+			}
+		);	
+}

@@ -1,3 +1,12 @@
+2011-11-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_menu.php
+	 include/config_process.php
+	 operation/menu.php
+	 godmode/menu.php
+	 godmode/reporting/visual_console_builder.php: Preserve autorefresh
+	 time from visual console like global autorefresh parameter.
+
 2011-11-12  Junichi Satoh  <junichi@rworks.jp>
 
 	* general/logon_ok.php: Fixed bad representation that __('ago') is

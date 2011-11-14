@@ -117,6 +117,11 @@ switch ($activeTab) {
 				
 				//Update elements in visual map
 				$idsElements = db_get_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));
+				
+				if ($idsElements === false){
+					$idsElements = array();
+				}
+				
 				foreach ($idsElements as $idElement) {
 					$id = $idElement['id'];
 					$values = array();

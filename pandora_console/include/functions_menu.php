@@ -27,7 +27,7 @@
 function menu_print_menu (&$menu) {
 	global $config;
 	static $idcounter = 0;
-	
+
 	echo '<div class="menu">';
 	
 	$sec = (string) get_parameter ('sec');
@@ -118,7 +118,6 @@ function menu_print_menu (&$menu) {
 				//Else it's not selected
 				$class = 'submenu_not_selected';
 			}
-
 			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
 			} 
@@ -185,8 +184,8 @@ function menu_print_menu (&$menu) {
 				} else {
 					$title = '';
 				}
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr=0' : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
-				$submenu_output .= '</li>';
+				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
+				$submenu_output .= '</li>';			
 			}
 		}
 		

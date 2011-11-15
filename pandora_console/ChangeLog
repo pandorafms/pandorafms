@@ -1,3 +1,9 @@
+2011-11-15 Sancho lerena <slerena@artica.es>
+
+	* godmode/snmpconsole/snmp_trap_generator.php: Fixed tool to generate
+	SNMP Traps. Was broken due a re-placement at last-time. 
+
+
 2011-11-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/javascript/pandora.js: Added ajax callback for metaconsole

@@ -25,6 +25,7 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 	return;
 }
 
+include "include/functions_snmp.php";
 $snmp_host_address = (string) get_parameter ("snmp_host_address", 'localhost');
 $snmp_community = (string) get_parameter ("snmp_community", 'public');
 $snmp_oid = (string) get_parameter ("snmp_oid", '');
@@ -49,7 +50,7 @@ if($generate_trap) {
 	__('Could not be generated'));
 }
 
-$traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
+$traps_generator = '<form method="POST" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
 $table->width = '90%';
 $table->size = array ();
 $table->data = array ();

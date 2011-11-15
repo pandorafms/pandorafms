@@ -53,7 +53,7 @@ if (!$@) {
 }	
 
 use constant AGENT_VERSION => '4.0';
-use constant AGENT_BUILD => '110923';
+use constant AGENT_BUILD => '111104';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -112,7 +112,9 @@ my $ConfDir = '';
 
 # Pandora FMS agent configuration file
 my $ConfFile = 'pandora_agent.conf';
-my @all_conf;
+
+# Broker agent configuration files
+my @BrokerConfFiles;
 
 # Configuration tokens
 my %Conf = (
@@ -255,7 +257,8 @@ sub chmodr {
 ################################################################################
 # Open the agent logfile and start logging.
 ################################################################################
-sub start_log () {
+sub start_log (;$) {
+	my $quiet = shift;
 
 	# Get the logfile
 	my $log_file_name = read_config ('logfile');
@@ -263,7 +266,9 @@ sub start_log () {
 
 	# Open it
 	open ($LogFileFH, "> $log_file_name") or error ("Could not open log file '$log_file_name' for writing: $!.");
-	print "Logging to $log_file_name\n";
+	if (! defined ($quiet)) {
+		print "Logging to $log_file_name\n";
+	}
 }
 
 ################################################################################
@@ -449,23 +454,31 @@ sub parse_conf_modules($) {
 }
 
 ################################################################################
-# Create configuration file for drone agents.
+# Create configuration file for broker agents.
 ################################################################################
-sub write_broker_conf($$$){
-	my ($conf_file, $broker_file, $name_agent) = @_;
+sub write_broker_conf($){
+	my ($broker_agent) = @_;
 	my $content = '';
 
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
-	open (BROKER_FILE, ">$broker_file") or error ("Could not write configuration file: $!");
+	open (BROKER_FILE, ">$ConfDir/${broker_agent}.conf") or error ("Could not write configuration file: $!");
 
 	while (my $line = <CONF_FILE>){
-		if ($line =~ /^broker_agent\s+(\w*)\s*/){
+
+		# Skip broker definitions
+		if ($line =~ m/^\s*broker_agent/) {
 			next;
 		}
-		#Change agent_name
-		if ($line =~ m/^\s*#*\s*agent_name\s+(\w*)\s*/) {
-			$line = "agent_name $name_agent";
+		
+		# Change the agent name
+		if ($line =~ m/^\s*#*\s*agent_name\s+/) {
+			$line = "agent_name $broker_agent\n";
 		}
+		# Change the logfile
+		elsif ($line =~ m/^\s*logfile\s+(.*)/) {
+			$line = 'logfile ' . dirname ($1) . "/$broker_agent.log\n";
+		}
+
 		print BROKER_FILE $line;
 	}
 	close (BROKER_FILE);
@@ -477,6 +490,7 @@ sub write_broker_conf($$$){
 ################################################################################
 sub read_config (;$) {
 	my $token = shift;
+	my @found_tokens;
 	my $module;
 
 	error ("File '$ConfDir/$ConfFile' not found.") unless (-e "$ConfDir/$ConfFile");
@@ -488,49 +502,56 @@ sub read_config (;$) {
 	foreach my $line (@file){
 		# Skip comments and empty lines
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
-		# Single token search
+		
+		# Token search
 		if (defined ($token)) {
-			return $2 if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token);
+			if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token) {
+				
+				# Multiple value token
+				if (wantarray ()) {
+					push (@found_tokens, $2);
+				}
+				# Single value token
+				else {
+					return $2;
+				}
+			}
 			next;
 		}
-		if 	($line =~ /^module\s*\w*/){
-			next;
-		}
-		#Additional configuration file
+		next if ($line =~ /^module\s*\w*/);
+		
+		# Additional configuration file
 		if ($line =~ /^include\s+(.*)\s*/){
 			open (FILE, "$1") or next;
 			my @file_conf = <FILE>;
 			parse_conf_modules(\@file_conf);	
 			close (FILE);
 		}
-		#Broker agent
-		if ($line =~ /^broker_agent\s+(\w*)\s*/){
-			my $path_conf = "$ConfDir/$ConfFile";
-			my $path_broker = "$ConfDir/$1.conf";
-			my $name_agent = $1;
-	
-			push (@all_conf, "$1.conf");
-			unless (-e $path_broker){
-				write_broker_conf($path_conf, $path_broker, $name_agent);
-			}
-		 }	
-		 #Configuration token
-		 if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
+
+		#Configuration token
+		if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
 			
 			# Remove trailing spaces
 			$Conf{$1} =~ s/\s*$//;
-		}	
+		}
 	}
 
-	# Module, plugin and collection definition
-	parse_conf_modules(\@file);
-
-	# Token not found
+	# Token search
 	if (defined ($token)) {
+		
+		# Multiple value token
+		if (wantarray ()) {
+			return @found_tokens;
+		}
+		
+		# Single value token not found.
 		return undef;
 	}
+
+	# Module, plugin and collection definitions
+	parse_conf_modules(\@file);
 
 	# Update the agent MD5 since agent_name may have changed
 	$AgentMD5 = md5 ($Conf{'agent_name'});
@@ -710,7 +731,7 @@ sub check_remote_config () {
 	
 	# Log file may have changed
 	stop_log ();
-	start_log ();
+	start_log ('quiet');
 	
 	#Set nice of the pandora_agent
 	my $PID = $$;
@@ -737,7 +758,7 @@ sub launch_tentacle_proxy () {
 			exec ($new_process);		
 		} 
 	} else {
-		log_message ('error', 'You can not proxy to localhost');
+		error ('You can not proxy to localhost');
 	}
 }
 
@@ -1574,41 +1595,34 @@ error ("Directory '$ConfDir' does not exist.") unless (-d "$ConfDir");
 #Pandora home path
 $ENV{'PANDORA_HOME'}=$ConfDir;
 
-push (@all_conf, $ConfFile);
-
-foreach my $conf_agent (@all_conf){
-	
-	$ConfFile = $conf_agent;
-	
-	# Get user to run as
-	my $pandora_user = read_config ('pandora_user');
-	if (defined ($pandora_user)) {
-		# Change the EUID
-		my $pandora_user_uid = getpwnam ($pandora_user);
-		if (!defined ($pandora_user_uid)) {
-			error ("Cannot get uid for user $pandora_user. Does the user exist and can we read /etc/passwd?");
-		}
-		$> = $pandora_user_uid;
-		if ($> != $pandora_user_uid) {
-			error ("Cannot run as $pandora_user: Insufficient permissions.");
-		}
+# Get user to run as
+my $pandora_user = read_config ('pandora_user');
+if (defined ($pandora_user)) {
+	# Change the EUID
+	my $pandora_user_uid = getpwnam ($pandora_user);
+	if (!defined ($pandora_user_uid)) {
+		error ("Cannot get uid for user $pandora_user. Does the user exist and can we read /etc/passwd?");
 	}
-
-	# Guess the OS version
-	$OS_VERSION = guess_os_version ($OS);
-
-	# Initialize MD5 variables
-	md5_init ();
-
-	# Start logging
-	start_log ();
-	log_message ('log', 'Running as user ' . getpwuid ($>));
-
-	# Read configuration file
-	read_config ();
-	
-	$ENV{'PANDORA_AGENT'}=$Conf{'agent_name'};
+	$> = $pandora_user_uid;
+	if ($> != $pandora_user_uid) {
+		error ("Cannot run as $pandora_user: Insufficient permissions.");
+	}
 }
+
+# Guess the OS version
+$OS_VERSION = guess_os_version ($OS);
+
+# Initialize MD5 variables
+md5_init ();
+
+# Start logging
+start_log ();
+log_message ('log', 'Running as user ' . getpwuid ($>));
+
+# Read configuration file
+read_config ();
+
+$ENV{'PANDORA_AGENT'}=$Conf{'agent_name'};
 
 # Fix directory names
 $Conf{'temporal'} = fix_directory ($Conf{'temporal'});
@@ -1631,7 +1645,7 @@ if ($Conf{'proxy_mode'}) {
 	if ($< != 0) {		
 		launch_tentacle_proxy();
 	} else {
-		log_message ('error', 'Proxy mode can not be launched as root');
+		error ('Proxy mode can not be launched as root');
 	}
 }
 
@@ -1648,6 +1662,9 @@ if ($Conf{'udp_server'} == 1){
 	}
 }
 
+# Must be set to 0 if the agent is a broker agent
+my $main_agent = -1;
+
 # Loop
 while (1) {
 
@@ -1661,6 +1678,41 @@ while (1) {
 
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
+
+	# Launch broker agents
+	my @broker_agents = read_config ('broker_agent');
+	foreach my $broker_agent (@broker_agents) {
+		
+		# Create broker conf file if it does not exist
+		if (! -e "$ConfDir/${broker_agent}.conf") {
+			write_broker_conf($broker_agent);
+		}
+		
+		$main_agent = fork ();
+			
+		# Broker agent
+		if ($main_agent == 0) {
+		
+			# Set the configuration file
+			$ConfFile = "${broker_agent}.conf";
+			
+			# Log to a new file
+			stop_log ();
+			start_log ('quiet');
+				
+			# Read configuration file
+			read_config ();
+					
+			# Check for a new configuration
+			check_remote_config () unless ($Conf{'debug'} eq '1');
+				
+			# Check file collections
+			check_collections () unless ($Conf{'debug'} eq '1');
+					
+			# Execute
+			last;
+		}
+	}
 
 	my $address;
 
@@ -1789,10 +1841,14 @@ while (1) {
 		$SIG{'INT'} = \&udp_server_signal;
 	}
 
-	# Go to sleep
-	#
-
-	sleep ($Conf{'interval'});
+	# Sleep if main agent
+	if ($main_agent != 0) {
+		sleep ($Conf{'interval'});
+	}
+	# Finish if broker agent
+	else {
+		last;
+	}
 }
 
 

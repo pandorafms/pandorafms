@@ -67,6 +67,10 @@ foreach($ids as $key => $id) {
 			$img_st = "images/star.png";
 			$title_st = __('New event');
 			break;
+		case 1:
+			$img_st = "images/tick.png";
+			$title_st = __('Event validated');
+			break;			
 		case 2:
 			$img_st = "images/hourglass.png";
 			$title_st = __('Event in process');

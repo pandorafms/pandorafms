@@ -57,7 +57,7 @@ if (is_ajax ()) {
 			echo agents_get_name ($event["id_agente"]);
 		}
 		else {
-			echo __('Alert').__('SNMP');
+			echo '';
 		}
 		echo '<br />';
 		echo '<strong>'.__('Timestamp').': </strong><br />';

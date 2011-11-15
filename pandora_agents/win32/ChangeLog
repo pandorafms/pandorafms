@@ -1,3 +1,8 @@
+2011-11-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* build.sh, modules/pandora_module_odbc.cc, Makefile.am: Made
+	  changes to cross-compile in openSUSE 11.4.
+
 2011-11-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.h,

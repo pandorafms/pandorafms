@@ -44,7 +44,7 @@ Pandora_Module_Odbc::Pandora_Module_Odbc (string name,
 					  string query)
 	: Pandora_Module (name) {
 
-	Pandora_Agent_Conf::Pandora_Agent_Conf *conf;
+	Pandora_Agent_Conf *conf;
 
 	conf = Pandora_Agent_Conf::getInstance ();
 	

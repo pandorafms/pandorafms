@@ -1,3 +1,9 @@
+2011-11-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/events/events_validate.php
+	operation/events/events.php: Fixed php warning and a wrong 
+	description.
+
 2011-11-15 Sancho lerena <slerena@artica.es>
 
 	* godmode/snmpconsole/snmp_trap_generator.php: Fixed tool to generate

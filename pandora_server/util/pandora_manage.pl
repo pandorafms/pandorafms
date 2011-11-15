@@ -304,6 +304,17 @@ sub pandora_validate_event_filter ($$$$$$$$$) {
 }
 
 ###############################################################################
+# Get list of all downed agents
+###############################################################################
+sub pandora_get_downed_agents () {    	
+	my @downed_agents = get_db_rows ($dbh, "SELECT tagente.nombre, truncate((NOW() - tagente.ultimo_contacto/60),0) as downed_time, tagente.server_name from tagente
+where  UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tagente.ultimo_contacto)>(tagente.intervalo*2)
+OR tagente.ultimo_contacto=0");
+	
+	return \@downed_agents;
+}
+
+###############################################################################
 ###############################################################################
 # PRINT HELP AND CHECK ERRORS FUNCTIONS
 ###############################################################################

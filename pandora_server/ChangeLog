@@ -1,3 +1,8 @@
+2011-11-15  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Changed cli function to pandora function
+	to reuse it in future
+
 2011-11-15  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_db.pl: Small optimization in module deletion. Instead

@@ -407,7 +407,7 @@ $(document).ready( function() {
 			{"page" : "operation/events/events",
 			"delete_event" : 1,
 			"id" : id,
-			"similar" : <?php echo ($group_rep ? 1 : 0) ?>
+			"similars" : <?php echo ($group_rep ? 1 : 0) ?>
 			},
 			function (data, status) {
 				if (data == "ok")

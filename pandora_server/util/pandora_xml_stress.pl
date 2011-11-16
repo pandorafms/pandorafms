@@ -651,7 +651,7 @@ module_end
 "# General Parameters
 # ==================
 
-server_ip       localhost
+server_ip       " . get_conf_token ($conf, 'server_ip', 'localhost') . "
 server_path     /var/spool/pandora/data_in
 temporal /tmp
 logfile /var/log/pandora/pandora_agent.log

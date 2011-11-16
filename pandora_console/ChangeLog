@@ -1,3 +1,8 @@
+2011-11-16  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_ff_threshold.php: Modified to be understood more
+	easily.
+
 2011-11-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/events_validate.php

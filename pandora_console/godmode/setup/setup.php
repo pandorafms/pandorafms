@@ -84,12 +84,6 @@ $table->data[1][1] = html_print_input_text ('remote_config', $config["remote_con
 $table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = html_print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
 
-$table->data[8][0] = __('Timestamp or time comparation') . ui_print_help_icon ("time_stamp-comparation", true);
-$table->data[8][1] = __('Comparation in rollover').' ';
-$table->data[8][1] .= html_print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
-$table->data[8][1] .= '<br />'.__('Timestamp in rollover').' ';
-$table->data[8][1] .= html_print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
-
 $table->data[9][0] = __('Time source') . ui_print_help_icon ("timesource", true);
 $sources["system"] = __('System');
 $sources["sql"] = __('Database');

@@ -162,8 +162,8 @@ require_once("include_graph_dependencies.php");
 include_graphs_dependencies($config['homedir'].'/');
 
 // Updates autorefresh time
-if (isset($_POST['refr'])){
-	config_update_value ('refr', get_parameter('refr', $config['refr']));
+if (isset($_POST['vc_refr'])){
+	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
 }
 
 ?>

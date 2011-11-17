@@ -243,6 +243,8 @@ function config_update_config () {
 	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));
 
 	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
+	config_update_value ('refr', get_parameter('refr', $config['refr']));	
+	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));	
 	
 	$enterprise = enterprise_include_once('include/functions_policies.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
@@ -655,6 +657,14 @@ function config_process_config () {
 	if (!isset ($config['dbtype'])) {
 		config_update_value ('dbtype', 'mysql');
 	}
+	
+	if (!isset ($config['vc_refr'])) {
+		config_update_value ('vc_refr', 60);
+	}	
+	
+	if (!isset ($config['refr'])) {
+		config_update_value ('refr', '');
+	}		
 	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();

@@ -319,9 +319,9 @@ if (isset ($_GET["update_alert"])) {
 			
 		$data[4] = $row["description"];
 		$data[5] = $row["times_fired"];
-		
-		if ($row["last_fired"] != "01-01-1970 00:00:00") {
-			$data[6] = $row["last_fired"];
+
+		if (($row["last_fired"] != "1970-01-01 00:00:00") and ($row["last_fired"] != "01-01-1970 00:00:00")) {
+			$data[6] = ui_print_timestamp($row["last_fired"], true);
 		} else {
 			$data[6] = __('Never');
 		}

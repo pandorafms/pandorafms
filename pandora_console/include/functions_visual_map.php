@@ -187,7 +187,11 @@ function visual_map_print_item($layoutData) {
 			}
 			echo '<div id="' . $id . '" class="item icon" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
-
+				// If match with protocol://direction 
+				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)){
+					echo '<a href="' . $label . '">' . '</a>' . '<br />';
+				}
+				
 				if (($width != 0) && ($height != 0)) 
 					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height"));
 				else
@@ -723,6 +727,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							// Link to a map
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 							$endTagA = true;
+						}
+						elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])){
+							// Link to an URL
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $layout_data['label'] .'">';
+							$endTagA = true;							
 						}
 					}
 				

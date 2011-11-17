@@ -116,7 +116,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<span id="title_panel_span_icon" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Icon');?></span>
 	</caption>
 	<tbody>
-		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value label datos">
+		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value label datos icon">
 			<td style=""><?php echo __('Label');?></td>
 			<td style=""><?php html_print_input_text ('label', '', '', 20, 200); ?></td>
 		</tr>

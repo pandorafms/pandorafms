@@ -24,6 +24,8 @@ ui_print_page_header (__("Visual console"), "images/monitor.png", false, "operat
 require_once ('include/functions_visual_map.php');
 require_once ('include/functions_groups.php');
 
+$refr = get_parameter('refr', $config['vc_refr']);
+
 $layouts = visual_map_get_user_layouts ();	
 
 $table->width = "98%";
@@ -52,7 +54,7 @@ foreach ($layouts as $layout) {
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.
-		$layout['id'].'">'.$layout['name'].'</a> ';
+		$layout['id'].'&amp;refr=' . $refr . '">'.$layout['name'].'</a> ';
 	$data[1] = ui_print_group_icon ($layout["id_group"], true);
 	$data[2] = db_get_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
 		

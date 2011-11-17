@@ -1,3 +1,21 @@
+2011-11-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/snmpconsole/snmp_alert.php: Fixed bad time description.
+
+	* godmode/reporting/visual_console_builder.editor.php
+	 include/functions_visual_map.php: Now it's possible to link icons 
+	 in visual console with a web page through the label. 
+
+	* operation/visual_console/index.php
+	 operation/visual_console/render_view.php
+	 include/functions_config.php	 
+	 operation/menu.php
+	 godmode/menu.php
+	 godmode/setup/setup.php
+	 godmode/setup/setup_visuals.php
+	 include/config_process.php: Added two new autorefresh 
+	 parameters: one global and the other for visual console.
+
 2011-11-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_network_map_enterprise.php,

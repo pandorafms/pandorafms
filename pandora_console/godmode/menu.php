@@ -153,7 +153,7 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 	if ($config['activate_gis']) {
 		$menu["godgismaps"]["text"] = __('GIS Maps builder');
 		$menu["godgismaps"]["sec2"] = "godmode/gis_maps/index";
-		if (isset($config['refr'])){
+		if (!empty($config['refr'])){
 			$menu["godgismaps"]["refr"] = $config['refr'];
 		}
 		else{
@@ -259,7 +259,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			if (array_key_exists('fatherId',$extmenu)) {
 				if (strlen($extmenu['fatherId']) > 0) {
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-					if (isset($config['refr'])){
+					if (!empty($config['refr'])){
 						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
 					}
 					else{

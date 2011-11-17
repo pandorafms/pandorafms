@@ -1,3 +1,10 @@
+2011-11-17 Tomas Palacios <tomas.palacios@artica.es>
+
+	* conf/pandora_server.conf: Removed checksum token since it is
+	  no longer used.
+
+	  BUG FIXES: ID 3439367
+
 2011-11-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.conf: Fixed a typo that made remote

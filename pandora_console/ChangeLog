@@ -1,5 +1,10 @@
 2011-11-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/snmpconsole/snmp_view.php: Added new free search and
+	fix agent and OID combo search.
+
+2011-11-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/snmpconsole/snmp_alert.php: Fixed bad time description.
 
 	* godmode/reporting/visual_console_builder.editor.php

@@ -37,10 +37,11 @@ $filter_severity = (int) get_parameter ("filter_severity", -1);
 $filter_fired = (int) get_parameter ("filter_fired", -1);
 $filter_status = (int) get_parameter ("filter_status", 0);
 $search_string = (string) get_parameter ("search_string", '');
+$free_search_string = (string) get_parameter ("free_search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 
-$url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&pagination=".$pagination."&offset=".$offset;
+$url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset;
 
 
 if ($config["pure"]) {
@@ -136,6 +137,8 @@ switch ($config["dbtype"]) {
 		break;
 }
 $traps = db_get_all_rows_sql ($sql);
+// All traps 
+$all_traps = db_get_all_rows_sql ("SELECT * FROM ttrap");
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
@@ -159,7 +162,7 @@ $agents = array ();
 $oids = array ();
 $severities = get_priorities ();
 $alerted = array (__('Not fired'), __('Fired'));
-foreach ($traps as $trap) {
+foreach ($all_traps as $trap) {
 	$agent = agents_get_agent_with_ip ($trap['source']);
 	$agents[$trap["source"]] = $agent !== false ? $agent["nombre"] : $trap["source"];
 	$oid = enterprise_hook ('get_oid', array ($trap));
@@ -233,6 +236,33 @@ if ($search_string != '') {
 			break;
 	}
 }
+if ($free_search_string != '') {
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$whereSubquery .= ' AND (source LIKE "%' . $free_search_string . '%" OR
+									oid LIKE "%' . $free_search_string . '%" OR
+									oid_custom LIKE "%' . $free_search_string . '%" OR
+									type_custom LIKE "%' . $free_search_string . '%" OR
+									value LIKE "%' . $free_search_string . '%" OR
+									value_custom LIKE "%' . $free_search_string . '%" OR
+									id_usuario LIKE "%' . $free_search_string . '%" OR
+									text LIKE "%' . $free_search_string . '%" OR
+									description LIKE "%' . $free_search_string . '%")';
+			break;
+		case "postgresql":
+		case "oracle":
+			$whereSubquery .= ' AND (source LIKE \'%' . $free_search_string . '%\' OR
+									oid LIKE \'%' . $free_search_string . '%\' OR
+									oid_custom LIKE \'%' . $free_search_string . '%\' OR
+									type_custom LIKE \'%' . $free_search_string . '%\' OR
+									value LIKE \'%' . $free_search_string . '%\' OR
+									value_custom LIKE \'%' . $free_search_string . '%\' OR
+									id_usuario LIKE \'%' . $free_search_string . '%\' OR
+									text LIKE \'%' . $free_search_string . '%\' OR
+									description LIKE \'%' . $free_search_string . '%\')';
+			break;
+	}
+}
 
 if ($filter_severity != -1) {
 	//Test if install the enterprise to search oid in text or oid field in ttrap.
@@ -247,7 +277,7 @@ if ($filter_severity != -1) {
 }
 if ($filter_status != -1)
 	$whereSubquery .= ' AND status = ' . $filter_status;
-	
+
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
@@ -285,7 +315,7 @@ $table->data[1][1] = html_print_select ($alerted, "filter_fired", $filter_fired,
 
 // String search_string
 $table->data[1][2] = '<strong>'.__('Search value').'</strong>';
-$table->data[1][3] = html_print_input_text ('search_string', $search_string, '', 25, 0, true);
+$table->data[1][3] = html_print_input_text ('search_string', $search_string, '', 40, 0, true);
 
 // Block size for pagination select
 $table->data[2][0] = '<strong>'.__('Block size for pagination').'</strong>';
@@ -307,8 +337,15 @@ $status[0] = __('Not validated');
 $status[1] = __('Validated');
 $table->data[3][1] = html_print_select ($status, 'filter_status', $filter_status, 'this.form.submit();', '', '', true);
 
+// Free search (search by all alphanumeric fields)
+$table->data[3][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
+$table->data[3][4] = html_print_input_text ('free_search_string', $free_search_string, '', 40, 0, true);
+
 $filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
 $filter .= html_print_table($table, true);
+$filter .= '<div style="width: ' . $table->width . '; text-align: right;">';
+$filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub upd"', true);
+$filter .= '</div>';
 $filter .= '</form>';
 
 ui_toggle($filter, __('Toggle filter(s)'));
@@ -437,7 +474,7 @@ if ($traps !== false) {
 		//User
 		if (!empty ($trap["status"])) {
 			$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
-			$data[5] .= '<a href="#" class="tip">&nbsp;<span>'.get_user_fullname($trap["id_usuario"]).'</span></a>';
+			$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
 		} else {
 			$data[5] = '--';
 		}
@@ -473,8 +510,8 @@ if ($traps !== false) {
 		array_push ($table->data, $data);
 		
 		//Hiden file for description
-		$string = '<table border="0" width="90%">
-			<tr><td align="left" valign="top" width="15%"><b>' . __('Custom data:') . '</b></td><td align="left">' . $trap['oid_custom'] . '</td></tr>'
+		$string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
+			<tr><td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td><td align="left" >' . $trap['oid_custom'] . '</td></tr>'
 			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>';
 
         if ($trap["description"] != ""){
@@ -503,7 +540,7 @@ if ($idx == 0) {
 
 unset ($table);
 
-echo '<div style="width:735px; text-align:right;">';
+echo '<div style="width:98%; text-align:right;">';
 if (check_acl ($config["id_user"], 0, "IW")) {
 	html_print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
 }

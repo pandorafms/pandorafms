@@ -1,3 +1,11 @@
+2011-11-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Changed tag field in events insertion from
+	tag name to tag name and URL. Pending to change it for Oracle and 
+	PostgreSQL. 
+
+	Fixes: #3439792
+
 2011-11-17 Tomas Palacios <tomas.palacios@artica.es>
 
 	* conf/pandora_server.conf: Removed checksum token since it is

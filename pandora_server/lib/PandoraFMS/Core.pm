@@ -2556,8 +2556,9 @@ Get a list of module tags in the format: |tag|tag| ... |tag|
 ##########################################################################
 sub pandora_get_module_tags ($$$) {
 	my ($pa_config, $dbh, $id_agentmodule) = @_;
-	
-	my @tags = get_db_rows ($dbh, 'SELECT ttag.name FROM ttag, ttag_module
+
+	#TODO: Fix for Oracle and PostgreSQL
+	my @tags = get_db_rows ($dbh, 'SELECT concat(ttag.name, " ", ttag.url) name_url FROM ttag, ttag_module
 	                               WHERE ttag.id_tag = ttag_module.id_tag
 	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
 	
@@ -2566,7 +2567,7 @@ sub pandora_get_module_tags ($$$) {
 
 	my $tag_string = '';
 	foreach my $tag (@tags) {
-		$tag_string .=  $tag->{'name'} . ',';
+		$tag_string .=  $tag->{'name_url'} . ',';
 	}
 	
 	# Remove the trailing ','

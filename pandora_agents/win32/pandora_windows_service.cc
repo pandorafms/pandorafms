@@ -216,16 +216,9 @@ Pandora_Windows_Service::pandora_init () {
 	string name_agent, name;
 	string proxy_mode, server_ip;
 	int pos, num;
-	static unsigned char first_run = 0;
+	static unsigned char first_run = 1;
                 
 	setPandoraDebug (true);
-
-	// Add the util subdirectory to the PATH
-	util_dir = Pandora::getPandoraInstallDir ();
-	util_dir += "util";
-	path = getenv ("PATH");
-	env = "PATH=" + path + ";" + util_dir;
-	putenv (env.c_str ());
 
 	conf_file = Pandora::getPandoraInstallDir ();
 	conf_file += "pandora_agent.conf";
@@ -273,7 +266,6 @@ Pandora_Windows_Service::pandora_init () {
 		}
 	}
 	
-	srand ((unsigned) time (0));
 	this->setSleepTime (this->interval);
 	
 	/*Check if proxy mode is set*/
@@ -292,8 +284,19 @@ Pandora_Windows_Service::pandora_init () {
 		((UDP_Server *)this->udp_server)->start ();
 	}
 	
-	if (first_run == 0) {
-		first_run = 1;
+	if (first_run == 1) {
+		first_run = 0;
+
+		// Add the util subdirectory to the PATH
+		util_dir = Pandora::getPandoraInstallDir ();
+		util_dir += "util";
+		path = getenv ("PATH");
+		env = "PATH=" + path + ";" + util_dir;
+		putenv (env.c_str ());
+
+		// Set the seed for rand
+		srand ((unsigned) time (0));
+
 		pandoraLog ("Pandora agent started");
 	}
 }

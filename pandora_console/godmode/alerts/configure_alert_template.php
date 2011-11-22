@@ -190,12 +190,7 @@ function update_template ($step) {
 				'matches_value' => $matches,
 				'priority' => $priority);
 
-		if (!$name || $name_check) {
-			$result = '';
-		}
-		else {
-			$result = alerts_update_alert_template ($id,$values);
-		}
+		$result = alerts_update_alert_template ($id,$values);
 	}
 	elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');

@@ -1,5 +1,10 @@
 2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* lib/PandoraFMS/ReconServer.pm: Fixed assignation of module 
+	templates when a recon task creates modules.
+
+2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Fixed a problem with keepalive module 
 	(never goes down).
 	

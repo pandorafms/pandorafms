@@ -42,58 +42,83 @@ if (is_ajax ()) {
 	return;
 }
 
-if (isset ($_GET["update"])) { // Edit mode
-	$id_rt = (int) get_parameter_get ("update");
-	$row = db_get_row ("trecon_task","id_rt",$id_rt);
-	$name = $row["name"];
-	$network = $row["subnet"];
-	$id_recon_server = $row["id_recon_server"];
-	$description = $row["description"];
-	$interval = $row["interval_sweep"];
-	$id_group = $row["id_group"];
-	$create_incident = $row["create_incident"];
-	$id_network_profile = $row["id_network_profile"];
-	$id_os = $row["id_os"];
-	$recon_ports = $row["recon_ports"];
-	$snmp_community = $row["snmp_community"];
-	$id_recon_script = $row["id_recon_script"];
-	$field1 = $row["field1"];
-	$field2 = $row["field2"];
-	$field3 = $row["field3"];
-	$field4 = $row["field4"];
-	if ($id_recon_script == 0)
+if (isset ($_GET["update"]) or ($_GET["crt"])) { // Edit mode
+
+	$update_recon = true;
+	if (isset ($_GET["crt"])){
+		if ($_GET["crt"] != "update"){
+			$update_recon = false;
+		}
+		else{
+			$id_rt = get_parameter("upd");			
+		}
+	}
+
+	if ($update_recon){
+		if (!isset($id_rt)){
+			$id_rt = (int) get_parameter_get ("update");
+		}
+		$row = db_get_row ("trecon_task","id_rt",$id_rt);
+		$name = $row["name"];
+		$network = $row["subnet"];
+		$id_recon_server = $row["id_recon_server"];
+		$description = $row["description"];
+		$interval = $row["interval_sweep"];
+		$id_group = $row["id_group"];
+		$create_incident = $row["create_incident"];
+		$id_network_profile = $row["id_network_profile"];
+		$id_os = $row["id_os"];
+		$recon_ports = $row["recon_ports"];
+		$snmp_community = $row["snmp_community"];
+		$id_recon_script = $row["id_recon_script"];
+		$field1 = $row["field1"];
+		$field2 = $row["field2"];
+		$field3 = $row["field3"];
+		$field4 = $row["field4"];
+		if ($id_recon_script == 0)
+			$mode = "network_sweep";
+		else
+			$mode = "recon_script";
+		$os_detect = $row["os_detect"];
+		$resolve_names = $row["resolve_names"];
+		$os_detect = $row["os_detect"];
+		$resolve_names = $row["resolve_names"];
+		$parent_detection = $row["parent_detection"];
+		$parent_recursion = $row["parent_recursion"];
+	}
+	
+} elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
+	$create_recon = true;
+	if (isset ($_GET["crt"])){
+		if ($_GET["crt"] != "Create"){
+			$create_recon = false;
+		}
+	}
+
+	if ($create_recon){
+		$id_rt = -1;
+		$name = "";
+		$network = "";
+		$description = "";
+		$id_recon_server = 0;
+		$interval = 0;
+		$id_group = 0;
+		$create_incident = 1;
+		$snmp_community = "public";
+		$id_network_profile = 0;
+		$id_os = -1; // Any
+		$recon_ports = ""; // Any
+		$field1 = "";
+		$field2 = "";
+		$field3 = "";
+		$field4 = "";
+		$id_recon_script = 0;
 		$mode = "network_sweep";
-	else
-		$mode = "recon_script";
-	$os_detect = $row["os_detect"];
-	$resolve_names = $row["resolve_names"];
-	$os_detect = $row["os_detect"];
-	$resolve_names = $row["resolve_names"];
-	$parent_detection = $row["parent_detection"];
-	$parent_recursion = $row["parent_recursion"];
-} elseif (isset ($_GET["create"])) {
-	$id_rt = -1;
-	$name = "";
-	$network = "";
-	$description = "";
-	$id_recon_server = 0;
-	$interval = 0;
-	$id_group = 0;
-	$create_incident = 1;
-	$snmp_community = "public";
-	$id_network_profile = 0;
-	$id_os = -1; // Any
-	$recon_ports = ""; // Any
-	$field1 = "";
-	$field2 = "";
-	$field3 = "";
-	$field4 = "";
-	$id_recon_script = 0;
-	$mode = "network_sweep";
-	$os_detect = 0;
-	$resolve_names = 0;
-	$parent_detection = 1;
-	$parent_recursion = 5;
+		$os_detect = 0;
+		$resolve_names = 0;
+		$parent_detection = 1;
+		$parent_recursion = 5;
+	}
 }
 
 // Headers
@@ -244,7 +269,6 @@ $table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recurs
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
-
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_rt != -1) 

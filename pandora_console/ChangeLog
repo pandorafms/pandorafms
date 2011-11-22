@@ -1,5 +1,11 @@
 2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/servers/manage_recontask.php
+	 godmode/servers/manage_recontask_form.php: Fixed bug due to 
+	 autorefresh in these views.
+
+2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/alerts/configure_alert_template.php: Fixed template 
 	update. Thank you to Manuel Arostegui for the patch!
 

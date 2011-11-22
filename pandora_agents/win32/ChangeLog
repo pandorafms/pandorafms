@@ -1,3 +1,8 @@
+2011-11-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Fixed a bug that resulted in a buffer
+	  overflow.
+
 2011-11-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* build.sh, modules/pandora_module_odbc.cc, Makefile.am: Made

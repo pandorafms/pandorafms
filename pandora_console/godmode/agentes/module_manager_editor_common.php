@@ -123,7 +123,7 @@ $table_simple->style[1] = 'width: 40%';
 $table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 
 $table_simple->data[0][0] = __('Name');
-$table_simple->data[0][1] = html_print_input_text ('name', $name, '', 50, 100, true, $disabledBecauseInPolicy);
+$table_simple->data[0][1] = html_print_input_text ('name', io_safe_output($name), '', 50, 100, true, $disabledBecauseInPolicy);
 $table_simple->data[0][2] = __('Disabled');
 $table_simple->data[0][3] = html_print_checkbox ("disabled", 1, $disabled, true);
 

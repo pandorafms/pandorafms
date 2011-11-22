@@ -1,5 +1,12 @@
 2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php: Removed entities
+	from agent name.
+	
+	Fixes: #3437885
+
+2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/servers/manage_recontask.php
 	 godmode/servers/manage_recontask_form.php: Fixed bug due to 
 	 autorefresh in these views.

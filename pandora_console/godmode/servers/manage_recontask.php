@@ -227,7 +227,7 @@ if ($result !== false) {
 	foreach ($result as $row) {
 		
 		$data = array();
-		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
+		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
 
 		if ($row["id_recon_script"] == 0)
 			$data[1] = $row["subnet"];

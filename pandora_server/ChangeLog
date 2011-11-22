@@ -1,3 +1,10 @@
+2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed a problem with keepalive module 
+	(never goes down).
+	
+	Fixed: #3438849 
+
 2011-11-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Changed tag field in events insertion from

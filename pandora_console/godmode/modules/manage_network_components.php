@@ -363,11 +363,11 @@ foreach ($components as $component) {
 	}
 	
 	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'">';
-	$data[0] .= $component['name'];
+	$data[0] .= io_safe_output($component['name']);
 	$data[0] .= '</a>';
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
 	$data[2] = $component['module_interval'] ? $component['module_interval'] : __('N/A	');
-	$data[3] = mb_strimwidth ($component['description'], 0, 30, "...");
+	$data[3] = mb_strimwidth (io_safe_output($component['description']), 0, 30, "...");
 	$data[4] = network_components_get_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	

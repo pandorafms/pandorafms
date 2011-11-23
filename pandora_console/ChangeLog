@@ -1,5 +1,14 @@
 2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb.data.postgreSQL.sql
+	 pandoradb.data.oracle.sql
+	 pandoradb_data.sql: Fixed entities in tables tnetwork_component.
+	 
+	 Fixes: #3441112
+
+
+2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_agente.php: Added agent description in 
 	this view.
 	

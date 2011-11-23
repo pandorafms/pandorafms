@@ -1,5 +1,12 @@
 2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/estado_agente.php: Added agent description in 
+	this view.
+	
+	Fixes: # 3424337
+
+2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/agentes/agent_conf_gis.php
 	godmode/agentes/agent_manager.php: Fixed 'Ignore GIS data' and
 	change labels.

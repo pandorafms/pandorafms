@@ -287,7 +287,8 @@ if (! empty ($agent_names)) {
 				'id_grupo',
 				'id_os',
 				'ultimo_contacto',
-				'intervalo'),
+				'intervalo',
+				'comentarios description'),
 			'AR',
 			$order);
 }
@@ -309,30 +310,42 @@ $table->head = array ();
 $table->head[0] = __('Agent'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
-$table->head[1] = __('OS'). ' ' .
+$table->head[1] = __('Description');
+$table->head[2] = __('OS'). ' ' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
-$table->head[2] = __('Interval'). ' ' .
+$table->head[3] = __('Interval'). ' ' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
-$table->head[3] = __('Group'). ' ' .
+$table->head[4] = __('Group'). ' ' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
-$table->head[4] = __('Modules');
-$table->head[5] = __('Status');
-$table->head[6] = __('Alerts');
-$table->head[7] = __('Last contact'). ' ' .
+$table->head[5] = __('Modules');
+$table->head[6] = __('Status');
+$table->head[7] = __('Alerts');
+$table->head[8] = __('Last contact'). ' ' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
-$table->align[1] = "center";
 $table->align[2] = "center";
 $table->align[3] = "center";
 $table->align[4] = "center";
 $table->align[5] = "center";
 $table->align[6] = "center";
-$table->align[7] = "right";
+$table->align[7] = "center";
+$table->align[8] = "right";
+
+$table->style = array();
+$table->style[0] = 'width: 9%';
+$table->style[1] = 'width: 11%';
+$table->style[2] = 'width: 7%';
+$table->style[3] = 'width: 10%';
+$table->style[4] = 'width: 9%';
+$table->style[5] = 'width: 10%';
+$table->style[6] = 'width: 6%';
+$table->style[7] = 'width: 6%';
+$table->style[8] = 'width: 15%';
 
 $table->data = array ();
 
@@ -370,7 +383,9 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}*/
 	
-	$data[1] = ui_print_os_icon ($agent["id_os"], false, true);
+	$data[1] = ui_print_truncate_text($agent["description"], 30, false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+	
+	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 
 	//The interval we are thinking that it must be the agent interval in this
 	//cell and it'snt the interval of modules.
@@ -379,39 +394,39 @@ foreach ($agents as $agent) {
 //	} else {
 //		$data[2] = $agent["intervalo"];
 //	}
-	$data[2] = $agent["intervalo"];
+	$data[3] = $agent["intervalo"];
 	
-	$data[3] = ui_print_group_icon ($agent["id_grupo"], true);
+	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
-	$data[4] = '<b>';
-	$data[4] .= $agent_info["modules"];
+	$data[5] = '<b>';
+	$data[5] .= $agent_info["modules"];
 
 	if ($agent_info["monitor_alertsfired"] > 0)
-		$data[4] .= ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
+		$data[5] .= ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
 	if ($agent_info["monitor_critical"] > 0)
-		$data[4] .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
+		$data[5] .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
 	if ($agent_info["monitor_warning"] > 0)
-		$data[4] .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
+		$data[5] .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
 	if ($agent_info["monitor_unknown"] > 0)
-		$data[4] .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
+		$data[5] .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
 	if ($agent_info["monitor_normal"] > 0)
-		$data[4] .= ' : <span class="green">'.$agent_info["monitor_normal"].'</span>';
-	$data[4] .= '</b>';
+		$data[5] .= ' : <span class="green">'.$agent_info["monitor_normal"].'</span>';
+	$data[5] .= '</b>';
 
-	$data[5] = $agent_info["status_img"];
+	$data[6] = $agent_info["status_img"];
 	
-	$data[6] = $agent_info["alert_img"];
+	$data[7] = $agent_info["alert_img"];
 
 
 	$last_time = strtotime ($agent["ultimo_contacto"]);
 	$now = time ();
 	$diferencia = $now - $last_time;
-	$time = ui_print_timestamp ($last_time, true);
+	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
 	$style = '';
 	if ($diferencia > ($agent["intervalo"] * 2))
-		$data[7] = '<b><span style="color: #ff0000">'.$time.'</span></b>';
+		$data[8] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
 	else
-		$data[7] = $time;
+		$data[8] = $time;
 
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!

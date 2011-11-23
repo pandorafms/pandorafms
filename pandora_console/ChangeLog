@@ -1,5 +1,9 @@
 2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/modules/manage_network_components.php: Removed entities.
+
+2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb.data.postgreSQL.sql
 	 pandoradb.data.oracle.sql
 	 pandoradb_data.sql: Fixed entities in tables tnetwork_component.

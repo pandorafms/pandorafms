@@ -1,3 +1,9 @@
+2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Fixed snmp v3 call in server.
+
+	Fixes: #3429360
+
 2011-11-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Fixed assignation of module 

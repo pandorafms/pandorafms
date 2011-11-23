@@ -358,8 +358,7 @@ sub pandora_query_snmp ($$$) {
 			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass -x $snmp3_privacy_method -X $snmp3_privacy_pass ";
 		}
        
-		$snmp3_execution = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra);
-		$output = `$snmp3_execution`;
+		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra);
 		if (defined ($output) && $output ne ""){
 			$module_result = 0;
 			$module_data = $output;

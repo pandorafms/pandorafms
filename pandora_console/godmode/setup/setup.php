@@ -150,7 +150,7 @@ if($config["integria_enabled"]) {
                 	}
         	}
 	}
-	$table->data[19][0] = __('Integria URL');
+	$table->data[19][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
 	$table->data[19][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
 	// If something goes wrong
 	if ($bad_input){

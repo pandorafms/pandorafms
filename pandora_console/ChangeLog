@@ -1,3 +1,10 @@
+2011-11-24  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_integria_url.php
+	include/help/es/help_integria_url.php
+	godmode/setup/setup.php: Added help for integria api
+	url in setup
+
 2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/setup/performance.php: Changed html element from input 

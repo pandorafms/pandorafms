@@ -214,6 +214,16 @@ function replaySound(type) {
 		$('#layer_sound_' + type).html("<embed src='" + $("#sound_" + type).val() + "' autostart='true' hidden='true' loop='true'>");
 	}
 }
+
+
+$(document).ready (function () {
+	$("#radiobtn0011").click(function(){
+			flag = $("#radiobtn0011").is(':checked');
+			if (flag == true){
+				<?php echo __("if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false", true); ?>
+			}
+	});
+});
 </script>
 <?php
 

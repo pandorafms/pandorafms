@@ -27,7 +27,8 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 require_once ('include/functions_networkmap.php');	
-	
+
+$name = '';	
 $pure = (int) get_parameter ('pure', 0);
 $activeTab = get_parameter ('tab', 'topology');
 $id_networkmap = get_parameter ('id_networkmap', 0);

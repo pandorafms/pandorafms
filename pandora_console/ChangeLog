@@ -1,5 +1,12 @@
 2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/estado_generalagente.php: Hide agent access 
+	graph when "Use agent access graph" is disabled.
+	
+	Fixes: #3437893
+
+2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/setup/setup.php: Added confirmation when "Use Enterprise 
 	ACL System" is checked.
 	

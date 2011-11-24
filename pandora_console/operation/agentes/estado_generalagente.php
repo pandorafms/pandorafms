@@ -48,11 +48,14 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 // Breaks the layout when Flash charts are enabled :-o
 echo '<div style="height: 10px">&nbsp;</div>';	
 	
-//Floating div
-echo '<div style="float:right; width:320px; padding-top:11px;">';
-echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+	//Floating div
+	echo '<div style="float:right; width:320px; padding-top:11px;">';
 
-graphic_agentaccess($id_agente, 280, 110, 86400);
+if ($config["agentaccess"]){
+	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+
+	graphic_agentaccess($id_agente, 280, 110, 86400);
+}
 
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';

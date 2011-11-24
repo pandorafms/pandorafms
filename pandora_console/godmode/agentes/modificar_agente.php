@@ -41,12 +41,6 @@ enterprise_include_once('include/functions_policies.php');
 require_once ('include/functions_agents.php');
 require_once ('include/functions_users.php');
 
-//Add enterprise function to add other enterprise ACL.
-$enterprise_acl = false;
-if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-	$enterprise_acl = true;
-}
-
 $search = get_parameter ("search", "");
 
 $agent_to_delete = (int)get_parameter('borrar_agente');
@@ -195,7 +189,7 @@ if ($search != ""){
 	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
 }
 
-// Show only selected groups    
+// Show only selected groups
 if ($ag_group > 0) {
 	$sql = sprintf ('SELECT COUNT(*)
 		FROM tagente
@@ -242,27 +236,30 @@ if ($ag_group > 0) {
 	}
 }
 else {
+	$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
 
+	if($sql_extra === ENTERPRISE_NOT_HOOK) {
+		$sql_extra = '';
+	}
+	else if($sql_extra != '') {
+		$sql_extra = sprintf('OR %s', $sql_extra);
+	}
+		
     // Admin user get ANY group, even if they doesnt exist
-    if (check_acl ($config['id_user'], 0, "PM")) {
-	    $subquery_enterprise = '';
-		if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-			$subquery_enterprise = subquery_acl_enterprise();
-		}
-    	
-	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s %s', $search_sql, $subquery_enterprise);
+    if (check_acl ($config['id_user'], 0, "PM")) {		
+	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE (1=1 %s) %s', $search_sql, $sql_extra);
 	    $total_agents = db_get_sql ($sql);
     	switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE 1=1 %s %s
-					ORDER BY %s %s LIMIT %d, %d', $search_sql, $subquery_enterprise, $order['field'],
+					FROM tagente WHERE (1=1 %s) %s
+					ORDER BY %s %s LIMIT %d, %d', $search_sql, $sql_extra, $order['field'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE 1=1 %s %s
-					ORDER BY %s %s LIMIT %d OFFSET %d', $search_sql, $subquery_enterprise, $order['field'],
+					FROM tagente WHERE (1=1 %s) %s
+					ORDER BY %s %s LIMIT %d OFFSET %d', $search_sql, $sql_extra, $order['field'],
 					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
@@ -270,62 +267,55 @@ else {
 				$set['limit'] = $config["block_size"];
 				$set['offset'] = $offset;
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE 1=1 %s %s
-					ORDER BY %s %s', $search_sql, $subquery_enterprise, $order['field'], $order['order']);
+					FROM tagente WHERE (1=1 %s) %s
+					ORDER BY %s %s', $search_sql, $sql_extra, $order['field'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
     }
     else {
-		if (!$enterprise_acl) {
-		    $sql = sprintf ('SELECT COUNT(*)
-			    FROM tagente
-			    WHERE id_grupo IN (%s)
-			    %s',
-			    implode (',', array_keys (users_get_groups ())),
-			    $search_sql);    
-			    
-		    $total_agents = db_get_sql ($sql);
-		    
-	        switch ($config["dbtype"]) {
-				case "mysql":
-				    $sql = sprintf ('SELECT *
-					    FROM tagente
-					    WHERE id_grupo IN (%s)
-					    %s
-					    ORDER BY %s %s LIMIT %d, %d',
-					    implode (',', array_keys (users_get_groups ())),
-					    $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
-					break;
-				case "postgresql":
-				    $sql = sprintf ('SELECT *
-					    FROM tagente
-					    WHERE id_grupo IN (%s)
-					    %s
-					    ORDER BY %s %s LIMIT %d OFFSET %d',
-					    implode (',', array_keys (users_get_groups ())),
-					    $search_sql, $order['field'], $order['order'], $config["block_size"], $offset);
-					break;
-				case "oracle":
-				    $set = array ();
-				    $set['limit'] = $config["block_size"];
-				    $set['offset'] = $offset;
-				    $sql = sprintf ('SELECT *
-					    FROM tagente
-					    WHERE id_grupo IN (%s)
-					    %s
-					    ORDER BY %s %s',
-					    implode (',', array_keys (users_get_groups ())),
-					    $search_sql, $order['field'], $order['order']);
-				    $sql = oracle_recode_query ($sql, $set);
-					break;
-			}
-		}
-		else {
-			$total_agents = enterprise_count_agents_manage_agents($search_sql);
+		$sql = sprintf ('SELECT COUNT(*)
+			FROM tagente
+			WHERE (id_grupo IN (%s)
+			%s) %s',
+			implode (',', array_keys (users_get_groups ())),
+			$search_sql, $sql_extra);    
 			
-			$sql = enterprise_sql_manage_agents($search_sql, $order, $offset);
-		}	
+		$total_agents = db_get_sql ($sql);
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = sprintf ('SELECT *
+					FROM tagente
+					WHERE (id_grupo IN (%s)
+					%s) %s
+					ORDER BY %s %s LIMIT %d, %d',
+					implode (',', array_keys (users_get_groups ())),
+					$search_sql, $sql_extra, $order['field'], $order['order'], $offset, $config["block_size"]);
+				break;
+			case "postgresql":
+				$sql = sprintf ('SELECT *
+					FROM tagente
+					WHERE (id_grupo IN (%s)
+					%s) %s
+					ORDER BY %s %s LIMIT %d OFFSET %d',
+					implode (',', array_keys (users_get_groups ())),
+					$search_sql, $sql_extra, $order['field'], $order['order'], $config["block_size"], $offset);
+				break;
+			case "oracle":
+				$set = array ();
+				$set['limit'] = $config["block_size"];
+				$set['offset'] = $offset;
+				$sql = sprintf ('SELECT *
+					FROM tagente
+					WHERE (id_grupo IN (%s)
+					%s) %s
+					ORDER BY %s %s',
+					implode (',', array_keys (users_get_groups ())),
+					$search_sql, $order['field'], $order['order']);
+				$sql = oracle_recode_query ($sql, $set);
+				break;
+		}
    }
 }
 
@@ -366,7 +356,12 @@ if ($agents !== false) {
 	$iterator = 0;
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
-		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']))
+		$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($agent["id_agente"]));
+
+		if($is_extra === ENTERPRISE_NOT_HOOK) {
+			$is_extra = false;
+		}
+		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && !$is_extra)
 			continue;
 		
 		if ($color == 1) {

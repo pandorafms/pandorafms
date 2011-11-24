@@ -192,34 +192,24 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ("SELECT %s
-			FROM talert_template_modules
-				INNER JOIN tagente_modulo AS t2
-					ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-				INNER JOIN tagente AS t3
-					ON t2.id_agente = t3.id_agente
-				INNER JOIN talert_templates AS t4
-					ON talert_template_modules.id_alert_template = t4.id
-			WHERE id_agent_module in (%s) %s %s %s",
-			$selectText, $subQuery, $where, $filter, $orderbyText);
-			break;
-		case "oracle":
-			$sql = sprintf ("SELECT %s
-			FROM talert_template_modules
-				INNER JOIN tagente_modulo t2
-					ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-				INNER JOIN tagente t3
-					ON t2.id_agente = t3.id_agente
-				INNER JOIN talert_templates t4
-					ON talert_template_modules.id_alert_template = t4.id
-			WHERE id_agent_module in (%s) %s %s %s",
-			$selectText, $subQuery, $where, $filter, $orderbyText);
-			break;
+	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.'));
+	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+		$extra_sql = '';
+	}else if ($extra_sql != '') {
+		$extra_sql .= ' OR ';
 	}
-	
+
+	$sql = sprintf ("SELECT %s
+	FROM talert_template_modules
+		INNER JOIN tagente_modulo t2
+			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+		INNER JOIN tagente t3
+			ON t2.id_agente = t3.id_agente
+		INNER JOIN talert_templates t4
+			ON talert_template_modules.id_alert_template = t4.id
+	WHERE (%s id_agent_module in (%s)) %s %s %s",
+	$selectText, $extra_sql, $subQuery, $where, $filter, $orderbyText);
+
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -321,12 +311,6 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
  */
 function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
     global $config;
-    
-	//Add enterprise function to add other enterprise ACL.
-	$enterprise_include = false;
-	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-		$enterprise_include = true;
-	}
 	
 	if (! is_array ($filter)) {
 		$filter = array ();
@@ -369,17 +353,58 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		$fields[1] = "nombre";
 	}
 	
-	$filter['order'] = $order['field'] . ' ' . $order['order'];
-	
-	if ($enterprise_include) {
-		$ids = get_id_agents_user_profile_policy();
-		
-		if (!empty($filter['id_agente'])) {
-			$filter['id_agente'] = array_intersect($filter['id_agente'], $ids);
+	if(isset($order['field'])) {
+		if(!isset($order['order'])) {
+			$order['order'] = 'ASC';
 		}
+		$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'];
 	}
 	
-	return db_get_all_rows_filter ('tagente', $filter, $fields);
+	unset($filter['order']);
+	
+	if(isset($filter['offset'])) {
+		$offset = $filter['offset'];
+		unset($filter['offset']);
+	}
+	
+	if(isset($filter['limit'])) {
+		$limit = $filter['limit'];
+		unset($filter['limit']);
+	}
+	
+	$where = db_format_array_where_clause_sql ($filter, 'AND', ' WHERE (').')';
+	
+	$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
+	
+	if($sql_extra != ENTERPRISE_NOT_HOOK) {
+		$where = sprintf('%s OR %s', $where, $sql_extra);
+	}
+	
+	$sql = sprintf('SELECT %s FROM tagente %s %s', implode(',',$fields), $where, $order);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			if(isset($offset) && isset($limit)) {
+				$limit_sql = " LIMIT $offset, $limit "; 
+			}
+			$sql = sprintf("%s %s", $sql, $limit_sql);
+
+			$agents = db_get_all_rows_sql($sql);
+			break;
+		case "oracle":	
+			$set = array();
+			if(isset($offset) && isset($limit)) {
+				$set['limit'] = $limit;
+				$set['offset'] = $offset;
+			}
+
+			$agents = oracle_recode_query ($sql, $set, 'AND', false);
+			break;
+	}
+	
+	return $agents;
+	return db_get_all_rows_sql($sql);
 }
 
 /**
@@ -745,7 +770,6 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
 function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
 	global $config;
 
-
 	if (!$noACL) {
 		$id_group = groups_safe_acl($config["id_user"], $id_group, "AR");
 
@@ -768,13 +792,13 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	}
 
 	if (is_array($id_group)) {
-		$search_sql = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
+		$search_sql = sprintf ('id_grupo IN (%s)', implode (",", $id_group));
 	}
 	else if ($id_group == 0) { //All group
-		$search_sql = 'WHERE 1 = 1';
+		$search_sql = '1 = 1';
 	}
 	else {
-		$search_sql = sprintf ('WHERE id_grupo = %d', $id_group);
+		$search_sql = sprintf ('id_grupo = %d', $id_group);
 	}
 
 
@@ -831,27 +855,27 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 		$search_sql .= ' AND disabled = 0';
 	}
 	
-	//Add enterprise function to add other enterprise ACL.
-	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-		$operator = 'AND';
-		
-		if (empty($search_sql))
-			$operator = '';
-		$search_sql .= subquery_acl_enterprise($operator);
+	enterprise_include_once ('include/functions_policies.php');
+	
+	$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+		$extra_sql = '';
+	}else if ($extra_sql != '') {
+		$extra_sql .= ' OR ';
 	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
+			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE %s (%s) ORDER BY nombre", $extra_sql, $search_sql);
 			break;
 		case "oracle":
-			$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY dbms_lob.substr(nombre,4000,1)", $search_sql);
+			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE %s (%s) ORDER BY dbms_lob.substr(nombre,4000,1)", $extra_sql, $search_sql);
 			break;
 	}
 	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if ($result === false)
 		return array (); //Return an empty array
 
@@ -902,11 +926,6 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
 	
-	$subquery_enterprise = '';
-	if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-		$subquery_enterprise = subquery_acl_enterprise();
-	}
-	
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
@@ -933,6 +952,13 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 
 	$id_agent = safe_int ($id_agent, 1);
 
+	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', (array)$id_agent);
+	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+		$extra_sql = '';
+	}else if ($extra_sql != '') {
+		$extra_sql .= ' OR ';
+	}
+	
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	
 	if(empty($userGroups)) {
@@ -941,7 +967,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	
 	$id_userGroups = array_keys($userGroups);
 
-	$where = " WHERE (
+	$where = "(
 			1 = (
 				SELECT is_admin
 				FROM tusuario
@@ -1072,31 +1098,33 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		else
 			$details = io_safe_input ($details);
 	}
+	
+	$where .= " AND id_policy_module = 0 ";
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
 			$sql = sprintf ('SELECT %s%s
-				FROM tagente_modulo
-				%s %s
+				FROM tagente_modulo WHERE
+				%s (%s)
 				ORDER BY nombre',
 				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
 				io_safe_output(implode (",", (array) $details)),
-				$where,
-				$subquery_enterprise);
+				$extra_sql,
+				$where);
 			break;
 		case "oracle":
 			$sql = sprintf ('SELECT %s%s
-				FROM tagente_modulo
-				%s %s
+				FROM tagente_modulo WHERE 
+				%s (%s)
 				ORDER BY dbms_lob.substr(nombre, 4000, 1)',
 				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
 				io_safe_output(implode (",", (array) $details)),
-				$where,
-				$subquery_enterprise);
+				$extra_sql,
+				$where);
 			break;
 	}
-	
-	
+
 	$result = db_get_all_rows_sql ($sql);
 	
 	if (empty ($result)) {

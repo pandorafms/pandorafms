@@ -28,20 +28,16 @@ if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user']
 	return;
 }
 
-require_once($config['homedir'] . "/include/functions_agents.php");
-require_once($config['homedir'] . "/include/functions_modules.php");
+require_once($config['homedir'] . '/include/functions_agents.php');
+require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('include/functions_policies.php');
 
-$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
-
-//Add the subquery for the ACL enterprise
-if (ENTERPRISE_NOT_HOOK !== $isFunctionPolicies) {
-	$subquery_enterprise = subquery_acl_enterprise();
-	$subquery_enterprise2 = subquery_acl_enterprise('AND', 'tagente.id_agente');
-}
-else {
-	$subquery_enterprise = '';
-	$subquery_enterprise2 = '';
+$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+	$extra_sql = '';
+}else if ($extra_sql != '') {
+	$extra_sql .= ' OR ';
 }
 
 ui_print_page_header ("Monitor detail", "images/brick.png", false);
@@ -112,11 +108,13 @@ switch ($config["dbtype"]) {
 		
 		$sql = ' SELECT distinct(nombre)
 		FROM tagente_modulo
-		WHERE nombre <> \'delete_pending\' ' . $subquery_enterprise . ' AND id_agente IN
+		WHERE nombre <> \'delete_pending\' AND id_agente IN
 		(
 			SELECT id_agente
 			FROM tagente
 			WHERE';
+		
+		$sql .= $extra_sql.'(';
 		
 		if ($flag_is_admin || $flag_all_group) {
 			$sql .= ' 1 = 1 ';
@@ -130,7 +128,7 @@ switch ($config["dbtype"]) {
 			}
 		}
 		
-		$sql .= ')';
+		$sql .= '))';
 		break;
 	case "oracle":
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
@@ -154,12 +152,14 @@ switch ($config["dbtype"]) {
 		
 		$sql = ' SELECT distinct dbms_lob.substr(nombre,4000,1) as nombre
 		FROM tagente_modulo
-		WHERE dbms_lob.substr(nombre,4000,1) <> \'delete_pending\' ' . $subquery_enterprise . ' AND id_agente IN
+		WHERE dbms_lob.substr(nombre,4000,1) <> \'delete_pending\' AND id_agente IN
 		(
 			SELECT id_agente
 			FROM tagente
 			WHERE';
 		
+		$sql .= $extra_sql.'(';		
+				
 		if ($flag_is_admin || $flag_all_group) {
 			$sql .= ' 1 = 1 ';
 		}
@@ -172,7 +172,7 @@ switch ($config["dbtype"]) {
 			}
 		}
 		
-		$sql .= ')';
+		$sql .= '))';
 		break;
 }
 
@@ -195,10 +195,10 @@ echo "</form>";
 
 // Begin Build SQL sentences
 $sql = " FROM tagente, tagente_modulo, tagente_estado 
-	WHERE tagente.id_agente = tagente_modulo.id_agente 
+	WHERE $sql_extra (tagente.id_agente = tagente_modulo.id_agente 
 	AND tagente_modulo.disabled = 0 
 	AND tagente.disabled = 0 
-	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo" . $subquery_enterprise2 ;
+	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
 if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
@@ -245,7 +245,7 @@ elseif ($status == 5) { //Not init
 	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";	
 }
 
-$sql .= " ORDER BY tagente.id_grupo, tagente.nombre";
+$sql .= ") ORDER BY tagente.id_grupo, tagente.nombre";
 
 // Build final SQL sentences
 $count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)".$sql);

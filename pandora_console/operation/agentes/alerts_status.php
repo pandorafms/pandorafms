@@ -55,7 +55,13 @@ if ($idAgent != 0) {
 	
 	$id_group = agents_get_agent_group ($idAgent);
 	
-	if (check_acl ($config["id_user"], $id_group, "AR") == 0) {
+	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
+
+	if($is_extra === ENTERPRISE_NOT_HOOK) {
+		$is_extra = false;
+	}
+
+	if (!check_acl ($config["id_user"], $id_group, "AR") && !$is_extra) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		exit;
@@ -370,10 +376,6 @@ $table->data = array ();
 $rowPair = true;
 $iterator = 0;
 foreach ($alerts['alerts_simple'] as $alert) {
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		if (!alert_in_acl_enterprise($alert['id'])) continue;
-	}
-	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else

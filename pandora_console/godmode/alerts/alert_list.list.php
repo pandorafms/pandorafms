@@ -366,10 +366,6 @@ $rowPair = true;
 $iterator = 0;
 
 foreach ($simple_alerts as $alert) {
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		if (!alert_in_acl_enterprise($alert['id'])) continue;
-	}
-	
 	if ($alert['disabled']) {
 		 $table->rowstyle[$iterator] = 'font-style: italic; color: #aaaaaa;';
 		 $table->style[$iterator][1] = 'font-style: italic; color: #aaaaaa;';

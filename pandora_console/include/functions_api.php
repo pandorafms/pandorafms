@@ -145,7 +145,6 @@ function array_apply_io_safe_output($item) {
  */
 function isInACL($ip) {
 	global $config;
-	
 	//If set * in the list ACL return true 
 	if(in_array('*', $config['list_ACL_IPs_for_API']))
 		return true;

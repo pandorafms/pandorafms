@@ -20,7 +20,7 @@ check_login();
 if (isset($_GET["id_agente"])){
 	$id_agente = $_GET["id_agente"];
 }
-
+		
 include_once($config['homedir'] . "/include/functions_modules.php");
 	
 // View last data packet		
@@ -174,22 +174,73 @@ switch ($sortField) {
 		break;
 }
 
-$modules = db_get_all_rows_filter ('tagente_modulo, tagente_estado',
-	array ('tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo',
-		'disabled' => 0,
-		'tagente_estado.utimestamp != 0',
-		'tagente_modulo.id_agente = '.$id_agente,
-		'order' => $order,
-		'offset' => (int) get_parameter ('offset'),
-		'limit' => (int) $config['block_size']));
-		
-$total_modules = db_get_all_rows_filter ('tagente_modulo',
-	array ('delete_pending' => 0,
-		'id_agente' => $id_agente,
-		'order' => $order),
-	array ('count(*) total'));	
+// Get the enterprise acl sql condition
+$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
+
+if($extra_sql == ENTERPRISE_NOT_HOOK) {
+	$extra_sql = '';
+}
+else if ($extra_sql != '') {
+	$extra_sql .= ' OR ';
+}
 	
-$total_modules = isset ($total_modules[0]['total']) ? $total_modules[0]['total'] : 0;		
+// Build the order sql
+if(!empty($order)) {
+	$order_sql = ' ORDER BY ';
+}
+$first = true;
+foreach($order as $ord) {
+	if($first) {
+		$first = false;
+	}
+	else {
+		$order_sql .= ',';
+	}
+	
+	$order_sql .= $ord['field'].' '.$ord['order'];
+}
+
+// Get limit and offset parameters
+$limit = (int) $config["block_size"];
+$offset = (int) get_parameter ('offset');
+
+$params = implode(',', array ('*'));
+$is_extra_sql = (int)$is_extra;
+
+$where = sprintf("(tagente_modulo.id_policy_module = 0 AND disabled = 0 AND tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente = %s AND delete_pending = 0)", $id_agente);
+
+$basic_where = " tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND ";
+
+switch ($config["dbtype"]) {
+	case "postgresql":
+		$limit_sql = " LIMIT $limit OFFSET $offset ";
+	case "mysql":
+		if(!isset($limit_sql)) {
+			$limit_sql = " LIMIT $offset, $limit ";
+		}
+
+		$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+
+		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s %s", 
+					$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+		$modules = db_get_all_rows_sql($sql);
+		break;
+	case "oracle":	
+		$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'ASC');
+
+		$set = array();
+		$set['limit'] = $limit;
+		$set['offset'] = $offset;	
+		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s", 
+					$params, $basic_where, $extra_sql, $where, $order_sql);
+		$modules = oracle_recode_query ($sql, $set, 'AND', false);
+		break;
+}
+
+$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo, tagente_estado WHERE %s (%s %s)", $basic_where, $extra_sql, $where);
+
+$total_modules = db_get_value_sql($sql_total_modules);
+$total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
@@ -233,11 +284,6 @@ $texto=''; $last_modulegroup = 0;
 $color = 1;
 $write = check_acl ($config['id_user'], $agent['id_grupo'], "AW");
 foreach ($modules as $module) {
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		if (!module_in_acl_enterprise($module['id_agente_modulo'])) continue;
-	}
-	
-	
 	// Calculate table line color
 	if ($color == 1){
 		$tdcolor = "datos";

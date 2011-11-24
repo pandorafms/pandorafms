@@ -1,5 +1,28 @@
 2011-11-24  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php
+	include/functions.php
+	include/functions_agents.php
+	operation/search_modules.php
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_agente.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/ver_agente.php
+	operation/search_agents.php
+	operation/search_alerts.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/configurar_agente.php
+	godmode/alerts/alert_list.list.php
+	godmode/users/configure_user.php: Reconstruct policy acl
+	system to allow in enterprise version get extra access for 
+	a user in a policy
+
+2011-11-24  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/en/help_integria_url.php
 	include/help/es/help_integria_url.php
 	godmode/setup/setup.php: Added help for integria api

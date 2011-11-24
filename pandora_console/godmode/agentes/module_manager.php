@@ -254,43 +254,68 @@ switch ($sortField) {
 		break;
 }
 
+// Get the enterprise acl sql condition
+$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
+
+if($extra_sql == ENTERPRISE_NOT_HOOK) {
+	$extra_sql = '';
+}else if ($extra_sql != '') {
+	$extra_sql .= ' OR ';
+}
+	
+// Build the order sql
+if(!empty($order)) {
+	$order_sql = ' ORDER BY ';
+}
+$first = true;
+foreach($order as $ord) {
+	if($first) {
+		$first = false;
+	}
+	else {
+		$order_sql .= ',';
+	}
+	
+	$order_sql .= $ord['field'].' '.$ord['order'];
+}
+
+// Get limit and offset parameters
+$limit = (int) $config["block_size"];
+$offset = (int) get_parameter ('offset');
+
+$params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
+		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
+		'disabled','max_warning', 'min_warning', 'str_warning',
+		'max_critical', 'min_critical', 'str_critical'));
+		
+$where = sprintf("id_policy_module = 0 AND delete_pending = 0 AND id_agente = %s", $id_agente);		
 switch ($config["dbtype"]) {
+	case "postgresql":
+		$limit_sql = " LIMIT $limit OFFSET $offset ";
 	case "mysql":
-	case "postgresql":	
-		$modules = db_get_all_rows_filter ('tagente_modulo',
-			array ('delete_pending' => 0,
-				'id_agente' => $id_agente,
-				'order' => $order,
-				'offset' => (int) get_parameter ('offset'),
-				'limit' => (int) $config['block_size']),
-			array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
-				'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-				'disabled','max_warning', 'min_warning', 'str_warning',
-				'max_critical', 'min_critical', 'str_critical'));
+		if(!isset($limit_sql)) {
+			$limit_sql = " LIMIT $offset, $limit ";
+		}
+		$sql = sprintf("SELECT %s total FROM tagente_modulo WHERE %s (%s) %s %s", 
+					$params, $extra_sql, $where, $order_sql, $limit_sql);
+
+		$modules = db_get_all_rows_sql($sql);
 		break;
-	case "oracle":		
+	case "oracle":	
 		$set = array();
-		$set['limit'] = (int) $config["block_size"];
-		$set['offset'] = (int) get_parameter ('offset');
-		$sql = db_get_all_rows_filter('tagente_modulo',
-			array ('delete_pending' => 0,
-				'id_agente' => $id_agente,
-				'order' => $order),
-			array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'dbms_lob.substr(nombre,4000,1) nombre',
-				'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-				'disabled','max_warning', 'min_warning', 'str_warning',
-				'max_critical', 'min_critical', 'str_critical'), 'AND', false, true);
+		$set['limit'] = $limit;
+		$set['offset'] = $offset;	
+		$sql = sprintf("SELECT %s total FROM tagente_modulo WHERE %s (%s) %s", 
+					$params, $extra_sql, $where, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
-		
-$total_modules = db_get_all_rows_filter ('tagente_modulo',
-	array ('delete_pending' => 0,
-		'id_agente' => $id_agente,
-		'order' => $order),
-	array ('count(*) total'));	
 	
-$total_modules = isset ($total_modules[0]['total']) ? $total_modules[0]['total'] : 0;	
+$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo WHERE %s (%s)", $extra_sql, $where);
+
+$total_modules = db_get_value_sql($sql_total_modules);
+
+$total_modules = isset ($total_modules) ? $total_modules : 0;	
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('No available data to show')."</div>";
@@ -320,7 +345,6 @@ $table->head[5] = __('Description');
 $table->head[6] = __('Warn');
 
 
-
 $table->head[7] = __('Action');
 
 $table->rowstyle = array();
@@ -347,9 +371,15 @@ foreach($tempRows as $row) {
 }
 
 foreach ($modules as $module) {
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		if (!module_in_acl_enterprise($module['id_agente_modulo'])) continue;
-	} 
+	$is_extra = enterprise_hook('policies_is_module_extra_policy', array($module["id_agente_modulo"]));
+
+	if($is_extra === ENTERPRISE_NOT_HOOK) {
+		$is_extra = false;
+	}
+
+	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && !$is_extra) {
+		continue;
+	}
 	
 	$type = $module["id_tipo_modulo"];
 	$id_module = $module["id_modulo"];

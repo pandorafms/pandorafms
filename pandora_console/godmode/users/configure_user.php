@@ -78,12 +78,13 @@ if ($config['user_can_update_info']) {
 $new_user = (bool) get_parameter ('new_user');
 $create_user = (bool) get_parameter ('create_user');
 $add_profile = (bool) get_parameter ('add_profile');
+$add_profile_policy = (bool) get_parameter ('add_profile_policy');
 $delete_profile = (bool) get_parameter ('delete_profile');
 $update_user = (bool) get_parameter ('update_user');
 $status = get_parameter ('status', -1);
 
 // Reset status var if current action is not update_user
-if ($new_user || $create_user || $add_profile || $delete_profile || $update_user){
+if ($new_user || $create_user || $add_profile || $add_profile_policy || $delete_profile || $update_user){
 	$status = -1;
 }
 
@@ -271,13 +272,35 @@ if ($add_profile) {
 		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
 	$return = profile_create_user_profile($id2, $profile2, $group2);
 	
-	if ($enterprise_include) {
-		add_enterprise_db_data_user_profile_form($return);
-	}
-	
 	ui_print_result_message ($return,
 		__('Profile added successfully'),
 		__('Profile cannot be added'));
+}
+
+if ($add_profile_policy && $enterprise_include) {
+	$id2 = (string) get_parameter ('id');
+	$profile2 = (int) get_parameter ('assign_profile');
+	$id_policy = (int) get_parameter ('policy');
+
+	if($id_policy != 0) {
+		$return = policies_create_user_policy_profile($id2, $profile2, $id_policy);
+	}
+	else {
+		$return = false;
+	}
+	
+	if($return === false) {
+		db_pandora_audit("User management",
+			"Added extra policy profile for user ".io_safe_input($id2), false, false, ' Policy: ' . $id_policy);
+	}
+	else {
+		db_pandora_audit("User management",
+			"Problem adding extra policy profile for user ".io_safe_input($id2), false, false, ' Policy: ' . $id_policy);
+	}
+		
+	ui_print_result_message ($return,
+		__('Extra policy profile added successfully'),
+		__('Extra policy profile cannot be added'));
 }
 
 if ($delete_profile) {
@@ -425,9 +448,11 @@ $table->head[1] = __('Group');
 $table->head[2] = __('Action');
 $table->align[2] = 'center';
 
+/*
 if ($enterprise_include) {
 	add_enterprise_column_user_profile_form($table);
 }
+*/
 
 $result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
 if ($result === false) {
@@ -435,6 +460,10 @@ if ($result === false) {
 }
 
 foreach ($result as $profile) {
+	if($profile["id_grupo"] == -1) {
+		continue;
+	}
+	
 	$data = array ();
 
 	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.profile_get_name ($profile['id_perfil']).'</a>';
@@ -446,14 +475,9 @@ foreach ($result as $profile) {
 	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true);
 	$data[2] .= '</form>';
 	
-	if ($enterprise_include) {
-		add_data_enterprise_column_user_profile_form($data, $profile['id_up']);
-	}
-	
 	array_push ($table->data, $data);
 }
 
-if (!$enterprise_include) {
 	$data = array ();
 	
 	$data[0] = '<form method="post">';
@@ -475,19 +499,15 @@ if (!$enterprise_include) {
 	$data[2] .= html_print_input_hidden ('id', $id, true);
 	$data[2] .= html_print_input_hidden ('add_profile', 1, true);
 	$data[2] .= '</form>';
-}
-else {
-	add_row_enterprise_form_user_profile_form($data, $own_info, $id);
-}
 
 array_push ($table->data, $data);
 
 html_print_table ($table);
-echo '</form>';
+
 
 unset ($table);
 
 if ($enterprise_include) {
-	add_script_enterprise_profile_form();
+	policies_profile_form($id);
 }
 ?>

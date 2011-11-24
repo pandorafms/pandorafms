@@ -16,10 +16,14 @@
 
 global $config;
 
+enterprise_include_once('include/functions_policies.php');
 require_once ($config['homedir'].'/include/functions_users.php');
-$subquery_enterprise = '';
-if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-	$subquery_enterprise = subquery_acl_enterprise();
+
+$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+	$extra_sql = '';
+}else if ($extra_sql != '') {
+	$extra_sql .= ' OR ';
 }
 
 $searchAgents = check_acl($config['id_user'], 0, "AR");
@@ -130,8 +134,9 @@ if ($searchAgents) {
 						)
 						OR t1.id_grupo IN (
 							" . implode(',', $id_userGroups) . "
-						)
-						OR 0 IN (
+						) OR " .
+						$extra_sql .
+						" 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
 							WHERE id_usuario = '" . $config['id_user'] . "'
@@ -145,7 +150,7 @@ if ($searchAgents) {
 						t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'
 					)
-			" . $subquery_enterprise;
+			";
 			break;
 		case "postgresql":
 		case "oracle":
@@ -161,8 +166,9 @@ if ($searchAgents) {
 						)
 						OR t1.id_grupo IN (
 							" . implode(',', $id_userGroups) . "
-						)
-						OR 0 IN (
+						) OR " .
+						$extra_sql .
+						" 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
 							WHERE id_usuario = '" . $config['id_user'] . "'
@@ -176,10 +182,10 @@ if ($searchAgents) {
 						t1.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre LIKE '%%" . $stringSearchSQL . "%%'
 					)
-			" . $subquery_enterprise;
+			";
 			break;
 	}
-	
+
 	$select = 
 		"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
 	$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 

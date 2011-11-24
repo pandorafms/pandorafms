@@ -17,13 +17,16 @@
 global $config;
 
 include_once('include/functions_alerts.php');
+enterprise_include_once('include/functions_policies.php')
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
-$subquery_enterprise = '';
-if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-	$subquery_enterprise = subquery_acl_enterprise();
-}
 
+$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+	$extra_sql = '';
+}else if ($extra_sql != '') {
+	$extra_sql .= ' OR ';
+}
 
 $searchAlerts = check_acl($config['id_user'], 0, "AR");
 
@@ -132,7 +135,7 @@ if($searchAlerts) {
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE nombre LIKE "%' . $stringSearchSQL . '%" ' . $subquery_enterprise . '))
+						WHERE nombre LIKE "%' . $stringSearchSQL . '%" ' . $extra_sql . '))
 			)';
 			break;
 		case "postgresql":
@@ -163,7 +166,7 @@ if($searchAlerts) {
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE nombre LIKE \'%' . $stringSearchSQL . '%\'  ' . $subquery_enterprise . '))
+						WHERE nombre LIKE \'%' . $stringSearchSQL . '%\'  ' . $extra_sql . '))
 			)';
 			break;
 	}

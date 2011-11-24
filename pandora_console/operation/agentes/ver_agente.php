@@ -17,10 +17,10 @@
 // Load global vars
 global $config;
 
-require_once ("include/functions_gis.php");
-require_once($config['homedir'] . "/include/functions_agents.php");
-require_once($config['homedir'] . "/include/functions_groups.php");
-require_once($config['homedir'] . "/include/functions_modules.php");
+require_once ('include/functions_gis.php');
+require_once($config['homedir'] . '/include/functions_agents.php');
+require_once($config['homedir'] . '/include/functions_groups.php');
+require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
@@ -443,7 +443,14 @@ if (empty ($id_agente)) {
 $agent = db_get_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
-if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente)) {
+
+$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
+
+if($is_extra === ENTERPRISE_NOT_HOOK) {
+	$is_extra = false;
+}
+
+if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && !$is_extra) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");
@@ -481,7 +488,7 @@ $tab = get_parameter ("tab", "main");
 
 $managetab = "";
 
-if (check_acl ($config['id_user'],$id_grupo, "AW")) {
+if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
@@ -705,13 +712,13 @@ switch ($tab) {
 		require ("alerts_status.php");
 		break;
 	case "inventory":
-		enterprise_include ('operation/agentes/agent_inventory.php');
+		enterprise_include ("operation/agentes/agent_inventory.php");
 		break;
 	case "collection":
-		enterprise_include ('operation/agentes/collection_view.php');
+		enterprise_include ("operation/agentes/collection_view.php");
 		break;
-	case 'policy':
-		enterprise_include ('operation/agentes/policy_view.php');
+	case "policy":
+		enterprise_include ("operation/agentes/policy_view.php");
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");

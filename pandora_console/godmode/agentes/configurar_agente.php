@@ -18,6 +18,7 @@
 global $config;
 
 enterprise_include ('godmode/agentes/configurar_agente.php');
+enterprise_include ('include/functions_policies.php');
 enterprise_include ('include/functions_modules.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
 
@@ -29,7 +30,13 @@ $group = 0;
 if ($id_agente)
 	$group = agents_get_agent_group ($id_agente);
 
-if (! check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
+
+if($is_extra === ENTERPRISE_NOT_HOOK) {
+	$is_extra = false;
+}
+
+if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && !$is_extra) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
@@ -531,7 +538,12 @@ if ($update_agent) { // if modified some agent paramenter
 if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = agents_get_agent_group ($id_agente);
-	if (check_acl ($config["id_user"], $id_grupo, "AW") != 1) {
+	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
+
+	if($is_extra === ENTERPRISE_NOT_HOOK) {
+		$is_extra = false;
+	}
+	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
@@ -571,7 +583,13 @@ $edit_module = (bool) get_parameter ('edit_module');
 if ($update_module || $create_module) {
 	$id_grupo = agents_get_agent_group ($id_agente);
 	
-	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
+	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
+
+	if($is_extra === ENTERPRISE_NOT_HOOK) {
+		$is_extra = false;
+	}
+	
+	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation",
 			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");

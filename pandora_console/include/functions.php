@@ -1370,6 +1370,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 		$parents_id = array();
 	}
 	
+	// TODO: To reduce this querys in one adding the group condition if necessary (only one line is different)
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
 	if ($id_group == 0) {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
@@ -1438,12 +1439,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	}
 	
 	if ($result >= 1) {
-		if ($id_agent != 0) {
-			if (ENTERPRISE_NOT_HOOK !== enterprise_include_once('include/functions_policies.php')) {
-				return check_acl_policy($id_user, $id_agent);
-			}
-		}
-		else return 1;
+		return 1;
 	}
 
 	return 0;

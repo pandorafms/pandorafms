@@ -1,3 +1,11 @@
+2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/networkmap.php
+	 include/functions_networkmap.php: Added links to agents, modules 
+	and groups in single view of networkmaps.
+	
+	Fixes: #3439487
+
 2011-11-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/modules/manage_network_components.php: Removed entities.

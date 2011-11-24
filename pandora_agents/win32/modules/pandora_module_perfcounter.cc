@@ -129,14 +129,14 @@ Pandora_Module_Perfcounter::run () {
     // Open a query object
     status = PdhOpenQuery (NULL, 0, &query);
     if (status != ERROR_SUCCESS) {
-        pandoraLog ("PdhOpenQuery failed with error %d", status);
+        pandoraLog ("PdhOpenQuery failed with error %lX", status);
         return;
     }
 
     // Add the counter that will provide the data
     status = PdhAddCounter (query, this->source.c_str (), 0, &counter);
     if (status != ERROR_SUCCESS) {
-        pandoraLog ("PdhAddCounter failed with error %d", status);
+        pandoraLog ("PdhAddCounter failed with error %lX", status);
 		PdhCloseQuery (query);
         return;
     }

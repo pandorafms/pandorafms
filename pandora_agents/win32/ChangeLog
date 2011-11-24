@@ -1,3 +1,11 @@
+2011-11-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: Use double instead of long for intermediate
+	  result to avoid overflows. Fixes bug #3422900.
+
+	* modules/pandora_module_perfcounter.cc: Print PDH errors in a more
+	  descriptive format.
+
 2011-11-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Fixed a bug that resulted in a buffer

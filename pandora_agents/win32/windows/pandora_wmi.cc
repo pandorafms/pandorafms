@@ -321,7 +321,7 @@ long
 Pandora_Wmi::getFreememoryPercent () {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
-	long          free_memory, total_memory;
+	double        free_memory, total_memory;
 
 	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
@@ -330,17 +330,17 @@ Pandora_Wmi::getFreememoryPercent () {
 				     L"SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem "));
 	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			dhGetValue (L"%d", &free_memory, quickfix,
+			dhGetValue (L"%e", &free_memory, quickfix,
 				    L".FreePhysicalMemory");
 
-			dhGetValue (L"%d", &total_memory, quickfix,
+			dhGetValue (L"%e", &total_memory, quickfix,
 				    L".TotalVisibleMemorySize");
 
 			if (total_memory == 0) {
                 return 0;
             }
             
-            return free_memory * 100 / total_memory;
+            return (long) (free_memory * 100.0 / total_memory);
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getFreememory error. %s", errstr.c_str ());

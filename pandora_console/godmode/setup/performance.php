@@ -67,8 +67,18 @@ $table->data[7][1] = html_print_input_text ('days_compact', $config["days_compac
 $table->data[8][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[8][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[9][0] = __('SLA period (seconds)') . ui_print_help_tip(__('You can see this in SLA agent tab.'), true);;
-$table->data[9][1] = html_print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
+$intervals = array ();
+$intervals[3600] = "1 ".__('hour');
+$intervals[43200] = "12 ".__('hours');
+$intervals[86400] = __('Last day');
+$intervals[172800] = "2 ". __('days');
+$intervals[864000] = "10 ". __('days');
+$intervals[604800] = __('Last week');
+$intervals[1209600] = "2 " . __('weeks');
+$intervals[2592000] = __('Last month');
+
+$table->data[9][0] = __('SLA period (seconds)') . ui_print_help_tip(__('You can see this in SLA agent tab.'), true);
+$table->data[9][1] = html_print_select ($intervals, 'sla_period', $config["sla_period"], '', '', '0', true);
 
 $table->data[10][0] = __('Default hours for event view');
 $table->data[10][1] = html_print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);

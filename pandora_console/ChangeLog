@@ -1,5 +1,12 @@
 2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/setup/performance.php: Changed html element from input 
+	text to select in SLA period (seconds) parameter.
+	
+	Fixes: #3437884
+
+2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_generalagente.php: Hide agent access 
 	graph when "Use agent access graph" is disabled.
 	

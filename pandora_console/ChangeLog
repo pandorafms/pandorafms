@@ -1,5 +1,12 @@
 2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/menu.php: Fixed a wrong sec2 tag that makes enterprise 
+	ACLs fail.
+	
+	Fixes: #3439464
+
+2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/networkmap.php
 	 include/functions_networkmap.php: Added links to agents, modules 
 	and groups in single view of networkmaps.

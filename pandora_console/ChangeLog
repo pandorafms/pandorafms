@@ -1,5 +1,12 @@
 2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/setup/setup.php: Added confirmation when "Use Enterprise 
+	ACL System" is checked.
+	
+	Fixes: #3438190
+
+2011-11-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/menu.php: Fixed a wrong sec2 tag that makes enterprise 
 	ACLs fail.
 	

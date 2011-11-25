@@ -1,5 +1,12 @@
 2011-11-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/agentes/module_manager.php: Incremented agent description
+	in this view.
+
+	Fixes: #3424395
+
+2011-11-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_agents.php
 	 operation/menu.php
 	 operation/gis_maps/render_view.php

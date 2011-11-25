@@ -78,7 +78,17 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		}
 		$id = (int) get_parameter ('id', -1);
 		
+		$own_info = get_user_info ($config['id_user']);
+		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+			$own_groups = array_keys(users_get_groups($config['id_user'], "IR"));
+		else
+			$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));		
+		
 		foreach ($gisMaps as $gisMap) {
+			$is_in_group = in_array($gisMap['group_id'], $own_groups);
+			if (!$is_in_group){
+				continue;
+			}			
 			if (! check_acl ($config["id_user"], $gisMap["group_id"], "IR")) {
 				continue;
 			}

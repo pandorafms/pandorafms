@@ -164,7 +164,15 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize) {
 		global $config;
 		global $REMOTE_ADDR;
-		
+				
+		// Round corners defined in global setup
+		if ($config["round_corner"] != 0) {
+			$radius = ($height > 18) ? 8 : 0;
+		}
+		else {
+			$radius = 0;
+		}
+			
 		if ($width == 0) {
 			$width = 150;
 		}
@@ -192,30 +200,28 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$soft_red = ImageColorAllocate($image,255, 154, 84);
 		$other_red = ImageColorAllocate($image,238, 0, 0);
 
-		ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
+		ImageRectangleWithRoundedCorners($image,0,0,$width-1,$height-1,$radius,$back,false);
 		switch ($mode)
 		{
 			case 0:
 				if ($rating > 70)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_green);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_green, $border);
 				elseif ($rating > 50)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_yellow);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_yellow, $border);
 				elseif ($rating > 30)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_red);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_red, $border);
 				else
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $other_red);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $other_red, $border);
 					
-				ImageRectangle($image,0,0,$width-1,$height-1,$border);
 				break;
 			case 1:
 				if ($rating > 100)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1,$radius,$red, $border);
 				elseif ($rating == 100)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$green);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1,$radius,$green, $border);
 				else
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$blue);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1,$radius,$blue, $border);
 					
-				ImageRectangle($image,0,0,$width-1,$height-1,$border);
 				
 				if ($rating > 50)
 					if ($rating > 100)
@@ -227,21 +233,53 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				break;
 			case 2:
 				if ($rating > 70)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $other_red);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $other_red, $border);
 				elseif ($rating > 50)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_red);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_red, $border);
 				elseif ($rating > 30)
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_yellow);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_yellow, $border);
 				else
-					ImageFilledRectangle($image,1,1,$ratingbar,$height-1, $soft_green);
+					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_green, $border);
 					
-				ImageRectangle($image,0,0,$width-1,$height-1,$border);
 				break;
 		}
+		
+/*
+		ImageRectangle($image,0,0,$width-1,$height-1,$border);
+*/
+
 		imagePNG($image);
 		imagedestroy($image);
-   	}
+		
 
+   	}
+   	
+	function ImageRectangleWithRoundedCorners(&$im, $x1, $y1, $x2, $y2, $radius, $color, $bordercolor)
+	{
+		// Draw rectangle without corners
+		ImageFilledRectangle($im, $x1+$radius, $y1, $x2-$radius, $y2, $color);
+		ImageFilledRectangle($im, $x1, $y1+$radius, $x2, $y2-$radius, $color);
+		// Draw circled corners
+		ImageFilledEllipse($im, $x1+$radius, $y1+$radius, $radius*2, $radius*2, $color);
+		ImageFilledEllipse($im, $x2-$radius, $y1+$radius, $radius*2, $radius*2, $color);
+		ImageFilledEllipse($im, $x1+$radius, $y2-$radius, $radius*2, $radius*2, $color);
+		ImageFilledEllipse($im, $x2-$radius, $y2-$radius, $radius*2, $radius*2, $color);
+		
+		if($bordercolor !== false) {
+			$x1--;
+			$y1--;
+			$x2++;
+			imageline($im, $x1+$radius, $y1, $x2-$radius, $y1, $bordercolor);
+			imageline($im, $x1+$radius, $y2, $x2-$radius, $y2, $bordercolor);
+			imageline($im, $x1, $y1+$radius, $x1, $y2-$radius, $bordercolor);
+			imageline($im, $x2, $y1+$radius, $x2, $y2-$radius, $bordercolor);
+
+			imagearc($im,$x1+$radius, $y1+$radius, $radius*2, $radius*2, 180 , 270, $bordercolor);
+			imagearc($im,$x2-$radius, $y1+$radius, $radius*2, $radius*2, 270 , 360, $bordercolor);
+			imagearc($im,$x1+$radius, $y2-$radius, $radius*2, $radius*2, 90 , 180, $bordercolor);
+			imagearc($im,$x2-$radius, $y2-$radius, $radius*2, $radius*2, 360 , 90, $bordercolor);
+		}
+	}
    	Header("Content-type: image/png");
    	
    	switch ($mode)

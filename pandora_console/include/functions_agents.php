@@ -315,7 +315,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
-
+	
 	//Get user groups
 	$groups = array_keys (users_get_groups ($config["id_user"], $access, false));
 
@@ -377,6 +377,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
 	
 	if($sql_extra != ENTERPRISE_NOT_HOOK) {
+		if (!empty($sql_extra))
 		$where = sprintf('%s OR %s', $where, $sql_extra);
 	}
 	

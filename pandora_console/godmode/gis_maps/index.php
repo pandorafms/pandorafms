@@ -85,9 +85,7 @@ $table->data = array();
 
 $defaultMapId = null;
 
-if (!$maps) {
-	echo '<div class="nf">'.('No maps defined').'</div>';
-} else {
+if ($maps){
 	$own_info = get_user_info($config['id_user']);
 	foreach ($maps as $map) {
 		if (!check_acl ($config["id_user"], $map["group_id"], "IR")) {
@@ -113,7 +111,12 @@ if (!$maps) {
 		array_push ($table_info, $buttons);
 		$table->data[] = $table_info;
 	}
+}
+	
+if (!empty ($table->data)) {
 	html_print_table($table);
+} else {
+	echo '<div class="nf">'.('No maps defined').'</div>';
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

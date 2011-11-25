@@ -144,11 +144,11 @@ if ($layers != false) {
 		gis_make_layer($layer['layer_name'], $layer['view_layer'], null, $layer['id_tmap_layer']);
 		
 		// calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.	
-		$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],false,'none', true);
+		$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],false,'none', true, true, false);
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'], array('nombre'));
 		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
-		
+
 		foreach ($agentNames as $agentName) {
 			$idAgent = agents_get_agent_id($agentName);
 			$coords = gis_get_data_last_position_agent($idAgent);

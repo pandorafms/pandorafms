@@ -386,6 +386,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
+			$limit_sql = '';
 			if(isset($offset) && isset($limit)) {
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
@@ -765,10 +766,11 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  * @param string $case Which case to return the agentname as (lower, upper, none)
  * @param boolean $noACL jump the ACL test.
  * @param boolean $childGroups The flag to get agents in the child group of group parent passed. By default false.
+ * @param boolean $extra_access The flag to get agents of extra access policies.
  *
  * @return array An array with all agents in the group or an empty array
  */
-function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
+function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false, $extra_access = true) {
 	global $config;
 
 	if (!$noACL) {
@@ -858,11 +860,16 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	
 	enterprise_include_once ('include/functions_policies.php');
 	
-	$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
-	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+	if ($extra_access){
+		$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+		if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+			$extra_sql = '';
+		}else if ($extra_sql != '') {
+			$extra_sql .= ' OR ';
+		}
+	}
+	else{
 		$extra_sql = '';
-	}else if ($extra_sql != '') {
-		$extra_sql .= ' OR ';
 	}
 	
 	switch ($config["dbtype"]) {
@@ -874,7 +881,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE %s (%s) ORDER BY dbms_lob.substr(nombre,4000,1)", $extra_sql, $search_sql);
 			break;
 	}
-	
+
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false)

@@ -475,7 +475,7 @@ foreach ($modules as $module) {
 		$data[4] = $agent_interval;
 	}
 	
-	$data[5] = ui_print_truncate_text($module['descripcion'], 25, false);
+	$data[5] = ui_print_truncate_text($module['descripcion'], 50, false);
 	
 	// MAX / MIN values
 	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 

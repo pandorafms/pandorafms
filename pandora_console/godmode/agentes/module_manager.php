@@ -296,7 +296,7 @@ switch ($config["dbtype"]) {
 		if(!isset($limit_sql)) {
 			$limit_sql = " LIMIT $offset, $limit ";
 		}
-		$sql = sprintf("SELECT %s total FROM tagente_modulo WHERE %s (%s) %s %s", 
+		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s) %s %s", 
 					$params, $extra_sql, $where, $order_sql, $limit_sql);
 
 		$modules = db_get_all_rows_sql($sql);
@@ -305,7 +305,7 @@ switch ($config["dbtype"]) {
 		$set = array();
 		$set['limit'] = $limit;
 		$set['offset'] = $offset;	
-		$sql = sprintf("SELECT %s total FROM tagente_modulo WHERE %s (%s) %s", 
+		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s) %s", 
 					$params, $extra_sql, $where, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;

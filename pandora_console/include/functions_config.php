@@ -46,19 +46,9 @@ function config_update_value ($token, $value) {
 	
 	switch ($token) {
 		case 'list_ACL_IPs_for_API':
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$rows = db_get_all_rows_sql('SELECT id_config
-						FROM tconfig 
-						WHERE token LIKE "%list_ACL_IPs_for_API_%"');
-					break;
-				case "postgresql":
-				case "oracle":
-					$rows = db_get_all_rows_sql("SELECT id_config
-						FROM tconfig 
-						WHERE token LIKE '%list_ACL_IPs_for_API_%'");
-					break;
-			}
+			$rows = db_get_all_rows_sql("SELECT id_config
+				FROM tconfig 
+				WHERE token LIKE '%list_ACL_IPs_for_API_%'");
 			
 			if ($rows !== false) {
 				foreach ($rows as $row)
@@ -67,6 +57,8 @@ function config_update_value ($token, $value) {
 				db_process_sql_delete('tconfig', 'id_config IN (' . implode(',', $idListACLofIP) . ')' );
 			}
 			
+			$value = io_safe_output($value);
+
 			if (strpos($value, "\r\n") !== false)
 				$ips = explode("\r\n", $value);
 			else

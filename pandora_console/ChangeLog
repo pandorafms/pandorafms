@@ -1,3 +1,7 @@
+2011-11-26  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_integria_url.php: Added a new help file.
+
 2011-11-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager.php: Incremented agent description

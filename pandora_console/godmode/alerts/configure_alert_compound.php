@@ -555,7 +555,7 @@ if ($step == 1) {
 	$table_alerts->id = 'alert_list';
 	$table_alerts->width = '80%';
 	$table_alerts->data = array ();
-	unset ($table_alerts->head[3]);
+	unset ($table_alerts->head[4]);
 	
 	if (! $id_agent) {
 		$table_alerts->class = 'invisible';

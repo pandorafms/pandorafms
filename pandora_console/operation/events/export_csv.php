@@ -31,25 +31,45 @@ if (! check_acl ($config["id_user"], 0, "AR") && ! check_acl ($config["id_user"]
 	exit;
 }
 
+global $config;
+
 $offset = (int) get_parameter ("offset");
 $ev_group = (int) get_parameter ("ev_group"); // group
-$search = (int) get_parameter ("search"); // free search
+//$search = (int) get_parameter ("search"); // free search
 $event_type = (string) get_parameter ("event_type", "all"); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", -1); // -1 all, 0 only red, 1 only green
 $id_agent = (int) get_parameter ("id_agent", -1);
 
+$id_event = (int) get_parameter ("id_event", -1);
+$event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
+$id_user_ack = get_parameter ("id_user_ack", 0);
+$search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
+$text_agent = (string)get_parameter('text_agent', __("All"));
+$tag = get_parameter("tag", "");
+
 $filter = array ();
 if ($ev_group > 1)
 	$filter['id_grupo'] = $ev_group;
-if ($status == 1)
+/*if ($status == 1)
 	$filter['estado'] = 1;
 if ($status == 0)
-	$filter['estado'] = 0;
+	$filter['estado'] = 0; */
+$filter_state = '';
+switch($status) {
+	case 0:
+	case 1:
+	case 2:
+		$filter_state = " AND estado = " . $status;
+		break;
+	case 3:
+		$filter_state = " AND (estado = 0 OR estado = 2)";
+		break;
+}		
 if ($search != "")
-	$filter[] = 'evento LIKE "%'.$search.'%"';
-if (($event_type != "all") AND ($event_type != 0))
-	$filter['event_type'] = $event_type;
+	$filter[] = 'evento LIKE "%'.io_safe_input($search).'%"';
+if (($event_type != "all") OR ($event_type != 0))
+	$filter['event_type'] = $event_type;	
 if ($severity != -1)
 	$filter[] = 'criticity >= '.$severity;
 	
@@ -87,8 +107,25 @@ else {
 	
 if ($id_agent != -1)
 	$filter['id_agente'] = $id_agent;
+	
+if ($id_event != -1)
+	$filter['id_evento'] = $id_event;	
+	
+$timestamp_filter = '';	
+if ($event_view_hr > 0) {
+	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+	$timestamp_filter = " AND (utimestamp > 	$unixtime OR estado = 2)";
+}
 
-$filter['order'] = 'timestamp DESC';
+if ($id_user_ack != "0")
+	$filter['id_usuario'] = $id_user_ack;
+	
+//Search by tag
+if ($tag != "") {
+	$filter['tags'] = "%".io_safe_input($tag)."%";
+}	
+
+//$filter['order'] = 'timestamp DESC';
 $now = date ("Y-m-d");
 
 // Show contentype header	
@@ -102,6 +139,7 @@ $fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
 	'event_type', 'criticity', 'timestamp');
 
 $sql = db_get_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
+$sql .= $filter_state . $timestamp_filter . ' ORDER BY timestamp DESC';  
 
 $new = true;
 while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
@@ -114,15 +152,15 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	echo ",";
 	echo io_safe_output(agents_get_name($event["id_agente"]));
 	echo ",";
-	echo groups_get_name($event["id_grupo"]);
+	echo io_safe_output(groups_get_name($event["id_grupo"]));
 	echo ",";
 	echo io_safe_output($event["evento"]);
 	echo ",";
-	echo $event["estado"];
+	echo io_safe_output($event["estado"]);
 	echo ",";
-	echo $event["id_usuario"];
+	echo io_safe_output($event["id_usuario"]);
 	echo ",";
-	echo $event["event_type"];
+	echo io_safe_output($event["event_type"]);
 	echo ",";
 	echo $event["criticity"];
 	echo chr (13);

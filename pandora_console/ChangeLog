@@ -1,3 +1,8 @@
+2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php: Changed parameter in 
+	policies_get_modules_sql_condition function call. 
+
 2011-11-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/status_monitor.php: Fixed the open version of

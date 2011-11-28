@@ -129,7 +129,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$filter = '';
 		$disabled = $filter;
 	}
-	
+
 	switch ($disabled) {
 		case "notfired":
 			$filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -146,7 +146,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		default:
 			$filter .= '';
 	}
-	
+
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
@@ -176,7 +176,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			
 		$subQuery = implode (",", $id_modules);
 	}
-	
+
 	$orderbyText = '';
 	if ($orderby !== false) {
 		if (is_array($orderby)) {
@@ -198,7 +198,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}else if ($extra_sql != '') {
 		$extra_sql .= ' OR ';
 	}
-
+	
 	$sql = sprintf ("SELECT %s
 	FROM talert_template_modules
 		INNER JOIN tagente_modulo t2
@@ -933,7 +933,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
  */
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
-	
+
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
@@ -959,14 +959,14 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 
 	$id_agent = safe_int ($id_agent, 1);
-
-	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', (array)$id_agent);
+	
+	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
 	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 		$extra_sql = '';
 	}else if ($extra_sql != '') {
 		$extra_sql .= ' OR ';
 	}
-	
+
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	
 	if(empty($userGroups)) {

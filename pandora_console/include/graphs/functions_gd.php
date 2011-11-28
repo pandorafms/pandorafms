@@ -182,14 +182,15 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 
 		//$rating = $_GET['rating'];
 		$ratingbar = (($rating/100)*$width)-2;
-
+		$ratingbar30 = ((30/100)*$width)-2;
+		
 		$image = imagecreate($width,$height);
 		
 
 		//colors
 		$back = ImageColorAllocate($image,255,255,255);
 		imagecolortransparent ($image, $back);
-		$border = ImageColorAllocate($image,174,174,174);
+		$bordercolor = ImageColorAllocate($image,174,174,174);
 		$text = ImageColorAllocate($image,74,74,74);
 		$red = ImageColorAllocate($image,255,60,75);
 		$green = ImageColorAllocate($image,50,205,50);
@@ -201,26 +202,35 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$other_red = ImageColorAllocate($image,238, 0, 0);
 
 		ImageRectangleWithRoundedCorners($image,0,0,$width-1,$height-1,$radius,$back,false);
+		
+		$x1 = 1;
+		$y1 = 1;
+		$x2 = $ratingbar;
+		$y2 = $height - 1;
+		
 		switch ($mode)
 		{
 			case 0:
 				if ($rating > 70)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_green, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_green);
 				elseif ($rating > 50)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_yellow, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_yellow);
 				elseif ($rating > 30)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_red, $border);
-				else
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $other_red, $border);
-					
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_red);
+				else if($rating > 0) {
+					if($radius != 0) {
+						$x2 = $ratingbar30;
+					}
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $other_red);
+				}
 				break;
 			case 1:
 				if ($rating > 100)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1,$radius,$red, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$red);
 				elseif ($rating == 100)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1,$radius,$green, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$green);
 				else
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1,$radius,$blue, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$blue);
 					
 				
 				if ($rating > 50)
@@ -233,20 +243,33 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				break;
 			case 2:
 				if ($rating > 70)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $other_red, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $other_red);
 				elseif ($rating > 50)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_red, $border);
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_red);
 				elseif ($rating > 30)
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_yellow, $border);
-				else
-					ImageRectangleWithRoundedCorners($image,1,1,$ratingbar,$height-1, $radius, $soft_green, $border);
-					
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_yellow);
+				else if($rating > 0) {
+					if($radius != 0) {
+						$x2 = $ratingbar30;
+					}
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_green);
+				}
 				break;
 		}
 		
-/*
-		ImageRectangle($image,0,0,$width-1,$height-1,$border);
-*/
+		if($bordercolor !== false) {
+			$x1-=1;
+			$x2 = $width-2;
+			imageline($image, $x1+$radius, $y1, $x2-$radius, $y1, $bordercolor);
+			imageline($image, $x1+$radius, $y2, $x2-$radius, $y2, $bordercolor);
+			imageline($image, $x1, $y1+$radius, $x1, $y2-$radius, $bordercolor);
+			imageline($image, $x2, $y1+$radius, $x2, $y2-$radius, $bordercolor);
+
+			imagearc($image,$x1+$radius, $y1+$radius, $radius*2, $radius*2, 180 , 270, $bordercolor);
+			imagearc($image,$x2-$radius, $y1+$radius, $radius*2, $radius*2, 270 , 360, $bordercolor);
+			imagearc($image,$x1+$radius, $y2-$radius, $radius*2, $radius*2, 90 , 180, $bordercolor);
+			imagearc($image,$x2-$radius, $y2-$radius, $radius*2, $radius*2, 360 , 90, $bordercolor);
+		}
 
 		imagePNG($image);
 		imagedestroy($image);
@@ -254,31 +277,17 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 
    	}
    	
-	function ImageRectangleWithRoundedCorners(&$im, $x1, $y1, $x2, $y2, $radius, $color, $bordercolor)
+	function ImageRectangleWithRoundedCorners(&$im, $x1, $y1, $x2, $y2, $radius, $color)
 	{
 		// Draw rectangle without corners
 		ImageFilledRectangle($im, $x1+$radius, $y1, $x2-$radius, $y2, $color);
 		ImageFilledRectangle($im, $x1, $y1+$radius, $x2, $y2-$radius, $color);
+
 		// Draw circled corners
 		ImageFilledEllipse($im, $x1+$radius, $y1+$radius, $radius*2, $radius*2, $color);
 		ImageFilledEllipse($im, $x2-$radius, $y1+$radius, $radius*2, $radius*2, $color);
 		ImageFilledEllipse($im, $x1+$radius, $y2-$radius, $radius*2, $radius*2, $color);
 		ImageFilledEllipse($im, $x2-$radius, $y2-$radius, $radius*2, $radius*2, $color);
-		
-		if($bordercolor !== false) {
-			$x1--;
-			$y1--;
-			$x2++;
-			imageline($im, $x1+$radius, $y1, $x2-$radius, $y1, $bordercolor);
-			imageline($im, $x1+$radius, $y2, $x2-$radius, $y2, $bordercolor);
-			imageline($im, $x1, $y1+$radius, $x1, $y2-$radius, $bordercolor);
-			imageline($im, $x2, $y1+$radius, $x2, $y2-$radius, $bordercolor);
-
-			imagearc($im,$x1+$radius, $y1+$radius, $radius*2, $radius*2, 180 , 270, $bordercolor);
-			imagearc($im,$x2-$radius, $y1+$radius, $radius*2, $radius*2, 270 , 360, $bordercolor);
-			imagearc($im,$x1+$radius, $y2-$radius, $radius*2, $radius*2, 90 , 180, $bordercolor);
-			imagearc($im,$x2-$radius, $y2-$radius, $radius*2, $radius*2, 360 , 90, $bordercolor);
-		}
 	}
    	Header("Content-type: image/png");
    	

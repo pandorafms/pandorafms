@@ -1,5 +1,9 @@
 2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: Removed traces.
+
+2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php
 	 operation/events/events.php: Added tag url popup, new style in 
 	 extended event table and new fields.  

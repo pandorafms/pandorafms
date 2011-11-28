@@ -691,14 +691,10 @@ foreach ($result as $event) {
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Tags') . '</td><td align="left">';
 	if ($event["tags"] != '') {
 		$tag_array = explode(',', $event["tags"]);
-		//html_debug_print($tag_array);
 		foreach ($tag_array as $tag_element){
 			$blank_char_pos = strpos($tag_element, ' ');
-			//html_debug_print($blank_char_pos);
 			$tag_name = substr($tag_element, 0, $blank_char_pos);
 			$tag_url = substr($tag_element, $blank_char_pos + 1);
-			//html_debug_print("Tag name " . $tag_name);
-			//html_debug_print($tag_url);
 			$string .= ' ' .$tag_name;
 			if (!empty($tag_url)){
 				$string .= ' <a href="javascript: openURLTagWindow(\'' . $tag_url . '\');">' . html_print_image('images/lupa.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a> ';

@@ -31,7 +31,7 @@ if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user']
 require_once($config['homedir'] . '/include/functions_agents.php');
 require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
-enterprise_include_once ('include/functions_policies.php');
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
 $extra_sql = enterprise_hook('policies_get_agents_sql_condition');
 if ($extra_sql === ENTERPRISE_NOT_HOOK) {

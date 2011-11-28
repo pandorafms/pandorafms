@@ -1,3 +1,8 @@
+2011-11-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/status_monitor.php: Fixed the open version of
+	'Monitor detail' fails.
+
 2011-11-26  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_integria_url.php: Added a new help file.

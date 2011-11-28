@@ -20,6 +20,8 @@ global $result_sources;
 global $result_groups;
 global $result_users;
 
+require_once ("include/functions_events.php"); //To get events group information
+
 $resolutions[0] = __('None');
 if (isset ($result_resolutions['resolution'])) {
 	foreach($result_resolutions['resolution'] as $res) {
@@ -63,8 +65,15 @@ if(!isset($result['id_incidencia'])) {
 	$result['id_task'] = 0;
 	$result['descripcion'] = '';
 	$result['epilog'] = '';
+	
+	if (isset ($_GET["from_event"])) {
+		$event = get_parameter ("from_event");
+		$result['descripcion'] = io_safe_output(events_get_description ($event));
+		$result['titulo'] = ui_print_truncate_text($result['descripcion'], 75, false, true, false);
+		unset ($event);
+	}
 }
-
+	
 $table->width = "98%";
 $table->class = "databox";
 
@@ -73,7 +82,7 @@ $table->colspan[0][0] = 3;
 $table->colspan[3][0] = 3;
 $table->colspan[4][0] = 3;
 
-$table->data[0][0] = "<b>".__('Title')."</b><br/>".html_print_input_text("title", $result['titulo'], '', 50, 255, true);
+$table->data[0][0] = "<b>".__('Title')."</b><br/>".html_print_input_text("title", $result['titulo'], '', 80, 255, true);
 if(isset($result['id_incidencia'])) {
 	$table->data[1][2] = "<b>".__('Assigned user')."</b><br/>".html_print_select ($users, 'id_user', $result['id_usuario'], '', '', 0, true, false, false);
 }

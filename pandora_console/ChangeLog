@@ -1,3 +1,12 @@
+2011-11-28  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/incidents/incident_detail.php
+	operation/integria_incidents/incident.incident.php
+	operation/events/events_list.php: Fixed some bugs of the
+	create incident from event form included the change of 
+	target url when integria incidents are enabled
+	bug: 3438251
+
 2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/export_csv.php: Added filter to CSV importation 

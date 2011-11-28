@@ -232,7 +232,14 @@ else {
 
 // If is a valid XML, parse it
 if(xml_parse(xml_parser_create(), $xml)) {
-	$result = incidents_xml_to_array($xml);
+	// Check if xml is empty
+	if($xml == "<xml>\n</xml>\n") {
+		$result = false;
+	}
+	else {
+		$result = incidents_xml_to_array($xml);
+	}
+	
 	if($result == false) {
 		$result = array();
 	}

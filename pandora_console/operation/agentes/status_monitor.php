@@ -49,6 +49,8 @@ $ag_group = (int) get_parameter ('ag_group', 0);
 $offset = (int) get_parameter ('offset');
 $status = (int) get_parameter ('status', 4);
 $modulegroup = (int) get_parameter ('modulegroup');
+$sql_extra = '';
+
 
 echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60">';
 

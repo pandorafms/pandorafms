@@ -100,8 +100,7 @@ $table->data[11][1] .= __('No').'&nbsp;'.html_print_radio_button ('https', 0, ''
 $table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory where temporary data is stored."), true);
 $table->data[14][1] = html_print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
 
-$table->data[15][0] = __('IP list with API access') . 
-	ui_print_help_tip (__("The list of IPs separate with carriage return."), true);
+$table->data[15][0] = __('IP list with API access') . ui_print_help_icon ("ip_api_list", true);
 $list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
 $table->data[15][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 

@@ -145,14 +145,28 @@ function array_apply_io_safe_output($item) {
  */
 function isInACL($ip) {
 	global $config;
-	//If set * in the list ACL return true 
-	if(in_array('*', $config['list_ACL_IPs_for_API']))
-		return true;
 	
 	if (in_array($ip, $config['list_ACL_IPs_for_API']))
 		return true;
-	else
-		return false;
+	
+	// If the IP is not in the list, we check one by one, all the wildcard registers
+	foreach($config['list_ACL_IPs_for_API'] as $acl_ip) {
+		if(preg_match('/\*$/', $acl_ip)) {
+			// Remove the final wildcard
+			$acl_ip = substr($acl_ip,0,strlen($acl_ip)-1);
+			
+			// Scape for protection
+			$acl_ip = str_replace('*','\*',$acl_ip);
+			$acl_ip = str_replace('.','\.',$acl_ip);
+			
+			// If the string match with the beginning of the IP give it access
+			if(preg_match('/^'.$acl_ip.'/', $ip)) {
+				return true;
+			}
+		}
+	}
+	
+	return false;
 }
 
 //-------------------------DEFINED OPERATIONS FUNCTIONS-------------------------

@@ -238,24 +238,7 @@ function config_update_config () {
 	config_update_value ('refr', get_parameter('refr', $config['refr']));	
 	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));	
 	
-	$enterprise = enterprise_include_once('include/functions_policies.php');
-	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
-		$locked = enterprise_hook('policies_semaphore_test_and_set');
-		if ($locked) {
-			db_pandora_audit("Policy management", "BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
-
-			config_update_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
-			
-			db_pandora_audit("Policy management", "UNBLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
-			enterprise_hook('policies_semaphore_unlock');
-		}
-		else {
-			db_pandora_audit("Policy management", "Try to BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
-		}
-	}
-	else {
-		config_update_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
-	}
+	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
@@ -624,10 +607,6 @@ function config_process_config () {
 	
 	if (!isset ($config['autoupdate'])) {
 		config_update_value ( 'autoupdate', 0);
-	}
-	
-	if (!isset ($config['can_block_policies'])) {
-		config_update_value ( 'can_block_policies', 0);
 	}
 	
 	if (!isset ($config['api_password'])) {

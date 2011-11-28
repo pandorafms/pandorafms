@@ -1,5 +1,10 @@
 2011-11-28  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_config.php: Clean deprecated lock policies
+	code for bug 3437881
+
+2011-11-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/graphs/functions_gd.php: Fixed rounded corners
 	graphs when the progress is less than 30%
 

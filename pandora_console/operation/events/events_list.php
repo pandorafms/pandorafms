@@ -587,7 +587,7 @@ foreach ($result as $event) {
 		$string .= date ($config["date_format"], $event['timestamp_rep']);
 	}
 	else {
-		$string .= date ($config["date_format"], $event["timestamp"]);
+		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
 	}		
 	$string .= '</td></tr><tr class="rowOdd">';	
 	$odd = '';

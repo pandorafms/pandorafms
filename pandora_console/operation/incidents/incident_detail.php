@@ -178,16 +178,17 @@ elseif (isset ($_GET["insert_form"])) {
 	$texto = "";
 	$usuario = $config["id_user"];
 	$id_creator = $config["id_user"];
-	
+	$id_grupo = 0;
+
 	if (isset ($_GET["from_event"])) {
 		$event = get_parameter ("from_event");
-		$titulo = events_get_description ($event);
+		$texto = io_safe_output(events_get_description ($event));
+		$titulo = ui_print_truncate_text(events_get_description ($event), 75, false, true, false);
 		$id_grupo = events_get_group ($event);
-		$origen = "Pandora FMS event";
+		$origen = "Pandora FMS Event";
 		unset ($event);
 	}
 	$prioridad = 0;
-	$id_grupo = 0;
 }
 else {
 	db_pandora_audit("HACK","Trying to get to incident details in an unusual way");
@@ -271,9 +272,9 @@ foreach ($return as $row) {
 
 // Only owner could change source or user with Incident management privileges
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	html_print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135');
+	html_print_select ($fields, "origen_form", $origen, '', '', '', false, false, false, 'w135');
 } else {
-	html_print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135', true);
+	html_print_select ($fields, "origen_form", $origen, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 

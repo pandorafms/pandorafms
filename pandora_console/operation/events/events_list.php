@@ -516,7 +516,13 @@ foreach ($result as $event) {
 	
 	// Create incident from this event
 	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
-		$data[4] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event='.$event["id_evento"].'">';
+		if(isset($config['integria_enabled']) && $config['integria_enabled'] == 1) {
+			$incidents_path = 'integria_incidents/incident&amp;tab=editor';
+		}
+		else {
+			$incidents_path = 'incidents/incident_detail&amp;insert_form';
+		}
+		$data[4] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/'.$incidents_path.'&amp;from_event='.$event["id_evento"].'">';
 		$data[4] .= html_print_image ("images/page_lightning.png", true,
 			array ("title" => __('Create incident from event')));
 		$data[4] .= '</a>';

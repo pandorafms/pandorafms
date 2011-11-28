@@ -1,5 +1,10 @@
 2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: Fixed bad cast from alphanumeric
+	to numeric in timestamp conversion.
+
+2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php: Removed traces.
 
 2011-11-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

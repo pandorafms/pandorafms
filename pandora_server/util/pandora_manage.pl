@@ -339,11 +339,28 @@ sub notexists_error ($$) {
 }
 
 ###############################################################################
+# Print a 'exists' error and exit the program.
+###############################################################################
+sub exists_error ($$) {
+    print (STDERR "[ERROR] Error: The $_[0] '$_[1]' already exists.\n\n");
+    exit 1;
+}
+
+###############################################################################
 # Check the return of 'get id' and call the error if its equal to -1.
 ###############################################################################
 sub exist_check ($$$) {
     if($_[0] == -1) {
 		notexists_error($_[1],$_[2]);
+	}
+}
+
+###############################################################################
+# Check the return of 'get id' and call the error if its not equal to -1.
+###############################################################################
+sub non_exist_check ($$$) {
+    if($_[0] != -1) {
+		exists_error($_[1],$_[2]);
 	}
 }
 
@@ -487,6 +504,8 @@ sub cli_create_agent() {
 	exist_check($id_group,'group',$group_name);
 	my $os_id = get_os_id($dbh,$os_name);
 	exist_check($id_group,'operating system',$group_name);
+	my $agent_exists = get_agent_id($dbh,$agent_name);
+	non_exist_check($agent_exists, 'agent name', $agent_name);
 	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh);
 }
 
@@ -521,6 +540,10 @@ sub cli_create_data_module() {
 	my $module_type_def;
 
 	print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+	non_exist_check($module_exists, 'module name', $module_name);
 		
 	# If the module is local, we add it to the conf file
 	if(defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
@@ -575,7 +598,6 @@ sub cli_create_data_module() {
 			exit;
 	}
 	
-	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
 	
 	my $module_group_id = get_module_group_id($dbh,$module_group);

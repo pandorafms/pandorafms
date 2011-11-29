@@ -86,7 +86,9 @@ namespace Pandora_Modules {
 		MODULE_PERFCOUNTER,    /**< The module reads performance counters */
 		MODULE_TCPCHECK,       /**< The module checks whether a tcp port is open */
 		MODULE_REGEXP,         /**< The module searches a file for matches of a regular expression */
-		MODULE_PLUGIN          /**< Plugin */
+		MODULE_PLUGIN,          /**< Plugin */
+		MODULE_PING,            /**< Ping module */
+		MODULE_SNMPGET          /**< SNMP get module */
 	} Module_Kind;
 	
 	/**
@@ -137,8 +139,10 @@ namespace Pandora_Modules {
 	const string module_perfcounter_str = "module_perfcounter";
 	const string module_tcpcheck_str   = "module_tcpcheck";	
 	const string module_regexp_str     = "module_regexp";	
-	const string module_plugin_str     = "module_plugin";	
-
+	const string module_plugin_str     = "module_plugin";
+	const string module_ping_str       = "module_ping";	
+	const string module_snmpget_str    = "module_snmpget";	
+	
 	/**
 	 * Pandora module super-class exception.
 	 */

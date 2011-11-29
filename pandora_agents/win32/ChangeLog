@@ -1,5 +1,22 @@
 2011-11-29  Ramon Novoa  <rnovoa@artica.es>
 
+	* modules/pandora_module.h,
+	  modules/pandora_module_exec.cc,
+	  modules/pandora_module_exec.h,
+	  modules/pandora_module_list.cc,
+	  modules/pandora_module_factory.cc,
+	  modules/pandora_module.cc,
+	  Makefile.am: Added native ping and SNMP get modules that wrap the
+	  calls to ping.exe and snmpget.exe.
+
+	* modules/pandora_module_ping.h,
+	  modules/pandora_module_snmpget.h,
+	  modules/pandora_module_ping.cc,
+	  modules/pandora_module_snmpget.cc: Added to repository. Ping and
+	  SNMP get modules.
+
+2011-11-29  Ramon Novoa  <rnovoa@artica.es>
+
 	* bin/PandoraAgent.exe: Updated to current revision.
 
 2011-11-24  Ramon Novoa  <rnovoa@artica.es>

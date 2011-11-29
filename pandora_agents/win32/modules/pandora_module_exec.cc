@@ -37,7 +37,7 @@ using namespace Pandora_Modules;
 Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec)
 					 : Pandora_Module (name) {
 	this->module_exec = "cmd.exe /c \"" + exec + "\"";
-	
+	this->proc = 0;
 	this->setKind (module_exec_str);
 }
 
@@ -148,18 +148,28 @@ Pandora_Module_Exec::run () {
 				pandoraLog ("TerminateJobObject failed. (error %d)",
 					    GetLastError ());
 			}
-                        if (retval != STILL_ACTIVE) {
-                          pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
-                                      this->module_name.c_str (), retval);
-                        }
-                        this->has_output = false;
+			if (retval != STILL_ACTIVE && this->proc == 0) {
+				pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
+				this->module_name.c_str (), retval);
+			}
+			this->has_output = false;
 		}
 
-                if (!output.empty()) {
-                  this->setOutput (output);
-                } else {
-                  this->setOutput ("");
-                }
+		// Proc mode
+		if (this->proc == 1) {
+			if (retval == 0) {
+				this->setOutput ("1");
+			} else {
+				this->setOutput ("0");
+				this->has_output = true;
+			}
+		}
+		// Command output mode
+		else if (!output.empty()) {
+			this->setOutput (output);
+		} else {
+			this->setOutput ("");
+		}
 	
 		/* Close job, process and thread handles. */
 		CloseHandle (job);

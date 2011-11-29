@@ -207,11 +207,11 @@ if ($config["pure"] == 0) {
 		);
 	
 	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
-	
+
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
-		url = '<?php echo 'http://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/operation/events/sound_events.php'; ?>';
+		url = '<?php $protocol = $config['https'] ? 'https' : 'http'; echo $protocol . '://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/operation/events/sound_events.php'; ?>';
 		
 		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 	}

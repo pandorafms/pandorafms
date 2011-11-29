@@ -1,5 +1,11 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events.php: Fixed sound event popup over https.
+	
+	Fixes: #3443835
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_reporting.php: Removed entities in events 
 	reports.
 	

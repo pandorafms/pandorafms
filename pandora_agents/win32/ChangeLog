@@ -1,3 +1,7 @@
+2011-11-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/PandoraAgent.exe: Updated to current revision.
+
 2011-11-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: Use double instead of long for intermediate

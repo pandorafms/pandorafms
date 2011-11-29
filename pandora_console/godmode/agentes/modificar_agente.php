@@ -431,7 +431,7 @@ if ($agents !== false) {
 		// Group icon and name
 		echo "<td class='$tdcolor' align='center' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
 		// Description
-		echo "<td class='".$tdcolor."f9'>".$agent["comentarios"]."</td>";
+		echo "<td class='".$tdcolor."f9'>". ui_print_truncate_text($agent["comentarios"], 65, true, true, true, '[&hellip;]', 'font-size: 6.5pt;')."</td>";
 		// Action
 		//When there is only one element in page it's necesary go back page.
 		if ((count($agents) == 1) && ($offset >= $config["block_size"]))

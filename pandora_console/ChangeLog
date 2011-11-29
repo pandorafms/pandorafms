@@ -1,5 +1,12 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_reporting.php: Removed entities in events 
+	reports.
+	
+	Fixes: #3445082
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	 include/functions_reporting.php: Fixed custom graphs in preview 
 	 reporting and PDF exportation.

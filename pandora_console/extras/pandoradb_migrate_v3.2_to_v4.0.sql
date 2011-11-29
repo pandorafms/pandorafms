@@ -28,6 +28,8 @@ ALTER TABLE `tgrupo` ADD COLUMN `id_skin` int(10) unsigned NOT NULL;
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
 ALTER TABLE `tnetwork_component` ADD COLUMN `post_process` double(18,13) DEFAULT 0;
+ALTER TABLE `tnetwork_component` ADD COLUMN `str_warning` text DEFAULT '';
+ALTER TABLE `tnetwork_component` ADD COLUMN `str_critical` text DEFAULT '';
 
 -- -----------------------------------------------------
 -- Table `treport_content`

@@ -1,5 +1,10 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* util/pandora_manage.pl: Added some checks that I forget in my 
+	last commit.
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* util/pandora_manage.pl: Added checks of agent and module names at
 	creation time.
 	

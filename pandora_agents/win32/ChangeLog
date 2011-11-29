@@ -1,5 +1,10 @@
 2011-11-29  Ramon Novoa  <rnovoa@artica.es>
 
+	* modules/pandora_module_snmpget.cc: Modified the call to snmpget.exe
+	  to directly retrieve the value.
+
+2011-11-29  Ramon Novoa  <rnovoa@artica.es>
+
 	* modules/pandora_module.h,
 	  modules/pandora_module_exec.cc,
 	  modules/pandora_module_exec.h,

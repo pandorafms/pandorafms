@@ -30,7 +30,7 @@ using namespace Pandora_Modules;
  * @param host Host to be SNMPGeted.
  */
 Pandora_Module_SNMPGet::Pandora_Module_SNMPGet (string name, string version, string community, string agent, string oid, string advanced_options)
-					 : Pandora_Module_Exec (name, "snmpget.exe -v " + version + " -c " + community + " " + advanced_options + " " + agent + " " + oid + " 2>nul | tail.exe -1 | cut.exe -d\" \" -f 4- | tr.exe -d \\\"\\n") {
+					 : Pandora_Module_Exec (name, "snmpget.exe -OUevqt -v " + version + " -c " + community + " " + advanced_options + " " + agent + " " + oid + " 2>nul | tr.exe -d \\\"\\n") {
 	this->setKind (module_snmpget_str);
 }
 

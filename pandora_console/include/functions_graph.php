@@ -741,40 +741,48 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	if ($only_image) {
 		$flash_charts = false;
 	}
+<<<<<<< .mine
+			
+	if ($flash_charts){
+		include_flash_chart_script();
+	}	
+	
+=======
 			
 	if ($flash_charts){
 		include_flash_chart_script();
 	}	
 
+>>>>>>> .r5204
 	switch ($stacked) {
 		case GRAPH_AREA:
-			$color = null;
+			$color = null; 
 			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size'], "", $ttl);
+				$config['fontpath'], $config['font_size'], "", $ttl); 
 			break;
 		default:
-		case GRAPH_STACKED_AREA:
+		case GRAPH_STACKED_AREA: 
 			$color = null;
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size'], "", $ttl);
+				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl);
 			break;
-		case GRAPH_LINE:
+		case GRAPH_LINE:  
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size'], "", $ttl);
+				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl); 
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
 			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				$config['fontpath'], $config['font_size'], "", $ttl);
+				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl);
 			break;
 	}
 }

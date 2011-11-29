@@ -1738,7 +1738,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0, $date = 0
 	foreach ($events as $eventRow) {
 		foreach ($eventRow as $event) { 
 			$data = array ();
-			$data[0] = $event['evento'];
+			$data[0] = io_safe_output($event['evento']);
 			$data[1] = $event['event_type'];
 			$data[2] = get_priority_name ($event['criticity']);
 			$data[3] = $event['count_rep'];
@@ -1787,7 +1787,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0, $date = 0, 
 	if ($events) {
 		foreach ($events as $event) {
 			$data = array ();
-			$data[0] = $event['evento'];
+			$data[0] = io_safe_output($event['evento']);
 			$data[1] = $event['event_type'];
 			$data[2] = get_priority_name ($event['criticity']);
 			$data[3] = $event['timestamp'];
@@ -1856,7 +1856,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 		foreach ($events as $eventRow) {
 			foreach ($eventRow as $event) {
 				$data = array ();
-				$data[0] = $event['evento'];
+				$data[0] = io_safe_output($event['evento']);
 				$data[1] = $event['event_type'];
 				$data[2] = get_priority_name ($event['criticity']);
 				$data[3] = $event['count_rep'];

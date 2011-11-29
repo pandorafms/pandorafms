@@ -222,7 +222,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 
 function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
-	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
 
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
@@ -249,13 +249,13 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='include/graphs/functions_pchart.php?graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . $homeurl . "/include/graphs/functions_pchart.php?graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}	
 }
 
 function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
-	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
 		
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
@@ -282,14 +282,14 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . $homeurl . "/include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}
 }
 
 function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
-	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
-		
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -312,7 +312,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . $homeurl . "/include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}	
 }
 

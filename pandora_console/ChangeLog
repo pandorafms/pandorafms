@@ -1,5 +1,14 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php: Added check for flash charts in pdf
+	exportation.
+	* operation/events/events_validate.php: Removed entities in this 
+	view.
+
+	Fixes: #3445106
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/setup/setup_visuals.php: Added custom logo in visual 
 	styles.
 

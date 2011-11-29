@@ -84,7 +84,7 @@ foreach($ids as $key => $id) {
 			"title" => $title_st,
 			"id" => 'status_img_'.$event["id_evento"]));
 			
-	$table->data[$key][0] = $icon." ".$event['evento'];
+	$table->data[$key][0] = $icon." ".io_safe_output($event['evento']);
 	$table->align[$key][0] = 'left';
 	if($event['id_alert_am'] != 0) {
 		$any_alert = true;

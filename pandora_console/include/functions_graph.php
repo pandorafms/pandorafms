@@ -378,11 +378,6 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	global $config;
 	global $graphic_type;
 	
-	$flash_charts = $config['flash_charts'];
-	
-	if ($flash_charts){
-		include_flash_chart_script();
-	}
 	
 	// Set the title and time format
 	
@@ -741,9 +736,15 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$time_format = 'M j';
 	}
 
+	$flash_charts = $config['flash_charts'];
+
 	if ($only_image) {
 		$flash_charts = false;
 	}
+			
+	if ($flash_charts){
+		include_flash_chart_script();
+	}	
 
 	switch ($stacked) {
 		case GRAPH_AREA:

@@ -268,7 +268,7 @@ html_print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
-echo grafico_eventos_grupo(220, 180, rawurlencode ($sql_post));
+echo grafico_eventos_grupo(350, 248, rawurlencode ($sql_post));
 echo '</div>';
 echo '<div id="steps_clean">&nbsp;</div>';
 echo '</div>';

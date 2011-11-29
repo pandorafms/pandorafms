@@ -741,19 +741,16 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	if ($only_image) {
 		$flash_charts = false;
 	}
-<<<<<<< .mine
+
 			
 	if ($flash_charts){
 		include_flash_chart_script();
 	}	
 	
-=======
-			
 	if ($flash_charts){
 		include_flash_chart_script();
 	}	
 
->>>>>>> .r5204
 	switch ($stacked) {
 		case GRAPH_AREA:
 			$color = null; 

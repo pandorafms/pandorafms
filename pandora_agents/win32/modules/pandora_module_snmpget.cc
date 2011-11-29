@@ -1,4 +1,4 @@
-/* Pandora exec module. These modules exec a command
+/* Pandora SNMPGet module. These modules SNMPGet a command.
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -18,28 +18,19 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_MODULE_EXEC_H__
-#define	__PANDORA_MODULE_EXEC_H__
+#include "pandora_module_snmpget.h"
 
-#include "pandora_module.h"
+using namespace Pandora;
+using namespace Pandora_Modules;
 
-namespace Pandora_Modules {
-	/**
-	 * Module to execute a custom command using the Windows command
-	 * line.
-	 *
-	 * Any custom order that want to be executed can be put in
-	 * the <code>util</code> directory into the Pandora agent path.
-	 */
-	class Pandora_Module_Exec : public Pandora_Module {
-	private:
-		string module_exec;        
-	public:
-		unsigned char proc;
-		Pandora_Module_Exec    (string name, string exec);
-		
-		void   run       ();
-	};
+/** 
+ * Creates a Pandora_Module_SNMPGet object.
+ * 
+ * @param name Module name
+ * @param host Host to be SNMPGeted.
+ */
+Pandora_Module_SNMPGet::Pandora_Module_SNMPGet (string name, string version, string community, string agent, string oid, string advanced_options)
+					 : Pandora_Module_Exec (name, "snmpget.exe -v " + version + " -c " + community + " " + advanced_options + " " + agent + " " + oid + " 2>nul | tail.exe -1 | cut.exe -d\" \" -f 4- | tr.exe -d \\\"\\n") {
+	this->setKind (module_snmpget_str);
 }
 
-#endif

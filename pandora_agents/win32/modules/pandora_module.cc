@@ -218,6 +218,10 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 		return MODULE_REGEXP;
 	} else if (kind == module_plugin_str) {
 		return MODULE_PLUGIN;
+	} else if (kind == module_ping_str) {
+		return MODULE_PING;
+	} else if (kind == module_snmpget_str) {
+		return MODULE_SNMPGET;
 	} else {
 		return MODULE_0;
 	}

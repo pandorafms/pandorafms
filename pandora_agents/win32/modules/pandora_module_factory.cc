@@ -36,6 +36,8 @@
 #include "pandora_module_tcpcheck.h"
 #include "pandora_module_regexp.h"
 #include "pandora_module_plugin.h"
+#include "pandora_module_ping.h"
+#include "pandora_module_snmpget.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -93,6 +95,15 @@ using namespace Pandora_Strutils;
 #define TOKEN_CRONINTERVAL  ("module_cron_interval ")
 #define TOKEN_PRECONDITION  ("module_precondition ")
 #define TOKEN_NOSEEKEOF     ("module_noseekeof ")
+#define TOKEN_PING          ("module_ping ")
+#define TOKEN_PING_COUNT    ("module_ping_count ")
+#define TOKEN_PING_TIMEOUT  ("module_ping_timeout ")
+#define TOKEN_SNMPGET       ("module_snmpget")
+#define TOKEN_SNMPVERSION   ("module_snmp_version ")
+#define TOKEN_SNMPCOMMUNITY ("module_snmp_community ")
+#define TOKEN_SNMPAGENT    ("module_snmp_agent ")
+#define TOKEN_SNMPOID       ("module_snmp_oid ")
+#define TOKEN_ADVANCEDOPTIONS ("module_advanced_options ")
 
 string
 parseLine (string line, string token) {
@@ -139,6 +150,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_crontab, module_cron_interval, module_post_process;
 	string                 module_min_critical, module_max_critical, module_min_warning, module_max_warning;
 	string                 module_disabled, module_min_ff_event, module_noseekeof;
+	string                 module_ping, module_ping_count, module_ping_timeout;
+	string                 module_snmpget, module_snmp_version, module_snmp_community, module_snmp_agent, module_snmp_oid;
+	string                 module_advanced_options;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -191,8 +205,17 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_max_warning   = "";
 	module_disabled      = "";
 	module_min_ff_event  = "";
-	module_noseekeof  = "";
-	
+	module_noseekeof     = "";
+	module_ping          = "";
+	module_ping_count    = "";
+	module_ping_timeout  = "";
+	module_snmpget       = "";
+    module_snmp_version  = "";
+    module_snmp_community = "";
+    module_snmp_agent    = "";
+    module_snmp_oid      = "";
+    module_advanced_options = "";
+    
 	stringtok (tokens, definition, "\n");
 	
 	/* Pick the first and the last value of the token list */
@@ -364,7 +387,33 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_noseekeof == "") {
 			module_noseekeof = parseLine (line, TOKEN_NOSEEKEOF);
 		}
-
+		if (module_ping == "") {
+			module_ping = parseLine (line, TOKEN_PING);
+		}
+		if (module_ping_count == "") {
+			module_ping_count = parseLine (line, TOKEN_PING_COUNT);
+		}
+		if (module_ping_timeout == "") {
+			module_ping_timeout = parseLine (line, TOKEN_PING_TIMEOUT);
+		}
+		if (module_snmpget == "") {
+			module_snmpget = parseLine (line, TOKEN_SNMPGET);
+		}
+		if (module_snmp_version == "") {
+			module_snmp_version = parseLine (line, TOKEN_SNMPVERSION);
+		}
+		if (module_snmp_community == "") {
+			module_snmp_community = parseLine (line, TOKEN_SNMPCOMMUNITY);
+		}
+		if (module_snmp_agent == "") {
+			module_snmp_agent = parseLine (line, TOKEN_SNMPAGENT);
+		}
+		if (module_snmp_oid == "") {
+			module_snmp_oid = parseLine (line, TOKEN_SNMPOID);
+		}
+		if (module_advanced_options == "") {
+			module_advanced_options = parseLine (line, TOKEN_ADVANCEDOPTIONS);
+		}
 		iter++;
 	}
 
@@ -455,6 +504,34 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern, (unsigned char) atoi (module_noseekeof.c_str ()));
 	} else if (module_plugin != "") {
 		module = new Pandora_Module_Plugin (module_name, module_plugin);
+	} else if (module_ping != "") {
+		if (module_ping_count == "") {
+			module_ping_count = "1";
+		}
+		if (module_ping_timeout == "") {
+			module_ping_timeout = "1000";
+		}
+
+		module = new Pandora_Module_Ping (module_name, module_ping, module_ping_count, module_ping_timeout, module_advanced_options);
+		if (module_timeout != "") {
+			module->setTimeout (atoi (module_timeout.c_str ()));
+		}
+	} else if (module_snmpget != "") {
+		if (module_snmp_version == "") {
+			module_snmp_version = "1";
+		}
+		if (module_snmp_community == "") {
+			module_snmp_community = "public";
+		}
+		if (module_snmp_agent == "") {
+			module_snmp_agent = "localhost";
+		}
+
+		module = new Pandora_Module_SNMPGet (module_name, module_snmp_version, module_snmp_community, module_snmp_agent, module_snmp_oid, module_advanced_options);
+		if (module_timeout != "") {
+			module->setTimeout (atoi (module_timeout.c_str ()));
+		}
+
 	} else {
 		return NULL;
 	}

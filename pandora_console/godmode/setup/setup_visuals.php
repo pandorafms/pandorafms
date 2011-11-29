@@ -95,10 +95,10 @@ $table->data[13][0] = __('Flash charts') . ui_print_help_tip(__('Whether to use 
 $table->data[13][1] = __('Yes').'&nbsp;'.html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
 $table->data[13][1] .= __('No').'&nbsp;'.html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
 
-if (!defined ('PANDORA_ENTERPRISE')){
-	$table->data[14][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
-	$table->data[14][1] = html_print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
-}
+
+$table->data[14][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
+$table->data[14][1] = html_print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
+
 
 $values = array ();
 $values[5] = human_time_description_raw (5);

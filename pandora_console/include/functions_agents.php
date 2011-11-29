@@ -316,6 +316,21 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		$filter = array ();
 	}
 	
+	
+	if(isset($filter['offset'])) {
+		$offset = $filter['offset'];
+		unset($filter['offset']);
+	}
+	
+	if(isset($filter['limit'])) {
+		$limit = $filter['limit'];
+		unset($filter['limit']);
+	}
+	
+	unset($filter['order']);
+
+	$filter_nogroup = $filter;
+	
 	//Get user groups
 	$groups = array_keys (users_get_groups ($config["id_user"], $access, false));
 
@@ -360,29 +375,28 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'];
 	}
 	
-	unset($filter['order']);
+	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
 	
-	if(isset($filter['offset'])) {
-		$offset = $filter['offset'];
-		unset($filter['offset']);
-	}
-	
-	if(isset($filter['limit'])) {
-		$limit = $filter['limit'];
-		unset($filter['limit']);
-	}
-	
-	$where = db_format_array_where_clause_sql ($filter, 'AND', ' WHERE (').')';
+	$where_nogroup = db_format_array_where_clause_sql ($filter_nogroup, 'AND', '');
 	
 	$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
 	
+	$extra = false;
 	if($sql_extra != ENTERPRISE_NOT_HOOK) {
-		if (!empty($sql_extra))
-		$where = sprintf('%s OR %s', $where, $sql_extra);
+		if (!empty($sql_extra)) {
+			$extra = true;
+		}
 	}
-	
-	$sql = sprintf('SELECT %s FROM tagente %s %s', implode(',',$fields), $where, $order);
-	
+
+	if($extra) {
+		$where = sprintf('%s AND (%s OR %s)', $where, $where_nogroup, $sql_extra);	
+	}
+	else {
+		$where = sprintf('%s AND %s', $where, $where_nogroup);
+	}
+
+	$sql = sprintf('SELECT %s FROM tagente WHERE %s %s', implode(',',$fields), $where, $order);
+
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":

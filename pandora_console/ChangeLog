@@ -1,5 +1,12 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/setup/setup_visuals.php: Added custom logo in visual 
+	styles.
+
+	Fixes: #3419712
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events.php: Fixed sound event popup over https.
 	
 	Fixes: #3443835

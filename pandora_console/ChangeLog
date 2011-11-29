@@ -1,3 +1,9 @@
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* install.php: Fixed width style in step 2.
+	
+	Fixes: #3421097
+
 2011-11-29  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_agents.php: Fixed filter of the operation

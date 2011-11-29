@@ -642,6 +642,10 @@ sub cli_create_network_module() {
 	my $module_type_def;
 	
 	print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+	non_exist_check($module_exists, 'module name', $module_name);
 	
 	if ($module_type =~ m/.?snmp.?/) {
 		print "[ERROR] '$module_type' is not a valid type. For snmp modules use --create_snmp_module parameter\n\n";
@@ -658,7 +662,6 @@ sub cli_create_network_module() {
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
 	
-	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
 	
 	my $module_group_id = get_module_group_id($dbh,$module_group);
@@ -717,11 +720,14 @@ sub cli_create_snmp_module() {
 	
 	print "[INFO] Adding snmp module '$module_name' to agent '$agent_name'\n\n";
 	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+	non_exist_check($module_exists, 'module name', $module_name);	
+	
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
 
-	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
 	
 	my $module_group_id = get_module_group_id($dbh,$module_group);
@@ -793,6 +799,10 @@ sub cli_create_plugin_module() {
 	
 	print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+	non_exist_check($module_exists, 'module name', $module_name);	
+	
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
@@ -802,7 +812,6 @@ sub cli_create_plugin_module() {
 			exit;
 	}
 	
-	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
 	
 	my $module_group_id = get_module_group_id($dbh,$module_group);

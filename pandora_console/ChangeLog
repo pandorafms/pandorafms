@@ -1,5 +1,11 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php
+	include/functions_graph.php: Fixed PDF exportation of combined 
+	graphs.
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php: Resized graph in this view.
 	
 	Fixed: #3411788

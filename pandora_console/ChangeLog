@@ -1,5 +1,13 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php
+	 include/functions_reporting.php: Fixed custom graphs in preview 
+	 reporting and PDF exportation.
+	 
+	 Fixes: #3444170
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/snmpconsole/snmp_view.php: Fixed trap validation when
 	the trap has Id equal to 1.
 	

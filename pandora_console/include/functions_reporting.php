@@ -2263,7 +2263,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				0,
 				$graph["stacked"],
-				$report["datetime"]);
+				$report["datetime"],
+				true);
 			array_push ($table->data, $data);
 	
 			break;

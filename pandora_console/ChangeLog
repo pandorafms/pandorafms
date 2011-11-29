@@ -1,5 +1,12 @@
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/snmpconsole/snmp_view.php: Fixed trap validation when
+	the trap has Id equal to 1.
+	
+	Fixes: #3439289
+
+2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	godmode/agentes/modificar_agente.php: Changed style in description
 	column of this view. 
 

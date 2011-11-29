@@ -76,7 +76,7 @@ if (isset ($_GET["delete"])){
 // Check Event (only incident write access).
 if (isset ($_GET["check"])) {
 	$id_trap = (int) get_parameter_get ("check", 0);
-	if ($id_trap > 1 && check_acl ($config['id_user'], 0, "IW")) {
+	if (check_acl ($config['id_user'], 0, "IW")) {
 		$values = array(
 			'status' => 1,
 			'id_usuario' => $config["id_user"]);
@@ -474,7 +474,8 @@ if ($traps !== false) {
 		//User
 		if (!empty ($trap["status"])) {
 			$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
-			$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
+			if (!empty($trap["id_usuario"]))
+				$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
 		} else {
 			$data[5] = '--';
 		}

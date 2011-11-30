@@ -1,3 +1,12 @@
+2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/estado_generalagente.php
+	include/javascript/jquery.ui.dialog.js
+	general/header.php: Fixed ui_dialog when graphs are displayed 
+	behind.
+	
+	Fixes: #3441058
+
 2011-11-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_gd.php: Fixed rounded corners 

@@ -23,6 +23,7 @@
 #define	__PANDORA_MODULE_LOGEVENT_H__
 
 #include "pandora_module.h"
+#include "boost/regex.h"
 
 // Log event read buffer size
 #define	BUFFER_SIZE 1024
@@ -39,14 +40,15 @@ namespace Pandora_Modules {
 
 	class Pandora_Module_Logevent : public Pandora_Module {
 	private:
-        unsigned long id;
-	int type;
-	unsigned char first_run;
-	string source;
-	string application;
-	string pattern;
-	HANDLE log_event;
-	HANDLE messages_dll;
+		regex_t regexp;
+		unsigned long id;
+		int type;
+		unsigned char first_run;
+		string source;
+		string application;
+		string pattern;
+		HANDLE log_event;
+		HANDLE messages_dll;
 
         HANDLE openLogEvent ();
         void closeLogEvent ();

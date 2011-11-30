@@ -1,5 +1,11 @@
 2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/ajax/agent.php
+	operation/agentes/exportdata.php: Fixed agent autocomplete 
+	functionality.
+
+2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_reporting.php: Fixed html render of combined 
 	graphs.
 

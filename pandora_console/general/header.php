@@ -203,6 +203,15 @@ if ($config["metaconsole"] == 0){
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+/* Temporal fix to hide graphics when ui_dialog are displayed */
+$("#yougotalert").click(function () { 
+	$("#agent_access").css("display", "none");	
+});
+$("#ui_close_dialog_titlebar").click(function () {
+	alert("LOLOLO");
+	$("#agent_access").css("display","");
+});	
+	
 <?php if ($msg_cnt > 0): ?>
 	$("#yougotmail").pulsate ();
 <?php endif; ?>

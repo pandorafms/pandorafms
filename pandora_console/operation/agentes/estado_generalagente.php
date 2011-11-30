@@ -55,7 +55,7 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 echo '<div style="height: 10px">&nbsp;</div>';	
 	
 	//Floating div
-	echo '<div style="float:right; width:320px; padding-top:11px;">';
+	echo '<div id="agent_access" style="float:right; width:320px; padding-top:11px;">';
 
 if ($config["agentaccess"]){
 	echo '<b>'.__('Agent access rate (24h)').'</b><br />';

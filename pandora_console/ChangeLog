@@ -1,6 +1,11 @@
 2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Fixed bad sql sintax in 
+	agents_get_agents function.
+
+2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php: Fixed bad sql sintax in 
 	agents_get_agents funtion.
 	
 	Fixes: #3445995

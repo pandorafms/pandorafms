@@ -229,9 +229,12 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$red);
 				elseif ($rating == 100)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$green);
-				else
+				else if($rating > 0){
+					if($radius != 0 && $rating < 30) {
+						$x2 = $ratingbar30;
+					}
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$blue);
-					
+				}	
 				
 				if ($rating > 50)
 					if ($rating > 100)

@@ -1,3 +1,9 @@
+2011-11-30  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_edit_modules.php: Fixed massive
+	module edition to not break module group, export id etc 
+	when edit another field
+
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* install.php: Fixed width style in step 2.

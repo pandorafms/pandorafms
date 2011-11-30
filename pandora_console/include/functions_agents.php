@@ -977,12 +977,15 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 
 	$id_agent = safe_int ($id_agent, 1);
-	
-	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
-	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
-		$extra_sql = '';
-	}else if ($extra_sql != '') {
-		$extra_sql .= ' OR ';
+
+	$extra_sql = '';
+	if ($id_agent != 0){
+		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
+		if ($extra_sql === ENTERPRISE_NOT_HOOK) {
+			$extra_sql = '';
+		}else if ($extra_sql != '') {
+			$extra_sql .= ' OR ';
+		}
 	}
 
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
@@ -1152,7 +1155,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 
 	$result = db_get_all_rows_sql ($sql);
-	
+
 	if (empty ($result)) {
 		return array ();
 	}
@@ -1484,7 +1487,7 @@ function agents_get_status($id_agent = 0) {
 		if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
 			$modules_async++;
 		}
-	}
+	}	
 
 	// If all the modules are asynchronous or keep alive, the group cannot be unknown
 	if($modules_async < count($modules)) {

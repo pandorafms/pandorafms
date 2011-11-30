@@ -153,7 +153,15 @@ function config_update_config () {
 	config_update_value ('prominent_time', (string) get_parameter ('prominent_time', $config["prominent_time"]));
 	config_update_value ('timesource', (string) get_parameter ('timesource', $config["timesource"]));
 	config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr', $config["event_view_hr"]));
-	config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]));
+	if (isset($_POST['loginhash_pwd'])){
+		// Reinitialization of login hash pass
+		if (empty($_POST['loginhash_pwd'])){ 
+			config_update_value ('loginhash_pwd', $_POST['loginhash_pwd']);
+		}
+		else{
+			config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]));
+		}
+	}
 	config_update_value ('https', (bool) get_parameter ('https', $config["https"]));
 	config_update_value ('compact_header', (bool) get_parameter ('compact_header', $config["compact_header"]));
 	config_update_value ('fontpath', (string) get_parameter ('fontpath', $config["fontpath"]));
@@ -251,7 +259,7 @@ function config_update_config () {
  */
 function config_process_config () {
 	global $config;
-	
+
 	$configs = db_get_all_rows_in_table ('tconfig');
 	
 	if (empty ($configs)) {

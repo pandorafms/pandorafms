@@ -388,8 +388,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		}
 	}
 
-	if($extra) {
-		$where = sprintf('%s AND (%s OR %s)', $where, $where_nogroup, $sql_extra);	
+	if($extra) { 
+		if (empty($where_nogroup))
+			$where = sprintf('%s AND (%s)', $where, $sql_extra);	
+		else
+			$where = sprintf('%s AND (%s OR %s)', $where, $where_nogroup, $sql_extra);	
 	}
 	else {
 		$where = sprintf('%s AND %s', $where, $where_nogroup);

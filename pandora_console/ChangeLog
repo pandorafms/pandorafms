@@ -1,5 +1,12 @@
 2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_agents.php: Fixed bad sql sintax in 
+	agents_get_agents funtion.
+	
+	Fixes: #3445995
+
+2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_generalagente.php
 	include/javascript/jquery.ui.dialog.js
 	general/header.php: Fixed ui_dialog when graphs are displayed 

@@ -322,7 +322,7 @@ $table->data['edit2'][0] = __('Interval');
 $table->data['edit2'][1] = html_print_input_text ('module_interval', '', '', 5, 15, true);
 $table->data['edit2'][2] = __('Disabled');
 //$table->data['edit2'][3] = html_print_checkbox ("disabled", 1, '', true);
-$table->data['edit2'][3] = html_print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
+$table->data['edit2'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
 
 $table->data['edit3'][0] = __('Post process');
 $table->data['edit3'][1] = html_print_input_text ('post_process', '', '', 10, 15, true);
@@ -331,7 +331,7 @@ $table->data['edit3'][3] = html_print_input_text ('snmp_community', '', '', 10, 
 $table->data['edit35'][0] = '';
 $table->data['edit35'][1] = '';
 $table->data['edit35'][2] = __('SNMP version');
-$table->data['edit35'][3] = html_print_select ($snmp_versions, 'tcp_send', '', '', __('Select'), '', true, false, false, '');
+$table->data['edit35'][3] = html_print_select ($snmp_versions, 'tcp_send', '', '', __('No change'), '', true, false, false, '');
 
 $table->data['edit4'][0] = __('Value');
 $table->data['edit4'][1] = '<em>'.__('Min.').'</em>';
@@ -339,8 +339,9 @@ $table->data['edit4'][1] .= html_print_input_text ('min', '', '', 5, 15, true);
 $table->data['edit4'][1] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit4'][1] .= html_print_input_text ('max', '', '', 5, 15, true);
 $table->data['edit4'][2] = __('Module group');
-$table->data['edit4'][3] = html_print_select (modules_get_modulegroups(),
-	'id_module_group', '', '', __('Select'), 0, true, false, false);
+$module_groups = array_merge(array(0 => 'Not assigned'), modules_get_modulegroups());
+$table->data['edit4'][3] = html_print_select ($module_groups,
+	'id_module_group', '', '', __('No change'), '', true, false, false);
 
 $table->data['edit5'][0] = __('Username');
 $table->data['edit5'][1] = html_print_input_text ('plugin_user', '', '', 15, 60, true);
@@ -350,13 +351,13 @@ $table->data['edit5'][3] = html_print_input_password ('plugin_pass', '', '', 15,
 $table->data['edit6'][0] = __('Export target');
 $table->data['edit6'][1] = html_print_select_from_sql ('SELECT id, name
 	FROM tserver_export ORDER BY name',
-	'id_export', '', '',__('None'),'0', true, false, false);
+	'id_export', '', '',__('No change'),'', true, false, false);
 
 /* FF stands for Flip-flop */
 $table->data['edit7'][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
 $table->data['edit7'][1] = html_print_input_text ('min_ff_event', '', '', 5, 15, true);
 $table->data['edit7'][2] = __('Historical data');
-$table->data['edit7'][3] = html_print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
+$table->data['edit7'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
 /* Tags avalaible */
 $id_tag = array();

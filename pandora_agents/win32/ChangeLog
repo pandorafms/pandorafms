@@ -1,3 +1,9 @@
+2011-11-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc,
+	  modules/pandora_module_logevent.h: Added support for regular
+	  expressions to the pattern filter.
+
 2011-11-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_snmpget.cc: Modified the call to snmpget.exe

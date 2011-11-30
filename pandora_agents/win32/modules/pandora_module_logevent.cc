@@ -62,6 +62,12 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
 	this->id = strtoul (id.c_str (), NULL, 0);
 	this->source = source;
 	this->pattern = pattern;
+	if (! pattern.empty ()) {
+		// Compile the regular expression
+		if (regcomp (&this->regexp, pattern.c_str (), REG_EXTENDED) != 0) {
+			pandoraLog ("Invalid regular expression %s", pattern.c_str ());
+		}
+	}
 	this->application = application;
 	this->log_event = NULL;
 	this->first_run = 1;
@@ -411,7 +417,7 @@ Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr, string description)
     }
 
     // Pattern filter
-    if (! this->pattern.empty () && description.find(this->pattern) == string::npos) {
+    if (! this->pattern.empty () && regexec (&this->regexp, description.c_str (), 0, NULL, 0) != 0) {
         return -1;
     }
     

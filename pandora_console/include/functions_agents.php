@@ -376,7 +376,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
-	
+
 	$where_nogroup = db_format_array_where_clause_sql ($filter_nogroup, 'AND', '');
 	
 	$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
@@ -395,7 +395,8 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			$where = sprintf('%s AND (%s OR %s)', $where, $where_nogroup, $sql_extra);	
 	}
 	else {
-		$where = sprintf('%s AND %s', $where, $where_nogroup);
+		if (!empty($where_nogroup))				
+			$where = sprintf('%s AND %s', $where, $where_nogroup);
 	}
 
 	$sql = sprintf('SELECT %s FROM tagente WHERE %s %s', implode(',',$fields), $where, $order);

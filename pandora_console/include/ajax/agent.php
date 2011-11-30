@@ -33,7 +33,7 @@ if ($search_agents && ($config['metaconsole'] == 0)) {
 
     $id_agent = (int) get_parameter ('id_agent');
     $string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-    $id_group = (int) get_parameter('id_group');
+    $id_group =  get_parameter('id_group', -1);
     $addedItems = html_entity_decode((string) get_parameter('add'));
     $addedItems = json_decode($addedItems);
 
@@ -53,8 +53,9 @@ if ($search_agents && ($config['metaconsole'] == 0)) {
 	    		$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
 			break;
 	}			
-		
-    $filter['id_grupo'] = $id_group;
+	
+	if ($id_group != -1)	
+		$filter['id_grupo'] = $id_group;
 
     $agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
     if ($agents === false)

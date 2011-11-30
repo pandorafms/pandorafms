@@ -123,7 +123,7 @@ $recursion = get_parameter('recursion', 0);
 
 ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
 
-echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '&offset=' . $offset . '">';
+echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';

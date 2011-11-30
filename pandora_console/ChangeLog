@@ -1,3 +1,8 @@
+2011-11-30  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_agente.php: Fixed pagination transfer
+	from form in the operation agents view
+
 2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Fixed bad sql sintax in 

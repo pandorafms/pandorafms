@@ -1,5 +1,9 @@
 2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/massive/massive_operations.php: Cleaned code.
+
+2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_agents.php: Fixed call to agents_get_modules
 	with id_agent = 0.
 

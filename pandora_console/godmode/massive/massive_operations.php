@@ -148,15 +148,11 @@ $submit_template_not_standby = get_parameter('id_alert_template_not_standby');
 $submit_template_standby = get_parameter('id_alert_template_standby');
 $submit_add = get_parameter('crtbutton');
 
-/*if (!empty($submit_action) or !empty($submit_update) or !empty($submit_del)
-	or !empty($submit_template_disabled) or !empty($submit_template_enabled)
-	or !empty($submit_template_not_standby) or !empty($submit_template_standby)
-	or !empty($submit_add)){*/
-	echo '<div id="loading" display="none">';
-	echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
-	echo '<strong>'.__('Please wait').'...</strong>';
-	echo '</div>';
-//}
+echo '<div id="loading" display="none">';
+echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
+echo '<strong>'.__('Please wait').'...</strong>';
+echo '</div>';
+
 
 ?>
 

@@ -1,3 +1,9 @@
+2011-12-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/snmp_explorer.php: Fixed snmp over IE8.
+	
+	Fixes: #3441762
+
 2011-12-01  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/insert_data.php: Improved the error message to

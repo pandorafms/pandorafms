@@ -41,10 +41,10 @@ function createXMLData($agent, $agentModule, $time, $data) {
 		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
 		
 	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
-		ui_print_error_message(sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
+		return false;
 	}
 	else {
-		ui_print_success_message(sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']));
+		return true;
 	}
 }
 
@@ -91,17 +91,48 @@ function mainInsertData() {
 			
 			$date_xml = $date2 . ' ' . $time2 . ':00';
 			
+			$done = 0;
+			$errors = 0;
 			if ($csv !== false) {
 				$file = file($csv['tmp_name']);
 				foreach ($file as $line) {
 					$tokens = explode(';', $line);
 					
-					createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
+					$result = createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
+					
+					if($result) {
+						$done++;
+					}
+					else {
+						$errors++;
+					}
 				}
 			}
 			else {
-				createXMLData($agent, $agentModule, $date_xml, $data);
+				$result = createXMLData($agent, $agentModule, $date_xml, $data);
+
+				if($result) {
+					$done++;
+				}
+				else {
+					$errors++;
+				}
 			}
+		}
+		
+		if($errors > 0) {
+			$msg = sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
+			if($errors > 1) {
+				$msg .= " ($errors)";
+			}
+			ui_print_error_message($msg);
+		}
+		if($done > 0){
+			$msg = sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
+			if($done > 1) {
+				$msg .= " ($done)";
+			}
+			ui_print_success_message($msg);
 		}
 	}
 	

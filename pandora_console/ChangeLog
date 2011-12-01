@@ -1,3 +1,8 @@
+2011-12-01  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/insert_data.php: Improved the error message to
+	multiple xml creations (csv) bug: 3426375
+
 2011-11-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_config.php: Login hash pass can be left blank.

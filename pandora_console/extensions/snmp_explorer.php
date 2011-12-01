@@ -23,9 +23,6 @@ require_once ('include/graphs/functions_utils.php');
 
 function snmp_explorer() {
 
-html_debug_print("Empieza snmp explorer", "/tmp/pp.txt");
-
-
     $idAgent = (int) get_parameter('id_agente', 0);
     $ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 

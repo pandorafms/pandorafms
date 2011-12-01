@@ -1,3 +1,10 @@
+2011-12-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/Core.pm: Added new function db_concat and added 
+	compatibility with postgreSQL and Oracle in function 
+	pandora_get_module_tags.
+
 2011-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* util/pandora_manage.pl: Added some checks that I forget in my 

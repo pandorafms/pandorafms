@@ -30,6 +30,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 		add_address
 		add_new_address_agent
+		db_concat
 		db_connect
 		db_disconnect
 		db_do
@@ -626,6 +627,17 @@ sub get_alert_template_name ($$) {
 	my ($dbh, $alert_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT name FROM talert_templates, talert_template_modules WHERE talert_templates.id = talert_template_modules.id_alert_template AND talert_template_modules.id = ?", $alert_id);
+}
+
+##########################################################################
+## Concat two strings
+##########################################################################
+sub db_concat ($$) {
+	my ($element1, $element2) = @_;
+	
+	return " concat(" . $element1 . ", ' '," . $element2 . ") " if ($RDBMS eq 'mysql');
+	return " " . $element1 . " || ' ' || " . $element2 . " " if ($RDBMS eq 'oracle' or $RDBMS eq 'postgresql');
+	
 }
 
 # End of function declaration

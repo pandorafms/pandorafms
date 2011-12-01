@@ -23,6 +23,9 @@ require_once ('include/graphs/functions_utils.php');
 
 function snmp_explorer() {
 
+html_debug_print("Empieza snmp explorer", "/tmp/pp.txt");
+
+
     $idAgent = (int) get_parameter('id_agente', 0);
     $ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 
@@ -57,7 +60,7 @@ function snmp_explorer() {
 	    $snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 				    $snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 				    $snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1");
-	
+
 	    if($snmpis === false) {
 			    $snmpis = array();
 	    }
@@ -230,7 +233,7 @@ function snmp_explorer() {
     }
 
     echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
-    echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
+    echo "<form method='post' id='walk_form' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
 
     $table->width = '98%';
 
@@ -305,8 +308,8 @@ function snmp_explorer() {
 
     echo "</form>";
 
-    echo "</tr></table>";
-    echo "</form>";
+    //echo "</tr></table>";
+    //echo "</form>";
 
     if(!empty($interfaces_list)){
 	    echo '<span id="form_interfaces">';
@@ -365,7 +368,7 @@ function snmp_explorer() {
 
 $(document).ready (function () {
 	var inputActive = true;
-	
+
 	$(document).data('text_for_module', $("#none_text").html());
 
 	$("#id_snmp").change(snmp_changed_by_multiple_snmp);
@@ -378,13 +381,14 @@ $(document).ready (function () {
 			$("#snmp3_options").css("display", "none");
 		}
 	});
-	
-	$("#submit-snmp_walk").click (function () {
-		$(this).disable ();
+
+	$("#walk_form").submit(function(){
+		$("#submit-snmp_walk").disable ();
 		$("#oid_loading").show ();
 		$("#no_snmp").hide ();
 		$("#form_interfaces").hide ();
-	});
+	});	
+	
 });
 
 function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {

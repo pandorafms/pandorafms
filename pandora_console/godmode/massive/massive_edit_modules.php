@@ -73,7 +73,7 @@ else {
 	foreach ($modules as $module) {
 		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true, $update_tags);
 		
-		if ($result === false) {
+		if (is_error($result)) {
 			db_process_sql_rollback ();
 			
 			return false;

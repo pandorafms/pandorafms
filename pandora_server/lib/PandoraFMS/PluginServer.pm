@@ -213,7 +213,14 @@ sub data_consumer ($$) {
 
 	my %data = ("data" => $module_data);
 	pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $self->getServerID (), $dbh);
-	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, $pa_config->{'servername'}.'_Plugin', $pa_config->{'version'}, -1, $dbh);
+
+	my $agent_os_version = get_db_value ($dbh, 'SELECT os_version FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+	
+	if ($agent_os_version eq ''){
+		$agent_os_version = $pa_config->{'servername'}.'_Plugin';
+	}
+
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
 }
 
 1;

@@ -1,3 +1,13 @@
+2011-12-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm
+	 lib/PandoraFMS/WMIServer.pm
+	 lib/PandoraFMS/PluginServer.pm
+	 lib/PandoraFMS/PredictionServer.pm: Fixed os_version  when an agent 
+	 is updated.
+	 
+	 Fixes: #3314285 
+
 2011-10-10 Javier Lanz <javier.lanz@artica.es>
 
 	* util/pandora_manage.pl: Fixed a wee bug with 'group' parameter

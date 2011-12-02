@@ -247,7 +247,14 @@ sub exec_prediction_module ($$$$) {
 
 	my %data = ("data" => $module_data);
 	pandora_process_module ($pa_config, \%data, '', $agent_module, '', $timestamp, $utimestamp, $server_id, $dbh);
-	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $pa_config->{'servername'}.'_Prediction', $pa_config->{'version'}, -1, $dbh);
+
+	my $agent_os_version = get_db_value ($dbh, 'SELECT os_version FROM tagente WHERE id_agente = ?', $agent_module->{'id_agente'});
+	
+	if ($agent_os_version eq ''){
+		$agent_os_version = $pa_config->{'servername'}.'_Prediction';
+	}
+
+	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
 }
 
 1;

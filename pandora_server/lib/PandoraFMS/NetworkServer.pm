@@ -377,7 +377,9 @@ sub exec_network_module ($$$$) {
 	my $module_result = 1; # Fail by default
 	my $module_data = 0;
 	my $id_agente = $module->{'id_agente'};
-	my $agent_name = get_agent_name ($dbh, $id_agente);
+	my $agent_row = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $id_agente);
+	my $agent_name = $agent_row->{'nombre'};
+	my $agent_os_version = $agent_row->{'os_version'};
 	my $id_tipo_modulo = $module->{'id_tipo_modulo'};
 	my $ip_target = $module->{'ip_target'};
 	my $snmp_oid = $module->{'snmp_oid'};
@@ -465,8 +467,12 @@ sub exec_network_module ($$$$) {
 		my %data = ("data" => $module_data);
 		pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
 
+		if ($agent_os_version eq ''){
+			$agent_os_version = $pa_config->{'servername'}.'_Net';
+		}
+
 		# Update agent last contact using Pandora version as agent version
-		pandora_update_agent ($pa_config, $timestamp, $id_agente, $pa_config->{'servername'}.'_Net', $pa_config->{'version'}, -1, $dbh);
+		pandora_update_agent ($pa_config, $timestamp, $id_agente, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
 	
     } else {
 		# Modules who cannot connect or something go bad, update last_execution_try field

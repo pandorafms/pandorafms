@@ -800,10 +800,13 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
 	
-	if ($idModule === false)
-		returnError('error_create_network_module', 'Error in creation network module.');
-	else
+	if (is_error($idModule)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_network_module', __('Error in creation network module.'));
+	}
+	else {
 		returnData('string', array('type' => 'string', 'data' => $idModule));
+	}
 }
 
 /**

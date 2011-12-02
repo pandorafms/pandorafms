@@ -244,7 +244,7 @@ $table_advanced->data[6][0] =  __('Tags available');
 if ($__code_from == 'modules') {
 	$__table_modules = 'ttag_module';
 	$__id_where = 'b.id_agente_modulo';
-	$__id = $id_agent_module;
+	$__id = (int)$id_agent_module;
 // Code comes from policy module editor
 }else {
 	global $__id_pol_mod;

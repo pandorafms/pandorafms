@@ -239,17 +239,25 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 			return false;
 	}
 
-	if (empty ($name))
-		return false;
+	if (empty ($name)) {
+		return ERR_INCOMPLETE;
+	}
+	
 	if (! is_array ($values))
 		$values = array ();
 	$values['nombre'] = $name;
 	$values['id_agente'] = (int) $id_agent;
+	
+	$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $name, 'id_agente' => (int)$id_agent));
 
+	if($exists) {
+		return ERR_EXIST;
+	}
+	
 	$id_agent_module = db_process_sql_insert ('tagente_modulo', $values);
 	
 	if ($id_agent_module === false)
-		return false;
+		return ERR_DB;
 
 	$return_tag = true;
 	if (($tags !== false) || (empty($tags)))
@@ -259,7 +267,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
 
-		return false;
+		return ERR_DB;
 	}
 
 	switch ($config["dbtype"]) {
@@ -305,7 +313,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
 		
-		return false;
+		return ERR_DB;
 	}
 	
 	return $id_agent_module;

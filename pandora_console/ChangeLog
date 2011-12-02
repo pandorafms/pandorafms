@@ -1,3 +1,16 @@
+2011-12-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
+	include/functions_api.php
+	include/functions.php
+	extensions/snmp_explorer.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/configurar_agente.php: limited the 
+	modules creation to not allows to create one if exists
+	a module with the same name in the agent to avoid
+	recreate a module when go back in the browser.
+	Bugfix: 3416129
+
 2011-12-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/snmp_explorer.php: Removed trace.

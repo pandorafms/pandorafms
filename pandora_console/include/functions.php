@@ -37,6 +37,17 @@ define ('EVENT_PROCESS', 2);
 define ('AGENT_ENABLED',0);
 define ('AGENT_DISABLED',1);
 
+/* Error report codes */
+define ('ERR_GENERIC',-10000);
+
+define ('ERR_EXIST',-20000);
+
+define ('ERR_INCOMPLETE', -30000);
+
+define ('ERR_DB', -40000);
+
+define ('ERR_FILE', -50000);
+
 /* Visual console constants */
 define("MIN_WIDTH",300);
 define("MIN_HEIGHT",120);
@@ -1100,6 +1111,21 @@ function is_ajax () {
 	return defined ('AJAX');
 }
 
+/**
+ * Check if a code is an error code
+ * 
+ * @param int code of an operation. Tipically the id of a module, agent... or a code error
+ * 
+ * @return bool true if a result code is an error or false otherwise
+ */
+function is_error($code) {
+	if($code <= ERR_GENERIC) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 /**
  * Transform an array of database result into an indexed array.
  *

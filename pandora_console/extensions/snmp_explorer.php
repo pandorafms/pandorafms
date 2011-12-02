@@ -144,6 +144,9 @@ function snmp_explorer() {
 	
 	    $result = false;
 	
+		$errors = array();
+		$done = 0;
+
 	    foreach($id_snmp as $id) {
 			if (isset($interfaces[$id]['ifName']) && $interfaces[$id]['ifName']['value'] != ""){
 					$ifname = $interfaces[$id]['ifName']['value'];
@@ -205,10 +208,47 @@ function snmp_explorer() {
 			    $values['id_modulo'] = 2;
 						
 			    $result = modules_create_agent_module ($id_agent, $name, $values);
+			    
+			    if(is_error($result)) {
+					if(!isset($errors[$result])) {
+						$errors[$result] = 0;
+					}
+					$errors[$result]++;
+				}
+				else {
+					$done++;
+				}
 		    }
 	    }
-	
-	    ui_print_result_message ($result, __('Successfully modules created'), __('Could not be created'));
+	    
+	    if($done > 0) {
+			ui_print_success_message(__('Successfully modules created')." ($done)");
+		}
+		
+		if(!empty($errors)) {
+			$msg = __('Could not be created').':';
+
+		
+			foreach($errors as $code => $number) {
+				switch($code) {
+					case ERR_EXIST:
+						$msg .= '<br>'.__('Another module already exists with the same name')." ($number)";
+						break;
+					case ERR_INCOMPLETE:
+						$msg .= '<br>'.__('Some required fields are missed').': ('.__('name').') '." ($number)";
+						break;
+					case ERR_DB:
+					case ERR_GENERIC:
+					default:
+						$msg .= '<br>'.__('Processing errors')." ($number)";
+						break;
+				}
+				
+			}
+			
+			ui_print_error_message($msg);
+		
+		}
     }
 
     // Create the interface list for the interface

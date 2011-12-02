@@ -828,9 +828,24 @@ if ($create_module) {
 	else {
 		$id_agent_module = modules_create_agent_module ($id_agente, $name, $values, false, $id_tag);
 	}
-	
-	if ($id_agent_module === false) {
-		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
+
+	if (is_error($id_agent_module)) {
+		$msg = __('There was a problem adding module').'. ';
+		switch($id_agent_module) {
+			case ERR_EXIST:
+				$msg .= __('Another module already exists with the same name').'.';
+				break;
+			case ERR_INCOMPLETE:
+				$msg .= __('Some required fields are missed').': ('.__('name').')';
+				break;
+			case ERR_DB:
+			case ERR_GENERIC:
+			default:
+				// No more info
+				break;
+		}
+		$id_agent_module = false;
+		echo '<h3 class="error">'.$msg.'</h3>';
 		$edit_module = true;
 		$moduletype = $id_module;
 		db_pandora_audit("Agent management",

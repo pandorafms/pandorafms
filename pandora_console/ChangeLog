@@ -1,6 +1,16 @@
 2011-12-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_modules.php
+	include/functions.php
+	extensions/snmp_explorer.php
+	godmode/agentes/configurar_agente.php
+	godmode/massive/massive_edit_modules.php: Check if a module 
+	name exists in the agent when you edit the module and
+	improve the errors feedback
+
+2011-12-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
 	include/functions_api.php
 	include/functions.php
 	extensions/snmp_explorer.php

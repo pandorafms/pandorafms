@@ -240,7 +240,7 @@ function snmp_explorer() {
 					case ERR_DB:
 					case ERR_GENERIC:
 					default:
-						$msg .= '<br>'.__('Processing errors')." ($number)";
+						$msg .= '<br>'.__('Processing error')." ($number)";
 						break;
 				}
 				

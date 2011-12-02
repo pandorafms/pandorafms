@@ -48,6 +48,8 @@ define ('ERR_DB', -40000);
 
 define ('ERR_FILE', -50000);
 
+define ('ERR_NOCHANGES', -60000);
+
 /* Visual console constants */
 define("MIN_WIDTH",300);
 define("MIN_HEIGHT",120);
@@ -1119,7 +1121,7 @@ function is_ajax () {
  * @return bool true if a result code is an error or false otherwise
  */
 function is_error($code) {
-	if($code <= ERR_GENERIC) {
+	if($code !== true AND ($code <= ERR_GENERIC || $code === false)) {
 		return true;
 	}
 	else {

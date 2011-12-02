@@ -742,8 +742,28 @@ if ($update_module) {
 			$values, false, $id_tag);
 	}
 	
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
+	if (is_error($result)) {
+		$msg = __('There was a problem updating module').'. ';
+		
+		switch($result) {
+			case ERR_EXIST:
+				$msg .= __('Another module already exists with the same name').'.';
+				break;
+			case ERR_INCOMPLETE:
+				$msg .= __('Some required fields are missed').': ('.__('name').')';
+				break;
+			case ERR_NOCHANGES:
+				$msg .= __('"No change"');
+				break;
+			case ERR_DB:
+			case ERR_GENERIC:
+			default:
+				$msg .= __('Processing error');
+				break;
+		}
+		$result = false;
+		echo '<h3 class="error">'.$msg.'</h3>';
+		
 		$edit_module = true;
 		
 		db_pandora_audit("Agent management",
@@ -841,7 +861,7 @@ if ($create_module) {
 			case ERR_DB:
 			case ERR_GENERIC:
 			default:
-				// No more info
+				$msg .= __('Processing error');
 				break;
 		}
 		$id_agent_module = false;

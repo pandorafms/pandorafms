@@ -194,28 +194,47 @@ function modules_delete_agent_module ($id_agent_module) {
  * 
  * @return True if the module was updated. False if not.
  */
-function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false, 
-	$tags = false) {
-	if (! is_array ($values) || empty ($values))
-		return false;
-		
-	if (isset ($values['nombre']) && empty ($values['nombre']))
-		return false;
-
-	if ($tags !== false)
-		$return_tag = tags_update_module_tag ($id, $tags);	
-
-//	if ($return_tag === false){
-//			return false;
-//	}
-		
-	if ($onlyNoDeletePending) {
-		return (@db_process_sql_update ('tagente_modulo', $values,
-			array ('id_agente_modulo' => (int) $id, 'delete_pending' => 0)) !== false);
+function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false, $tags = false) {
+	if (!is_array ($values) || empty ($values)) {
+		return ERR_GENERIC;
 	}
-	else {	
-		return (@db_process_sql_update ('tagente_modulo', $values,
-			array ('id_agente_modulo' => (int) $id)) !== false);
+		
+	if (isset ($values['nombre'])) {
+		if(empty ($values['nombre'])) {
+			return ERR_INCOMPLETE;
+		}
+		
+		$id_agent = modules_get_agentmodule_agent($id);
+		
+		$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
+
+		if($exists) {
+			return ERR_EXIST;
+		}
+	}
+	
+	$return_tag = true;
+	if ($tags !== false) {
+		$return_tag = tags_update_module_tag ($id, $tags);
+	}
+
+	if ($return_tag === false){
+			return ERR_DB;
+	}
+		
+	$where = array();
+	$where['id_agente_modulo'] = $id;
+	if ($onlyNoDeletePending) {
+		$where['delete_pending'] = 0;
+	}	
+	
+	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
+
+	if($result === false) {
+		return ERR_DB;
+	}
+	else {
+		return true;
 	}
 }
 

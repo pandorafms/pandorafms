@@ -1,5 +1,11 @@
 2011-12-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/setup/os.php: List all OS is the page by defect.
+	
+	Fixes: #3450147
+
+2011-12-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/agentes/agent_conf_gis.php
       godmode/gis_maps/configure_gis_map.php: Changed order of latitude,
       longitude and altitude in Gis maps information.

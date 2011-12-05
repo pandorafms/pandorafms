@@ -1,3 +1,10 @@
+2011-12-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandora_server_upgrade: Removed rm of pandora_exec and 
+	pandora_server and changed for ln -s commands.
+	
+	Fixes: #3451305
+
 2011-12-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm

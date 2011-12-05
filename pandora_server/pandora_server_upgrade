@@ -29,11 +29,12 @@ install () {
 
 	echo "Copying utilities...."
 	cp -R util /usr/share/pandora_server
-	cp bin/pandora_exec /usr/bin
 	
 	echo "Rebuilding links /usr/local/bin -> /usr/bin"
-	rm /usr/local/bin/pandora_server 2> /dev/null
-	rm /usr/local/bin/pandora_exec 2> /dev/null
+	#rm /usr/local/bin/pandora_server 2> /dev/null
+	#rm /usr/local/bin/pandora_exec 2> /dev/null
+	ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server 2> /dev/null
+	ln -s /usr/local/bin/pandora_exec /usr/bin/pandora_exec 2> /dev/null
 
 	if [ -d /etc/logrotate.d ]; then
 		echo "Creating logrotate.d entry for Pandora FMS log management"
@@ -65,7 +66,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 3.2 Server Upgrade (c) 2009-2010 Artica ST"
+echo "Pandora FMS 4.0dev Server Upgrade (c) 2009-2010 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

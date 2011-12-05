@@ -1,5 +1,12 @@
 2011-12-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/status_monitor.php: Added sort funcionality
+	and resize module value feature for string module data types.
+
+	Pending task: #3425266
+
+2011-12-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/help/en/help_custom_logo.php
 	include/help/es/help_custom_logo.php: Changed height and width in 
 	this help view.

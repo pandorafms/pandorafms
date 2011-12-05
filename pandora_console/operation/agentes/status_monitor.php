@@ -50,9 +50,13 @@ $offset = (int) get_parameter ('offset');
 $status = (int) get_parameter ('status', 4);
 $modulegroup = (int) get_parameter ('modulegroup');
 $sql_extra = '';
+$refr = get_parameter('refr', 0);
+// Sort functionality
 
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
 
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60">';
+echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . $sortField . '&amp;sort=' . $sort .'">';
 
 echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
@@ -195,6 +199,129 @@ echo "</td><tr>";
 echo "</table>";
 echo "</form>";
 
+// Sort functionality
+
+$selected = 'border: 1px solid black;';
+$selectAgentNameUp = '';
+$selectAgentNameDown = '';
+$selectTypeUp = '';
+$selectTypeDown = '';
+$selectModuleNameUp = '';
+$selectModuleNameDown = '';
+$selectIntervalUp = '';
+$selectIntervalDown = '';
+$selectStatusUp = '';
+$selectStatusDown = '';
+$selectDataUp = '';
+$selectDataDown = '';
+$selectTimestampUp = '';
+$selectTimestampDown = '';
+$order = null;
+
+switch ($sortField) {
+	case 'agent_name':
+		switch ($sort) {
+			case 'up':
+				$selectAgentNameUp = $selected;
+				$order = array('field' => 'tagente.nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectAgentNameDown = $selected;
+				$order = array('field' => 'tagente.nombre', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'type':
+		switch ($sort) {
+			case 'up':
+				$selectTypeUp = $selected;
+				$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTypeDown = $selected;
+				$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'module_name':
+		switch ($sort) {
+			case 'up':
+				$selectModuleNameUp = $selected;
+				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectModuleNameDown = $selected;
+				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				break;
+		}
+		break;		
+	case 'interval':
+		switch ($sort) {
+			case 'up':
+				$selectIntervalUp = $selected;
+				$order = array('field' => 'tagente_modulo.module_interval', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectIntervalDown = $selected;
+				$order = array('field' => 'tagente_modulo.module_interval', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'status':
+		switch ($sort) {
+			case 'up':
+				$selectStatusUp = $selected;
+				$order = array('field' => 'tagente_estado.estado', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectStatusDown = $selected;
+				$order = array('field' => 'tagente_estado.estado', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'data':
+		switch ($sort) {
+			case 'up':
+				$selectDataUp = $selected;
+				$order = array('field' => 'tagente_estado.datos', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectDataDown = $selected;
+				$order = array('field' => 'tagente_estado.datos', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'timestamp':
+		switch ($sort) {
+			case 'up':
+				$selectTimestampUp = $selected;
+				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTimestampDown = $selected;
+				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+				break;
+		}
+		break;		
+	default:
+		$selectAgentNameUp = $selected;
+		$selectAgentNameDown = '';
+		$selectTypeUp = '';
+		$selectTypeDown = '';
+		$selectModuleNameUp = '';
+		$selectModuleNameDown = '';
+		$selectIntervalUp = '';
+		$selectIntervalDown = '';
+		$selectStatusUp = '';
+		$selectStatusDown = '';
+		$selectDataUp = '';
+		$selectDataDown = '';
+		$selectTimestampUp = '';
+		$selectTimestampDown = '';
+		$order = array('field' => 'tagente.nombre', 'order' => 'ASC');
+		break;
+}
+
 // Begin Build SQL sentences
 $sql = " FROM tagente, tagente_modulo, tagente_estado 
 	WHERE $sql_extra (tagente.id_agente = tagente_modulo.id_agente 
@@ -247,10 +374,8 @@ elseif ($status == 5) { //Not init
 	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";	
 }
 
-$sql .= ") ORDER BY tagente.id_grupo, tagente.nombre";
-
 // Build final SQL sentences
-$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)".$sql);
+$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)". $sql . ") ORDER BY tagente.id_grupo, tagente.nombre");
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT tagente_modulo.id_agente_modulo,
@@ -273,7 +398,8 @@ switch ($config["dbtype"]) {
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
 			tagente_modulo.extended_info,
-			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
+			tagente_estado.utimestamp AS utimestamp".$sql.") ORDER BY " . $order['field'] . " " . $order['order'] 
+			. " LIMIT ".$offset.",".$config["block_size"];
 		break;
 	case "postgresql":
 		$sql = "SELECT tagente_modulo.id_agente_modulo,
@@ -354,17 +480,26 @@ $table->align = array ();
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 
-$table->head[1] = __('Agent');
+$table->head[1] = __('Agent') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown, "alt" => "down")) . '</a>';
 
-$table->head[2] = __('Type');
+$table->head[2] = __('Type'). ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
+
 $table->align[2] = "left";
 
-$table->head[3] = __('Module name');
+$table->head[3] = __('Module name') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
 
-$table->head[4] = __('Interval');
+
+$table->head[4] = __('Interval') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+
 $table->align[4] = "center";
 
-$table->head[5] = __('Status');
+$table->head[5] = __('Status') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+
 $table->align[5] = "center";
 
 $table->head[6] = __('Graph');
@@ -373,10 +508,14 @@ $table->align[6] = "center";
 $table->head[7] = __('Warn');
 $table->align[7] = "left";
 
-$table->head[8] = __('Data');
+$table->head[8] = __('Data') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
+
 $table->align[8] = "left";
 
-$table->head[9] = __('Timestamp');
+$table->head[9] = __('Timestamp') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTimestampUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTimestampDown, "alt" => "down")) . '</a>';
+
 $table->align[9] = "right";
 
 $rowPair = true;
@@ -490,9 +629,28 @@ foreach ($result as $row) {
 	$data[7] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
 
 	if (is_numeric($row["datos"]))
-		$data[8] = format_numeric($row["datos"]);
-	else
-		$data[8] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
+		$salida = format_numeric($row["datos"]);
+	else {
+		$module_value = io_safe_output($row["datos"]);
+		$sub_string = substr(io_safe_output($row["datos"]),0, 12);
+		if ($module_value == $sub_string) {
+			$salida = $module_value;
+		}
+		else {
+			if (strlen($module_value) > 35)
+				$mod_val = substr($module_value, 0, 35) . '...';
+			else
+				$mod_val = $module_value;
+			
+			$salida = html_print_input_hidden("value_replace_module_" . $row["id_agente_modulo"], $mod_val, true) 
+			. "<span id='value_module_" . $row["id_agente_modulo"] . "'
+				title='". $module_value ."' style='white-space: nowrap;'>" . 
+				'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
+				"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
+		}			
+	}
+
+	$data[8] = $salida;
 	
 	if ($row["module_interval"] > 0)
 		$interval = $row["module_interval"];
@@ -514,3 +672,12 @@ if (!empty ($table->data)) {
 	echo '<div class="nf">'.__('This group doesn\'t have any monitor').'</div>';
 }
 ?>
+<script type="text/javascript">
+function toggle_full_value(id) {
+	value_title = $("#hidden-value_replace_module_" + id).val();
+	
+	$("#hidden-value_replace_module_" + id).val($("#value_module_text_" + id).html());
+
+	$("#value_module_text_" + id).html(value_title);
+}
+</script>

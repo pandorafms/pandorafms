@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 $action = get_parameter('action', 'new');
 $idOS = get_parameter('id_os', 0);
-$tab = get_parameter('tab', 'builder');
+$tab = get_parameter('tab', 'list');
 
 if ($idOS) {
 	$os = db_get_row_filter('tconfig_os', array('id_os' => $idOS));

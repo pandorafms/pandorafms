@@ -88,7 +88,7 @@ sub get_agent_pid ($$) {
 	my $app_path = shift;
 
 	$ENV{'COLUMNS'}=400;
-        my $os_name=`uname -s`;
+	my $os_name=`uname -s`;
 	my $pid = "";
 	my $cmd = "";
 
@@ -106,9 +106,9 @@ sub get_agent_pid ($$) {
 
 		if ( $zone =~ /global/) {
 			$cmd ="ps -f -z global | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
-       	} else {
+	   	} else {
 			$cmd ="ps -Af | grep \"$truncated_daemon\" | grep -v grep | head -1 | awk '{ print \$2 }'";
-                }
+		}
 	} else {
 		$cmd ="ps -Af | grep \"$daemon $app_path\" | grep -v grep | head -1 | awk '{ print \$2 }'";
 	}
@@ -145,17 +145,16 @@ if (defined($ARGV[1])) {
 # Location of binaries 
 
 # Unix 
-my $running_binary;
-my $updated_binary;
+my ($running_binary, $updated_binary, $conf_path);
 if ($^O eq 'freebsd') {
-    $running_binary = $opt_dir."/usr/local/bin/pandora_agent";
-    $updated_binary = $opt_dir."/usr/local/etc/pandora/collections/$fc_path/pandora_agent";
+	$running_binary = $opt_dir."/usr/local/bin/pandora_agent";
+	$updated_binary = $opt_dir."/usr/local/etc/pandora/collections/$fc_path/pandora_agent";
+	$conf_path = $opt_dir."/usr/local/etc/pandora";
 } else {
-    $running_binary = $opt_dir."/usr/bin/pandora_agent";
-    $updated_binary = $opt_dir."/etc/pandora/collections/$fc_path/pandora_agent";
+	$running_binary = $opt_dir."/usr/bin/pandora_agent";
+	$updated_binary = $opt_dir."/etc/pandora/collections/$fc_path/pandora_agent";
+	$conf_path = $opt_dir."/etc/pandora";
 }
-
-my $conf_path = $opt_dir."/etc/pandora";
 
 # Windows 
 
@@ -169,11 +168,11 @@ my $conf_path = $opt_dir."/etc/pandora";
 my $start_pandora;
 my $stop_pandora;
 if ($^O eq 'freebsd') {
-    $start_pandora = $opt_dir."/usr/local/etc/rc.d/pandora_agent start";
-    $stop_pandora = $opt_dir."/usr/local/etc/rc.d/pandora_agent stop";
+	$start_pandora = $opt_dir."/usr/local/etc/rc.d/pandora_agent start";
+	$stop_pandora = $opt_dir."/usr/local/etc/rc.d/pandora_agent stop";
 } else {
-    $start_pandora = $opt_dir."/etc/init.d/pandora_agent_daemon start";
-    $stop_pandora = $opt_dir."/etc/init.d/pandora_agent_daemon stop";
+	$start_pandora = $opt_dir."/etc/init.d/pandora_agent_daemon start";
+	$stop_pandora = $opt_dir."/etc/init.d/pandora_agent_daemon stop";
 }
 
 # Windows stuff

@@ -1,3 +1,14 @@
+2011-12-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/module_manager.php: Added status column in 
+	godmode view of modules and added delete button in 
+	edition module view
+
+	* operation/agentes/estado_monitores.php: Fixed missed
+	extra query to not show modules of foreign policies
+
 2011-12-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/estado_agente.php: Added filter by summarized 

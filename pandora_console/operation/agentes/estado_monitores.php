@@ -152,6 +152,15 @@ switch ($config["dbtype"]) {
 		break;
 }
 
+// Get the enterprise acl sql condition
+$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
+
+if($extra_sql == ENTERPRISE_NOT_HOOK) {
+	$extra_sql = '';
+}else if ($extra_sql != '') {
+	$extra_sql = "(($extra_sql) OR id_policy_module = 0) AND";
+}
+
 // Get all module from agent
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -172,8 +181,8 @@ switch ($config["dbtype"]) {
 			SELECT * FROM tagente_estado, (SELECT * FROM tagente_modulo WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0) tagente_modulo 
 				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_estado.utimestamp != 0  
-			ORDER BY tagente_modulo.id_module_group , %s  %s", $id_agente, $order['field'], $order['order']);	
+				AND %s tagente_estado.utimestamp != 0  
+			ORDER BY tagente_modulo.id_module_group , %s  %s", $id_agente, $extra_sql, $order['field'], $order['order']);	
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":
@@ -330,46 +339,8 @@ foreach ($modules as $module) {
 		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
 	}
 	$data[4] = ui_print_string_substr ($module["descripcion"], 40, true, 9);
-
-	$status = STATUS_MODULE_WARNING;
-	$title = "";
-
-	if ($module["estado"] == 1) {
-		$status = STATUS_MODULE_CRITICAL;
-		$title = __('CRITICAL');
-	}
-	elseif ($module["estado"] == 2) {
-		$status = STATUS_MODULE_WARNING;
-		$title = __('WARNING');
-	}
-	elseif ($module["estado"] == 0) {
-		$status = STATUS_MODULE_OK;
-		$title = __('NORMAL');
-	}
-	elseif ($module["estado"] == 3) {
-		$last_status =  modules_get_agentmodule_last_status($module['id_agente_modulo']);
-		switch($last_status) {
-			case 0:
-				$status = STATUS_MODULE_OK;
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL');
-				break;
-			case 1:
-				$status = STATUS_MODULE_CRITICAL;
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL');
-				break;
-			case 2:
-				$status = STATUS_MODULE_WARNING;
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('WARNING');
-				break;
-		}
-	}
 	
-	if (is_numeric($module["datos"])) {
-		$title .= ": " . format_for_graph($module["datos"]);
-	}
-	else {
-		$title .= ": " . substr(io_safe_output($module["datos"]),0,42);
-	}
+	modules_get_status($module['id_agente_modulo'], $module['estado'], $module['datos'], $status, $title);
 
 	$data[5] = ui_print_status_image($status, $title, true);
 

@@ -1,3 +1,9 @@
+2011-12-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Added two new functions 
+	to external API: set_enable_module_alerts and 
+	set_disable_module_alerts for feature request 3427673
+
 2011-12-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/events_list.php

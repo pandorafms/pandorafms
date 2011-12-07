@@ -1,3 +1,11 @@
+2011-12-07  KIKUCHI Koichiro  <koichiro@rworks.jp>
+
+	* pandora_agent_installer: Removed duplicated lines and spaces to
+	  tabs.  Also removed lines that set group to wheel (gid of wheel is 0).
+	* plugins/files_indir: Added support for FreeBSD.
+	* plugins/pandora_update: Fixed $conf_path for FreeBSD and spaces
+	  to tabs.
+
 2011-11-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Re-wrote broker agent code (was not working properly).

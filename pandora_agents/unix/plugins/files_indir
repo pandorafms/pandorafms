@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Syntax:
 #
@@ -13,10 +13,14 @@ then
 fi
 
 DIRE=$1
-DIRETMP=`echo $DIRE | md5sum | awk '{ print $1 }'`
+if [ `uname -s` = "FreeBSD" ];then
+	DIRETMP=`echo $DIRE | /sbin/md5`;
+else
+	DIRETMP=`echo $DIRE | md5sum | awk '{ print $1 }'`
+fi
 DIRETMP=/tmp/$DIRETMP
 
-CURRENT=`ls -la ${DIRE} | wc -l`
+CURRENT=`ls -la ${DIRE} | wc -l | tr -d ' '`
 
 if [ -e $DIRETMP ]
 then

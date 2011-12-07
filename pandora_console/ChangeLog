@@ -1,3 +1,10 @@
+2011-12-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/estado_agente.php: Added filter by summarized 
+	agent state.
+	
+	Pending task: #3389947
+
 2011-12-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Added two new functions 

@@ -120,6 +120,7 @@ $search = trim(io_safe_output_html(get_parameter ("search", "")));
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
+$status = (int) get_parameter ('status', -1);
 
 ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
 
@@ -139,6 +140,20 @@ echo '</td><td style="white-space:nowrap;">';
 echo __('Free text for search').' (*): ';
 
 html_print_input_text ("search", $search, '', 15);
+
+echo '</td><td style="white-space:nowrap;">';
+
+$fields = array ();
+$fields[0] = __('Normal'); 
+$fields[1] = __('Warning');
+$fields[2] = __('Critical');
+$fields[3] = __('Unknown');
+$fields[4] = __('Not normal'); 
+$fields[5] = __('Not init');
+
+echo '</td><td style="white-space:nowrap;">'.__('Agent status').': ';
+
+html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), -1, false, false, true, '', false, 'width: 90px;');
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -282,8 +297,8 @@ if (! empty ($agent_names)) {
 		$agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
 			'order' => 'nombre ASC',
 			'id_grupo' => $groups,
-			'offset' => (int) get_parameter ('offset'),
-			'limit' => (int) $config['block_size']),
+		/*	'offset' => (int) get_parameter ('offset'),
+			'limit' => (int) $config['block_size'] */ ),
 			array ('id_agente',
 				'id_grupo',
 				'id_os',
@@ -298,8 +313,79 @@ if (empty ($agents)) {
 	$agents = array ();
 }
 
+$result_agents = array();
+// This will be use above to simulate pagination
+$i = 0;
+$limit_agents = $offset + $config['block_size'];
+// Filter by agents status
+if ($status != -1){
+	$result_agents_tmp = array();
+	foreach ($agents as $agent_filter){
+		$filter_by_status = false;
+		$agent_stat = reporting_get_agent_module_info ($agent_filter["id_agente"]);	
+		switch ($status){
+				// Normal
+				case 0: 
+						if ($agent_stat['status'] != STATUS_AGENT_OK)
+							$filter_by_status = true;
+						break;
+				// Warning
+				case 1:
+						if ($agent_stat['status'] != STATUS_AGENT_WARNING)
+							$filter_by_status = true;
+						break;
+				// Critical
+				case 2: 
+						if ($agent_stat['status'] != STATUS_AGENT_CRITICAL)
+							$filter_by_status = true;
+						break;
+				// Unknown
+				case 3:
+						if ($agent_stat['status'] != STATUS_AGENT_DOWN)
+							$filter_by_status = true;			
+						break;
+				// Not normal
+				case 4:
+						if ($agent_stat['status'] == STATUS_AGENT_OK)
+							$filter_by_status = true;				
+						break;
+				// Not init
+				case 5:	
+						if ($agent_stat['status'] != STATUS_AGENT_NO_DATA)
+							$filter_by_status = true;
+						break;
+		}
+		
+		// If status is different from filter, don't show agent
+		if (! $filter_by_status)
+			$result_agents_tmp[] = $agent_filter;
+	}
+
+	// Recalculate total agents
+	if (! empty ($result_agents_tmp))
+		$total_agents = count($result_agents_tmp);	
+	else
+		$total_agents = 0;
+	
+	// Simulate pagination
+	foreach ($result_agents_tmp as $agent_filter_off){
+		if ($i >= $offset and $i < $limit_agents)
+			$result_agents[] = $agent_filter_off;
+		$i++;
+	}	
+	
+}
+else {
+	// Simulate pagination
+	foreach ($agents as $agent_filter){
+		if ($i >= $offset and $i < $limit_agents)
+			$result_agents[] = $agent_filter;
+		$i++;
+	}
+}
+
 // Prepare pagination
-ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
+ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 
 // Show data.
 $table->cellpadding = 4;
@@ -309,24 +395,24 @@ $table->class = "databox";
 
 $table->head = array ();
 $table->head[0] = __('Agent'). ' ' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 $table->head[1] = __('Description');
 $table->head[2] = __('OS'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
 $table->head[3] = __('Interval'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
 $table->head[4] = __('Group'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
 $table->head[5] = __('Modules');
 $table->head[6] = __('Status');
 $table->head[7] = __('Alerts');
 $table->head[8] = __('Last contact'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
 $table->align[2] = "center";
@@ -352,7 +438,7 @@ $table->data = array ();
 
 $rowPair = true;
 $iterator = 0;
-foreach ($agents as $agent) {
+foreach ($result_agents as $agent) {
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -438,10 +524,10 @@ foreach ($agents as $agent) {
 
 if (!empty ($table->data)) {
 	html_print_table ($table);
-	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
+	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 	unset ($table);
 } else {
-	echo '<div class="nf">'.__('There are no agents included in this group').'</div>';
+	echo '<div class="nf">'.__('There are no defined agents').'</div>';
 }
 
 /* Godmode controls SHOULD NOT BE HERE 

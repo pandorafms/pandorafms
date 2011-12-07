@@ -122,7 +122,26 @@ $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter ('status', -1);
 
-ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
+$onheader = array();
+
+if (check_acl ($config['id_user'], 0, "AW")) {
+	// Prepare the tab system to the future
+	$tab = 'setup';
+
+	/* Setup tab */
+	$setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">' 
+			. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
+			. '</a>';
+			
+	if($tab == 'setup')
+		$setuptab['active'] = true;
+	else
+		$setuptab['active'] = false;
+		
+	$onheader = array('setup' => $setuptab);
+}
+
+ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status", false, $onheader);
 
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 

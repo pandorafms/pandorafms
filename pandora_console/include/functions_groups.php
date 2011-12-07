@@ -605,4 +605,149 @@ function groups_get_users ($id_group, $filter = false) {
 	return $retval;
 }
 
+/**
+ * Print a row in the groups view (Recursive function)
+ *
+ * @param int $id_group The group id of the row
+ * @param array $group_all An array of all groups
+ * @param array $group arrayy The group name and childs
+ * @param array $printed_groups The printed groups list (by reference)
+ *
+ */
+function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
+	global $config;
+	
+	if (isset($printed_groups[$id_group])) {
+		return;
+	}
+	
+	// Store printed group to not print it again
+	$printed_groups[$id_group] = 1;
+		
+	if ($id_group < 1) 
+		return; // Skip group 0
+
+	// Get stats for this group
+	$data = reporting_get_group_stats($id_group);
+
+	if ($data["total_agents"] == 0)
+		return; // Skip empty groups
+
+	// Calculate entire row color
+	if ($data["monitor_alerts_fired"] > 0){
+		echo "<tr style='background-color: #ffd78f; height: 35px;'>";
+	}
+	elseif ($data["monitor_critical"] > 0) {
+		echo "<tr style='background-color: #ffc0b5; height: 35px;'>";
+	}
+	elseif ($data["monitor_warning"] > 0) {
+		echo "<tr style='background-color: #f4ffbf; height: 35px;'>";
+	}
+	elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
+		echo "<tr style='background-color: #ddd; height: 35px;'>";
+	}
+	elseif ($data["monitor_ok"] > 0)  {
+		echo "<tr style='background-color: #bbffa4; height: 35px;'>";
+	}
+	else {
+		echo "<tr style='height: 35px;'>";
+	}
+
+	// Group name
+	echo "<td style='font-weight: bold; font-size: 12px;'>&nbsp;&nbsp;";
+	echo $group['prefix'].ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
+	echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
+	echo ui_print_truncate_text($group['name'], 35);
+	echo "</a>";
+	echo "</td>";
+	echo "<td style='text-align: center; vertica-align: middle;'>";
+	if (check_acl ($config['id_user'], $id_group, "AW")) {
+		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . html_print_image("images/target.png", true, array("border" => '0')) . '</a>';
+	}
+	echo "</td>";
+
+	// Total agents
+	echo "<td style='font-weight: bold; font-size: 18px; text-align: center;'>";
+	if ($data["total_agents"] > 0)
+		echo $data["total_agents"];
+
+	// Agents unknown
+	if ($data["agents_unknown"] > 0) {
+		echo "<td style='font-weight: bold; font-size: 18px; color: #886666; text-align: center;'>";
+		echo $data["agents_unknown"];
+		echo "</td>";
+	}
+	else {
+		echo "<td></td>";
+	}
+
+	// Monitors Unknown
+	if ($data["monitor_unknown"] > 0){
+		echo "<td style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'>";
+		echo $data["monitor_unknown"];
+		echo "</td>";
+	}
+	else {
+		echo "<td></td>";
+	}
+
+
+	// Monitors Not Init
+	if ($data["monitor_not_init"] > 0){
+		echo "<td style='font-weight: bold; font-size: 18px; color: #729fcf; text-align: center;'>";
+		echo $data["monitor_not_init"];
+		echo "</td>";
+	}
+	else {
+		echo "<td></td>";
+	}
+
+
+	// Monitors OK
+	echo "<td style='font-weight: bold; font-size: 18px; color: #6ec300; text-align: center;'>";
+	if ($data["monitor_ok"] > 0) {
+		echo $data["monitor_ok"];
+	}
+	else { 
+		echo "&nbsp;";
+	}
+	echo "</td>";
+
+	// Monitors Warning
+	if ($data["monitor_warning"] > 0){
+		echo "<td style='font-weight: bold; font-size: 18px; color: #f2ef00; text-align: center;'>";
+		echo $data["monitor_warning"];
+		echo "</td>";
+	}
+	else {
+		echo "<td></td>";
+	}
+
+	// Monitors Critical
+	if ($data["monitor_critical"] > 0){
+		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'>";
+		echo $data["monitor_critical"];
+		echo "</td>";
+	}
+	else {
+		echo "<td></td>";
+	}
+	// Alerts fired
+	if ($data["monitor_alerts_fired"] > 0){
+		echo "<td style='font-weight: bold; font-size: 18px; color: #ffa300; text-align: center;'>";
+		echo $data["monitor_alerts_fired"];
+		echo "</td>";
+	}
+	else {
+		echo "<td></td>";
+	}
+
+
+	echo "</tr>";
+	echo "<tr style='height: 5px;'><td colspan=10> </td></tr>";
+	
+	foreach($group['childs'] as $child) {
+		groups_get_group_row($child, $group_all, $group_all[$child], $printed_groups);
+	}
+}
 ?>

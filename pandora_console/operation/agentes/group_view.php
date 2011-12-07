@@ -45,8 +45,23 @@ if (isset ($_GET["update_netgroup"])) {
 }
 
 // Get group list that user has access
-$groups = users_get_groups ($config['id_user']);
+$groups_full = users_get_groups ($config['id_user'], "AR", true, true);
 
+$groups = array();
+foreach($groups_full as $group) {
+	$groups[$group['id_grupo']]['name'] = $group['nombre'];
+	if($group['parent'] != 0) {
+		$groups[$group['parent']]['childs'][] = $group['id_grupo'];
+		$groups[$group['id_grupo']]['prefix'] = $groups[$group['parent']]['prefix'].'&nbsp;&nbsp;&nbsp;';
+	}
+	else {
+		$groups[$group['id_grupo']]['prefix'] = '';
+	}
+	
+	if(!isset($groups[$group['id_grupo']]['childs'])) {
+		$groups[$group['id_grupo']]['childs'] = array();
+	}
+}
 
 if ($config["realtimestats"] == 0){
 	$updated_time = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
@@ -69,8 +84,7 @@ if (count($agents) > 0) {
 echo '<table cellpadding="0" style="margin-top:10px" cellspacing="0" border="0" width="98%">';
 
 echo "<tr>";
-echo "<th width=5%>";
-echo "<th width='20%'>".__("Group")."</th>";
+echo "<th width='25%'>".__("Group")."</th>";
 echo "<th>";
 echo "<th width='10%'>".__("Agents")."</th>";
 echo "<th width='10%'>".__("Agent unknown")."</th>";
@@ -81,131 +95,11 @@ echo "<th width='10%'>".__("Warning")."</th>";
 echo "<th width='10%'>".__("Critical")."</th>";
 echo "<th width='10%'>".__("Alert fired")."</th>";
 
+$printed_groups = array();
+
 // For each valid group for this user, take data from agent and modules
-foreach ($groups as $id_group => $group_name) {
-	if ($id_group < 1) 
-		continue; // Skip group 0
-
-	// Get stats for this group
-	$data = reporting_get_group_stats($id_group);
-
-	if ($data["total_agents"] == 0)
-		continue; // Skip empty groups
-
-	// Calculate entire row color
-	if ($data["monitor_alerts_fired"] > 0){
-		echo "<tr style='background-color: #ffd78f; height: 35px;'>";
-	}
-	elseif ($data["monitor_critical"] > 0) {
-		echo "<tr style='background-color: #ffc0b5; height: 35px;'>";
-	}
-	elseif ($data["monitor_warning"] > 0) {
-		echo "<tr style='background-color: #f4ffbf; height: 35px;'>";
-	}
-	elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
-		echo "<tr style='background-color: #ddd; height: 35px;'>";
-	}
-	elseif ($data["monitor_ok"] > 0)  {
-		echo "<tr style='background-color: #bbffa4; height: 35px;'>";
-	}
-	else {
-		echo "<tr style='height: 35px;'>";
-	}
-
-	// Group name
-	echo "<td style='text-align:center;'>";
-	echo ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
-	echo "</td>";
-	echo "<td style='font-weight: bold; font-size: 12px;'>";
-	echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
-	echo ui_print_truncate_text($group_name, 35);
-	echo "</a>";
-	echo "</td>";
-	echo "<td style='text-align: center; vertica-align: middle;'>";
-	if (check_acl ($config['id_user'], $id_group, "AW")) {
-		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . html_print_image("images/target.png", true, array("border" => '0')) . '</a>';
-	}
-	echo "</td>";
-
-	// Total agents
-	echo "<td style='font-weight: bold; font-size: 18px; text-align: center;'>";
-	if ($data["total_agents"] > 0)
-		echo $data["total_agents"];
-
-	// Agents unknown
-	if ($data["agents_unknown"] > 0) {
-		echo "<td style='font-weight: bold; font-size: 18px; color: #886666; text-align: center;'>";
-		echo $data["agents_unknown"];
-		echo "</td>";
-	}
-	else {
-		echo "<td></td>";
-	}
-
-	// Monitors Unknown
-	if ($data["monitor_unknown"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'>";
-		echo $data["monitor_unknown"];
-		echo "</td>";
-	}
-	else {
-		echo "<td></td>";
-	}
-
-
-	// Monitors Not Init
-	if ($data["monitor_not_init"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #729fcf; text-align: center;'>";
-		echo $data["monitor_not_init"];
-		echo "</td>";
-	}
-	else {
-		echo "<td></td>";
-	}
-
-
-	// Monitors OK
-	echo "<td style='font-weight: bold; font-size: 18px; color: #6ec300; text-align: center;'>";
-	if ($data["monitor_ok"] > 0) {
-		echo $data["monitor_ok"];
-	}
-	else { 
-		echo "&nbsp;";
-	}
-	echo "</td>";
-
-	// Monitors Warning
-	if ($data["monitor_warning"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #f2ef00; text-align: center;'>";
-		echo $data["monitor_warning"];
-		echo "</td>";
-	}
-	else {
-		echo "<td></td>";
-	}
-
-	// Monitors Critical
-	if ($data["monitor_critical"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'>";
-		echo $data["monitor_critical"];
-		echo "</td>";
-	}
-	else {
-		echo "<td></td>";
-	}
-	// Alerts fired
-	if ($data["monitor_alerts_fired"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #ffa300; text-align: center;'>";
-		echo $data["monitor_alerts_fired"];
-		echo "</td>";
-	}
-	else {
-		echo "<td></td>";
-	}
-
-
-	echo "</tr>";
-	echo "<tr style='height: 5px;'><td colspan=10> </td></tr>";
+foreach ($groups as $id_group => $group) {
+	groups_get_group_row($id_group, $groups, $group, $printed_groups);
 }
 
 echo "</table>";

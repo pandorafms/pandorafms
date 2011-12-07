@@ -1,5 +1,11 @@
 2011-12-07  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_groups.php
+	operation/agentes/group_view.php: Improved group view 
+	with hierarchy to feature request 3444380
+
+2011-12-07  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/estado_agente.php
 	godmode/agentes/modificar_agente.php: Added tab on header in the
 	agent list views to navigate from operation to godmode sections

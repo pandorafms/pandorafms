@@ -1,5 +1,12 @@
 2011-12-07  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/estado_agente.php
+	godmode/agentes/modificar_agente.php: Added tab on header in the
+	agent list views to navigate from operation to godmode sections
+	improving usability
+
+2011-12-07  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_modules.php
 	godmode/agentes/module_manager_editor_common.php
 	godmode/agentes/module_manager.php: Added status column in 

@@ -65,8 +65,23 @@ if (!empty($agent_to_delete)) {
 	}
 }
 
+// Prepare the tab system to the future
+$tab = 'view';
+
+/* Setup tab */
+$viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">' 
+		. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
+		. '</a>';
+		
+if($tab == 'view')
+	$viewtab['active'] = true;
+else
+	$viewtab['active'] = false;
+	
+$onheader = array('view' => $viewtab);
+
 // Header
-ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true);
+ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true, $onheader);
 
 if (isset($result)) {
 	ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));

@@ -2056,7 +2056,7 @@ function set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 
 
 /**
- * Disable a alert 
+ * Disable an alert 
  * 
  * @param string $agent_name Name of agent (for example "myagent")
  * @param string $module_name Name of the module (for example "Host alive")
@@ -2077,7 +2077,7 @@ function set_disable_alert ($agent_name, $module_name, $template_name, $thrash4)
 }
 
 /**
- * Enable a alert
+ * Enable an alert
  * 
  * @param string $agent_name Name of agent (for example "myagent")
  * @param string $module_name Name of the module (for example "Host alive")
@@ -2097,5 +2097,44 @@ function set_enable_alert ($agent_name, $module_name, $template_name, $thrash4) 
 	returnData('string', array('type' => 'string', 'data' => "Correct alert enable"));
 }
 
+/**
+ * Disable all the alerts of one module
+ * 
+ * @param string $agent_name Name of agent (for example "myagent")
+ * @param string $module_name Name of the module (for example "Host alive")
+ * @param $thrash3 Don't use.
+ * @param $thrash4 Don't use.
+
+// http://localhost/pandora_console/include/api.php?op=set&op2=disable_module_alerts&id=garfio&id2=Status
+ */
+
+function set_disable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
+
+	$id_agent = agents_get_agent_id($agent_name);
+	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
+
+    db_process_sql("UPDATE talert_template_modules SET disabled = 1 WHERE id_agent_module = $id_agent_module");
+	returnData('string', array('type' => 'string', 'data' => "Correct alerts disable"));
+}
+
+/**
+ * Enable all the alerts of one module
+ * 
+ * @param string $agent_name Name of agent (for example "myagent")
+ * @param string $module_name Name of the module (for example "Host alive")
+ * @param $thrash3 Don't use.
+ * @param $thrash4 Don't use.
+
+// http://localhost/pandora_console/include/api.php?op=set&op2=enable_module_alerts&id=garfio&id2=Status
+ */
+
+function set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
+
+	$id_agent = agents_get_agent_id($agent_name);
+	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
+
+    db_process_sql("UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module = $id_agent_module");
+	returnData('string', array('type' => 'string', 'data' => "Correct alerts enable"));
+}
 
 ?>

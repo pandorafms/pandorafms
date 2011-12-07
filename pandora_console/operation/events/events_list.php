@@ -141,13 +141,21 @@ if ($tag != "") {
 	$sql_post .= " AND tags LIKE '%".io_safe_input($tag)."%'";
 }
 
+// Filter/Only alerts
+if (isset($filter_only_alert)){
+	if ($filter_only_alert == 0)
+		$sql_post .= " AND event_type NOT LIKE '%alert%'";
+	else
+		$sql_post .= " AND event_type LIKE '%alert%'";
+}
+
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	rawurlencode(io_safe_input($search)) . "&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;offset=" . $offset;
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset;
 
 echo "<br>";
 //Link to toggle filter
@@ -260,7 +268,16 @@ foreach($tags as $t) {
 
 html_print_select ($tags_name, "tag", $tag, '', __('All'), "");
 
+echo "</td>";
+
+echo "<td>";
+echo __("Filter/Only alert events") . "</td><td>";
+
+html_print_select (array('0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '');
+
 echo "</td></tr>";
+
+
 
 echo '<tr><td colspan="4" style="text-align:right">';
 //The buttons

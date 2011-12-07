@@ -342,20 +342,21 @@ $table->head[4] = __('Interval') . ' ' .
 	'<a href="' . $url . '&sort_field=interval&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=interval&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
 $table->head[5] = __('Description');
-$table->head[6] = __('Warn');
+$table->head[6] = __('Status');
+$table->head[7] = __('Warn');
 
 
-$table->head[7] = __('Action');
+$table->head[8] = __('Action');
 
 $table->rowstyle = array();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '55px';
-$table->size[7] = '100px';
+$table->size[8] = '100px';
 $table->align = array ();
 $table->align[2] = 'center';
-$table->align[7] = 'left';
+$table->align[8] = 'left';
 $table->data = array ();
 
 $agent_interval = agents_get_interval ($id_agente);
@@ -477,30 +478,36 @@ foreach ($modules as $module) {
 	
 	$data[5] = ui_print_truncate_text($module['descripcion'], 50, false);
 	
+	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+	
+	modules_get_status($module['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
+
+	$data[6] = ui_print_status_image($status, $title, true);
+	
 	// MAX / MIN values
-	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
+	$data[7] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
 
 	// Delete module
-	$data[7] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-	$data[7] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+	$data[8] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
+	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[7] .= html_print_image ('images/cross.png', true,
+	$data[8] .= html_print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
-	$data[7] .= '</a> ';
-	$data[7] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+	$data[8] .= '</a> ';
+	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[7] .= html_print_image ('images/copy.png', true,
+	$data[8] .= html_print_image ('images/copy.png', true,
 		array ('title' => __('Duplicate')));
-	$data[7] .= '</a> ';
+	$data[8] .= '</a> ';
 	
 	// Make a data normalization
 
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
-			$data[7] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			$data[7] .= html_print_image ('images/chart_curve.png', true,
+			$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			$data[8] .= html_print_image ('images/chart_curve.png', true,
 				array ('title' => __('Normalize')));
-			$data[7] .= '</a>';
+			$data[8] .= '</a>';
 		}
 	}
 

@@ -996,29 +996,6 @@ function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 }
 
 /**
- * Get the worst status of all modules of the agents of a group.
- *
- * @param int Id module to check.
- *
- * @return int Worst status of a module for all of its agents.
- * The value -1 is returned in case the agent has exceed its interval. <-- DISABLED
- */
-function modules_get_status ($id_module = 0) {
-	$time = get_system_time ();
-
-	$status = db_get_sql ("SELECT estado
-			FROM tagente_estado, tagente_modulo 
-			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 
-				AND tagente_modulo.delete_pending = 0 
-				AND tagente_modulo.id_agente_modulo = ".$id_module);
-
-	// TODO: Check any alert for that agent who has recept alerts fired
-
-	return $status;
-}
-
-/**
  * Get the current value of an agent module.
  *
  * @param int Agent module id.
@@ -1186,6 +1163,56 @@ function modules_get_modulegroup_name ($modulegroup_id) {
 		return false;
 	else
 		return (string) db_get_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
+}
+
+/**
+ * Gets a module status an modify the status and title reference variables
+ *
+ * @param mixed The module data (Necessary $module['datos'] and $module['estado']
+ * @param int status reference variable
+ * @param string title reference variable
+ *
+ */	
+function modules_get_status($id_agent_module, $db_status, $data, &$status, &$title) {
+	$status = STATUS_MODULE_WARNING;
+	$title = "";
+
+	if ($db_status == 1) {
+		$status = STATUS_MODULE_CRITICAL;
+		$title = __('CRITICAL');
+	}
+	elseif ($db_status == 2) {
+		$status = STATUS_MODULE_WARNING;
+		$title = __('WARNING');
+	}
+	elseif ($db_status == 0) {
+		$status = STATUS_MODULE_OK;
+		$title = __('NORMAL');
+	}
+	elseif ($db_status == 3) {
+		$last_status =  modules_get_agentmodule_last_status($id_agent_module);
+		switch($last_status) {
+			case 0:
+				$status = STATUS_MODULE_OK;
+				$title = __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL');
+				break;
+			case 1:
+				$status = STATUS_MODULE_CRITICAL;
+				$title = __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL');
+				break;
+			case 2:
+				$status = STATUS_MODULE_WARNING;
+				$title = __('UNKNOWN')." - ".__('Last status')." ".__('WARNING');
+				break;
+		}
+	}
+	
+	if (is_numeric($data)) {
+		$title .= ": " . format_for_graph($data);
+	}
+	else {
+		$title .= ": " . substr(io_safe_output($data),0,42);
+	}
 }
 
 ?>

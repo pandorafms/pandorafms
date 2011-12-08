@@ -202,12 +202,12 @@ function snmp_explorer() {
                     $module_type = 15;			
 			
 			    $values['id_tipo_modulo'] = $module_type;
-			    $values['descripcion'] = "(" . $ip_target." - ".$name . ") " . $interfaces[$id]['ifDescr']['value'];
+			    $values['descripcion'] = io_safe_input("(" . $ip_target." - ".$name . ") " . $interfaces[$id]['ifDescr']['value']);
 			
 			    $values['snmp_oid'] = $oid;
 			    $values['id_modulo'] = 2;
 						
-			    $result = modules_create_agent_module ($id_agent, $name, $values);
+			    $result = modules_create_agent_module ($id_agent, io_safe_input($name), $values);
 			    
 			    if(is_error($result)) {
 					if(!isset($errors[$result])) {

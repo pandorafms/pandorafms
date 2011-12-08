@@ -1,3 +1,9 @@
+2011-12-08  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* extensions/snmp_explorer.php: Call io_safe_input() for
+	 module name and description when creating module.
+	* include/functions_io.php: spaces to tabs.
+
 2011-12-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_groups.php

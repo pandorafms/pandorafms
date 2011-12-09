@@ -84,6 +84,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_STARTDELAY    ("module_startdelay ")
 #define TOKEN_RETRYDELAY    ("module_retrydelay ")
 #define TOKEN_PERFCOUNTER   ("module_perfcounter ")
+#define TOKEN_COOKED        ("module_cooked ")
 #define TOKEN_TCPCHECK      ("module_tcpcheck ")
 #define TOKEN_PORT          ("module_port ")
 #define TOKEN_TIMEOUT       ("module_timeout ")
@@ -101,7 +102,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_SNMPGET       ("module_snmpget")
 #define TOKEN_SNMPVERSION   ("module_snmp_version ")
 #define TOKEN_SNMPCOMMUNITY ("module_snmp_community ")
-#define TOKEN_SNMPAGENT    ("module_snmp_agent ")
+#define TOKEN_SNMPAGENT     ("module_snmp_agent ")
 #define TOKEN_SNMPOID       ("module_snmp_oid ")
 #define TOKEN_ADVANCEDOPTIONS ("module_advanced_options ")
 
@@ -152,7 +153,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_disabled, module_min_ff_event, module_noseekeof;
 	string                 module_ping, module_ping_count, module_ping_timeout;
 	string                 module_snmpget, module_snmp_version, module_snmp_community, module_snmp_agent, module_snmp_oid;
-	string                 module_advanced_options;
+	string                 module_advanced_options, module_cooked;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -215,6 +216,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
     module_snmp_agent    = "";
     module_snmp_oid      = "";
     module_advanced_options = "";
+    module_cooked        = "";
     
 	stringtok (tokens, definition, "\n");
 	
@@ -414,6 +416,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_advanced_options == "") {
 			module_advanced_options = parseLine (line, TOKEN_ADVANCEDOPTIONS);
 		}
+		if (module_cooked == "") {
+			module_cooked = parseLine (line, TOKEN_COOKED);
+		}
 		iter++;
 	}
 
@@ -497,7 +502,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_WMIQuery (module_name,
 						      module_wmiquery, module_wmicolumn);
 	} else if (module_perfcounter != "") {
-		module = new Pandora_Module_Perfcounter (module_name, module_perfcounter);
+		module = new Pandora_Module_Perfcounter (module_name, module_perfcounter, module_cooked);
 	} else if (module_tcpcheck != "") {
 		module = new Pandora_Module_Tcpcheck (module_name, module_tcpcheck, module_port, module_timeout);
 	} else if (module_regexp != "") {

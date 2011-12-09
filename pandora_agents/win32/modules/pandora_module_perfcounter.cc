@@ -34,6 +34,7 @@ static PdhOpenQueryT PdhOpenQuery = NULL;
 static PdhAddCounterT PdhAddCounter = NULL;
 static PdhCollectQueryDataT PdhCollectQueryData = NULL;
 static PdhGetRawCounterValueT PdhGetRawCounterValue = NULL;
+static PdhGetFormattedCounterValueT PdhGetFormattedCounterValue = NULL;
 static PdhCloseQueryT PdhCloseQuery = NULL;
 
 /** 
@@ -42,7 +43,7 @@ static PdhCloseQueryT PdhCloseQuery = NULL;
  * @param name Module name.
  * @param service_name Service internal name to check.
  */
-Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string source)
+Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string source, string cooked)
 	: Pandora_Module (name) {
 
 	this->source = source;
@@ -87,7 +88,15 @@ Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string sour
             PDH = NULL;
             return;
         }
-
+        
+        PdhGetFormattedCounterValue = (PdhGetFormattedCounterValueT) GetProcAddress (PDH, "PdhGetFormattedCounterValue"); 
+        if (PdhGetFormattedCounterValue == NULL) {
+            pandoraLog ("Error loading function PdhGetFormattedCounterValue");
+            FreeLibrary (PDH);
+            PDH = NULL;
+            return;
+        }
+        
         PdhCloseQuery = (PdhCloseQueryT) GetProcAddress (PDH, "PdhCloseQuery"); 
         if (PdhCloseQuery == NULL) {
             pandoraLog ("Error loading function PdhCloseQuery");
@@ -96,6 +105,12 @@ Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string sour
             return;
         }
     }
+    
+    if (cooked == "1") {
+		this->cooked = 1;
+	} else {
+		this->cooked = 0;
+	}
 }
 
 /** 
@@ -111,7 +126,8 @@ Pandora_Module_Perfcounter::run () {
     HQUERY query;
     PDH_STATUS status;
     HCOUNTER counter;
-    PDH_RAW_COUNTER value;
+    PDH_RAW_COUNTER raw_value;
+    PDH_FMT_COUNTER fmt_value;
     ostringstream string_value;
 
 	// Run
@@ -150,11 +166,30 @@ Pandora_Module_Perfcounter::run () {
     }
 
     // Retrieve the counter value
-    status = PdhGetRawCounterValue(counter, NULL, &value);
+	if (this->cooked == 1) {
+			
+	    // Some counters require to samples
+	    Sleep (100);
+	    status = PdhCollectQueryData (query);
+	    if (status != ERROR_SUCCESS) {
+	        // No data
+			PdhCloseQuery (query);
+	        return;
+	    }
+
+		status = PdhGetFormattedCounterValue(counter, PDH_FMT_LONG, NULL, &fmt_value);
+	} else {
+		status = PdhGetRawCounterValue(counter, NULL, &raw_value);
+	}
 
     // Close the query object
     PdhCloseQuery (query);
 
-    string_value << value.FirstValue;
+	if (cooked == 1) {
+		string_value << fmt_value.longValue;
+	} else {
+		string_value << raw_value.FirstValue;
+	}
+		
     this->setOutput (string_value.str ());
 }

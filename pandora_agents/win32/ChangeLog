@@ -1,3 +1,12 @@
+2011-12-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: Added a debug message.
+
+	* modules/pandora_module_perfcounter.cc,
+	  modules/pandora_module_perfcounter.h,
+	  modules/pandora_module_factory.cc: Added support to read the
+	  'cooked' value of a performance counter.
+
 2011-11-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc,

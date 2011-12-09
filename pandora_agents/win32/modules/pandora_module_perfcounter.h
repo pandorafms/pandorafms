@@ -38,11 +38,26 @@ typedef struct _PDH_RAW_COUNTER {
     DWORD       MultiCount;
 } PDH_RAW_COUNTER, *PPDH_RAW_COUNTER;
 
+typedef struct _PDH_FMT_COUNTER {
+  DWORD CStatus;
+  union {
+    LONG     longValue;
+    double   doubleValue;
+    LONGLONG largeValue;
+    LPCSTR   AnsiStringValue;
+    LPCWSTR  WideStringValue;
+  };
+} PDH_FMT_COUNTER, *PPDH_FMT_COUNTER;
+
+#define PDH_FMT_LONG 0x00000100
+#define PDH_FMT_DOUBLE 0x00000200
 #define PDH_FUNCTION    PDH_STATUS __stdcall
+
 typedef PDH_FUNCTION (*PdhOpenQueryT) (IN LPCSTR szDataSource, IN DWORD_PTR dwUserData, IN HQUERY *phQuery);
 typedef PDH_FUNCTION (*PdhAddCounterT) (IN HQUERY hQuery, IN LPCSTR szFullCounterPath, IN DWORD_PTR dwUserData, IN HCOUNTER *phCounter);
 typedef PDH_FUNCTION (*PdhCollectQueryDataT) (IN HQUERY hQuery);
 typedef PDH_FUNCTION (*PdhGetRawCounterValueT) (IN HCOUNTER, IN LPDWORD lpdwType, IN PPDH_RAW_COUNTER pValue);
+typedef PDH_FUNCTION (*PdhGetFormattedCounterValueT) (IN HCOUNTER, IN DWORD dwFormat, IN LPDWORD lpdwType, IN PPDH_FMT_COUNTER pValue);
 typedef PDH_FUNCTION (*PdhCloseQueryT) (IN HQUERY hQuery);
 
 namespace Pandora_Modules {
@@ -54,9 +69,10 @@ namespace Pandora_Modules {
 	class Pandora_Module_Perfcounter : public Pandora_Module {
 	private:
 		string source;
+		unsigned char cooked;
 
 	public:
-		Pandora_Module_Perfcounter (string name, string source);
+		Pandora_Module_Perfcounter (string name, string source, string cooked);
 		virtual ~Pandora_Module_Perfcounter ();
 		void run ();
 	};

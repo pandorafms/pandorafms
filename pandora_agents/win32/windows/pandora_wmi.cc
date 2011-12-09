@@ -130,6 +130,7 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 		pandoraLog ("isServiceRunning error. %s", errstr.c_str ());
 	}
 
+	pandoraDebug ("Service %s not found.", service_name.c_str ());
 	return 0;
 }
 

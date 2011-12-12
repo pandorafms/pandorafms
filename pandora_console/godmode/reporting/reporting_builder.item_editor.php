@@ -291,6 +291,9 @@ switch ($action) {
 				$show_resume = $item['show_resume'];
 				$show_graph = $item['show_graph'];
 				break;
+			case 'group_report':
+				$group = $item['id_group'];
+				break;
 			case 'top_n':
 				$description = $item['description'];
 				$period = $item['period'];
@@ -1320,6 +1323,9 @@ function chooseType() {
 			$("#row_order_uptodown").css('display', '');
 			$("#row_show_resume").css('display', '');
 			$("#row_show_in_two_columns").css('display', '');
+			break;
+		case 'group_report':
+			$("#row_group").css('display', '');
 			break;
 		case 'top_n':
 			$("#row_description").css('display', '');

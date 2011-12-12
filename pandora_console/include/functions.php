@@ -733,6 +733,7 @@ function get_report_types () {
 	$types['event_report_module'] = __('Event report module'); 
 	$types['event_report_group'] = __('Event report group');
 	$types['general'] = __('General');
+	$types['group_report'] = __('Group report');
 	$types['top_n'] = __('Top n');
 	$types['exception'] = __('Exception');
 	if ($config['metaconsole'] != 1)

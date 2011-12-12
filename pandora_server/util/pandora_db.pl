@@ -440,7 +440,8 @@ sub pandora_checkdb_consistency {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 
 		# Skip policy modules
-		next if (is_policy_module ($dbh, $id_agente_modulo));
+		my $is_policy_module = enterprise_hook ('is_policy_module', [$dbh, $id_agente_modulo]);
+		next if (defined($is_policy_module) && $is_policy_module);
 
 		# Delete the module
 		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
@@ -456,7 +457,8 @@ sub pandora_checkdb_consistency {
 			my $id_agente_modulo = $module->{'id_agente_modulo'};
 	
 			# Skip policy modules
-			next if (is_policy_module ($dbh, $id_agente_modulo));
+			my $is_policy_module = enterprise_hook ('is_policy_module', [$dbh, $id_agente_modulo]);
+			next if (defined($is_policy_module) && $is_policy_module);
 	
 			# Delete the module
 			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
@@ -494,37 +496,6 @@ sub pandora_checkdb_consistency {
 		db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
 		print "[CHECKDB] Deleting non-existing module $id_agente_modulo in state table \n";
 	}
-}
-
-###############################################################################
-# Returns undef if the given module is not a policy module.
-###############################################################################
-sub is_policy_module ($$) {
-	my ($dbh, $module_id) = @_;
-
-	eval {
-		my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tpolicies');
-	};
-	
-	# Not running Pandora FMS Enterprise
-	return undef if ($@);
-
-	# Get agent id
-	my $agent_id = get_db_value ($dbh, 'SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
-	return undef unless defined ($agent_id);
-
-	# Get module name
-	my $module_name = get_db_value ($dbh, 'SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
-	return undef unless defined ($module_name);
-
-	# Search policies
-	my $policy_id = get_db_value ($dbh, 'SELECT t3.id FROM tpolicy_agents AS t1 INNER JOIN tpolicy_modules AS t2 ON t1.id_policy = t2.id_policy
-	INNER JOIN tpolicies AS t3 ON t1.id_policy = t3.id WHERE t1.id_agent = ? AND t2.name LIKE ?', $agent_id, $module_name);
-	
-	# Not a policy module
-	return undef unless defined ($policy_id);
-
-	return $policy_id;
 }
 
 ##############################################################################

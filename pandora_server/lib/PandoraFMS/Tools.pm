@@ -539,6 +539,8 @@ sub enterprise_hook ($$) {
 
 	# Prepend the package name
 	$func = 'PandoraFMS::Enterprise::' . $func;
+	
+	# undef is returned only if the enterprise function was not found
 	return undef unless (defined (&$func));
 
 	# Try to call the function
@@ -546,8 +548,6 @@ sub enterprise_hook ($$) {
 
 	# Check for errors
 	#return undef if ($@);
-
-	# undef is returned only if the enterprise function was not found
 	return '' unless defined ($output);
 
 	return $output;

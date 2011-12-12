@@ -3023,6 +3023,54 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$mttr.'</p>';
 			array_push ($table->data, $data);
 			break;
+		case 'group_report':
+			$group_name = groups_get_name($content['id_group']);
+			$group_stats = reporting_get_group_stats($content['id_group']);
+
+			$data = array ();
+			
+			$table->colspan[0][0] = 7;
+			$table->colspan[1][3] = 4;
+			$table->colspan[3][3] = 4;
+			$table->colspan[4][2] = 5;
+			$data[0] = $sizh. __('Group report').': "'.$group_name.'"' . $sizhfin;
+
+			array_push ($table->data, $data);	
+					
+			$data = array();
+			$data[0] = '<b>'.__('Agents').'</b>';
+			$data[1] = __('Total').' ('.$group_stats['total_agents'].')';
+			$data[2] = __('Unknown').' ('.$group_stats['agents_unknown'].')';
+			$data[3] = '';
+			array_push ($table->data, $data);	
+			
+			$data = array();
+			$data[0] = '<b>'.__('Monitors').'</b>';
+			$data[1] = __('Total').' ('.$group_stats['monitor_checks'].')';
+			$data[2] = __('Normal').' ('.$group_stats['monitor_ok'].')';
+			$data[3] = __('Critical').' ('.$group_stats['monitor_critical'].')';
+			$data[4] = __('Warning').' ('.$group_stats['monitor_warning'].')';
+			$data[5] = __('Unknown').' ('.$group_stats['monitor_unknown'].')';
+			$data[6] = __('Not init').' ('.$group_stats['monitor_not_init'].')';
+			array_push ($table->data, $data);	
+			
+			$data = array();
+			$data[0] = '<b>'.__('Alerts').'</b>';
+			$data[1] = __('Total').' ('.$group_stats['monitor_alerts'].')';
+			$data[2] = __('Fired').' ('.$group_stats['monitor_alerts_fired'].')';
+			$data[3] = '';
+			array_push ($table->data, $data);
+			
+			// Get events of the last 8 hours
+			$events = events_get_group_events ($content['id_group'], 28800, $report["datetime"]);
+			
+			$data = array();
+			$data[0] = '<b>'.__('Events').'</b>';
+			$data[1] = __('Last 8 hours events').' ('.count($events).')';
+			$data[2] = '';
+			array_push ($table->data, $data);
+			
+			break;
 		case 'general':
 			$group_by_agent = $content['group_by_agent'];
 			$order_uptodown = $content['order_uptodown'];

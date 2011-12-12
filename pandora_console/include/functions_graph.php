@@ -480,6 +480,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$time_format = 'M j';
 	}	
 	
+	$graph_values = array();
+	$module_name_list = array();
+	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
 		// If its a projection graph, first module will be data and second will be the projection

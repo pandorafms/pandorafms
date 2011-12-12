@@ -246,7 +246,7 @@ namespace Pandora_Modules {
 		virtual void setOutput     (string output);
 		virtual void setOutput     (string output,
 					    SYSTEMTIME *system_time);
-
+		virtual void setNoOutput   ();
 		
 		string      getName        () const;
 		string      getDescription () const;

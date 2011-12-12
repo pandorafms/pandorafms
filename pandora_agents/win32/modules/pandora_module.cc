@@ -407,6 +407,14 @@ Pandora_Module::setOutput (string output, SYSTEMTIME *system_time) {
 }
 
 /** 
+ * Set no output for the module.
+ */
+void
+Pandora_Module::setNoOutput () {
+	this->has_output = false;
+}
+
+/** 
  * Run the module and generates the output.
  *
  * It is used by the child classes to check the execution interval
@@ -956,8 +964,7 @@ Pandora_Module::evaluatePreconditions () {
 			in <windef.h> */
 			job = CreateJobObject (&attributes, this->module_name.c_str ());
 			if (job == NULL) {
-				pandoraLog ("CreateJobObject bad. Err: %d", GetLastError ());
-				this->has_output = false;
+				pandoraLog ("evaluatePreconditions: CreateJobObject failed. Err: %d", GetLastError ());
 				return 0;
 			}
 
@@ -965,8 +972,7 @@ Pandora_Module::evaluatePreconditions () {
 			out = GetStdHandle (STD_OUTPUT_HANDLE); 
 
 			if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
-				pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
-				this->has_output = false;
+				pandoraLog ("evaluatePreconditions: CreatePipe failed. Err: %d", GetLastError ());
 				return 0;
 			}
 
@@ -985,7 +991,7 @@ Pandora_Module::evaluatePreconditions () {
 
 			/* Set up members of the PROCESS_INFORMATION structure. */
 			ZeroMemory (&pi, sizeof (pi));
-			pandoraDebug ("Executing: %s", precond->command.c_str ());
+			pandoraDebug ("Executing pre-condition: %s", precond->command.c_str ());
 
 			/* Set the working directory of the process. It's "utils" directory
 			to find the GNU W32 tools */
@@ -995,18 +1001,17 @@ Pandora_Module::evaluatePreconditions () {
 			if (! CreateProcess (NULL, (CHAR *) precond->command.c_str (), NULL,
 			     NULL, TRUE, CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL,
 			     working_dir.c_str (), &si, &pi)) {
-				pandoraLog ("Pandora_Module_Exec: %s CreateProcess failed. Err: %d",
+				pandoraLog ("evaluatePreconditions: %s CreateProcess failed. Err: %d",
 			    this->module_name.c_str (), GetLastError ());
-				this->has_output = false;
 			} else {
 				char          buffer[BUFSIZE + 1];
 				unsigned long read, avail;
 	
 				if (! AssignProcessToJobObject (job, pi.hProcess)) {
-					pandoraLog ("Could not assigned proccess to job (error %d)",
+					pandoraLog ("evaluatePreconditions: could not assign proccess to job (error %d)",
 				    GetLastError ());
 				}
-			ResumeThread (pi.hThread);
+				ResumeThread (pi.hThread);
 	
 			/*string output;*/
 			int tickbase = GetTickCount();
@@ -1025,7 +1030,7 @@ Pandora_Module::evaluatePreconditions () {
 			} else if(this->getTimeout() < GetTickCount() - tickbase) {
 				/* STILL_ACTIVE */
 				TerminateProcess(pi.hThread, STILL_ACTIVE);
-				pandoraLog ("Pandora_Module_Exec: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
+				pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
 				break;
 			}
 		}
@@ -1034,21 +1039,21 @@ Pandora_Module::evaluatePreconditions () {
 
 		if (retval != 0) {
 			if (! TerminateJobObject (job, 0)) {
-				pandoraLog ("TerminateJobObject failed. (error %d)",
+				pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
 				GetLastError ());
 			}
             if (retval != STILL_ACTIVE) {
-				pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
+				pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
                 this->module_name.c_str (), retval);
             }
-            this->has_output = false;
+			/* Close job, process and thread handles. */
+			CloseHandle (job);
+			CloseHandle (pi.hProcess);
+			CloseHandle (pi.hThread);
+			CloseHandle (new_stdout);
+			CloseHandle (out_read);
+			return 0;
 		}
-
-        if (!output.empty()) {
-			this->setOutput (output);
-        } else {
-			this->setOutput ("");
-        }
 	
 		/* Close job, process and thread handles. */
 		CloseHandle (job);
@@ -1058,7 +1063,7 @@ Pandora_Module::evaluatePreconditions () {
 
 	CloseHandle (new_stdout);
 	CloseHandle (out_read);
-	
+
 	if ((precond->operation == ">" && float_output > precond->value_1) ||
 			    (precond->operation == "<" && float_output < precond->value_1) ||
 			    (precond->operation == "=" && float_output == precond->value_1) ||

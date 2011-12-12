@@ -1,3 +1,15 @@
+2011-12-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: Removed some debugging messages.
+
+	* modules/pandora_module.h,
+	  modules/pandora_module.cc,
+	  pandora_windows_service.cc: Fixed pre-conditions (were not working
+	  properly).
+
+	* modules/pandora_module_regexp.cc: Improved file status detection and
+	  small fixes.
+
 2011-12-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: Added a debug message.

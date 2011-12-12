@@ -701,9 +701,7 @@ Pandora_Wmi::getCdRomInfo (list<string> &rows) {
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &cd_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT  Name, Description, Drive FROM Win32_CDROMDrive "));
@@ -761,9 +759,7 @@ Pandora_Wmi::getVideoInfo (list<string> &rows){
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &video_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT Caption, AdapterRAM, VideoProcessor FROM Win32_VideoController "));
@@ -783,7 +779,6 @@ Pandora_Wmi::getVideoInfo (list<string> &rows){
                double ram_in_mb = atof(adapter_RAM) / 1048576; 
                ostringstream converter;
                converter << ram_in_mb;
-               pandoraDebug("f:%f s:%s\n",ram_in_mb,adapter_RAM);            
 		  	   ret += " " + converter.str() + " MBytes";
 		  	}
             ret += inventory_field_separator;
@@ -824,9 +819,7 @@ Pandora_Wmi::getHDsInfo (list<string> &rows) {
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &hd_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT Model, Size, SystemName FROM Win32_DiskDrive "));
@@ -846,12 +839,9 @@ Pandora_Wmi::getHDsInfo (list<string> &rows) {
                double fsize = atof(size) / 1073741824; 
                ostringstream converter;
                converter << fsize;
-               pandoraDebug("f:%f s:%s\n",fsize,size);
 		  	   ret += converter.str() + " GBs";   		  	  
 		  	}
-  		  	else {
-                 pandoraDebug("Size unknown\n");
-            }
+
             ret += inventory_field_separator;
             dhFreeString (size);		
 			dhGetValue (L"%s", &system_name, hd_info_item,
@@ -890,9 +880,7 @@ Pandora_Wmi::getCPUsInfo (list<string> &rows){
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &cpu_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT Name, MaxClockSpeed, Description FROM Win32_Processor "));
@@ -946,7 +934,6 @@ getIPs(VARIANT *ip_array){
           ret += "";
        }
        int num_ips  = V_ARRAY(ip_array)->rgsabound[0].cElements;
-       pandoraDebug("Num IPs: %d\n",num_ips);
        for (i = 0;i < num_ips;i++) { 
 	   	   if ((i > 0) && (i < num_ips - 1 ))
 	   	   {
@@ -954,7 +941,6 @@ getIPs(VARIANT *ip_array){
 	   	   }
            if (V_VT(&pvArray[i]) == VT_BSTR) { 
              LPSTR szStringA;                     
-             pandoraDebug("String[%u] (original): %S\n", i, V_BSTR(&pvArray[i])); 
              ret +=  Pandora_Strutils::strUnicodeToAnsi( V_BSTR(&pvArray[i]));             
            } 
        } 
@@ -982,9 +968,7 @@ Pandora_Wmi::getNICsInfo (list<string> &rows) {
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &nic_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT Caption, MACAddress, IPAddress FROM Win32_NetworkAdapterConfiguration "));
@@ -1040,9 +1024,7 @@ Pandora_Wmi::getPatchInfo (list<string> &rows) {
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &patch_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT HotFixID, Description, FixComments FROM Win32_QuickFixEngineering "));
@@ -1097,9 +1079,7 @@ Pandora_Wmi::getRAMInfo (list<string> &rows) {
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &ram_info, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT Tag, Capacity, Name FROM Win32_PhysicalMemory "));
@@ -1119,7 +1099,6 @@ Pandora_Wmi::getRAMInfo (list<string> &rows) {
                double fcapacity = atof(capacity) / 1048576; 
                ostringstream converter;
                converter << fcapacity;
-               pandoraDebug("f:%f s:%s\n",fcapacity,capacity);
 		  	   ret += converter.str() + " MBs";   		  	  
 		  	}
   		  	else {

@@ -1425,8 +1425,11 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			module = this->modules->getCurrentValue ();
 	
 			exe = module->evaluatePreconditions ();
-			
-			if (exe == 0) return;
+			if (exe == 0) {
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
+			}
 			
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 			if (module->checkCron () == 1) {
@@ -1503,8 +1506,11 @@ Pandora_Windows_Service::pandora_run () {
 			module = this->modules->getCurrentValue ();
 			
 			exe = module->evaluatePreconditions ();
-		
-			if (exe == 0) return;
+			if (exe == 0) {
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
+			}
 	
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 			if (module->checkCron () == 1) {

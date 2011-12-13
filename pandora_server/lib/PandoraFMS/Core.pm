@@ -661,6 +661,7 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 		
 		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
 		my $threshold = 0;
+		$action->{'last_execution'} = 0 unless defined ($action->{'last_execution'});
 		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
 		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
@@ -1774,7 +1775,10 @@ sub subst_alert_macros ($$) {
 	my $macro_regexp = join('|', grep { defined $macros->{$_} } keys %{$macros});
 
 	# Macro data may contain HTML entities
-	$string =~ s/($macro_regexp)/decode_entities($macros->{$1})/ige;
+	{
+		no warnings;
+		$string =~ s/($macro_regexp)/decode_entities($macros->{$1})/ige;
+	}
 
 	return $string;
 }

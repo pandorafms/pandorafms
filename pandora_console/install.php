@@ -66,8 +66,8 @@ function ChangeDBAction(causer) {
 
 <?php
 
-$version = '4.0';
-$build = '110923';
+$version = 'final';
+$build = '111213';
 $banner = "v$version Build $build";
 
 error_reporting(0);

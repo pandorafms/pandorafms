@@ -5,6 +5,16 @@
 	  DEBIAN/make_deb_package.sh,
 	  include/config_process.php,
 	  install.php,
+	  pandora_console.spec: Fixed version strings (were wrong
+	  in the previous commit).
+
+2011-12-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  include/config_process.php,
+	  install.php,
 	  pandora_console.spec: Updated version strings.
 
 2011-12-13  Sergio Martin <sergio.martin@artica.es>

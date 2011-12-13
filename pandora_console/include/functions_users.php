@@ -87,10 +87,10 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 
 		$list_id_groups = array_unique($list_id_groups);
 
-		$groups = db_get_all_rows_filter('tgrupo', array('id_grupo' => $list_id_groups));
+		$groups = db_get_all_rows_filter('tgrupo', array('id_grupo' => $list_id_groups, 'order' => 'parent, nombre'));
 	}
 	else {
-		$groups = db_get_all_rows_in_table ('tgrupo', 'nombre');
+		$groups = db_get_all_rows_in_table ('tgrupo', 'parent, nombre');
 	}
 
 	$user_groups = array ();
@@ -100,13 +100,16 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 
 	if ($returnAllGroup) { //All group
 		if ($returnAllColumns) {
-			$groups[] = array('id_grupo' => 0, 'nombre' => __('All'),
+			$groupall = array('id_grupo' => 0, 'nombre' => __('All'),
 				'icon' => 'world', 'parent' => 0, 'disabled' => 0,
 				'custom_id' => null, 'propagate' => 0); 
 		}
 		else {
-			$groups[] = array('id_grupo' => 0, 'nombre' => __("All"));
+			$groupall = array('id_grupo' => 0, 'nombre' => __("All"));
 		}
+		
+		// Add the All group to the beginning to be always the first
+		array_unshift($groups, $groupall);
 	}
 
 	foreach ($groups as $group) {
@@ -127,8 +130,6 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			}
 		}
 	}
-
-	ksort($user_groups);
 
 	return $user_groups;
 }

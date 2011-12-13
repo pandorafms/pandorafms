@@ -1,5 +1,10 @@
 2011-12-13  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_users.php: Change the get user groups
+	to return the groups orderer by name
+
+2011-12-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php: Fixed a bug of the
 	NO DATA images in the pdf graph reports
 

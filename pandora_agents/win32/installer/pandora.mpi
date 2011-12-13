@@ -3,7 +3,7 @@ AllowLanguageSelection
 {Yes}
 
 AppName
-{Pandora FMS Windows Agent v4.0}
+{Pandora FMS Windows Agent vfinal}
 
 ApplicationID
 {17E3D2CF-CA02-406B-8A80-9D31C17BD08F}
@@ -75,7 +75,7 @@ InstallPassword
 {}
 
 InstallVersion
-{4.0.0.0}
+{final.0.0}
 
 Language,ca
 {No}
@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{110923}
+{111213}
 
 ViewReadme
 {Yes}

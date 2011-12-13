@@ -125,15 +125,6 @@ Pandora_Windows_Service::pandora_init_broker (string file_conf) {
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	int pos;
 
-	/*setPandoraDebug (true);*/
-
-	// Add the util subdirectory to the PATH
-	util_dir = Pandora::getPandoraInstallDir ();
-	util_dir += "util";
-	path = getenv ("PATH");
-	env = "PATH=" + path + ";" + util_dir;
-	putenv (env.c_str ());
-
 	name_agent = "PANDORA_AGENT=" + checkAgentName(file_conf);
 	putenv(name_agent.c_str());
 	

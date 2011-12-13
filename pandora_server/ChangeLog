@@ -3,6 +3,14 @@
 	* DEBIAN/control,
 	  DEBIAN/make_deb_package.sh,
 	  pandora_server.spec,
+	  lib/PandoraFMS/Config.pm: Fixed version strings (were wrong
+	  in the previous commit).
+
+2011-12-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  pandora_server.spec,
 	  lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/Core.pm: Updated version strings.
 

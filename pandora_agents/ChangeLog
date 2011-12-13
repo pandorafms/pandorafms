@@ -1,3 +1,15 @@
+2011-12-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/pandora_windows_service.cc: Brokers do not need to
+	  modify the path.
+
+	* win32/installer/pandora.mpi,
+	  win32/pandora.cc,
+	  unix/DEBIAN/control,
+	  unix/DEBIAN/make_deb_package.sh,
+	  unix/pandora_agent.spec,
+	  unix/pandora_agent: Updated version strings.
+
 2011-11-01  Junichi Satoh  <junichi@rworks.jp>
 
 	* android/res/values-ja/strings.xml: Updated the help text.

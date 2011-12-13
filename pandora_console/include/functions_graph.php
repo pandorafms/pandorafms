@@ -758,7 +758,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		case GRAPH_AREA:
 			$color = null; 
 			return area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
 				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $config['font_size'], "", $ttl); 
 			break;
@@ -766,21 +766,21 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		case GRAPH_STACKED_AREA: 
 			$color = null;
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl);
 			break;
 		case GRAPH_LINE:  
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl); 
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
 			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, "images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl);
 			break;

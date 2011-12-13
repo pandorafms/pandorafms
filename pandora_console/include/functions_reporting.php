@@ -3026,48 +3026,77 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'group_report':
 			$group_name = groups_get_name($content['id_group']);
 			$group_stats = reporting_get_group_stats($content['id_group']);
-
-			$data = array ();
+			// Get events of the last 8 hours
+			$events = events_get_group_events ($content['id_group'], 28800, $report['datetime']);
 			
+			$data = array ();
 			$table->colspan[0][0] = 7;
-			$table->colspan[1][3] = 4;
-			$table->colspan[3][3] = 4;
-			$table->colspan[4][2] = 5;
+			$table->colspan[1][1] = 3;
+			$table->colspan[1][4] = 3;
+			$table->colspan[2][1] = 3;
+			$table->colspan[2][4] = 3;
+			$table->colspan[5][1] = 3;
+			$table->colspan[5][4] = 3;
+			$table->colspan[6][1] = 3;
+			$table->colspan[6][4] = 3;
+			$table->colspan[7][1] = 6;
+			$table->colspan[8][1] = 6;
 			$data[0] = $sizh. __('Group report').': "'.$group_name.'"' . $sizhfin;
 
 			array_push ($table->data, $data);	
 					
 			$data = array();
-			$data[0] = '<b>'.__('Agents').'</b>';
-			$data[1] = __('Total').' ('.$group_stats['total_agents'].')';
-			$data[2] = __('Unknown').' ('.$group_stats['agents_unknown'].')';
-			$data[3] = '';
-			array_push ($table->data, $data);	
-			
-			$data = array();
-			$data[0] = '<b>'.__('Monitors').'</b>';
-			$data[1] = __('Total').' ('.$group_stats['monitor_checks'].')';
-			$data[2] = __('Normal').' ('.$group_stats['monitor_ok'].')';
-			$data[3] = __('Critical').' ('.$group_stats['monitor_critical'].')';
-			$data[4] = __('Warning').' ('.$group_stats['monitor_warning'].')';
-			$data[5] = __('Unknown').' ('.$group_stats['monitor_unknown'].')';
-			$data[6] = __('Not init').' ('.$group_stats['monitor_not_init'].')';
-			array_push ($table->data, $data);	
-			
-			$data = array();
-			$data[0] = '<b>'.__('Alerts').'</b>';
-			$data[1] = __('Total').' ('.$group_stats['monitor_alerts'].')';
-			$data[2] = __('Fired').' ('.$group_stats['monitor_alerts_fired'].')';
-			$data[3] = '';
+			$data[0] = '';
+			$data[1] = "<div class='cellBold cellCenter'>".__('Total')."</div>";
+			$data[4] = "<div class='cellBold cellCenter'>".__('Unknown')."</div>";
 			array_push ($table->data, $data);
 			
-			// Get events of the last 8 hours
-			$events = events_get_group_events ($content['id_group'], 28800, $report["datetime"]);
+			$data = array();
+			$data[0] = "<div class='cellBold'>".__('Agents')."</div>";
+			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$group_stats['total_agents']."</div>";
+			$data[4] = "<div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$group_stats['agents_unknown']."</div>";
+			array_push ($table->data, $data);	
 			
 			$data = array();
-			$data[0] = '<b>'.__('Events').'</b>';
-			$data[1] = __('Last 8 hours events').' ('.count($events).')';
-			$data[2] = '';
+			$data[0] = '';
+			$data[1] = "<div class='cellBold cellCenter'>".__('Total')."</div>";
+			$data[2] = "<div class='cellBold cellCenter'>".__('Normal')."</div>";
+			$data[3] = "<div class='cellBold cellCenter'>".__('Critical')."</div>";
+			$data[4] = "<div class='cellBold cellCenter'>".__('Warning')."</div>";
+			$data[5] = "<div class='cellBold cellCenter'>".__('Unknown')."</div>";
+			$data[6] = "<div class='cellBold cellCenter'>".__('Not init')."</div>";
+			array_push ($table->data, $data);
+			
+			$data = array();
+			$data[0] = "<div class='cellBold'>".__('Monitors')."</div>";
+			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$group_stats['monitor_checks']."</div>";
+			$data[2] = "<div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>".$group_stats['monitor_ok']."</div>";
+			$data[3] = "<div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>".$group_stats['monitor_critical']."</div>";
+			$data[4] = "<div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>".$group_stats['monitor_warning']."</div>";
+			$data[5] = "<div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$group_stats['monitor_unknown']."</div>";
+			$data[6] = "<div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>".$group_stats['monitor_not_init']."</div>";
+			array_push ($table->data, $data);
+			
+			$data = array();
+			$data[0] = '';
+			$data[1] = "<div class='cellBold cellCenter'>".__('Defined')."</div>";
+			$data[4] = "<div class='cellBold cellCenter'>".__('Fired')."</div>";
+			array_push ($table->data, $data);
+			
+			$data = array();
+			$data[0] = "<div class='cellBold'>".__('Alerts')."</div>";
+			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$group_stats['monitor_alerts']."</div>";
+			$data[4] = "<div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$group_stats['monitor_alerts_fired']."</div>";
+			array_push ($table->data, $data);
+			
+			$data = array();
+			$data[0] = '';
+			$data[1] = "<div class='cellBold cellCenter'>".__('Last 8 hours')."</div>";
+			array_push ($table->data, $data);
+			
+			$data = array();
+			$data[0] = "<div class='cellBold'>".__('Events')."</div>";
+			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".count($events)."</div>";
 			array_push ($table->data, $data);
 			
 			break;

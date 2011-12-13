@@ -1,3 +1,12 @@
+2011-12-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Fixed a bug of the
+	NO DATA images in the pdf graph reports
+
+	* include/styles/pandora.css
+	include/functions_reporting.php: Added styles to the 
+	group report
+
 2011-12-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fixed some notices of the graphs

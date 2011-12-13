@@ -52,7 +52,7 @@ if (!$@) {
 	threads::shared::share (\$Sem);
 }	
 
-use constant AGENT_VERSION => 'final';
+use constant AGENT_VERSION => '4.0.1';
 use constant AGENT_BUILD => '111213';
 
 # Commands to retrieve total memory information in kB

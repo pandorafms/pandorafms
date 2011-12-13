@@ -206,6 +206,7 @@ Pandora_Windows_Service::pandora_init () {
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	string name_agent, name;
 	string proxy_mode, server_ip;
+	string *all_conf;
 	int pos, num;
 	static unsigned char first_run = 1;
                 
@@ -215,7 +216,7 @@ Pandora_Windows_Service::pandora_init () {
 	conf_file += "pandora_agent.conf";
 
 	num = count_broker_agents();
-	string all_conf[num];
+	all_conf = new string[num];
 	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
 	this->conf->setFile (all_conf);
@@ -223,6 +224,7 @@ Pandora_Windows_Service::pandora_init () {
 		delete this->modules;
 	}
 	this->modules = new Pandora_Module_List (conf_file);
+	delete []all_conf;
 	
 	name = checkAgentName(conf_file);
 	if (name.empty ()) {
@@ -1455,7 +1457,7 @@ if (this->elapsed_transfer_time >= this->transfer_interval) {
 void
 Pandora_Windows_Service::pandora_run () {
 	Pandora_Agent_Conf  *conf = NULL;
-	string server_addr, conf_file;
+	string server_addr, conf_file, *all_conf;
     int startup_delay = 0;
     static unsigned char delayed = 0;
     int exe = 1;
@@ -1536,13 +1538,14 @@ Pandora_Windows_Service::pandora_run () {
 
 	/* Load and execute brokers */
 	num = count_broker_agents();
-	string all_conf[num];
+	all_conf = new string [num];
 	check_broker_agents(all_conf);
 	for (i=0;i<num;i++){
 		pandora_init_broker(all_conf[i]);
 		pandora_run_broker(all_conf[i]);
 	}
-
+	delete []all_conf;
+	
 	/* Reload the original configuration */
 	if (num != 0) {
 		pandora_init ();

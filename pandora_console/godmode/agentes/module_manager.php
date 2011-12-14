@@ -399,7 +399,7 @@ foreach ($modules as $module) {
 		$table->rowstyle[$i - 1] = 'text-align: center';
 		$table->rowclass[$i - 1] = 'datos3';
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
-				$table->colspan[$i - 1][0] = 8;
+				$table->colspan[$i - 1][0] = 9;
 		else
 			$table->colspan[$i - 1][0] = 7;
 		

@@ -178,9 +178,16 @@ function update_compound ($step) {
 		$result = alerts_update_alert_compound ($id, $values);
 		
 		/* Update actions */
-		$actions = (array) get_parameter ('actions');
-		
-		foreach ($actions as $id_action) {
+		$remove_actions = alerts_get_alert_compound_actions ($id);
+		$add_actions = (array) get_parameter ('actions');
+
+		if (!empty ($remove_actions)) {
+			foreach ($remove_actions as $key => $action) {
+				alerts_delete_alert_compound_action ($key);
+			}
+		}
+
+		foreach ($add_actions as $id_action) {
 			/* TODO: fires_min and fires_max missing */
 			alerts_add_alert_compound_action ($id, (int) $id_action);
 		}
@@ -425,7 +432,12 @@ if ($step == 2) {
 					$table->data['actions'][1] .= __('From').' '.$action['fires_min'].
 						' '.__('to').' '.$action['fires_max'];
 			}
-			$table->data['actions'][1] .= ')</em></li>';
+			$table->data['actions'][1] .= ')</em>';
+			$table->data['actions'][1] .= '<a href="#" class="remove_action" />';
+			$table->data['actions'][1] .= html_print_image('images/cross.png', true, array("title" => __('Delete')));
+                        $table->data['actions'][1] .= '</a>';
+			$table->data['actions'][1] .= html_print_input_hidden ('actions[]', $action['id'], true);
+			$table->data['actions'][1] .= '</li>';
 		}
 	}
 	$table->data['actions'][1] .= '</ul>';
@@ -726,6 +738,10 @@ function add_alert () {
 	return false;
 }
 
+function remove_action () {
+	$(this).parent ().remove ();
+}
+
 $(document).ready (function () {
 <?php if ($step == 1): ?>
 	$("a.add_alert").click (add_alert);
@@ -885,13 +901,15 @@ $(document).ready (function () {
 	$("#button-add_action").click (function () {
 		value = $("#action option[selected]").html ();
 		id = $("#action").fieldValue ();
+		a = $("<a href=\"#\"></a>").append ("<img src=\"images/cross.png\" title=\"<?php echo __('Delete')?>\">").click (remove_action);
 		input = input = $("<input type=\"hidden\"></input>")
 			.attr ("name", "actions[]")
 			.attr ("value", id);
-		li = $("<li></li>").append (value).append (input);
+		li = $("<li></li>").append (value).append (a).append (input);
 		$("ul#alert_actions").append (li);
 		$("#compound-actions").show ();
 	});
+	$("a.remove_action").click (remove_action);
 <?php elseif ($step == 3): ?>
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {

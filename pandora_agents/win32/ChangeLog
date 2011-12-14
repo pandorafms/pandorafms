@@ -1,3 +1,12 @@
+2011-12-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_perfcounter.cc,
+	  modules/pandora_module_perfcounter.h: Use MinrGW's pdh.h
+	  instead of our own definitions.
+
+	* modules/pandora_module.cc: Fixed a bug in pre-conditions that led to an
+	  infinite loop.
+
 2011-12-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: Removed some debugging messages.

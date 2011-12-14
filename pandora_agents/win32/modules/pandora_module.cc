@@ -82,7 +82,7 @@ Pandora_Module::~Pandora_Module () {
 		iter_pre = this->precondition_list->begin ();
 		for (iter_pre = this->precondition_list->begin ();
 		     iter_pre != this->precondition_list->end ();
-		     iter++) {
+		     iter_pre++) {
 			/* Free regular expressions */
 			precond = *iter_pre;
 			if (precond->string_value != "") {
@@ -91,6 +91,7 @@ Pandora_Module::~Pandora_Module () {
 			delete (*iter_pre);
 		}
 		delete (this->precondition_list);
+		this->precondition_list = NULL;
 	}
 	
 	/* Clean condition list */
@@ -107,11 +108,13 @@ Pandora_Module::~Pandora_Module () {
 			delete (*iter);
 		}
 		delete (this->condition_list);
+		this->condition_list = NULL;
 	}
 	
 	/* Clean the module cron */
 	if (this->cron != NULL) {
 		delete (this->cron);
+		this->cron = NULL;
 	}
 }
 

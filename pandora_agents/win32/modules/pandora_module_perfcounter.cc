@@ -30,12 +30,12 @@ using namespace Pandora_Modules;
 
 // Pointers to pdh.dll functions
 static HINSTANCE PDH = NULL;
-static PdhOpenQueryT PdhOpenQuery = NULL;
-static PdhAddCounterT PdhAddCounter = NULL;
-static PdhCollectQueryDataT PdhCollectQueryData = NULL;
-static PdhGetRawCounterValueT PdhGetRawCounterValue = NULL;
-static PdhGetFormattedCounterValueT PdhGetFormattedCounterValue = NULL;
-static PdhCloseQueryT PdhCloseQuery = NULL;
+static PdhOpenQueryT PdhOpenQueryF = NULL;
+static PdhAddCounterT PdhAddCounterF = NULL;
+static PdhCollectQueryDataT PdhCollectQueryDataF = NULL;
+static PdhGetRawCounterValueT PdhGetRawCounterValueF = NULL;
+static PdhGetFormattedCounterValueT PdhGetFormattedCounterValueF = NULL;
+static PdhCloseQueryT PdhCloseQueryF = NULL;
 
 /** 
  * Creates a Pandora_Module_Perfcounter object.
@@ -57,48 +57,48 @@ Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string sour
             return;
         }
 
-        PdhOpenQuery = (PdhOpenQueryT) GetProcAddress (PDH, "PdhOpenQueryA");
-        if (PdhOpenQuery == NULL) {
+        PdhOpenQueryF = (PdhOpenQueryT) GetProcAddress (PDH, "PdhOpenQueryA");
+        if (PdhOpenQueryF == NULL) {
             pandoraLog ("Error loading function PdhOpenQueryA");
             FreeLibrary (PDH);
             PDH = NULL;
             return;
         }
 
-        PdhAddCounter = (PdhAddCounterT) GetProcAddress (PDH, "PdhAddCounterA");
-        if (PdhAddCounter == NULL) {
+        PdhAddCounterF = (PdhAddCounterT) GetProcAddress (PDH, "PdhAddCounterA");
+        if (PdhAddCounterF == NULL) {
             pandoraLog ("Error loading function PdhAddCounterA");
             FreeLibrary (PDH);
             PDH = NULL;
             return;
         }
 
-        PdhCollectQueryData = (PdhCollectQueryDataT) GetProcAddress (PDH, "PdhCollectQueryData");
-        if (PdhCollectQueryData == NULL) {
+        PdhCollectQueryDataF = (PdhCollectQueryDataT) GetProcAddress (PDH, "PdhCollectQueryData");
+        if (PdhCollectQueryDataF == NULL) {
             pandoraLog ("Error loading function PdhCollectQueryData");
             FreeLibrary (PDH);
             PDH = NULL;
             return;
         }
 
-        PdhGetRawCounterValue = (PdhGetRawCounterValueT) GetProcAddress (PDH, "PdhGetRawCounterValue"); 
-        if (PdhGetRawCounterValue == NULL) {
+        PdhGetRawCounterValueF = (PdhGetRawCounterValueT) GetProcAddress (PDH, "PdhGetRawCounterValue"); 
+        if (PdhGetRawCounterValueF == NULL) {
             pandoraLog ("Error loading function PdhGetRawCounterValue");
             FreeLibrary (PDH);
             PDH = NULL;
             return;
         }
         
-        PdhGetFormattedCounterValue = (PdhGetFormattedCounterValueT) GetProcAddress (PDH, "PdhGetFormattedCounterValue"); 
-        if (PdhGetFormattedCounterValue == NULL) {
+        PdhGetFormattedCounterValueF = (PdhGetFormattedCounterValueT) GetProcAddress (PDH, "PdhGetFormattedCounterValue"); 
+        if (PdhGetFormattedCounterValueF == NULL) {
             pandoraLog ("Error loading function PdhGetFormattedCounterValue");
             FreeLibrary (PDH);
             PDH = NULL;
             return;
         }
         
-        PdhCloseQuery = (PdhCloseQueryT) GetProcAddress (PDH, "PdhCloseQuery"); 
-        if (PdhCloseQuery == NULL) {
+        PdhCloseQueryF = (PdhCloseQueryT) GetProcAddress (PDH, "PdhCloseQuery"); 
+        if (PdhCloseQueryF == NULL) {
             pandoraLog ("Error loading function PdhCloseQuery");
             FreeLibrary (PDH);
             PDH = NULL;
@@ -106,7 +106,7 @@ Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string sour
         }
     }
     
-    if (cooked == "1") {
+    if (cooked[0] == '1') {
 		this->cooked = 1;
 	} else {
 		this->cooked = 0;
@@ -117,7 +117,7 @@ Pandora_Module_Perfcounter::Pandora_Module_Perfcounter (string name, string sour
  * Pandora_Module_Perfcounter destructor.
  */
 Pandora_Module_Perfcounter::~Pandora_Module_Perfcounter () {
-    FreeLibrary (PDH);
+    //FreeLibrary (PDH);
 }
 
 void
@@ -127,7 +127,7 @@ Pandora_Module_Perfcounter::run () {
     PDH_STATUS status;
     HCOUNTER counter;
     PDH_RAW_COUNTER raw_value;
-    PDH_FMT_COUNTER fmt_value;
+    PDH_FMT_COUNTERVALUE fmt_value;
     ostringstream string_value;
 
 	// Run
@@ -143,25 +143,25 @@ Pandora_Module_Perfcounter::run () {
 	}
 
     // Open a query object
-    status = PdhOpenQuery (NULL, 0, &query);
+    status = PdhOpenQueryF (NULL, 0, &query);
     if (status != ERROR_SUCCESS) {
         pandoraLog ("PdhOpenQuery failed with error %lX", status);
         return;
     }
 
     // Add the counter that will provide the data
-    status = PdhAddCounter (query, this->source.c_str (), 0, &counter);
+    status = PdhAddCounterF (query, this->source.c_str (), 0, &counter);
     if (status != ERROR_SUCCESS) {
         pandoraLog ("PdhAddCounter failed with error %lX", status);
-		PdhCloseQuery (query);
+		PdhCloseQueryF (query);
         return;
     }
 
     // Collect the data
-    status = PdhCollectQueryData (query);
+    status = PdhCollectQueryDataF (query);
     if (status != ERROR_SUCCESS) {
         // No data
-		PdhCloseQuery (query);
+		PdhCloseQueryF (query);
         return;
     }
 
@@ -170,20 +170,20 @@ Pandora_Module_Perfcounter::run () {
 			
 	    // Some counters require to samples
 	    Sleep (100);
-	    status = PdhCollectQueryData (query);
+	    status = PdhCollectQueryDataF (query);
 	    if (status != ERROR_SUCCESS) {
 	        // No data
-			PdhCloseQuery (query);
+			PdhCloseQueryF (query);
 	        return;
 	    }
 
-		status = PdhGetFormattedCounterValue(counter, PDH_FMT_LONG, NULL, &fmt_value);
+		status = PdhGetFormattedCounterValueF(counter, PDH_FMT_LONG, NULL, &fmt_value);
 	} else {
-		status = PdhGetRawCounterValue(counter, NULL, &raw_value);
+		status = PdhGetRawCounterValueF(counter, NULL, &raw_value);
 	}
 
     // Close the query object
-    PdhCloseQuery (query);
+    PdhCloseQueryF (query);
 
 	if (cooked == 1) {
 		string_value << fmt_value.longValue;

@@ -22,43 +22,17 @@
 #ifndef	__PANDORA_MODULE_PERFCOUNTER_H__
 #define	__PANDORA_MODULE_PERFCOUNTER_H__
 
+#include <pdh.h>
 #include "pandora_module.h"
 
 #define BUFFER_SIZE 1024
 
-// Some definitions to use pdh.dll
-typedef LONG PDH_STATUS;
-typedef HANDLE HCOUNTER;
-typedef HANDLE HQUERY;
-typedef struct _PDH_RAW_COUNTER {
-    DWORD       CStatus;
-    FILETIME    TimeStamp;
-    LONGLONG    FirstValue;
-    LONGLONG    SecondValue;
-    DWORD       MultiCount;
-} PDH_RAW_COUNTER, *PPDH_RAW_COUNTER;
-
-typedef struct _PDH_FMT_COUNTER {
-  DWORD CStatus;
-  union {
-    LONG     longValue;
-    double   doubleValue;
-    LONGLONG largeValue;
-    LPCSTR   AnsiStringValue;
-    LPCWSTR  WideStringValue;
-  };
-} PDH_FMT_COUNTER, *PPDH_FMT_COUNTER;
-
-#define PDH_FMT_LONG 0x00000100
-#define PDH_FMT_DOUBLE 0x00000200
-#define PDH_FUNCTION    PDH_STATUS __stdcall
-
-typedef PDH_FUNCTION (*PdhOpenQueryT) (IN LPCSTR szDataSource, IN DWORD_PTR dwUserData, IN HQUERY *phQuery);
-typedef PDH_FUNCTION (*PdhAddCounterT) (IN HQUERY hQuery, IN LPCSTR szFullCounterPath, IN DWORD_PTR dwUserData, IN HCOUNTER *phCounter);
-typedef PDH_FUNCTION (*PdhCollectQueryDataT) (IN HQUERY hQuery);
-typedef PDH_FUNCTION (*PdhGetRawCounterValueT) (IN HCOUNTER, IN LPDWORD lpdwType, IN PPDH_RAW_COUNTER pValue);
-typedef PDH_FUNCTION (*PdhGetFormattedCounterValueT) (IN HCOUNTER, IN DWORD dwFormat, IN LPDWORD lpdwType, IN PPDH_FMT_COUNTER pValue);
-typedef PDH_FUNCTION (*PdhCloseQueryT) (IN HQUERY hQuery);
+typedef PDH_FUNCTION (*PdhOpenQueryT) (LPCSTR szDataSource,DWORD_PTR dwUserData,PDH_HQUERY *phQuery);
+typedef PDH_FUNCTION (*PdhAddCounterT) (PDH_HQUERY hQuery,LPCSTR szFullCounterPath,DWORD_PTR dwUserData,PDH_HCOUNTER *phCounter);
+typedef PDH_FUNCTION (*PdhCollectQueryDataT) (PDH_HQUERY hQuery);
+typedef PDH_FUNCTION (*PdhGetRawCounterValueT) (PDH_HCOUNTER hCounter,LPDWORD lpdwType,PPDH_RAW_COUNTER pValue);
+typedef PDH_FUNCTION (*PdhGetFormattedCounterValueT) (PDH_HCOUNTER hCounter,DWORD dwFormat,LPDWORD lpdwType,PPDH_FMT_COUNTERVALUE pValue);
+typedef PDH_FUNCTION (*PdhCloseQueryT) (PDH_HQUERY hQuery);
 
 namespace Pandora_Modules {
     

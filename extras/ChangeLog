@@ -1,3 +1,8 @@
+2011-12-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Update CLI and DB maintenance scripts
+	  version strings.
+
 2011-10-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Fixed a typo.

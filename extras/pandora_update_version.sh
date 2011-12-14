@@ -33,6 +33,8 @@ $CODE_HOME/pandora_agents/unix/DEBIAN \
 $CODE_HOME_ENT/pandora/trunk/pandora_console/DEBIAN \
 $CODE_HOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN"
 SERVER_FILE="$CODE_HOME/pandora_server/lib/PandoraFMS/Config.pm"
+SERVER_DB_FILE="$CODE_HOME/pandora_server/util/pandora_db.pl"
+SERVER_CLI_FILE="$CODE_HOME/pandora_server/util/pandora_manage.pl"
 CONSOLE_DB_FILE="$CODE_HOME/pandora_console/pandoradb_data.sql"
 CONSOLE_FILE="$CODE_HOME/pandora_console/include/config_process.php"
 CONSOLE_INSTALL_FILE="$CODE_HOME/pandora_console/install.php"
@@ -81,6 +83,10 @@ done
 echo "Updating Pandora Server version..."
 sed -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$SERVER_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_FILE"
 sed -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$SERVER_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_FILE"
+echo "Updating DB maintenance script version..."
+sed -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_DB_FILE"
+echo "Updating CLI script version..."
+sed -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_CLI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_CLI_FILE"
 
 # Pandora Console
 echo "Updating Pandora Console DB version..."

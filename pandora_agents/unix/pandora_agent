@@ -1332,7 +1332,6 @@ sub module_freepercentmemory ($) {
 ################################################################################
 sub evaluate_module_preconditions ($) {
 	my ($module) = @_;
-	my $exe = 1;
 
 	# Evaluate preconditions
 	if ($module->{'precon'}){
@@ -1340,21 +1339,24 @@ sub evaluate_module_preconditions ($) {
 		foreach my $precondition (@{$module->{'precondition'}}) {
 			
 			my $data = `$precondition->{'command'} 2> $DevNull`;
-		
-			if (($precondition->{'operator'} eq '>' && $data > $precondition->{'value_1'}) ||
-				($precondition->{'operator'} eq '<' && $data < $precondition->{'value_1'}) ||
-				($precondition->{'operator'} eq '=' && $data == $precondition->{'value_1'}) ||
-				($precondition->{'operator'} eq '!=' && $data != $precondition->{'value_1'}) ||
-				($precondition->{'operator'} eq '=~' && $data =~ /$precondition->{'value_1'}/) ||
-				($precondition->{'operator'} eq '()' && $data > $precondition->{'value_1'} && $data < $precondition->{'value_2'})) {
-					$exe = 1;
-			} else {
-				$exe = 0;
-				return $exe;
-			}
+			
+			{
+				# Do not display a warning if the output of the command is not numeric
+				no warnings;
+				if (($precondition->{'operator'} eq '>' && $data > $precondition->{'value_1'}) ||
+					($precondition->{'operator'} eq '<' && $data < $precondition->{'value_1'}) ||
+					($precondition->{'operator'} eq '=' && $data == $precondition->{'value_1'}) ||
+					($precondition->{'operator'} eq '!=' && $data != $precondition->{'value_1'}) ||
+					($precondition->{'operator'} eq '=~' && $data =~ /$precondition->{'value_1'}/) ||
+					($precondition->{'operator'} eq '()' && $data > $precondition->{'value_1'} && $data < $precondition->{'value_2'})) {
+				} else {
+					return 0;
+				}
+			};
 		}
-	}	
-	return $exe;
+	}
+	
+	return 1;
 }
 
 

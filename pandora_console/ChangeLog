@@ -1,3 +1,9 @@
+2011-12-15 Tomas Palacios <tomas.palacios@artica.es>
+
+	* include/languages: Updated template, .po and .mo files.
+	Updated template in Launchpad and completed
+	Spanish and English translations.
+
 2011-12-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

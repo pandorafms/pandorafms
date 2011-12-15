@@ -37,7 +37,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 				300, 300 , '', null,
 				false, 0, false,
 				0, '', 0, 1, false,
-				false, '', 1, true);
+				true, '', 1, true);
 
 	if (empty($module_data)){
 		return array();	

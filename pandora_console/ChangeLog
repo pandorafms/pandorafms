@@ -1,3 +1,9 @@
+2011-12-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/events/events_list.php
+	operation/events/events.php: Added new option for display all 
+	events in event viewer.
+
 2011-12-15  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/setup/setup.php: Fixed bad use of __() function

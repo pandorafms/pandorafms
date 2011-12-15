@@ -145,7 +145,7 @@ if ($tag != "") {
 if (isset($filter_only_alert)){
 	if ($filter_only_alert == 0)
 		$sql_post .= " AND event_type NOT LIKE '%alert%'";
-	else
+	else if ($filter_only_alert == 1)
 		$sql_post .= " AND event_type LIKE '%alert%'";
 }
 
@@ -271,9 +271,9 @@ html_print_select ($tags_name, "tag", $tag, '', __('All'), "");
 echo "</td>";
 
 echo "<td>";
-echo __("Filter/Only alert events") . "</td><td>";
+echo __("Alert events") . "</td><td>";
 
-html_print_select (array('0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '');
+html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '');
 
 echo "</td></tr>";
 

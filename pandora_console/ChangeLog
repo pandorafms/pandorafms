@@ -1,5 +1,10 @@
 2011-12-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/servers/manage_recontask_form.php: Deleted notice due to 
+	a non init variable.
+
+2011-12-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_forecast.php
 	include/functions_reporting.php: Added CSV functionality for 
 	projection and prediction reports.

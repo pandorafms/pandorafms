@@ -42,7 +42,7 @@ if (is_ajax ()) {
 	return;
 }
 
-if (isset ($_GET["update"]) or ($_GET["crt"])) { // Edit mode
+if (isset ($_GET["update"]) or (isset($_GET["crt"]))) { // Edit mode
 
 	$update_recon = true;
 	if (isset ($_GET["crt"])){

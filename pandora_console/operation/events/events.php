@@ -167,7 +167,7 @@ $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate", 0);
 $section = (string) get_parameter ("section", "list");
 $text_agent = (string)get_parameter('text_agent', __("All"));
-$filter_only_alert = (int)get_parameter('filter_only_alert', 0);
+$filter_only_alert = (int)get_parameter('filter_only_alert', -1);
 
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 

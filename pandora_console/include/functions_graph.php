@@ -33,7 +33,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	global $config;
 	global $graphic_type;
-	
+
 	enterprise_include_once("include/functions_reporting.php");
 	
 	// Set variables
@@ -342,7 +342,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	
+
 	if ($flash_chart) {
 		include_flash_chart_script($homeurl);
 	}

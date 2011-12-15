@@ -1,3 +1,8 @@
+2011-12-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	include/functions_reporting.php: Projection graphs are static now.
+
 2011-12-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_forecast.php: Changed the kind of graph 

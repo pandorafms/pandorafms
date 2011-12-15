@@ -2136,7 +2136,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				0,
 				$report["datetime"],
-				false,
+				true,
 				'',
 				1,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph

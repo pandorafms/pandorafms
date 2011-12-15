@@ -2166,7 +2166,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$intervals_text = $content['text'];
 			$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
 			$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);			
-			$value = forecast_prediction_date ($content['id_agent_module'], $content['period'], $max_interval, $min_interval);
+			$value = forecast_prediction_date ($content['id_agent_module'], $content['period'],  $max_interval, $min_interval);
 			
 			if ($value === false) {
 				$value = __('Unknown');

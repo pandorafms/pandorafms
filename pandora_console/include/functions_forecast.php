@@ -27,10 +27,11 @@
  * @param int Period of the prediction or false to use it in prediction_date function (see below). 
  * @param int Maximun value using this function for prediction_date.
  * @param int Minimun value using this function for prediction_date.
+ * @param bool Result data for CSV file exportation.
  * 
  * @return array Void array or prediction of the module data.
  */
-function forecast_projection_graph($module_id, $period = 5184000, $prediction_period, $max_value = false, $min_value = false){
+function forecast_projection_graph($module_id, $period = 5184000, $prediction_period, $max_value = false, $min_value = false, $csv = false){
 	global $config;
 
 	$module_data=grafico_modulo_sparse ($module_id, $period, 0,
@@ -169,10 +170,17 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	
 	// Aplying linear regression to module data in order to do the prediction	
 	$output_data = array();
+	$idx = 0;
 	// Create data in graph format like
 	while ($in_range){	
 		$timestamp_f = date($time_format, $current_ts);
-		$output_data[$timestamp_f] = ($a + ($b * $current_ts));
+		if ($csv){
+			$output_data[$idx]['date'] = $current_ts;
+			$output_data[$idx]['data'] = ($a + ($b * $current_ts));
+		}
+		else{
+			$output_data[$timestamp_f] = ($a + ($b * $current_ts));
+		}
 		// Using this function for prediction_date
 		if ($prediction_period == false){
 			// This statements stop the prediction when interval is greater than 4 years
@@ -188,6 +196,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 			$in_range = false;
 		}
 		$current_ts = $current_ts + $agent_interval;
+		$idx++;
 	}	
 
 	return $output_data;

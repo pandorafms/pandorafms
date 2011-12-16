@@ -1,3 +1,8 @@
+2011-12-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Empty modules, plugins and collections before
+	  running a broker agent.
+
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Do not display a warning if the output of a

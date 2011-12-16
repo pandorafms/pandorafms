@@ -323,7 +323,7 @@ if ($modules === false) {
 }
 
 // Prepare pagination
-ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort)));
+ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort, 'id_agent_module' => false, 'edit_module' => false), true, false));
 
 $table->width = '98%';
 $table->head = array ();

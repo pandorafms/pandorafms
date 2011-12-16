@@ -1,3 +1,8 @@
+2011-12-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/pandora_agent: Merged from trunk. Empty modules, plugins
+	  and collections before running a broker agent.
+
 2011-12-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/installer/pandora.mpi,

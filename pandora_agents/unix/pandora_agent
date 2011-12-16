@@ -1703,6 +1703,9 @@ while (1) {
 			start_log ('quiet');
 				
 			# Read configuration file
+			@Modules = ();
+			@Plugins = ();
+			%Collections = ();
 			read_config ();
 					
 			# Check for a new configuration

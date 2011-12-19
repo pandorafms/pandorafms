@@ -1,3 +1,9 @@
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_src.sh, build_windows_agent.sh,
+	  build_deb.sh, pandora_update_version.sh,
+	  build_rpm.sh: Updated to build from the branch.
+
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Update CLI and DB maintenance scripts

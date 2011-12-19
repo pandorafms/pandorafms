@@ -1,5 +1,5 @@
 #!/bin/bash
-CODEHOME=~/code/pandora/trunk
+CODEHOME=~/code/pandora/branches/pandora_4.0
 RPMHOME=/usr/src/packages
 
 if [ ! -d $RPMHOME/EXE ]; then

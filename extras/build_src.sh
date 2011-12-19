@@ -1,5 +1,5 @@
 #!/bin/bash
-CODEHOME=~/code/pandora/trunk
+CODEHOME=~/code/pandora/branches/pandora_4.0
 CODEHOME_ENT=~/code/artica/code
 RPMHOME=/usr/src/packages
 VERSION=$(grep 'my $pandora_version =' $CODEHOME/pandora_server/lib/PandoraFMS/Config.pm | awk '{print substr($4, 2, length($4) - 3)}')
@@ -32,10 +32,10 @@ cd $CODEHOME/pandora_agents/shellscript && tar zcvf $RPMHOME/SOURCES/pandorafms_
 cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz --exclude \.svn --exclude nohup --exclude NT4 unix || exit 1
 
 # Enterprise console
-cd $CODEHOME_ENT/pandora/trunk/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn enterprise/* || exit 1
+cd $CODEHOME_ENT/pandora/branches/4.0/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn enterprise/* || exit 1
 
 # Enterprise server
-cd $CODEHOME_ENT/pandora/trunk/pandora_server/ && tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn  PandoraFMS-Enterprise || exit 1
+cd $CODEHOME_ENT/pandora/branches/4.0/pandora_server/ && tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn  PandoraFMS-Enterprise || exit 1
 
 # Updatemanager keygen
 cd $CODEHOME_ENT/updatemanager/keygen && tar cvzf $RPMHOME/SOURCES/pandorafms_keygen-$KEYGEN_VERSION.tar.gz --exclude .svn --exclude keygen --exclude keygen.i386.static --exclude pandora_keygen.spec pandora || exit 1

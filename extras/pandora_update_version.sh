@@ -20,18 +20,18 @@ else
 	BUILD=$3
 fi
 TEMP_FILE="/tmp/pandora_update_version.tmp"
-CODE_HOME=~/code/pandora/trunk
+CODE_HOME=~/code/pandora/branches/pandora_4.0
 CODE_HOME_ENT=~/code/artica/code
 SPEC_FILES="$CODE_HOME/pandora_console/pandora_console.spec \
 $CODE_HOME/pandora_agents/unix/pandora_agent.spec \
 $CODE_HOME/pandora_server/pandora_server.spec \
-$CODE_HOME_ENT/pandora/trunk/pandora_console/enterprise/pandora_console_enterprise.spec \
-$CODE_HOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec"
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_console/enterprise/pandora_console_enterprise.spec \
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec"
 DEBIAN_FILES="$CODE_HOME/pandora_console/DEBIAN \
 $CODE_HOME/pandora_server/DEBIAN \
 $CODE_HOME/pandora_agents/unix/DEBIAN \
-$CODE_HOME_ENT/pandora/trunk/pandora_console/DEBIAN \
-$CODE_HOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN"
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_console/DEBIAN \
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_server/PandoraFMS-Enterprise/DEBIAN"
 SERVER_FILE="$CODE_HOME/pandora_server/lib/PandoraFMS/Config.pm"
 SERVER_DB_FILE="$CODE_HOME/pandora_server/util/pandora_db.pl"
 SERVER_CLI_FILE="$CODE_HOME/pandora_server/util/pandora_manage.pl"

@@ -1,5 +1,9 @@
 2011-12-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Merged from 4.0 branch. Empty the broker PID array.
+
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Wait for broker childs instead of ignoring
 	  SIGCHLD.
 

@@ -1682,6 +1682,7 @@ while (1) {
 	check_collections () unless ($Conf{'debug'} eq '1');
 
 	# Launch broker agents
+	@BrokerPid = ();
 	my @broker_agents = read_config ('broker_agent');
 	foreach my $broker_agent (@broker_agents) {
 		

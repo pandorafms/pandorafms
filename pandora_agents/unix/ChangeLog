@@ -1,5 +1,10 @@
 2011-12-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Wait for broker childs instead of ignoring
+	  SIGCHLD.
+
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Ignore SIGCHLD.
 
 2011-12-16  Ramon Novoa  <rnovoa@artica.es>

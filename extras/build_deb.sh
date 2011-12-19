@@ -1,5 +1,5 @@
 #!/bin/bash
-CODEHOME=~/code/branches/pandora_4.0
+CODEHOME=~/code/pandora/branches/pandora_4.0
 CODEHOME_ENT=~/code/artica/code
 RPMHOME=/usr/src/packages
 

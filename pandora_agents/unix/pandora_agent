@@ -1589,6 +1589,9 @@ sub kill_signal_handler (){
 #Handler TERM signal.
 $SIG{'TERM'} = \&kill_signal_handler;
 
+# Ignore SIGCHLD
+$SIG{'CHLD'} = 'IGNORE';
+
 # Check command line arguments
 print_usage unless ($#ARGV == 0);
 $ConfDir = fix_directory ($ARGV[0]);
@@ -1852,11 +1855,9 @@ while (1) {
 	}
 	# Finish if broker agent
 	else {
-		last;
+		exit (0);
 	}
 }
-
-
 
 __END__
 

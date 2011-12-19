@@ -7,16 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 15:43+0100\n"
-"PO-Revision-Date: 2011-09-22 04:12+0000\n"
-"Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
+"POT-Creation-Date: 2011-12-15 12:11+0100\n"
+"PO-Revision-Date: 2011-12-16 07:59+0000\n"
+"Last-Translator: Tadashi Kaneda <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-23 09:49+0000\n"
-"X-Generator: Launchpad (build 14012)\n"
+"X-Launchpad-Export-Date: 2011-12-19 05:04+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
@@ -453,7 +452,7 @@ msgstr "システムアラートを検知しました。できるだけ早く修
 #: ../../general/header.php:81
 #, php-format
 msgid "You have %d warning(s)"
-msgstr "%d 個のワーニングがあります。"
+msgstr "警告が %d 件あります。"
 
 #: ../../general/header.php:88 ../../mobile/include/functions_web.php:33
 msgid "Logout"
@@ -589,9 +588,8 @@ msgid ""
 "attempts to access this page are recorded in security logs of Pandora System "
 "Database"
 msgstr ""
-"このページへのアクセスは認証されたユーザのみに制限されています。必要であれば"
-"システム管理者へ連絡してください。<br><br>このページへのアクセスは、Pandoraシ"
-"ステムデータベースのセキュリティログに記録されますので注意してください。"
+"このページへのアクセスは認証されたユーザのみに制限されています。必要であればシステム管理者へ連絡してください。<br><br>このページへのアクセスは、P"
+"andoraシステムデータベースのセキュリティログに記録されますので注意してください。"
 
 #: ../../general/logon_failed.php:21
 msgid "Authentication error"
@@ -605,10 +603,8 @@ msgid ""
 "these can be reviewed by each user, please report to admin any incident or "
 "malfunction."
 msgstr ""
-"パスワードまたはユーザ名が正しくありません。大文字・小文字を区別しますので、"
-"CAPS LOCKキーを確認してください。<br><br>ログインの失敗は Pandora FMS システ"
-"ムログに記録され他のユーザから確認されます。問題があれば管理者へ連絡してくだ"
-"さい。"
+"パスワードまたはユーザ名が正しくありません。大文字・小文字を区別しますので、CAPS LOCKキーを確認してください。<br><br>ログインの失敗は "
+"Pandora FMS システムログに記録され他のユーザから確認されます。問題があれば管理者へ連絡してください。"
 
 #: ../../general/pandora_help.php:24 ../../general/pandora_help.php:73
 msgid "Pandora FMS help system"
@@ -622,9 +618,7 @@ msgstr "ヘルプシステムエラー"
 msgid ""
 "Pandora FMS help system has been called with a help reference that currently "
 "don't exist. There is no help content to show."
-msgstr ""
-"Pandora FMS ヘルプシステムが呼び出されましたが、表示するヘルプが存在しませ"
-"ん。"
+msgstr "Pandora FMS ヘルプシステムが呼び出されましたが、表示するヘルプが存在しません。"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:216
 msgid "Links"
@@ -690,7 +684,6 @@ msgstr "イベント"
 #: ../../operation/events/events_list.php:181
 #: ../../operation/events/events_list.php:188
 #: ../../operation/events/events_list.php:269
-#: ../../operation/events/events_list.php:276
 #: ../../operation/events/events_rss.php:120
 #: ../../operation/events/events_rss.php:124
 #: ../../operation/events/events_rss.php:139
@@ -2147,10 +2140,9 @@ msgstr "レポート '%s' でエラーです。指定の名前はすでに使わ
 
 #: ../../extensions/resource_registration.php:75
 #, php-format
-msgid "Warning create '%s' report, the name exist, the report have a name %s."
-msgstr ""
-"レポート '%s' で警告です。その名前はすでに使われており、このレポートの名前は "
-"%s です。"
+msgid ""
+"Warning create '%s' report, the name exist, the report have a name %s."
+msgstr "レポート '%s' で警告です。その名前はすでに使われており、このレポートの名前は %s です。"
 
 #: ../../extensions/resource_registration.php:82
 msgid "Error the report haven't name."
@@ -2210,9 +2202,7 @@ msgstr "ビジュアルマップ '%s' の作成に失敗しました。名前が
 #, php-format
 msgid ""
 "Warning create '%s' visual map, the name exist, the report have a name %s."
-msgstr ""
-"ビジュアルマップ '%s' の生成で警告です。名前がすでに存在し、本レポート名は "
-"%s です。"
+msgstr "ビジュアルマップ '%s' の生成で警告です。名前がすでに存在し、本レポート名は %s です。"
 
 #: ../../extensions/resource_registration.php:424
 #, php-format
@@ -2274,11 +2264,10 @@ msgid ""
 "<br><br>You can get more resurces in our <a href='%s'>Public Resource "
 "Library</a>"
 msgstr ""
-"この拡張を使うと、リソーステンプレートの登録が簡単にできます。ここに、"
-"Pandora FMS 3.x フォーマット (.ptr) でリソーステンプレートをアップロードでき"
-"ます。Pandora FMS リソースの取得および利用方法については、ドキュメントを参照"
-"してください。<br><br>リソースは、我々の<a href='%s'>Public Resource "
-"Library</a>から取得できます。"
+"この拡張を使うと、リソーステンプレートの登録が簡単にできます。ここに、Pandora FMS 3.x フォーマット (.ptr) "
+"でリソーステンプレートをアップロードできます。Pandora FMS "
+"リソースの取得および利用方法については、ドキュメントを参照してください。<br><br>リソースは、我々の<a href='%s'>Public "
+"Resource Library</a>から取得できます。"
 
 #: ../../extensions/resource_registration.php:852
 msgid "Group filter: "
@@ -2310,9 +2299,7 @@ msgstr "システムログファイルビューワ"
 msgid ""
 "This tool is used just to view your Pandora FMS system logfiles directly "
 "from console"
-msgstr ""
-"このツールは、コンソールから Pandora FMS のシステムログファイルを直接参照する"
-"のに利用します。"
+msgstr "このツールは、コンソールから Pandora FMS のシステムログファイルを直接参照するのに利用します。"
 
 #: ../../extensions/pandora_logs.php:59
 msgid "System logfiles"
@@ -2364,29 +2351,26 @@ msgstr "作成に失敗しました。"
 #: ../../extensions/snmp_explorer.php:235
 #: ../../godmode/agentes/configurar_agente.php:750
 #: ../../godmode/agentes/configurar_agente.php:856
-#, fuzzy
 msgid "Another module already exists with the same name"
-msgstr "同じ短縮名で他のコレクションがあります"
+msgstr "同じ名前のモジュールが既に存在します"
 
 #: ../../extensions/snmp_explorer.php:238
 #: ../../godmode/agentes/configurar_agente.php:753
 #: ../../godmode/agentes/configurar_agente.php:859
 msgid "Some required fields are missed"
-msgstr ""
+msgstr "必須フィールドが設定されていません"
 
 #: ../../extensions/snmp_explorer.php:238
 #: ../../godmode/agentes/configurar_agente.php:753
 #: ../../godmode/agentes/configurar_agente.php:859
-#, fuzzy
 msgid "name"
-msgstr "名称変更"
+msgstr "名前"
 
 #: ../../extensions/snmp_explorer.php:243
 #: ../../godmode/agentes/configurar_agente.php:761
 #: ../../godmode/agentes/configurar_agente.php:864
-#, fuzzy
 msgid "Processing error"
-msgstr "処理"
+msgstr "処理エラー"
 
 #: ../../extensions/snmp_explorer.php:272
 #: ../../extensions/snmp_explorer.php:353
@@ -3022,21 +3006,19 @@ msgid ""
 "getting new modules, new plugins and new features (even full migrations "
 "tools for future versions) automatically."
 msgstr ""
-"新しい<a href=\"http://updatemanager.sourceforge.net\">アップデートマネージャ"
-"</a>クライアントは、Pandora FMSと一緒にリリースされました。アップデートマネー"
-"ジャは、新規モジュール、新規プラグイン、新規機能を自動的に取得するもの(フルマ"
-"イグレーションツールは将来対応予定)であり、これによりシステム管理者がPandora "
-"FMSを自動的に更新するのに役に立つでしょう。"
+"新しい<a "
+"href=\"http://updatemanager.sourceforge.net\">アップデートマネージャ</a>クライアントは、Pandora "
+"FMSと一緒にリリースされました。アップデートマネージャは、新規モジュール、新規プラグイン、新規機能を自動的に取得するもの(フルマイグレーションツールは将"
+"来対応予定)であり、これによりシステム管理者がPandora FMSを自動的に更新するのに役に立つでしょう。"
 
 #: ../../extensions/update_manager/main.php:34
 msgid ""
 "Update Manager is one of the most advanced features of Pandora FMS "
-"Enterprise version, for more information visit <a href=\"http://pandorafms."
-"com\">http://pandorafms.com</a>."
+"Enterprise version, for more information visit <a "
+"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 msgstr ""
-"アップデートマネージャは、Pandora FMS Enterprise版の拡張機能です。より詳細"
-"は、<a href=\"http://pandorafms.com\">http://pandorafms.com</a> を参照してく"
-"ださい。"
+"アップデートマネージャは、Pandora FMS Enterprise版の拡張機能です。より詳細は、<a "
+"href=\"http://pandorafms.com\">http://pandorafms.com</a> を参照してください。"
 
 #: ../../extensions/update_manager/main.php:36
 msgid ""
@@ -3044,10 +3026,9 @@ msgid ""
 "of agents and modules running). To disable it, just delete extension or "
 "remove remote server address from Update Manager plugin setup."
 msgstr ""
-"アップデートマネージャは、Pandora FMS の利用状況(エージェントと動作しているモ"
-"ジュールの数)を送信します。それを無効にするには、「拡張」の削除もしくは、アッ"
-"プデートマネージャプラグインの設定からリモートサーバのアドレスを削除してくだ"
-"さい。"
+"アップデートマネージャは、Pandora FMS "
+"の利用状況(エージェントと動作しているモジュールの数)を送信します。それを無効にするには、「拡張」の削除もしくは、アップデートマネージャプラグインの設定か"
+"らリモートサーバのアドレスを削除してください。"
 
 #: ../../extensions/update_manager/main.php:45
 msgid "Updating"
@@ -3147,14 +3128,14 @@ msgstr "エージェント(%s)、モジュール(%s) のデータを保存しま
 #: ../../extensions/insert_data.php:140
 msgid ""
 "Please check that the directory \"/var/spool/pandora/data_in\" is writeable "
-"by the apache user. <br /><br />The CSV file format is date;value&lt;"
-"newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:"
-"i:s."
+"by the apache user. <br /><br />The CSV file format is "
+"date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in "
+"format Y/m/d H:i:s."
 msgstr ""
-"\"/var/spool/pandora/data_in\" ディレクトリに apache ユーザによる書き込み権限"
-"があるか確認してください。<br /><br />CSV ファイルフォーマットは、date;"
-"value&lt;newline&gt;date;value&lt;newline&gt;... です。CSV の日付のフォーマッ"
-"トは、Y/m/d H:i:s です。"
+"\"/var/spool/pandora/data_in\" ディレクトリに apache ユーザによる書き込み権限があるか確認してください。<br "
+"/><br />CSV "
+"ファイルフォーマットは、date;value&lt;newline&gt;date;value&lt;newline&gt;... です。CSV "
+"の日付のフォーマットは、Y/m/d H:i:s です。"
 
 #: ../../extensions/insert_data.php:153
 #: ../../operation/events/events_list.php:215
@@ -3289,47 +3270,36 @@ msgstr "エージェントグループとモジュールグループの一覧"
 msgid ""
 "This table shows in columns the modules group and in rows agents group. The "
 "cell shows all modules"
-msgstr ""
-"列にモジュールグループ、行にエージェントグループを示しています。各セルは、全"
-"モジュールの状態を表示しています。"
+msgstr "列にモジュールグループ、行にエージェントグループを示しています。各セルは、全モジュールの状態を表示しています。"
 
 #: ../../extensions/module_groups.php:252
 msgid ""
 "Orange cell when the module group and agent have at least one alarm fired."
-msgstr ""
-"モジュールグループおよびエージェントで、少なくとも 1つのモジュールでアラート"
-"が発生している時にオレンジになります。"
+msgstr "モジュールグループおよびエージェントで、少なくとも 1つのモジュールでアラートが発生している時にオレンジになります。"
 
 #: ../../extensions/module_groups.php:256
 msgid ""
 "Red cell when the module group and agent have at least one module in "
 "critical status and the others in any status"
-msgstr ""
-"モジュールグループおよびエージェントで、少なくとも 1つのモジュールが障害状態"
-"の時に赤になります。"
+msgstr "モジュールグループおよびエージェントで、少なくとも 1つのモジュールが障害状態の時に赤になります。"
 
 #: ../../extensions/module_groups.php:260
 msgid ""
 "Yellow cell when the module group and agent have at least one in warning "
 "status and the others in grey or green status"
 msgstr ""
-"モジュールグループおよびエージェントで、少なくとも 1つのモジュールが警告状態"
-"で、その他のモジュールが不明か正常状態の時にに黄色なります。"
+"モジュールグループおよびエージェントで、少なくとも 1つのモジュールが警告状態で、その他のモジュールが不明か正常状態の時にに黄色なります。"
 
 #: ../../extensions/module_groups.php:264
 msgid ""
 "Green cell when the module group and agent have all modules in OK status"
-msgstr ""
-"モジュールグループおよびエージェントの全てのモジュールが正常状態の時に、緑に"
-"なります。"
+msgstr "モジュールグループおよびエージェントの全てのモジュールが正常状態の時に、緑になります。"
 
 #: ../../extensions/module_groups.php:268
 msgid ""
 "Grey cell when the module group and agent have at least one in unknown "
 "status and the others in green status"
-msgstr ""
-"モジュールグループおよびエージェントで、少なくとも 1つのモジュールが不明状態"
-"で、その他のモジュールが正常状態の時にグレーになります。"
+msgstr "モジュールグループおよびエージェントで、少なくとも 1つのモジュールが不明状態で、その他のモジュールが正常状態の時にグレーになります。"
 
 #: ../../extensions/module_groups.php:274
 msgid "There are no defined groups or module groups"
@@ -3353,9 +3323,8 @@ msgid ""
 "information, but it must be run as root or across sudo. For example: <i>sudo "
 "php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>"
 msgstr ""
-"この拡張は、シェル上で情報を表示するための PHP スクリプトとしても実行できま"
-"す。ただし、root 権限が必要です。<br>例: <i>sudo php /var/www/"
-"pandora_console/extensions/system_info.php -d -s -c</i>"
+"この拡張は、シェル上で情報を表示するための PHP スクリプトとしても実行できます。ただし、root 権限が必要です。<br>例: <i>sudo "
+"php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>"
 
 #: ../../extensions/system_info.php:270 ../../extensions/system_info.php:273
 #: ../../extensions/system_info.php:303
@@ -3402,8 +3371,8 @@ msgid ""
 "This extension makes exportation of resource template more easy. Here you "
 "can export as a resource template in Pandora FMS 3.x format (.ptr). "
 msgstr ""
-"この拡張で、リソーステンプレートのエクスポートを簡単にできます。Pandora FMS "
-"3.x フォーマット(.ptr)で、リソーステンプレートをエクスポートできます。 "
+"この拡張で、リソーステンプレートのエクスポートを簡単にできます。Pandora FMS 3.x "
+"フォーマット(.ptr)で、リソーステンプレートをエクスポートできます。 "
 
 #: ../../extensions/resource_exportation.php:354
 #: ../../enterprise/extensions/cron/functions.php:295
@@ -3442,15 +3411,14 @@ msgstr "プラグインの登録"
 msgid ""
 "This extension makes registration of server plugins more easy. Here you can "
 "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
-"refer to documentation on how to obtain and use Pandora FMS Server Plugins."
-"<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+"refer to documentation on how to obtain and use Pandora FMS Server "
+"Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
 "Library</a>"
 msgstr ""
-"この拡張インタフェースを使うことによって、サーバプラグインを簡単に登録するこ"
-"とができます。アップロードは、Pandora FMS 3.x の圧縮フォーマット(.pspz)で行っ"
-"てください。Pandora FMS サーバプラグインの入手方法についてはドキュメントを参"
-"照してください。<br><br>プラグインは、<a href='%s'>パブリックリソースライブラ"
-"リ</a>から入手できます。"
+"この拡張インタフェースを使うことによって、サーバプラグインを簡単に登録することができます。アップロードは、Pandora FMS 3.x "
+"の圧縮フォーマット(.pspz)で行ってください。Pandora FMS "
+"サーバプラグインの入手方法についてはドキュメントを参照してください。<br><br>プラグインは、<a "
+"href='%s'>パブリックリソースライブラリ</a>から入手できます。"
 
 #: ../../extensions/plugin_registration.php:71
 msgid "Cannot load INI file"
@@ -4490,19 +4458,16 @@ msgid "Tag"
 msgstr "タグ"
 
 #: ../../operation/events/events_list.php:274
-#, fuzzy
-msgid "Alert events"
-msgstr "全イベント一覧表示"
+msgid "Filter/Only alert events"
+msgstr "アラートイベントのみフィルター"
 
 #: ../../operation/events/events_list.php:276
-#, fuzzy
 msgid "Filter alert events"
-msgstr "エージェントのフィルタ"
+msgstr "アラートイベントフィルター"
 
 #: ../../operation/events/events_list.php:276
-#, fuzzy
 msgid "Only alert events"
-msgstr "アラートのみ"
+msgstr "アラートイベントのみ"
 
 #: ../../operation/events/events_list.php:392
 #: ../../operation/events/events_list.php:587
@@ -4554,9 +4519,8 @@ msgid "Create incident from event"
 msgstr "インシデントを作成する"
 
 #: ../../operation/events/events_list.php:629
-#, fuzzy
 msgid "Agent module"
-msgstr "発生元エージェントモジュール"
+msgstr "エージェントモジュール"
 
 #: ../../operation/events/events_list.php:649
 #: ../../enterprise/operation/metaconsole/eventview.php:801
@@ -4616,7 +4580,7 @@ msgstr "タグ"
 
 #: ../../operation/events/events_list.php:723
 msgid "Click here to open a popup window with URL tag"
-msgstr ""
+msgstr "URLタグのポップアップウインドウを開くにはここをクリックしてください"
 
 #: ../../operation/events/events_list.php:776
 #: ../../enterprise/operation/metaconsole/eventview.php:905
@@ -4750,7 +4714,7 @@ msgstr "T/Q"
 
 #: ../../operation/servers/view_server.php:60
 msgid "Threads / Queued modules currently"
-msgstr "スレッド : 現在キューに溜まっているモジュール"
+msgstr "スレッド数 / 現在キューに溜まっているモジュール数"
 
 #: ../../operation/servers/view_server.php:80
 #: ../../operation/agentes/tactical.php:268
@@ -4946,8 +4910,7 @@ msgstr "パスワードの更新に失敗しました。:%s"
 #: ../../operation/users/user_edit.php:75
 msgid ""
 "Passwords didn't match or other problem encountered while updating passwords"
-msgstr ""
-"パスワードが一致しない、または他の原因でパスワードの更新に失敗しました。"
+msgstr "パスワードが一致しない、または他の原因でパスワードの更新に失敗しました。"
 
 #: ../../operation/users/user_edit.php:86
 #: ../../operation/users/user_edit.php:104
@@ -5058,7 +5021,7 @@ msgstr "いいえ"
 
 #: ../../operation/users/user_edit.php:188
 msgid "If checkbox is clicked then block size global configuration is used"
-msgstr ""
+msgstr "チェックボックスをクリックすると、システム全体の設定が利用されます"
 
 #: ../../operation/users/user_edit.php:204
 msgid ""
@@ -5288,9 +5251,8 @@ msgid "Free text for search"
 msgstr "検索文字列"
 
 #: ../../operation/agentes/estado_agente.php:173
-#, fuzzy
 msgid "Agent status"
-msgstr "状態"
+msgstr "エージェント状態"
 
 #: ../../operation/agentes/estado_agente.php:420
 #: ../../operation/agentes/estado_generalagente.php:110
@@ -5364,8 +5326,7 @@ msgstr "非スタンバイ状態"
 
 #: ../../operation/agentes/alerts_status.functions.php:64
 msgid "Filter by agent name, module name, template name or action name"
-msgstr ""
-"エージェント名、モジュール名、テンプレート名および、アクション名でのフィルタ"
+msgstr "エージェント名、モジュール名、テンプレート名および、アクション名でのフィルタ"
 
 #: ../../operation/agentes/alerts_status.functions.php:66
 #: ../../operation/agentes/alerts_status.php:262
@@ -5913,9 +5874,7 @@ msgstr "デフォルトのマップがありません。"
 msgid ""
 "There is no GIS data for this agent, so it's positioned in default position "
 "of map."
-msgstr ""
-"このエージェントには GIS データがありません。そのため、マップのデフォルト位置"
-"に配置します。"
+msgstr "このエージェントには GIS データがありません。そのため、マップのデフォルト位置に配置します。"
 
 #: ../../operation/agentes/gis_view.php:88
 msgid "Last position in "
@@ -6127,9 +6086,7 @@ msgstr "標準ユーザ"
 
 #: ../../operation/search_users.php:227 ../../godmode/users/user_list.php:225
 msgid "The user doesn't have any assigned profile/group"
-msgstr ""
-"このユーザには、プロファイル/グループの組み合わせが何も割り当てられていませ"
-"ん。"
+msgstr "このユーザには、プロファイル/グループの組み合わせが何も割り当てられていません。"
 
 #: ../../operation/integria_incidents/incident.incident.php:85
 #: ../../enterprise/dashboard/widget.php:57
@@ -6205,9 +6162,7 @@ msgstr "ファイルが大きすぎます"
 
 #: ../../operation/integria_incidents/incident.php:139
 msgid "File was partially uploaded. Please try again"
-msgstr ""
-"ファイルが一部しかアップロードされませんでした。再度アップロードしてくださ"
-"い。"
+msgstr "ファイルが一部しかアップロードされませんでした。再度アップロードしてください。"
 
 #: ../../operation/integria_incidents/incident.php:142
 msgid "No file was uploaded"
@@ -6585,7 +6540,7 @@ msgstr "承諾済み"
 
 #: ../../operation/snmpconsole/snmp_view.php:341
 msgid "Search by any alphanumeric field in the trap"
-msgstr ""
+msgstr "トラップの英数字フィールド検索"
 
 #: ../../operation/snmpconsole/snmp_view.php:379
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:67
@@ -6806,13 +6761,12 @@ msgstr "MTTR"
 #: ../../operation/reporting/reporting_viewer.php:111
 #: ../../godmode/reporting/reporting_builder.preview.php:101
 msgid "Set initial date of all reports"
-msgstr ""
+msgstr "全レポートの開始日時設定"
 
 #: ../../operation/reporting/reporting_viewer.php:112
 #: ../../godmode/reporting/reporting_builder.preview.php:102
-#, fuzzy
 msgid "This is the begin date for all reports"
-msgstr "これは自動生成されたレポートです。"
+msgstr "全レポートの開始日"
 
 #: ../../operation/reporting/reporting_viewer.php:149
 #: ../../operation/reporting/graph_viewer.php:195
@@ -7207,7 +7161,8 @@ msgid "Disabled alerts"
 msgstr "無効なアラート"
 
 #: ../../godmode/massive/massive_delete_agents.php:52
-msgid "There was an error deleting the agent, the operation has been cancelled"
+msgid ""
+"There was an error deleting the agent, the operation has been cancelled"
 msgstr "エージェント削除でエラーが発生しました。操作はキャンセルされます。"
 
 #: ../../godmode/massive/massive_delete_agents.php:53
@@ -7347,7 +7302,7 @@ msgstr "データのエクスポート"
 #: ../../godmode/modules/manage_network_components_form_common.php:92
 #: ../../godmode/agentes/module_manager_editor_common.php:203
 msgid "FF threshold"
-msgstr "複数回連続設定"
+msgstr "連続抑制回数"
 
 #: ../../godmode/massive/massive_edit_modules.php:359
 #: ../../godmode/modules/manage_network_components_form_common.php:95
@@ -7440,10 +7395,13 @@ msgid ""
 "parameters to a correct value: <br><i> max_execution_time = 0</i> and "
 "<i>max_input_time = -1</i>"
 msgstr ""
+"一括操作のためには、PHPのタイムアウトパラメータを正しく設定する必要があります。php設定ファイル(php.ini)を開き(例:<i>sudo vi "
+"/etc/php5/apache2/php.ini;</i>)タイムアウトパラメータを次のように設定してください。<br><i> "
+"max_execution_time = 0</i>、 <i>max_input_time = -1</i>"
 
 #: ../../godmode/massive/massive_operations.php:153
 msgid "Please wait"
-msgstr ""
+msgstr "お待ちください"
 
 #: ../../godmode/massive/massive_operations.php:200
 msgid "The blank fields will not be updated"
@@ -8006,9 +7964,7 @@ msgstr "自動検出管理"
 msgid ""
 "You must select a Recon Server for the Task, otherwise the Recon Task will "
 "never run"
-msgstr ""
-"タスクを実行する自動検出サーバを指定する必要があります。指定しないと自動検出"
-"は実行されません。"
+msgstr "タスクを実行する自動検出サーバを指定する必要があります。指定しないと自動検出は実行されません。"
 
 #: ../../godmode/servers/manage_recontask_form.php:159
 msgid "Network sweep"
@@ -8085,9 +8041,8 @@ msgid ""
 "Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line "
 "format). If dont want to do a sweep using portscan, left it in blank"
 msgstr ""
-"ポート番号の指定は、一つの場合は 80、複数の場合は、80,443,512 や 0-1024 (nmap"
-"コマンドのフォーマット)のように記載します。ポートスキャンをしたくない場合は、"
-"空白にしてください。"
+"ポート番号の指定は、一つの場合は 80、複数の場合は、80,443,512 や 0-1024 "
+"(nmapコマンドのフォーマット)のように記載します。ポートスキャンをしたくない場合は、空白にしてください。"
 
 #: ../../godmode/servers/manage_recontask_form.php:217
 msgid "Choose if the discovery of a new system creates an incident or not."
@@ -8174,7 +8129,8 @@ msgid "Op."
 msgstr "操作"
 
 #: ../../godmode/servers/modificar_server.php:139
-msgid "Modules run by this server will stop working. Do you want to continue?"
+msgid ""
+"Modules run by this server will stop working. Do you want to continue?"
 msgstr "このサーバで動作しているモジュールを停止します。実行しますか?"
 
 #: ../../godmode/servers/manage_recontask.php:43
@@ -8481,14 +8437,12 @@ msgid "Profile cannot be added"
 msgstr "プロファイルの追加に失敗しました。"
 
 #: ../../godmode/users/configure_user.php:302
-#, fuzzy
 msgid "Extra policy profile added successfully"
-msgstr "プロファイルを追加しました。"
+msgstr "特別ポリシープロファイルを追加しました"
 
 #: ../../godmode/users/configure_user.php:303
-#, fuzzy
 msgid "Extra policy profile cannot be added"
-msgstr "プロファイルの追加に失敗しました。"
+msgstr "特別ポリシープロファイルの追加に失敗しました"
 
 #: ../../godmode/users/configure_user.php:355
 msgid "Global Profile"
@@ -8498,18 +8452,14 @@ msgstr "全体プロファイル"
 msgid ""
 "This user has permissions to manage all. This is admin user and overwrites "
 "all permissions given in profiles/groups"
-msgstr ""
-"このユーザは、全ての管理権限を所有します。プロファイルやグループで定義するす"
-"べての権限を上書きします。"
+msgstr "このユーザは、全ての管理権限を所有します。プロファイルやグループで定義するすべての権限を上書きします。"
 
 #: ../../godmode/users/configure_user.php:365
 msgid ""
 "This user has separated permissions to view data in his group agents, create "
 "incidents belong to his groups, add notes in another incidents, create "
 "personal assignments or reviews and other tasks, on different profiles"
-msgstr ""
-"このユーザは、以下のプロファイル名およびグループ名の組み合わせで定義した、限"
-"られた権限を所有します。"
+msgstr "このユーザは、以下のプロファイル名およびグループ名の組み合わせで定義した、限られた権限を所有します。"
 
 #: ../../godmode/users/configure_user.php:404
 msgid "Use global conf"
@@ -8629,9 +8579,7 @@ msgstr "エージェントカスタムフィールドの作成"
 msgid ""
 "Warning: When you change the Agent position, the agent automatically "
 "activates the 'Ignore new GIS data' option"
-msgstr ""
-"警告: エージェントの位置を変更した時は、エージェントが「新たなGISデータを無視"
-"する」オプションを自動的に有効にします。"
+msgstr "警告: エージェントの位置を変更した時は、エージェントが「新たなGISデータを無視する」オプションを自動的に有効にします。"
 
 #: ../../godmode/agentes/agent_conf_gis.php:48
 msgid "Agent position"
@@ -8666,7 +8614,6 @@ msgid "No component was found"
 msgstr "コンポーネントが見つかりません。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:132
-#, fuzzy
 msgid "Delete module"
 msgstr "モジュール削除"
 
@@ -8687,9 +8634,7 @@ msgstr "モジュール実行間隔 (秒)"
 msgid ""
 "In case you use an Export server you can link this module and export data to "
 "one these."
-msgstr ""
-"エクスポートサーバを利用している場合は、このモジュールをリンクしエクスポート"
-"できます。"
+msgstr "エクスポートサーバを利用している場合は、このモジュールをリンクしエクスポートできます。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:245
 msgid "Unit"
@@ -8820,9 +8765,8 @@ msgid "There was a problem updating module"
 msgstr "モジュールの更新に失敗しました。"
 
 #: ../../godmode/agentes/configurar_agente.php:756
-#, fuzzy
 msgid "\"No change\""
-msgstr "変更無し"
+msgstr "\"変更なし\""
 
 #: ../../godmode/agentes/configurar_agente.php:776
 msgid "Module successfully updated"
@@ -8870,8 +8814,7 @@ msgstr "日次"
 
 #: ../../godmode/agentes/agent_manager.php:148
 msgid "The agent's name must be the same as the one defined at the console"
-msgstr ""
-"ここで指定するエージェント名は、すでに定義済のものである必要があります。"
+msgstr "ここで指定するエージェント名は、すでに定義済のものである必要があります。"
 
 #: ../../godmode/agentes/agent_manager.php:163
 #: ../../enterprise/godmode/policies/policy_agents.php:378
@@ -8900,9 +8843,7 @@ msgstr "リモート設定ファイル削除"
 msgid ""
 "Delete this conf file implies that for restore you must reactive remote "
 "config in the local agent."
-msgstr ""
-"この設定を削除した場合、元に戻すにはローカルエージェントのリモート設定を再有"
-"効化する必要があります。"
+msgstr "この設定を削除した場合、元に戻すにはローカルエージェントのリモート設定を再有効化する必要があります。"
 
 #: ../../godmode/agentes/agent_manager.php:281
 msgid "Agent icon for GIS Maps."
@@ -9096,12 +9037,10 @@ msgid "No plug-in provided"
 msgstr "プラグインがありません"
 
 #: ../../godmode/agentes/module_manager_editor.php:416
-#, fuzzy
 msgid ""
 "Error, The field name and name in module_name in data configuration are "
 "different."
-msgstr ""
-"エラー。データ設定におけるフィールド名と module_name 内の名前が異なります。"
+msgstr "エラー、データ設定におけるフィールド名と module_name 内の名前が異なります。"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:29
 msgid "WMI server module"
@@ -9522,9 +9461,7 @@ msgstr "通常のアクション"
 msgid ""
 "In case you fill any Field 1, Field 2 or Field 3 above, those will replace "
 "the corresponding fields of this associated \"Default action\"."
-msgstr ""
-"フィールド1、フィールド2 またはフィールド 3 を入力した場合、対応するフィール"
-"ドの設定が \"デフォルトアクション\" になります。"
+msgstr "フィールド1、フィールド2 またはフィールド 3 を入力した場合、対応するフィールドの設定が \"デフォルトアクション\" になります。"
 
 #: ../../godmode/alerts/configure_alert_template.php:524
 #: ../../godmode/alerts/configure_alert_compound.php:452
@@ -9562,60 +9499,48 @@ msgstr "次"
 #: ../../godmode/alerts/configure_alert_template.php:655
 msgid ""
 "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
-msgstr ""
-"取得した値が <span id=\\\"value\\\"></span> にマッチした場合、アラートを発生"
-"させます。"
+msgstr "取得した値が <span id=\\\"value\\\"></span> にマッチした場合、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:656
 msgid ""
-"The alert would fire when the value doesn't match <span id=\\\"value\\\"></"
-"span>"
-msgstr ""
-"取得した値が <span id=\\\"value\\\"></span> にマッチしない場合、アラートを発"
-"生させます。"
+"The alert would fire when the value doesn't match <span id=\\\"value\\"
+"\"></span>"
+msgstr "取得した値が <span id=\\\"value\\\"></span> にマッチしない場合、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:657
 msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-msgstr ""
-"取得した値が <span id=\\\"value\\\"></span> になったら、アラートを発生させま"
-"す。"
+msgstr "取得した値が <span id=\\\"value\\\"></span> になったら、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:658
 msgid ""
 "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-msgstr ""
-"取得した値が <span id=\\\"value\\\"></span> 以外になったら、アラートを発生さ"
-"せます。"
+msgstr "取得した値が <span id=\\\"value\\\"></span> 以外になったら、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:659
 msgid ""
 "The alert would fire when the value is between <span id=\\\"min\\\"></span> "
 "and <span id=\\\"max\\\"></span>"
 msgstr ""
-"取得した値が <span id=\\\"min\\\"></span> と <span id=\\\"max\\\"></span> の"
-"間になったら、アラートを発生させます。"
+"取得した値が <span id=\\\"min\\\"></span> と <span id=\\\"max\\\"></span> "
+"の間になったら、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:660
 msgid ""
-"The alert would fire when the value is not between <span id=\\\"min\\\"></"
-"span> and <span id=\\\"max\\\"></span>"
+"The alert would fire when the value is not between <span id=\\\"min\\"
+"\"></span> and <span id=\\\"max\\\"></span>"
 msgstr ""
-"取得した値が <span id=\\\"min\\\"></span> と <span id=\\\"max\\\"></span> の"
-"間を外れたら、アラートを発生させます。"
+"取得した値が <span id=\\\"min\\\"></span> と <span id=\\\"max\\\"></span> "
+"の間を外れたら、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:661
 msgid ""
 "The alert would fire when the value is below <span id=\\\"min\\\"></span>"
-msgstr ""
-"取得した値が <span id=\\\"min\\\"></span> 以下になったら、アラートを発生させ"
-"ます。"
+msgstr "取得した値が <span id=\\\"min\\\"></span> 以下になったら、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:662
 msgid ""
 "The alert would fire when the value is above <span id=\\\"max\\\"></span>"
-msgstr ""
-"取得した値が <span id=\\\"max\\\"></span> を超えたら、アラートを発生させま"
-"す。"
+msgstr "取得した値が <span id=\\\"max\\\"></span> を超えたら、アラートを発生させます。"
 
 #: ../../godmode/alerts/configure_alert_template.php:663
 #: ../../include/functions_ui.php:745
@@ -9881,9 +9806,7 @@ msgstr "利用マップの追加"
 msgid ""
 "At least one map connection must be defined, it will be possible to change "
 "between the connections in the map"
-msgstr ""
-"少なくとも、1つの利用マップが定義されていなければいけません。マップの変更は可"
-"能です。"
+msgstr "少なくとも、1つの利用マップが定義されていなければいけません。マップの変更は可能です。"
 
 #: ../../godmode/gis_maps/configure_gis_map.php:342
 msgid "Group that owns the map"
@@ -9934,9 +9857,7 @@ msgstr "レイヤ"
 msgid ""
 "Each layer can show agents from one group or the agents added to that layer "
 "or both."
-msgstr ""
-"それぞれのレイヤは、グループに所属するエージェントまたはレイヤに個別に追加さ"
-"れたエージェントを表示できます。"
+msgstr "それぞれのレイヤは、グループに所属するエージェントまたはレイヤに個別に追加されたエージェントを表示できます。"
 
 #: ../../godmode/gis_maps/configure_gis_map.php:393
 msgid "List of layers"
@@ -10292,9 +10213,8 @@ msgid ""
 "daemon is running. It's very important to keep up-to-date database to get "
 "the best performance and results in Pandora"
 msgstr ""
-"Pandoraサーバの設定とデータベースメンテナンスデーモンの動作に注意をしてくださ"
-"い。パフォーマンスを維持するためには、データベースを日々整理することが重要で"
-"す。"
+"Pandoraサーバの設定とデータベースメンテナンスデーモンの動作に注意をしてください。パフォーマンスを維持するためには、データベースを日々整理することが"
+"重要です。"
 
 #: ../../godmode/db/db_purge.php:42
 msgid "Get data from agent"
@@ -10312,9 +10232,7 @@ msgstr "次より古いデータ"
 msgid ""
 "Please be patient. This operation can take a long time depending on the "
 "amount of modules."
-msgstr ""
-"しばらくお待ちください。この操作は、モジュール数によりしばらく時間がかかるこ"
-"とがあります。"
+msgstr "しばらくお待ちください。この操作は、モジュール数によりしばらく時間がかかることがあります。"
 
 #: ../../godmode/db/db_purge.php:94
 msgid "Deleting records for module"
@@ -10346,9 +10264,7 @@ msgstr "データ取得"
 
 #: ../../godmode/db/db_purge.php:164
 msgid "Click here to get the data from the agent specified in the select box"
-msgstr ""
-"選択したエージェントからデータを取得するためには、ここをクリックしてくださ"
-"い。"
+msgstr "選択したエージェントからデータを取得するためには、ここをクリックしてください。"
 
 #: ../../godmode/db/db_purge.php:168
 #, php-format
@@ -10473,12 +10389,11 @@ msgid ""
 "that you should be running each day or week. This console sanity DONT "
 "compact your database, only delete bad structured data."
 msgstr ""
-"Pandora FMS のデータベース健全性ツールは、モジュールが初期化されていなかった"
-"り、モジュールがおかしなデータを記録している場合などに、不正なデータを削除す"
-"るために利用します。このような問題のあるモジュールは、Pandora FMS のパフォー"
-"マンスを劣化させます。このデータベース健全性ツールは、<b>pandora_db.pl</b>と"
-"しても実装されており、日次や週次で実行させることができます。このツールは不正"
-"なデータを削除するのみで、その他データの削除は行いません。"
+"Pandora FMS "
+"のデータベース健全性ツールは、モジュールが初期化されていなかったり、モジュールがおかしなデータを記録している場合などに、不正なデータを削除するために利用し"
+"ます。このような問題のあるモジュールは、Pandora FMS "
+"のパフォーマンスを劣化させます。このデータベース健全性ツールは、<b>pandora_db.pl</b>としても実装されており、日次や週次で実行させること"
+"ができます。このツールは不正なデータを削除するのみで、その他データの削除は行いません。"
 
 #: ../../godmode/db/db_sanity.php:106
 msgid "Sanitize my database now"
@@ -10595,14 +10510,12 @@ msgid "Descending"
 msgstr "降順"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:384
-#, fuzzy
 msgid "Projection period"
-msgstr "予測サーバ"
+msgstr "予想期間"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:388
-#, fuzzy
 msgid "Data range"
-msgstr "データの表示"
+msgstr "データ範囲"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:390
 #: ../../godmode/reporting/reporting_builder.item_editor.php:554
@@ -10786,7 +10699,7 @@ msgstr "2カラムで表示"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:596
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:147
 msgid "SLA items sorted by fulfillment value"
-msgstr ""
+msgstr "実データによりソートしたSLAアイテム"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:600
 msgid "Show in landscape"
@@ -11038,8 +10951,7 @@ msgstr "キャンセル"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:227
 msgid "For use the original image file size, set 0 width and 0 height."
-msgstr ""
-"オリジナルの画像サイズを利用するためには、幅と高さを 0 に設定してください。"
+msgstr "オリジナルの画像サイズを利用するためには、幅と高さを 0 に設定してください。"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:254
 msgid "Label color"
@@ -11209,9 +11121,7 @@ msgstr "グラフの削除で問題が発生しました。"
 msgid ""
 "Use [ or ( as first character, for example '[*] Map name', to render this "
 "map name in main menu"
-msgstr ""
-"最初の文字には [ または ( を使ってください。例えば、マップ名をメインメニュー"
-"に表示するには、'[*] Map name'  です。"
+msgstr "最初の文字には [ または ( を使ってください。例えば、マップ名をメインメニューに表示するには、'[*] Map name'  です。"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:51
 #: ../../enterprise/godmode/agentes/collections.data.php:291
@@ -11351,7 +11261,7 @@ msgstr "詳細情報"
 
 #: ../../godmode/tag/tag.php:140
 msgid "Number of modules affected"
-msgstr "モジュール数が影響します。"
+msgstr "影響するモジュール数"
 
 #: ../../godmode/tag/tag.php:172
 msgid "No tags selected"
@@ -11472,9 +11382,7 @@ msgstr "httpsの利用"
 msgid ""
 "If SSL is not properly configured you will lose access to Pandora FMS "
 "Console. Do you want to continue?"
-msgstr ""
-"SSL の設定ができていないと、Pandora FMS コンソールへアクセスできなくなりま"
-"す。設定を行いますか?"
+msgstr "SSL の設定ができていないと、Pandora FMS コンソールへアクセスできなくなります。設定を行いますか?"
 
 #: ../../godmode/setup/setup.php:100
 msgid "Attachment store"
@@ -11537,13 +11445,12 @@ msgid "Sound for Monitor warning"
 msgstr "警告状態時のサウンド"
 
 #: ../../godmode/setup/setup.php:222
-#, fuzzy
 msgid ""
 "If Enterprise ACL System is enabled without rules you will lose access to "
 "Pandora FMS Console (even admin). Do you want to continue?"
 msgstr ""
-"SSL の設定ができていないと、Pandora FMS コンソールへアクセスできなくなりま"
-"す。設定を行いますか?"
+"ルール設定が無い状態でエンタープライズACLシステムが有効になっている場合は、(adminでさえも)Pandora FMS "
+"コンソールへアクセスできなくなります。続けますか。"
 
 #: ../../godmode/setup/setup_auth.php:33
 msgid "Authentication configuration"
@@ -11761,9 +11668,7 @@ msgstr "画像サイズ"
 msgid ""
 "Preview to select the center of the map and the default position of an agent "
 "without gis data"
-msgstr ""
-"マップの中心選択と、GISデータが無い場合のエージェントのデフォルト位置プレ"
-"ビュー"
+msgstr "マップの中心選択と、GISデータが無い場合のエージェントのデフォルト位置プレビュー"
 
 #: ../../godmode/setup/gis_step_2.php:279
 msgid "Load preview map"
@@ -11920,19 +11825,19 @@ msgstr "カスタムロゴ"
 
 #: ../../godmode/setup/setup_visuals.php:112
 msgid "Global default interval for refresh"
-msgstr ""
+msgstr "システムデフォルトの再読み込み間隔"
 
 #: ../../godmode/setup/setup_visuals.php:112
 msgid "This interval will affect all pages"
-msgstr ""
+msgstr "この間隔は全ページで有効です"
 
 #: ../../godmode/setup/setup_visuals.php:115
 msgid "Default interval for refresh on Visual Console"
-msgstr ""
+msgstr "ビジュアルコンソールのデフォルト更新間隔"
 
 #: ../../godmode/setup/setup_visuals.php:115
 msgid "This interval will affect to Visual Console pages"
-msgstr ""
+msgstr "この間隔はビジュアルコンソールページで有効です"
 
 #: ../../godmode/setup/news.php:28
 msgid "Site news management"
@@ -11949,10 +11854,9 @@ msgstr "ポリシー '%s' の作成でエラーです。名前がすでに存在
 
 #: ../../enterprise/extensions/resource_registration/functions.php:44
 #, php-format
-msgid "Warning create '%s' policy, the name exist, the policy have a name %s."
-msgstr ""
-"'%s'ポリシー生成にて警告です。その名前はすでに使われていて、このポリシーの名"
-"前は%sです。"
+msgid ""
+"Warning create '%s' policy, the name exist, the policy have a name %s."
+msgstr "'%s'ポリシー生成にて警告です。その名前はすでに使われていて、このポリシーの名前は%sです。"
 
 #: ../../enterprise/extensions/resource_registration/functions.php:51
 msgid "Error the policy haven't name."
@@ -12116,29 +12020,24 @@ msgid "Configuration saved"
 msgstr "設定を保存しました。"
 
 #: ../../enterprise/extensions/backup/main.php:53
-#, fuzzy
 msgid "Pandora database backup utility"
-msgstr ""
-"Pandora データベースバックアップのリストアは、手動で行う必要があります。"
+msgstr "Pandora データベースバックアップユーティリティ"
 
 #: ../../enterprise/extensions/backup/main.php:113
 msgid "Lost"
-msgstr ""
+msgstr "失敗"
 
 #: ../../enterprise/extensions/backup/main.php:120
-#, fuzzy
 msgid "Download"
-msgstr "停止"
+msgstr "ダウンロード"
 
 #: ../../enterprise/extensions/backup/main.php:139
-#, fuzzy
 msgid "Backups list"
-msgstr "バックアップ"
+msgstr "バックアップ一覧"
 
 #: ../../enterprise/extensions/backup/main.php:144
-#, fuzzy
 msgid "Create backup"
-msgstr "グループの作成"
+msgstr "バックアップの作成"
 
 #: ../../enterprise/extensions/cron.php:57
 #: ../../enterprise/extensions/cron/main.php:36
@@ -12457,9 +12356,8 @@ msgid "Error process map"
 msgstr "マップの処理に失敗しました。"
 
 #: ../../enterprise/operation/agentes/policy_view.php:37
-#, fuzzy
 msgid "This agent has no policy assigned"
-msgstr "このエージェントにはポリシーがありません"
+msgstr "このエージェントにはポリシーが設定されていません"
 
 #: ../../enterprise/operation/agentes/policy_view.php:41
 msgid "Pandora agents "
@@ -12650,9 +12548,7 @@ msgstr "移動元DBのエージェントを無効化しました"
 msgid ""
 "Not set metaconsole IP in the \"IP list with API access\" guess Pandora "
 "Console."
-msgstr ""
-"Pandora コンソールの \"APIアクセスを許可するIPアドレスリスト\" の設定にメタコ"
-"ンソールの IP が設定されていません。"
+msgstr "Pandora コンソールの \"APIアクセスを許可するIPアドレスリスト\" の設定にメタコンソールの IP が設定されていません。"
 
 #: ../../enterprise/operation/metaconsole/agentmanager.move_agent.php:76
 msgid "Successfully moved"
@@ -13288,8 +13184,7 @@ msgstr "不正な更新ファイル"
 
 #: ../../enterprise/godmode/agentes/collections.editor.php:286
 msgid "Please, first save a new collection before to upload files."
-msgstr ""
-"ファイルをアップロードするには、最初に新たなコレクションを保存してください。"
+msgstr "ファイルをアップロードするには、最初に新たなコレクションを保存してください。"
 
 #: ../../enterprise/godmode/agentes/collection_manager.php:87
 #: ../../enterprise/godmode/agentes/collections.php:219
@@ -13348,8 +13243,7 @@ msgstr "この名前の変更は、データ設定の次に行う必要があり
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:22
 msgid ""
 "If you change this type, you must change into the text of Data configuration."
-msgstr ""
-"このタイプを変更する場合は、データ設定のテキストを変更する必要があります。"
+msgstr "このタイプを変更する場合は、データ設定のテキストを変更する必要があります。"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:25
 msgid "Using local component"
@@ -13492,15 +13386,11 @@ msgstr "短い名前:"
 msgid ""
 "The collection's short name is the name of dir in attachment dir and the "
 "package collection."
-msgstr ""
-"コレクションの短縮名は、添付ディレクトリやパッケージコレクションにあるディレ"
-"クトリ名です。"
+msgstr "コレクションの短縮名は、添付ディレクトリやパッケージコレクションにあるディレクトリ名です。"
 
 #: ../../enterprise/godmode/agentes/collections.data.php:308
 msgid "Short name must contain only alphanumeric characters, - or _ ."
-msgstr ""
-"短縮名には、アルファベット、-(ハイフン)、_(アンダースコア)しか使用できませ"
-"ん。"
+msgstr "短縮名には、アルファベット、-(ハイフン)、_(アンダースコア)しか使用できません。"
 
 #: ../../enterprise/godmode/agentes/collections.data.php:308
 msgid "Empty for default short name fc_X where X is the collection id."
@@ -13568,9 +13458,8 @@ msgstr "イベントアラートビルダー"
 
 #: ../../enterprise/godmode/alerts/alert_events_rules.php:73
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:50
-#, fuzzy
 msgid "List event rules"
-msgstr "イベントアラート一覧"
+msgstr "イベントルール一覧"
 
 #: ../../enterprise/godmode/alerts/alert_events_rules.php:78
 msgid "Event rules"
@@ -13765,8 +13654,7 @@ msgstr "拡張情報の表示"
 msgid ""
 "Maybe delete the extended data or the audit data is previous to table "
 "tsession_extended."
-msgstr ""
-"拡張データを削除したか、監査データがtsession_extendedテーブルにあります。"
+msgstr "拡張データを削除したか、監査データがtsession_extendedテーブルにあります。"
 
 #: ../../enterprise/godmode/admin_access_logs.php:71
 msgid "Security check is ok."
@@ -13786,13 +13674,12 @@ msgstr "フォントファミリー"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:77
 msgid ""
-"The dir of custom logos is in your www Pandora Console in \"images/"
-"custom_logo\". You can upload more files (ONLY JPEG) in upload tool in "
-"console."
+"The dir of custom logos is in your www Pandora Console in "
+"\"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool "
+"in console."
 msgstr ""
-"カスタムロゴディレクトリは、Pandora コンソールの \"images/custom_logo\" で"
-"す。コンソールのアップロードツールにて、追加ファイル (JPEG のみ) をアップロー"
-"ドできます。"
+"カスタムロゴディレクトリは、Pandora コンソールの \"images/custom_logo\" "
+"です。コンソールのアップロードツールにて、追加ファイル (JPEG のみ) をアップロードできます。"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:83
 msgid "Header"
@@ -14066,8 +13953,7 @@ msgstr "スキンを作成しました"
 msgid ""
 "Zip file with skin subdirectory. The name of the zip file only can have "
 "alphanumeric characters."
-msgstr ""
-"スキンサブディレクトリのzipファイル。zip ファイル名は英数字のみ利用可能です。"
+msgstr "スキンサブディレクトリのzipファイル。zip ファイル名は英数字のみ利用可能です。"
 
 #: ../../enterprise/godmode/setup/edit_skin.php:243
 msgid "Group/s"
@@ -14196,8 +14082,7 @@ msgstr "認証トークン"
 msgid ""
 "Token previously configured on the destination Pandora console in order to "
 "use delegated authentification."
-msgstr ""
-"代理認証を利用するために、対象の Pandora コンソールで設定したトークン。"
+msgstr "代理認証を利用するために、対象の Pandora コンソールで設定したトークン。"
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:172
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:225
@@ -14370,8 +14255,7 @@ msgstr "データベースにポリシーがありません"
 msgid ""
 "Successfully added to delete pending agents. Will be deleted in the next "
 "policy application."
-msgstr ""
-"削除保留エージェントへ追加しました。次回のポリシー適用時に削除されます。"
+msgstr "削除保留エージェントへ追加しました。次回のポリシー適用時に削除されます。"
 
 #: ../../enterprise/godmode/policies/policy_agents.php:121
 msgid "Successfully added to delete queue"
@@ -14565,8 +14449,7 @@ msgstr "不要です。"
 msgid ""
 "If you change this description, you must change into the text of Data "
 "configuration."
-msgstr ""
-"この説明を変更する場合は、データ設定のテキストを変更する必要があります。"
+msgstr "この説明を変更する場合は、データ設定のテキストを変更する必要があります。"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:240
 msgid "Modules in policy"
@@ -14583,22 +14466,19 @@ msgstr "モジュールの追加に失敗しました。"
 #: ../../enterprise/godmode/policies/policy_modules.php:496
 msgid ""
 "The module type in Data configuration is empty, take from combo box of form."
-msgstr ""
-"データ設定のモジュールタイプが空です。コンボボックスから選択してください。"
+msgstr "データ設定のモジュールタイプが空です。コンボボックスから選択してください。"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:499
 msgid ""
 "The module name in Data configuration is empty, take from text field of form."
-msgstr ""
-"データ設定のモジュール名が空です。テキストフィールドに入力してください。"
+msgstr "データ設定のモジュール名が空です。テキストフィールドに入力してください。"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:508
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:92
 msgid ""
 "Successfully added to delete pending modules. Will be deleted in the next "
 "policy application."
-msgstr ""
-"削除保留モジュールに追加されました。次回のポリシー適用時に削除されます。"
+msgstr "削除保留モジュールに追加されました。次回のポリシー適用時に削除されます。"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:568
 msgid "Local component"
@@ -14750,34 +14630,27 @@ msgid "Welcome to Pandora FMS"
 msgstr "ようこそ Pandora FMS へ"
 
 #: ../../enterprise/dashboard/widgets/example.php:36
-msgid "This is an example of a dashboard widget. A widget may contain elements"
-msgstr ""
-"これは、ダッシュボードウィジェットのサンプルです。ウィジェットはエレメントを"
-"含んでいることがあります。"
+msgid ""
+"This is an example of a dashboard widget. A widget may contain elements"
+msgstr "これは、ダッシュボードウィジェットのサンプルです。ウィジェットはエレメントを含んでいることがあります。"
 
 #: ../../enterprise/dashboard/widgets/example.php:37
 msgid ""
 "To add more elements, click on \"<em>Add widgets</em>\" on the top of this "
 "page."
-msgstr ""
-"要素追加には、このページの先頭の \"<em>ウィジェットの追加</em>\" をクリックし"
-"ます。"
+msgstr "要素追加には、このページの先頭の \"<em>ウィジェットの追加</em>\" をクリックします。"
 
 #: ../../enterprise/dashboard/widgets/example.php:38
 #: ../../enterprise/dashboard/widgets/example.php:40
 msgid ""
 "To delete this message, click on the delete button on top right corner of "
 "this element."
-msgstr ""
-"このメッセージを消すには、このエレメントの右上の削除ボタンをクリックしてくだ"
-"さい。"
+msgstr "このメッセージを消すには、このエレメントの右上の削除ボタンをクリックしてください。"
 
 #: ../../enterprise/dashboard/widgets/example.php:39
 msgid ""
 "To do so, just click on the title and drag and drop it to the desired place."
-msgstr ""
-"それを行うためには、タイトルをクリックし目的の場所にドラッグ & ドロップしてく"
-"ださい。"
+msgstr "それを行うためには、タイトルをクリックし目的の場所にドラッグ & ドロップしてください。"
 
 #: ../../enterprise/dashboard/widgets/example.php:41
 msgid "Thanks for using Pandora FMS"
@@ -15024,61 +14897,50 @@ msgid "Illegal query"
 msgstr "不正なクエリ"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Uknown agents"
-msgstr "不明なエージェント数"
+msgstr "不明なエージェント"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Total modules"
-msgstr "ローカルモジュール数"
+msgstr "全モジュール"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Normal modules"
-msgstr "通常モード"
+msgstr "正常モジュール"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Critical modules"
-msgstr "ローカルモジュール数"
+msgstr "障害モジュール"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Warning modules"
-msgstr "リンクしているモジュール"
+msgstr "警告モジュール"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Unknown modules"
-msgstr "リンクしているモジュール"
+msgstr "不明モジュール"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Not init modules"
-msgstr "未初期化モジュール数"
+msgstr "未初期化モジュール"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Defined alerts"
-msgstr "無効なアラート"
+msgstr "定義済みアラート"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Fired alerts"
-msgstr "無効なアラート"
+msgstr "発生したアラート"
 
 #: ../../enterprise/include/functions_reporting_csv.php:593
-#, fuzzy
 msgid "Last 8 hours events"
-msgstr "最新のイベント"
+msgstr "直近8時間のエベント"
 
 #: ../../enterprise/include/functions_reporting_csv.php:594
 #: ../../enterprise/include/functions_reporting_pdf.php:460
 #: ../../include/functions.php:736 ../../include/functions_reporting.php:3044
-#, fuzzy
 msgid "Group report"
-msgstr "一版グループレポート"
+msgstr "グループレポート"
 
 #: ../../enterprise/include/functions_reporting_csv.php:672
 #: ../../enterprise/include/functions_reporting_csv.php:784
@@ -15275,15 +15137,13 @@ msgstr "モジュールが定義されたエージェントがありません。
 
 #: ../../enterprise/include/functions_reporting_pdf.php:502
 #: ../../include/functions_reporting.php:3082
-#, fuzzy
 msgid "Defined"
-msgstr "定義済みモジュール"
+msgstr "定義済み"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:515
 #: ../../include/functions_reporting.php:3094
-#, fuzzy
 msgid "Last 8 hours"
-msgstr "最新時間"
+msgstr "直近8時間"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:542
 #: ../../enterprise/include/functions_reporting_pdf.php:845
@@ -15360,9 +15220,8 @@ msgid "There are no alerts for this module."
 msgstr "このモジュールにはアラートがありません。"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1663
-#, fuzzy
 msgid "Modules detailed event"
-msgstr "モジュール詳細イベント"
+msgstr "モジュールイベント詳細"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1674
 msgid "There are no events for this module."
@@ -15442,8 +15301,7 @@ msgstr "バックアップのリストア中"
 #: ../../enterprise/include/functions_backup.php:247
 #: ../../enterprise/include/functions_backup.php:329
 msgid "Restoring a Pandora database backup must be done manually"
-msgstr ""
-"Pandora データベースバックアップのリストアは、手動で行う必要があります。"
+msgstr "Pandora データベースバックアップのリストアは、手動で行う必要があります。"
 
 #: ../../enterprise/include/functions_backup.php:248
 #: ../../enterprise/include/functions_backup.php:330
@@ -15455,9 +15313,7 @@ msgstr "これは、人的操作におけるシステム障害やデータ消失
 #: ../../enterprise/include/functions_backup.php:249
 #: ../../enterprise/include/functions_backup.php:331
 msgid "To restore the selected backup, please follow these steps"
-msgstr ""
-"選択したバックアップをリストアするためには、これらのステップに従ってくださ"
-"い。"
+msgstr "選択したバックアップをリストアするためには、これらのステップに従ってください。"
 
 #: ../../enterprise/include/functions_backup.php:255
 #: ../../enterprise/include/functions_backup.php:337
@@ -15524,9 +15380,8 @@ msgid "Into your destination database."
 msgstr "対象のデータベースで実施します。"
 
 #: ../../enterprise/include/functions_policies.php:48
-#, fuzzy
 msgid "Extra policies access to this user"
-msgstr "このユーザに割り当てるプロファイル/グループの組み合わせ"
+msgstr "このユーザの特別ポリシー"
 
 #: ../../enterprise/include/functions_policies.php:710
 #: ../../include/functions_alerts.php:280
@@ -15728,11 +15583,9 @@ msgstr "添付ファイルディレクトリが HTTP サーバから書き込み
 
 #: ../../include/functions_config.php:667
 msgid ""
-"Please check that the web server has write rights on the {HOMEDIR}/"
-"attachment directory"
-msgstr ""
-"{HOMEDIR}/attachment ディレクトリに、ウェブサーバの書き込み権限があるか確認し"
-"てください。"
+"Please check that the web server has write rights on the "
+"{HOMEDIR}/attachment directory"
+msgstr "{HOMEDIR}/attachment ディレクトリに、ウェブサーバの書き込み権限があるか確認してください。"
 
 #: ../../include/functions_config.php:677
 #: ../../include/functions_config.php:683
@@ -15748,9 +15601,7 @@ msgstr "attachmentディレクトリにあるファイルが多すぎます。"
 msgid ""
 "There are too much files in attachment directory. This is not fatal, but you "
 "should consider cleaning up your attachment directory manually"
-msgstr ""
-"添付ディレクトリに大量のファイルがあります。障害ではありませんが、添付ディレ"
-"クトリの手動での整理をお勧めします。"
+msgstr "添付ディレクトリに大量のファイルがあります。障害ではありませんが、添付ディレクトリの手動での整理をお勧めします。"
 
 #: ../../include/functions_config.php:700
 msgid "files"
@@ -15767,10 +15618,8 @@ msgid ""
 "how to execute this maintance process (pandora_db.pl) and enable it as soon "
 "as possible"
 msgstr ""
-"データベースがあまりメンテナンスされていません。48時間以上適切なメンテナンス"
-"がされていないように見受けられます。メンテナンスプロセス(pandora_db.pl)の実行"
-"に関しては Pandora FMS ドキュメントを参照し、メンテナンス処理を早急に有効にし"
-"てください。"
+"データベースがあまりメンテナンスされていません。48時間以上適切なメンテナンスがされていないように見受けられます。メンテナンスプロセス(pandora_d"
+"b.pl)の実行に関しては Pandora FMS ドキュメントを参照し、メンテナンス処理を早急に有効にしてください。"
 
 #: ../../include/functions_config.php:722
 msgid "Default font doesnt exist"
@@ -15780,9 +15629,7 @@ msgstr "デフォルトのフォントがありません"
 msgid ""
 "Your defined font doesnt exist or is not defined. Please check font "
 "parameters in your config"
-msgstr ""
-"定義したフォントが存在しないかフォントが定義されていません。フォントパラメー"
-"タの設定を確認してください。"
+msgstr "定義したフォントが存在しないかフォントが定義されていません。フォントパラメータの設定を確認してください。"
 
 #: ../../include/functions_config.php:730
 msgid "Developer mode is enabled"
@@ -15794,9 +15641,9 @@ msgid ""
 "developer mode and should be disabled in a production system. This value is "
 "written in the main index.php file"
 msgstr ""
-"この Pandora FMS は、\"develop_bypass\" モードが有効になっています。これは、"
-"これは開発用のモードであるため本番システムでは無効にしてください。この設定"
-"は、メインの index.php ファイルに書かれています。"
+"この Pandora FMS は、\"develop_bypass\" "
+"モードが有効になっています。これは、これは開発用のモードであるため本番システムでは無効にしてください。この設定は、メインの index.php "
+"ファイルに書かれています。"
 
 #: ../../include/functions_incidents.php:82
 #: ../../include/functions_incidents.php:101
@@ -15904,14 +15751,12 @@ msgid "Event report group"
 msgstr "イベントレポートグループ"
 
 #: ../../include/functions.php:741 ../../include/functions_reporting.php:2103
-#, fuzzy
 msgid "Projection graph"
-msgstr "グラフ作成"
+msgstr "予想グラフ"
 
 #: ../../include/functions.php:742 ../../include/functions_reporting.php:2151
-#, fuzzy
 msgid "Prediction date"
-msgstr "予測サーバ"
+msgstr "予測日"
 
 #: ../../include/functions.php:887
 msgid "Monitor Critical"
@@ -16152,54 +15997,45 @@ msgstr "要求された処理の実行に失敗しました。"
 
 #: ../../include/functions_ui.php:710
 msgid "The alert would fire when the value is <span id=\"value\"></span>"
-msgstr ""
-"取得した値が <span id=\"value\"></span> の場合、アラートを発生させます。"
+msgstr "取得した値が <span id=\"value\"></span> の場合、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:714
 msgid "The alert would fire when the value is not <span id=\"value\"></span>"
-msgstr ""
-"取得した値が <span id=\"value\"></span> 以外の場合、アラートを発生させます。"
+msgstr "取得した値が <span id=\"value\"></span> 以外の場合、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:719
-msgid "The alert would fire when the value matches <span id=\"value\"></span>"
-msgstr ""
-"取得した値が <span id=\"value\"></span> にマッチした場合、アラートを発生させ"
-"ます。"
+msgid ""
+"The alert would fire when the value matches <span id=\"value\"></span>"
+msgstr "取得した値が <span id=\"value\"></span> にマッチした場合、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:722
 msgid ""
 "The alert would fire when the value doesn't match <span id=\"value\"></span>"
-msgstr ""
-"取得した値が <span id=\"value\"></span> にマッチしない場合、アラートを発生さ"
-"せます。"
+msgstr "取得した値が <span id=\"value\"></span> にマッチしない場合、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:728
 msgid ""
 "The alert would fire when the value is between <span id=\"min\"></span> and "
 "<span id=\"max\"></span>"
 msgstr ""
-"取得した値が <span id=\"min\"></span> と <span id=\"max\"></span> の間になっ"
-"たら、アラートを発生させます。"
+"取得した値が <span id=\"min\"></span> と <span id=\"max\"></span> "
+"の間になったら、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:731
 msgid ""
 "The alert would fire when the value is not between <span id=\"min\"></span> "
 "and <span id=\"max\"></span>"
 msgstr ""
-"取得した値が <span id=\"min\"></span> と <span id=\"max\"></span> の間を外れ"
-"たら、アラートを発生させます。"
+"取得した値が <span id=\"min\"></span> と <span id=\"max\"></span> "
+"の間を外れたら、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:735
 msgid "The alert would fire when the value is over <span id=\"max\"></span>"
-msgstr ""
-"取得した値が <span id=\"max\"></span> 以上になったら、アラートを発生させま"
-"す。"
+msgstr "取得した値が <span id=\"max\"></span> 以上になったら、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:740
 msgid "The alert would fire when the value is under <span id=\"min\"></span>"
-msgstr ""
-"取得した値が <span id=\"min\"></span> 未満になったら、アラートを発生させま"
-"す。"
+msgstr "取得した値が <span id=\"min\"></span> 未満になったら、アラートを発生させます。"
 
 #: ../../include/functions_ui.php:778
 msgid "Help"
@@ -16246,9 +16082,8 @@ msgid "Correct Delete"
 msgstr "削除しました。"
 
 #: ../../include/functions_api.php:805
-#, fuzzy
 msgid "Error in creation network module."
-msgstr "インベントリモジュールの作成に失敗しました。"
+msgstr "ネットワークモジュールの作成に失敗しました。"
 
 #: ../../include/functions_api.php:874
 msgid "Create user."
@@ -16267,14 +16102,12 @@ msgid "Delete user profile."
 msgstr "ユーザプロファイル削除"
 
 #: ../../include/functions_api.php:2037
-#, fuzzy
 msgid "Correct module disable"
-msgstr "モジュールテーブル切り替え"
+msgstr "モジュールを無効にしました"
 
 #: ../../include/functions_api.php:2054
-#, fuzzy
 msgid "Correct module enable"
-msgstr "モジュールテーブル切り替え"
+msgstr "モジュールを有効にしました"
 
 #: ../../include/functions_html.php:1428
 msgid "Type at least two characters to search the module."
@@ -16370,9 +16203,7 @@ msgstr "閉じる"
 #: ../../include/functions_filemanager.php:672
 #: ../../include/functions_filemanager.php:744
 msgid "The zip upload in this dir, easy to upload multiple files."
-msgstr ""
-"このディレクトリに zip ファイルもアップロードできます。複数ファイルのアップ"
-"ロードも簡単です。"
+msgstr "このディレクトリに zip ファイルもアップロードできます。複数ファイルのアップロードも簡単です。"
 
 #: ../../include/functions_filemanager.php:534
 msgid "Decompress"
@@ -16406,9 +16237,7 @@ msgstr "カレントディレクトリに、HTTP サーバによる書き込み�
 #: ../../include/functions_filemanager.php:741
 #: ../../include/functions_filemanager.php:776
 msgid "Please check that current directory has write rights for HTTP server"
-msgstr ""
-"カレントディレクトリに、HTTP サーバによる書き込み権限があるか確認してくださ"
-"い。"
+msgstr "カレントディレクトリに、HTTP サーバによる書き込み権限があるか確認してください。"
 
 #: ../../include/functions_filemanager.php:674
 msgid "Multiple files zipped"
@@ -16477,25 +16306,6 @@ msgstr "値"
 #: ../../index.php:267
 msgid "Sorry! I can't find the page!"
 msgstr "ページが見つかりません"
-
-#, fuzzy
-#~ msgid "Filter/Only alert events"
-#~ msgstr "アラートのみ"
-
-#~ msgid "The list of IPs separate with carriage return."
-#~ msgstr "IPアドレスは、1行に1つずつ書いてください。"
-
-#~ msgid "T."
-#~ msgstr "種類"
-
-#~ msgid "G."
-#~ msgstr "グループ"
-
-#~ msgid "Go to alert overview"
-#~ msgstr "アラート概要表示"
-
-#~ msgid "Active policy locking"
-#~ msgstr "有効なポリシーのロック"
 
 #~ msgid "Hour"
 #~ msgstr "時"
@@ -16566,6 +16376,9 @@ msgstr "ページが見つかりません"
 #~ msgid "Delete agents"
 #~ msgstr "エージェント削除"
 
+#~ msgid "Delete modules"
+#~ msgstr "モジュール削除"
+
 #~ msgid "Delete alerts"
 #~ msgstr "アラート削除"
 
@@ -16615,18 +16428,23 @@ msgstr "ページが見つかりません"
 #~ msgstr "Pandora エージェント"
 
 #~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can "
-#~ "manage its agents, alerts and incidents. Session is open while activity "
-#~ "exists."
+#~ "This is the Web Management System for Pandora FMS. From here you can manage "
+#~ "its agents, alerts and incidents. Session is open while activity exists."
 #~ msgstr ""
-#~ "ここは Pandora FMS の Web 管理画面です。ここからエージェントやアラート、イ"
-#~ "ンシデントの管理を行います。画面を開いている間、セッションが維持されます。"
+#~ "ここは Pandora FMS の Web "
+#~ "管理画面です。ここからエージェントやアラート、インシデントの管理を行います。画面を開いている間、セッションが維持されます。"
 
 #~ msgid "Event validate"
 #~ msgstr "未承諾"
 
 #~ msgid "Event not validate"
 #~ msgstr "承諾済"
+
+#~ msgid "T."
+#~ msgstr "種類"
+
+#~ msgid "G."
+#~ msgstr "グループ"
 
 #~ msgid "Agent general information"
 #~ msgstr "エージェント概要"
@@ -16653,8 +16471,7 @@ msgstr "ページが見つかりません"
 #~ msgstr "マップアイテム削除"
 
 #~ msgid "Drag an element here to edit the properties"
-#~ msgstr ""
-#~ "アイテムのプロパティを編集するには、アイテムをここにドラッグしてください。"
+#~ msgstr "アイテムのプロパティを編集するには、アイテムをここにドラッグしてください。"
 
 #~ msgid "Select an element to delete:"
 #~ msgstr "削除するアイテムを選択してください。"
@@ -16692,6 +16509,12 @@ msgstr "ページが見つかりません"
 #~ msgid "Compact CSS and JS into header"
 #~ msgstr "ヘッダーの CSS と JS の圧縮"
 
+#~ msgid "The list of IPs separate with carriage return."
+#~ msgstr "IPアドレスは、1行に1つずつ書いてください。"
+
+#~ msgid "Go to alert overview"
+#~ msgstr "アラート概要表示"
+
 #~ msgid "From the last"
 #~ msgstr "表示範囲"
 
@@ -16728,6 +16551,7 @@ msgstr "ページが見つかりません"
 #~ msgid "No selected agent, please select any agent."
 #~ msgstr "エージェントが選択されていません。選択してください。"
 
+#, php-format
 #~ msgid "Created directory %s"
 #~ msgstr "%s ディレクトリを作成しました。"
 
@@ -16757,19 +16581,18 @@ msgstr "ページが見つかりません"
 #~ msgstr "TCP ポート番号"
 
 #~ msgid ""
-#~ "This extension makes registration of server plugins more easy. Here you "
-#~ "can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). "
-#~ "Please refer to documentation on how to obtain and use Pandora FMS Server "
-#~ "Plugins.<br><br>You can get more plugins in our <a href='http://"
-#~ "pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>Public "
-#~ "Resource Library</A>"
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a "
+#~ "href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>P"
+#~ "ublic Resource Library</A>"
 #~ msgstr ""
-#~ "この拡張インタフェースを使うことによって、サーバプラグインを簡単に登録する"
-#~ "ことができます。アップロードは、Pandora FMS 3.x の圧縮フォーマット(.pspz)"
-#~ "で行ってください。Pandora FMS サーバプラグインの入手方法についてはドキュメ"
-#~ "ントを参照してください。<br><br>プラグインは、<a href='http://pandorafms."
-#~ "org/index.php?sec=community&sec2=repository&lng=en'>パブリックリソースライ"
-#~ "ブラリ</a>から入手できます。"
+#~ "この拡張インタフェースを使うことによって、サーバプラグインを簡単に登録することができます。アップロードは、Pandora FMS 3.x "
+#~ "の圧縮フォーマット(.pspz)で行ってください。Pandora FMS "
+#~ "サーバプラグインの入手方法についてはドキュメントを参照してください。<br><br>プラグインは、<a "
+#~ "href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>パ"
+#~ "ブリックリソースライブラリ</a>から入手できます。"
 
 #~ msgid "SLA was successfully created"
 #~ msgstr "SLA を作成しました。"
@@ -16805,25 +16628,25 @@ msgstr "ページが見つかりません"
 #~ msgstr "不正なモジュールタイプです。"
 
 #~ msgid ""
-#~ "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</"
-#~ "a> client is shipped with Pandora FMS 3.0. It helps system administrators "
-#~ "to update their Pandora FMS automatically, since the Update Manager does "
-#~ "the task of getting new modules, new plugins and new features (even full "
+#~ "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
+#~ "client is shipped with Pandora FMS 3.0. It helps system administrators to "
+#~ "update their Pandora FMS automatically, since the Update Manager does the "
+#~ "task of getting new modules, new plugins and new features (even full "
 #~ "migrations tools for future versions) automatically."
 #~ msgstr ""
-#~ "Pandora FMS 3.0 には、新しい<a href=\"http://updatemanager.sourceforge.net"
-#~ "\">アップデートマネージャ</a>がついています。これは、Pandora FMS を自動的"
-#~ "にアップデートします。アップデートマネージャは、新しいモジュール、新しいプ"
-#~ "ラグイン、新しい機能の取得を自動的に行います(新たしいバージョンへの移行)。"
+#~ "Pandora FMS 3.0 には、新しい<a "
+#~ "href=\"http://updatemanager.sourceforge.net\">アップデートマネージャ</a>がついています。これは、Pand"
+#~ "ora FMS "
+#~ "を自動的にアップデートします。アップデートマネージャは、新しいモジュール、新しいプラグイン、新しい機能の取得を自動的に行います(新たしいバージョンへの移行"
+#~ ")。"
 
 #~ msgid ""
 #~ "Update Manager is one of the most advanced features of Pandora FMS 3.0 "
-#~ "Enterprise version, for more information visit <a href=\"http://"
-#~ "pandorafms.com\">http://pandorafms.com</a>."
+#~ "Enterprise version, for more information visit <a "
+#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 #~ msgstr ""
-#~ "アップデートマネージャは、Pandora FMS 3.0 エンタープライズ版の最も先進的な"
-#~ "機能の一つです。より詳しい情報は、<a href=\"http://pandorafms.com"
-#~ "\">http://pandorafms.com</a>を参照してください。"
+#~ "アップデートマネージャは、Pandora FMS 3.0 エンタープライズ版の最も先進的な機能の一つです。より詳しい情報は、<a "
+#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>を参照してください。"
 
 #~ msgid "Display of last data modules received by agent"
 #~ msgstr "エージェントから受け取った最新データモジュールの表示"
@@ -16843,21 +16666,16 @@ msgstr "ページが見つかりません"
 #~ msgid ""
 #~ "Red cell when the module group and agent have at least one module in "
 #~ "critical state and the others in any state."
-#~ msgstr ""
-#~ "赤色は、そのセルに該当するモジュールのうち、障害中のモジュールが少なくとも"
-#~ "一つあることを示します。"
+#~ msgstr "赤色は、そのセルに該当するモジュールのうち、障害中のモジュールが少なくとも一つあることを示します。"
 
 #~ msgid ""
 #~ "Yellow cell when the module group and agent have at least one in warning "
 #~ "state and the others in green state."
-#~ msgstr ""
-#~ "黄色は、そのセルに該当するモジュールのうち、警告状態のモジュールが少なくと"
-#~ "も一つあることを示します。"
+#~ msgstr "黄色は、そのセルに該当するモジュールのうち、警告状態のモジュールが少なくとも一つあることを示します。"
 
 #~ msgid ""
 #~ "Green cell when the module group and agent have all modules in OK state."
-#~ msgstr ""
-#~ "緑色は、そのセルに該当するモジュールが全て正常であることを示します。"
+#~ msgstr "緑色は、そのセルに該当するモジュールが全て正常であることを示します。"
 
 #~ msgid "Grey cell when the module group and agent don't have any modules."
 #~ msgstr "灰色は、そのセルに該当するモジュールが存在しないことを示します。"
@@ -16885,6 +16703,9 @@ msgstr "ページが見つかりません"
 
 #~ msgid "MinMax.Al"
 #~ msgstr "最小・最大"
+
+#~ msgid "General group report"
+#~ msgstr "一版グループレポート"
 
 #~ msgid "Oper"
 #~ msgstr "演算子"

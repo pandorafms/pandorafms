@@ -1,3 +1,8 @@
+2011-12-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/languages/ja.po, include/languages/ja.mo: Updated translation
+	files.
+
 2011-12-16  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_ff_threshold.php: Fixed Japanese word

@@ -114,7 +114,7 @@ my $ConfDir = '';
 my $ConfFile = 'pandora_agent.conf';
 
 # Broker agent configuration files
-my @BrokerConfFiles;
+my @BrokerPid;
 
 # Configuration tokens
 my %Conf = (
@@ -1589,9 +1589,6 @@ sub kill_signal_handler (){
 #Handler TERM signal.
 $SIG{'TERM'} = \&kill_signal_handler;
 
-# Ignore SIGCHLD
-$SIG{'CHLD'} = 'IGNORE';
-
 # Check command line arguments
 print_usage unless ($#ARGV == 0);
 $ConfDir = fix_directory ($ARGV[0]);
@@ -1685,6 +1682,7 @@ while (1) {
 	check_collections () unless ($Conf{'debug'} eq '1');
 
 	# Launch broker agents
+	@BrokerPid = ();
 	my @broker_agents = read_config ('broker_agent');
 	foreach my $broker_agent (@broker_agents) {
 		
@@ -1719,6 +1717,8 @@ while (1) {
 					
 			# Execute
 			last;
+		} else {
+			push (@BrokerPid, $main_agent);
 		}
 	}
 
@@ -1851,6 +1851,9 @@ while (1) {
 
 	# Sleep if main agent
 	if ($main_agent != 0) {
+		foreach my $broker_pid (@BrokerPid) {
+			waitpid ($broker_pid, 0);
+		}
 		sleep ($Conf{'interval'});
 	}
 	# Finish if broker agent

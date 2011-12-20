@@ -1,5 +1,10 @@
 2011-12-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Merged from trunk. Wait for broker childs instead of ignoring
+	  SIGCHLD.
+
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Merged from trunk. Ignore SIGCHLD.
 
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>

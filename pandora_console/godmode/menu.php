@@ -199,7 +199,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["gtag"]["text"] = __('Manage tags');
 	$menu["gtag"]["sec2"] = "godmode/tag/tag";
 	$menu["gtag"]["id"] = "god-tag";
-
+	
 	// Setup
 	$menu["gsetup"]["text"] = __('Setup');
 	$menu["gsetup"]["sec2"] = "godmode/setup/setup";
@@ -211,6 +211,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/performance"]["text"] = __('Performance');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
+	if ($config['activate_netflow'])
+		$sub["godmode/netflow/nf_manage"]["text"] = __('Netflow');
 	if ($config['activate_gis'])
 		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/links"]["text"] = __('Links');
@@ -222,6 +224,21 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
 
 	$menu["gsetup"]["sub"] = $sub;
+}
+
+if (check_acl ($config['id_user'], 0, "AW")) {
+	if ($config['activate_netflow']) {
+		//Netflow
+		$menu["netf"]["text"] = __('Netflow');
+		$menu["netf"]["sec2"] = "godmode/netflow/nf_report";
+		$menu["netf"]["id"] = "god-netflow";
+	
+		$sub = array ();
+	
+		$sub["godmode/netflow/nf_edit"]["text"] = __('Filters');
+		$sub["godmode/netflow/nf_report"]["text"] = __('Manage reports');
+		$menu["netf"]["sub"] = $sub;
+	}
 }
 
 if (check_acl ($config['id_user'], 0, "DM")) {

@@ -116,6 +116,10 @@ $table->data[18][0] = __('Enable Integria incidents in Pandora Console');
 $table->data[18][1] = __('Yes').'&nbsp;'.html_print_radio_button ('integria_enabled', 1, '', $config["integria_enabled"], true).'&nbsp;&nbsp;';
 $table->data[18][1] .= __('No').'&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
 
+$table->data[19][0] = __('Enable Netflow');
+$table->data[19][1] = __('Yes').'&nbsp;'.html_print_radio_button ('activate_netflow', 1, '', $config["activate_netflow"], true).'&nbsp;&nbsp;';
+$table->data[19][1] .= __('No').'&nbsp;'.html_print_radio_button ('activate_netflow', 0, '', $config["activate_netflow"], true);
+
 if($config["integria_enabled"]) {
        require_once('include/functions_incidents.php');
         $invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
@@ -149,15 +153,15 @@ if($config["integria_enabled"]) {
                 	}
         	}
 	}
-	$table->data[19][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
-	$table->data[19][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
+	$table->data[20][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
+	$table->data[20][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
 	// If something goes wrong
 	if ($bad_input){
-		$table->data[19][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
+		$table->data[20][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
 	}
 
-	$table->data[20][0] = __('Integria API password');
-	$table->data[20][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
+	$table->data[21][0] = __('Integria API password');
+	$table->data[21][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
 	
 	if (!$bad_input){ 
 		foreach($invent as $inv) {
@@ -172,28 +176,28 @@ if($config["integria_enabled"]) {
 			$inventories[$invexp[0]] = $invexp[1];
 		}
 	}
-	$table->data[21][0] = __('Integria inventory');
-	$table->data[21][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
+	$table->data[22][0] = __('Integria inventory');
+	$table->data[22][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
 }
 
-$table->data[22][0] = __('Timezone setup');
-$table->data[22][1] = html_print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
+$table->data[23][0] = __('Timezone setup');
+$table->data[23][1] = html_print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
 
 $sounds = get_sounds();
-$table->data[23][0] = __('Sound for Alert fired');
-$table->data[23][1] = html_print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
-$table->data[23][1] .= ' <a href="javascript: toggleButton(\'alert\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_alert", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
-$table->data[23][1] .= '<div id="layer_sound_alert"></div>';
+$table->data[24][0] = __('Sound for Alert fired');
+$table->data[24][1] = html_print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
+$table->data[24][1] .= ' <a href="javascript: toggleButton(\'alert\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_alert", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[24][1] .= '<div id="layer_sound_alert"></div>';
 
-$table->data[24][0] = __('Sound for Monitor critical');
-$table->data[24][1] = html_print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
-$table->data[24][1] .= ' <a href="javascript: toggleButton(\'critical\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_critical", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
-$table->data[24][1] .= '<div id="layer_sound_critical"></div>';
+$table->data[25][0] = __('Sound for Monitor critical');
+$table->data[25][1] = html_print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
+$table->data[25][1] .= ' <a href="javascript: toggleButton(\'critical\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_critical", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[25][1] .= '<div id="layer_sound_critical"></div>';
 
-$table->data[25][0] = __('Sound for Monitor warning');
-$table->data[25][1] = html_print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
-$table->data[25][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
-$table->data[25][1] .= '<div id="layer_sound_warning"></div>';
+$table->data[26][0] = __('Sound for Monitor warning');
+$table->data[26][1] = html_print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
+$table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[26][1] .= '<div id="layer_sound_warning"></div>';
 ?>
 <script type="text/javascript">
 function toggleButton(type) {

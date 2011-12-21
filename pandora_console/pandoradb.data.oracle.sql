@@ -71,6 +71,7 @@ INSERT INTO tconfig (token, value) VALUES ('timesource', 'system');
 INSERT INTO tconfig (token, value) VALUES ('realtimestats', '1');
 INSERT INTO tconfig (token, value) VALUES ('stats_interval', '60');
 INSERT INTO tconfig (token, value) VALUES ('activate_gis', '0');
+INSERT INTO tconfig (token, value) VALUES ('activate_netflow', '0');
 INSERT INTO tconfig (token, value) VALUES ('timezone', 'Europe/Berlin');
 INSERT INTO tconfig (token, value) VALUES ('string_purge', 7);
 INSERT INTO tconfig (token, value) VALUES ('audit_purge', 15);

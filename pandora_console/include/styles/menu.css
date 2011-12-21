@@ -132,6 +132,9 @@
 #icon_oper-gismaps {
 	background-image: url(../../images/server_web.png);
 }
+#icon_oper-netflow {
+	background-image: url(../../images/networkmap/so_cisco_new.png);
+}
 #icon_oper-extensions, #icon_god-extensions {
 	background-image: url(../../images/extensions.png);
 }
@@ -175,6 +178,9 @@
 }
 #icon_god-audit {
 	background-image: url(../../images/god6.png);
+}
+#icon_god-netflow {
+	background-image: url(../../images/networkmap/so_cisco_new.png);
 }
 #icon_god-setup {
 	background-image: url(../../images/god7.png);

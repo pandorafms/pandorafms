@@ -1,3 +1,37 @@
+2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_config.php
+	  include/functions_graph.php
+	  include/styles/menu.css
+	  pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+  	  pandoradb.data.sql: Netflow traffic monitoring.
+
+
+2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/menu.php
+	  godmode/setup/setup.php
+	  include/functions_config.php
+	  include/functions_graph.php
+	  include/styles/menu.css
+ 	  operation/menu.php
+	  pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+  	  pandoradb.data.sql
+	  added files:
+	  operation/netflow/nf_reporting.php
+	  operation/netflow/nf_view.php
+	  godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_edit_form.php
+	  godmode/netflow/nf_report.php
+	  godmode/netflow/nf_report_form.php
+	  godmode/netflow/nf_report_item.php
+	  godmode/netflow/nf_item_list.php
+	  godmode/netflow/nf_manage.php
+	  godmode/netflow/nf_option_form.php
+	  images/networkmap/so_cisco_new.png: Netflow traffic monitoring.
+
 2011-12-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/status_monitor.php: Fixed that long module names

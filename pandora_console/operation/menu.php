@@ -260,6 +260,14 @@ $menu["usuarios"]["id"] = "oper-users";
 
 //End of Users
 
+if (check_acl ($config['id_user'], 0, "IR")) {
+	if ($config['activate_netflow']) {
+		$menu["netf"]["text"] = __('Netflow');
+		$menu["netf"]["sec2"] = "operation/netflow/nf_reporting";
+		$menu["netf"]["id"] = "oper-netflow";
+	}
+}
+		
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR")) {
 

@@ -1961,6 +1961,288 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		 $config['fontpath'], $config['font_size'], "");
 }
 
+
+/**
+ * Print an area graph with netflow aggregated
+ */
+
+function grafico_netflow_aggregate_area ($data, $period,$width, $height , $title, $unit_name, $avg_only = 0, $pure=0,$date = 0, $only_image = false, $homeurl = '') {
+	global $config;
+	global $graphic_type;
+echo"<h4>Gráfica de área</h4>";
+	include_flash_chart_script($homeurl);
+
+	// Set variables
+	if ($date == 0) $date = get_system_time();
+	$datelimit = $date - $period;
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	$interval = (int) ($period / $resolution);
+	
+		/////////////////////////////////////////////////////////////////
+		// Set the title and time format
+		if ($period <= 3600) {
+			$title_period = __('Last hour');
+			$time_format = 'G:i:s';
+		}
+		elseif ($period <= 86400) {
+			$title_period = __('Last day');
+			$time_format = 'G:i:s';
+		}
+		elseif ($period <= 604800) {
+			$title_period = __('Last week');
+			$time_format = 'M d H:i:s';
+		}
+		elseif ($period <= 2419200) {
+			$title_period = __('Last month');
+			$time_format = 'M d H\h';
+		} 
+		else {
+			$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+			$time_format = 'M d H\h';
+		}
+		$timestamp_short = date($time_format, $date);
+
+		$long_index[$timestamp_short] = date(
+			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+		$timestamp = $timestamp_short;
+		/////////////////////////////////////////////////////////////////
+
+	
+///////////////COMBINED
+	$aggs = array();
+	// Calculate data for each agg
+	$j = 0;
+	for ($i = 0; $i < $resolution; $i++) {
+		$count = 0;
+		$timestamp = $datelimit + ($interval * $i);
+		$timestamp_short = date($time_format, $timestamp);
+		$long_index[$timestamp_short] = date(
+		html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+		
+		
+		if (isset ($data[$i])){
+			$aggs[$data[$i]['agg']] = $data[$i]['agg'];
+		}
+		// Read data that falls in the current interval
+		while (isset ($data[$j])) {
+			$ag = $data[$j]['agg'];
+			
+				$date = $data[$j]['date'];
+				$time = $data[$j]['time'];
+
+				$datetime = strtotime ($date." ".$time);
+				
+				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){	
+					if ($data[$j]['unit'] == 'G'){
+						$data[$j]['data'] *= 1024;
+					}
+
+					if(!isset($chart[$timestamp_short][$ag])) {
+						$chart[$timestamp_short][$ag] = $data[$j]['data'];
+						$count++;
+					} else {
+						$chart[$timestamp_short][$ag] += $data[$j]['data'];
+						$count++;
+					}
+				} else { 
+					break;
+				}
+				
+				$j++;
+			}	
+		
+		// Average
+		if ($count > 0) {
+			$chart[$timestamp_short][$ag] = $chart[$timestamp_short][$ag]/$count;
+		} else {
+			$chart[$timestamp_short][$ag] = 0;
+		}
+	}
+	
+	foreach($chart as $key => $value) {
+		foreach($aggs as $agg) {
+			if(!isset($chart[$key][$agg])) {
+				$chart[$key][$agg] = 0;
+			}
+		}
+	}
+
+	$color = array();
+
+	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		 $config['homedir'] .  "/images/logo_vertical_water.png",
+		 $config['fontpath'], $config['font_size'], "");
+}
+
+
+
+/**
+ * Print an area graph with netflow total
+ */
+function grafico_netflow_total_area ($data, $period,$width, $height , $title, $unit_name, $avg_only = 0, $pure=0,$date = 0, $only_image = false, $homeurl = '') {
+	global $config;
+	global $graphic_type;
+
+	echo"<h4>Gráfica de área</h4>";
+	include_flash_chart_script($homeurl);
+
+	// Set variables
+	if ($date == 0) $date = get_system_time();
+	$datelimit = $date - $period;
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	$interval = (int) ($period / $resolution);
+	
+		/////////////////////////////////////////////////////////////////
+		// Set the title and time format
+		if ($period <= 3600) {
+			$title_period = __('Last hour');
+			$time_format = 'G:i:s';
+		}
+		elseif ($period <= 86400) {
+			$title_period = __('Last day');
+			$time_format = 'G:i:s';
+		}
+		elseif ($period <= 604800) {
+			$title_period = __('Last week');
+			$time_format = 'M d H:i:s';
+		}
+		elseif ($period <= 2419200) {
+			$title_period = __('Last month');
+			$time_format = 'M d H\h';
+		} 
+		else {
+			$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+			$time_format = 'M d H\h';
+		}
+		$timestamp_short = date($time_format, $date);
+
+		$long_index[$timestamp_short] = date(
+			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+		$timestamp = $timestamp_short;
+		/////////////////////////////////////////////////////////////////
+
+	$aggs = array();
+	// Calculate data for each agg
+	$j = 0;
+	for ($i = 0; $i < $resolution; $i++) {
+		$count = 0;
+		$timestamp = $datelimit + ($interval * $i);
+		$timestamp_short = date($time_format, $timestamp);
+		$long_index[$timestamp_short] = date(
+		html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+		
+		// Read data that falls in the current interval
+		while (isset ($data[$j])) {
+				$date = $data[$j]['date'];
+				$time = $data[$j]['time'];
+				$datetime = strtotime ($date." ".$time);
+
+				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){	
+					if ($data[$j]['unit'] == 'G'){
+						$data[$j]['data'] *= 1024;
+					}
+
+					if(!isset($chart[$timestamp_short][$ip])) {
+						$chart[$timestamp_short][$ip] = $data[$j]['data'];
+						$count++;
+					} else {
+						$chart[$timestamp_short][$ip] += $data[$j]['data'];
+						$count++;
+					}
+				} else { 
+					break;
+				}
+				$j++;
+			}	
+		
+		// Average
+		if ($count > 0) {
+			$chart[$timestamp_short][$ip] = $chart[$timestamp_short][$ip]/$count;
+		} else {
+			$chart[$timestamp_short][$ip] = 0;
+		}
+	}
+	
+	foreach($chart as $key => $value) {
+		foreach($ips as $ip) {
+			if(!isset($chart[$key][$ip])) {
+				$chart[$key][$ip] = 0;
+			}
+		}
+	}
+
+//////////FIN COMBINED
+	
+	$flash_chart = $config['flash_charts'];
+	if ($only_image) {
+		$flash_chart = false;
+	}
+	$leyend = array();
+	$color = array();
+
+	return area_graph($flash_chart, $chart, $width, $height, $color, $leyend,
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		 $config['homedir'] .  "/images/logo_vertical_water.png",
+		 $config['fontpath'], $config['font_size'], "");
+}
+
+/**
+ * Print a pie graph with netflow aggregated
+ */
+function grafico_netflow_aggregate_pie ($data) {
+	global $config;
+	global $graphic_type;
+	
+	echo"<h4>Gráfica totalizada</h4>";
+	
+	$i = 0;
+	while (isset ($data[$i])) {
+		$agg = $data[$i]['agg'];
+		if ($data[$i]['unit'] == 'G') {
+			$data[$i]['data'] = $data[$i]['data'] * 1024;
+		}
+		if (isset($values[$agg])){
+			$values[$agg] = $data[$i]['data'];
+		} else {
+			$values[$agg] += $data[$i]['data'];
+		}
+		$i++;
+	}
+
+	return pie3d_graph($config['flash_charts'], $values, 320, 200,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
+}
+
+/**
+ * Print a pie graph with netflow total
+ */
+ 
+function grafico_netflow_total_pie ($data) {
+	global $config;
+	global $graphic_type;	
+	echo"<h4>Gráfica totalizada</h4>";
+	
+	$i = 0;
+	while (isset ($data[$i])) {
+		$agg = $data[$i]['agg'];
+		if ($data[$i]['unit'] == 'G') {
+			$data[$i]['data'] = $data[$i]['data'] * 1024;
+		}
+		if (isset($values[$agg])){
+			$values[$agg] = $data[$i]['data'];
+		} else {
+			$values[$agg] += $data[$i]['data'];
+		}
+		$i++;
+	}
+	return pie3d_graph($config['flash_charts'], $values, 320, 200,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
+}
+
+
 /**
  * Draw a graph of Module string data of agent
  * 

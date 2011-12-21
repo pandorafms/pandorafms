@@ -31,7 +31,7 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 }
 		
 //Header
-ui_print_page_header (__('Netflow Reporting'), "images/networkmap/so_cisco_new.png", false, "", false, $buttons);
+ui_print_page_header (__('Netflow Reporting'), "images/networkmap/so_cisco_new.png", false, "", false);
 
 $filter = array ();
 
@@ -40,7 +40,7 @@ $filter['limit'] = (int) $config['block_size'];
 
 $reports = db_get_all_rows_filter ('tnetflow_report', $filter);
 
-$table->width = '80%';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
@@ -57,7 +57,7 @@ $table->data = array ();
 $total_reports = db_get_all_rows_filter ('tnetflow_report', false, 'COUNT(*) AS total');
 $total_reports = $total_reports[0]['total'];
 
-ui_pagination ($total_reports, $url);
+//ui_pagination ($total_reports, $url);
 
 foreach ($reports as $report) {
 	$data = array ();

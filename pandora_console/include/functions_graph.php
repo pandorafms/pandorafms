@@ -2002,14 +2002,17 @@ echo"<h4>Gráfica de área</h4>";
 		}
 		$timestamp_short = date($time_format, $date);
 
+/*
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
 		$timestamp = $timestamp_short;
+*/
 		/////////////////////////////////////////////////////////////////
 
 	
 ///////////////COMBINED
 	$aggs = array();
+	$ag ='';
 	// Calculate data for each agg
 	$j = 0;
 	for ($i = 0; $i < $resolution; $i++) {
@@ -2068,7 +2071,7 @@ echo"<h4>Gráfica de área</h4>";
 	}
 
 	$color = array();
-
+	$flash_chart = '';
 	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2117,9 +2120,6 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 		}
 		$timestamp_short = date($time_format, $date);
 
-		$long_index[$timestamp_short] = date(
-			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		$timestamp = $timestamp_short;
 		/////////////////////////////////////////////////////////////////
 
 	$aggs = array();
@@ -2143,11 +2143,21 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 						$data[$j]['data'] *= 1024;
 					}
 
+/*
 					if(!isset($chart[$timestamp_short][$ip])) {
 						$chart[$timestamp_short][$ip] = $data[$j]['data'];
 						$count++;
 					} else {
 						$chart[$timestamp_short][$ip] += $data[$j]['data'];
+						$count++;
+					}
+*/
+
+					if(!isset($chart[$timestamp_short]['data'])) {
+						$chart[$timestamp_short]['data'] = $data[$j]['data'];
+						$count++;
+					} else {
+						$chart[$timestamp_short]['data'] += $data[$j]['data'];
 						$count++;
 					}
 				} else { 
@@ -2157,13 +2167,22 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 			}	
 		
 		// Average
+/*
 		if ($count > 0) {
 			$chart[$timestamp_short][$ip] = $chart[$timestamp_short][$ip]/$count;
 		} else {
 			$chart[$timestamp_short][$ip] = 0;
 		}
+*/
+
+		if ($count > 0) {
+			$chart[$timestamp_short]['data'] = $chart[$timestamp_short]['data']/$count;
+		} else {
+			$chart[$timestamp_short]['data'] = 0;
+		}
 	}
 	
+/*
 	foreach($chart as $key => $value) {
 		foreach($ips as $ip) {
 			if(!isset($chart[$key][$ip])) {
@@ -2171,6 +2190,7 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 			}
 		}
 	}
+*/
 
 //////////FIN COMBINED
 	
@@ -2197,6 +2217,8 @@ function grafico_netflow_aggregate_pie ($data) {
 	echo"<h4>Gráfica totalizada</h4>";
 	
 	$i = 0;
+	$values = array();
+	$agg = array();
 	while (isset ($data[$i])) {
 		$agg = $data[$i]['agg'];
 		if ($data[$i]['unit'] == 'G') {

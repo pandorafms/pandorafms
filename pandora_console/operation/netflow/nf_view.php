@@ -427,6 +427,7 @@ if ($show_bpp)
 
 	// Data iterator
 	$j = 0;
+	$values = array();
 			
 	// Calculate interval date
 	for ($i = 0; $i < $inter; $i++) {
@@ -471,7 +472,9 @@ if ($show_bpp)
 
 			switch ($element){
 				case '0':
-					echo grafico_netflow_aggregate_area($result, $interval, 880, 540, $id_name, '','','',$date);
+					echo grafico_netflow_aggregate_area($result, $interval, 880, 540, '', '','','',$date);
+					echo netflow_show_table_values($result, $date_limit, $date_time);
+					echo netflow_show_total_period($result, $date_limit, $date_time);
 					break;
 				case '1':
 					echo grafico_netflow_aggregate_pie($result);
@@ -486,7 +489,7 @@ if ($show_bpp)
 		}else{
 			switch ($element){
 				case '0':
-					echo grafico_netflow_total_area($values, $interval, 660, 320, $id_name, '','','',$date);
+					echo grafico_netflow_total_area($values, $interval, 660, 320, '', '','','',$date);
 					break;
 			}
 		}

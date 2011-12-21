@@ -32,7 +32,7 @@ if (! check_acl ($config["id_user"], 0, "IW")) {
 }
 
 //Header
-ui_print_page_header (__('Report Manager'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+ui_print_page_header (__('Report Manager'), "images/networkmap/so_cisco_new.png", false, "", true);
 
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
@@ -85,7 +85,7 @@ $filter['limit'] = (int) $config['block_size'];
 
 $reports = db_get_all_rows_filter ('tnetflow_report', $filter);
 
-if ($options === false)
+if ($reports === false)
 	$filter = array ();
 	
 $table->width = '80%';
@@ -108,7 +108,7 @@ $table->data = array ();
 $total_reports = db_get_all_rows_filter ('tnetflow_report', false, 'COUNT(*) AS total');
 $total_reports = $total_reports[0]['total'];
 
-ui_pagination ($total_reports, $url);
+//ui_pagination ($total_reports, $url);
 
  foreach ($reports as $report) {
 

@@ -128,7 +128,7 @@ $table->data = array ();
 $total_reports_item = db_get_all_rows_filter ('tnetflow_report_content', false, 'COUNT(*) AS total');
 $total_reports_item = $total_reports_item[0]['total'];
 
-ui_pagination ($total_reports_item, $url);
+//ui_pagination ($total_reports_item, $url);
 
  foreach ($reports_item as $item) {
 

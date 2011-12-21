@@ -1,4 +1,12 @@
 2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql: added mysql tables for traffic netflow.
+
+2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
+	* include/functions_netflow.php
+	  include/help/en/help_aggregate_by.php: added files to netflow
+	traffic monitoring.
+
+2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_config.php
 	  include/functions_graph.php

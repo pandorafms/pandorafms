@@ -19,8 +19,8 @@ global $config;
 
 include_once("include/functions_ui.php");
 include_once("include/functions_netflow.php");
-include_once ("/include/functions_users.php");
-include_once ("/include/functions_groups.php");
+include_once ("include/functions_users.php");
+include_once ("include/functions_groups.php");
 
 check_login ();
 
@@ -191,7 +191,7 @@ $table->data[7][1] = html_print_select ($aggregate_list, "aggregate", $aggregate
 	
 $table->data[8][0] = '<b>'.__('Output format').'</b>';
 
-$table->data[8][1] .= __('Packets');
+$table->data[8][1] = __('Packets');
 $table->data[8][1] .= html_print_checkbox ('show_packets', 1, $show_packets, true);
 $table->data[8][1] .= __('Bytes');
 $table->data[8][1] .= html_print_checkbox ('show_bytes', 1, $show_bytes, true);

@@ -65,7 +65,9 @@ function exec_command ($start_date, $end_date, $command, $show){
 					break;
 				case "bytes":
 					$values[$i]['data'] = $val[9];
-					$values[$i]['unit'] = $val[10];
+					if (isset($val[10])){
+						$values[$i]['unit'] = $val[10];
+					}
 					break;
 				case "flows":
 					$values[$i]['data'] = $val[11];
@@ -79,7 +81,7 @@ function exec_command ($start_date, $end_date, $command, $show){
 
 function exec_command_aggregate ($start_date, $end_date, $command, $show){
 	$command .= ' -t '.$start_date.'-'.$end_date;
-	
+
 	$values = array();
 	exec($command, $string);
 
@@ -473,8 +475,6 @@ if ($show_bpp)
 			switch ($element){
 				case '0':
 					echo grafico_netflow_aggregate_area($result, $interval, 880, 540, '', '','','',$date);
-					echo netflow_show_table_values($result, $date_limit, $date_time);
-					echo netflow_show_total_period($result, $date_limit, $date_time);
 					break;
 				case '1':
 					echo grafico_netflow_aggregate_pie($result);

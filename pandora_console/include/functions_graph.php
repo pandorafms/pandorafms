@@ -2138,10 +2138,12 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 				$time = $data[$j]['time'];
 				$datetime = strtotime ($date." ".$time);
 
-				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){	
+				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){
+					if (isset($data[$j]['unit'])){
 					if ($data[$j]['unit'] == 'G'){
 						$data[$j]['data'] *= 1024;
 					}
+				}
 
 /*
 					if(!isset($chart[$timestamp_short][$ip])) {
@@ -2218,20 +2220,22 @@ function grafico_netflow_aggregate_pie ($data) {
 	
 	$i = 0;
 	$values = array();
-	$agg = array();
+	$agg = '';
 	while (isset ($data[$i])) {
 		$agg = $data[$i]['agg'];
-		if ($data[$i]['unit'] == 'G') {
-			$data[$i]['data'] = $data[$i]['data'] * 1024;
+		if (isset($data[$i]['unit'])){
+			if ($data[$i]['unit'] == 'G') {
+				$data[$i]['data'] = $data[$i]['data'] * 1024;
+			}
 		}
-		if (isset($values[$agg])){
+		if (!isset($values[$agg])){
 			$values[$agg] = $data[$i]['data'];
 		} else {
 			$values[$agg] += $data[$i]['data'];
 		}
 		$i++;
 	}
-
+html_debug_print($values);
 	return pie3d_graph($config['flash_charts'], $values, 320, 200,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);
@@ -2247,6 +2251,8 @@ function grafico_netflow_total_pie ($data) {
 	echo"<h4>Gráfica totalizada</h4>";
 	
 	$i = 0;
+	$agg = '';
+	$values = array();
 	while (isset ($data[$i])) {
 		$agg = $data[$i]['agg'];
 		if ($data[$i]['unit'] == 'G') {

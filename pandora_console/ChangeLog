@@ -1,4 +1,10 @@
 2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_edit_form.php
+	  include/functions_graph.php
+	  operation/netflow/nf_view.php: remove some warning. 
+
+2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql: added mysql tables for traffic netflow.
 
 2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>

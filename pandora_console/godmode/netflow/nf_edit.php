@@ -109,7 +109,7 @@ $table->data = array ();
 $total_filters = db_get_all_rows_filter ('tnetflow_filter', false, 'COUNT(*) AS total');
 $total_filters = $total_filters[0]['total'];
 
-ui_pagination ($total_filters, $url);
+//ui_pagination ($total_filters, $url);
 
 foreach ($filters as $filter) {
 	$data = array ();

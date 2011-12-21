@@ -1,6 +1,5 @@
 #!/bin/bash
-CODEHOME=~/code/pandora/trunk
-RPMHOME=/usr/src/packages
+source build_vars.sh
 
 if [ ! -d $RPMHOME/EXE ]; then
 	mkdir -p $RPMHOME/EXE || exit 1

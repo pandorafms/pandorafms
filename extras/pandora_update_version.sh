@@ -1,5 +1,6 @@
 #!/bin/bash
 # Automatically update Pandora FMS version and build where necessary.
+source build_vars.sh
 
 # Check command line arguments
 if [ $# -lt 2 ] || [ $# -gt 3 ]; then
@@ -20,27 +21,30 @@ else
 	BUILD=$3
 fi
 TEMP_FILE="/tmp/pandora_update_version.tmp"
-CODE_HOME=~/code/pandora/trunk
-CODE_HOME_ENT=~/code/artica/code
-SPEC_FILES="$CODE_HOME/pandora_console/pandora_console.spec \
-$CODE_HOME/pandora_agents/unix/pandora_agent.spec \
-$CODE_HOME/pandora_server/pandora_server.spec \
-$CODE_HOME_ENT/pandora/trunk/pandora_console/enterprise/pandora_console_enterprise.spec \
-$CODE_HOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec"
-DEBIAN_FILES="$CODE_HOME/pandora_console/DEBIAN \
-$CODE_HOME/pandora_server/DEBIAN \
-$CODE_HOME/pandora_agents/unix/DEBIAN \
-$CODE_HOME_ENT/pandora/trunk/pandora_console/DEBIAN \
-$CODE_HOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN"
-SERVER_FILE="$CODE_HOME/pandora_server/lib/PandoraFMS/Config.pm"
-SERVER_DB_FILE="$CODE_HOME/pandora_server/util/pandora_db.pl"
-SERVER_CLI_FILE="$CODE_HOME/pandora_server/util/pandora_manage.pl"
-CONSOLE_DB_FILE="$CODE_HOME/pandora_console/pandoradb_data.sql"
-CONSOLE_FILE="$CODE_HOME/pandora_console/include/config_process.php"
-CONSOLE_INSTALL_FILE="$CODE_HOME/pandora_console/install.php"
-AGENT_UNIX_FILE="$CODE_HOME/pandora_agents/unix/pandora_agent"
-AGENT_WIN_FILE="$CODE_HOME/pandora_agents/win32/pandora.cc"
-AGENT_WIN_MPI_FILE="$CODE_HOME/pandora_agents/win32/installer/pandora.mpi"
+SPEC_FILES="$CODEHOME/pandora_console/pandora_console.spec \
+$CODEHOME/pandora_agents/unix/pandora_agent.spec \
+$CODEHOME/pandora_server/pandora_server.spec \
+$PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.spec \
+$PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec \
+$CODEHOME/pandora_console/pandora_console.redhat.spec \
+$CODEHOME/pandora_agents/unix/pandora_agent.redhat.spec \
+$CODEHOME/pandora_server/pandora_server.redhat.spec \
+$PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.redhat.spec \
+$PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.redhat.spec"
+DEBIAN_FILES="$CODEHOME/pandora_console/DEBIAN \
+$CODEHOME/pandora_server/DEBIAN \
+$CODEHOME/pandora_agents/unix/DEBIAN \
+$PANDHOME_ENT/pandora_console/DEBIAN \
+$PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/DEBIAN"
+SERVER_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/Config.pm"
+SERVER_DB_FILE="$CODEHOME/pandora_server/util/pandora_db.pl"
+SERVER_CLI_FILE="$CODEHOME/pandora_server/util/pandora_manage.pl"
+CONSOLE_DB_FILE="$CODEHOME/pandora_console/pandoradb_data.sql"
+CONSOLE_FILE="$CODEHOME/pandora_console/include/config_process.php"
+CONSOLE_INSTALL_FILE="$CODEHOME/pandora_console/install.php"
+AGENT_UNIX_FILE="$CODEHOME/pandora_agents/unix/pandora_agent"
+AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
+AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
 
 # Update version in spec files
 function update_spec_version {

@@ -86,7 +86,7 @@ $filter['limit'] = (int) $config['block_size'];
 $reports = db_get_all_rows_filter ('tnetflow_report', $filter);
 
 if ($reports === false)
-	$filter = array ();
+	$reports = array();
 	
 $table->width = '80%';
 $table->head = array ();
@@ -147,10 +147,6 @@ echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_rep
 ?>
 
 <script type="text/javascript">
-
-$(document).ready (function () {
-	$("textarea").TextAreaResizer ();
-});
 
 function check_all_checkboxes() {
 	if ($("input[name=all_delete]").attr('checked')) {

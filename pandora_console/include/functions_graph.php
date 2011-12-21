@@ -2027,7 +2027,7 @@ echo"<h4>Gráfica de área</h4>";
 			$aggs[$data[$i]['agg']] = $data[$i]['agg'];
 		}
 		// Read data that falls in the current interval
-		while (isset ($data[$j])) {
+		while(isset ($data[$j])) {
 			$ag = $data[$j]['agg'];
 			
 				$date = $data[$j]['date'];
@@ -2056,7 +2056,9 @@ echo"<h4>Gráfica de área</h4>";
 		
 		// Average
 		if ($count > 0) {
-			$chart[$timestamp_short][$ag] = $chart[$timestamp_short][$ag]/$count;
+			if (isset($chart[$timestamp_short][$ag])){
+				$chart[$timestamp_short][$ag] = $chart[$timestamp_short][$ag]/$count;
+			}
 		} else {
 			$chart[$timestamp_short][$ag] = 0;
 		}
@@ -2235,7 +2237,6 @@ function grafico_netflow_aggregate_pie ($data) {
 		}
 		$i++;
 	}
-html_debug_print($values);
 	return pie3d_graph($config['flash_charts'], $values, 320, 200,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);

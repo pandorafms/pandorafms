@@ -102,33 +102,22 @@ if ($create){
 	$timedate = $date .".".$time;
 	$date_time = strtotime ($date." ".$time);
 
-	$sql1 = "select id_filter from tnetflow_report_content where id_report='".$id."'";
-	$filters_aux = db_get_all_rows_sql($sql1);
-	$exist = false;
-	foreach($filters_aux as $filter_aux){
-		if ($name_filter == $filter_aux['id_filter']){
-			$exist = true;
-			echo '<h3 class="error">'.__ ('Error creating item. Filter already exists.').'</h3>';
-			break;
-		}
-	}
-	if (!$exist){
-		$values = array (
-			'id_report' => $id,
-			'id_filter' => $name_filter,
-			'date' => $date_time,
-			'period' => $period,
-			'max' => $max_val,
-			'show_graph' => $show_graph
+	$values = array (
+				'id_report' => $id,
+				'id_filter' => $name_filter,
+				'date' => $date_time,
+				'period' => $period,
+				'max' => $max_val,
+				'show_graph' => $show_graph
 			);
-		$result = db_process_sql_insert('tnetflow_report_content', $values);
-
+			$result = db_process_sql_insert('tnetflow_report_content', $values);
+		
 		if ($result === false)
-				echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
-			else
-				echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';
+			echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
+		else
+			echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';
 	}
-}
+	
 $table->width = '80%';
 $table->border = 0;
 $table->cellspacing = 3;

@@ -1,0 +1,218 @@
+<?php
+
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+
+global $config;
+
+include_once("include/functions_ui.php");
+include_once("include/functions_netflow.php");
+include_once ("/include/functions_users.php");
+include_once ("/include/functions_groups.php");
+
+check_login ();
+
+if (! check_acl ($config["id_user"], 0, "AW")) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access event viewer");
+	require ("general/noaccess.php");
+	return;
+}
+
+$id = (int) get_parameter ('id');
+$name = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
+$update = (string)get_parameter('update', 0);
+$create = (string)get_parameter('create', 0);
+		
+$buttons['edit'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
+		. html_print_image ("images/edit.png", true, array ("title" => __('Filter list')))
+		. '</a>';
+		
+$buttons['add'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
+		. html_print_image ("images/add.png", true, array ("title" => __('Add filter')))
+		. '</a>';
+		
+//Header
+ui_print_page_header (__('Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+
+if ($id) {
+	$filter = netflow_filter_get_filter ($id);
+	$assign_group = $filter['group'];
+	$name = $filter['id_name'];
+	$ip_dst = $filter['ip_dst'];
+	$ip_src = $filter['ip_src'];
+	$dst_port = $filter['dst_port'];
+	$src_port = $filter['src_port'];
+	$aggregate = $filter['aggregate'];
+	$show_packets = $filter['show_packets'];
+	$show_bytes = $filter['show_bytes'];
+	$show_bps = $filter['show_bps'];
+	$show_bpp = $filter['show_bpp'];
+
+} else {
+	$name = '';
+	$assign_group = 'none';
+	$ip_dst = '';
+	$ip_src = '';
+	$dst_port = '';
+	$src_port = '';
+	$aggregate = 'none';
+	$show_packets = '';
+	$show_bytes = 1;
+	$show_bps = '';
+	$show_bpp = '';
+	
+}
+
+if ($update) {
+	$name = (string) get_parameter ('name');
+	$assign_group = (int) get_parameter ('assign_group');
+	$aggregate = get_parameter('aggregate','');
+	$show_packets = (bool)get_parameter('show_packets');
+	$show_bytes = (bool)get_parameter('show_bytes');
+	$show_bps = (bool)get_parameter('show_bps');
+	$show_bpp = (bool)get_parameter('show_bpp');
+	$ip_dst = get_parameter('ip_dst','');
+	$ip_src = get_parameter('ip_src','');
+	$dst_port = get_parameter('dst_port','');
+	$src_port = get_parameter('src_port','');
+	
+	if ($name == '') {
+                ui_print_error_message (__('Not updated. Blank name'));
+        } else {
+		$result = db_process_sql_update ('tnetflow_filter',
+			array ('id_sg' => $id,
+				'id_name' => $name,
+				'group' => $assign_group,
+				'aggregate' => $aggregate,
+				'ip_dst' => $ip_dst,
+				'ip_src' => $ip_src,
+				'dst_port' => $dst_port,
+				'src_port' => $src_port,
+				'show_packets' => $show_packets,
+				'show_bytes' => $show_bytes,
+				'show_bps' => $show_bps,
+				'show_bpp' => $show_bpp,	),
+			array ('id_sg' => $id));
+			
+		ui_print_result_message ($result,
+			__('Successfully updated'),
+			__('Not updated. Error updating data'));
+	}
+}
+
+if ($create){
+	$name = (string) get_parameter ('name');
+	$assign_group = (int) get_parameter ('assign_group');
+	$aggregate = get_parameter('aggregate','none');
+	$show_packets = (bool)get_parameter('show_packets',0);
+	$show_bytes = (bool)get_parameter('show_bytes',1);
+	$show_bps = (bool)get_parameter('show_bps',0);
+	$show_bpp = (bool)get_parameter('show_bpp',0);
+	$ip_dst = get_parameter('ip_dst','');
+	$ip_src = get_parameter('ip_src','');
+	$dst_port = get_parameter('dst_port','');
+	$src_port = get_parameter('src_port','');
+
+		if($name == db_get_value('id_name', 'tnetflow_filter', 'id_name', $name)){	
+			$result = false;
+		} else {
+			$values = array (
+				'id_name'=>$name,
+				'group' => $assign_group,
+				'ip_dst'=>$ip_dst,
+				'ip_src'=>$ip_src,
+				'dst_port'=>$dst_port,
+				'src_port'=>$src_port,
+				'aggregate'=>$aggregate,
+				'show_packets'=>$show_packets,
+				'show_bytes'=>$show_bytes,
+				'show_bps'=>$show_bps,
+				'show_bpp'=>$show_bpp
+			);
+			$result = db_process_sql_insert('tnetflow_filter', $values);
+		}
+		if ($result === false)
+				echo '<h3 class="error">'.__ ('Error creating filter').'</h3>';
+			else
+				echo '<h3 class="suc">'.__ ('filter created successfully').'</h3>';
+}
+
+$table->width = '80%';
+$table->border = 0;
+$table->cellspacing = 3;
+$table->cellpadding = 5;
+$table->class = "databox_color";
+$table->style[0] = 'vertical-align: top;';
+
+$table->data = array ();
+	
+$table->data[0][0] = '<b>'.__('Name').'</b>';
+$table->data[0][1] = html_print_input_text ('name', $name, false, 20, 80, true);
+
+$own_info = get_user_info ($config['id_user']);
+$table->data[1][0] = '<b>'.__('Group').'</b>';
+$table->data[1][1] = html_print_select_groups($config['id_user'], "AW",
+		$own_info['is_admin'], 'assign_group', $assign_group, '', __('None'), -1, true,
+		false, false);
+	
+$table->data[2][0] = '<b>'.__('Filter:').'</b>';
+	
+$table->data[3][0] = __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
+$table->data[3][1] = html_print_input_text ('ip_dst', $ip_dst, false, 40, 80, true);
+	
+$table->data[4][0] = __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
+$table->data[4][1] = html_print_input_text ('ip_src', $ip_src, false, 40, 80, true);
+	
+$table->data[5][0] = __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
+$table->data[5][1] = html_print_input_text ('dst_port', $dst_port, false, 40, 80, true);
+
+$table->data[6][0] = __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
+$table->data[6][1] = html_print_input_text ('src_port', $src_port, false, 40, 80, true);
+
+	
+$table->data[7][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
+$aggregate_list = array();
+$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
+
+$table->data[7][1] = html_print_select ($aggregate_list, "aggregate", $aggregate, '', '', 0, true, false, true, '', false);
+	
+$table->data[8][0] = '<b>'.__('Output format').'</b>';
+
+$table->data[8][1] .= __('Packets');
+$table->data[8][1] .= html_print_checkbox ('show_packets', 1, $show_packets, true);
+$table->data[8][1] .= __('Bytes');
+$table->data[8][1] .= html_print_checkbox ('show_bytes', 1, $show_bytes, true);
+$table->data[8][1] .= __('Bits per second');
+$table->data[8][1] .= html_print_checkbox ('show_bps', 1, $show_bps, true);
+$table->data[8][1] .= __('Bytes per packet');
+$table->data[8][1] .= html_print_checkbox ('show_bpp', 1, $show_bpp, true);
+
+echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
+html_print_table ($table);
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+if ($id) {
+	html_print_input_hidden ('update', 1);
+	html_print_input_hidden ('id', $id);
+	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
+} else {
+	html_print_input_hidden ('create', 1);
+	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
+}
+echo '</div>';
+echo '</form>';
+?>
+
+

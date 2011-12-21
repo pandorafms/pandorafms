@@ -184,6 +184,7 @@ function config_update_config () {
 	config_update_value ('history_db_delay', (string) get_parameter ('history_db_delay', $config['history_db_delay']));
 	config_update_value ('timezone', (string) get_parameter ('timezone', $config['timezone']));
 	config_update_value ('activate_gis', (bool) get_parameter ('activate_gis', $config['activate_gis']));
+	config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow', $config['activate_netflow']));
 	config_update_value ('stats_interval', get_parameter ('stats_interval', $config['stats_interval']));
 	config_update_value ('realtimestats', get_parameter ('realtimestats', $config['realtimestats']));
 	config_update_value ('event_purge', get_parameter ('event_purge', $config['event_purge']));
@@ -475,6 +476,10 @@ function config_process_config () {
 
 	if (!isset ($config['activate_gis'])) {
 		config_update_value ( 'activate_gis', 0);
+	}
+	
+	if (!isset ($config['activate_netflow'])) {
+		config_update_value ( 'activate_netflow', 0);
 	}
 
 	if (!isset ($config['auth'])) {

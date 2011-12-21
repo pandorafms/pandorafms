@@ -120,7 +120,7 @@ function mysql_db_get_value ($field, $table, $field_search = 1, $condition = 1, 
 				$field, $table, $field_search, $condition);
 	}
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
-	
+
 	if ($result === false)
 		return false;
 	
@@ -860,6 +860,7 @@ function mysql_db_process_sql_update($table, $values, $where = false, $where_joi
 		}
 		else if (is_array ($where)) {
 			$query .= db_format_array_where_clause_sql ($where, $where_join, ' WHERE ');
+			
 		}
 	}
 	

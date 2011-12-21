@@ -74,7 +74,7 @@ $config["admin_can_make_admin"] = true;
  */
 function process_user_login ($login, $pass) {
 	global $config, $mysql_cache;
-	
+
 	// Always authenticate admins against the local database
 	if (strtolower ($config["auth"]) == 'mysql' || is_user_admin ($login)) {
 		// Connect to Database
@@ -399,7 +399,7 @@ function update_user ($id_user, $values) {
  */
 function ldap_process_user_login ($login, $password) {
 	global $config;
-	
+		
 	if (! function_exists ("ldap_connect")) {
 		$config["auth_error"] = 'Your installation of PHP does not support LDAP';
 		return false;
@@ -407,6 +407,7 @@ function ldap_process_user_login ($login, $password) {
 
 	// Connect to the LDAP server
 	$ds = @ldap_connect ($config["ldap_server"], $config["ldap_port"]);
+
 	if (!$ds) {
 		$config["auth_error"] = 'Error connecting to LDAP server';
 		return false;

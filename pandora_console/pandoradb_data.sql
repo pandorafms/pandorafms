@@ -67,6 +67,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('realtimestats', '1'),
 ('stats_interval', '60'),
 ('activate_gis', '0'),
+('activate_netflow', '0'),
 ('timezone', 'Europe/Berlin'),
 ('string_purge', 7),
 ('audit_purge', 15),

@@ -1,7 +1,5 @@
 #!/bin/bash
-CODEHOME=~/code/pandora/trunk
-CODEHOME_ENT=~/code/artica/code
-RPMHOME=/usr/src/packages
+source build_vars.sh
 
 if [ ! -d $RPMHOME/DEB ]; then
 	mkdir -p $RPMHOME/DEB || exit 1
@@ -19,10 +17,10 @@ cd $CODEHOME/pandora_server/DEBIAN  && bash ./make_deb_package.sh && mv ../*.deb
 cd $CODEHOME/pandora_agents/unix/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
 # Enterprise console
-cd $CODEHOME_ENT/pandora/trunk/pandora_console/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
+cd $PANDHOME_ENT/pandora_console/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
 # Enterprise server
-cd $CODEHOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
+cd $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
 exit 0
 

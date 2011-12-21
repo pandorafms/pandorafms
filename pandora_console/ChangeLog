@@ -1,4 +1,10 @@
 2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/netflow/nf_view.php
+	  godmode/netflow/nf_report_item.php
+	  godmode/netflow/nf_report.php: Allow repeat filters
+	  in reports.
+
+2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/netflow/nf_edit.php
 	  godmode/netflow/nf_edit_form.php
 	  include/functions_graph.php

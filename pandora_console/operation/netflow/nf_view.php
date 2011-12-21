@@ -220,13 +220,14 @@ echo'</form>';
 
 if ($id!=''){
 	echo"<h3>$report_name</h3>";
-	$sql1 = "select id_filter from tnetflow_report_content where id_report='".$id."'";
-	$all_filters = db_get_all_rows_sql($sql1);
+
+	$sql1 = "select id_rc from tnetflow_report_content where id_report='".$id."'";
+	$all_rcs = db_get_all_rows_sql($sql1);
 
 	$x = 0;
-	while(isset($all_filters[$x]['id_filter'])) {
-		$filter = $all_filters[$x]['id_filter'];
-		$sql = "SELECT * FROM tnetflow_report_content WHERE id_report='".$id."' and id_filter='".$filter."'";
+	while(isset($all_rcs[$x]['id_rc'])) {
+		$rc = $all_rcs[$x]['id_rc'];
+		$sql = "SELECT * FROM tnetflow_report_content WHERE id_rc='".$rc."'";
 
 		$content_report = db_get_row_sql($sql);
 		$name_filter = $content_report['id_filter'];

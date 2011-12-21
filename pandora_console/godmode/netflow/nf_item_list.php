@@ -98,7 +98,7 @@ $reports_item = db_get_all_rows_sql('
 		WHERE id_report = ' . $id);
 
 if ($reports_item === false)
-	$filter = array ();
+	$reports_item = array ();
 	
 $table->width = '90%';
 $table->head = array ();

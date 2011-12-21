@@ -39,6 +39,9 @@ $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
 
 $reports = db_get_all_rows_filter ('tnetflow_report', $filter);
+if ($reports == false){
+	$reports = array();
+}
 
 $table->width = '98%';
 $table->head = array ();

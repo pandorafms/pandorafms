@@ -1,3 +1,8 @@
+2011-12-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/status_monitor.php: Merged from trunk. Fixed that
+	long module names cannot be seen. (Added title.)
+
 2011-12-19  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/languages/ja.po, include/languages/ja.mo: Updated translation

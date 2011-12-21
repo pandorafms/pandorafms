@@ -575,7 +575,7 @@ foreach ($result as $row) {
 	
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
-	$data[3] = ui_print_truncate_text($row["module_name"],30,false,true,false);
+	$data[3] = ui_print_truncate_text($row["module_name"],30,false,true,true);
 	if ($row["extended_info"] != "") {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}

@@ -1,3 +1,11 @@
+2011-12-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Fixed Date formats in graph
+	axis to avoid loss data
+	
+	* include/functions_custom_graphs.php: Fixed number of hours of
+	a week in the graphs combo
+
 2011-12-21  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/netflow/nf_view.php
 	  godmode/netflow/nf_report_item.php

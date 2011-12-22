@@ -204,7 +204,7 @@ else {
 		
 		$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
 		
-		$intervalCell = ($module['module_interval'] == 0) ? $module['agent_interval'] : $module['intervalo'];
+		$intervalCell = modules_get_interval ($module['id_agente_modulo']);
 		
 		if($module['utimestamp'] == 0 && (($module['module_type'] < 21 || $module['module_type'] > 23) && $module['module_type'] != 100)){
 			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);

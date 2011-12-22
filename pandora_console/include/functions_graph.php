@@ -380,26 +380,25 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	
 	
 	// Set the title and time format
-	
-	if ($period <= 3600) {
+	if ($period <= 21600) {
 		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
+		$time_format = 'H:i:s';
 	}
-	elseif ($period <= 86400) {
+	elseif ($period < 86400) {
 		$title_period = __('Last day');
-		$time_format = 'G:i';
+		$time_format = 'H:i';
 	}
-	elseif ($period <= 604800) {
+	elseif ($period < 1296000) {
 		$title_period = __('Last week');
-		$time_format = 'M j';
+		$time_format = 'M d H:i';
 	}
-	elseif ($period <= 2419200) {
+	elseif ($period < 2592000) {
 		$title_period = __('Last month');
-		$time_format = 'M j';
+		$time_format = 'M d H\h';
 	} 
 	else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
+		$time_format = 'M d H\h';
 	}
 	
 	// Set variables
@@ -462,23 +461,28 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}
 
 	$long_index = array();
-	
-	if ($period <= 3600) {
+
+	// Set the title and time format
+	if ($period <= 21600) {
 		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
-	} elseif ($period <= 86400) {
+		$time_format = 'H:i:s';
+	}
+	elseif ($period < 86400) {
 		$title_period = __('Last day');
-		$time_format = 'G:i';
-	} elseif ($period <= 604800) {
+		$time_format = 'H:i';
+	}
+	elseif ($period < 1296000) {
 		$title_period = __('Last week');
-		$time_format = 'M j';
-	} elseif ($period <= 2419200) {
+		$time_format = 'M d H:i';
+	}
+	elseif ($period < 2592000) {
 		$title_period = __('Last month');
-		$time_format = 'M j';
-	} else {
+		$time_format = 'M d H\h';
+	} 
+	else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
-	}	
+		$time_format = 'M d H\h';
+	}
 	
 	$graph_values = array();
 	$module_name_list = array();
@@ -722,21 +726,26 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}
 	*/
 	
-	if ($period <= 3600) {
+	// Set the title and time format
+	if ($period <= 21600) {
 		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
-	} elseif ($period <= 86400) {
+		$time_format = 'H:i:s';
+	}
+	elseif ($period < 86400) {
 		$title_period = __('Last day');
-		$time_format = 'G:i';
-	} elseif ($period <= 604800) {
+		$time_format = 'H:i';
+	}
+	elseif ($period < 1296000) {
 		$title_period = __('Last week');
-		$time_format = 'M j';
-	} elseif ($period <= 2419200) {
+		$time_format = 'M d H:i';
+	}
+	elseif ($period < 2592000) {
 		$title_period = __('Last month');
-		$time_format = 'M j';
-	} else {
+		$time_format = 'M d H\h';
+	} 
+	else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
+		$time_format = 'M d H\h';
 	}
 
 	$flash_charts = $config['flash_charts'];
@@ -1797,27 +1806,26 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			$k++;
 		}
 		
-		/////////////////////////////////////////////////////////////////
 		// Set the title and time format
-		if ($period <= 3600) {
+		if ($period <= 21600) {
 			$title_period = __('Last hour');
-			$time_format = 'G:i:s';
+			$time_format = 'H:i:s';
 		}
-		elseif ($period <= 86400) {
+		elseif ($period < 86400) {
 			$title_period = __('Last day');
-			$time_format = 'G:i';
+			$time_format = 'H:i';
 		}
-		elseif ($period <= 604800) {
+		elseif ($period < 1296000) {
 			$title_period = __('Last week');
-			$time_format = 'M j';
+			$time_format = 'M d H:i';
 		}
-		elseif ($period <= 2419200) {
+		elseif ($period < 2592000) {
 			$title_period = __('Last month');
-			$time_format = 'M j';
+			$time_format = 'M d H\h';
 		} 
 		else {
 			$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-			$time_format = 'M j';
+			$time_format = 'M d H\h';
 		}
 
 		$timestamp_short = date($time_format, $timestamp);
@@ -1896,27 +1904,27 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			}
 		}
 	}
-///////////////////////////////////////////////////
+	///////////////////////////////////////////////////
 	// Set the title and time format
-	if ($period <= 3600) {
+	if ($period <= 21600) {
 		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
+		$time_format = 'H:i:s';
 	}
-	elseif ($period <= 86400) {
+	elseif ($period < 86400) {
 		$title_period = __('Last day');
-		$time_format = 'G:i';
+		$time_format = 'H:i';
 	}
-	elseif ($period <= 604800) {
+	elseif ($period < 1296000) {
 		$title_period = __('Last week');
-		$time_format = 'M j';
+		$time_format = 'M d H:i';
 	}
-	elseif ($period <= 2419200) {
+	elseif ($period < 2592000) {
 		$title_period = __('Last month');
-		$time_format = 'M j';
+		$time_format = 'M d H\h';
 	} 
 	else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
+		$time_format = 'M d H\h';
 	}
 	
     // Flash chart
@@ -2411,25 +2419,25 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		
 		/////////////////////////////////////////////////////////////////
 		// Set the title and time format
-		if ($period <= 3600) {
+		if ($period <= 21600) {
 			$title_period = __('Last hour');
-			$time_format = 'G:i:s';
+			$time_format = 'H:i:s';
 		}
-		elseif ($period <= 86400) {
+		elseif ($period < 86400) {
 			$title_period = __('Last day');
-			$time_format = 'G:i';
+			$time_format = 'H:i';
 		}
-		elseif ($period <= 604800) {
+		elseif ($period < 1296000) {
 			$title_period = __('Last week');
-			$time_format = 'M j';
+			$time_format = 'M d H:i';
 		}
-		elseif ($period <= 2419200) {
+		elseif ($period < 2592000) {
 			$title_period = __('Last month');
-			$time_format = 'M j';
+			$time_format = 'M d H\h';
 		} 
 		else {
 			$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-			$time_format = 'M j';
+			$time_format = 'M d H\h';
 		}
 
 		$timestamp_short = date($time_format, $timestamp);

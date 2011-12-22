@@ -1,3 +1,9 @@
+2011-12-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/search_alerts.php: Added semicolon at end of a line.
+	
+	Fixes: #3453610
+
 2011-12-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fixed Date formats in graph

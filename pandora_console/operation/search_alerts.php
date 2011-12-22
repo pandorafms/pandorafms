@@ -17,7 +17,7 @@
 global $config;
 
 include_once('include/functions_alerts.php');
-enterprise_include_once('include/functions_policies.php')
+enterprise_include_once('include/functions_policies.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 

@@ -1,3 +1,8 @@
+2011-12-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Added netflow server configuration
+	  tokens.
+
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl, util/pandora_manage.pl: Updated version strings.

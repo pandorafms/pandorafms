@@ -39,23 +39,11 @@ if ($id) {
 	$name = $report['id_name'];
 	$description = $report['description'];
 	$group = $report['group'];
-	$name_filter = $report['id_filter'];
-	$max_val = $report['max_values'];
-	$show_area = $report['show_area'];
-	$show_pie = $report['show_pie'];
-	$show_table = $report['show_table'];
-	$show_period = $report['show_period'];
 
 } else {
 	$name = '';
 	$group = 'none';
 	$description = '';
-	$name_filter = 'none';
-	$max_val = '2';
-	$show_area = '';
-	$show_pie = '';
-	$show_table = '';
-	$show_period = '';
 }
 
 if ($update) {
@@ -63,12 +51,6 @@ if ($update) {
 	$name = (string) get_parameter ('name');
 	$description = get_parameter ('description');
 	$group = get_parameter('group','none');
-	$name_filter = get_parameter('id_filter','none');
-	$max_val = get_parameter('max_values','2');
-	$show_area = get_parameter('show_area','');
-	$show_pie = get_parameter('show_pie','');
-	$show_table = get_parameter('show_table','');
-	$show_period = get_parameter('show_period','');
 
 	if ($name == '') {
                 ui_print_error_message (__('Not updated. Blank name'));
@@ -78,12 +60,6 @@ if ($update) {
 				'id_name' => $name,
 				'group' => $group,
 				'description' => $description,
-				'id_filter' => $name_filter,
-				'max_values' => $max_val,
-				'show_area' => $show_area,
-				'show_pie' => $show_pie,
-				'show_table' => $show_table,
-				'show_period' => $show_period
 				),
 			array ('id_report' => $id));
 	}
@@ -93,12 +69,6 @@ if ($create){
 	$name = (string) get_parameter ('name');
 	$group = (int) get_parameter ('group');
 	$description = get_parameter('description','');
-	$name_filter = get_parameter('name_filter','none');
-	$max_val = get_parameter('max_val','2');
-	$show_area = (bool)get_parameter('show_area','0');
-	$show_pie = (bool)get_parameter('show_pie','0');
-	$show_table = (bool)get_parameter('show_table','0');
-	$show_period = (bool)get_parameter('show_period','0');
 
 		if($name == db_get_value('id_name', 'tnetflow_report', 'id_name', $name)){	
 			$result = false;
@@ -107,12 +77,6 @@ if ($create){
 				'id_name' => $name,
 				'group' => $group,
 				'description' => $description,
-				'id_filter' => $name_filter,
-				'max_values' => $max_val,
-				'show_area' => $show_area,
-				'show_pie' => $show_pie,
-				'show_table' => $show_table,
-				'show_period' => $show_period
 			);
 			$result = db_process_sql_insert('tnetflow_report', $values);
 		}

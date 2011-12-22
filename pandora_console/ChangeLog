@@ -1,3 +1,9 @@
+2011-12-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/search_alerts.php: Added semicolon at end of a line.
+	
+	Merged bugfix from trunk.
+
 2011-12-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/status_monitor.php: Merged from trunk. Fixed that

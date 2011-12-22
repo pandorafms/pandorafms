@@ -1,3 +1,12 @@
+2011-12-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_pchart.php
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php
+	include/functions_custom_graphs.php: Fixed combined graphs bug and
+	improved presentation merged from trunk
+
 2011-12-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/search_alerts.php: Added semicolon at end of a line.

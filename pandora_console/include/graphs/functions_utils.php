@@ -113,4 +113,22 @@ function stack_data(&$chart_data, &$legend = null, &$color = null) {
 		ksort($color);
 	}
 }
+
+function graph_get_max_index($legend_values) {
+	$max_chars = 0;
+	foreach ($legend_values as $string_legend) {
+		if (empty($string_legend)) continue;
+
+		$string_legend = explode("\n",$string_legend);
+
+		foreach($string_legend as $st_lg) {
+			$len = strlen($st_lg);
+			if ($len > $max_chars) {
+				$max_chars = $len; 
+			}
+		}
+	}
+	
+	return $max_chars;
+}
 ?>

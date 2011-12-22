@@ -126,7 +126,7 @@ $colors['pep4'] = array('border' => '#000000', 'color' => '#0000ff', 'alpha' => 
 
 $step = 1;
 if ($force_steps) {
-	$pixels_between_xdata = 40;
+	$pixels_between_xdata = 50;
 	$max_xdata_display = round($width / $pixels_between_xdata);
 	$ndata = count($data);
 	if($max_xdata_display > $ndata) {
@@ -139,7 +139,7 @@ if ($force_steps) {
 	$step = round($ndata/$xdata_display);
 }
 
-$c = 0;
+$c = 1;
 
 switch($graph_type) {
 	case 'hbar':
@@ -336,8 +336,6 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 		$myPicture->drawRoundedFilledRectangle ($i, 0, $ratio+$i, 
 				$height, $radius, array('R' => $color['R'], 'G' => $color['G'], 'B' => $color['B']));
 		$i+=$ratio;
-
-
 	}
 	
 	if ($round_corner) {
@@ -408,16 +406,8 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 
 	 /* Write down the legend next to the 2nd chart*/
 		//Calculate the bottom margin from the size of string in each index
-		$max_chars = 0;
-		foreach ($legend_values as $string_legend) {
-			if (empty($string_legend)) continue;
-			
-			$len = strlen($string_legend);
-			if ($len > $max_chars) {
-				$max_chars = $len; 
-			}
-		}
-		$legend_with_aprox = 32 + (7 * $max_chars);
+	$max_chars = graph_get_max_index($legend_values);
+	$legend_with_aprox = 32 + (7 * $max_chars);
 
 	 $PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
  
@@ -540,15 +530,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	 // TODO: AvoidTickWhenEmpty = TRUE When the distance between two ticks will be greater than 50 px
 	 
 	 //Calculate the top margin from the size of string in each index
-	 $max_chars = 0;
-	 foreach ($index as $string_index) {
-		if (empty($string_index)) continue;
-		
-		$len = strlen($string_index);
-		if ($len > $max_chars) {
-			$max_chars = $len; 
-		}
-	 }
+	 $max_chars = graph_get_max_index($index);
 	 $margin_top = 10 * $max_chars;
 	
 	 switch($graph_type) {
@@ -640,7 +622,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		 else {
 			$point_id = $i;
 		 }
-
+		 
 		$MyData->addPoints($values,$point_id);
 		if (!empty($rgb_color)) {
 			$MyData->setPalette($point_id, 
@@ -670,7 +652,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$MyData->setPalette($point_id, $palette_color);*/
 		}
 		
-		$MyData->setSerieWeight($point_id, 1);
+		$MyData->setSerieWeight($point_id, 0);
 	 }
 
 	 //$MyData->addPoints($data,"Yaxis");
@@ -705,15 +687,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 }
 	 
 	 //Calculate the bottom margin from the size of string in each index
-	 $max_chars = 0;
-	 foreach ($index as $string_index) {
-	 	if (empty($string_index)) continue;
-	 	
-	 	$len = strlen($string_index);
-	 	if ($len > $max_chars) {
-	 		$max_chars = $len; 
-	 	}
-	 }
+	 $max_chars = graph_get_max_index($index);
 	 $margin_bottom = $font_size * $max_chars;
 	 
 	 $water_mark_height = 0;

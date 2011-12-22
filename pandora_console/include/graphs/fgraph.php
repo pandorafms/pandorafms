@@ -191,7 +191,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 }
 
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
-	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homedir="",
+	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
 
 	if (empty($chart_data)) {
@@ -199,7 +199,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
-		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homedir, $unit);
+		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit);
 	}
 	else {
 		$graph = array();
@@ -216,7 +216,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 				
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 
-		return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
+		return "<img src='".$homeurl."include/graphs/functions_pchart.php?graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
 	}	
 }
 
@@ -249,7 +249,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='" . $homeurl . "/include/graphs/functions_pchart.php?graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}	
 }
 
@@ -282,7 +282,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='" . $homeurl . "/include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}
 }
 
@@ -312,7 +312,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='" . $homeurl . "/include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}	
 }
 

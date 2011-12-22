@@ -296,6 +296,12 @@ sub pandora_load_config {
 	$pa_config->{"agentaccess"} = 1; 
 	# -------------------------------------------------------------------------
 
+	# Netflow server (4.1)
+	$pa_config->{'netflowserver'} = 0;
+	$pa_config->{'netflow_daemon'} = '/usr/bin/nfcapd';
+	$pa_config->{'netflow_interval'} = 300;
+	$pa_config->{'netflow_basedir'} = '/var/spool/pandora/data_in/netflow';
+	
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -599,20 +605,32 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^recon_location_scatter_radius\s+(\d+)/i) {
 			$pa_config->{'recon_location_scatter_radius'} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^self_monitoring\s([0-1])/i) {
+		elsif ($parametro =~ m/^self_monitoring\s+([0-1])/i) {
 			$pa_config->{'self_monitoring'} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^update_parent\s([0-1])/i) {
+		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^event_window\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^event_window\s+([0-9]*)/i) {
 			$pa_config->{'event_window'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^snmp_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^block_size\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^block_size\s+([0-9]*)/i) {
 			$pa_config->{'block_size'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflowserver\s+([0-9]*)/i) {
+			$pa_config->{'netflowserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflow_daemon\s+(.*)/i) {
+			$pa_config->{'netflow_daemon'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflow_interval\s+([0-9]*)/i) {
+			$pa_config->{'netflow_interval'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^netflow_basedir\s+(.*)/i) {
+			$pa_config->{'netflow_basedir'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

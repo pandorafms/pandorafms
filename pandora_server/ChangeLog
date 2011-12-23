@@ -1,3 +1,10 @@
+2011-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Added Netflow server configuration
+	  tokens.
+
+	* lib/PandoraFMS/Core.pm: Added the netflow server type.
+
 2011-12-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Added netflow server configuration

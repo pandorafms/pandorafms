@@ -90,7 +90,7 @@ $filter['limit'] = (int) $config['block_size'];
 $filters = db_get_all_rows_filter ('tnetflow_filter', $filter);
 
 if ($filters === false)
-	$filter = array ();
+	$filters = array ();
 
 $table->width = '70%';
 $table->head = array ();

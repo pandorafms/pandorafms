@@ -219,6 +219,11 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "enterprise snmp";
 				$id_modulo = 2;
 				break;
+			case 13:
+				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Enterprise SNMP server')));
+				$server["type"] = "netflow";
+				$id_modulo = 2;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";

@@ -2029,7 +2029,12 @@ echo"<h4>Gráfica de área</h4>";
 	}
 
 	$color = array();
-	$flash_chart = '';
+	
+	$flash_chart = $config['flash_charts'];
+	if ($only_image) {
+		$flash_chart = false;
+	}
+	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2182,35 +2187,6 @@ function grafico_netflow_aggregate_pie ($data) {
 			}
 		}
 		if (!isset($values[$agg])){
-			$values[$agg] = $data[$i]['data'];
-		} else {
-			$values[$agg] += $data[$i]['data'];
-		}
-		$i++;
-	}
-	return pie3d_graph($config['flash_charts'], $values, 320, 200,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']);
-}
-
-/**
- * Print a pie graph with netflow total
- */
- 
-function grafico_netflow_total_pie ($data) {
-	global $config;
-	global $graphic_type;	
-	echo"<h4>Gráfica totalizada</h4>";
-	
-	$i = 0;
-	$agg = '';
-	$values = array();
-	while (isset ($data[$i])) {
-		$agg = $data[$i]['agg'];
-		if ($data[$i]['unit'] == 'G') {
-			$data[$i]['data'] = $data[$i]['data'] * 1024;
-		}
-		if (isset($values[$agg])){
 			$values[$agg] = $data[$i]['data'];
 		} else {
 			$values[$agg] += $data[$i]['data'];

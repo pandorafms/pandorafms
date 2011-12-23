@@ -19,8 +19,8 @@ global $config;
 
 include_once("include/functions_ui.php");
 include_once("include/functions_netflow.php");
-include_once ("/include/functions_users.php");
-include_once ("/include/functions_groups.php");
+include_once ("include/functions_users.php");
+include_once ("include/functions_groups.php");
 
 check_login ();
 

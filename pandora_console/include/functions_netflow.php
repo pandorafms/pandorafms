@@ -249,7 +249,29 @@ function netflow_show_table_values($data, $date_limit, $date_time){
 
 	$coordx = array();
 	$coordy = array();
-	
+//añadido
+/*
+	$max_values = 10;
+
+	if(count($data) > $max_values) {
+		$chart_data_trunc = array();
+		$n = 1;
+		foreach($chart_data as $key => $value) {
+			if($n < $max_values) {
+				$chart_data_trunc[$key] = $value;
+			}
+			else {
+				if (!isset($chart_data_trunc[$others_str])) {
+					$chart_data_trunc[$others_str] = 0;
+				}
+				$chart_data_trunc[$others_str] += $value;
+			}
+			$n++;
+		}
+		$chart_data = $chart_data_trunc;
+	}
+*/
+//fin añadido
 	while (isset ($data[$j])) {
 		$date = $data[$j]['date'];
 		$time = $data[$j]['time'];

@@ -1,3 +1,7 @@
+2011-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_servers.php: Added Netflow server information.
+
 2011-12-22 Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_migrate_4.0.x_to_4.1.mysql.sql: Added migration 

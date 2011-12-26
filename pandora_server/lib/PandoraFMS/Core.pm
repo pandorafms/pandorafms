@@ -1820,6 +1820,9 @@ sub process_data ($$$$$) {
 	if ($module_type =~ m/_inc$/) {
 		$data = process_inc_data ($data, $module, $utimestamp, $dbh);
 		
+		# Same timestamp as previous data. Discard.
+		return undef if($data == -1);
+		
 		# Not an error, no previous data
 		if (!defined($data)){
 			$data_object->{'data'} = 0;
@@ -1868,7 +1871,7 @@ sub process_inc_data ($$$$) {
 	}
 
 	# Should not happen
-	return 0 if ($utimestamp == $data_inc->{'utimestamp'});
+	return -1 if ($utimestamp == $data_inc->{'utimestamp'});
 
 	# Update inc data
 	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});

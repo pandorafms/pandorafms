@@ -1,3 +1,8 @@
+2011-12-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Discard inc data when a second value
+	  with the same timestamp arrives. Thanks to eXXon.
+
 2011-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Added Netflow server configuration

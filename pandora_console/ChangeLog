@@ -1,3 +1,9 @@
+2011-12-29  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor.php: Fixe module editor when the
+	data configuration textarea is empty or is a module plugin
+	Merged from trunk
+
 2011-12-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

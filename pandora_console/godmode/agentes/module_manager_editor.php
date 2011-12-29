@@ -410,8 +410,10 @@ $(document).ready (function () {
 			remote_config = $("#textarea_configuration_data").val();
 
 			regexp_name = new RegExp('module_name\\s*' + name+"\n");
-
-			if (remote_config.match(regexp_name) || $("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) return true;
+			
+			regexp_plugin = new RegExp('^module_plugin\\s*');
+			
+			if (remote_config == '' || remote_config.match(regexp_name) || remote_config.match(regexp_plugin) || $("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) return true;
 			else {
 				alert("<?php echo __("Error, The field name and name in module_name in data configuration are different.");?>");
 				return false;

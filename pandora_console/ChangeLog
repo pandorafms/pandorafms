@@ -1,3 +1,8 @@
+2011-12-29  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor.php: Fixe module editor when the
+	data configuration textarea is empty or is a module plugin
+
 2011-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_servers.php: Added Netflow server information.
@@ -12,6 +17,17 @@
 	* operation/search_alerts.php: Added semicolon at end of a line.
 	
 	Fixes: #3453610
+
+2011-12-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_pchart.php
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php: Improve the static
+	graphs
+
+	* operation/search_modules.php: Fix the interval
+	column of the global modules search
 
 2011-12-22  Sergio Martin <sergio.martin@artica.es>
 

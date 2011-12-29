@@ -42,6 +42,8 @@ Exported Functions:
 
 =item * C<pandora_create_agent>
 
+=item * C<pandora_create_group>
+
 =item * C<pandora_create_incident>
 
 =item * C<pandora_create_module>
@@ -130,6 +132,7 @@ our @EXPORT = qw(
 	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
+	pandora_create_group
 	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
@@ -1365,6 +1368,18 @@ sub pandora_update_module_from_hash ($$$$$) {
 	
 	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, $where_column, $where_value);
 	return $module_id;
+}
+
+##########################################################################
+## Create a group
+##########################################################################
+sub pandora_create_group ($$$$$$$$) {
+	my ($name, $icon, $parent, $propagate, $disabled, $custom_id, $id_skin, $dbh) = @_;
+	
+	my $group_id = db_insert ($dbh, 'id_grupo', 'INSERT INTO tgrupo (nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (?, ?, ?, ?, ?, ?, ?)', safe_input($name), $icon, 
+			$parent, $propagate, $disabled, $custom_id, $id_skin);
+				 
+	return $group_id;
 }
 
 ##########################################################################

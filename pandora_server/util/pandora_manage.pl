@@ -432,6 +432,8 @@ sub help_screen{
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
     help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
+    help_screen_line('--create_group', '<group_name> [<parent_group_name>]', 'Create an agent group');
+    help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
     print "\n";
 	exit;
 }
@@ -1347,6 +1349,60 @@ sub cli_disable_policy_alerts() {
 	my $array_pointer_ag = enterprise_hook('pandora_disable_policy_alerts',[$dbh, $policy_id]);
 }
 
+##############################################################################
+# Add an agent to a policy
+# Related option: --add_agent_to_policy
+##############################################################################
+
+sub cli_policy_add_agent() {
+	my ($agent_name, $policy_name) = @ARGV[2..3];
+	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	exist_check($agent_id,'agent',$agent_name);
+	
+	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+	exist_check($policy_id,'policy',$policy_name);
+		
+	# Add the agent to policy
+	my $policy_agent_id = enterprise_hook('pandora_policy_add_agent',[$policy_id, $agent_id, $dbh]);
+	
+	if($policy_agent_id == -1) {
+		print "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
+	}
+	else {
+		print "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary apply the policy to changes take effect.\n\n";
+	}
+}
+
+##############################################################################
+# Create group
+# Related option: --create_group
+##############################################################################
+
+sub cli_create_group() {
+	my ($group_name,$parent_group_name) = @ARGV[2..3];
+	
+	my $group_id = get_group_id($dbh,$group_name);
+	
+	non_exist_check($group_id, 'group name', $group_name);
+	
+	my $parent_group_id = 0;
+	
+	if(defined($parent_group_name)) {
+		$parent_group_id = get_group_id($dbh,$parent_group_name);
+		exist_check($parent_group_id, 'group name', $parent_group_name);
+	}
+
+	$group_id = pandora_create_group ($group_name, '', $parent_group_id, 0, 0, '', 0, $dbh);
+
+	if($group_id == -1) {
+		print "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
+	}
+	else {
+		print "[INFO] Created group '$group_name'\n\n";
+	}
+}
+
 ###############################################################################
 # Disable alert system globally
 # Related option: --disable_alerts
@@ -1550,6 +1606,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--disable_policy_alerts') {
 			param_check($ltotal, 1);
 			cli_disable_policy_alerts();
+		}
+		elsif ($param eq '--create_group') {
+			param_check($ltotal, 2, 1);
+			cli_create_group();
+		}
+		elsif ($param eq '--add_agent_to_policy') {
+			param_check($ltotal, 2, 0);
+			cli_policy_add_agent();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

@@ -138,13 +138,11 @@ $total_reports_item = $total_reports_item[0]['total'];
 	
 	$data[1] = $item['id_filter'];
 	
-	$data[2] = $item['period'];
+	$data[2] = $item['max'];
 	
-	$data[3] = $item['max'];
+	$data[3] = $item['show_graph'];
 	
-	$data[4] = $item['show_graph'];
-	
-	$data[5] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);

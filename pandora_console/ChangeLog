@@ -1,4 +1,9 @@
 2011-12-30  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/netflow/nf_report_item.php
+	  godmode/netflow/nf_item_list.php
+	  operation/netflow/nf_view: Changed the report date and interval.
+
+2011-12-30  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/netflow/nf_edit.php
 	  godmode/netflow/nf_item_list.php: Cascade delete filters.
 

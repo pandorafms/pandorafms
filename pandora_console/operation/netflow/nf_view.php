@@ -153,8 +153,9 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 
 
 $id = get_parameter('id');
-$period = get_parameter('period');
-
+$period = get_parameter('period', '86400');
+$date_= get_parameter('date', date ("Y/m/d", get_system_time ()));
+$time_= get_parameter('time', date ("H:i:s", get_system_time ()));
 $report_name = db_get_value('id_name', 'tnetflow_report', 'id_report', $id);
 
 $time_format = 'Y/m/d.H:i:s';
@@ -183,9 +184,9 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 
 	$table->data[0][0] = '<b>'.__('Date').'</b>';
 
-	$table->data[0][1] = html_print_input_text ('date', date ("Y/m/d", get_system_time () - 86400), false, 10, 10, true);
+	$table->data[0][1] = html_print_input_text ('date', $date_, false, 10, 10, true);
 	$table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-date'),this);"));
-	$table->data[0][1] .= html_print_input_text ('time', date ("H:i:s", get_system_time () - 86400), false, 10, 5, true);
+	$table->data[0][1] .= html_print_input_text ('time', $time_, false, 10, 5, true);
 
 	$table->data[1][0] = '<b>'.__('Interval').'</b>';
 		$values_period = array ('600' => __('10 mins'),
@@ -208,7 +209,6 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 			'62208000' => __('2 years')
 					);
 	$table->data[1][1] = html_print_select ($values_period, 'period', $period, '', '', 0, true, false, false);
-	
 	html_print_table ($table);
 
 	echo '<div class="action-buttons" style="width:60%;">';
@@ -231,22 +231,20 @@ if ($id!=''){
 
 		$content_report = db_get_row_sql($sql);
 		$name_filter = $content_report['id_filter'];
-		$interval = $content_report['period'];
-		$date = $content_report['date'];
 		$max_val= $content_report['max'];
 		$element = $content_report['show_graph'];
-	$date_time = date($time_format, $date+84600);
-	
+
 		if($update_date){
 			$date = get_parameter_post ('date');
 			$time = get_parameter_post ('time');
-			$period = get_parameter('period','0');
-			$date = strtotime ($date." ".$time);
-	
-			if(($period!='None')&&($period!='0'))
-				$interval = $period;
+			$interval = get_parameter('period','86400');
+		} else {
+			$date = date ("Y/m/d", get_system_time ());
+			$time = date ("H:i:s", get_system_time ());
+			$interval ='86400';
 		}
-
+		$date = strtotime ($date." ".$time);
+		$date_time = date($time_format, $date);
 		$limit = $date - $interval;
 
 		$date_limit = date ($time_format, $limit);
@@ -401,14 +399,14 @@ if ($id!=''){
 		}
 	}
 
-if ($show_packets)
-	$show = 'packets';
-if ($show_bytes)
-	$show = 'bytes';
-if ($show_bps)
-	$show = 'bps';
-if ($show_bpp)
-	$show = 'bpp';
+	if ($show_packets)
+		$show = 'packets';
+	if ($show_bytes)
+		$show = 'bytes';
+	if ($show_bps)
+		$show = 'bps';
+	if ($show_bpp)
+		$show = 'bpp';
 
 //create interval to divide command execution
 	if ($interval<43200)
@@ -468,11 +466,8 @@ if ($show_bpp)
 			}
 			$j++;
 		}			
-
-
 	}
 		if($aggregate!='none'){
-
 			switch ($element){
 				case '0':
 					echo grafico_netflow_aggregate_area($result, $interval, 880, 540, '', '','','',$date);

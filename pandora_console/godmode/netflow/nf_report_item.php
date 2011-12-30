@@ -49,37 +49,24 @@ ui_print_page_header (__('Netflow Report'), "images/networkmap/so_cisco_new.png"
 
 if ($id_rc) {
 	$item = netflow_reports_get_content ($id_rc);
-	$date = $item['date'];
-	$period = $item['period'];
 	$name_filter = $item['id_filter'];
 	$max_val = $item['max'];
 	$show_graph = $item['show_graph'];
 } else {
-	$date = '';
-	$period ='';
 	$name_filter = '';
 	$max_val = '';
 	$show_graph = '';
 }
 
 if ($update) {
-	$date = get_parameter_post ('date');
-	$time = get_parameter_post ('time');
-	$period = get_parameter ('period');
 	$name_filter = get_parameter('id_filter');
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
-
-	$date = str_replace('-','/',$date);
-	$timedate = $date .".".$time;
-	$date_time = strtotime ($date." ".$time);
 	
 	$result = db_process_sql_update ('tnetflow_report_content',
 			array (
 				'id_report' => $id,
 				'id_filter' => $name_filter,
-				'date' => $date_time,
-				'period' => $period,
 				'max' => $max_val,
 				'show_graph' => $show_graph
 				),
@@ -91,22 +78,13 @@ if ($update) {
 }
 
 if ($create){
-	$date = get_parameter_post ('date');
-	$time = get_parameter_post ('time');
-	$period = get_parameter ('period');
 	$name_filter = get_parameter('id_filter');
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
 
-	$date = str_replace('-','/',$date);
-	$timedate = $date .".".$time;
-	$date_time = strtotime ($date." ".$time);
-
 	$values = array (
 				'id_report' => $id,
 				'id_filter' => $name_filter,
-				'date' => $date_time,
-				'period' => $period,
 				'max' => $max_val,
 				'show_graph' => $show_graph
 			);
@@ -118,7 +96,7 @@ if ($create){
 			echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';
 	}
 	
-$table->width = '80%';
+$table->width = '70%';
 $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
@@ -127,42 +105,14 @@ $table->style[0] = 'vertical-align: top;';
 
 $table->data = array ();
 
-$table->data[0][0] = '<b>'.__('Date').'</b>';
-
-$table->data[0][1] = html_print_input_text ('date', date ("Y/m/d", get_system_time () - 86400), false, 10, 10, true);
-$table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-date'),this);"));
-$table->data[0][1] .= html_print_input_text ('time', date ("H:i:s", get_system_time () - 86400), false, 10, 5, true);
-
-$table->data[1][0] = '<b>'.__('Interval').'</b>';
-	$values_period = array ('600' => __('10 mins'),
-		'900' => __('15 mins'),
-		'1800' => __('30 mins'),
-		'3600' => __('1 hour'),
-		'7200' => __('2 hours'),
-		'18000' => __('5 hours'),
-		'43200' => __('12 hours'),
-		'86400' => __('1 day'),
-		'172800' => __('2 days'),
-		'432000' => __('5 days'),
-		'1296000' => __('15 days'),
-		'604800' => __('Last week'),
-		'2592000' => __('Last month'),
-		'5184000' => __('2 months'),
-		'7776000' => __('3 months'),
-		'15552000' => __('6 months'),
-		'31104000' => __('Last year'),
-		'62208000' => __('2 years')
-					);
-$table->data[1][1] = html_print_select ($values_period, 'period', $period, '', '', 0, true, false, false);
-
 $filters = netflow_get_filters ();
 if ($filters === false) {
 	$filters = array ();
 }	
-$table->data[2][0] = '<b>'.__('Filters').'</b>';
-$table->data[2][1] = html_print_select($filters, 'id_filter', $name_filter, '', '', 0, true);
+$table->data[0][0] = '<b>'.__('Filters').'</b>';
+$table->data[0][1] = html_print_select($filters, 'id_filter', $name_filter, '', '', 0, true);
 
-$table->data[3][0] = '<b>'.__('Max values aggregated').'</b>';
+$table->data[1][0] = '<b>'.__('Max values aggregated').'</b>';
 		$max_values = array ('2' => '2',
 			'5' => '5',
 			'10' => '10',
@@ -171,9 +121,9 @@ $table->data[3][0] = '<b>'.__('Max values aggregated').'</b>';
 			'25' => '25',
 			'50' => '50'
 		);
-$table->data[3][1] = html_print_select ($max_values, 'max', $max_val, '', '', 0, true);
+$table->data[1][1] = html_print_select ($max_values, 'max', $max_val, '', '', 0, true);
 
-$table->data[4][0] = '<b>'.__('Elements').'</b>';
+$table->data[2][0] = '<b>'.__('Elements').'</b>';
 
 $show_graph_options = Array();
 $show_graph_options[0] = __('Area graph');
@@ -181,7 +131,7 @@ $show_graph_options[1] = __('Pie graph');
 $show_graph_options[2] = __('Table values');
 $show_graph_options[3] = __('Total period');
 
-$table->data[4][1] = html_print_select ($show_graph_options, 'show_graph', $show_graph,'','',0,true);
+$table->data[2][1] = html_print_select ($show_graph_options, 'show_graph', $show_graph,'','',0,true);
 
 echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';
 html_print_table ($table);

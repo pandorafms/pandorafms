@@ -161,7 +161,7 @@ if(isset($data)) {
 	echo "</div>";
 	echo "</form>";
 }else {
-	echo "<div class='nf'>".__('There are no defined filters')."</div>";
+	echo "<div class='nf'>".__('There are no defined items')."</div>";
 }
 
 echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';

@@ -43,11 +43,18 @@ $id = (int) get_parameter ('id');
 $name = (string) get_parameter ('name');
 
 if ($delete) {
+	$id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
 	$result = db_process_sql_delete ('tnetflow_filter',
 		array ('id_sg' => $id));
+		
+	$result2 = db_process_sql_delete ('tnetflow_report_content',
+		array ('id_filter' => $id_filter));
 
-	if ($result !== false) $result = true;
-	else $result = false;
+	if ($result !== false) {
+		$result = true;
+	} else {
+		$result = false;
+	}
 		
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -61,8 +68,12 @@ if ($multiple_delete) {
 	db_process_sql_begin();
 	
 	foreach ($ids as $id) {
+		$id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);	
 		$result = db_process_sql_delete ('tnetflow_filter',
 			array ('id_sg' => $id));
+		
+		$result2 = db_process_sql_delete ('tnetflow_report_content',
+			array ('id_filter' => $id_filter));
 	
 		if ($result === false) {
 			db_process_sql_rollback();

@@ -1,3 +1,7 @@
+2011-12-30  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_item_list.php: Cascade delete filters.
+
 2011-12-29  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Fixe module editor when the

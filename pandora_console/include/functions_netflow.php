@@ -222,11 +222,11 @@ function netflow_show_total_period($data, $date_limit, $date_time){
 		if (!isset($values[$agg])){
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = $data[$j]['data'].' '.$data[$j]['unit'];
+			$table->data[$x][1] = $data[$j]['data'];
 		} else {
 			$values[$agg] += $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = $data[$j]['data'].' '.$data[$j]['unit'];
+			$table->data[$x][1] = $data[$j]['data'];
 		}
 		$j++;
 		$x++;
@@ -249,37 +249,11 @@ function netflow_show_table_values($data, $date_limit, $date_time){
 
 	$coordx = array();
 	$coordy = array();
-//añadido
-/*
-	$max_values = 10;
-
-	if(count($data) > $max_values) {
-		$chart_data_trunc = array();
-		$n = 1;
-		foreach($chart_data as $key => $value) {
-			if($n < $max_values) {
-				$chart_data_trunc[$key] = $value;
-			}
-			else {
-				if (!isset($chart_data_trunc[$others_str])) {
-					$chart_data_trunc[$others_str] = 0;
-				}
-				$chart_data_trunc[$others_str] += $value;
-			}
-			$n++;
-		}
-		$chart_data = $chart_data_trunc;
-	}
-*/
-//fin añadido
+	
 	while (isset ($data[$j])) {
 		$date = $data[$j]['date'];
 		$time = $data[$j]['time'];
 		$agg = $data[$j]['agg'];
-		
-		if ($data[$j]['unit'] == 'G'){
-			$data[$j]['data'] *= 1024;
-		}
 		
 		if (!isset($values[$agg])){
 			$values['data'] = $data[$j]['data'];			

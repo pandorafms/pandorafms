@@ -1,4 +1,7 @@
 2012-01-02  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.oracle.sql: Added netflow tables.
+
+2012-01-02  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/netflow/nf_view.php
 	  include/functions_graph.php
 	  include/functions_netflow.php: changed the way to collect netflow

@@ -1,3 +1,9 @@
+2012-01-02  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/netflow/nf_view.php
+	  include/functions_graph.php
+	  include/functions_netflow.php: changed the way to collect netflow
+	parameters.
+
 2011-12-30  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/netflow/nf_report_item.php
 	  godmode/netflow/nf_item_list.php

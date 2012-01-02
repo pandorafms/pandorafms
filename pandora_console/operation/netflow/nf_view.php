@@ -31,7 +31,7 @@ if (! check_acl ($config["id_user"], 0, "AR")) {
 }
 
 function exec_command ($start_date, $end_date, $command, $show){
-	$command .= ' -t '.$start_date.'-'.$end_date;
+	$command .= ' -t '.$start_date.'-'.$end_date.' -N';
 	
 	$values = array();
 	exec($command, $string);
@@ -61,16 +61,12 @@ function exec_command ($start_date, $end_date, $command, $show){
 			switch ($show){
 				case "packets":
 					$values[$i]['data'] = $val[7];
-					$values[$i]['unit'] = $val[8];
 					break;
 				case "bytes":
-					$values[$i]['data'] = $val[9];
-					if (isset($val[10])){
-						$values[$i]['unit'] = $val[10];
-					}
+					$values[$i]['data'] = $val[8];
 					break;
 				case "flows":
-					$values[$i]['data'] = $val[11];
+					$values[$i]['data'] = $val[9];
 					break;
 			}
 			$i++;
@@ -80,7 +76,7 @@ function exec_command ($start_date, $end_date, $command, $show){
 }
 
 function exec_command_aggregate ($start_date, $end_date, $command, $show){
-	$command .= ' -t '.$start_date.'-'.$end_date;
+	$command .= ' -t '.$start_date.'-'.$end_date.' -N';
 
 	$values = array();
 	exec($command, $string);
@@ -115,34 +111,12 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 				case "bytes":
 					$val[9]= str_replace('(','',$val[9]);
 					$values[$i]['data'] = $val[9];
-					$val[10]= str_replace('(','',$val[10]);
-					$values[$i]['unit'] = $val[10];
-					if (($values[$i]['unit']!='M') && ($values[$i]['unit']!='G')) {
-						$values[$i]['unit'] = '';
-					}
-					if ($values[$i]['unit']=='M'){
-						$values[$i]['data'] = $values[$i]['data'] * 1024;
-					}
 					break;
 				case "bps":
-					$val[10]= str_replace('(','',$val[10]);
-					$values[$i]['unit'] = $val[10];
-					if (($values[$i]['unit']=='M') || ($values[$i]['unit']=='G')) {
-						$values[$i]['data'] = $val[13];
-					} else {
-						$values[$i]['data'] = $val[12];
-					}
-					$values[$i]['unit'] = '';
+					$values[$i]['data'] = $val[12];
 					break;
 				case "bpp":
-					$val[10]= str_replace('(','',$val[10]);
-					$values[$i]['unit'] = $val[10];
-					if (($values[$i]['unit']=='M') || ($values[$i]['unit']=='G')) {
-						$values[$i]['data'] = $val[14];
-					} else {
-						$values[$i]['data'] = $val[13];
-					}
-					$values[$i]['unit'] = '';
+					$values[$i]['data'] = $val[13];
 					break;
 			}	
 			$i++;
@@ -416,9 +390,9 @@ if ($id!=''){
 	else if ($interval > 86400 && $interval < 604800) //1296000)
 		$inter = 150;
 	else if ($interval >= 604800 && $interval <= 1296000)
-		$inter = 600;
+		$inter = 800;
 	else
-		$inter = 1600;
+		$inter = 2800;
 		
 	if ($aggregate!='none')
 		$inter = 1;

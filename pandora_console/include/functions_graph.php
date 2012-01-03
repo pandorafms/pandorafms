@@ -2073,41 +2073,17 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 	$aggs = array();
 	// Calculate data for each agg
 	$j = 0;
-	for ($i = 0; $i < $resolution; $i++) {
-		$count = 0;
-		$timestamp = $datelimit + ($interval * $i);
-		$timestamp_short = date($time_format, $timestamp);
-		$long_index[$timestamp_short] = date(
-		html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		
-		// Read data that falls in the current interval
-		while (isset ($data[$j])) {
-				$date = $data[$j]['date'];
-				$time = $data[$j]['time'];
-				$datetime = strtotime ($date." ".$time);
-
-				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){
-					if(!isset($chart[$timestamp_short]['data'])) {
-						$chart[$timestamp_short]['data'] = $data[$j]['data'];
-						$count++;
-					} else {
-						$chart[$timestamp_short]['data'] += $data[$j]['data'];
-						$count++;
-					}
-				} else { 
-					break;
-				}
-				$j++;
-			}	
-
-		if ($count > 0) {
-			$chart[$timestamp_short]['data'] = $chart[$timestamp_short]['data']/$count;
-		} else {
-			$chart[$timestamp_short]['data'] = 0;
-		}
-	}
-//////////FIN COMBINED
+	$chart = array();
+	$long_index = array();
 	
+	while (isset ($data[$j])) {
+		$date = $data[$j]['date'];
+		$time = $data[$j]['time'];
+		$datetime = strtotime ($date." ".$time);
+		$timestamp_short = date($time_format, $datetime);
+		$chart[$timestamp_short]['data'] = $data[$j]['data'];
+		$j++;
+	}
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;

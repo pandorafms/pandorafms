@@ -60,3 +60,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+
+ALTER TABLE `tusuario` ADD COLUMN `disabled` int(4) NOT NULL DEFAULT 0;
+

@@ -39,6 +39,18 @@ function users_get_info ($order = "fullname", $info = "fullname") {
 }
 
 /**
+ * Enable/Disable a user
+ *
+ * @param int user id
+ * @param int new disabled value (0 when enable, 1 when disable)
+ *
+ * @return int sucess return
+ */
+function users_disable ($user_id, $new_disabled_value) {
+	return db_process_sql_update('tusuario', array('disabled' => $new_disabled_value), array('id_user' => $user_id));
+}
+
+/**
  * Get all the Model groups a user has reading privileges.
  *
  * @param string User id

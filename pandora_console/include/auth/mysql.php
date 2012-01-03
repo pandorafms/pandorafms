@@ -80,13 +80,13 @@ function process_user_login ($login, $pass) {
 		// Connect to Database
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$sql = sprintf ("SELECT `id_user`, `password` FROM `tusuario` WHERE `id_user` = '%s'", $login);
+				$sql = sprintf ("SELECT `id_user`, `password` FROM `tusuario` WHERE `id_user` = '%s' AND `disabled` = 0", $login);
 				break;
 			case "postgresql":
-				$sql = sprintf ('SELECT "id_user", "password" FROM "tusuario" WHERE "id_user" = \'%s\'', $login);
+				$sql = sprintf ('SELECT "id_user", "password" FROM "tusuario" WHERE "id_user" = \'%s\' AND "disabled" = 0', $login);
 				break;
 			case "oracle":
-				$sql = sprintf ('SELECT id_user, password FROM tusuario WHERE id_user = \'%s\'', $login);
+				$sql = sprintf ('SELECT id_user, password FROM tusuario WHERE id_user = \'%s\' AND disabled = 0', $login);
 				break;
 		}
 		$row = db_get_row_sql ($sql);

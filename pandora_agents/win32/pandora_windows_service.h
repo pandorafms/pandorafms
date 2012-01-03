@@ -22,6 +22,7 @@
 #define	__PANDORA_WINDOWS_SERVICE_H__
 
 #include <list>
+#include <time.h>
 #include "windows_service.h"
 #include "pandora_agent_conf.h"
 #include "modules/pandora_module_list.h"
@@ -43,8 +44,8 @@ namespace Pandora {
 		Pandora_Module_List *modules;
 		long                 execution_number;
 		string               agent_name;
-		long                 elapsed_transfer_time;
-		long                 transfer_interval;
+		time_t               timestamp;
+		time_t               run_time;
 		bool                 started;
 		void                 *udp_server;
 		bool                 tentacle_proxy;
@@ -91,6 +92,8 @@ namespace Pandora {
 		void           pandora_init ();
 		
 		long           interval;
+		long           interval_sec;
+		long           intensive_interval;
 	public:
 		static Pandora_Windows_Service *getInstance ();
 		
@@ -101,9 +104,12 @@ namespace Pandora {
 					     const char *svc_description);
 		
 		void           start        ();
-		int           sendXml      (Pandora_Module_List *modules);
-        void          sendBufferedXml (string path);
-		Pandora_Agent_Conf  *getConf ();
+		int            sendXml      (Pandora_Module_List *modules);
+        void           sendBufferedXml (string path);
+		Pandora_Agent_Conf *getConf ();
+		long           getInterval ();
+		long           getIntensiveInterval ();
+
 	};
 }
 

@@ -92,18 +92,6 @@ namespace Pandora_Modules {
 	} Module_Kind;
 	
 	/**
-	 * Defines the structure that holds module preconditions.
-	 */
-	typedef struct {
-		double value_1;
-		double value_2;
-		string string_value;
-		string operation;
-		string command;
-		regex_t regexp;
-	} Precondition;
-	
-	/**
 	 * Defines the structure that holds module conditions.
 	 */
 	typedef struct {
@@ -182,8 +170,13 @@ namespace Pandora_Modules {
 		Module_Kind           module_kind;
 		string                save;
 		list<Condition *>     *condition_list;
-		list<Precondition *>  *precondition_list;
+		list<Condition *>     *precondition_list;
 		Cron				  *cron;
+		list<Condition *>     *intensive_condition_list;
+		time_t                timestamp;
+		unsigned char         intensive_match;
+		int                   intensive_interval;
+		
 
 	protected:
 		
@@ -233,7 +226,9 @@ namespace Pandora_Modules {
 			parseModuleKindFromString (string kind);
 		
 		void         setInterval   (int interval);
+		void         setIntensiveInterval   (int intensive_interval);
 		int          getInterval   ();
+		int          getIntensiveInterval   ();
 		void         setTimeout    (int timeout);
 		int          getTimeout    ();
 		string       getSave ();
@@ -273,14 +268,23 @@ namespace Pandora_Modules {
 		void        setSave        (string save);
 
 		void        exportDataOutput ();
-		void		addPrecondition ();
-		void        addCondition (string condition);
-		void		addPrecondition (string precondition);
+		void        addGenericCondition (string condition, list<Condition *> **condition_list);
+		void		addCondition    (string precondition);
+		void		addPreCondition    (string precondition);
+		void		addIntensiveCondition    (string intensivecondition);
 		int 		evaluatePreconditions ();
 		void		evaluateConditions ();
 		int         checkCron ();
 		void        setCron (string cron_string);
 		void        setCronInterval (int interval);
+		int         evaluateCondition (string string_value, double double_value, Condition *condition);
+		int         evaluateIntensiveConditions ();
+		int         hasOutput ();
+		void        setTimestamp (time_t timestamp);
+		time_t      getTimestamp ();
+		void        setIntensiveMatch (unsigned char intensive_match);
+		unsigned char getIntensiveMatch ();
+
 	};
 }
 

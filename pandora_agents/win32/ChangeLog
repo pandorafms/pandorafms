@@ -1,3 +1,11 @@
+2012-01-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.h,
+	  modules/pandora_module.h,
+	  modules/pandora_module_factory.cc,
+	  modules/pandora_module.cc,
+	  pandora_windows_service.cc: Added support for intensive modules.
+
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_perfcounter.cc,

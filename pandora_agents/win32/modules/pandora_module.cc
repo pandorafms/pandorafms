@@ -61,6 +61,10 @@ Pandora_Module::Pandora_Module (string name) {
 	this->max_warning     = "";
 	this->disabled        = "";
 	this->min_ff_event    = "";
+	this->intensive_condition_list = NULL;
+	this->intensive_interval = 1;
+	this->timestamp       = 0;
+	this->intensive_match = 0;
 }
 
 /** 
@@ -70,9 +74,9 @@ Pandora_Module::Pandora_Module (string name) {
  */
 Pandora_Module::~Pandora_Module () {
 	Condition *cond = NULL;
-	Precondition *precond = NULL;
+	Condition *precond = NULL;
 	list<Condition *>::iterator iter;
-	list<Precondition *>::iterator iter_pre;
+	list<Condition *>::iterator iter_pre;
 
 	/* Clean data lists */
 	this->cleanDataList ();
@@ -109,6 +113,23 @@ Pandora_Module::~Pandora_Module () {
 		}
 		delete (this->condition_list);
 		this->condition_list = NULL;
+	}
+
+	/* Clean intensive_condition list */
+	if (this->intensive_condition_list != NULL && this->intensive_condition_list->size () > 0) {
+		iter = this->intensive_condition_list->begin ();
+		for (iter = this->intensive_condition_list->begin ();
+		     iter != this->intensive_condition_list->end ();
+		     iter++) {
+			/* Free regular expressions */
+			cond = *iter;
+			if (cond->string_value != "") {
+				regfree (&(cond->regexp));
+			}
+			delete (*iter);
+		}
+		delete (this->intensive_condition_list);
+		this->intensive_condition_list = NULL;
 	}
 	
 	/* Clean the module cron */
@@ -414,6 +435,7 @@ Pandora_Module::setOutput (string output, SYSTEMTIME *system_time) {
  */
 void
 Pandora_Module::setNoOutput () {
+	this->cleanDataList ();
 	this->has_output = false;
 }
 
@@ -430,9 +452,8 @@ Pandora_Module::setNoOutput () {
 void
 Pandora_Module::run () {
 	/* Check the interval */
-	if (this->executions % this->module_interval != 0) {
-		pandoraDebug ("%s: Interval is not fulfilled",
-			      this->module_name.c_str ());
+	if (this->executions % this->intensive_interval != 0) {
+		pandoraDebug ("%s: Interval is not fulfilled", this->module_name.c_str ());
 		this->executions++;
 		has_output = false;
 		throw Interval_Not_Fulfilled ();
@@ -489,12 +510,10 @@ Pandora_Module::getXml () {
 	}
 	
 	/* Interval */
-    if (this->module_interval > 1) {
-		module_interval << this->module_interval;
-		module_xml += "\t<module_interval><![CDATA[";
-		module_xml += module_interval.str ();
-		module_xml += "]]></module_interval>\n";
-	}
+	module_interval << this->module_interval;
+	module_xml += "\t<module_interval><![CDATA[";
+	module_xml += module_interval.str ();
+	module_xml += "]]></module_interval>\n";
 	
 	/* Min */
     if (this->has_min) {
@@ -753,6 +772,16 @@ Pandora_Module::setInterval (int interval) {
 }
 
 /** 
+ * Set the intensive interval.
+ * 
+ * @param intensive_interval Intensive interval.
+ */
+void
+Pandora_Module::setIntensiveInterval (int intensive_interval) {
+	this->intensive_interval = intensive_interval;
+}
+
+/** 
  * Set the execution timeout.
  * 
  * @param timeout Execution timeout.
@@ -776,6 +805,16 @@ Pandora_Module::setTimeout (int timeout) {
 int
 Pandora_Module::getInterval () {
 	return this->module_interval;
+}
+
+/** 
+ * Get the intensive interval.
+ * 
+ * @return The intensive interval.
+ */
+int
+Pandora_Module::getIntensiveInterval () {
+	return this->intensive_interval;
 }
 
 /** 
@@ -819,75 +858,19 @@ Pandora_Module::getSave () {
 }
 
 /** 
- * Adds a new precondition to the module.
- * 
- * @param precondition string.
- */
-void
-Pandora_Module::addPrecondition (string precondition) {
-	Precondition *precond;
-	char operation[256], string_value[1024], command[1024];
-
-	/* Create the precondition list if it does not exist */
-	if (this->precondition_list == NULL) {
-		this->precondition_list = new list<Precondition *> ();
-	}
-
-	/* Create the new precondition */
-	precond = new Precondition;
-	if (precond == NULL) {
-		return;
-	}
-
-	precond->value_1 = 0;
-	precond->value_2 = 0;
-
-	/* Numeric comparison */
-	if (sscanf (precondition.c_str (), "%255s %lf %1023[^\n]s", operation, &(precond->value_1), command) == 3) {
-		precond->operation = operation;
-		precond->command = command;
-		precond->command = "cmd.exe /c \"" + precond->command + "\"";
-		this->precondition_list->push_back (precond);
-		return;
-		
-	/* Regular expression */
-	} else if (sscanf (precondition.c_str (), "=~ %1023s %1023[^\n]s", string_value, command) == 2) {
-		precond->operation = "=~";
-		precond->string_value = string_value;
-		precond->command = command;
-		if (regcomp (&(precond->regexp), string_value, 0) != 0) {
-			pandoraDebug ("Invalid regular expression %s", string_value);
-			delete (precond);
-			return;
-		}
-		this->precondition_list->push_back (precond);
-		
-	/* Interval */
-	} else if (sscanf (precondition.c_str (), "(%lf , %lf) %1023[^\n]s", &(precond->value_1), &(precond->value_2), command) == 3) {
-		precond->operation = "()";
-		precond->command = command;
-		this->precondition_list->push_back (precond);
-	} else {
-		pandoraDebug ("Invalid module condition: %s", precondition.c_str ());
-		delete (precond);
-		return;
-	}
-return;
-}
-
-/** 
- * Adds a new condition to the module.
+ * Adds a new condition to a condition list.
  * 
  * @param condition Condition string.
+ * @param condition_list Pointer to the condition list.
  */
 void
-Pandora_Module::addCondition (string condition) {
+Pandora_Module::addGenericCondition (string condition, list<Condition *> **condition_list) {
 	Condition *cond;
 	char operation[256], string_value[1024], command[1024];
 
 	/* Create the condition list if it does not exist */
-	if (this->condition_list == NULL) {
-		this->condition_list = new list<Condition *> ();
+	if (*condition_list == NULL) {
+		*condition_list = new list<Condition *> ();
 	}
 
 	/* Create the new condition */
@@ -902,7 +885,7 @@ Pandora_Module::addCondition (string condition) {
 	if (sscanf (condition.c_str (), "%255s %lf %1023[^\n]s", operation, &(cond->value_1), command) == 3) {
 		cond->operation = operation;
 		cond->command = command;
-		this->condition_list->push_back (cond);		
+		(*condition_list)->push_back (cond);		
 	/* Regular expression */
 	} else if (sscanf (condition.c_str (), "=~ %1023s %1023[^\n]s", string_value, command) == 2) {
 		cond->operation = "=~";
@@ -913,14 +896,82 @@ Pandora_Module::addCondition (string condition) {
 			delete (cond);
 			return;
 		}
-		this->condition_list->push_back (cond);		
+		(*condition_list)->push_back (cond);		
 	/* Interval */
 	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1023[^\n]s", &(cond->value_1), &(cond->value_2), command) == 3) {
 		cond->operation = "()";
 		cond->command = command;
-		this->condition_list->push_back (cond);
+		(*condition_list)->push_back (cond);
 	} else {
-		pandoraDebug ("Invalid module condition: %s", condition.c_str ());
+		pandoraLog ("Invalid condition: %s", condition.c_str ());
+		delete (cond);
+		return;
+	}
+}
+
+/** 
+ * Adds a new module condition.
+ * 
+ * @param condition Condition string.
+ */
+void
+Pandora_Module::addCondition (string condition) {
+	addGenericCondition (condition, &(this->condition_list));
+}
+
+/** 
+ * Adds a new module pre-condition.
+ * 
+ * @param condition Condition string.
+ */
+void
+Pandora_Module::addPreCondition (string condition) {
+	addGenericCondition (condition, &(this->precondition_list));
+}
+
+/** 
+ * Adds a new module intensive condition.
+ * 
+ * @param condition Condition string.
+ */
+void
+Pandora_Module::addIntensiveCondition (string condition) {
+	Condition *cond;
+	char operation[256], string_value[1024], command[1024];
+
+	/* Create the condition list if it does not exist */
+	if (this->intensive_condition_list == NULL) {
+		this->intensive_condition_list = new list<Condition *> ();
+	}
+
+	/* Create the new condition */
+	cond = new Condition;
+	if (cond == NULL) {
+		return;
+	}
+	cond->value_1 = 0;
+	cond->value_2 = 0;
+
+	/* Numeric comparison */
+	if (sscanf (condition.c_str (), "%255s %lf", operation, &(cond->value_1)) == 2) {
+		cond->operation = operation;
+		(this->intensive_condition_list)->push_back (cond);		
+	/* Regular expression */
+	} else if (sscanf (condition.c_str (), "=~ %1023s", string_value) == 1) {
+		cond->operation = "=~";
+		cond->string_value = string_value;
+		if (regcomp (&(cond->regexp), string_value, 0) != 0) {
+			pandoraDebug ("Invalid regular expression %s", string_value);
+			delete (cond);
+			return;
+		}
+		(this->intensive_condition_list)->push_back (cond);		
+	/* Interval */
+	} else if (sscanf (condition.c_str (), "(%lf , %lf)", &(cond->value_1), &(cond->value_2)) == 2) {
+		cond->operation = "()";
+		(this->intensive_condition_list)->push_back (cond);
+	} else {
+		pandoraDebug ("Invalid intensive condition: %s", condition.c_str ());
 		delete (cond);
 		return;
 	}
@@ -937,11 +988,10 @@ Pandora_Module::evaluatePreconditions () {
 	SECURITY_ATTRIBUTES attributes;
 	HANDLE              out, new_stdout, out_read, job;
 	string              working_dir;
-	Precondition *precond = NULL;
-	float float_output;
-	list<Precondition *>::iterator iter;
+	Condition *precond = NULL;
+	double double_output;
+	list<Condition *>::iterator iter;
 	unsigned char run;
-	int exe = 1;
 	string output;
 	
 	if (this->precondition_list != NULL && this->precondition_list->size () > 0) {
@@ -1016,78 +1066,69 @@ Pandora_Module::evaluatePreconditions () {
 				}
 				ResumeThread (pi.hThread);
 	
-			/*string output;*/
-			int tickbase = GetTickCount();
-			while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
-				PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
-					if (avail > 0) {
-						ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
-						buffer[read] = '\0';
-						output += (char *) buffer;
+				/*string output;*/
+				int tickbase = GetTickCount();
+				while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
+					PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
+						if (avail > 0) {
+							ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
+							buffer[read] = '\0';
+							output += (char *) buffer;
+					}
+				
+				try {
+					double_output = Pandora_Strutils::strtodouble (output);
+				} catch (Pandora_Strutils::Invalid_Conversion e) {
+					double_output = 0;
 				}
-			
-			float_output = atof(output.c_str());
-
-			if (dwRet == WAIT_OBJECT_0) { 
-				break;
-			} else if(this->getTimeout() < GetTickCount() - tickbase) {
-				/* STILL_ACTIVE */
-				TerminateProcess(pi.hThread, STILL_ACTIVE);
-				pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
-				break;
+	
+				if (dwRet == WAIT_OBJECT_0) { 
+					break;
+				} else if(this->getTimeout() < GetTickCount() - tickbase) {
+					/* STILL_ACTIVE */
+					TerminateProcess(pi.hThread, STILL_ACTIVE);
+					pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
+					break;
+				}
 			}
-		}
-
-		GetExitCodeProcess (pi.hProcess, &retval);
-
-		if (retval != 0) {
-			if (! TerminateJobObject (job, 0)) {
-				pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
-				GetLastError ());
+	
+			GetExitCodeProcess (pi.hProcess, &retval);
+	
+			if (retval != 0) {
+				if (! TerminateJobObject (job, 0)) {
+					pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
+					GetLastError ());
+				}
+	            if (retval != STILL_ACTIVE) {
+					pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
+	                this->module_name.c_str (), retval);
+	            }
+				/* Close job, process and thread handles. */
+				CloseHandle (job);
+				CloseHandle (pi.hProcess);
+				CloseHandle (pi.hThread);
+				CloseHandle (new_stdout);
+				CloseHandle (out_read);
+				return 0;
 			}
-            if (retval != STILL_ACTIVE) {
-				pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
-                this->module_name.c_str (), retval);
-            }
+		
 			/* Close job, process and thread handles. */
 			CloseHandle (job);
 			CloseHandle (pi.hProcess);
 			CloseHandle (pi.hThread);
+		}
+
 			CloseHandle (new_stdout);
 			CloseHandle (out_read);
-			return 0;
-		}
-	
-		/* Close job, process and thread handles. */
-		CloseHandle (job);
-		CloseHandle (pi.hProcess);
-		CloseHandle (pi.hThread);
-	}
-
-	CloseHandle (new_stdout);
-	CloseHandle (out_read);
-
-	if ((precond->operation == ">" && float_output > precond->value_1) ||
-			    (precond->operation == "<" && float_output < precond->value_1) ||
-			    (precond->operation == "=" && float_output == precond->value_1) ||
-			    (precond->operation == "!=" && float_output != precond->value_1) ||
-			    (precond->operation == "=~" && regexec (&(precond->regexp), output.c_str(), 0, NULL, 0) == 0) ||
-				(precond->operation == "()" && float_output > precond->value_1 && float_output < precond->value_2)){
-						exe = 1;
-			} else {
-				exe = 0;
-				return exe;
+		
+			if (evaluateCondition (output, double_output, precond) != 0) {
+				return 0;
 			}
-			
-			CloseHandle (pi.hProcess);			
-	} 
-}
-	return exe;
-}
-			
+		}
+	}
 	
-
-
+	return 1;
+}
 
 /** 
  * Evaluates and executes module conditions.
@@ -1129,13 +1170,8 @@ Pandora_Module::evaluateConditions () {
 		     iter++) {
 			cond = *iter;
 			run = 0;
-			if ((cond->operation == ">" && double_value > cond->value_1) ||
-			    (cond->operation == "<" && double_value < cond->value_1) ||
-			    (cond->operation == "=" && double_value == cond->value_1) ||
-			    (cond->operation == "!=" && double_value != cond->value_1) ||
-			    (cond->operation == "=~" && regexec (&(cond->regexp), string_value.c_str (), 0, NULL, 0) == 0) ||
-				(cond->operation == "()" && double_value > cond->value_1 && double_value < cond->value_2)) {
-	
+			
+			if (evaluateCondition (string_value, double_value, cond) == 1) {
 				/* Run the condition command */
 				ZeroMemory (&si, sizeof (si));
 				ZeroMemory (&pi, sizeof (pi));
@@ -1148,6 +1184,56 @@ Pandora_Module::evaluateConditions () {
 			}
 		}
 	}
+}
+
+/** 
+ * Evaluates and executes intensive module conditions.
+ */
+int
+Pandora_Module::evaluateIntensiveConditions () {
+	double double_value;
+	string string_value;
+	Condition *cond = NULL;
+	list<Condition *>::iterator iter;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;
+	Pandora_Data *pandora_data = NULL;
+	regex_t regex;
+
+	/* Not an intensive module */
+	if (this->intensive_condition_list == NULL || this->intensive_condition_list->size () <= 0) {
+		return 1;
+	}
+
+	/* No data */
+	if ( (!this->has_output) || this->data_list == NULL) {
+		return 0;
+	}
+
+	/* Get the module data */
+	pandora_data = data_list->front ();
+
+	/* Get the string value of the data */
+	string_value = pandora_data->getValue ();
+
+	/* Get the double value of the data */
+	try {
+		double_value = Pandora_Strutils::strtodouble (string_value);
+	} catch (Pandora_Strutils::Invalid_Conversion e) {
+		double_value = 0;
+	}
+
+	iter = this->intensive_condition_list->begin ();
+	for (iter = this->intensive_condition_list->begin ();
+	     iter != this->intensive_condition_list->end ();
+	     iter++) {
+		cond = *iter;
+		if (evaluateCondition (string_value, double_value, cond) == 0) {
+			return 0;
+		}
+	}
+	
+	return 1;
 }
 
 /** 
@@ -1280,6 +1366,8 @@ Pandora_Module::setCron (string cron_string) {
 
 /** 
  * Sets the interval of the module cron.
+ * 
+ * @param interval Module cron interval in seconds.
  */
 void
 Pandora_Module::setCronInterval (int interval) {
@@ -1289,3 +1377,80 @@ Pandora_Module::setCronInterval (int interval) {
 	
 	this->cron->interval = interval;
 }
+
+/** 
+ * Evaluate a single condition. Returns 1 if the condition matches, 0
+ * otherwise.
+ * 
+ * @param string_value String value.
+ * @param double_value Double value.
+ * @param condition Pointer to the condition.
+ */
+int Pandora_Module::evaluateCondition (string string_value, double double_value, Condition *condition) {
+	if ((condition->operation == ">" && double_value > condition->value_1) ||
+	    (condition->operation == "<" && double_value < condition->value_1) ||
+	    (condition->operation == "=" && double_value == condition->value_1) ||
+	    (condition->operation == "!=" && double_value != condition->value_1) ||
+	    (condition->operation == "=~" && regexec (&(condition->regexp), string_value.c_str(), 0, NULL, 0) == 0) ||
+		(condition->operation == "()" && double_value > condition->value_1 && double_value < condition->value_2)) {
+			return 1;
+	}
+	
+	return 0;
+}
+
+/** 
+ * Checks if a module has data.
+ * 
+ * @return 1 if the module has data, 0 otherwise.
+ */	
+int Pandora_Module::hasOutput () {
+	if (this->has_output == 1) {
+		return 1;
+	}
+	
+	return 0;
+}
+
+/** 
+ * Sets the module timestamp.
+ * 
+ * @param timestamp Module timestamp in seconds.
+ */
+void
+Pandora_Module::setTimestamp (time_t timestamp) {
+	this->timestamp = timestamp;
+}
+
+/** 
+ * Gets the module timestamp.
+ * 
+ * @return Module timestamp in seconds.
+ */
+time_t
+Pandora_Module::getTimestamp () {
+	return this->timestamp;
+}
+
+/** 
+ * Sets the value of intensive_match.
+ * 
+ * @param intensive_match 0 or 1.
+ */
+void
+Pandora_Module::setIntensiveMatch (unsigned char intensive_match) {
+	this->intensive_match = intensive_match;
+}
+
+/** 
+ * Gets the value of intensive_match.
+ * 
+ * @return The value of intensive match.
+ */
+unsigned char
+Pandora_Module::getIntensiveMatch () {
+	return this->intensive_match;
+}
+
+					
+

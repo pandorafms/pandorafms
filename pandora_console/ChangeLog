@@ -1,3 +1,8 @@
+2012-01-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.postgreSQL.sql
+	 pandoradb.data.postgreSQL.sql: Fixes queries in these scripts.
+
 2011-12-29  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Fixe module editor when the

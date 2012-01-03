@@ -77,7 +77,7 @@ function exec_command ($start_date, $end_date, $command, $show){
 
 function exec_command_aggregate ($start_date, $end_date, $command, $show){
 	$command .= ' -t '.$start_date.'-'.$end_date.' -N';
-
+	
 	$values = array();
 	exec($command, $string);
 
@@ -98,7 +98,6 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 			$date_time = strtotime ($date." ".$time);
 			$values[$i]['datetime'] = $date_time;
 			///
-			
 			$values[$i]['duration'] = $val[2];
 			$values[$i]['proto'] = $val[3];
 			$values[$i]['agg'] = $val[4];
@@ -106,10 +105,12 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 			switch ($show){
 				case "packets":
 					$val[7]= str_replace('(','',$val[7]);
+					$val[7]= str_replace(')','',$val[7]);
 					$values[$i]['data'] = $val[7];
 					break;
 				case "bytes":
 					$val[9]= str_replace('(','',$val[9]);
+					$val[9]= str_replace(')','',$val[9]);
 					$values[$i]['data'] = $val[9];
 					break;
 				case "bps":
@@ -124,7 +125,6 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 		return $values;
 	}
 }
-
 
 $id = get_parameter('id');
 $period = get_parameter('period', '86400');
@@ -382,18 +382,8 @@ if ($id!=''){
 	if ($show_bpp)
 		$show = 'bpp';
 
-//create interval to divide command execution
-	if ($interval<43200)
-		$inter = 1;
-	else if (($interval>=43200)&&($interval<=86400))
-		$inter = 25;
-	else if ($interval > 86400 && $interval < 604800) //1296000)
-		$inter = 150;
-	else if ($interval >= 604800 && $interval <= 1296000)
-		$inter = 800;
-	else
-		$inter = 2800;
-		
+	//create interval to divide command execution
+	$inter = $config['graph_res'] * 100;
 	if ($aggregate!='none')
 		$inter = 1;
 

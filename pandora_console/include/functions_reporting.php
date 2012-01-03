@@ -2140,7 +2140,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				'',
 				1,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
-				$output_projection
+				$output_projection,
+				$content['top_n_value']
 				);			
 			array_push ($table->data, $data);			
 			break;

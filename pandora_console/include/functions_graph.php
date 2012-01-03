@@ -385,24 +385,33 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  */
 function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 		$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
-		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1, $projection = false) {
+		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1, $projection = false, $prediction_period = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	$time_format_2 = '';
+	$temp_range = $period;
 	
+	if ($projection != false){
+		if ($period < $prediction_period)
+			$temp_range = $prediction_period;
+	}
+		
 	// Set the title and time format
-	if ($period <= 21600) {
+	if ($temp_range <= 21600) {
 		$time_format = 'H:i:s';
 	}
-	elseif ($period < 86400) {
+	elseif ($temp_range < 86400) {
 		$time_format = 'H:i';
 	}
-	elseif ($period < 1296000) {
+	elseif ($temp_range < 1296000) {
 		$time_format = 'M d';
 		$time_format_2 = 'H:i';
+		if ($projection != false){
+			$time_format_2 = 'H\h';
+		}
 	}
-	elseif ($period <= 2592000) {
+	elseif ($temp_range <= 2592000) {
 		$time_format = 'M d';
 		$time_format_2 = 'H\h';
 	} 
@@ -668,13 +677,13 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			// Added to support projection graphs
 			if ($projection != false and $i != 0){
 					$projection_data = array();
-					$projection_data = array_merge($before_projection, $projection);
+					$projection_data = array_merge($before_projection, $projection); 
 					$graph_values[$i] = $projection_data;
 			}else{
-					$graph_values[$i] = $temp_graph_values;
+					$graph_values[$i] = $temp_graph_values; 
 			}
 		}
-		
+
 		//Add the max, min and avg in the legend
 		$avg = round($avg / $countAvg, 1);
 		

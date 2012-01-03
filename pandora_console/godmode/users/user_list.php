@@ -105,6 +105,8 @@ $buttons[$tab]['active'] = true;
 // Header
 ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true, $buttons);
 
+$disable_user = get_parameter ("disable_user", false);
+
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter ("delete_user", 0);
 	// Only allow delete user if is not the actual user
@@ -128,6 +130,27 @@ elseif (isset ($_GET["profile_del"])) { //delete profile
 	ui_print_result_message ($result, 
 		__('Successfully deleted'),
 		__('There was a problem deleting the profile'));
+}
+elseif ($disable_user !== false) { //disable_user
+	$id_user = get_parameter ("id", 0);
+	
+	if($id_user !== 0) {
+		$result = users_disable ($id_user, $disable_user);
+	}
+	else {
+		$result = false;
+	}
+	
+	if($disable_user == 1) {
+		ui_print_result_message ($result, 
+			__('Successfully disabled'),
+			__('There was a problem disabling user'));
+	}
+	else {
+		ui_print_result_message ($result, 
+			__('Successfully enabled'),
+			__('There was a problem enabling user'));
+	}
 }
 
 $table->cellpadding = 4;
@@ -155,7 +178,7 @@ $table->head[5] = '<span title="Operations">' . __('Op.') . '</span>';
 $table->align[2] = "center";
 $table->align[3] = "center";
 $table->align[5] = "left";
-$table->size[5] = '45px';
+$table->size[5] = '65px';
 
 $info1 = array ();
 
@@ -227,8 +250,14 @@ foreach ($info as $user_id => $user_info) {
 	$data[3] .= "</span></a>";
 	
 	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
-
-	$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
+	
+	if($user_info['disabled'] == 0) {
+		$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;disable_user=1&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, array('title' => __('Disable'))).'</a>';
+	}
+	else {
+		$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;disable_user=0&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, array('title' => __('Enable'))).'</a>';
+	}
+	$data[5] .= '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[5] .= "&nbsp;&nbsp;<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 	} else {

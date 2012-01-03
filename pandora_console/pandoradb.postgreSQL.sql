@@ -30,18 +30,10 @@ CREATE LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION unix_timestamp(TIMESTAMP without time zone = CURRENT_TIMESTAMP) RETURNS double precision AS 'SELECT ceil(date_part(''epoch'', $1)); ' LANGUAGE SQL;
 
-CREATE TABLE "taddress" (
-	"id_a" SERIAL NOT NULL PRIMARY KEY,
-	"ip" VARCHAR(60) NOT NULL default '',
-	"ip_pack" INTEGER NOT NULL default 0
-);
+CREATE TABLE "taddress" ("id_a" SERIAL NOT NULL PRIMARY KEY,"ip" VARCHAR(60) NOT NULL default '',"ip_pack" INTEGER NOT NULL default 0);
 CREATE INDEX "taddress_ip_idx" ON "taddress"("ip");
 
-CREATE TABLE "taddress_agent" (
-	"id_ag" BIGSERIAL NOT NULL PRIMARY KEY,
-	"id_a" BIGINT NOT NULL default 0,
-	"id_agent" BIGINT NOT NULL default 0
-);
+CREATE TABLE "taddress_agent" ("id_ag" BIGSERIAL NOT NULL PRIMARY KEY,"id_a" BIGINT NOT NULL default 0,"id_agent" BIGINT NOT NULL default 0);
 
 CREATE TABLE "tagente" (
 	"id_agente" SERIAL NOT NULL PRIMARY KEY,
@@ -1119,7 +1111,7 @@ CREATE TABLE "tnetwork_map" (
 	"distance_nodes" DOUBLE PRECISION default 2.5,
 	"center" INTEGER NOT NULL default 0,
 	"contracted_nodes" TEXT,
-	"show_snmp_modules" SMALLINT NOT NULL default 0,
+	"show_snmp_modules" SMALLINT NOT NULL default 0
 );
 
 -- -----------------------------------------------------
@@ -1156,7 +1148,7 @@ CREATE TABLE "tagent_custom_data" (
 
 CREATE TABLE "ttag" ( 
  "id_tag" SERIAL NOT NULL PRIMARY KEY, 
- "name" VARCHAR2(100) NOT NULL default '', 
+ "name" VARCHAR(100) NOT NULL default '', 
  "description" text NOT NULL default '', 
  "url" text NOT NULL default ''
 ); 
@@ -1191,7 +1183,7 @@ CREATE INDEX "ttag_poli_mod_id_pol_mo_idx" ON "ttag_policy_module"("id_policy_mo
 
 CREATE TABLE "ttag_event" ( 
  id_tag INTEGER NOT NULL, 
- id_evento BIGINT(20) NOT NULL DEFAULT 0, 
+ id_evento BIGINT NOT NULL DEFAULT 0, 
    PRIMARY KEY  (id_tag, id_evento)
 ); 
 

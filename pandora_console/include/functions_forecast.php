@@ -146,27 +146,29 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	}
 	$current_ts = $last_timestamp;
 	$in_range = true;
-
-	if ($period <= 3600) {
-		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
+	$time_format_2 = '';
+	
+	$temp_range = $period;
+	if ($period < $prediction_period)
+		$temp_range = $prediction_period;
+	
+	if ($temp_range <= 21600) {
+		$time_format = 'H:i:s';
 	}
-	elseif ($period <= 86400) {
-		$title_period = __('Last day');
-		$time_format = 'G:i';
+	elseif ($temp_range < 86400) {
+		$time_format = 'H:i';
 	}
-	elseif ($period <= 604800) {
-		$title_period = __('Last week');
-		$time_format = 'M j';
+	elseif ($temp_range < 1296000) {
+		$time_format = 'M d';
+		$time_format_2 = 'H\h';
 	}
-	elseif ($period <= 2419200) {
-		$title_period = __('Last month');
-		$time_format = 'M j';
+	elseif ($temp_range <= 2592000) {
+		$time_format = 'M d';
+		$time_format_2 = 'H\h';
 	} 
 	else {
-		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
-	}	
+		$time_format = 'M d';
+	}
 	
 	// Aplying linear regression to module data in order to do the prediction	
 	$output_data = array();
@@ -174,6 +176,10 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	// Create data in graph format like
 	while ($in_range){	
 		$timestamp_f = date($time_format, $current_ts);
+
+		//$timestamp_f = date($time_format, $current_ts);
+		$timestamp_f = graph_get_formatted_date($current_ts, $time_format, $time_format_2);
+
 		if ($csv){
 			$output_data[$idx]['date'] = $current_ts;
 			$output_data[$idx]['data'] = ($a + ($b * $current_ts));

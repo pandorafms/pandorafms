@@ -385,24 +385,33 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  */
 function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 		$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
-		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1, $projection = false) {
+		$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1, $projection = false, $prediction_period = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	$time_format_2 = '';
+	$temp_range = $period;
 	
+	if ($projection != false){
+		if ($period < $prediction_period)
+			$temp_range = $prediction_period;
+	}
+		
 	// Set the title and time format
-	if ($period <= 21600) {
+	if ($temp_range <= 21600) {
 		$time_format = 'H:i:s';
 	}
-	elseif ($period < 86400) {
+	elseif ($temp_range < 86400) {
 		$time_format = 'H:i';
 	}
-	elseif ($period < 1296000) {
+	elseif ($temp_range < 1296000) {
 		$time_format = 'M d';
 		$time_format_2 = 'H:i';
+		if ($projection != false){
+			$time_format_2 = 'H\h';
+		}
 	}
-	elseif ($period <= 2592000) {
+	elseif ($temp_range <= 2592000) {
 		$time_format = 'M d';
 		$time_format_2 = 'H\h';
 	} 
@@ -668,13 +677,13 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			// Added to support projection graphs
 			if ($projection != false and $i != 0){
 					$projection_data = array();
-					$projection_data = array_merge($before_projection, $projection);
+					$projection_data = array_merge($before_projection, $projection); 
 					$graph_values[$i] = $projection_data;
 			}else{
-					$graph_values[$i] = $temp_graph_values;
+					$graph_values[$i] = $temp_graph_values; 
 			}
 		}
-		
+
 		//Add the max, min and avg in the legend
 		$avg = round($avg / $countAvg, 1);
 		
@@ -1957,12 +1966,6 @@ echo"<h4>Gráfica de área</h4>";
 			$time_format = 'M d H\h';
 		}
 		$timestamp_short = date($time_format, $date);
-
-/*
-		$long_index[$timestamp_short] = date(
-			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		$timestamp = $timestamp_short;
-*/
 		/////////////////////////////////////////////////////////////////
 
 	
@@ -1992,10 +1995,6 @@ echo"<h4>Gráfica de área</h4>";
 				$datetime = strtotime ($date." ".$time);
 				
 				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){	
-					if ($data[$j]['unit'] == 'G'){
-						$data[$j]['data'] *= 1024;
-					}
-
 					if(!isset($chart[$timestamp_short][$ag])) {
 						$chart[$timestamp_short][$ag] = $data[$j]['data'];
 						$count++;
@@ -2029,7 +2028,12 @@ echo"<h4>Gráfica de área</h4>";
 	}
 
 	$color = array();
-	$flash_chart = '';
+	
+	$flash_chart = $config['flash_charts'];
+	if ($only_image) {
+		$flash_chart = false;
+	}
+	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2078,77 +2082,17 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 	$aggs = array();
 	// Calculate data for each agg
 	$j = 0;
-	for ($i = 0; $i < $resolution; $i++) {
-		$count = 0;
-		$timestamp = $datelimit + ($interval * $i);
-		$timestamp_short = date($time_format, $timestamp);
-		$long_index[$timestamp_short] = date(
-		html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		
-		// Read data that falls in the current interval
-		while (isset ($data[$j])) {
-				$date = $data[$j]['date'];
-				$time = $data[$j]['time'];
-				$datetime = strtotime ($date." ".$time);
-
-				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){
-					if (isset($data[$j]['unit'])){
-					if ($data[$j]['unit'] == 'G'){
-						$data[$j]['data'] *= 1024;
-					}
-				}
-
-/*
-					if(!isset($chart[$timestamp_short][$ip])) {
-						$chart[$timestamp_short][$ip] = $data[$j]['data'];
-						$count++;
-					} else {
-						$chart[$timestamp_short][$ip] += $data[$j]['data'];
-						$count++;
-					}
-*/
-
-					if(!isset($chart[$timestamp_short]['data'])) {
-						$chart[$timestamp_short]['data'] = $data[$j]['data'];
-						$count++;
-					} else {
-						$chart[$timestamp_short]['data'] += $data[$j]['data'];
-						$count++;
-					}
-				} else { 
-					break;
-				}
-				$j++;
-			}	
-		
-		// Average
-/*
-		if ($count > 0) {
-			$chart[$timestamp_short][$ip] = $chart[$timestamp_short][$ip]/$count;
-		} else {
-			$chart[$timestamp_short][$ip] = 0;
-		}
-*/
-
-		if ($count > 0) {
-			$chart[$timestamp_short]['data'] = $chart[$timestamp_short]['data']/$count;
-		} else {
-			$chart[$timestamp_short]['data'] = 0;
-		}
-	}
+	$chart = array();
+	$long_index = array();
 	
-/*
-	foreach($chart as $key => $value) {
-		foreach($ips as $ip) {
-			if(!isset($chart[$key][$ip])) {
-				$chart[$key][$ip] = 0;
-			}
-		}
+	while (isset ($data[$j])) {
+		$date = $data[$j]['date'];
+		$time = $data[$j]['time'];
+		$datetime = strtotime ($date." ".$time);
+		$timestamp_short = date($time_format, $datetime);
+		$chart[$timestamp_short]['data'] = $data[$j]['data'];
+		$j++;
 	}
-*/
-
-//////////FIN COMBINED
-	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
@@ -2176,41 +2120,7 @@ function grafico_netflow_aggregate_pie ($data) {
 	$agg = '';
 	while (isset ($data[$i])) {
 		$agg = $data[$i]['agg'];
-		if (isset($data[$i]['unit'])){
-			if ($data[$i]['unit'] == 'G') {
-				$data[$i]['data'] = $data[$i]['data'] * 1024;
-			}
-		}
 		if (!isset($values[$agg])){
-			$values[$agg] = $data[$i]['data'];
-		} else {
-			$values[$agg] += $data[$i]['data'];
-		}
-		$i++;
-	}
-	return pie3d_graph($config['flash_charts'], $values, 320, 200,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']);
-}
-
-/**
- * Print a pie graph with netflow total
- */
- 
-function grafico_netflow_total_pie ($data) {
-	global $config;
-	global $graphic_type;	
-	echo"<h4>Gráfica totalizada</h4>";
-	
-	$i = 0;
-	$agg = '';
-	$values = array();
-	while (isset ($data[$i])) {
-		$agg = $data[$i]['agg'];
-		if ($data[$i]['unit'] == 'G') {
-			$data[$i]['data'] = $data[$i]['data'] * 1024;
-		}
-		if (isset($values[$agg])){
 			$values[$agg] = $data[$i]['data'];
 		} else {
 			$values[$agg] += $data[$i]['data'];

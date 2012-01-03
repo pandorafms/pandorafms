@@ -1,5 +1,12 @@
 2012-01-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php
+	 include/functions_forecast.php
+	 include/functions_reporting.php: Fixed graphical representation of
+	 intervals in projection graphs.
+
+2012-01-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb.postgreSQL.sql
 	 pandoradb.data.postgreSQL.sql: Fixes queries in these scripts.
 

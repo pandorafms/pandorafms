@@ -155,6 +155,8 @@ my %Conf = (
 	'proxy_mode' => 0,
 	'proxy_max_connection' => 10,
 	'proxy_timeout' => 1,
+	'intensive_interval' => 0,
+	'timestamp' => 0,
 );
 
 # Modules
@@ -328,7 +330,10 @@ sub parse_conf_modules($) {
 				'cron_utimestamp' => 0,
 				'cron_interval' => -1,
 				'precondition' => [],
-				'precon'=> 0
+				'is_intensive' => 0,
+				'intensive_conditions' => [],
+				'intensive_match' => 0,
+				'timestamp' => 0,
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
@@ -338,7 +343,7 @@ sub parse_conf_modules($) {
 			$module->{'type'} = $1;
 		}elsif ($line =~ /^\s*module_precondition\s+(.*)$/) {
 			my $action = $1;
-			$module->{'precon'} = 1;
+			
 			# Numeric comparison
 			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s+(.*)$/) {
 				push (@{$module->{'precondition'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
@@ -387,9 +392,6 @@ sub parse_conf_modules($) {
 			$module->{'post_process'} = $1;
 		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
 			$module->{'interval'} = $1;
-
-			# Make the module run the first time
-			$module->{'counter'} = $1;
 		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
 			$module->{'timeout'} = $1;
 		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
@@ -406,12 +408,38 @@ sub parse_conf_modules($) {
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
 				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
 			}
+		} elsif ($line =~ /^\s*module_intensive_condition\s+(.*)$/) {
+			my $action = $1;
+			
+			$module->{'is_intensive'} = 1;
+			
+			# Numeric comparison
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s*$/) {
+				push (@{$module->{'intensive_conditions'}}, {'operator' => $1, 'value_1' => $2});
+			# Interval
+			} elsif ($action =~ /^\s*[(]\s*(\d+(?:\.\d*)?)\s*,\s*(\d+(?:\.\d*)?)\s*[)]\s*$/) {
+				push (@{$module->{'intensive_conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2});
+			# Regular expression
+			} elsif ($action =~ /^\s*=~\s+(\S*)\s*$/) {
+				push (@{$module->{'intensive_conditions'}}, {'operator' => '=~', 'value_1' => $1});
+			}
 		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
 			$module->{'cron'} = $1;
 		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
 			$module->{'cron_interval'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
+
+			# Set the intensive interval
+			if ($module->{'is_intensive'} == 1) {				
+				$module->{'intensive_interval'} = $module->{'interval'};
+			} else {
+				$module->{'intensive_interval'} = $module->{'interval'} * ($Conf{'interval'} / $Conf{'intensive_interval'});
+			}
+
+			# Make the module run the first time
+			$module->{'counter'} = $module->{'intensive_interval'};
+
 			push (@Modules, $module);
 		# Plugin
 		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
@@ -572,7 +600,11 @@ sub read_config (;$) {
 		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq 'yes');		
 	}
-
+	
+	# Set the intensive interval
+	if ($Conf{'intensive_interval'} == 0) {
+		$Conf{'intensive_interval'} = $Conf{'interval'};
+	}
 }
 
 #################################################################################
@@ -986,7 +1018,7 @@ sub exec_module ($) {
 	}
 	
 	# Check module interval
-	if (++($module->{'counter'}) < $module->{'interval'}) {
+	if (++($module->{'counter'}) < $module->{'intensive_interval'}) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 		return;
 	}
@@ -994,6 +1026,11 @@ sub exec_module ($) {
 	# Check module cron
 	if (check_module_cron ($module) != 1) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
+
+	# Check module preconditions
+	if (evaluate_module_preconditions ($module) == 0) {
 		return;
 	}
 	
@@ -1005,6 +1042,29 @@ sub exec_module ($) {
 
 	# Run
 	my @value = &{$module->{'func'}}($module);
+	if (defined ($value[0])) {
+
+		# Evaluate intensive conditions
+		if ($module->{'is_intensive'} == 1) {
+			my $intensive_match = evaluate_module_intensive_conditions ($module, $value[0]);
+			if ($intensive_match == $module->{'intensive_match'} && $module->{'timestamp'} + $module->{'interval'} * $Conf{'interval'} > time ()) {
+				$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+				return;
+			}
+			
+			# Update the time reference
+			$module->{'timestamp'} = time () if ($module->{'timestamp'} + $module->{'interval'} * $Conf{'interval'} <= time ());
+			
+			# Update the intensive match status
+			$module->{'intensive_match'} = $intensive_match;
+		}
+		
+		# Evaluate module conditions
+		evaluate_module_conditions ($module, $value[0]);
+		
+		# Write the module XML
+		write_module_xml ($module, @value);
+	}
 	
 	# Save the module value if needed (only works for the first returned value)
 	if ($module->{'save'} ne '') {
@@ -1014,8 +1074,6 @@ sub exec_module ($) {
 			$ENV{$module->{'save'}} = '';
 		}
 	}
-
-	write_module_xml ($module, @value);
 	
 	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 }
@@ -1103,33 +1161,6 @@ sub load_parts () {
 }
 
 ################################################################################
-# Execute the given command precondition.
-################################################################################
-sub module_precondition_exec ($) {
-	my $module = shift;
-	my @data;
-
-	# Check module parameters
-	return () unless ($module->{'params_precon'} ne '');
-
-	# Execute the command
-	if ($module->{'timeout'} == 0) {
-		@data = `$module->{'params_precon'} 2> $DevNull`;
-	} else {
-		my $cmd = quotemeta ($module->{'params_precon'});
-		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> $DevNull`;
-	}
-
-	# Something went wrong or no data
-	return () unless ($? eq 0 && defined ($data[0]));
-	
-# Evaluate module preconditions
-	evaluate_module_preconditions ($module, $data[0]);
-	
-	return @data;
-}
-
-################################################################################
 # Execute the given command.
 ################################################################################
 sub module_exec ($) {
@@ -1137,10 +1168,6 @@ sub module_exec ($) {
 	my @data;
 	my $exe;
 
-	$exe = evaluate_module_preconditions ($module);
-
-	return @data if ($exe == 0);
-	
 	# Check module parameters
 	return () unless ($module->{'params'} ne '');
 
@@ -1154,9 +1181,6 @@ sub module_exec ($) {
 
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));
-
-	# Evaluate module conditions
-	evaluate_module_conditions ($module, $data[0]);
 
 	return @data;
 }
@@ -1334,29 +1358,33 @@ sub evaluate_module_preconditions ($) {
 	my ($module) = @_;
 
 	# Evaluate preconditions
-	if ($module->{'precon'}){
-		
-		foreach my $precondition (@{$module->{'precondition'}}) {
-			
-			my $data = `$precondition->{'command'} 2> $DevNull`;
-			
-			{
-				# Do not display a warning if the output of the command is not numeric
-				no warnings;
-				if (($precondition->{'operator'} eq '>' && $data > $precondition->{'value_1'}) ||
-					($precondition->{'operator'} eq '<' && $data < $precondition->{'value_1'}) ||
-					($precondition->{'operator'} eq '=' && $data == $precondition->{'value_1'}) ||
-					($precondition->{'operator'} eq '!=' && $data != $precondition->{'value_1'}) ||
-					($precondition->{'operator'} eq '=~' && $data =~ /$precondition->{'value_1'}/) ||
-					($precondition->{'operator'} eq '()' && $data > $precondition->{'value_1'} && $data < $precondition->{'value_2'})) {
-				} else {
-					return 0;
-				}
-			};
+	foreach my $precondition (@{$module->{'precondition'}}) {
+		my $data = `$precondition->{'command'} 2> $DevNull`;		
+		return 0 if (evaluate_condition ($precondition, $data) == 0);
+	}
+
+	return 1;
+}
+
+################################################################################
+# Evaluate a module condition. Returns 1 if the condition matches, 0 otherwise.
+################################################################################
+sub evaluate_condition ($$) {
+	my ($condition, $data) = @_;
+	
+	{
+		no warnings;
+		if (($condition->{'operator'} eq '>' && $data > $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '<' && $data < $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '=' && $data == $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '!=' && $data != $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '=~' && $data =~ /$condition->{'value_1'}/) ||
+			($condition->{'operator'} eq '()' && $data > $condition->{'value_1'} && $data < $condition->{'value_2'})) {
+				return 1;
 		}
 	}
 	
-	return 1;
+	return 0;
 }
 
 
@@ -1368,15 +1396,24 @@ sub evaluate_module_conditions ($$) {
 
 	# Evaluate conditions
 	foreach my $condition (@{$module->{'conditions'}}) {
-		if (($condition->{'operator'} eq '>' && $data > $condition->{'value_1'}) ||
-			($condition->{'operator'} eq '<' && $data < $condition->{'value_1'}) ||
-			($condition->{'operator'} eq '=' && $data == $condition->{'value_1'}) ||
-			($condition->{'operator'} eq '!=' && $data != $condition->{'value_1'}) ||
-			($condition->{'operator'} eq '=~' && $data =~ /$condition->{'value_1'}/) ||
-			($condition->{'operator'} eq '()' && $data > $condition->{'value_1'} && $data < $condition->{'value_2'})) {
+		if (evaluate_condition ($condition, $data) == 1) {
 				`$condition->{'command'} 2> $DevNull`;
 		}
 	}
+}
+
+################################################################################
+# Evaluate intensive conditions.
+################################################################################
+sub evaluate_module_intensive_conditions ($$) {
+	my ($module, $data) = @_;
+
+	# Evaluate conditions
+	foreach my $condition (@{$module->{'intensive_conditions'}}) {
+		return 0 if (evaluate_condition ($condition, $data) == 0);
+	}
+	
+	return 1;
 }
 
 ################################################################################
@@ -1463,7 +1500,7 @@ sub write_module_xml ($@) {
 		"	<type>" . $module->{'type'} . "</type>\n";
 
 	# Interval
-	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n" if ($module->{'interval'} > 1);
+	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
 	
 	# Min
 	$Xml .= "	<min>" . $module->{'min'} . "</min>\n" if (defined ($module->{'min'}));
@@ -1736,51 +1773,8 @@ while (1) {
 		}
 	}
 	
-	$Xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
-		"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
-		"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
-		"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
-		"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
-
-	if (defined ($Conf{'address'})) {
-		$Xml .= "' address='" .$address;
-	}
-	
-	if (defined ($Conf{'parent_agent_name'})) {
-		$Xml .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
-	}
-	
-	# Check the gis mode (exec or manual). If exec script is defined, we execute it and get the coordenates
-	if (defined ($Conf{'gis_exec'}) && (-e $Conf{'gis_exec'})) {		
-		my $coord_str = `$Conf{'gis_exec'}`;
-		chomp($coord_str);
-		my @coords = split(',',$coord_str);
-		# Check if lat and long are numeric
-		if (defined($coords[0]) && defined($coords[1]) && ($coords[0] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/) && ($coords[1] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/)) {
-			my $lat = $coords[0];
-			my $long = $coords[1];
-			
-			$Xml .= "' longitude='" .$long . "' latitude='" .$lat;
-
-			if (defined ($coords[2])) {
-				my $alt = $coords[2];
-				$Xml .= "' altitude='" .$alt;
-			}
-			if (defined ($Conf{'position_description'})) {
-				$Xml .= "' position_description='" .$Conf{'position_description'};
-			}
-		}
-	}
-	elsif (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
-		$Xml .= "' longitude='" .$Conf{'longitude'} . "' latitude='" .$Conf{'latitude'};
-		if (defined ($Conf{'altitude'})) {
-			$Xml .= "' altitude='" .$Conf{'altitude'};
-		}
-		if (defined ($Conf{'position_description'})) {
-			$Xml .= "' position_description='" .$Conf{'position_description'};
-		}
-	}
-	$Xml .= "'>\n";
+	# Clear the XML
+	$Xml = "";
 
 	# Execute modules
 	foreach my $module (@Modules) {
@@ -1801,51 +1795,103 @@ while (1) {
 	}
 
 	# Execute plugins
-	foreach my $plugin (@Plugins) {
-
-		# Execute the plugin in a separate thread
-		if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
-			$ThreadSem->down ();
-			my $thr = threads->create (\&exec_plugin, $plugin);
-			if (! defined ($thr)) {
-				$ThreadSem->up ();
+	if ($Conf{'timestamp'} + $Conf{'interval'} <= time ()) {
+		foreach my $plugin (@Plugins) {
+	
+			# Execute the plugin in a separate thread
+			if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
+				$ThreadSem->down ();
+				my $thr = threads->create (\&exec_plugin, $plugin);
+				if (! defined ($thr)) {
+					$ThreadSem->up ();
+				} else {
+					$thr->detach();
+				}
+			# Execute the plugin
 			} else {
-				$thr->detach();
+				exec_plugin ($plugin);
 			}
-		# Execute the plugin
-		} else {
-			exec_plugin ($plugin);
 		}
 	}
 
 	# Wait for all the threads
 	$ThreadSem->down ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 	$ThreadSem->up ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+
+	if ($Xml ne "" || $Conf{'timestamp'} + $Conf{'interval'} <= time ()) {
+		
+		# Update the time reference
+		$Conf{'timestamp'} = time () if ($Conf{'timestamp'} + $Conf{'interval'} <= time ());
+		
+		# Compose the XML
+		my $xml_header = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
+			"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+			"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
+			"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
+			"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
 	
-	$Xml .= "</agent_data>";
+		if (defined ($Conf{'address'})) {
+			$xml_header .= "' address='" .$address;
+		}
+		
+		if (defined ($Conf{'parent_agent_name'})) {
+			$xml_header .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
+		}
+		
+		# Check the gis mode (exec or manual). If exec script is defined, we execute it and get the coordenates
+		if (defined ($Conf{'gis_exec'}) && (-e $Conf{'gis_exec'})) {		
+			my $coord_str = `$Conf{'gis_exec'}`;
+			chomp($coord_str);
+			my @coords = split(',',$coord_str);
+			# Check if lat and long are numeric
+			if (defined($coords[0]) && defined($coords[1]) && ($coords[0] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/) && ($coords[1] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/)) {
+				my $lat = $coords[0];
+				my $long = $coords[1];
+				
+				$xml_header .= "' longitude='" .$long . "' latitude='" .$lat;
+	
+				if (defined ($coords[2])) {
+					my $alt = $coords[2];
+					$xml_header .= "' altitude='" .$alt;
+				}
+				if (defined ($Conf{'position_description'})) {
+					$xml_header .= "' position_description='" .$Conf{'position_description'};
+				}
+			}
+		}
+		elsif (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
+			$xml_header .= "' longitude='" .$Conf{'longitude'} . "' latitude='" .$Conf{'latitude'};
+			if (defined ($Conf{'altitude'})) {
+				$xml_header .= "' altitude='" .$Conf{'altitude'};
+			}
+			if (defined ($Conf{'position_description'})) {
+				$xml_header .= "' position_description='" .$Conf{'position_description'};
+			}
+		}
+		$xml_header .= "'>\n";
+		$Xml = $xml_header . $Xml . "</agent_data>";
 
-	# Save XML data file
-	my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
-	open (TEMP_FILE, "> $temp_file") || error ("Could not write XML data file: $!");
-	print TEMP_FILE $Xml;
-	close (TEMP_FILE);
+		# Save XML data file
+		my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
+		open (TEMP_FILE, "> $temp_file") || error ("Could not write XML data file: $!");
+		print TEMP_FILE $Xml;
+		close (TEMP_FILE);
 
-	# Debug mode
-	if ($Conf{'debug'} eq '1') {
-		log_message ('debug', "Wrote XML data file '$temp_file'");
-		log_message ('debug', "Wrote XML data file '$temp_file'", *STDOUT);
-		last;
+		# Debug mode
+		if ($Conf{'debug'} eq '1') {
+			log_message ('debug', "Wrote XML data file '$temp_file'");
+			log_message ('debug', "Wrote XML data file '$temp_file'", *STDOUT);
+			last;
+		}
+
+		# Send the XML data file
+		send_file ($temp_file, 1);
+		unlink ($temp_file);
+		
 	}
-
-	# Send the XML data file
-	send_file ($temp_file, 1);
-	unlink ($temp_file);
-	
-	# Cron mode
-	last if ($Conf{'cron_mode'} == 1);
 	
 	# Enable signal capture to break the Sleep interval on UDP signal
-	if ($Conf{'udp_server'} == 1){
+	if ($Conf{'udp_server'} == 1) {
 		$SIG{'INT'} = \&udp_server_signal;
 	}
 
@@ -1854,7 +1900,11 @@ while (1) {
 		foreach my $broker_pid (@BrokerPid) {
 			waitpid ($broker_pid, 0);
 		}
-		sleep ($Conf{'interval'});
+		
+		# Cron mode
+		last if ($Conf{'cron_mode'} == 1);
+
+		sleep ($Conf{'intensive_interval'});
 	}
 	# Finish if broker agent
 	else {

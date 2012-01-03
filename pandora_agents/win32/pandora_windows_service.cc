@@ -73,10 +73,11 @@ Pandora_Windows_Service::setValues (const char * svc_name,
 	this->modules               = NULL;
 	this->conf                  = NULL;
 	this->interval              = 60000;
-	this->transfer_interval     = this->interval;
-	this->elapsed_transfer_time = 0;
+	this->timestamp             = 0;
+	this->run_time              = 0;
 	this->udp_server            = NULL;
 	this->tentacle_proxy        = false;
+	this->intensive_interval    = 60000;
 }
 
 /** 
@@ -202,7 +203,7 @@ Pandora_Windows_Service::check_broker_agents(string *all_conf){
 
 void
 Pandora_Windows_Service::pandora_init () {
-	string conf_file, interval, debug, transfer_interval, util_dir, path, env;
+	string conf_file, interval, debug, intensive_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	string name_agent, name;
 	string proxy_mode, server_ip;
@@ -210,8 +211,6 @@ Pandora_Windows_Service::pandora_init () {
 	int pos, num;
 	static unsigned char first_run = 1;
                 
-	setPandoraDebug (true);
-
 	conf_file = Pandora::getPandoraInstallDir ();
 	conf_file += "pandora_agent.conf";
 
@@ -223,6 +222,34 @@ Pandora_Windows_Service::pandora_init () {
 	if (this->modules != NULL) {
 		delete this->modules;
 	}
+
+	/* Get the interval value (in seconds) and set it to the service */
+	interval = conf->getValue ("interval");
+	intensive_interval = conf->getValue ("intensive_interval");
+
+	if (interval != "") {
+		try {
+			/* miliseconds */
+			this->interval_sec = strtoint (interval);
+			this->interval = this->interval_sec * 1000;
+		} catch (Invalid_Conversion e) {
+		}
+	}
+
+	// Set the intensive interval
+	if (intensive_interval != "") {
+		try {
+			/* miliseconds */
+			this->intensive_interval = strtoint (intensive_interval) * 1000;
+		} catch (Invalid_Conversion e) {
+		}
+	} else {
+		this->intensive_interval = this->interval;
+	}
+		
+	this->setSleepTime (this->intensive_interval);
+
+	// Read modules
 	this->modules = new Pandora_Module_List (conf_file);
 	delete []all_conf;
 	
@@ -232,35 +259,10 @@ Pandora_Windows_Service::pandora_init () {
 	}
 	name_agent = "PANDORA_AGENT=" + name;
 	putenv(name_agent.c_str());
-
-	/* Get the interval value (in seconds) and set it to the service */
-	interval = conf->getValue ("interval");
-	transfer_interval = conf->getValue ("transfer_interval");
 	
 	debug = conf->getValue ("debug");
 	setPandoraDebug (is_enabled (debug));
-	
-	if (interval != "") {
-		try {
-			/* miliseconds */
-			this->interval = strtoint (interval) * 1000;
-		} catch (Invalid_Conversion e) {
-		}
-	}
-	
-	if (transfer_interval == "") {
-		this->transfer_interval = this->interval;
-	} else {
-		try {
-			/* miliseconds */
-			this->transfer_interval = strtoint (transfer_interval) * 1000;
-		} catch (Invalid_Conversion e) {
-			this->transfer_interval = this->interval;
-		}
-	}
-	
-	this->setSleepTime (this->interval);
-	
+		
 	/*Check if proxy mode is set*/
 	proxy_mode = conf->getValue ("proxy_mode");
 	if (proxy_mode != "" && this->tentacle_proxy == false) {
@@ -1382,20 +1384,12 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 	string server_addr;
     int startup_delay = 0;
     static unsigned char delayed = 0;
-    int exe = 1;
-    int i;
-
+	unsigned char data_flag = 0;
+	unsigned char intensive_match;
+	
 	pandoraDebug ("Run begin");
 
 	conf = this->getConf ();
-
- 	/* Sleep if a startup delay was specified */
-	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
- 	if (startup_delay > 0 && delayed == 0) {
-		delayed = 1;
-        	pandoraLog ("Delaying startup %d miliseconds", startup_delay);
-        	Sleep (startup_delay);
-    	}
 
 	/* Check for configuration changes */
 	if (getPandoraDebug () == false) {
@@ -1407,8 +1401,6 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 
 	server_addr = conf->getValue ("server_ip");
 
-	execution_number++;
-
 	if (this->modules != NULL) {
 		this->modules->goFirst ();
 	
@@ -1416,18 +1408,29 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			Pandora_Module *module;
 		
 			module = this->modules->getCurrentValue ();
+			
+			/* Check preconditions */
+			if (module->evaluatePreconditions () == 0) {
+				pandoraDebug ("Preconditions not matched for module %s", module->getName ().c_str ());
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
+			}
 	
-			exe = module->evaluatePreconditions ();
-			if (exe == 0) {
+			/* Check preconditions */			
+			if (module->checkCron () == 0) {
+				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
 				this->modules->goNext ();
 				continue;
 			}
 			
 			pandoraDebug ("Run %s", module->getName ().c_str ());
-			if (module->checkCron () == 1) {
-				module->run ();
-				Sleep(10);
+			module->run ();
+			if (! module->hasOutput ()) {
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
 			}
 			
 			/* Save module data to an environment variable */
@@ -1435,22 +1438,37 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 				module->exportDataOutput ();
 			}
 
+			/* Evaluate intensive conditions */
+			intensive_match = module->evaluateIntensiveConditions ();
+			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
+			}
+			module->setIntensiveMatch (intensive_match);
+			
+			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+				module->setTimestamp (this->run_time);
+			}
+			
 			/* Evaluate module conditions */
 			module->evaluateConditions ();
+			
+			/* At least one module has data */
+			data_flag = 1;
 
 			this->modules->goNext ();
 		}
 	}
-	
-this->elapsed_transfer_time += this->interval;
-	
-if (this->elapsed_transfer_time >= this->transfer_interval) {
-	this->elapsed_transfer_time = 0;
-	if (!server_addr.empty ()) {
+
+	if (data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) {
 		
-		this->sendXml (this->modules);
+		// Send the XML
+		if (!server_addr.empty ()) {
+		  this->sendXml (this->modules);
+		}
 	}
-}
+	
 	return;
 }
 
@@ -1458,23 +1476,27 @@ void
 Pandora_Windows_Service::pandora_run () {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr, conf_file, *all_conf;
-    int startup_delay = 0;
-    static unsigned char delayed = 0;
-    int exe = 1;
-    int i, num;
-
+	int startup_delay = 0;
+	int i, num;
+	static unsigned char delayed = 0;
+	unsigned char data_flag = 0;
+	unsigned char intensive_match;
+	
 	pandoraDebug ("Run begin");
 	
 	conf = this->getConf ();
-
+	
  	/* Sleep if a startup delay was specified */
  	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
- 	if (startup_delay > 0 && delayed == 0) {
+	if (startup_delay > 0 && delayed == 0) {
 		delayed = 1;
-        	pandoraLog ("Delaying startup %d miliseconds", startup_delay);
-        	Sleep (startup_delay);
-    	}
+		pandoraLog ("Delaying startup %d miliseconds", startup_delay);
+		Sleep (startup_delay);
+	}
 
+	/* Set the run time */
+	this->run_time = time (NULL);
+	
 	/* Check for configuration changes */
 	if (getPandoraDebug () == false) {
 		conf_file = Pandora::getPandoraInstallDir ();
@@ -1498,17 +1520,28 @@ Pandora_Windows_Service::pandora_run () {
 		
 			module = this->modules->getCurrentValue ();
 			
-			exe = module->evaluatePreconditions ();
-			if (exe == 0) {
+			/* Check preconditions */
+			if (module->evaluatePreconditions () == 0) {
+				pandoraDebug ("Preconditions not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
 				this->modules->goNext ();
 				continue;
 			}
 	
+			/* Check preconditions */			
+			if (module->checkCron () == 0) {
+				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
+			}
+			
 			pandoraDebug ("Run %s", module->getName ().c_str ());
-			if (module->checkCron () == 1) {
-				module->run ();
-				Sleep(5);
+			module->run ();
+			if (! module->hasOutput ()) {
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
 			}
 			
 			/* Save module data to an environment variable */
@@ -1516,25 +1549,39 @@ Pandora_Windows_Service::pandora_run () {
 				module->exportDataOutput ();
 			}
 
+			/* Evaluate intensive conditions */
+			intensive_match = module->evaluateIntensiveConditions ();
+			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+				module->setNoOutput ();
+				this->modules->goNext ();
+				continue;
+			}
+			module->setIntensiveMatch (intensive_match);
+			
+			if (module->getTimestamp () + module->getInterval () * this->interval_sec <= this->run_time) {
+				module->setTimestamp (this->run_time);
+			}
+			
 			/* Evaluate module conditions */
 			module->evaluateConditions ();
+			
+			/* At least one module has data */
+			data_flag = 1;
 
 			this->modules->goNext ();
 		}
 	}
 
-	this->elapsed_transfer_time += this->interval;
-	
-	if (this->elapsed_transfer_time >= this->transfer_interval) {
-		this->elapsed_transfer_time = 0;
+	if (data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) {
+				
+		// Send the XML
 		if (!server_addr.empty ()) {
-			
 		  this->sendXml (this->modules);
 		}
 	}
 	
 	/* Get the interval value (in minutes) */
-	pandoraDebug ("Next execution on %d seconds", this->interval / 1000);
+	pandoraDebug ("Next execution on %d seconds", this->interval_sec);
 
 	/* Load and execute brokers */
 	num = count_broker_agents();
@@ -1551,6 +1598,11 @@ Pandora_Windows_Service::pandora_run () {
 		pandora_init ();
 	}
 
+	/* Reset time reference if necessary */
+	if (this->timestamp + this->interval_sec <= this->run_time) {
+		this->timestamp = this->run_time;
+	}
+
 	return;
 }
 
@@ -1558,3 +1610,14 @@ Pandora_Agent_Conf  *
 Pandora_Windows_Service::getConf () {
 	return this->conf;
 }
+
+long
+Pandora_Windows_Service::getInterval () {
+	return this->interval;
+}
+
+long
+Pandora_Windows_Service::getIntensiveInterval () {
+	return this->intensive_interval;
+}
+

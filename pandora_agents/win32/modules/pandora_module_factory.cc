@@ -18,6 +18,7 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include "pandora_windows_service.h"
 #include "pandora_module_factory.h"
 #include "pandora_module.h"
 #include "pandora_module_exec.h"
@@ -105,6 +106,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_SNMPAGENT     ("module_snmp_agent ")
 #define TOKEN_SNMPOID       ("module_snmp_oid ")
 #define TOKEN_ADVANCEDOPTIONS ("module_advanced_options ")
+#define TOKEN_INTENSIVECONDITION ("module_intensive_condition ")
 
 string
 parseLine (string line, string token) {
@@ -153,15 +155,14 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_disabled, module_min_ff_event, module_noseekeof;
 	string                 module_ping, module_ping_count, module_ping_timeout;
 	string                 module_snmpget, module_snmp_version, module_snmp_community, module_snmp_agent, module_snmp_oid;
-	string                 module_advanced_options, module_cooked;
+	string                 module_advanced_options, module_cooked, module_intensive_condition;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
 	long                    agent_interval;
-	list<string>           condition_list;
-	list<string>           precondition_list;
-	list<string>::iterator condition_iter;
-	list<string>::iterator precondition_iter;
+	list<string>           condition_list, precondition_list, intensive_condition_list;
+	list<string>::iterator condition_iter, precondition_iter, intensive_condition_iter;
+	Pandora_Windows_Service *service = NULL;
 
 	module_name          = "";
 	module_type          = "";
@@ -217,6 +218,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
     module_snmp_oid      = "";
     module_advanced_options = "";
     module_cooked        = "";
+    module_intensive_condition = "";
     
 	stringtok (tokens, definition, "\n");
 	
@@ -419,6 +421,15 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_cooked == "") {
 			module_cooked = parseLine (line, TOKEN_COOKED);
 		}
+		if (module_intensive_condition == "") {
+			module_intensive_condition = parseLine (line, TOKEN_INTENSIVECONDITION);
+
+			/* Queue the condition and keep looking for more */
+			if (module_intensive_condition != "") {
+				intensive_condition_list.push_back (module_intensive_condition);
+				module_intensive_condition = "";
+			}
+		}
 		iter++;
 	}
 
@@ -556,13 +567,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module->setAsync (true);
 	}
 
-/* Module precondition */
+	/* Module precondition */
 	if (precondition_list.size () > 0) {
 		precondition_iter = precondition_list.begin ();
 		for (precondition_iter = precondition_list.begin ();
 		     precondition_iter != precondition_list.end ();
 		     precondition_iter++) {
-			module->addPrecondition (*precondition_iter);
+			module->addPreCondition (*precondition_iter);
 		}
 	}
 	
@@ -574,6 +585,35 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		     condition_iter++) {
 			module->addCondition (*condition_iter);
 		}
+	}
+
+	/* Set the module interval */
+	if (module_interval != "") {
+		int interval;
+		
+		try {
+			interval = strtoint (module_interval);
+			module->setInterval (interval);
+			module->setIntensiveInterval (interval);
+		} catch (Invalid_Conversion e) {
+			pandoraLog ("Invalid interval value \"%s\" for module %s",
+			module_interval.c_str (),
+			module_name.c_str ());
+		}
+	}
+
+	/* Module intensive condition */
+	if (intensive_condition_list.size () > 0) {
+		intensive_condition_iter = intensive_condition_list.begin ();
+		for (intensive_condition_iter = intensive_condition_list.begin ();
+		     intensive_condition_iter != intensive_condition_list.end ();
+		     intensive_condition_iter++) {
+			module->addIntensiveCondition (*intensive_condition_iter);
+		}
+	/* Adjust the module interval for non-intensive modules */
+	} else {
+		service = Pandora_Windows_Service::getInstance ();
+		module->setIntensiveInterval (module->getInterval () * (service->getInterval () / service->getIntensiveInterval ()));
 	}
 
 	/* Module cron */
@@ -643,19 +683,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 	}
 	
-	if (module_interval != "") {
-		int interval;
-		
-		try {
-			interval = strtoint (module_interval);
-			module->setInterval (interval);
-		} catch (Invalid_Conversion e) {
-			pandoraLog ("Invalid interval value \"%s\" for module %s",
-				    module_interval.c_str (),
-				    module_name.c_str ());
-		}
-	}
-
 	if (module_post_process != "") {
 		module->setPostProcess (module_post_process);
 	}

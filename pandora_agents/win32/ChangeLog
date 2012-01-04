@@ -1,3 +1,8 @@
+2012-01-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module.cc: Fixed an error when checking multiple
+	  preconditions. Fixed precondition evaluation logic.
+
 2012-01-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.h,

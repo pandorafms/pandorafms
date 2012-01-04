@@ -1067,6 +1067,7 @@ Pandora_Module::evaluatePreconditions () {
 				ResumeThread (pi.hThread);
 	
 				/*string output;*/
+				output = "";
 				int tickbase = GetTickCount();
 				while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
 					PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
@@ -1121,7 +1122,7 @@ Pandora_Module::evaluatePreconditions () {
 			CloseHandle (new_stdout);
 			CloseHandle (out_read);
 		
-			if (evaluateCondition (output, double_output, precond) != 0) {
+			if (evaluateCondition (output, double_output, precond) == 0) {
 				return 0;
 			}
 		}

@@ -434,6 +434,8 @@ sub help_screen{
     help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
     help_screen_line('--create_group', '<group_name> [<parent_group_name>]', 'Create an agent group');
     help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
+    help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
+    help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
     print "\n";
 	exit;
 }
@@ -1464,6 +1466,56 @@ sub cli_enable_eacl ($$) {
 }
 
 ###############################################################################
+# Enable user
+# Related option: --enable_user
+###############################################################################
+sub cli_user_enable () {
+	my $user_id = @ARGV[2];
+
+	my $user_disabled = get_user_disabled ($dbh, $user_id);
+	
+	exist_check($user_disabled,'user',$user_id);
+
+	if($user_disabled == 0) {
+		print "[INFO] The user '$user_id' is already enabled. Nothing to do.\n\n";
+		exit;
+	}
+	
+	print "[INFO] Enabling user '$user_id'\n\n";
+
+	$user_id = safe_input($user_id);
+
+    db_do ($dbh, "UPDATE tusuario SET `disabled` = '0' WHERE `id_user` = '$user_id'");
+    	
+    exit;
+}
+
+###############################################################################
+# Disable user
+# Related option: --disable_user
+###############################################################################
+sub cli_user_disable () {
+	my $user_id = @ARGV[2];
+
+	my $user_disabled = get_user_disabled ($dbh, $user_id);
+	
+	exist_check($user_disabled,'user',$user_id);
+
+	if($user_disabled == 1) {
+		print "[INFO] The user '$user_id' is already disabled. Nothing to do.\n\n";
+		exit;
+	}
+	
+	print "[INFO] Disabling user '$user_id'\n\n";
+
+	$user_id = safe_input($user_id);
+	
+    db_do ($dbh, "UPDATE tusuario SET `disabled` = '1' WHERE `id_user` = '$user_id'");
+    	
+    exit;
+}
+
+###############################################################################
 ###############################################################################
 # MAIN
 ###############################################################################
@@ -1612,8 +1664,16 @@ sub pandora_manage_main ($$$) {
 			cli_create_group();
 		}
 		elsif ($param eq '--add_agent_to_policy') {
-			param_check($ltotal, 2, 0);
+			param_check($ltotal, 2);
 			cli_policy_add_agent();
+		}
+		elsif ($param eq '--enable_user') {
+			param_check($ltotal, 1);
+			cli_user_enable();
+		}
+		elsif ($param eq '--disable_user') {
+			param_check($ltotal, 1);
+			cli_user_disable();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

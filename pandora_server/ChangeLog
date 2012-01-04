@@ -1,3 +1,9 @@
+2012-01-04  Sergio Martin <sergio.martin@artica.es>
+
+	*  lib/PandoraFMS/DB.pm
+	util/pandora_manage.pl: Added --enable_user and
+	--disable_user options to CLI
+
 2011-12-29  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm

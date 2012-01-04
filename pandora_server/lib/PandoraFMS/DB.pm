@@ -67,6 +67,7 @@ our @EXPORT = qw(
 		get_server_id
 		get_template_id
 		get_template_module_id
+		get_user_disabled
 		is_agent_address
 		is_group_disabled
 	);
@@ -276,6 +277,16 @@ sub get_module_id ($$) {
 	my ($dbh, $module_name) = @_;
 
 	my $rc = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", safe_input($module_name));
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return disabled bit frin a user.
+##########################################################################
+sub get_user_disabled ($$) {
+	my ($dbh, $user_id) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT disabled FROM tusuario WHERE id_user = ?", safe_input($user_id));
 	return defined ($rc) ? $rc : -1;
 }
 

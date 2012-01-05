@@ -432,6 +432,7 @@ sub help_screen{
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
     help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
+    help_screen_line('--create_group', '<group_name> [<parent_group_name>]', 'Create an agent group');
     print "\n";
 	exit;
 }
@@ -1347,6 +1348,35 @@ sub cli_disable_policy_alerts() {
 	my $array_pointer_ag = enterprise_hook('pandora_disable_policy_alerts',[$dbh, $policy_id]);
 }
 
+##############################################################################
+# Create group
+# Related option: --create_group
+##############################################################################
+
+sub cli_create_group() {
+	my ($group_name,$parent_group_name) = @ARGV[2..3];
+	
+	my $group_id = get_group_id($dbh,$group_name);
+	
+	non_exist_check($group_id, 'group name', $group_name);
+	
+	my $parent_group_id = 0;
+	
+	if(defined($parent_group_name)) {
+		$parent_group_id = get_group_id($dbh,$parent_group_name);
+		exist_check($parent_group_id, 'group name', $parent_group_name);
+	}
+
+	$group_id = pandora_create_group ($group_name, '', $parent_group_id, 0, 0, '', 0, $dbh);
+
+	if($group_id == -1) {
+		print "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
+	}
+	else {
+		print "[INFO] Created group '$group_name'\n\n";
+	}
+}
+
 ###############################################################################
 # Disable alert system globally
 # Related option: --disable_alerts
@@ -1550,6 +1580,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--disable_policy_alerts') {
 			param_check($ltotal, 1);
 			cli_disable_policy_alerts();
+		}
+		elsif ($param eq '--create_group') {
+			param_check($ltotal, 2, 1);
+			cli_create_group();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

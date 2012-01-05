@@ -1,3 +1,8 @@
+2012-01-05  Hirofumi Kosaka <kosaka@rworks.jp>
+
+        * lib/PandoraFMS/Core.pm, util/pandora_manage.pl: Merged from trunk.
+          Added a new optoins to CLI: Create group
+
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl, util/pandora_manage.pl: Updated version strings.

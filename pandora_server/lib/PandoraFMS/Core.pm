@@ -42,6 +42,8 @@ Exported Functions:
 
 =item * C<pandora_create_agent>
 
+=item * C<pandora_create_group>
+
 =item * C<pandora_create_incident>
 
 =item * C<pandora_create_module>
@@ -130,6 +132,7 @@ our @EXPORT = qw(
 	pandora_add_agent_address
 	pandora_audit
 	pandora_create_agent
+	pandora_create_group
 	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
@@ -172,7 +175,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver netflowserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 
@@ -1365,6 +1368,18 @@ sub pandora_update_module_from_hash ($$$$$) {
 	
 	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, $where_column, $where_value);
 	return $module_id;
+}
+
+##########################################################################
+## Create a group
+##########################################################################
+sub pandora_create_group ($$$$$$$$) {
+	my ($name, $icon, $parent, $propagate, $disabled, $custom_id, $id_skin, $dbh) = @_;
+	
+	my $group_id = db_insert ($dbh, 'id_grupo', 'INSERT INTO tgrupo (nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (?, ?, ?, ?, ?, ?, ?)', safe_input($name), $icon, 
+			$parent, $propagate, $disabled, $custom_id, $id_skin);
+				 
+	return $group_id;
 }
 
 ##########################################################################

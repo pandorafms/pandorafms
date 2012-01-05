@@ -1,3 +1,9 @@
+2012-01-05  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm
+	util/pandora_manage.pl: Added two new options to 
+	CLI --update_user and --add_profile_to_user
+
 2012-01-04  Sergio Martin <sergio.martin@artica.es>
 
 	*  lib/PandoraFMS/DB.pm

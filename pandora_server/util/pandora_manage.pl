@@ -460,6 +460,7 @@ sub help_screen{
     help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
     help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', 'Update a user field. The fields can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1), comments, fullname, password');
     help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
+    help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
     
     print "\n";
 	exit;
@@ -1610,6 +1611,43 @@ sub cli_user_disable () {
 }
 
 ###############################################################################
+# Get module data
+# Related option: --get_module_data
+###############################################################################
+sub cli_module_get_data () {
+	my ($agent_name,$module_name,$interval,$csv_separator) = @ARGV[2..5];
+	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	exist_check($agent_id, 'agent name', $agent_name);
+	
+	my $module_id = get_agent_module_id($dbh, $module_name, $agent_id);
+	exist_check($module_id, 'module name', $module_name);
+	
+	if($interval <= 0) {
+		print "[ERROR] Interval must be a possitive value\n\n";
+	}
+	
+	$csv_separator = ';' unless defined($csv_separator);
+
+	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id);
+	
+	my @data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+		FROM tagente_datos 
+		WHERE id_agente_modulo = $id_agent_module 
+		AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+		ORDER BY utimestamp DESC");
+
+	foreach my $data_timestamp (@data) {
+		print $data_timestamp->{'utimestamp'};
+		print $csv_separator;
+		print $data_timestamp->{'datos'};
+		print "\n";
+	}
+	
+    exit;
+}
+
+###############################################################################
 ###############################################################################
 # MAIN
 ###############################################################################
@@ -1776,6 +1814,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--add_profile_to_user') {
 			param_check($ltotal, 3, 1);
 			cli_user_add_profile();
+		}
+		elsif ($param eq '--get_module_data') {
+			param_check($ltotal, 4, 1);
+			cli_module_get_data();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

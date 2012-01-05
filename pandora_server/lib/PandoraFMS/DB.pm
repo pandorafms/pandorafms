@@ -68,6 +68,7 @@ our @EXPORT = qw(
 		get_template_id
 		get_template_module_id
 		get_user_disabled
+		get_user_exists
 		is_agent_address
 		is_group_disabled
 	);
@@ -288,6 +289,16 @@ sub get_user_disabled ($$) {
 
 	my $rc = get_db_value ($dbh, "SELECT disabled FROM tusuario WHERE id_user = ?", safe_input($user_id));
 	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return 1 if user exists or -1 if not
+##########################################################################
+sub get_user_exists ($$) {
+	my ($dbh, $user_id) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id_user FROM tusuario WHERE id_user = ?", safe_input($user_id));
+	return defined ($rc) ? 1 : -1;
 }
 
 ##########################################################################

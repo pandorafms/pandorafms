@@ -151,6 +151,18 @@ sub pandora_delete_template_module_action ($$$) {
 }
 
 ##########################################################################
+# Assign a profile in a group to user 
+##########################################################################
+sub pandora_add_profile_to_user ($$$;$) {
+	my ($dbh, $user_id, $profile_id, $group_id) = @_;
+	
+	$group_id = 0 unless defined($group_id);
+	
+	db_do ($dbh, 'INSERT INTO tusuario_perfil (`id_usuario`, `id_perfil`, `id_grupo`)
+				  VALUES (?, ?, ?)', safe_input($user_id), $profile_id, $group_id);
+}
+
+##########################################################################
 ## Create a user.
 ##########################################################################
 sub pandora_create_user ($$$$$) {
@@ -303,6 +315,16 @@ sub pandora_validate_event_filter ($$$$$$$$$) {
 	db_do ($dbh, "UPDATE tevento SET estado = 1 WHERE estado = 0".$filter);
 }
 
+##########################################################################
+## Update a user from hash
+##########################################################################
+sub pandora_update_user_from_hash ($$$$) {
+	my ($parameters, $where_column, $where_value, $dbh) = @_;
+	
+	my $user_id = db_process_update($dbh, 'tusuario', $parameters, $where_column, $where_value);
+	return $user_id;
+}
+
 ###############################################################################
 # Get list of all downed agents
 ###############################################################################
@@ -436,6 +458,9 @@ sub help_screen{
     help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
     help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
     help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
+    help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', 'Update a user field. The fields can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1), comments, fullname, password');
+    help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
+    
     print "\n";
 	exit;
 }
@@ -1074,6 +1099,75 @@ sub cli_create_user() {
 }
 
 ##############################################################################
+# Update a user.
+# Related option: --update_user
+##############################################################################
+
+sub cli_user_update() {
+	my ($user_id,$field,$new_value) = @ARGV[2..4];
+	
+	my $user_exists = get_user_exists ($dbh, $user_id);
+	exist_check($user_exists,'user',$user_id);
+	
+	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin' || $field eq 'flash_chart') {
+		# Fields admited, no changes
+	}
+	elsif($field eq 'comments' || $field eq 'fullname') {
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'password') {
+		if($new_value eq '') {
+			print "[ERROR] Field '$field' cannot be empty\n\n";
+			exit;
+		}
+		
+		$new_value = md5($new_value);
+	}
+	else {
+		print "[ERROR] Field '$field' doesnt exist\n\n";
+		exit;
+	}
+		
+	print "[INFO] Updating field '$field' in user '$user_id'\n\n";
+	
+	my $update;
+	
+	$update->{$field} = $new_value;
+	
+	pandora_update_user_from_hash ($update, 'id_user', safe_input($user_id), $dbh);
+}
+
+##############################################################################
+# Add a profile to a User in a Group
+# Related option: --add_profile_to_user
+##############################################################################
+
+sub cli_user_add_profile() {
+	my ($user_id,$profile_name,$group_name) = @ARGV[2..4];
+	
+	my $user_exists = get_user_exists ($dbh, $user_id);
+	exist_check($user_exists,'user',$user_id);
+	
+	my $profile_id = get_profile_id($dbh, $profile_name);
+	exist_check($profile_id,'profile',$profile_name);
+	
+	my $group_id = 0;
+	
+	# If group name is not defined, we assign group All (0)
+	if(defined($group_name)) {
+		$group_id = get_group_id($dbh, $group_name);
+		exist_check($group_id,'group',$group_name);
+	}
+	else {
+		$group_name = 'All';
+	}
+		
+	print "[INFO] Adding profile '$profile_name' to user '$user_id' in group '$group_name'\n\n";
+		
+	pandora_add_profile_to_user ($dbh, $user_id, $profile_id, $group_id);
+}
+
+##############################################################################
 # Delete a user.
 # Related option: --delete_user
 ##############################################################################
@@ -1674,6 +1768,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--disable_user') {
 			param_check($ltotal, 1);
 			cli_user_disable();
+		}
+		elsif ($param eq '--update_user') {
+			param_check($ltotal, 3);
+			cli_user_update();
+		}
+		elsif ($param eq '--add_profile_to_user') {
+			param_check($ltotal, 3, 1);
+			cli_user_add_profile();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

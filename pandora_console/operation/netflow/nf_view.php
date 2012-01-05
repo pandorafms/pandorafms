@@ -30,54 +30,113 @@ if (! check_acl ($config["id_user"], 0, "AR")) {
 	return;
 }
 
-function exec_command ($start_date, $end_date, $command, $show){
-	$command .= ' -t '.$start_date.'-'.$end_date.' -N';
-	
-	$values = array();
-	exec($command, $string);
-
-	$i = 0;
-	if(isset($string) && is_array($string)&&($string!=null)){
-		foreach($string as $line){
-			$line = preg_replace('/\s+/',' ',$line);
-			
-			$val = explode(' ',$line);
-
-			$values[$i]['date'] = $val[0];
-			$values[$i]['time'] = $val[1];
-			$values[$i]['duration'] = $val[2];
-			$values[$i]['proto'] = $val[3];
-			$values[$i]['srcip:port'] = $val[4];
-			$val2 = explode(':', $val[4]);
-			$values[$i]['srcip'] = $val2[0];
-			// campo para mostrar grafica de tarta
-			$values[$i]['agg'] = $val2[0];
-			$values[$i]['srcport'] = $val2[1];
-			$values[$i]['dstip:port'] = $val[6];
-			$val2 = explode(':', $val[6]);
-			$values[$i]['dstip'] = $val2[0];
-			$values[$i]['dstport'] = $val2[1];
-			
-			switch ($show){
-				case "packets":
-					$values[$i]['data'] = $val[7];
-					break;
-				case "bytes":
-					$values[$i]['data'] = $val[8];
-					break;
-				case "flows":
-					$values[$i]['data'] = $val[9];
-					break;
-			}
-			$i++;
-		}
-		return $values;
+// Returns 1 if the given address is a network address
+function is_net ($address) {
+	if (strpos ($address, '/') !== FALSE) {
+		return 1;
 	}
+	
+	return 0;
+}
+
+function exec_command ($start_date, $end_date, $command, $show){
+	global $time_format;
+	global $config;
+	
+	// Execute nfdump and save its output in a temporary file
+	$command .= ' -t '.date($time_format, $start_date).'-'.date($time_format, $end_date);
+	$temp_file = $config["attachment_store"] . "/netflow_" . rand (0, getrandmax()) . ".data";
+	exec("$command > $temp_file", $string);
+
+	// Open the temporary file
+	$fh = fopen ($temp_file, "r");
+	if ($fh === FALSE) {
+		return;
+	}
+
+	// Calculate the number of intervals
+	$num_intervals = $config['graph_res'] * 50;
+	$period = $end_date - $start_date;
+	$interval_length = (int) ($period / $num_intervals);
+
+	// Set the title and time format
+	if ($period <= 21600) {
+	        $chart_time_format = 'H:i:s';
+	}
+	elseif ($period < 86400) {
+	        $chart_time_format = 'H:i';
+	}
+	elseif ($period < 1296000) {
+	        $chart_time_format = 'M d H:i';
+	}
+	elseif ($period < 2592000) {
+	        $chart_time_format = 'M d H\h';
+	}
+	else { 
+	        $chart_time_format = 'M d H\h';
+	}
+
+	// Parse flow data
+	$read_flag = 1;
+	$values = array ();
+	$flow = array ();
+	for ($i = 0; $i < $num_intervals; $i++) {
+		$timestamp = $start_date + ($interval_length * $i);
+		
+		$interval_total = 0;
+		$interval_count = 0;
+		do {
+			if ($read_flag == 1) {
+				$read_flag = 0;
+				$line = fgets($fh, 4096);
+				if ($line === false) {
+					$read_flag = 1;
+					break;
+				}
+				
+				$line = preg_replace('/\s+/',' ',$line);
+				$val = explode(' ',$line);
+				
+				$flow['date'] = $val[0];
+				$flow['time'] = $val[1];
+				switch ($show) {
+					case "packets":
+						$flow['data'] = $val[7];
+						break;
+					case "bytes":
+						$flow['data'] = $val[8];
+						break;
+					case "flows":
+						$flow['data'] = $val[9];
+						break;
+				}
+				$flow['timestamp'] = strtotime ($flow['date'] . " " . $flow['time']);
+			}
+			if ($flow['timestamp'] >= $timestamp && $flow['timestamp'] <= $timestamp + $interval_length) {
+				$read_flag = 1;
+				$interval_total += $flow['data'];
+				$interval_count += 1;
+			}
+		} while ($read_flag == 1);
+		
+		$interval_date = date ($chart_time_format, $timestamp);
+		if ($interval_count == 0) {
+			$values[$interval_date]['data'] = 0;
+		} else {
+			$values[$interval_date]['data'] = (int) ($interval_total / $interval_count);
+		}
+	}
+
+	fclose ($fh);
+	unlink ($temp_file);
+
+	return $values;
 }
 
 function exec_command_aggregate ($start_date, $end_date, $command, $show){
-	$command .= ' -t '.$start_date.'-'.$end_date.' -N';
+	global $time_format;
 
+	$command .= ' -t '.date($time_format, $start_date).'-'.date($time_format, $end_date);
 	$values = array();
 	exec($command, $string);
 
@@ -86,8 +145,8 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 		foreach($string as $line){
 			if ($line=='')
 				break;
-			$line = preg_replace ('/\(\s*\S+\)/', '', $line);
-			$line = preg_replace ('/\s+/', ' ', $line);
+			$line = preg_replace('/\(\s*\S+\)/','',$line);
+			$line = preg_replace('/\s+/',' ',$line);
 			$val = explode(' ',$line);
 
 			$values[$i]['date'] = $val[0];
@@ -98,11 +157,11 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 			$time = $val[1];
 			$date_time = strtotime ($date." ".$time);
 			$values[$i]['datetime'] = $date_time;
-			///
-			$values[$i]['duration'] = $val[2];
-			$values[$i]['proto'] = $val[3];
+			
+			//$values[$i]['duration'] = $val[2];
+			//$values[$i]['proto'] = $val[3];
 			$values[$i]['agg'] = $val[4];
-		
+			
 			switch ($show){
 				case "packets":
 					$values[$i]['data'] = $val[6];
@@ -121,107 +180,6 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 		}
 		return $values;
 	}
-}
-
-function get_aggregate ($start_date, $end_date, $command, $show,$filt, $aggregate, $max, $order){
-	//$command .= ' -t '.$start_date.'-'.$end_date.' -N';
-	$command_1 = $command.' -n '.$max;
-	$command_1 .= $order;
-	
-//html_debug_print($aggregate);
-	$values = array();
-	exec($command_1, $string);
-
-	$i = 0;
-	$aggs = array();
-	$ag ='';
-	if(isset($string) && is_array($string)&&($string!=null)){
-		foreach($string as $line) {
-			if ($line=='')
-				break;
-			
-			$line = preg_replace ('/\s+/', ' ', $line);
-			$val = explode(' ',$line);
-			switch ($aggregate){
-				case "proto":
-					$aggs[$val[3]] = $val[3];
-					break;
-				case "srcip":
-					$val2 = explode(':', $val[4]);
-					$aggs[$val2[0]] = $val2[0];
-					break;
-				case "srcport":
-					$val2 = explode(':', $val[4]);
-					$aggs[$val2[1]] = $val2[1];
-					break;
-				case "dstip":
-					$val2 = explode(':', $val[6]);
-					$aggs[$val2[0]] = $val2[0];
-					break;
-				case "dstport":
-					$val2 = explode(':', $val[6]);
-					$aggs[$val2[1]] = $val2[1];
-					break;
-			}
-		}
-		//html_debug_print($aggs);
-		return $aggs;
-	}
-
-}
-
-function exec_command_prueba ($start_date, $end_date, $command, $show, $aggs, $aggregate){
-	//$command .= ' -t '.$start_date.'-'.$end_date.' -N';
-	$values = array();
-	$ag = 'src ip';
-		
-		$count_agg = count($aggs);
-		$command .= ' "';
-		$i = 0;
-			foreach($aggs as $agg){
-				if ($i==0)
-					$command .= $ag.' '.$agg;
-				else
-					$command .= ' or '.$ag.' '.$agg;
-				$i++;
-		}
-		$command .= '"';
-		exec($command, $result);
-		//html_debug_print($result);
-			
-		$i = 0;
-		if(isset($result) && is_array($result)&&($result!=null)){
-			foreach($result as $line) {
-				if ($line=='')
-					break;
-					
-				$line = preg_replace ('/\s+/', ' ', $line);
-				$val = explode(' ',$line);
-				$values[$i]['date'] = $val[0];
-				$values[$i]['time'] = $val[1];
-			
-				//create field to sort array
-				$date = $val[0];
-				$time = $val[1];
-				$date_time = strtotime ($date." ".$time);
-				$values[$i]['datetime'] = $date_time;
-				///
-				$values[$i]['duration'] = $val[2];
-				$values[$i]['proto'] = $val[3];
-					
-				switch ($show){
-					case "packets":
-						$values[$i]['data'] = $val[7];
-						break;
-					case "bytes":
-						$values[$i]['data'] = $val[8];
-						break;
-				}
-			$i++;
-			}
-		}
-	
-	return $values;
 }
 
 $id = get_parameter('id');
@@ -261,25 +219,25 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 	$table->data[0][1] .= html_print_input_text ('time', $time_, false, 10, 5, true);
 
 	$table->data[1][0] = '<b>'.__('Interval').'</b>';
-		$values_period = array ('600' => __('10 mins'),
-			'900' => __('15 mins'),
-			'1800' => __('30 mins'),
-			'3600' => __('1 hour'),
-			'7200' => __('2 hours'),
-			'18000' => __('5 hours'),
-			'43200' => __('12 hours'),
-			'86400' => __('1 day'),
-			'172800' => __('2 days'),
-			'432000' => __('5 days'),
-			'1296000' => __('15 days'),
-			'604800' => __('Last week'),
-			'2592000' => __('Last month'),
-			'5184000' => __('2 months'),
-			'7776000' => __('3 months'),
-			'15552000' => __('6 months'),
-			'31104000' => __('Last year'),
-			'62208000' => __('2 years')
-					);
+	$values_period = array ('600' => __('10 mins'),
+				'900' => __('15 mins'),
+				'1800' => __('30 mins'),
+				'3600' => __('1 hour'),
+				'7200' => __('2 hours'),
+				'18000' => __('5 hours'),
+				'43200' => __('12 hours'),
+				'86400' => __('1 day'),
+				'172800' => __('2 days'),
+				'432000' => __('5 days'),
+				'1296000' => __('15 days'),
+				'604800' => __('Last week'),
+				'2592000' => __('Last month'),
+				'5184000' => __('2 months'),
+				'7776000' => __('3 months'),
+				'15552000' => __('6 months'),
+				'31104000' => __('Last year'),
+				'62208000' => __('2 years')
+	);
 	$table->data[1][1] = html_print_select ($values_period, 'period', $period, '', '', 0, true, false, false);
 	html_print_table ($table);
 
@@ -316,10 +274,7 @@ if ($id!=''){
 			$interval ='86400';
 		}
 		$date = strtotime ($date." ".$time);
-		$date_time = date($time_format, $date);
 		$limit = $date - $interval;
-
-		$date_limit = date ($time_format, $limit);
 
 		$sql = "SELECT * FROM tnetflow_filter WHERE id_name = '".$name_filter."'";
 		$result = db_get_row_sql($sql,false,true);
@@ -334,28 +289,14 @@ if ($id!=''){
 		$show_bytes = $result['show_bytes'];
 		$show_bps = $result['show_bps'];
 		$show_bpp = $result['show_bpp'];
-		
-		$dst_net = false;
-		$src_net = false;
 	
 		if(isset($ip_dst)){
-			$net = preg_match('/\//',$ip_dst);
-			//html_debug_print(var_dump($net));
-			if ($net != 0) {
-				$dst_net = true;
-			} else {
-				$val_ipdst = explode(',',$ip_dst);
-				$count_ipdst = count($val_ipdst);
-			}
+			$val_ipdst = explode(',',$ip_dst);
+			$count_ipdst = count($val_ipdst);
 		}
 		if(isset($ip_src)){
-			$net = preg_match('/\//',$ip_src);
-			if ($net != 0) {
-				$src_net = true;
-			} else {
-				$val_ipsrc = explode(',',$ip_src);
-				$count_ipsrc = count($val_ipsrc);
-			}
+			$val_ipsrc = explode(',',$ip_src);
+			$count_ipsrc = count($val_ipsrc);
 		}
 		if(isset($dst_port)&&($dst_port!='0')){
 			$val_dstport = explode(',',$dst_port);
@@ -366,225 +307,123 @@ if ($id!=''){
 			$count_srcport = count($val_srcport);
 		}
 
-		//// Build command line
-		$command = 'nfdump -q';
+		// Build command line
+		$command = 'nfdump -q -N -m';
 
 		if (isset($config['netflow_path']))
 			$command .= ' -R '.$config['netflow_path'];
 		
-/*
 		if (isset($aggregate)&&($aggregate!='none')){
 			$command .= ' -s '.$aggregate;
-			if (isset($max_val))
+			if (isset($max_val)) {
 				$command .= ' -n '.$max_val;
+			}
 		}
-*/
 
-		//filter options
-		if (isset($ip_dst)&&($ip_dst!='')&&($dst_net == false)){
-			$command .= ' "';
+		// Filter options
+		$filter = '';
+		if (isset($ip_dst)&&($ip_dst!='')){
+			$filter .= ' "(';
 			for($i=0;$i<$count_ipdst;$i++){
-				if ($i==0)
-					$command .= 'dst ip '.$val_ipdst[$i];
-				else
-					$command .= ' or dst ip '.$val_ipdst[$i];
-			}
-			if (isset($ip_src)&&($ip_src!='')&&($src_net == false)){
-				$command .= ' and (';
-
-				for($i=0;$i<$count_ipsrc;$i++){
-					if ($i==0)
-						$command .= 'src ip '.$val_ipsrc[$i];
-					else
-						$command .= ' or src ip '.$val_ipsrc[$i];
+				if ($i > 0) {
+					$filter .= ' or ';
 				}
-				$command .= ')';
-			}
-			if (isset($dst_port)&&($dst_port!='')&&($dst_port!='0')){
-				$command .= ' and (';
-				for($i=0;$i<$count_dstport;$i++){
-					if ($i==0)
-						$command .= 'dst port '. $val_dstport[$i];
-					else
-						$command .= ' or dst port '.$val_dstport[$i];
+				
+				if (is_net ($val_ipdst[$i]) == 0) {
+					$filter .= 'dst ip '.$val_ipdst[$i];
+				} else {
+					$filter .= 'dst net '.$val_ipdst[$i];
 				}
-				$command .= ')';
 			}
-			if (isset($src_port)&&($src_port!='')&&($src_port!='0')){
-				$command .= ' and (';
-				for($i=0;$i<$count_srcport;$i++){
-					if ($i==0)
-						$command .= 'src port '. $val_srcport[$i];
-					else
-						$command .= ' or src port '.$val_srcport[$i];
-				}
-				$command .= ')';
+			$filter .=  ')';
+		}
+		if (isset($ip_src)&&($ip_src!='')){
+			if ($filter == '') {
+				$filter .= ' "(';
+			} else {
+				$filter .= ' and (';
 			}
-		$command .= '"';
-		
-		} else if (isset($ip_src)&&($ip_src!='')&&($src_net == false)) {
-			$command .= ' "';
 			for($i=0;$i<$count_ipsrc;$i++){
-				if ($i==0)
-					$command .= 'src ip '.$val_ipsrc[$i];
-				else
-					$command .= ' or src ip '.$val_ipsrc[$i];
-			}
-			if (isset($dst_port)&&($dst_port!='')&&($dst_port!='0')){
-				$command .= ' and (';
-				for($i=0;$i<$count_dstport;$i++){
-					if ($i==0)
-						$command .= 'dst port '. $val_dstport[$i];
-					else
-						$command .= ' or dst port '.$val_dstport[$i];
+				if ($i > 0) {
+					$filter .= ' or ';
 				}
-				$command .= ')';
-			}
-			if (isset($src_port)&&($src_port!='')&&($src_port!='0')){
-				$command .= ' and (';
-				for($i=0;$i<$count_srcport;$i++){
-					if ($i==0)
-						$command .= 'src port '. $val_srcport[$i];
-					else
-						$command .= ' or src port '.$val_srcport[$i];
+				
+				if (is_net ($val_ipsrc[$i]) == 0) {
+					$filter .= 'src ip '.$val_ipsrc[$i];
+				} else {
+					$filter .= 'src net '.$val_ipsrc[$i];
 				}
-				$command .= ')';
+			}
+			$filter .=  ')';
+		}
+		if (isset($dst_port)&&($dst_port!='')&&($dst_port!='0')){
+			if ($filter == '') {
+				$filter .= ' "(';
 			} else {
-				$command .= '"'; 
+				$filter .= ' and (';
 			}
-
-	} else if (isset($dst_port)&&($dst_port!='')&&($dst_port!='0')){
-			$command .= ' "';
 			for($i=0;$i<$count_dstport;$i++){
-			if ($i==0)
-				$command .= 'dst port '.$val_dstport[$i];
-			else
-				$command .= ' or dst port '.$val_dstport[$i];
-			}
-			if (isset($src_port)&&($src_port!='')&&($src_port!='0')){
-				$command .= ' and (';
-				for($i=0;$i<$count_srcport;$i++){
-					if ($i==0)
-						$command .= 'src port '. $val_srcport[$i];
-					else
-						$command .= ' or src port '.$val_srcport[$i];
+				if ($i > 0) {
+					$filter .= ' or ';
 				}
-				$command .= ')';
-			} else {
-				$command .= '"'; 
+				$filter .= 'dst port '.$val_dstport[$i];
 			}
-			
-	} else {
-		if (isset($src_port)&&($src_port!='')&&($src_port!='0')&&($src_net == false)&&($dst_net == false)){
-				$command .= ' "(';
-			for($i=0;$i<$count_srcport;$i++){
-				if ($i==0)
-					$command .= 'src port '.$val_srcport[$i];
-				else
-					$command .= ' or src port '.$val_srcport[$i];
-			}
-			$command .= ' )"';
+			$filter .=  ')';
 		}
-	}
+		if (isset($src_port)&&($src_port!='')&&($src_port!='0')){
+			if ($filter == '') {
+				$filter .= ' "(';
+			} else {
+				$filter .= ' and (';
+			}
+			for($i=0;$i<$count_ipdst;$i++){
+				if ($i > 0) {
+					$filter .= ' or ';
+				}
+				$filter .= 'dst ip '.$val_ipdst[$i];
+			}
+			$filter .=  ')';
+		}
+		if ($filter != '') {
+			$filter .=  '"';
+			$command .= $filter;
+		}
 
-	if ($show_packets)
-		$show = 'packets';
-	if ($show_bytes)
-		$show = 'bytes';
-	if ($show_bps)
-		$show = 'bps';
-	if ($show_bpp)
-		$show = 'bpp';
-
-	//create interval to divide command execution
-	$inter = $config['graph_res'] * 50;
-/*
-	if ($aggregate!='none')
-		$inter = 1;
-*/
-
-	$fecha_limite = date ($time_format, $limit);
-	$res = $interval/$inter;
+		if ($show_packets)
+			$show = 'packets';
+		if ($show_bytes)
+			$show = 'bytes';
+		if ($show_bps)
+			$show = 'bps';
+		if ($show_bpp)
+			$show = 'bpp';
 	
-	$aggs = array();
-	if ($aggregate!='none'){
-		$command = 'nfdump -q -R /home/vanessa/netflow/netflow/ -t 2011/11/29.14:53:17-2011/12/30.20:53:17 -N';
-		$filt='';
-		$order = ' -s record/'.$show;
+		// Data iterator
 		$j = 0;
-		$aggs = get_aggregate($date_limit, $date_time, $command, $show,$filt,$aggregate, $max_val, $order);
-	}
-	// Data iterator
-	$j = 0;
-	$values = array();
-
-			
-	// Calculate interval date
-	for ($i = 0; $i < $inter; $i++) {
-		$timestamp = $limit + ($res * $i);
-		$timestamp_short = date($time_format, $timestamp);
-		
-		$end_date = $timestamp + $res;
-		$end = date ($time_format, $end_date);
-
+		$values = array();
+				
 		if($aggregate!='none'){
-			$result = exec_command_prueba($timestamp_short, $end, $command, $show, $aggs);
-
-/*
-			//$result = orderMultiDimensionalArray($result, 'datetime');
-			html_debug_print($aggs);
-			foreach ($aggs as $agg) {
-				$command = 'nfdump -q -R /home/vanessa/netflow/netflow/ -t 2011/11/29.14:53:17-2011/12/30.20:53:17 -N "src ip '.$agg.'"';
-				$result = exec_command_prueba($timestamp_short, $end, $command, $show,$filt,$aggregate, $max_val, $order);
-			}
-*/
-		} else {
-			$result = exec_command($timestamp_short, $end, $command, $show);
-		}
-
-		$total = 0;
-		$count = 0;
-
-		if(!empty($result)){
-			$previous_data = 0;
-			foreach($result as $data){
-				$dates = $data['date'];
-				$times = $data['time'];
-				$total += $data['data'];	
-				$count++;
-			}
-			$values[$j]['date'] = $dates;
-			$values[$j]['time'] = $times;
-
-			if ($count > 0) {
-				$values[$j]['data'] = $total / $count;
-				$previous_data = $values[$j]['data'];
-			} else {
-				$values[$j]['data'] = $previous_data;
-			}
-			$j++;
-		}			
-	}
-
-		if($aggregate!='none'){
+			$result = exec_command_aggregate($limit, $date, $command, $show);
+			$result = orderMultiDimensionalArray($result, 'data', true);
 			switch ($element){
 				case '0':
 					echo grafico_netflow_aggregate_area($result, $interval, 880, 540, '', '','','',$date);
 					break;
 				case '1':
-					//echo grafico_netflow_aggregate_pie($result);
+					echo grafico_netflow_aggregate_pie($result);
 					break;
 				case '2':
-					//echo netflow_show_table_values($result, $date_limit, $date_time, $show);
+					echo netflow_show_table_values($result, date ($time_format, $limit), date ($time_format, $date), $show);
 					break;
 				case '3':
-					//echo netflow_show_total_period($result, $date_limit, $date_time, $show);
+					echo netflow_show_total_period($result, date ($time_format, $limit), date ($time_format, $date), $show);
 					break;
 			}
 		}else{
+			$result = exec_command($limit, $date, $command, $show);
 			switch ($element){
 				case '0':
-					echo grafico_netflow_total_area($values, $interval, 660, 320, '', '','','',$date);
+					echo grafico_netflow_total_area($result, ($date - $limit), 660, 320, '', '','','',$date);
 					break;
 			}
 		}

@@ -222,11 +222,11 @@ function netflow_show_total_period($data, $date_limit, $date_time, $show){
 		if (!isset($values[$agg])){
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = $data[$j]['data'].' '.$show;
+			$table->data[$x][1] = format_numeric ($data[$j]['data']) .' '.$show;
 		} else {
 			$values[$agg] += $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = $data[$j]['data'].' '.$show;
+			$table->data[$x][1] = format_numeric ($data[$j]['data']) .' '.$show;
 		}
 		$j++;
 		$x++;

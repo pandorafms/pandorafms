@@ -2048,7 +2048,7 @@ while (isset ($data[$j])){
 	if ($only_image) {
 		$flash_chart = false;
 	}
-
+	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2072,42 +2072,13 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 	$datelimit = $date - $period;
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
-	
-		/////////////////////////////////////////////////////////////////
-		// Set the title and time format
-		if ($period <= 3600) {
-			$time_format = 'G:i:s';
-		}
-		elseif ($period <= 86400) {
-			$time_format = 'G:i:s';
-		}
-		elseif ($period <= 604800) {
-			$time_format = 'M d H:i:s';
-		}
-		elseif ($period <= 2419200) {
-			$time_format = 'M d H\h';
-		} 
-		else {
-			$time_format = 'M d H\h';
-		}
-		$timestamp_short = date($time_format, $date);
-
-		/////////////////////////////////////////////////////////////////
 
 	$aggs = array();
 	// Calculate data for each agg
 	$j = 0;
 	$chart = array();
 	$long_index = array();
-		
-	while (isset ($data[$j])) {
-		$date = $data[$j]['date'];
-		$time = $data[$j]['time'];
-		$datetime = strtotime ($date." ".$time);
-		$timestamp_short = date($time_format, $datetime);
-		$chart[$timestamp_short]['data'] = $data[$j]['data'];
-		$j++;
-	}
+	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
@@ -2115,7 +2086,7 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 	$leyend = array();
 	$color = array();
 
-	return area_graph($flash_chart, $chart, $width, $height, $color, $leyend,
+	return area_graph($flash_chart, $data, $width, $height, $color, $leyend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], "");

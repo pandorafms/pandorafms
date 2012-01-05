@@ -1,3 +1,9 @@
+2012-01-05  Vanessa Gil  <vanessa.gil@artica.es>
+	* include/functions_graph.php
+          include/functions_netflow.php
+	  operation/netflow/nf_view.php
+	  godmode/netflow/nf_item_list: Graph changes.
+
 2012-01-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

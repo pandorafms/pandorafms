@@ -2019,6 +2019,21 @@ echo"<h4>Gráfica de área</h4>";
 		}
 	}
 	
+/*
+while (isset ($data[$j])){
+
+	$aggs[$data[$j]['agg']] = $data[$j]['agg'];
+		$date = $data[$j]['date'];
+		$time = $data[$j]['time'];
+	$ag = $data[$j]['agg'];
+		$datetime = strtotime ($date." ".$time);
+		$timestamp_short = date($time_format, $datetime);
+		$chart[$timestamp_short][$ag] = $data[$j]['data'];
+		$j++;
+	}
+	
+*/
+	
 	foreach($chart as $key => $value) {
 		foreach($aggs as $agg) {
 			if(!isset($chart[$key][$agg])) {
@@ -2033,7 +2048,7 @@ echo"<h4>Gráfica de área</h4>";
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	
+
 	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2084,7 +2099,7 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 	$j = 0;
 	$chart = array();
 	$long_index = array();
-	
+		
 	while (isset ($data[$j])) {
 		$date = $data[$j]['date'];
 		$time = $data[$j]['time'];

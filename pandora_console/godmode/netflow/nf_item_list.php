@@ -104,25 +104,24 @@ $table->width = '90%';
 $table->head = array ();
 $table->head[0] = __('Id item');
 $table->head[1] = __('Filter');
-$table->head[2] = __('Period');
-$table->head[3] = __('Max values');
-$table->head[4] = __('Graph');
-$table->head[5] = __('Action') .
+$table->head[2] = __('Max values');
+$table->head[3] = __('Graph');
+$table->head[4] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
+$table->align[0] = 'center';
 $table->align[2] = 'center';
-$table->align[3] = 'center';
-$table->align[5] = 'right';
+$table->align[4] = 'right';
 $table->size = array ();
 $table->size[0] = '10%';
-$table->size[1] = '30%';
-$table->size[2] = '20%';
-$table->size[3] = '10%';
-$table->size[4] = '20%';
-$table->size[5] = '20px';
+$table->size[1] = '50%';
+$table->size[2] = '10%';
+$table->size[3] = '30%';
+$table->size[4] = '20px';
+
 $table->data = array ();
 
 $total_reports_item = db_get_all_rows_filter ('tnetflow_report_content', false, 'COUNT(*) AS total');
@@ -140,7 +139,21 @@ $total_reports_item = $total_reports_item[0]['total'];
 	
 	$data[2] = $item['max'];
 	
-	$data[3] = $item['show_graph'];
+	switch ($item['show_graph']) {
+		case 0:
+			$data[3] = 'Area graph';
+			break;
+		case 1:
+			$data[3] = 'Pie graph';
+			break;
+		case 2:
+			$data[3] = 'Table values';
+			break;
+		case 3:
+			$data[3] = 'Table total period';
+			break;
+	}
+	//$data[3] = $item['show_graph'];
 	
 	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 

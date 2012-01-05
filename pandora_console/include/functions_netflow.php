@@ -204,7 +204,7 @@ function orderMultiDimensionalArray ($toOrderArray, $field, $inverse = false) {
      return $returnArray; 
 }
 
-function netflow_show_total_period($data, $date_limit, $date_time){
+function netflow_show_total_period($data, $date_limit, $date_time, $show){
 	$values = array();
 	$table->width = '50%';
 	$table->class = 'databox';
@@ -213,7 +213,7 @@ function netflow_show_total_period($data, $date_limit, $date_time){
 	$j = 0;
 	$x = 1;
 	
-	echo"<h4>Suma por periodo</h4>";
+	echo"<h4>Suma por periodo ($show)</h4>";
 	$table->data[0][0] = '<b>'.__('Rango').'</b>';
 	$table->data[0][1] = '<b>'.$title.'</b>';
 	
@@ -222,11 +222,11 @@ function netflow_show_total_period($data, $date_limit, $date_time){
 		if (!isset($values[$agg])){
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = $data[$j]['data'];
+			$table->data[$x][1] = $data[$j]['data'].' '.$show;
 		} else {
 			$values[$agg] += $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = $data[$j]['data'];
+			$table->data[$x][1] = $data[$j]['data'].' '.$show;
 		}
 		$j++;
 		$x++;
@@ -234,7 +234,7 @@ function netflow_show_total_period($data, $date_limit, $date_time){
 html_print_table($table);
 }
 
-function netflow_show_table_values($data, $date_limit, $date_time){
+function netflow_show_table_values($data, $date_limit, $date_time, $show){
 	$values = array();
 	$table->width = '50%';
 	$table->class = 'databox';
@@ -244,7 +244,7 @@ function netflow_show_table_values($data, $date_limit, $date_time){
 	$x = 1;
 	$y = 1;
 	
-	echo"<h4>Tabla de valores</h4>";
+	echo"<h4>Tabla de valores ($show)</h4>";
 	$table->data[0][0] = '<b>'.__('Rango').'</b>';
 
 	$coordx = array();

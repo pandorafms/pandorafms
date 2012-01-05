@@ -77,7 +77,7 @@ function exec_command ($start_date, $end_date, $command, $show){
 
 function exec_command_aggregate ($start_date, $end_date, $command, $show){
 	$command .= ' -t '.$start_date.'-'.$end_date.' -N';
-	
+
 	$values = array();
 	exec($command, $string);
 
@@ -86,7 +86,8 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 		foreach($string as $line){
 			if ($line=='')
 				break;
-			$line = preg_replace('/\s+/',' ',$line);
+			$line = preg_replace ('/\(\s*\S+\)/', '', $line);
+			$line = preg_replace ('/\s+/', ' ', $line);
 			$val = explode(' ',$line);
 
 			$values[$i]['date'] = $val[0];
@@ -101,29 +102,126 @@ function exec_command_aggregate ($start_date, $end_date, $command, $show){
 			$values[$i]['duration'] = $val[2];
 			$values[$i]['proto'] = $val[3];
 			$values[$i]['agg'] = $val[4];
-			
+		
 			switch ($show){
 				case "packets":
-					$val[7]= str_replace('(','',$val[7]);
-					$val[7]= str_replace(')','',$val[7]);
-					$values[$i]['data'] = $val[7];
+					$values[$i]['data'] = $val[6];
 					break;
 				case "bytes":
-					$val[9]= str_replace('(','',$val[9]);
-					$val[9]= str_replace(')','',$val[9]);
-					$values[$i]['data'] = $val[9];
+					$values[$i]['data'] = $val[7];
 					break;
 				case "bps":
-					$values[$i]['data'] = $val[12];
+					$values[$i]['data'] = $val[9];
 					break;
 				case "bpp":
-					$values[$i]['data'] = $val[13];
+					$values[$i]['data'] = $val[10];
 					break;
 			}	
 			$i++;
 		}
 		return $values;
 	}
+}
+
+function get_aggregate ($start_date, $end_date, $command, $show,$filt, $aggregate, $max, $order){
+	//$command .= ' -t '.$start_date.'-'.$end_date.' -N';
+	$command_1 = $command.' -n '.$max;
+	$command_1 .= $order;
+	
+//html_debug_print($aggregate);
+	$values = array();
+	exec($command_1, $string);
+
+	$i = 0;
+	$aggs = array();
+	$ag ='';
+	if(isset($string) && is_array($string)&&($string!=null)){
+		foreach($string as $line) {
+			if ($line=='')
+				break;
+			
+			$line = preg_replace ('/\s+/', ' ', $line);
+			$val = explode(' ',$line);
+			switch ($aggregate){
+				case "proto":
+					$aggs[$val[3]] = $val[3];
+					break;
+				case "srcip":
+					$val2 = explode(':', $val[4]);
+					$aggs[$val2[0]] = $val2[0];
+					break;
+				case "srcport":
+					$val2 = explode(':', $val[4]);
+					$aggs[$val2[1]] = $val2[1];
+					break;
+				case "dstip":
+					$val2 = explode(':', $val[6]);
+					$aggs[$val2[0]] = $val2[0];
+					break;
+				case "dstport":
+					$val2 = explode(':', $val[6]);
+					$aggs[$val2[1]] = $val2[1];
+					break;
+			}
+		}
+		//html_debug_print($aggs);
+		return $aggs;
+	}
+
+}
+
+function exec_command_prueba ($start_date, $end_date, $command, $show, $aggs, $aggregate){
+	//$command .= ' -t '.$start_date.'-'.$end_date.' -N';
+	$values = array();
+	$ag = 'src ip';
+		
+		$count_agg = count($aggs);
+		$command .= ' "';
+		$i = 0;
+			foreach($aggs as $agg){
+				if ($i==0)
+					$command .= $ag.' '.$agg;
+				else
+					$command .= ' or '.$ag.' '.$agg;
+				$i++;
+		}
+		$command .= '"';
+		exec($command, $result);
+		//html_debug_print($result);
+			
+		$i = 0;
+		if(isset($result) && is_array($result)&&($result!=null)){
+			foreach($result as $line) {
+				if ($line=='')
+					break;
+					
+				$line = preg_replace ('/\s+/', ' ', $line);
+				$val = explode(' ',$line);
+				$values[$i]['date'] = $val[0];
+				$values[$i]['time'] = $val[1];
+			
+				//create field to sort array
+				$date = $val[0];
+				$time = $val[1];
+				$date_time = strtotime ($date." ".$time);
+				$values[$i]['datetime'] = $date_time;
+				///
+				$values[$i]['duration'] = $val[2];
+				$values[$i]['proto'] = $val[3];
+					
+				switch ($show){
+					case "packets":
+						$values[$i]['data'] = $val[7];
+						break;
+					case "bytes":
+						$values[$i]['data'] = $val[8];
+						break;
+				}
+			$i++;
+			}
+		}
+	
+	return $values;
 }
 
 $id = get_parameter('id');
@@ -236,14 +334,28 @@ if ($id!=''){
 		$show_bytes = $result['show_bytes'];
 		$show_bps = $result['show_bps'];
 		$show_bpp = $result['show_bpp'];
+		
+		$dst_net = false;
+		$src_net = false;
 	
 		if(isset($ip_dst)){
-			$val_ipdst = explode(',',$ip_dst);
-			$count_ipdst = count($val_ipdst);
+			$net = preg_match('/\//',$ip_dst);
+			//html_debug_print(var_dump($net));
+			if ($net != 0) {
+				$dst_net = true;
+			} else {
+				$val_ipdst = explode(',',$ip_dst);
+				$count_ipdst = count($val_ipdst);
+			}
 		}
 		if(isset($ip_src)){
-			$val_ipsrc = explode(',',$ip_src);
-			$count_ipsrc = count($val_ipsrc);
+			$net = preg_match('/\//',$ip_src);
+			if ($net != 0) {
+				$src_net = true;
+			} else {
+				$val_ipsrc = explode(',',$ip_src);
+				$count_ipsrc = count($val_ipsrc);
+			}
 		}
 		if(isset($dst_port)&&($dst_port!='0')){
 			$val_dstport = explode(',',$dst_port);
@@ -254,20 +366,22 @@ if ($id!=''){
 			$count_srcport = count($val_srcport);
 		}
 
-//// Build command line
+		//// Build command line
 		$command = 'nfdump -q';
 
 		if (isset($config['netflow_path']))
 			$command .= ' -R '.$config['netflow_path'];
 		
+/*
 		if (isset($aggregate)&&($aggregate!='none')){
 			$command .= ' -s '.$aggregate;
 			if (isset($max_val))
 				$command .= ' -n '.$max_val;
 		}
+*/
 
-	//filter options
-		if (isset($ip_dst)&&($ip_dst!='')){
+		//filter options
+		if (isset($ip_dst)&&($ip_dst!='')&&($dst_net == false)){
 			$command .= ' "';
 			for($i=0;$i<$count_ipdst;$i++){
 				if ($i==0)
@@ -275,7 +389,7 @@ if ($id!=''){
 				else
 					$command .= ' or dst ip '.$val_ipdst[$i];
 			}
-			if (isset($ip_src)&&($ip_src!='')){
+			if (isset($ip_src)&&($ip_src!='')&&($src_net == false)){
 				$command .= ' and (';
 
 				for($i=0;$i<$count_ipsrc;$i++){
@@ -308,7 +422,7 @@ if ($id!=''){
 			}
 		$command .= '"';
 		
-		} else if (isset($ip_src)&&($ip_src!='')){
+		} else if (isset($ip_src)&&($ip_src!='')&&($src_net == false)) {
 			$command .= ' "';
 			for($i=0;$i<$count_ipsrc;$i++){
 				if ($i==0)
@@ -361,13 +475,13 @@ if ($id!=''){
 			}
 			
 	} else {
-		if (isset($src_port)&&($src_port!='')&&($src_port!='0')){
+		if (isset($src_port)&&($src_port!='')&&($src_port!='0')&&($src_net == false)&&($dst_net == false)){
 				$command .= ' "(';
-			for($i=0;$i<$count_ipdst;$i++){
+			for($i=0;$i<$count_srcport;$i++){
 				if ($i==0)
-					$command .= 'dst ip '.$val_ipdst[$i];
+					$command .= 'src port '.$val_srcport[$i];
 				else
-					$command .= ' or dst ip '.$val_ipdst[$i];
+					$command .= ' or src port '.$val_srcport[$i];
 			}
 			$command .= ' )"';
 		}
@@ -383,16 +497,27 @@ if ($id!=''){
 		$show = 'bpp';
 
 	//create interval to divide command execution
-	$inter = $config['graph_res'] * 100;
+	$inter = $config['graph_res'] * 50;
+/*
 	if ($aggregate!='none')
 		$inter = 1;
+*/
 
 	$fecha_limite = date ($time_format, $limit);
 	$res = $interval/$inter;
-
+	
+	$aggs = array();
+	if ($aggregate!='none'){
+		$command = 'nfdump -q -R /home/vanessa/netflow/netflow/ -t 2011/11/29.14:53:17-2011/12/30.20:53:17 -N';
+		$filt='';
+		$order = ' -s record/'.$show;
+		$j = 0;
+		$aggs = get_aggregate($date_limit, $date_time, $command, $show,$filt,$aggregate, $max_val, $order);
+	}
 	// Data iterator
 	$j = 0;
 	$values = array();
+
 			
 	// Calculate interval date
 	for ($i = 0; $i < $inter; $i++) {
@@ -403,8 +528,16 @@ if ($id!=''){
 		$end = date ($time_format, $end_date);
 
 		if($aggregate!='none'){
-			$result = exec_command_aggregate($timestamp_short, $end, $command, $show);
-			$result = orderMultiDimensionalArray($result, 'datetime');
+			$result = exec_command_prueba($timestamp_short, $end, $command, $show, $aggs);
+
+/*
+			//$result = orderMultiDimensionalArray($result, 'datetime');
+			html_debug_print($aggs);
+			foreach ($aggs as $agg) {
+				$command = 'nfdump -q -R /home/vanessa/netflow/netflow/ -t 2011/11/29.14:53:17-2011/12/30.20:53:17 -N "src ip '.$agg.'"';
+				$result = exec_command_prueba($timestamp_short, $end, $command, $show,$filt,$aggregate, $max_val, $order);
+			}
+*/
 		} else {
 			$result = exec_command($timestamp_short, $end, $command, $show);
 		}
@@ -412,38 +545,40 @@ if ($id!=''){
 		$total = 0;
 		$count = 0;
 
-	if(!empty($result)){
-		foreach($result as $data){
-			$dates = $data['date'];
-			$times = $data['time'];
-			$total += $data['data'];	
-			$count++;
-		}
+		if(!empty($result)){
+			$previous_data = 0;
+			foreach($result as $data){
+				$dates = $data['date'];
+				$times = $data['time'];
+				$total += $data['data'];	
+				$count++;
+			}
 			$values[$j]['date'] = $dates;
 			$values[$j]['time'] = $times;
 
 			if ($count > 0) {
 				$values[$j]['data'] = $total / $count;
-				$var = $values[$j]['data'];
+				$previous_data = $values[$j]['data'];
 			} else {
-				$values[$j]['data'] = 0;
+				$values[$j]['data'] = $previous_data;
 			}
 			$j++;
 		}			
 	}
+
 		if($aggregate!='none'){
 			switch ($element){
 				case '0':
 					echo grafico_netflow_aggregate_area($result, $interval, 880, 540, '', '','','',$date);
 					break;
 				case '1':
-					echo grafico_netflow_aggregate_pie($result);
+					//echo grafico_netflow_aggregate_pie($result);
 					break;
 				case '2':
-					echo netflow_show_table_values($result, $date_limit, $date_time);
+					//echo netflow_show_table_values($result, $date_limit, $date_time, $show);
 					break;
 				case '3':
-					echo netflow_show_total_period($result, $date_limit, $date_time);
+					//echo netflow_show_total_period($result, $date_limit, $date_time, $show);
 					break;
 			}
 		}else{

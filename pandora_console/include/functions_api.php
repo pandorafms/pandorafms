@@ -759,11 +759,11 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *  <min>;<max>;<custom_id>;<description> in this order
+ *  <min>;<max>;<custom_id>;<description>;<id_modulo> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|0|0|0|0|0|1|127.0.0.1|0||0|180|0|0|0||latency%20ping&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|0|0|0|0|0|1|127.0.0.1|0||0|180|0|0|0||latency%20ping|2&other_mode=url_encode_separator_|
  *  
  * @param $thrash3 Don't use
  */
@@ -796,6 +796,7 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'max' => $other['data'][19],
 		'custom_id' => $other['data'][20],
 		'descripcion' => $other['data'][21],
+		'id_modulo' => $other['data'][22]
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);

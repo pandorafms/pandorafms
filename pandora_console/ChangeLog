@@ -1,3 +1,10 @@
+2012-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	* include/functions_api.php: Added new serialized parameter in 
+	set_create_network_module function from api. Without it Web console 
+	interface module edit view crash.
+
+	* Bugfix from trunk
+
 2012-01-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

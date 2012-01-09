@@ -31,33 +31,22 @@ PRIMARY KEY(`id_report`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
--- Table `tnetflow_options`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `tnetflow_options` (
-  `id_option`  int(10) unsigned NOT NULL auto_increment,
-  `id_name` varchar(60) NOT NULL default '0',
-  `description` TEXT NOT NULL default '',
-  `path` varchar(200),
-  `port` varchar(100),
-PRIMARY KEY  (`id_option`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- -----------------------------------------------------
 -- Table `tnetflow_report_content`
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
    	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,
-        `id_filter`  varchar(60),
+    `id_filter`  INTEGER UNSIGNED NOT NULL default 0,
 	`date` bigint(20) NOT NULL default '0',
 	`period` int(11) NOT NULL default 0,
 	`max` int (11) NOT NULL default 0,
 	`show_graph` varchar(60),
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES tnetflow_report(`id_report`)
-		ON UPDATE CASCADE ON DELETE CASCADE
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_filter`) REFERENCES tnetflow_filter(`id_sg`)
+	ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------

@@ -60,13 +60,14 @@ if ($id_rc) {
 
 if ($update) {
 	$name_filter = get_parameter('id_filter');
+	$id_filter = db_get_value('id_sg', 'tnetflow_filter', 'id_name', $name_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
 	
 	$result = db_process_sql_update ('tnetflow_report_content',
 			array (
 				'id_report' => $id,
-				'id_filter' => $name_filter,
+				'id_filter' => $id_filter,
 				'max' => $max_val,
 				'show_graph' => $show_graph
 				),
@@ -79,12 +80,13 @@ if ($update) {
 
 if ($create){
 	$name_filter = get_parameter('id_filter');
+	$id_filter = db_get_value('id_sg', 'tnetflow_filter', 'id_name', $name_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
 
 	$values = array (
 				'id_report' => $id,
-				'id_filter' => $name_filter,
+				'id_filter' => $id_filter,
 				'max' => $max_val,
 				'show_graph' => $show_graph
 			);

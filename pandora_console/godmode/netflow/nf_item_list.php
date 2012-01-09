@@ -134,8 +134,9 @@ $total_reports_item = $total_reports_item[0]['total'];
 	$data = array ();
 
 	$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$item['id_rc'].'</a>';
-	
-	$data[1] = $item['id_filter'];
+	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $item['id_filter']);
+	//$data[1] = $item['id_filter'];
+	$data[1] = $name_filter;
 	
 	$data[2] = $item['max'];
 	
@@ -153,7 +154,6 @@ $total_reports_item = $total_reports_item[0]['total'];
 			$data[3] = 'Table total period';
 			break;
 	}
-	//$data[3] = $item['show_graph'];
 	
 	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 

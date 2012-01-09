@@ -1,3 +1,7 @@
+2012-01-09  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/agentes/planned_downtime.php: allow cancelling scheduled
+	downtime once it has started.
+
 2012-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	* include/functions_api.php: Added new serialized parameter in 
 	set_create_network_module function from api. Without it Web console 

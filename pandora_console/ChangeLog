@@ -1,4 +1,12 @@
 2012-01-09  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added migration 
+	script for 4.1 version.
+
+2012-01-09  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/netflow/nf_item_list.php
 	  godmode/netflow/nf_report_item.php
 	  pandoradb.sql: Fixed editing and deleting netflow filters.

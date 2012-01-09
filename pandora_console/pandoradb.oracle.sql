@@ -1519,7 +1519,7 @@ CREATE OR REPLACE TRIGGER tnetflow_report_inc BEFORE INSERT ON tnetflow_report R
 CREATE TABLE tnetflow_report_content (
 id_rc NUMBER(10, 0) NOT NULL PRIMARY KEY,
 id_report NUMBER(10, 0) NOT NULL REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
-id_filter VARCHAR2(100),
+id_filter NUMBER(10,0) NOT NULL REFERENCES tnetflow_filter(id_sg) ON DELETE CASCADE,
 "date" NUMBER(20, 0) default 0 NOT NULL,
 period NUMBER(11, 0) default 0 NOT NULL,
 max NUMBER(11, 0) default 0 NOT NULL,

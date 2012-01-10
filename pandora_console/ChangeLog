@@ -1,3 +1,7 @@
+2012-01-10  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/agentes/planned_downtime.php: fixed error in
+	planned downtime.
+
 2012-01-10  Junichi Satoh  <junichi@rworks.jp>
 
 	* mobile/operation/agents/view_agents.php: Fixed 'img' paths.

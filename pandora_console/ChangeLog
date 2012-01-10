@@ -1,5 +1,9 @@
 2012-01-10  Junichi Satoh  <junichi@rworks.jp>
 
+	* mobile/operation/agents/view_agents.php: Fixed 'img' paths.
+
+2012-01-10  Junichi Satoh  <junichi@rworks.jp>
+
 	* mobile/index.php: Fixed i18n translation does not work with mobile
 	console.
 

@@ -285,10 +285,7 @@ if ($id!=''){
 		$dst_port = $result['dst_port'];
 		$src_port = $result['src_port'];
 		$aggregate = $result['aggregate'];
-		$show_packets = $result['show_packets'];
-		$show_bytes = $result['show_bytes'];
-		$show_bps = $result['show_bps'];
-		$show_bpp = $result['show_bpp'];
+		$show = $result['output'];
 	
 		if(isset($ip_dst)){
 			$val_ipdst = explode(',',$ip_dst);
@@ -389,15 +386,6 @@ if ($id!=''){
 			$command .= $filter;
 		}
 
-		if ($show_packets)
-			$show = 'packets';
-		if ($show_bytes)
-			$show = 'bytes';
-		if ($show_bps)
-			$show = 'bps';
-		if ($show_bpp)
-			$show = 'bpp';
-	
 		// Data iterator
 		$j = 0;
 		$values = array();

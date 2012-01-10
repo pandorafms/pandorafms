@@ -1293,10 +1293,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
   `dst_port` varchar(100),
   `src_port` varchar(100),
   `aggregate` varchar(60),
-  `show_packets` int(1) default '0',
-  `show_bytes` int(1) default '0',
-  `show_bps` int(1) default '0',
-  `show_bpp` int(1) default '0',
+  `output` varchar(60),
 PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

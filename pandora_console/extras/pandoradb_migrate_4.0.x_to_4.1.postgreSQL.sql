@@ -16,10 +16,7 @@ CREATE TABLE "tnetflow_filter" (
   	"dst_port" varchar(100),
 	"src_port" varchar(100),
 	"aggregate" varchar(60),
- 	"show_packets" SMALLINT default 0,
-        "show_bytes" SMALLINT default 0,
-  	"show_bps" SMALLINT default 0,
-  	"show_bpp" SMALLINT default 0
+ 	"output" varchar(60)
 );
 
 -- -----------------------------------------------------

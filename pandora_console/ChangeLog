@@ -1,4 +1,15 @@
 2012-01-10  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql
+	  pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql
+	  godmode/netflow/nf_edit_form.php
+	  operation/netflow/nf_view.php: Changes in output format
+	of netflow.
+
+2012-01-10  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/netflow/nf_view.php: Fixed filter
 	netflow.
 

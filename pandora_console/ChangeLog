@@ -1,4 +1,8 @@
 2012-01-10  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/netflow/nf_view.php: Fixed filter
+	netflow.
+
+2012-01-10  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/agentes/group_view.php
 	  include/functions_group.php: Improve display for 
 	group view.

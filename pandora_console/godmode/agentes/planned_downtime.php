@@ -72,14 +72,14 @@ if ($stop_downtime == 1){
 	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
 
 	$values = array(
-		'id' => $id_downtime,
 		'name' => $name,
 		'description' => $description,
 		'date_from' => $date_from,
 		'date_to' => $date_time_stop,
-		'executed' => 0,
+		'executed' => $executed,
 		'id_group' => $id_group,
-		'only_alerts' => $only_alerts);
+		'only_alerts' => $only_alerts
+		);
 
 	$result = db_process_sql_update('tplanned_downtime', $values, array ('id' => $id_downtime));
 }

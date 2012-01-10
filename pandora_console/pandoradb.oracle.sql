@@ -1489,10 +1489,7 @@ ip_src VARCHAR2(100),
 dst_port VARCHAR2(100),
 src_port VARCHAR2(100),
 aggregate VARCHAR2(60),
-show_packets NUMBER(1, 0) default 0,
-show_bytes NUMBER(1, 0) default 0,
-show_bps NUMBER(1, 0) default 0,
-show_bpp NUMBER(1, 0) default 0
+output VARCHAR2(60)
 );
 
 CREATE SEQUENCE tnetflow_filter_s INCREMENT BY 1 START WITH 1;

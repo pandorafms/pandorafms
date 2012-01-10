@@ -56,10 +56,7 @@ if ($id) {
 	$dst_port = $filter['dst_port'];
 	$src_port = $filter['src_port'];
 	$aggregate = $filter['aggregate'];
-	$show_packets = $filter['show_packets'];
-	$show_bytes = $filter['show_bytes'];
-	$show_bps = $filter['show_bps'];
-	$show_bpp = $filter['show_bpp'];
+	$output = $filter['output'];
 
 } else {
 	$name = '';
@@ -69,21 +66,14 @@ if ($id) {
 	$dst_port = '';
 	$src_port = '';
 	$aggregate = 'none';
-	$show_packets = '';
-	$show_bytes = 1;
-	$show_bps = '';
-	$show_bpp = '';
-	
+	$output = 'bytes';	
 }
 
 if ($update) {
 	$name = (string) get_parameter ('name');
 	$assign_group = (int) get_parameter ('assign_group');
 	$aggregate = get_parameter('aggregate','');
-	$show_packets = (bool)get_parameter('show_packets');
-	$show_bytes = (bool)get_parameter('show_bytes');
-	$show_bps = (bool)get_parameter('show_bps');
-	$show_bpp = (bool)get_parameter('show_bpp');
+	$output = get_parameter('output','bytes');
 	$ip_dst = get_parameter('ip_dst','');
 	$ip_src = get_parameter('ip_src','');
 	$dst_port = get_parameter('dst_port','');
@@ -117,10 +107,7 @@ if ($create){
 	$name = (string) get_parameter ('name');
 	$assign_group = (int) get_parameter ('assign_group');
 	$aggregate = get_parameter('aggregate','none');
-	$show_packets = (bool)get_parameter('show_packets',0);
-	$show_bytes = (bool)get_parameter('show_bytes',1);
-	$show_bps = (bool)get_parameter('show_bps',0);
-	$show_bpp = (bool)get_parameter('show_bpp',0);
+	$output = get_parameter('output','bytes');
 	$ip_dst = get_parameter('ip_dst','');
 	$ip_src = get_parameter('ip_src','');
 	$dst_port = get_parameter('dst_port','');
@@ -137,10 +124,7 @@ if ($create){
 				'dst_port'=>$dst_port,
 				'src_port'=>$src_port,
 				'aggregate'=>$aggregate,
-				'show_packets'=>$show_packets,
-				'show_bytes'=>$show_bytes,
-				'show_bps'=>$show_bps,
-				'show_bpp'=>$show_bpp
+				'output'=>$output
 			);
 			$result = db_process_sql_insert('tnetflow_filter', $values);
 		}
@@ -190,15 +174,9 @@ $aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip
 $table->data[7][1] = html_print_select ($aggregate_list, "aggregate", $aggregate, '', '', 0, true, false, true, '', false);
 	
 $table->data[8][0] = '<b>'.__('Output format').'</b>';
-
-$table->data[8][1] = __('Packets');
-$table->data[8][1] .= html_print_checkbox ('show_packets', 1, $show_packets, true);
-$table->data[8][1] .= __('Bytes');
-$table->data[8][1] .= html_print_checkbox ('show_bytes', 1, $show_bytes, true);
-$table->data[8][1] .= __('Bits per second');
-$table->data[8][1] .= html_print_checkbox ('show_bps', 1, $show_bps, true);
-$table->data[8][1] .= __('Bytes per packet');
-$table->data[8][1] .= html_print_checkbox ('show_bpp', 1, $show_bpp, true);
+$show_output = array();
+$show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'bps' =>__('Bits per second'), 'bpp' =>__('Bytes per packet'));
+$table->data[8][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
 echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
 html_print_table ($table);

@@ -50,7 +50,8 @@ $groups_full = users_get_groups ($config['id_user'], "AR", true, true);
 $groups = array();
 foreach($groups_full as $group) {
 	$groups[$group['id_grupo']]['name'] = $group['nombre'];
-	if($group['parent'] != 0) {
+
+	if($group['id_grupo'] != 0) {
 		$groups[$group['parent']]['childs'][] = $group['id_grupo'];
 		$groups[$group['id_grupo']]['prefix'] = $groups[$group['parent']]['prefix'].'&nbsp;&nbsp;&nbsp;';
 	}

@@ -12,6 +12,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+//Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
+if (function_exists ('mb_internal_encoding')) {
+        mb_internal_encoding ("UTF-8");
+}
+
 ob_start ();
 
 require_once("include/system.class.php");
@@ -33,6 +38,15 @@ if ($user == null) {
 	$user = new User();
 }
 $user->hackinjectConfig();
+
+if ($user->isLogged()) {
+	$user_language = get_user_language ($system->getConfig('id_user'));
+	if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+		$l10n = new gettext_reader (new CachedFileReader ('../include/languages/'.$user_language.'.mo'));
+		$l10n->load_tables();
+	}
+}
+
 ?>
 <html>
 	<head>
@@ -64,7 +78,11 @@ $user->hackinjectConfig();
 							require ("../general/noaccess.php");
 							return;
 						}
-						
+						$user_language = get_user_language ($system->getConfig('id_user'));
+						if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+							$l10n = new gettext_reader (new CachedFileReader ('../include/languages/'.$user_language.'.mo'));
+							$l10n->load_tables();
+						}
 						$tactical = new Tactical();
 						$tactical->show();
 					}

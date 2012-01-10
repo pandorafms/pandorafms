@@ -282,7 +282,7 @@ class ViewAgent {
 			}
 		
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img height="15" width="15"') , ui_print_status_image($status, $title, true));
+				array('/images/status_sets', '<img height="15" width="15"') , ui_print_status_image($status, $title, true));
 			
 			if ($module["id_tipo_modulo"] == 24) { // log4x
 				switch($module["datos"]) {
@@ -371,7 +371,7 @@ class ViewAgent {
 			}
 			
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img width="15" height="15"'), ui_print_status_image($status, $title, true));
+				array('/images/status_sets', '<img width="15" height="15"'), ui_print_status_image($status, $title, true));
 			
 			$table->data[] = $data;
 		}

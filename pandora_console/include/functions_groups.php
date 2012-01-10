@@ -623,9 +623,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	// Store printed group to not print it again
 	$printed_groups[$id_group] = 1;
-		
-	if ($id_group < 1) 
-		return; // Skip group 0
+	
+	if ($id_group < 0) 
+		return; 
 
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);

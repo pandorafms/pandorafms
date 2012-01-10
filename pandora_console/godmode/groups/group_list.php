@@ -286,7 +286,7 @@ if(!empty($groups)) {
 				}
 			}
 		}
-		
+	
 		$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
 		
 		if ($group['id_grupo'] == 0) {

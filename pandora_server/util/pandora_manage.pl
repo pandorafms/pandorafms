@@ -367,23 +367,23 @@ sub non_exist_check ($$$) {
 ###############################################################################
 # Check the parameters.
 # Param 0: # of received parameters
-# Param 1: # of necessary parameters
+# Param 1: # of acceptable parameters
 # Param 2: # of optional parameters
 ###############################################################################
 sub param_check ($$;$) {
-	my ($ltotal, $lneed, $lopt) = @_;
+	my ($ltotal, $laccept, $lopt) = @_;
 	$ltotal = $ltotal - 1;
 	
 	if(!defined($lopt)){
 		$lopt = 0;
 	}
 
-	if( $ltotal < $lneed - $lopt || $ltotal > $lneed) {
+	if( $ltotal < $laccept - $lopt || $ltotal > $laccept) {
 		if( $lopt == 0 ) {
-			param_error ($lneed, $ltotal);
+			param_error ($laccept, $ltotal);
 		}
 		else {
-			param_error (($lneed-$lopt)."-".$lneed, $ltotal);
+			param_error (($laccept-$lopt)."-".$laccept, $ltotal);
 		}
 	}
 }
@@ -411,10 +411,10 @@ sub help_screen{
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
-	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add data server module to agent');
-	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold>]', 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add plug-in module to agent');
+	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
+	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to agent');
+	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -535,7 +535,7 @@ sub cli_delete_agent() {
 sub cli_create_data_module() {
 	my ($module_name, $module_type, $agent_name, $description, $module_group, 
 	$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $definition_file) = @ARGV[2..16];
+	$critical_max, $history_data, $definition_file, $warning_str, $critical_str) = @ARGV[2..18];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -580,12 +580,12 @@ sub cli_create_data_module() {
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 	}
 	
-	if(defined($definition_file) && $module_type ne $module_type_def) {
+	if(defined($module_type_def) && $module_type ne $module_type_def) {
 		$module_type = $module_type_def;
 		print "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 	}
 	
-	if(defined($definition_file) && $module_name ne $module_name_def) {
+	if(defined($module_name_def) && $module_name ne $module_name_def) {
 		$module_name = $module_name_def;
 		print "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
@@ -622,7 +622,8 @@ sub cli_create_data_module() {
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
 	$parameters{'module_interval'} = $interval unless !defined ($interval);	
-
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 
 	$parameters{'id_modulo'} = 1;	
 	
@@ -637,7 +638,7 @@ sub cli_create_data_module() {
 sub cli_create_network_module() {
 	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $ff_threshold) = @ARGV[2..18];
+	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..20];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -699,6 +700,8 @@ sub cli_create_network_module() {
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
 	$parameters{'module_interval'} = $interval unless !defined ($interval);	
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 
 	$parameters{'id_modulo'} = 2;	
 	
@@ -714,7 +717,8 @@ sub cli_create_snmp_module() {
 	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
 	$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 	$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-	$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass, $ff_threshold) = @ARGV[2..27];
+	$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass, $ff_threshold,
+	$warning_str, $critical_str) = @ARGV[2..29];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -768,6 +772,8 @@ sub cli_create_snmp_module() {
 	$parameters{'snmp_community'} = $community unless !defined ($community);
 	$parameters{'snmp_oid'} = $oid unless !defined ($oid);
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 	
 	if($version == 3) {
 		$parameters{'custom_string_1'} = $snmp3_priv_method;
@@ -793,7 +799,7 @@ sub cli_create_plugin_module() {
 	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
 	$user, $password, $parameters, $description, $module_group, $min, $max, $post_process, 
 	$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-	$ff_threshold) = @ARGV[2..22];
+	$ff_threshold, $warning_str, $critical_str) = @ARGV[2..24];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -851,6 +857,8 @@ sub cli_create_plugin_module() {
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
 	$parameters{'module_interval'} = $interval unless !defined ($interval);	
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 
 	$parameters{'id_modulo'} = 4;	
 	
@@ -1498,19 +1506,19 @@ sub pandora_manage_main ($$$) {
 			cli_delete_agent();
 		}
 		elsif ($param eq '--create_data_module') {
-			param_check($ltotal, 15, 12);
+			param_check($ltotal, 17, 14);
 			cli_create_data_module();
 		}
 		elsif ($param eq '--create_network_module') {
-			param_check($ltotal, 17, 13);
+			param_check($ltotal, 19, 15);
 			cli_create_network_module();
 		}
 		elsif ($param eq '--create_snmp_module') {
-			param_check($ltotal, 26, 20);
+			param_check($ltotal, 28, 22);
 			cli_create_snmp_module();
 		}
 		elsif ($param eq '--create_plugin_module') {
-			param_check($ltotal, 21, 12);
+			param_check($ltotal, 23, 14);
 			cli_create_plugin_module();
 		}
 		elsif ($param eq '--delete_module') {

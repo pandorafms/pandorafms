@@ -260,7 +260,7 @@ if ($id!=''){
 		$sql = "SELECT * FROM tnetflow_report_content WHERE id_rc='".$rc."'";
 
 		$content_report = db_get_row_sql($sql);
-		$name_filter = $content_report['id_filter'];
+		$id_filter = $content_report['id_filter'];
 		$max_val= $content_report['max'];
 		$element = $content_report['show_graph'];
 
@@ -276,7 +276,7 @@ if ($id!=''){
 		$date = strtotime ($date." ".$time);
 		$limit = $date - $interval;
 
-		$sql = "SELECT * FROM tnetflow_filter WHERE id_name = '".$name_filter."'";
+		$sql = "SELECT * FROM tnetflow_filter WHERE id_sg = '".$id_filter."'";
 		$result = db_get_row_sql($sql,false,true);
 
 		$assign_group = $result['group'];

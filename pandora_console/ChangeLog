@@ -1,3 +1,8 @@
+2012-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: Added new functions 
+	set_create_plugin_module and set_create_alert_template in the Api.
+
 2012-01-10  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql
 	  pandoradb.oracle.sql

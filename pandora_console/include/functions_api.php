@@ -752,25 +752,32 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 }
 
 /**
- * Create a module in agent. And return the id_agent_module of new module.
+ * Create a network module in agent. And return the id_agent_module of new module.
  * 
  * @param string $id Name of agent to add the module.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *  <min>;<max>;<custom_id>;<description>;<id_modulo> in this order
+ *  <min>;<max>;<custom_id>;<description>;<id_module> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|0|0|0|0|0|1|127.0.0.1|0||0|180|0|0|0||latency%20ping|2&other_mode=url_encode_separator_|
- *  
+ *  api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|10|15|0|16|18|0|15|0|www.google.es|0||0|180|0|0|0|0|latency%20ping|2&other_mode=url_encode_separator_| 
+ * 
+ * 
  * @param $thrash3 Don't use
  */
 function set_create_network_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
+	
+	if ($other['data'][22] == ""){
+		returnError('error_create_network_module', __('Error in creation network module. Id_module cannot be left blank.'));
+		return;
+	}
+	
 	$idAgent = agents_get_agent_id($agentName);
-
+	
 	$name = $other['data'][0];
 	
 	$values = array(
@@ -809,6 +816,196 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => $idModule));
 	}
 }
+
+
+		$plugin_user = (string) get_parameter ('plugin_user');
+		if (get_parameter('id_module_component_type') == 7)
+			$plugin_pass = (int) get_parameter ('plugin_pass');
+		else
+			$plugin_pass = (string) get_parameter ('plugin_pass');
+			
+		$plugin_parameter = (string) get_parameter ('plugin_parameter');
+
+
+/**
+ * Create a plugin module in agent. And return the id_agent_module of new module.
+ * 
+ * @param string $id Name of agent to add the module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<id_module>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=create_plugin_module&id=pepito&other=prueba|0|1|2|0|0||0|0||0|0|127.0.0.1|0||0|300|0|0|0|0|plugin%20module%20from%20api|4|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use
+ */
+function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
+	$agentName = $id;
+	
+	if ($other['data'][22] == ""){
+		returnError('error_create_plugin_module', __('Error in creation plugin module. Id_module cannot be left blank.'));
+		return;
+	}
+	
+	if ($other['data'][23] == ""){
+		returnError('error_create_plugin_module', __('Error in creation plugin module.  Id_plugin cannot be left blank.'));
+		return;		
+	}
+	
+	$idAgent = agents_get_agent_id($agentName);
+	
+	$name = $other['data'][0];
+	
+	$values = array(
+		'id_agente' => $idAgent,
+		'disabled' => $other['data'][1],
+		'id_tipo_modulo' => $other['data'][2],
+		'id_module_group' => $other['data'][3],
+		'min_warning' => $other['data'][4],
+		'max_warning' => $other['data'][5],
+		'str_warning' => $other['data'][6],
+		'min_critical' => $other['data'][7],
+		'max_critical' => $other['data'][8],
+		'str_critical' => $other['data'][9],
+		'min_ff_event' => $other['data'][10],
+		'history_data' => $other['data'][11],
+		'ip_target' => $other['data'][12],
+		'tcp_port' => $other['data'][13],
+		'snmp_community' => $other['data'][14],
+		'snmp_oid' => $other['data'][15],
+		'module_interval' => $other['data'][16],
+		'post_process' => $other['data'][17],
+		'min' => $other['data'][18],
+		'max' => $other['data'][19],
+		'custom_id' => $other['data'][20],
+		'descripcion' => $other['data'][21],
+		'id_modulo' => $other['data'][22],
+		'id_plugin' => $other['data'][23],
+		'plugin_user' => $other['data'][24],
+		'plugin_pass' => $other['data'][25],
+		'plugin_parameter' => $other['data'][26]
+	);
+	
+	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
+	
+	if (is_error($idModule)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_plugin_module', __('Error in creation plugin module.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $idModule));
+	}
+}
+
+
+
+/**
+ * Create an alert template. And return the id of new template.
+ * 
+ * @param string $id Name of alert template to add the module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <type>;<description>;<id_alert_action>;
+ *  <field1>;<field2>;<field3>;<value>;<matches_value>;<max_value>;<min_value>;<time_threshold>;
+ *  <max_alerts>;<min_alerts>;<time_from>;<time_to>;<monday>;<tuesday>;<wednesday>;
+ *  <thursday>;<friday>;<saturday>;<sunday>;<recovery_notify>;<field2_recovery>;<field3_recovery>;<priority>;<id_group> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example 1 (condition: regexp =~ /pp/, action: Mail to XXX, max_alert: 10, min_alert: 0, priority: WARNING, group: databases):
+ *  api.php?op=set&op2=create_alert_template&id=pepito&other=regex|template%20based%20in%20regexp|1||||pp|1||||10|0|||||||||||||3&other_mode=url_encode_separator_|
+ *  
+ * 	example 2 (condition: value is not between 5 and 10, max_value: 10.00, min_value: 5.00, time_from: 00:00:00, time_to: 15:00:00, priority: CRITICAL, group: Servers):
+ *  api.php?op=set&op2=create_alert_template&id=template_min_max&other=max_min|template%20based%20in%20range|NULL||||||10|5||||00:00:00|15:00:00|||||||||||4|2&other_mode=url_encode_separator_|
+ * 
+ *  api.php?op=set&op2=create_alert_template&id=pepito&other=prueba|0|7|1|0|0|0|0|0|1|127.0.0.1|0||0|180|0|0|0||latency%20ping|2&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use
+ */
+function set_create_alert_template($name, $thrash1, $other, $thrash3) {
+	if ($name == "") {
+		returnError('error_create_alert_template', __('Error creating alert template. Template name cannot be left blank.'));
+		return;
+	}
+	
+	$template_name = $name;
+	
+	$type = $other['data'][0];
+	
+	if ($other['data'][2] != ""){
+		$values = array(
+			'description' => $other['data'][1],
+			'id_alert_action' => $other['data'][2],
+			'field1' => $other['data'][3],
+			'field2' => $other['data'][4],
+			'field3' => $other['data'][5],
+			'value' => $other['data'][6],
+			'matches_value' => $other['data'][7],
+			'max_value' => $other['data'][8],
+			'min_value' => $other['data'][9],
+			'time_threshold' => $other['data'][10],
+			'max_alerts' => $other['data'][11],
+			'min_alerts' => $other['data'][12],
+			'time_from' => $other['data'][13],
+			'time_to' => $other['data'][14],
+			'monday' => $other['data'][15],
+			'tuesday' => $other['data'][16],
+			'wednesday' => $other['data'][17],
+			'thursday' => $other['data'][18],
+			'friday' => $other['data'][19],
+			'saturday' => $other['data'][20],
+			'sunday' => $other['data'][21],
+			'recovery_notify' => $other['data'][22],
+			'field2_recovery' => $other['data'][23],
+			'field3_recovery' => $other['data'][24],
+			'priority' => $other['data'][25],		
+			'id_group' => $other['data'][26]											
+		);
+	} else {
+		$values = array(
+			'description' => $other['data'][1],
+			'field1' => $other['data'][3],
+			'field2' => $other['data'][4],
+			'field3' => $other['data'][5],
+			'value' => $other['data'][6],
+			'matches_value' => $other['data'][7],
+			'max_value' => $other['data'][8],
+			'min_value' => $other['data'][9],
+			'time_threshold' => $other['data'][10],
+			'max_alerts' => $other['data'][11],
+			'min_alerts' => $other['data'][12],
+			'time_from' => $other['data'][13],
+			'time_to' => $other['data'][14],
+			'monday' => $other['data'][15],
+			'tuesday' => $other['data'][16],
+			'wednesday' => $other['data'][17],
+			'thursday' => $other['data'][18],
+			'friday' => $other['data'][19],
+			'saturday' => $other['data'][20],
+			'sunday' => $other['data'][21],
+			'recovery_notify' => $other['data'][22],
+			'field2_recovery' => $other['data'][23],
+			'field3_recovery' => $other['data'][24],
+			'priority' => $other['data'][25],		
+			'id_group' => $other['data'][26]											
+		);			
+	}
+	
+	$id_template = alerts_create_alert_template($template_name, $type, $values);
+	
+	if (is_error($id_template)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_alert_template', __('Error creating alert template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $id_template));
+	}
+}
+
+
 
 /**
  * Get module data in CSV format.

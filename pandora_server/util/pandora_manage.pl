@@ -699,7 +699,7 @@ sub cli_create_data_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $warning_str, $critical_str);
+		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str);
 		
 	if($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
@@ -709,7 +709,7 @@ sub cli_create_data_module($) {
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $warning_str, $critical_str) = @ARGV[2..18];
+		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str) = @ARGV[2..18];
 	}
 	
 	my $module_name_def;
@@ -738,7 +738,7 @@ sub cli_create_data_module($) {
 	}
 
 	# If the module is local and is not to policy, we add it to the conf file
-	if($in_policy == 0 && defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+	if(defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
 		open (FILE, $definition_file);
 		my @file = <FILE>;
 		my $definition = join("", @file);
@@ -771,12 +771,12 @@ sub cli_create_data_module($) {
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 	}
 
-	if($in_policy == 0 && defined($definition_file) && $module_type ne $module_type_def) {
+	if(defined($definition_file) && $module_type ne $module_type_def) {
 		$module_type = $module_type_def;
 		print "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 	}
 	
-	if($in_policy == 0 && defined($definition_file) && $module_name ne $module_name_def) {
+	if(defined($definition_file) && $module_name ne $module_name_def) {
 		$module_name = $module_name_def;
 		print "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
@@ -819,8 +819,9 @@ sub cli_create_data_module($) {
 	}
 	else {
 		$parameters{'description'} = safe_input($description) unless !defined ($description);
-		$parameters{'id_module'} = 1;	
-		$parameters{'configuration_data'} = safe_input($definition_file);	
+		$parameters{'id_module'} = 1;
+		$configuration_data !~ s/\\n/\n/g;
+		$parameters{'configuration_data'} = safe_input($configuration_data);	
 	}
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);

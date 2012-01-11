@@ -35,7 +35,15 @@ $id = (int) get_parameter ('id');
 $name = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
-		
+
+if ($id){
+	$permission = netflow_check_filter_group ($id);
+	if (!$permission) { //no tiene permisos para acceder a un filtro
+		require ("general/noaccess.php");
+		return;
+	}
+}
+	
 $buttons['edit'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
 		. html_print_image ("images/edit.png", true, array ("title" => __('Filter list')))
 		. '</a>';

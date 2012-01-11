@@ -31,6 +31,15 @@ if (! check_acl ($config["id_user"], 0, "AR")) {
 }
 
 $id = io_safe_input (get_parameter('id'));
+
+if ($id) {
+	$permission = netflow_check_report_group ($id);
+	if (!$permission) { //no tiene permisos para acceder a un informe
+		require ("general/noaccess.php");
+		return;
+	}
+}
+
 $period = get_parameter('period', '86400');
 $update_date = get_parameter('update_date', 0);
 if($update_date){

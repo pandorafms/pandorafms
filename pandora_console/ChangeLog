@@ -1,3 +1,11 @@
+2012-01-11  Vanessa Gil  <vanessa.gil@artica.es>
+	  godmode/netflow/nf_edit_form.php
+	  godmode/netflow/nf_report.php
+	  godmode/netflow/nf_report_form.php
+	  godmode/netflow/nf_report_item.php
+	  include/functions_netflow.php
+	  operation/netflow/nf_view.php: netflow acl.
+
 2012-01-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_graph.php,

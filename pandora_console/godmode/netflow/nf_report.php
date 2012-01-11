@@ -89,15 +89,14 @@ $reports = db_get_all_rows_filter ('tnetflow_report', $filter);
 
 // Get group list that user has access
 $groups_user = users_get_groups ($config['id_user'], "IW", false, true);
-html_debug_print($groups_user);
 
 $groups_id = array();
 foreach($groups_user as $key => $groups){
 	$groups_id[] = $groups['id_grupo'];
 }
-html_debug_print($groups_id);
+
 $sql = "SELECT * FROM tnetflow_report WHERE id_group IN (".implode(',',$groups_id).")";
-html_debug_print($sql);
+
 $reports = db_get_all_rows_sql($sql);
 if ($reports === false)
 	$reports = array();

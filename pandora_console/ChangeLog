@@ -1,3 +1,11 @@
+2012-01-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php,
+	  include/functions_netflow.php,
+	  operation/netflow/nf_view.php: Fixed netflow stacked charts. Moved
+	  code from nf_view to functions in functions_netflow. Several other
+	  fixes.
+
 2012-01-11  Sancho Lerena <slerena@artica.es>
 
 	*  images/status_sets/color_text/*.png: Updated icons missing

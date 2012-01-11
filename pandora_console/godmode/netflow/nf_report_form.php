@@ -38,11 +38,11 @@ if ($id) {
 	$report = netflow_reports_get_reports ($id);
 	$name = $report['id_name'];
 	$description = $report['description'];
-	$group = $report['group'];
+	$group = $report['id_group'];
 
 } else {
 	$name = '';
-	$group = 'none';
+	$group = '';
 	$description = '';
 }
 
@@ -50,7 +50,7 @@ if ($update) {
 	$id = get_parameter('id');
 	$name = (string) get_parameter ('name');
 	$description = get_parameter ('description');
-	$group = get_parameter('group','none');
+	$group = get_parameter('id_group');
 
 	if ($name == '') {
                 ui_print_error_message (__('Not updated. Blank name'));
@@ -58,7 +58,7 @@ if ($update) {
 		$result = db_process_sql_update ('tnetflow_report',
 			array (
 				'id_name' => $name,
-				'group' => $group,
+				'id_group' => $group,
 				'description' => $description,
 				),
 			array ('id_report' => $id));
@@ -67,7 +67,7 @@ if ($update) {
 
 if ($create){
 	$name = (string) get_parameter ('name');
-	$group = (int) get_parameter ('group');
+	$group = (int) get_parameter ('id_group');
 	$description = get_parameter('description','');
 
 		if($name == db_get_value('id_name', 'tnetflow_report', 'id_name', $name)){	
@@ -75,7 +75,7 @@ if ($create){
 		} else {
 			$values = array (
 				'id_name' => $name,
-				'group' => $group,
+				'id_group' => $group,
 				'description' => $description,
 			);
 			$result = db_process_sql_insert('tnetflow_report', $values);
@@ -124,7 +124,7 @@ $table->data[0][1] = html_print_input_text ('name', $name, false, 30, 80, true);
 $own_info = get_user_info ($config['id_user']);
 $table->data[1][0] = '<b>'.__('Group').'</b>';
 $table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
-		$own_info['is_admin'], 'group', $group, '', __('None'), -1, true,
+		$own_info['is_admin'], 'id_group', $group, '','', -1, true,
 		false, false);
 
 $table->data[2][0] = '<b>'.__('Description').'</b>';

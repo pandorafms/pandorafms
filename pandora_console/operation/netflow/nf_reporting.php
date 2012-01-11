@@ -23,7 +23,7 @@ include_once("include/functions_html.php");
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "AR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -33,12 +33,24 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 //Header
 ui_print_page_header (__('Netflow Reporting'), "images/networkmap/so_cisco_new.png", false, "", false);
 
+/*
 $filter = array ();
 
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
+*/
 
-$reports = db_get_all_rows_filter ('tnetflow_report', $filter);
+// Get group list that user has access
+$groups_user = users_get_groups ($config['id_user'], "AR", false, true);
+
+$groups_id = array();
+foreach($groups_user as $key => $groups){
+	$groups_id[] = $groups['id_grupo'];
+}
+//$sql = "SELECT * FROM tnetflow_report WHERE 'group' IN (\"".implode('","',$groups_id)."\")";
+$sql = "SELECT * FROM tnetflow_report WHERE id_group IN (".implode(',',$groups_id).")";
+$reports = db_get_all_rows_sql($sql);
+
 if ($reports == false){
 	$reports = array();
 }

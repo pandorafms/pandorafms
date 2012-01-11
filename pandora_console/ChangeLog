@@ -1,3 +1,13 @@
+2012-01-11  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql
+	  godmode/netflow/nf_edit_form.php
+	  godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_report.php
+	  godmode/netflow/nf_report_form.php
+	  godmode/netflow/nf_report_item.php
+	  godmode/netflow/nf_reporting.php
+	  operation/netflow/nf_view.php: netflow acls.
+
 2012-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: Added new functions 

@@ -1,3 +1,8 @@
+2012-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: Added new functions 
+	set_create_snmp_module and set_create_data_module in the Api.
+
 2012-01-11  Junichi Satoh  <junichi@rworks.jp>
 
 	* mobile/operation/agents/view_agents.php: Fixed graph generation

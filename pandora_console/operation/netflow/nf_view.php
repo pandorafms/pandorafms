@@ -152,12 +152,12 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 			echo graph_netflow_aggregate_pie($result);
 			break;
 		case '2':
-			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo netflow_stat_table ($data, $start_date, $end_date, $unit);
+			$data = netflow_get_data ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
+			echo netflow_data_table ($data, $start_date, $end_date, $unit);
 			break;
 		case '3':
 			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo netflow_show_total_period($data, $start_date, $end_date, $unit);
+			echo netflow_stat_table ($data, $start_date, $end_date, $unit);
 			break;
 		default:
 			echo fs_error_image();

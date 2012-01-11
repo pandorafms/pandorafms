@@ -194,7 +194,7 @@ function sort_netflow_data ($netflow_data) {
      usort($netflow_data, "compare_flows");
 }
 
-function netflow_show_total_period($data, $start_date, $end_date, $show){
+function netflow_stat_table ($data, $start_date, $end_date, $show){
 	global $nfdump_date_format;
 
 	$start_date = date ($nfdump_date_format, $start_date);
@@ -238,77 +238,60 @@ html_print_table($table);
  *
  * @return The statistics table.
  */
-function netflow_stat_table ($data, $start_date, $end_date, $unit){
+function netflow_data_table ($data, $start_date, $end_date, $unit){
 	global $nfdump_date_format;
 
+	$period = $end_date - $start_date;
 	$start_date = date ($nfdump_date_format, $start_date);
 	$end_date = date ($nfdump_date_format, $end_date);
 
+	// Set the format
+	if ($period <= 21600) {
+		$time_format = 'H:i:s';
+	}
+	elseif ($period < 86400) {
+		$time_format = 'H:i';
+	}
+	elseif ($period < 1296000) {
+		$time_format = 'M d H:i';
+	}
+	elseif ($period < 2592000) {
+		$time_format = 'M d H\h';
+	}
+	else {  
+		$time_format = 'M d H\h';
+	}
+
 	$values = array();
-	$table->width = '50%';
+	//$table->size = array ('50%');
 	$table->class = 'databox';
 	$table->data = array();
-	
-	$j = 0;
-	$x = 1;
-	$y = 1;
 	
 	echo"<h4>Tabla de valores ($unit)</h4>";
 	$table->data[0][0] = '<b>'.__('Rango').'</b>';
 
-	$coordx = array();
-	$coordy = array();
-	
-	while (isset ($data[$j])) {
-		$date = $data[$j]['date'];
-		$time = $data[$j]['time'];
-		$agg = $data[$j]['agg'];
-		
-		if (!isset($values[$agg])){
-			$values['data'] = $data[$j]['data'];			
-		} else {
-			$values['data'] += $data[$j]['data'];
-		}
-		
-		$values['agg'] = $agg;
-		$values['datetime'] = $date.'.'.$time;
-		
-		if(isset($coordy[$agg])) {
-			$cy = $coordy[$agg];
-		}
-		else {
-			$cy = $y;
-			$coordy[$agg] = $cy;
-			$y++;
-		}
-		
-		if(isset($coordx[$date.'.'.$time])) {
-			$cx = $coordx[$date.'.'.$time];
-		}
-		else {
-			$cx = $x;
-			$coordx[$date.'.'.$time] = $cx;
-			$x++;
-		}
-		
-		$table->data[0][$cy] = $agg;
-		$table->data[$cx][0] = $date.'.'.$time;
-		$table->data[$cx][$cy] = $values['data'];
-
+	$j = 0;
+	$source_index = array ();
+	$source_count = 0;
+	foreach ($data['sources'] as $source => $null) {
+		$table->data[0][$j+1] = $source;
+		$source_index[$j] = $source;
+		$source_count++;
 		$j++;
 	}
-	//si la coordenada no tiene valor, se rellena con 0
-	foreach($coordx as $x) {
-		foreach($coordy as $y) {
-			if(!isset($table->data[$x][$y])) {
-				$table->data[$x][$y] = 0;
+
+	$i = 1;
+	foreach ($data['data'] as $timestamp => $values) {
+		$table->data[$i][0] = date ($time_format, $timestamp);
+		for ($j = 0; $j < $source_count; $j++) {
+			if (isset ($values[$source_index[$j]])) {
+				$table->data[$i][$j+1] = format_numeric ($values[$source_index[$j]]);
+			} else {
+				$table->data[$i][$j+1] = 0;
 			}
 		}
+		$i++;
 	}
-	//ordenar los indices
-	foreach($coordx as $x) {
-		ksort($table->data[$x]);
-	}	
 
 	html_print_table($table);
 }
@@ -546,7 +529,7 @@ function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, 
 		}	
 		$i++;
 	}
-	
+
 	sort_netflow_data ($values);
 	return $values;
 }

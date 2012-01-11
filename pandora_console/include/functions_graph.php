@@ -1936,121 +1936,62 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
  * Print an area graph with netflow aggregated
  */
 
-function grafico_netflow_aggregate_area ($data, $period,$width, $height , $title, $unit_name, $avg_only = 0, $pure=0,$date = 0, $only_image = false, $homeurl = '') {
+function graph_netflow_aggregate_area ($data, $period, $width, $height, $title, $unit_name, $avg_only = 0, $pure=0, $date = 0, $only_image = false, $homeurl = '') {
 	global $config;
 	global $graphic_type;
-echo"<h4>Gráfica de área</h4>";
+
+	echo"<h4>Gráfica de área</h4>";
 	include_flash_chart_script($homeurl);
 
-	// Set variables
-	if ($date == 0) $date = get_system_time();
-	$datelimit = $date - $period;
-	$resolution = $config['graph_res'] * 50; //Number of points of the graph
-	$interval = (int) ($period / $resolution);
-	
-		/////////////////////////////////////////////////////////////////
-		// Set the title and time format
-		if ($period <= 3600) {
-			$time_format = 'G:i:s';
-		}
-		elseif ($period <= 86400) {
-			$time_format = 'G:i:s';
-		}
-		elseif ($period <= 604800) {
-			$time_format = 'M d H:i:s';
-		}
-		elseif ($period <= 2419200) {
-			$time_format = 'M d H\h';
-		} 
-		else {
-			$time_format = 'M d H\h';
-		}
-		$timestamp_short = date($time_format, $date);
-		/////////////////////////////////////////////////////////////////
-
-	
-///////////////COMBINED
-	$aggs = array();
-	$ag ='';
-	// Calculate data for each agg
-	$j = 0;
-	for ($i = 0; $i < $resolution; $i++) {
-		$count = 0;
-		$timestamp = $datelimit + ($interval * $i);
-		$timestamp_short = date($time_format, $timestamp);
-		$long_index[$timestamp_short] = date(
-		html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		
-		
-		if (isset ($data[$i])){
-			$aggs[$data[$i]['agg']] = $data[$i]['agg'];
-		}
-		// Read data that falls in the current interval
-		while(isset ($data[$j])) {
-			$ag = $data[$j]['agg'];
-			
-				$date = $data[$j]['date'];
-				$time = $data[$j]['time'];
-
-				$datetime = strtotime ($date." ".$time);
-				
-				if ($datetime >= $timestamp && $datetime <= ($timestamp + $interval)){	
-					if(!isset($chart[$timestamp_short][$ag])) {
-						$chart[$timestamp_short][$ag] = $data[$j]['data'];
-						$count++;
-					} else {
-						$chart[$timestamp_short][$ag] += $data[$j]['data'];
-						$count++;
-					}
-				} else { 
-					break;
-				}
-				
-				$j++;
-			}	
-		
-		// Average
-		if ($count > 0) {
-			if (isset($chart[$timestamp_short][$ag])){
-				$chart[$timestamp_short][$ag] = $chart[$timestamp_short][$ag]/$count;
-			}
-		} else {
-			$chart[$timestamp_short][$ag] = 0;
-		}
+	if (empty ($data)) {
+		echo fs_error_image ();
+		return;
 	}
-	
-/*
-while (isset ($data[$j])){
 
-	$aggs[$data[$j]['agg']] = $data[$j]['agg'];
-		$date = $data[$j]['date'];
-		$time = $data[$j]['time'];
-	$ag = $data[$j]['agg'];
-		$datetime = strtotime ($date." ".$time);
-		$timestamp_short = date($time_format, $datetime);
-		$chart[$timestamp_short][$ag] = $data[$j]['data'];
-		$j++;
+        if ($period <= 21600) {
+                $chart_time_format = 'H:i:s';
+        }
+        elseif ($period < 86400) {
+                $chart_time_format = 'H:i';
+        }
+        elseif ($period < 1296000) {
+                $chart_time_format = 'M d H:i';
+        }
+        elseif ($period < 2592000) {
+                $chart_time_format = 'M d H\h';
+        }
+        else { 
+                $chart_time_format = 'M d H\h';
+        }
+
+	// Calculate source indexes
+	$i = 0;
+	foreach ($data['sources'] as $source => $value) {
+		$source_indexes[$source] = $i;
+		$sources[$i] = $source;
+		$i++;
 	}
-	
-*/
-	
-	foreach($chart as $key => $value) {
-		foreach($aggs as $agg) {
-			if(!isset($chart[$key][$agg])) {
-				$chart[$key][$agg] = 0;
-			}
+
+	// Add sources to chart
+	$chart = array ();
+	foreach ($data['data'] as $timestamp => $data) {
+		$chart_date = date ($chart_time_format, $timestamp);
+		$chart[$chart_date] = array ();
+		foreach ($source_indexes as $source => $index) {
+			$chart[$chart_date][$index] = 0;
+		}
+		foreach ($data as $source => $value) {
+			$chart[$chart_date][$source_indexes[$source]] = $value;
 		}
 	}
 
-	$color = array();
-	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	
-	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+
+	return stacked_area_graph($flash_chart, $chart, $width, $height, null, $sources,
+		 null, "images/image_problem.opaque.png", "", "",
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], "");
 }
@@ -2060,34 +2001,47 @@ while (isset ($data[$j])){
 /**
  * Print an area graph with netflow total
  */
-function grafico_netflow_total_area ($data, $period,$width, $height , $title, $unit_name, $avg_only = 0, $pure=0,$date = 0, $only_image = false, $homeurl = '') {
+function graph_netflow_total_area ($data, $period, $width, $height, $title, $unit_name, $avg_only = 0, $pure=0, $date = 0, $only_image = false, $homeurl = '') {
 	global $config;
 	global $graphic_type;
 
 	echo"<h4>Gráfica de área</h4>";
 	include_flash_chart_script($homeurl);
 
-	// Set variables
-	if ($date == 0) $date = get_system_time();
-	$datelimit = $date - $period;
-	$resolution = $config['graph_res'] * 50; //Number of points of the graph
-	$interval = (int) ($period / $resolution);
+	if (empty ($data)) {
+		echo fs_error_image ();
+		return;
+	}
 
-	$aggs = array();
-	// Calculate data for each agg
-	$j = 0;
-	$chart = array();
-	$long_index = array();
+        if ($period <= 21600) {
+                $chart_time_format = 'H:i:s';
+        }
+        elseif ($period < 86400) {
+                $chart_time_format = 'H:i';
+        }
+        elseif ($period < 1296000) {
+                $chart_time_format = 'M d H:i';
+        }
+        elseif ($period < 2592000) {
+                $chart_time_format = 'M d H\h';
+        }
+        else { 
+                $chart_time_format = 'M d H\h';
+        }
 	
+	// Populate chart
+	$chart = array ();
+	foreach ($data as $timestamp => $value) {
+		$chart[date ($chart_time_format, $timestamp)] = $value;
+	}
+
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	$leyend = array();
-	$color = array();
 
-	return area_graph($flash_chart, $data, $width, $height, $color, $leyend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+	return area_graph($flash_chart, $chart, $width, $height, array (), array (),
+		array (), "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], "");
 }
@@ -2095,12 +2049,17 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 /**
  * Print a pie graph with netflow aggregated
  */
-function grafico_netflow_aggregate_pie ($data) {
+function graph_netflow_aggregate_pie ($data) {
 	global $config;
 	global $graphic_type;
 	
 	echo"<h4>Gráfica totalizada</h4>";
 	
+	if (empty ($data)) {
+		echo fs_error_image ();
+		return;
+	}
+
 	$i = 0;
 	$values = array();
 	$agg = '';

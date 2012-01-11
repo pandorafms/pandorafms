@@ -63,7 +63,7 @@ if ($update) {
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
-	
+
 	$result = db_process_sql_update ('tnetflow_report_content',
 			array (
 				'id_report' => $id,
@@ -79,7 +79,6 @@ if ($update) {
 }
 
 if ($create){
-	
 	$id_filter = get_parameter('id_filter');
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = get_parameter('max','2');
@@ -112,9 +111,10 @@ $filters = netflow_get_filters ();
 if ($filters === false) {
 	$filters = array ();
 }	
-html_debug_print($filters);
+
+$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 // Get group list that user has access
-$groups_user = users_get_groups ($config['id_user'], "IW", false, true);
+$groups_user = users_get_groups ($config['id_user'], "IW", $is_admin, true);
 $groups_id = array();
 foreach($groups_user as $key => $groups){
 	$groups_id[] = $groups['id_grupo'];

@@ -14,6 +14,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+include_once("include/functions_users.php");
+
 // Date format for nfdump
 $nfdump_date_format = 'Y/m/d.H:i:s';
 
@@ -66,6 +69,42 @@ function netflow_get_reports ($filter = false) {
 	return $return;
 }
 
+//permite validar si un filtro pertenece a un grupo permitido para el usuario
+
+function netflow_check_filter_group ($id_sg) {
+	global $config;
+	
+	$id_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id_sg);	
+	// Get group list that user has access
+	$groups_user = users_get_groups ($config['id_user'], "IW", false, true);
+	$groups_id = array();
+	$has_permission = false;
+	
+	foreach($groups_user as $key => $groups){
+		if ($groups['id_grupo'] == $id_group)
+			return true;
+	}
+	return false;
+}
+
+//permite validar si un informe pertenece a un grupo permitido para el usuario
+
+function netflow_check_report_group ($id_report) {
+	global $config;
+	
+	$id_group = db_get_value('id_group', 'tnetflow_report', 'id_report', $id_report);	
+	// Get group list that user has access
+	$groups_user = users_get_groups ($config['id_user'], "IW", false, true);
+	$groups_id = array();
+	$has_permission = false;
+	
+	foreach($groups_user as $key => $groups){
+		if ($groups['id_grupo'] == $id_group)
+			return true;
+	}
+	return false;
+}
+
 /**
  * Get a filter.
  *
@@ -76,13 +115,32 @@ function netflow_get_reports ($filter = false) {
  * @return array A netflow filter matching id and filter.
  */
 function netflow_filter_get_filter ($id_sg, $filter = false, $fields = false) {
-	if (empty ($id_sg))
-		return false;
-	if (! is_array ($filter))
-		$filter = array ();
-	$filter['id_sg'] = (int) $id_sg;
+	global $config;
 	
-	return db_get_row_filter ('tnetflow_filter', $filter, $fields);
+/*
+	$id_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id_sg);	
+	// Get group list that user has access
+	$groups_user = users_get_groups ($config['id_user'], "AR", false, true);
+	$groups_id = array();
+	$has_permission = false;
+	
+	foreach($groups_user as $key => $groups){
+		if ($groups['id_grupo'] == $id_group)
+			$has_permission = true;
+	}
+*/
+
+	//if ($has_permission) {
+		if (! is_array ($filter))
+			$filter = array ();
+			$filter['id_sg'] = (int) $id_sg;
+	
+			return db_get_row_filter ('tnetflow_filter', $filter, $fields);
+/*
+	} else {
+		return false;
+	}
+*/
 }
 
 /**

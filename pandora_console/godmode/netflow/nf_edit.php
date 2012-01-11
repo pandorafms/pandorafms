@@ -61,7 +61,6 @@ if ($delete) {
 		__('Not deleted. Error deleting data'));
 }
 
-
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
@@ -93,13 +92,16 @@ if ($multiple_delete) {
 		__('Not deleted. Error deleting data'));
 }
 
-$filter = array ();
+// Get group list that user has access
+$groups_user = users_get_groups ($config['id_user'], "AW", false, true);
 
-$filter['offset'] = (int) get_parameter ('offset');
-$filter['limit'] = (int) $config['block_size'];
+$groups_id = array();
+foreach($groups_user as $key => $groups){
+	$groups_id[] = $groups['id_grupo'];
+}
 
-$filters = db_get_all_rows_filter ('tnetflow_filter', $filter);
-
+$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
+$filters = db_get_all_rows_sql($sql);
 if ($filters === false)
 	$filters = array ();
 

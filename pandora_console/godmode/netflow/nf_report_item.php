@@ -59,8 +59,8 @@ if ($id_rc) {
 }
 
 if ($update) {
-	$name_filter = get_parameter('id_filter');
-	$id_filter = db_get_value('id_sg', 'tnetflow_filter', 'id_name', $name_filter);
+	$id_filter = get_parameter('id_filter');
+	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
 	
@@ -79,8 +79,9 @@ if ($update) {
 }
 
 if ($create){
-	$name_filter = get_parameter('id_filter');
-	$id_filter = db_get_value('id_sg', 'tnetflow_filter', 'id_name', $name_filter);
+	
+	$id_filter = get_parameter('id_filter');
+	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
 
@@ -111,8 +112,16 @@ $filters = netflow_get_filters ();
 if ($filters === false) {
 	$filters = array ();
 }	
+html_debug_print($filters);
+// Get group list that user has access
+$groups_user = users_get_groups ($config['id_user'], "IW", false, true);
+$groups_id = array();
+foreach($groups_user as $key => $groups){
+	$groups_id[] = $groups['id_grupo'];
+}
+$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
 $table->data[0][0] = '<b>'.__('Filters').'</b>';
-$table->data[0][1] = html_print_select($filters, 'id_filter', $name_filter, '', '', 0, true);
+$table->data[0][1] = html_print_select_from_sql($sql, 'id_filter', $name_filter, '', '', 0, true);
 
 $table->data[1][0] = '<b>'.__('Max values aggregated').'</b>';
 		$max_values = array ('2' => '2',

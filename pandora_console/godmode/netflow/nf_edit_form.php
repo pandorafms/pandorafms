@@ -24,7 +24,7 @@ include_once ("include/functions_groups.php");
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "AW")) {
+if (! check_acl ($config["id_user"], 0, "IW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -49,7 +49,7 @@ ui_print_page_header (__('Netflow Filter'), "images/networkmap/so_cisco_new.png"
 
 if ($id) {
 	$filter = netflow_filter_get_filter ($id);
-	$assign_group = $filter['group'];
+	$assign_group = $filter['id_group'];
 	$name = $filter['id_name'];
 	$ip_dst = $filter['ip_dst'];
 	$ip_src = $filter['ip_src'];
@@ -60,7 +60,7 @@ if ($id) {
 
 } else {
 	$name = '';
-	$assign_group = 'none';
+	$assign_group = '';
 	$ip_dst = '';
 	$ip_src = '';
 	$dst_port = '';
@@ -85,16 +85,13 @@ if ($update) {
 		$result = db_process_sql_update ('tnetflow_filter',
 			array ('id_sg' => $id,
 				'id_name' => $name,
-				'group' => $assign_group,
+				'id_group' => $assign_group,
 				'aggregate' => $aggregate,
 				'ip_dst' => $ip_dst,
 				'ip_src' => $ip_src,
 				'dst_port' => $dst_port,
 				'src_port' => $src_port,
-				'show_packets' => $show_packets,
-				'show_bytes' => $show_bytes,
-				'show_bps' => $show_bps,
-				'show_bpp' => $show_bpp,	),
+				'output' => $output),
 			array ('id_sg' => $id));
 			
 		ui_print_result_message ($result,
@@ -118,7 +115,7 @@ if ($create){
 		} else {
 			$values = array (
 				'id_name'=>$name,
-				'group' => $assign_group,
+				'id_group' => $assign_group,
 				'ip_dst'=>$ip_dst,
 				'ip_src'=>$ip_src,
 				'dst_port'=>$dst_port,
@@ -148,8 +145,8 @@ $table->data[0][1] = html_print_input_text ('name', $name, false, 20, 80, true);
 
 $own_info = get_user_info ($config['id_user']);
 $table->data[1][0] = '<b>'.__('Group').'</b>';
-$table->data[1][1] = html_print_select_groups($config['id_user'], "AW",
-		$own_info['is_admin'], 'assign_group', $assign_group, '', __('None'), -1, true,
+$table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
+		$own_info['is_admin'], 'assign_group', $assign_group, '', '', -1, true,
 		false, false);
 	
 $table->data[2][0] = '<b>'.__('Filter:').'</b>';

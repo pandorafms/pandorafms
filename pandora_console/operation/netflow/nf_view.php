@@ -279,7 +279,7 @@ if ($id!=''){
 		$sql = "SELECT * FROM tnetflow_filter WHERE id_sg = '".$id_filter."'";
 		$result = db_get_row_sql($sql,false,true);
 
-		$assign_group = $result['group'];
+		$assign_group = $result['id_group'];
 		$ip_dst = $result['ip_dst'];
 		$ip_src = $result['ip_src'];
 		$dst_port = $result['dst_port'];

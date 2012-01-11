@@ -1287,7 +1287,7 @@ CREATE TABLE IF NOT EXISTS `ttag_event` (
 CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
   `id_sg`  int(10) unsigned NOT NULL auto_increment,
   `id_name` varchar(60) NOT NULL default '0',
-  `group` varchar(60),
+  `id_group` int(10),
   `ip_dst` varchar(100),
   `ip_src` varchar(100),
   `dst_port` varchar(100),
@@ -1305,7 +1305,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report` (
   `id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
   `id_name` varchar(150) NOT NULL default '',
   `description` TEXT NOT NULL,
-  `group` varchar(60),
+  `id_group` int(10),
 PRIMARY KEY(`id_report`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

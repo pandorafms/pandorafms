@@ -1,5 +1,10 @@
 2012-01-11  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Little fixes over the last
+	changes
+
+2012-01-11  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Added options
 	--create_policy_data_module and --create_alert_template 
 	to CLI and merged changes from Kosaka works into 4.0 branch

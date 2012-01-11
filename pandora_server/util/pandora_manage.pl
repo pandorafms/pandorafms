@@ -151,6 +151,19 @@ sub pandora_delete_template_module_action ($$$) {
 }
 
 ##########################################################################
+## Create an alert template from hash
+##########################################################################
+sub pandora_create_alert_template_from_hash ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+
+ 	logger($pa_config, "Creating alert_template '$parameters->{'name'}'", 10);
+
+	my $template_id = db_process_insert($dbh, 'id', 'talert_templates', $parameters);
+
+	return $template_id;
+}
+
+##########################################################################
 # Assign a profile in a group to user 
 ##########################################################################
 sub pandora_add_profile_to_user ($$$;$) {
@@ -336,6 +349,18 @@ OR tagente.ultimo_contacto=0");
 	return \@downed_agents;
 }
 
+##########################################################################
+## SUB get_alert_template_id(id)
+## Return the alert template id, given "template_name"
+##########################################################################
+sub pandora_get_alert_template_id ($$) {
+	my ($dbh, $template_name) = @_;
+	
+	my $template_id = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", safe_input($template_name));
+
+	return defined ($template_id) ? $template_id : -1;
+}
+
 ###############################################################################
 ###############################################################################
 # PRINT HELP AND CHECK ERRORS FUNCTIONS
@@ -389,23 +414,23 @@ sub non_exist_check ($$$) {
 ###############################################################################
 # Check the parameters.
 # Param 0: # of received parameters
-# Param 1: # of necessary parameters
+# Param 1: # of acceptable parameters
 # Param 2: # of optional parameters
 ###############################################################################
 sub param_check ($$;$) {
-	my ($ltotal, $lneed, $lopt) = @_;
+	my ($ltotal, $laccept, $lopt) = @_;
 	$ltotal = $ltotal - 1;
 	
 	if(!defined($lopt)){
 		$lopt = 0;
 	}
 
-	if( $ltotal < $lneed - $lopt || $ltotal > $lneed) {
+	if( $ltotal < $laccept - $lopt || $ltotal > $laccept) {
 		if( $lopt == 0 ) {
-			param_error ($lneed, $ltotal);
+			param_error ($laccept, $ltotal);
 		}
 		else {
-			param_error (($lneed-$lopt)."-".$lneed, $ltotal);
+			param_error (($laccept-$lopt)."-".$laccept, $ltotal);
 		}
 	}
 }
@@ -433,10 +458,10 @@ sub help_screen{
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
-	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add data server module to agent');
-	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold>]', 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add plug-in module to agent');
+	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
+	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to agent');
+	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -461,7 +486,12 @@ sub help_screen{
     help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', 'Update a user field. The fields can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1), comments, fullname, password');
     help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
     help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
-    
+	help_screen_line('--create_policy_data_module', '<policy_name> <module_name> <module_type> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add data server module to policy');
+	#help_screen_line('--create_policy_network_module', '<policy_name> <module_name> <module_type> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add not snmp network module to policy');
+	#help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold>]', 'Add snmp network module to policy');
+	#help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>]', 'Add plug-in module to policy');
+	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <condition_type_separator>]', 'Create alert template');
+	
     print "\n";
 	exit;
 }
@@ -556,27 +586,159 @@ sub cli_delete_agent() {
 	pandora_delete_agent($dbh,$id_agent,$conf);
 }
 
+
+##############################################################################
+# Create alert template
+# Related option: --create_alert_template
+##############################################################################
+
+sub cli_create_alert_template() {
+	my ($template_name, $condition_type_serialized, $time_from, $time_to, 
+		$description,$group_name,$field1, $field2, $field3, $priority, $default_action, $days, $time_threshold, 
+		$min_alerts, $max_alerts, $alert_recovery, $field2_recovery, $field3_recovery, $condition_type_separator) = @ARGV[2..20];
+	
+	my $template_exists = pandora_get_alert_template_id ($dbh, $template_name);
+	non_exist_check($template_exists,'alert template',$template_name);
+
+	my $id_alert_action = 0;
+	
+	$id_alert_action = get_action_id ($dbh, safe_input($default_action)) unless $default_action eq '';
+
+	my $group_id = 0;
+	
+	# If group name is not defined, we assign group All (0)
+	if(defined($group_name)) {
+		$group_id = get_group_id($dbh, $group_name);
+		exist_check($group_id,'group',$group_name);
+	}
+	else {
+		$group_name = 'All';
+	}
+	
+	$condition_type_separator = ';' unless defined $condition_type_separator;
+	
+	my %parameters;
+	
+	my @condition_array = split($condition_type_separator, $condition_type_serialized);
+	
+	my $type = $condition_array[0];
+	
+	if($type eq 'regex') {
+		$parameters{'matches_value'} = $condition_array[1];
+		$parameters{'value'} = $condition_array[1];
+	}
+	elsif($type eq 'max_min') {
+		$parameters{'matches_value'} = $condition_array[1];
+		$parameters{'min_value'} = $condition_array[2];
+		$parameters{'max_value'} = $condition_array[3];
+	}
+	elsif($type eq 'max') {
+		$parameters{'max_value'} = $condition_array[1];
+	}
+	elsif($type eq 'min') {
+		$parameters{'min_value'} = $condition_array[1];
+	}
+	elsif($type eq 'equal') {
+		$parameters{'value'} = $condition_array[1];
+	}
+	elsif($type eq 'not_equal') {
+		$parameters{'value'} = $condition_array[1];
+	}
+	elsif($type eq 'onchange') {
+		$parameters{'matches_value'} = $condition_array[1];
+	}
+	elsif($type eq 'warning' || $type eq 'critical' || $type eq 'unknown' || $type eq 'always') {
+		# Only type is stored
+	}
+	else {
+		$type = 'always';
+	}
+	
+	$parameters{'name'} = $template_name;
+	$parameters{'type'} = $type;
+	$parameters{'time_from'} = $time_from;
+	$parameters{'time_to'} = $time_to;
+	
+	$parameters{'id_alert_action'} = $id_alert_action unless $id_alert_action <= 0;
+	
+	$parameters{'id_group'} = $group_id;
+	$parameters{'priority'} = defined ($priority) ? $priority : '';
+	$parameters{'field1'} = defined ($field1) ? safe_input($field1) : '';
+	$parameters{'field2'} = defined ($field2) ? safe_input($field2) : '';
+	$parameters{'field3'} = defined ($field3) ? safe_input($field3) : '';
+	$parameters{'priority'} = defined ($priority) ? $priority : 1; # Informational by default
+	$parameters{'description'} = defined ($description) ? safe_input($description) : '';
+	$parameters{'time_threshold'} = defined ($time_threshold) ? $time_threshold : 86400;
+	$parameters{'min_alerts'} = defined ($min_alerts) ? $min_alerts : 0;
+	$parameters{'max_alerts'} = defined ($max_alerts) ? $max_alerts : 1;
+	$parameters{'recovery_notify'} = defined ($alert_recovery) ? $alert_recovery : 0;
+	$parameters{'field2_recovery'} = defined ($field2_recovery) ? safe_input($field2_recovery) : '';
+	$parameters{'field3_recovery'} = defined ($field3_recovery) ? safe_input($field3_recovery) : '';
+	
+	$days = '1111111' unless defined($days); # Al days actived by default
+	
+	my @days_array = split('',$days);
+	
+	$parameters{'monday'} = $days_array[0];
+	$parameters{'tuesday'} = $days_array[1];
+	$parameters{'wednesday'} = $days_array[2];
+	$parameters{'thursday'} = $days_array[3];
+	$parameters{'friday'} = $days_array[4];
+	$parameters{'saturday'} = $days_array[5];
+	$parameters{'sunday'} = $days_array[6];
+
+	pandora_create_alert_template_from_hash ($conf, \%parameters, $dbh);
+}
+
 ##############################################################################
 # Create data module.
 # Related option: --create_data_module
 ##############################################################################
 
-sub cli_create_data_module() {
-	my ($module_name, $module_type, $agent_name, $description, $module_group, 
-	$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $definition_file) = @ARGV[2..16];
+sub cli_create_data_module($) {
+	my $in_policy = shift;
+	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
+		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
+		$critical_max, $history_data, $definition_file, $warning_str, $critical_str);
+		
+	if($in_policy == 0) {
+		($module_name, $module_type, $agent_name, $description, $module_group, 
+		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
+		$critical_max, $history_data, $definition_file, $warning_str, $critical_str) = @ARGV[2..18];
+	}
+	else {
+		($policy_name, $module_name, $module_type, $description, $module_group, 
+		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
+		$critical_max, $history_data, $definition_file, $warning_str, $critical_str) = @ARGV[2..18];
+	}
 	
 	my $module_name_def;
 	my $module_type_def;
-
-	print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $module_name);
+	my $agent_id;
+	my $policy_id;
+	
+	if($in_policy == 0) {
+		$agent_id = get_agent_id($dbh,$agent_name);
+		exist_check($agent_id,'agent',$agent_name);
+	
+		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+		non_exist_check($module_exists, 'module name', $module_name);
 		
-	# If the module is local, we add it to the conf file
-	if(defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	}
+	else {
+		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+		exist_check($policy_id,'policy',$policy_name);
+	
+		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
+		non_exist_check($policy_module_exist,'policy module',$module_name);
+		
+		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+	}
+
+	# If the module is local and is not to policy, we add it to the conf file
+	if($in_policy == 0 && defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
 		open (FILE, $definition_file);
 		my @file = <FILE>;
 		my $definition = join("", @file);
@@ -608,13 +770,13 @@ sub cli_create_data_module() {
 		
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 	}
-	
-	if(defined($definition_file) && $module_type ne $module_type_def) {
+
+	if($in_policy == 0 && defined($definition_file) && $module_type ne $module_type_def) {
 		$module_type = $module_type_def;
 		print "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 	}
 	
-	if(defined($definition_file) && $module_name ne $module_name_def) {
+	if($in_policy == 0 && defined($definition_file) && $module_name ne $module_name_def) {
 		$module_name = $module_name_def;
 		print "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
@@ -627,17 +789,22 @@ sub cli_create_data_module() {
 			print "[ERROR] '$module_type' is not valid type for data modules. Try with generic, asyncronous, keep alive or log4x types\n\n";
 			exit;
 	}
-	
-	exist_check($agent_id,'agent',$agent_name);
-	
+		
 	my $module_group_id = get_module_group_id($dbh,$module_group);
 	exist_check($module_group_id,'module group',$module_group);
 	
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	$parameters{'nombre'} = safe_input($module_name);
-	$parameters{'id_agente'} = $agent_id;
+	
+	if($in_policy == 0) {
+		$parameters{'nombre'} = safe_input($module_name);
+		$parameters{'id_agente'} = $agent_id;
+	}
+	else {
+		$parameters{'name'} = safe_input($module_name);
+		$parameters{'id_policy'} = $policy_id;
+	}
 
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
@@ -646,16 +813,28 @@ sub cli_create_data_module() {
 	$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
-	$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+	if($in_policy == 0) {
+		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+		$parameters{'id_modulo'} = 1;	
+	}
+	else {
+		$parameters{'description'} = safe_input($description) unless !defined ($description);
+		$parameters{'id_module'} = 1;	
+		$parameters{'configuration_data'} = safe_input($definition_file);	
+	}
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
-	$parameters{'module_interval'} = $interval unless !defined ($interval);	
-
-
-	$parameters{'id_modulo'} = 1;	
+	$parameters{'module_interval'} = $interval unless !defined ($interval);
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 	
-	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	if($in_policy == 0) {
+		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	}
+	else {
+		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
+	}
 }
 
 ##############################################################################
@@ -666,7 +845,7 @@ sub cli_create_data_module() {
 sub cli_create_network_module() {
 	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $ff_threshold) = @ARGV[2..18];
+	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..20];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -728,7 +907,9 @@ sub cli_create_network_module() {
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
 	$parameters{'module_interval'} = $interval unless !defined ($interval);	
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
-
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
+	
 	$parameters{'id_modulo'} = 2;	
 	
 	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -743,7 +924,7 @@ sub cli_create_snmp_module() {
 	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
 	$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 	$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-	$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass, $ff_threshold) = @ARGV[2..27];
+	$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..29];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -797,6 +978,8 @@ sub cli_create_snmp_module() {
 	$parameters{'snmp_community'} = $community unless !defined ($community);
 	$parameters{'snmp_oid'} = $oid unless !defined ($oid);
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 	
 	if($version == 3) {
 		$parameters{'custom_string_1'} = $snmp3_priv_method;
@@ -822,7 +1005,7 @@ sub cli_create_plugin_module() {
 	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
 	$user, $password, $parameters, $description, $module_group, $min, $max, $post_process, 
 	$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-	$ff_threshold) = @ARGV[2..22];
+	$ff_threshold, $warning_str, $critical_str) = @ARGV[2..24];
 	
 	my $module_name_def;
 	my $module_type_def;
@@ -880,7 +1063,9 @@ sub cli_create_plugin_module() {
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
 	$parameters{'module_interval'} = $interval unless !defined ($interval);	
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
-
+	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
+	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
+	
 	$parameters{'id_modulo'} = 4;	
 	
 	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -1708,19 +1893,19 @@ sub pandora_manage_main ($$$) {
 			cli_delete_agent();
 		}
 		elsif ($param eq '--create_data_module') {
-			param_check($ltotal, 15, 12);
-			cli_create_data_module();
+			param_check($ltotal, 17, 14);
+			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_network_module') {
-			param_check($ltotal, 17, 13);
+			param_check($ltotal, 19, 15);
 			cli_create_network_module();
 		}
 		elsif ($param eq '--create_snmp_module') {
-			param_check($ltotal, 26, 20);
+			param_check($ltotal, 28, 22);
 			cli_create_snmp_module();
 		}
 		elsif ($param eq '--create_plugin_module') {
-			param_check($ltotal, 21, 12);
+			param_check($ltotal, 23, 14);
 			cli_create_plugin_module();
 		}
 		elsif ($param eq '--delete_module') {
@@ -1818,6 +2003,26 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_module_data') {
 			param_check($ltotal, 4, 1);
 			cli_module_get_data();
+		}
+		elsif ($param eq '--create_policy_data_module') {
+			param_check($ltotal, 17, 14);
+			cli_create_data_module(1);
+		}
+		#~ elsif ($param eq '--create_policy_network_module') {
+			#~ param_check($ltotal, 19, 15);
+			#~ cli_create_network_module();
+		#~ }
+		#~ elsif ($param eq '--create_policy_snmp_module') {
+			#~ param_check($ltotal, 28, 22);
+			#~ cli_create_snmp_module();
+		#~ }
+		#~ elsif ($param eq '--create_policy_plugin_module') {
+			#~ param_check($ltotal, 23, 14);
+			#~ cli_create_plugin_module();
+		#~ }
+		elsif ($param eq '--create_alert_template') {
+			param_check($ltotal, 19, 15);
+			cli_create_alert_template();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

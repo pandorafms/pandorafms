@@ -1,3 +1,8 @@
+2012-01-11  Sancho Lerena <slerena@artica.es>
+
+	*  images/status_sets/color_text/*.png: Updated icons missing
+	for this iconset.
+
 2012-01-11  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql
 	  godmode/netflow/nf_edit_form.php

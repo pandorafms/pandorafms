@@ -1,5 +1,10 @@
 2012-01-11  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Added icon to the create
+	group option
+
+2012-01-11  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Fixed a little bug in 
 	the configuration_data field when create a data
 	module in a policy

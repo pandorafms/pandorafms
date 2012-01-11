@@ -479,7 +479,7 @@ sub help_screen{
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
     help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
-    help_screen_line('--create_group', '<group_name> [<parent_group_name>]', 'Create an agent group');
+    help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon>]', 'Create an agent group');
     help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
     help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
     help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
@@ -1663,20 +1663,21 @@ sub cli_policy_add_agent() {
 ##############################################################################
 
 sub cli_create_group() {
-	my ($group_name,$parent_group_name) = @ARGV[2..3];
-	
+	my ($group_name,$parent_group_name,$icon) = @ARGV[2..4];
+		
 	my $group_id = get_group_id($dbh,$group_name);
-	
 	non_exist_check($group_id, 'group name', $group_name);
 	
 	my $parent_group_id = 0;
 	
-	if(defined($parent_group_name)) {
+	if(defined($parent_group_name) && $parent_group_name ne 'All') {
 		$parent_group_id = get_group_id($dbh,$parent_group_name);
 		exist_check($parent_group_id, 'group name', $parent_group_name);
 	}
 
-	$group_id = pandora_create_group ($group_name, '', $parent_group_id, 0, 0, '', 0, $dbh);
+	$icon = '' unless defined($icon);
+
+	$group_id = pandora_create_group ($group_name, $icon, $parent_group_id, 0, 0, '', 0, $dbh);
 
 	if($group_id == -1) {
 		print "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
@@ -1978,7 +1979,7 @@ sub pandora_manage_main ($$$) {
 			cli_disable_policy_alerts();
 		}
 		elsif ($param eq '--create_group') {
-			param_check($ltotal, 2, 1);
+			param_check($ltotal, 3, 2);
 			cli_create_group();
 		}
 		elsif ($param eq '--add_agent_to_policy') {

@@ -1483,7 +1483,7 @@ CREATE INDEX ttag_event_id_evento_idx ON ttag_event(id_evento);
 CREATE TABLE tnetflow_filter (
 id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
 id_name VARCHAR2(100) NOT NULL,
-"group" VARCHAR2(50),
+id_group NUMBER(10, 0),
 ip_dst VARCHAR2(100),
 ip_src VARCHAR2(100),
 dst_port VARCHAR2(100),
@@ -1503,7 +1503,7 @@ CREATE TABLE tnetflow_report (
 id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
 id_name VARCHAR2(100) NOT NULL,
 description CLOB default '',
-"group" VARCHAR2(50)
+id_group NUMBER(10, 0)
 );
 
 CREATE SEQUENCE tnetflow_report_s INCREMENT BY 1 START WITH 1;

@@ -1,4 +1,12 @@
 2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Changes in group
+	fields of netflow tables.
+
+2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/netflow/nf_report_item.php
 	  include/functions_netflow.php: changes netflow groups.
 

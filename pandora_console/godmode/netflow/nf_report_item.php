@@ -49,7 +49,8 @@ ui_print_page_header (__('Netflow Report'), "images/networkmap/so_cisco_new.png"
 
 if ($id_rc) {
 	$item = netflow_reports_get_content ($id_rc);
-	$name_filter = $item['id_filter'];
+	$id_filter = $item['id_filter'];
+	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = $item['max'];
 	$show_graph = $item['show_graph'];
 } else {
@@ -115,10 +116,12 @@ if ($filters === false) {
 $own_info = get_user_info ($config['id_user']);
 // Get group list that user has access
 $groups_user = users_get_groups ($config['id_user'], "IW", $own_info['is_admin'], true);
+
 $groups_id = array();
 foreach($groups_user as $key => $groups){
 	$groups_id[] = $groups['id_grupo'];
 }
+
 $sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
 $table->data[0][0] = '<b>'.__('Filters').'</b>';
 $table->data[0][1] = html_print_select_from_sql($sql, 'id_filter', $name_filter, '', '', 0, true);

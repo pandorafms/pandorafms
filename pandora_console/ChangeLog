@@ -1,3 +1,7 @@
+2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/netflow/nf_report_item.php
+	  include/functions_netflow.php: changes netflow groups.
+
 2012-01-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/graphs/functions_fsgraph.php: Fixed empty chart detection for

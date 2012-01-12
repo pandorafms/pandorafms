@@ -1,3 +1,8 @@
+2012-01-12  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/admin_access_logs.php: Merged from trunk. Fixed user
+	filtering does not work.
+
 2012-01-12  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Merged from trunk. Added new

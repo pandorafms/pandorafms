@@ -1196,7 +1196,7 @@ CREATE INDEX "ttag_event_id_evento_idx" ON "ttag_event"("id_evento");
 CREATE TABLE "tnetflow_filter" (
 	"id_sg" SERIAL NOT NULL PRIMARY KEY,
   	"id_name" varchar(60) NOT NULL default '',
-  	"group" varchar(60),
+  	"id_group" INTEGER,
   	"ip_dst" varchar(100),
 	"ip_src" varchar(100),
   	"dst_port" varchar(100),
@@ -1212,7 +1212,7 @@ CREATE TABLE "tnetflow_report" (
  	"id_report" SERIAL NOT NULL PRIMARY KEY,
  	"id_name" varchar(150) NOT NULL default '',
 	"description" TEXT,
-  	"group" varchar(60)
+  	"id_group" INTEGER
 );
 
 -- -----------------------------------------------------

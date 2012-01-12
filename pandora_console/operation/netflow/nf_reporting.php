@@ -41,7 +41,7 @@ $filter['limit'] = (int) $config['block_size'];
 */
 
 // Get group list that user has access
-$groups_user = users_get_groups ($config['id_user'], "AR", false, true);
+$groups_user = users_get_groups ($config['id_user'], "AR", true, true);
 
 $groups_id = array();
 foreach($groups_user as $key => $groups){

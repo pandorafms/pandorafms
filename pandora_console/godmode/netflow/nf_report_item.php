@@ -112,9 +112,9 @@ if ($filters === false) {
 	$filters = array ();
 }	
 
-$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
+$own_info = get_user_info ($config['id_user']);
 // Get group list that user has access
-$groups_user = users_get_groups ($config['id_user'], "IW", $is_admin, true);
+$groups_user = users_get_groups ($config['id_user'], "IW", $own_info['is_admin'], true);
 $groups_id = array();
 foreach($groups_user as $key => $groups){
 	$groups_id[] = $groups['id_grupo'];

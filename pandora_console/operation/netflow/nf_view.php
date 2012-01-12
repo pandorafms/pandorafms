@@ -33,7 +33,7 @@ if (! check_acl ($config["id_user"], 0, "AR")) {
 $id = io_safe_input (get_parameter('id'));
 
 if ($id) {
-	$permission = netflow_check_report_group ($id);
+	$permission = netflow_check_report_group ($id, true);
 	if (!$permission) { //no tiene permisos para acceder a un informe
 		require ("general/noaccess.php");
 		return;

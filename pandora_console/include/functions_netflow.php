@@ -87,14 +87,22 @@ function netflow_check_filter_group ($id_sg) {
 	return false;
 }
 
-//permite validar si un informe pertenece a un grupo permitido para el usuario
+/* Permite validar si un informe pertenece a un grupo permitido para el usuario.
+ * Si mode = false entonces es modo godmode y solo puede ver el grupo All el admin
+ * Si es modo operation (mode = true) entonces todos pueden ver el grupo All
+ */
 
-function netflow_check_report_group ($id_report) {
+function netflow_check_report_group ($id_report, $mode=false) {
 	global $config;
 	
-	$id_group = db_get_value('id_group', 'tnetflow_report', 'id_report', $id_report);	
+	if (!$mode) {
+		$own_info = get_user_info ($config['id_user']);
+		$mode = $own_info['is_admin'];
+	}
+	$id_group = db_get_value('id_group', 'tnetflow_report', 'id_report', $id_report);
+	
 	// Get group list that user has access
-	$groups_user = users_get_groups ($config['id_user'], "IW", false, true);
+	$groups_user = users_get_groups ($config['id_user'], "IW", $mode, true);
 	$groups_id = array();
 	$has_permission = false;
 	
@@ -104,6 +112,7 @@ function netflow_check_report_group ($id_report) {
 	}
 	return false;
 }
+
 
 /**
  * Get a filter.
@@ -115,32 +124,12 @@ function netflow_check_report_group ($id_report) {
  * @return array A netflow filter matching id and filter.
  */
 function netflow_filter_get_filter ($id_sg, $filter = false, $fields = false) {
-	global $config;
-	
-/*
-	$id_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id_sg);	
-	// Get group list that user has access
-	$groups_user = users_get_groups ($config['id_user'], "AR", false, true);
-	$groups_id = array();
-	$has_permission = false;
-	
-	foreach($groups_user as $key => $groups){
-		if ($groups['id_grupo'] == $id_group)
-			$has_permission = true;
-	}
-*/
 
-	//if ($has_permission) {
 		if (! is_array ($filter))
 			$filter = array ();
 			$filter['id_sg'] = (int) $id_sg;
 	
 			return db_get_row_filter ('tnetflow_filter', $filter, $fields);
-/*
-	} else {
-		return false;
-	}
-*/
 }
 
 /**

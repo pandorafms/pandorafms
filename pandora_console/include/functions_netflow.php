@@ -193,12 +193,12 @@ function netflow_stat_table ($data, $start_date, $end_date, $show){
 	$table->width = '50%';
 	$table->class = 'databox';
 	$table->data = array();
-	$title = "Desde $start_date hasta $end_date";
+	$title = __('From')." ".$start_date." ".__('to')." ".$end_date;
 	$j = 0;
 	$x = 1;
 
-	echo"<h4>Suma por periodo ($show)</h4>";
-	$table->data[0][0] = '<b>'.__('Rango').'</b>';
+	echo"<h4>".__('Amount per period')." (".$show.")</h4>";
+	$table->data[0][0] = '<b>'.__('Rank').'</b>';
 	$table->data[0][1] = '<b>'.$title.'</b>';
 	
 	while (isset ($data[$j])) {
@@ -257,8 +257,8 @@ function netflow_data_table ($data, $start_date, $end_date, $unit){
 	$table->class = 'databox';
 	$table->data = array();
 	
-	echo"<h4>Tabla de valores ($unit)</h4>";
-	$table->data[0][0] = '<b>'.__('Rango').'</b>';
+	echo"<h4>".__('Table values'). " (".$unit.")</h4>";
+	$table->data[0][0] = '<b>'.__('Rank').'</b>';
 
 	$j = 0;
 	$source_index = array ();

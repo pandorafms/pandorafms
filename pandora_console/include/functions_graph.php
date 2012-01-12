@@ -1940,7 +1940,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $title, 
 	global $config;
 	global $graphic_type;
 
-	echo"<h4>Gráfica de área</h4>";
+	echo"<h4>".__('Area graph')."</h4>";
 	include_flash_chart_script($homeurl);
 
 	if (empty ($data)) {
@@ -2053,7 +2053,7 @@ function graph_netflow_aggregate_pie ($data) {
 	global $config;
 	global $graphic_type;
 	
-	echo"<h4>Gráfica totalizada</h4>";
+	echo"<h4>".__('Graphic totalized')."</h4>";
 	
 	if (empty ($data)) {
 		echo fs_error_image ();

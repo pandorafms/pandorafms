@@ -487,9 +487,9 @@ sub help_screen{
     help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
     help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
 	help_screen_line('--create_policy_data_module', '<policy_name> <module_name> <module_type> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> <critical_str>]', 'Add data server module to policy');
-	#help_screen_line('--create_policy_network_module', '<policy_name> <module_name> <module_type> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to policy');
-	#help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to policy');
-	#help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
+	help_screen_line('--create_policy_network_module', '<policy_name> <module_name> <module_type> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to policy');
+	help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to policy');
+	help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
 	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
 	
     print "\n";
@@ -790,8 +790,12 @@ sub cli_create_data_module($) {
 			exit;
 	}
 		
-	my $module_group_id = get_module_group_id($dbh,$module_group);
-	exist_check($module_group_id,'module group',$module_group);
+	my $module_group_id = 0;
+	
+	if(defined($module_group)) {
+		$module_group_id = get_module_group_id($dbh,$module_group);
+		exist_check($module_group_id,'module group',$module_group);
+	}
 	
 	my %parameters;
 	
@@ -843,20 +847,47 @@ sub cli_create_data_module($) {
 # Related option: --create_network_module
 ##############################################################################
 
-sub cli_create_network_module() {
-	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
+sub cli_create_network_module($) {
+	my $in_policy = shift;
+	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..20];
+	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str);
+		
+	if($in_policy == 0) {
+		($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
+		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
+		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..20];
+	}
+	else {
+		($policy_name, $module_name, $module_type, $module_port, $description, 
+		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
+		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..19];
+	}
 	
 	my $module_name_def;
 	my $module_type_def;
+	my $agent_id;
+	my $policy_id;
 	
-	print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	if($in_policy == 0) {
+		my $agent_id = get_agent_id($dbh,$agent_name);
+		exist_check($agent_id,'agent',$agent_name);
+		
+		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+		non_exist_check($module_exists, 'module name', $module_name);
+		
+		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	}
+	else {
+		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+		exist_check($policy_id,'policy',$policy_name);
+	
+		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
+		non_exist_check($policy_module_exist,'policy module',$module_name);
+		
+		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+	}
 
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $module_name);
-	
 	if ($module_type =~ m/.?snmp.?/) {
 		print "[ERROR] '$module_type' is not a valid type. For snmp modules use --create_snmp_module parameter\n\n";
 		$param = '--create_snmp_module';
@@ -871,11 +902,13 @@ sub cli_create_network_module() {
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
+		
+	my $module_group_id = 0;
 	
-	exist_check($agent_id,'agent',$agent_name);
-	
-	my $module_group_id = get_module_group_id($dbh,$module_group);
-	exist_check($module_group_id,'module group',$module_group);
+	if(defined($module_group)) {
+		$module_group_id = get_module_group_id($dbh,$module_group);
+		exist_check($module_group_id,'module group',$module_group);
+	}
 	
 	if ($module_type !~ m/.?icmp.?/) {
 		if (not defined($module_port)) {
@@ -890,9 +923,16 @@ sub cli_create_network_module() {
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	$parameters{'nombre'} = safe_input($module_name);
-	$parameters{'id_agente'} = $agent_id;
-	$parameters{'ip_target'} = $module_address;
+
+	if($in_policy == 0) {
+		$parameters{'nombre'} = safe_input($module_name);
+		$parameters{'id_agente'} = $agent_id;
+		$parameters{'ip_target'} = $module_address;
+	}
+	else {
+		$parameters{'name'} = safe_input($module_name);
+		$parameters{'id_policy'} = $policy_id;
+	}
 
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
@@ -902,7 +942,14 @@ sub cli_create_network_module() {
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
 	$parameters{'tcp_port'} = $module_port unless !defined ($module_port);
-	$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+	if($in_policy == 0) {
+		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+		$parameters{'id_modulo'} = 2;	
+	}
+	else {
+		$parameters{'description'} = safe_input($description) unless !defined ($description);
+		$parameters{'id_module'} = 2;
+	}
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -910,10 +957,13 @@ sub cli_create_network_module() {
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
-	
-	$parameters{'id_modulo'} = 2;	
-	
-	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		
+	if($in_policy == 0) {
+		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	}
+	else {
+		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
+	}
 }
 
 ##############################################################################
@@ -921,29 +971,60 @@ sub cli_create_network_module() {
 # Related option: --create_snmp_module
 ##############################################################################
 
-sub cli_create_snmp_module() {
-	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
-	$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
-	$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-	$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..29];
-	
+sub cli_create_snmp_module($) {
+	my $in_policy = shift;
+	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
+		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
+		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str);
+		
+	if($in_policy == 0) {
+		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
+		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
+		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..29];
+	}
+	else {
+		($policy_name, $module_name, $module_type, $module_port, $version, $community, 
+		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
+		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..28];
+	}
+
 	my $module_name_def;
 	my $module_type_def;
+	my $agent_id;
+	my $policy_id;
 	
-	print "[INFO] Adding snmp module '$module_name' to agent '$agent_name'\n\n";
+	if($in_policy == 0) {
+		my $agent_id = get_agent_id($dbh,$agent_name);
+		exist_check($agent_id,'agent',$agent_name);
+		
+		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+		non_exist_check($module_exists, 'module name', $module_name);
+		
+		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	}
+	else {
+		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+		exist_check($policy_id,'policy',$policy_name);
 	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $module_name);	
+		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
+		non_exist_check($policy_module_exist,'policy module',$module_name);
+		
+		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+	}	
 	
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-
-	exist_check($agent_id,'agent',$agent_name);
 	
-	my $module_group_id = get_module_group_id($dbh,$module_group);
-	exist_check($module_group_id,'module group',$module_group);
+	my $module_group_id = 0;
+
+	if(defined($module_group)) {
+		$module_group_id = get_module_group_id($dbh,$module_group);
+		exist_check($module_group_id,'module group',$module_group);
+	}
 	
 	if ($module_type !~ m/.?snmp.?/) {
 		print "[ERROR] '$module_type' is not a valid snmp type\n\n";
@@ -958,9 +1039,17 @@ sub cli_create_snmp_module() {
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	$parameters{'nombre'} = safe_input($module_name);
-	$parameters{'id_agente'} = $agent_id;
-	$parameters{'ip_target'} = $module_address;
+	
+	if($in_policy == 0) {
+		$parameters{'nombre'} = safe_input($module_name);
+		$parameters{'id_agente'} = $agent_id;
+		$parameters{'ip_target'} = $module_address;
+	}
+	else {
+		$parameters{'name'} = safe_input($module_name);
+		$parameters{'id_policy'} = $policy_id;
+	}
+
 	$parameters{'tcp_port'} = $module_port;
 	$parameters{'tcp_send'} = $version;
 
@@ -971,7 +1060,16 @@ sub cli_create_snmp_module() {
 	$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
-	$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+	if($in_policy == 0) {
+		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+		#2 for snmp modules
+		$parameters{'id_modulo'} = 2;	
+	}
+	else {
+		$parameters{'description'} = safe_input($description) unless !defined ($description);
+		#2 for snmp modules
+		$parameters{'id_module'} = 2;
+	}
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -990,11 +1088,13 @@ sub cli_create_snmp_module() {
 		$parameters{'plugin_user'} = $snmp3_auth_user; 
 		$parameters{'plugin_pass'} = $snmp3_auth_pass;
 	}
-
-	# id_modulo = 2 for snmp modules
-	$parameters{'id_modulo'} = 2;	
 	
-	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	if($in_policy == 0) {
+		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	}
+	else {
+		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
+	}
 }
 
 ##############################################################################
@@ -1002,20 +1102,49 @@ sub cli_create_snmp_module() {
 # Related option: --create_plugin_module
 ##############################################################################
 
-sub cli_create_plugin_module() {
-	my ($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
-	$user, $password, $parameters, $description, $module_group, $min, $max, $post_process, 
+sub cli_create_plugin_module($) {
+	my $in_policy = shift;
+	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
+	$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
 	$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-	$ff_threshold, $warning_str, $critical_str) = @ARGV[2..24];
+	$ff_threshold, $warning_str, $critical_str);
 	
+	if($in_policy == 0) {
+		($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
+			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
+			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+			$ff_threshold, $warning_str, $critical_str) = @ARGV[2..24];
+	}
+	else {
+		($policy_name, $module_name, $module_type, $module_port, $plugin_name,
+			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
+			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+			$ff_threshold, $warning_str, $critical_str) = @ARGV[2..23];
+	}
+		
 	my $module_name_def;
 	my $module_type_def;
+	my $agent_id;
+	my $policy_id;
+
+	if($in_policy == 0) {
+		my $agent_id = get_agent_id($dbh,$agent_name);
+		exist_check($agent_id,'agent',$agent_name);
+		
+		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
+		non_exist_check($module_exists, 'module name', $module_name);
+		
+		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	}
+	else {
+		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+		exist_check($policy_id,'policy',$policy_name);
 	
-	print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
-	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $module_name);	
+		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
+		non_exist_check($policy_module_exist,'policy module',$module_name);
+		
+		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+	}
 	
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
@@ -1025,9 +1154,7 @@ sub cli_create_plugin_module() {
 			print "[ERROR] '$module_type' is not valid type for plugin modules. Try with generic or log4x types\n\n";
 			exit;
 	}
-	
-	exist_check($agent_id,'agent',$agent_name);
-	
+		
 	my $module_group_id = get_module_group_id($dbh,$module_group);
 	exist_check($module_group_id,'module group',$module_group);
 			
@@ -1042,14 +1169,22 @@ sub cli_create_plugin_module() {
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	$parameters{'nombre'} = safe_input($module_name);
-	$parameters{'id_agente'} = $agent_id;
-	$parameters{'ip_target'} = $module_address;
+
+	if($in_policy == 0) {
+		$parameters{'nombre'} = safe_input($module_name);
+		$parameters{'id_agente'} = $agent_id;
+		$parameters{'ip_target'} = $module_address;
+	}
+	else {
+		$parameters{'name'} = safe_input($module_name);
+		$parameters{'id_policy'} = $policy_id;
+	}
+	
 	$parameters{'tcp_port'} = $module_port;
 	$parameters{'id_plugin'} = $plugin_id;
 	$parameters{'plugin_user'} = $user;
 	$parameters{'plugin_pass'} = $password;
-	$parameters{'plugin_parameter'} = $parameters;
+	$parameters{'plugin_parameter'} = $params;
 
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
@@ -1058,7 +1193,16 @@ sub cli_create_plugin_module() {
 	$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
-	$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+	if($in_policy == 0) {
+		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
+		#4 for plugin modules
+		$parameters{'id_modulo'} = 4;	
+	}
+	else {
+		$parameters{'description'} = safe_input($description) unless !defined ($description);
+		#4 for plugin modules
+		$parameters{'id_module'} = 4;
+	}
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
@@ -1066,10 +1210,13 @@ sub cli_create_plugin_module() {
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
-	
-	$parameters{'id_modulo'} = 4;	
-	
-	pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+		
+	if($in_policy == 0) {
+		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
+	}
+	else {
+		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
+	}
 }
 
 ##############################################################################
@@ -1900,15 +2047,15 @@ sub pandora_manage_main ($$$) {
 		}
 		elsif ($param eq '--create_network_module') {
 			param_check($ltotal, 19, 15);
-			cli_create_network_module();
+			cli_create_network_module(0);
 		}
 		elsif ($param eq '--create_snmp_module') {
 			param_check($ltotal, 28, 22);
-			cli_create_snmp_module();
+			cli_create_snmp_module(0);
 		}
 		elsif ($param eq '--create_plugin_module') {
 			param_check($ltotal, 23, 14);
-			cli_create_plugin_module();
+			cli_create_plugin_module(0);
 		}
 		elsif ($param eq '--delete_module') {
 			param_check($ltotal, 2);
@@ -2010,18 +2157,18 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 17, 14);
 			cli_create_data_module(1);
 		}
-		#~ elsif ($param eq '--create_policy_network_module') {
-			#~ param_check($ltotal, 19, 15);
-			#~ cli_create_network_module();
-		#~ }
-		#~ elsif ($param eq '--create_policy_snmp_module') {
-			#~ param_check($ltotal, 28, 22);
-			#~ cli_create_snmp_module();
-		#~ }
-		#~ elsif ($param eq '--create_policy_plugin_module') {
-			#~ param_check($ltotal, 23, 14);
-			#~ cli_create_plugin_module();
-		#~ }
+		elsif ($param eq '--create_policy_network_module') {
+			param_check($ltotal, 18, 15);
+			cli_create_network_module(1);
+		}
+		elsif ($param eq '--create_policy_snmp_module') {
+			param_check($ltotal, 27, 22);
+			cli_create_snmp_module(1);
+		}
+		elsif ($param eq '--create_policy_plugin_module') {
+			param_check($ltotal, 22, 14);
+			cli_create_plugin_module(1);
+		}
 		elsif ($param eq '--create_alert_template') {
 			param_check($ltotal, 19, 15);
 			cli_create_alert_template();

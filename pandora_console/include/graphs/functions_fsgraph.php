@@ -409,7 +409,9 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 				$show_name = '0';
 			}
 			
-			$empty = 0;
+			if ($v != 0) {
+				$empty = 0;
+			}
 			
 			if ($a < 3) {
 				$a++;
@@ -587,7 +589,7 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 			} else {
 				$show_name = '0';
 			}
-			if ($value > 0) {
+			if ($value != 0) {
 				$empty = 0;
 			}
 			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
@@ -662,7 +664,7 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
 			} else {
 				$show_name = '0';
 			}
-			if ($value > 0) {
+			if ($value != 0) {
 				$empty = 0;
 			}
 			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
@@ -699,7 +701,7 @@ function fs_3d_column_chart ($data, $width, $height) {
 		} else {
 			$show_name = '0';
 		}
-		if ($value > 0) {
+		if ($value != 0) {
 			$empty = 0;
 		}
 		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');

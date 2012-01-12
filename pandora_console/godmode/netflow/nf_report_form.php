@@ -35,7 +35,7 @@ $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
 if ($id) {
-	$permission = netflow_check_report_group ($id);
+	$permission = netflow_check_report_group ($id, false);
 	if (!$permission) { //no tiene permisos para acceder a un informe
 		require ("general/noaccess.php");
 		return;

@@ -151,6 +151,19 @@ sub pandora_delete_template_module_action ($$$) {
 }
 
 ##########################################################################
+## Create an alert template from hash
+##########################################################################
+sub pandora_create_alert_template_from_hash ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+
+ 	logger($pa_config, "Creating alert_template '$parameters->{'name'}'", 10);
+
+	my $template_id = db_process_insert($dbh, 'id', 'talert_templates', $parameters);
+
+	return $template_id;
+}
+
+##########################################################################
 ## Create a user.
 ##########################################################################
 sub pandora_create_user ($$$$$) {
@@ -314,6 +327,18 @@ OR tagente.ultimo_contacto=0");
 	return \@downed_agents;
 }
 
+##########################################################################
+## SUB get_alert_template_id(id)
+## Return the alert template id, given "template_name"
+##########################################################################
+sub pandora_get_alert_template_id ($$) {
+	my ($dbh, $template_name) = @_;
+	
+	my $template_id = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", safe_input($template_name));
+
+	return defined ($template_id) ? $template_id : -1;
+}
+
 ###############################################################################
 ###############################################################################
 # PRINT HELP AND CHECK ERRORS FUNCTIONS
@@ -433,6 +458,7 @@ sub help_screen{
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
     help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
     help_screen_line('--create_group', '<group_name> [<parent_group_name>]', 'Create an agent group');
+	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
     print "\n";
 	exit;
 }
@@ -527,6 +553,108 @@ sub cli_delete_agent() {
 	pandora_delete_agent($dbh,$id_agent,$conf);
 }
 
+##############################################################################
+# Create alert template
+# Related option: --create_alert_template
+##############################################################################
+
+sub cli_create_alert_template() {
+	my ($template_name, $condition_type_serialized, $time_from, $time_to, 
+		$description,$group_name,$field1, $field2, $field3, $priority, $default_action, $days, $time_threshold, 
+		$min_alerts, $max_alerts, $alert_recovery, $field2_recovery, $field3_recovery, $condition_type_separator) = @ARGV[2..20];
+	
+	my $template_exists = pandora_get_alert_template_id ($dbh, $template_name);
+	non_exist_check($template_exists,'alert template',$template_name);
+
+	my $id_alert_action = 0;
+	
+	$id_alert_action = get_action_id ($dbh, safe_input($default_action)) unless $default_action eq '';
+
+	my $group_id = 0;
+	
+	# If group name is not defined, we assign group All (0)
+	if(defined($group_name)) {
+		$group_id = get_group_id($dbh, $group_name);
+		exist_check($group_id,'group',$group_name);
+	}
+	else {
+		$group_name = 'All';
+	}
+	
+	$condition_type_separator = ';' unless defined $condition_type_separator;
+	
+	my %parameters;
+	
+	my @condition_array = split($condition_type_separator, $condition_type_serialized);
+	
+	my $type = $condition_array[0];
+	
+	if($type eq 'regex') {
+		$parameters{'matches_value'} = $condition_array[1];
+		$parameters{'value'} = $condition_array[1];
+	}
+	elsif($type eq 'max_min') {
+		$parameters{'matches_value'} = $condition_array[1];
+		$parameters{'min_value'} = $condition_array[2];
+		$parameters{'max_value'} = $condition_array[3];
+	}
+	elsif($type eq 'max') {
+		$parameters{'max_value'} = $condition_array[1];
+	}
+	elsif($type eq 'min') {
+		$parameters{'min_value'} = $condition_array[1];
+	}
+	elsif($type eq 'equal') {
+		$parameters{'value'} = $condition_array[1];
+	}
+	elsif($type eq 'not_equal') {
+		$parameters{'value'} = $condition_array[1];
+	}
+	elsif($type eq 'onchange') {
+		$parameters{'matches_value'} = $condition_array[1];
+	}
+	elsif($type eq 'warning' || $type eq 'critical' || $type eq 'unknown' || $type eq 'always') {
+		# Only type is stored
+	}
+	else {
+		$type = 'always';
+	}
+	
+	$parameters{'name'} = $template_name;
+	$parameters{'type'} = $type;
+	$parameters{'time_from'} = $time_from;
+	$parameters{'time_to'} = $time_to;
+	
+	$parameters{'id_alert_action'} = $id_alert_action unless $id_alert_action <= 0;
+	
+	$parameters{'id_group'} = $group_id;
+	$parameters{'priority'} = defined ($priority) ? $priority : '';
+	$parameters{'field1'} = defined ($field1) ? safe_input($field1) : '';
+	$parameters{'field2'} = defined ($field2) ? safe_input($field2) : '';
+	$parameters{'field3'} = defined ($field3) ? safe_input($field3) : '';
+	$parameters{'priority'} = defined ($priority) ? $priority : 1; # Informational by default
+	$parameters{'description'} = defined ($description) ? safe_input($description) : '';
+	$parameters{'time_threshold'} = defined ($time_threshold) ? $time_threshold : 86400;
+	$parameters{'min_alerts'} = defined ($min_alerts) ? $min_alerts : 0;
+	$parameters{'max_alerts'} = defined ($max_alerts) ? $max_alerts : 1;
+	$parameters{'recovery_notify'} = defined ($alert_recovery) ? $alert_recovery : 0;
+	$parameters{'field2_recovery'} = defined ($field2_recovery) ? safe_input($field2_recovery) : '';
+	$parameters{'field3_recovery'} = defined ($field3_recovery) ? safe_input($field3_recovery) : '';
+	
+	$days = '1111111' unless defined($days); # Al days actived by default
+	
+	my @days_array = split('',$days);
+	
+	$parameters{'monday'} = $days_array[0];
+	$parameters{'tuesday'} = $days_array[1];
+	$parameters{'wednesday'} = $days_array[2];
+	$parameters{'thursday'} = $days_array[3];
+	$parameters{'friday'} = $days_array[4];
+	$parameters{'saturday'} = $days_array[5];
+	$parameters{'sunday'} = $days_array[6];
+
+	pandora_create_alert_template_from_hash ($conf, \%parameters, $dbh);
+}
 ##############################################################################
 # Create data module.
 # Related option: --create_data_module
@@ -1592,6 +1720,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_group') {
 			param_check($ltotal, 2, 1);
 			cli_create_group();
+		}
+		elsif ($param eq '--create_alert_template') {
+			param_check($ltotal, 19, 15);
+			cli_create_alert_template();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

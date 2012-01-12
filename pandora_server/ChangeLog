@@ -1,3 +1,8 @@
+2012-01-12  Hirofumi Kosaka <kosaka@rworks.jp>
+
+        * util/pandora_manage.pl: Merged from trunk. Added a new option
+	  to CLI: Create alert template
+
 2012-01-10  Hirofumi Kosaka <kosaka@rworks.jp>
 
         *  util/pandora_manage.pl: Added new optional parameters (str_warning and

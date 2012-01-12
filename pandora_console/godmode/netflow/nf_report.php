@@ -93,21 +93,24 @@ $reports = db_get_all_rows_sql($sql);
 if ($reports === false)
 	$reports = array();
 	
-$table->width = '80%';
+$table->width = '90%';
 $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
-$table->head[2] = __('Action') .
+$table->head[2] = __('Group');
+$table->head[3] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
 $table->align[2] = 'center';
+$table->align[3] = 'center';
 $table->size = array ();
-$table->size[0] = '50%';
-$table->size[1] = '40%';
-$table->size[2] = '50px';
+$table->size[0] = '40%';
+$table->size[1] = '30%';
+$table->size[2] = '20%';
+$table->size[3] = '50px';
 $table->data = array ();
 
 $total_reports = db_get_all_rows_filter ('tnetflow_report', false, 'COUNT(*) AS total');
@@ -123,7 +126,12 @@ $total_reports = $total_reports[0]['total'];
 	
 	$data[1] = $report['description'];
 	
-	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+	$group = db_get_value('nombre','tgrupo', 'id_grupo', $report['id_group']);
+	if ($group == '')
+		$group = 'All';
+	$data[2] = $group;
+	
+	$data[3] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_report&delete=1&id=".$report['id_report']."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $report['id_report'], false, false, '', 'class="check_delete"', true);

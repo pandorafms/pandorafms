@@ -1,4 +1,10 @@
 2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_edit.php: Added column group
+	to report list.
+
+2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
 	* include/functions_graph.php
 	  include/functions_netflow.php: translate netflow titles.
 

@@ -106,18 +106,21 @@ $filters = db_get_all_rows_sql($sql);
 if ($filters === false)
 	$filters = array ();
 
-$table->width = '70%';
+$table->width = '90%';
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Action') .
+$table->head[1] = __('Group');
+$table->head[2] = __('Action') .
 		html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
+$table->align[1] = 'center';
 $table->align[2] = 'center';
 $table->size = array ();
-$table->size[0] = '90%';
-$table->size[1] = '80px';
+$table->size[0] = '60%';
+$table->size[1] = '30%';
+$table->size[2] = '80px';
 $table->data = array ();
 
 $total_filters = db_get_all_rows_filter ('tnetflow_filter', false, 'COUNT(*) AS total');
@@ -129,8 +132,12 @@ foreach ($filters as $filter) {
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'">'.$filter['id_name'].'</a>';
-
-	$data[1] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+	
+	$group = db_get_value('nombre','tgrupo', 'id_grupo', $filter['id_group']);
+	if ($group == '')
+		$group = 'All';
+	$data[1] = $group;
+	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id=".$filter['id_sg']."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);

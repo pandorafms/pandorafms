@@ -1,3 +1,9 @@
+2012-01-12  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk. Added new
+	functions set_create_snmp_module, set_create_data_module,
+	set_create_plugin_module and set_create_alert_template in the API.
+
 2012-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	* include/functions_api.php: Added new serialized parameter in 
 	set_create_network_module function from api. Without it Web console 

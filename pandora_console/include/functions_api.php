@@ -21,6 +21,7 @@ require_once('functions_modules.php');
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . "/include/functions.php");
 include_once($config['homedir'] . "/include/functions_events.php");
+include_once($config['homedir'] . "/include/functions_groups.php");
 
 /**
  * Parse the "other" parameter.
@@ -1102,6 +1103,34 @@ function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Create new module template.
+ * 
+ * @param $id string Name of the module template.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <description> in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_module_template&id=example_template_name&other=This%20is%20a%20module%20template%20created%20by%20the%20Api&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_module_template($id, $thrash1, $other, $thrash2) {
+
+	$values['name'] = $id;
+	$values['description'] = $other['data'][0];
+
+	$result = db_process_sql_insert('tnetwork_profile', $values);
+
+	if (!$result)
+		returnError('error_new_module_template', 'Error creating module template.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Module template created.')));
+}
+
+/**
  * Create an alert template. And return the id of new template.
  * 
  * @param string $id Name of alert template to add.
@@ -1201,7 +1230,259 @@ function set_create_alert_template($name, $thrash1, $other, $thrash3) {
 	}
 }
 
+/**
+ * Update an alert template. And return a message with the result of the operation.
+ * 
+ * @param string $id_template Id of the template to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <template_name>;<type>;<description>;<id_alert_action>;
+ *  <field1>;<field2>;<field3>;<value>;<matches_value>;<max_value>;<min_value>;<time_threshold>;
+ *  <max_alerts>;<min_alerts>;<time_from>;<time_to>;<monday>;<tuesday>;<wednesday>;
+ *  <thursday>;<friday>;<saturday>;<sunday>;<recovery_notify>;<field2_recovery>;<field3_recovery>;<priority>;<id_group> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=update_alert_template&id=38&other=example_template_with_changed_name|onchange|changing%20from%20min_max%20to%20onchange||||||1||||5|1|||1|1|0|1|1|0|0|1|field%20recovery%20example%201|field%20recovery%20example%202|1|8&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_alert_template($id_template, $thrash1, $other, $thrash3) {
 
+	if ($id_template == "") {
+		returnError('error_update_alert_template', __('Error updating alert template. Id_template cannot be left blank.'));
+		return;
+	}
+
+	$result_template = alerts_get_alert_template_name($id_template);
+	
+	if (!$result_template){
+		returnError('error_update_alert_template', __('Error updating alert template. Id_template doesn\'t exists.'));
+		return;
+	}
+	
+	$fields_template = array('name', 'type', 'description', 'id_alert_action', 'field1', 'field2', 'field3', 'value', 'matches_value', 
+							 'max_value', 'min_value', 'time_threshold', 'max_alerts', 'min_alerts', 'time_from', 'time_to', 
+							 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'recovery_notify', 
+							 'field2_recovery', 'field3_recovery', 'priority', 'id_group');
+
+	$cont = 0;
+	foreach ($fields_template as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+			
+	$id_template = alerts_update_alert_template($id_template, $values);
+	
+	if (is_error($id_template)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_alert_template', __('Error updating alert template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct updating of alert template')));
+	}
+}
+
+/**
+ * Delete an alert template. And return a message with the result of the operation.
+ * 
+ * @param string $id_template Id of the template to delete.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=delete_alert_template&id=38
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
+
+	if ($id_template == "") {
+		returnError('error_delete_alert_template', __('Error deleting alert template. Id_template cannot be left blank.'));
+		return;
+	}
+
+	$result = alerts_delete_alert_template($id_template);
+	
+	if ($result == 0) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_alert_template', __('Error deleting alert template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of alert template.')));
+	}
+}
+
+/**
+ * Assign a module to an alert template. And return the id of new relationship.
+ * 
+ * @param string $id_template Name of alert template to add.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_module>;<id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  api.php?op=set&op2=create_module_template&id=1&other=1|10&other_mode=url_encode_separator_|  
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_create_module_template($id, $thrash1, $other, $thrash3) {
+	if ($id_template == "") {
+		returnError('error_module_to_template', __('Error assigning module to template. Id_template cannot be left blank.'));
+		return;
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_module cannot be left blank.'));
+		return;
+	}
+
+	if ($other['data'][1] == ""){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_agent cannot be left blank.'));
+		return;
+	}
+	
+	$result_template = alerts_get_alert_template($id_template);
+		
+	if (!$result_template){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_template doensn\'t exists.'));
+		return;
+	}	
+		
+	$id_module = $other['data'][0];
+	$id_agent = $other['data'][1];
+	
+	$result_agent = agents_get_name($id_agent);
+	
+	if (!$result_agent){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exists.'));
+		return;		
+	}
+
+	$result_module = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
+
+	if (!$result_module){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	$id_template_module = alerts_create_alert_agent_module($id_module, $id_template);
+		
+	if (is_error($id_template_module)) {
+		// TODO: Improve the error returning more info
+		returnError('error_module_to_template', __('Error assigning module to template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $id_template_module));
+	}
+}
+
+/**
+ * Delete an module assigned to a template. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the relationship between module and template (talert_template_modules) to delete.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=delete_module_template&id=38
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_delete_module_template($id, $thrash1, $other, $thrash3) {
+
+	if ($id == "") {
+		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template cannot be left blank.'));
+		return;
+	}
+
+	$result_module_template = alerts_get_alert_agent_module($id);
+
+	if (!$result_module_template){
+		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exists.'));
+		return;		
+	}
+	
+	$result = alerts_delete_alert_agent_module($id);
+
+	if ($result == 0) {
+		// TODO: Improve the error returning more info
+		returnError('error_delete_module_template', __('Error deleting module template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of module template.')));
+	}
+}
+
+
+/**
+ * Create a new group. And return the id_group of the new group. 
+ * 
+ * @param string $id Name of the new group.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <icon_name>;<id_group_parent>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example 1 (with parent group: Servers) 
+ * 
+ *  api.php?op=set&op2=create_group&id=example_group_name&other=applications|1&other_mode=url_encode_separator_|
+ *  
+ * 	example 2 (without parent group)
+ * 
+ * 	api.php?op=set&op2=create_group&id=example_group_name2&other=computer|&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_create_group($id, $thrash1, $other, $thrash3) {
+	$group_name = $id;
+	
+	if ($id == ""){
+		returnError('error_create_group', __('Error in group creation. Group_name cannot be left blank.'));
+		return;		
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
+		return;
+	}	
+
+	if ($other['data'][1] != ""){
+		$group = groups_get_group_by_id($other['data'][1]);
+
+		if ($group == false){
+			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
+			return;			
+		}
+	}
+	
+	if ($other['data'][1] != ""){	
+		$values = array(
+			'icon' => $other['data'][0],
+			'parent' => $other['data'][1]
+		);
+	}
+	else {
+		$values = array(
+			'icon' => $other['data'][0]		
+		);
+	}	
+	
+	$id_group = groups_create_group($group_name, $values);
+	
+	if (is_error($id_group)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_group', __('Error in group creation.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $id_group));
+	}
+}
 
 /**
  * Get module data in CSV format.
@@ -1267,6 +1548,116 @@ function set_new_user($id, $thrash2, $other, $thrash3) {
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Create user.')));
 }
+
+/**
+ * Update new user.
+ * 
+ * @param string $id String username for user login in Pandora
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <fullname>;<firstname>;<lastname>;<middlename>;<password>;
+ *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;<flash_chart> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_user&id=example_user_name&other=example_fullname||example_lastname||example_new_passwd|example_email||example_language|example%20comment|1|30|&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use.
+ */
+function set_update_user($id, $thrash2, $other, $thrash3) {
+
+	$fields_user = array('fullname', 'firstname', 'lastname', 'middlename', 'password', 'email', 
+						 'phone', 'language', 'comments', 'is_admin', 'block_size', 'flash_chart');
+
+
+	if ($id == "") {
+		returnError('error_update_user', __('Error updating user. Id_user cannot be left blank.'));
+		return;
+	}
+
+	$result_user = users_get_user_by_id($id);
+	
+	if (!$result_user){
+		returnError('error_update_user', __('Error updating user. Id_user doesn\'t exists.'));
+		return;
+	}
+	
+	$cont = 0;
+	foreach ($fields_user as $field){
+		if ($other['data'][$cont] != "" and $field != "password"){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	// If password field has data
+	if ($other['data'][4] != ""){
+		if (!update_user_password($id, $other['data'][4])){
+			returnError('error_update_user', __('Error updating user. Password info incorrect.'));
+			return;
+		}
+	}
+	
+	if (!update_user ($id, $values))
+		returnError('error_create_user', 'Error updating user');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Updated user.')));
+}
+
+/**
+ * Enable/disable user given an id
+ * 
+ * @param string $id String username for user login in Pandora
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <enable/disable value> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example 1 (Disable user 'example_name') 
+ * 
+ *  api.php?op=set&op2=enable_disable_user&id=example_name&other=0&other_mode=url_encode_separator_|
+ *  
+ * 	example 2 (Enable user 'example_name')
+ * 
+ *  api.php?op=set&op2=enable_disable_user&id=example_name&other=1&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+
+function set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
+
+	if ($id == ""){
+		returnError('error_enable_disable_user', 'Error enable/disable user. Id_user cannot be left blank.');
+		return;
+	}
+
+
+	if ($other['data'][0] != "0" and $other['data'][0] != "1"){
+		returnError('error_enable_disable_user', 'Error enable/disable user. Enable/disable value cannot be left blank.');
+		return;		
+	}
+	
+	if (users_get_user_by_id($id) == false){
+		returnError('error_enable_disable_user', 'Error enable/disable user. The user doesn\'t exists.');
+		return;				
+	}
+
+	$result = users_disable($id, $other['data'][0]);
+    
+	if (is_error($result)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_network_module', __('Error in user enabling/disabling.'));
+	}
+	else {
+		if ($other['data'][0] == "0"){
+			returnData('string', array('type' => 'string', 'data' => __('Enabled user.')));
+		}
+		else {
+			returnData('string', array('type' => 'string', 'data' => __('Disabled user.')));			
+		}
+	}
+}
+
 
 function otherParameter2Filter($other, $array = false) {
 	$filter = array();
@@ -2304,7 +2695,7 @@ function set_delete_user($id, $thrash1, $thrash2, $thrash3) {
  *  othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=add_user_profile&id=md&other=12|4&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=add_user_profile&id=example_user_name&other=12|4&other_mode=url_encode_separator_|
  *  
  * @param $thrash2 Don't use.
 

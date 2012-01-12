@@ -209,4 +209,17 @@ function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	return (bool) check_acl ($id_user, $id_group, $mode);
 }
 
+/**
+ * Return user by id (user name)
+ *
+ * @param string User id.
+ *
+ * @return mixed User row or false if something goes wrong
+ */
+function users_get_user_by_id ($id_user){
+	$result_user = db_get_row('tusuario', 'id_user', $id_user);
+
+	return $result_user;	
+}
+
 ?>

@@ -1,3 +1,13 @@
+2012-01-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_users.php
+	 include/functions_groups.php
+	 include/functions_profile.php
+	 include/functions_api.php: Added functions and new functions to Api
+	 set_update_template, set_delete_template, 
+	 set_delete_module_template, set_update_user, set_add_user_profile,
+	 set_create_module_template.
+
 2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/netflow/nf_edit.php

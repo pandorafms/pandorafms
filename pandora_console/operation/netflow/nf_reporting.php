@@ -58,15 +58,17 @@ if ($reports == false){
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Report name');
-$table->head[1] = __('Description');
+$table->head[1]= __('Description');
+$table->head[2] = __('Group');
 
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
 $table->align[2] = 'center';
 $table->size = array ();
-$table->size[0] = '50%';
+$table->size[0] = '40%';
 $table->size[1] = '40%';
+$table->size[2] = '20%';
 $table->data = array ();
 
 $total_reports = db_get_all_rows_filter ('tnetflow_report', false, 'COUNT(*) AS total');
@@ -79,6 +81,11 @@ foreach ($reports as $report) {
 
 	$data[0] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf_view&id='.$report['id_report'].'">'.$report['id_name'].'</a>';
 	$data[1] = $report['description'];
+	
+	$group = db_get_value('nombre','tgrupo', 'id_grupo', $report['id_group']);
+	if ($group == '')
+		$group = 'All';
+	$data[2] = $group;
 	
 	array_push ($table->data, $data);
 }

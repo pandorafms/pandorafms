@@ -165,10 +165,12 @@ $last_item = $item_max['id_rc'];
  foreach ($reports_item as $item) {
 
 	$data = array ();
-	if ($item['id_rc'] == $first_item){
+	if (($item['id_rc'] == $first_item) && ($item['id_rc'] == $last_item)){
+		$data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
+	} else if (($item['id_rc'] == $first_item) && ($item['id_rc'] != $last_item)){
 		$data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
 		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
-	} else if ($item['id_rc'] == $last_item){
+	} else if (($item['id_rc'] == $last_item) && ($item['id_rc'] != $first_item)){
 		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
 	} else {
 		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';

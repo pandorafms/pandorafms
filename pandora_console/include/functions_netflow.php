@@ -171,7 +171,7 @@ function netflow_reports_get_content ($id_rc, $filter = false, $fields = false){
  * @return Result of the comparison.
  */
 function compare_flows ($a, $b) {
-	return $a['data']>$b['data'];
+	return $a['data'] < $b['data'];
 }
 
 /**
@@ -180,7 +180,7 @@ function compare_flows ($a, $b) {
  * @param array netflow_data Netflow data array.
  *
  */
-function sort_netflow_data ($netflow_data) {
+function sort_netflow_data (&$netflow_data) {
      usort($netflow_data, "compare_flows");
 }
 
@@ -308,6 +308,7 @@ function netflow_is_net ($address) {
  * @param string start_date Period start date.
  * @param string end_date Period end date.
  * @param string command Command used to retrieve netflow data.
+ * @param string unique_id A unique number that is used to generate a cache file.
  * @param string aggregate Aggregate field.
  * @param int max Maximum number of aggregates.
  * @param string unit Unit to show.
@@ -315,14 +316,15 @@ function netflow_is_net ($address) {
  * @return An array with netflow stats.
  *
  */
-function netflow_get_data ($start_date, $end_date, $command, $aggregate, $max, $unit){
+function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max, $unit) {
 	global $nfdump_date_format;
 	global $config;
 
 	// If there is aggregation calculate the top n
-	$sources = array ();
 	if ($aggregate != 'none') {
-		$agg_command = $command . " -s $aggregate -n $max -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+		$values['data'] = array ();
+		$values['sources'] = array ();
+		$agg_command = $command . " -s $aggregate/$unit -n $max -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 		exec($agg_command, $string);
 		foreach($string as $line){
 			if ($line=='') {
@@ -331,131 +333,35 @@ function netflow_get_data ($start_date, $end_date, $command, $aggregate, $max, $
 			$line = preg_replace('/\(\s*\S+\)/','',$line);
 			$line = preg_replace('/\s+/',' ',$line);
 			$val = explode(' ',$line);
-			$sources[$val[4]] = 1;
+			$values['sources'][$val[4]] = 1;
 		}
+	} else {
+		$values = array ();
 	}
 
-	// Execute nfdump and save its output in a temporary file
-	$command .= ' -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-	$temp_file = $config["attachment_store"] . "/netflow_" . rand (0, getrandmax()) . ".data";
-	exec("$command > $temp_file");
+	// Load cache
+	$cache_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.cache';
+	$last_timestamp = netflow_load_cache ($values, $cache_file, $start_date, $end_date, $aggregate);
+	if ($last_timestamp < $end_date) {
 
-	// Open the temporary file
-	$fh = fopen ($temp_file, "r");
-	if ($fh === FALSE) {
-		return;
-	}
+		$last_timestamp++;
 
-	// Calculate the number of intervals
-	$num_intervals = $config['graph_res'] * 50;
-	$period = $end_date - $start_date;
-	$interval_length = (int) ($period / $num_intervals);
+		// Execute nfdump and save its output in a temporary file
+		$temp_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.tmp';
+		$command .= ' -t '.date($nfdump_date_format, $last_timestamp).'-'.date($nfdump_date_format, $end_date);
+		exec("$command > $temp_file");
 
-	// Parse flow data
-	$read_flag = 1;
-	$values = array ();
-	$flow = array ();
-	for ($i = 0; $i < $num_intervals; $i++) {
-		$timestamp = $start_date + ($interval_length * $i);
+		// Parse data file
+		// We must parse from $start_date to avoid creating new intervals!
+		netflow_parse_file ($start_date, $end_date, $temp_file, $values, $aggregate, $unit);
 		
-		if ($aggregate != 'none') {
-			$interval_total = array ();
-			$interval_count = array ();
-		} else {
-			$interval_total = 0;
-			$interval_count = 0;
-		}
-
-		do {
-			if ($read_flag == 1) {
-				$read_flag = 0;
-				$line = fgets($fh, 4096);
-				if ($line === false) {
-					$read_flag = 1;
-					break;
-				}
-				
-				$line = preg_replace('/\s+/',' ',$line);
-				$val = explode(' ',$line);
-				if (! isset ($val[6])) {
-					$read_flag = 1;
-					break;
-				}
-				
-				$flow['date'] = $val[0];
-				$flow['time'] = $val[1];
-				
-				switch ($aggregate){
-					case "proto":
-						$flow['agg'] = $val[3];
-						break;
-					case "srcip":
-						$val2 = explode(':', $val[4]);
-						$flow['agg'] = $val2[0];
-						break;
-					case "srcport":
-						$val2 = explode(':', $val[4]);
-						$flow['agg'] = $val2[1];
-						break;
-					case "dstip":
-						$val2 = explode(':', $val[6]);
-						$flow['agg'] = $val2[0];
-						break;
-					case "dstport":
-						$val2 = explode(':', $val[6]);
-						$flow['agg'] = $val2[1];
-						break;
-				}
-				
-				switch ($unit) {
-					case "packets":
-						$flow['data'] = $val[7];
-						break;
-					case "bytes":
-						$flow['data'] = $val[8];
-						break;
-					case "flows":
-						$flow['data'] = $val[9];
-						break;
-				}
-				$flow['timestamp'] = strtotime ($flow['date'] . " " . $flow['time']);
-			}
-			if ($flow['timestamp'] >= $timestamp && $flow['timestamp'] <= $timestamp + $interval_length) {
-				$read_flag = 1;
-				if ($aggregate != 'none') {
-					if (isset ($sources[$flow['agg']])) {
-						if (! isset ($interval_total[$flow['agg']])) {
-							$interval_total[$flow['agg']] = 0;
-							$interval_count[$flow['agg']] = 0;
-						}
-						$interval_total[$flow['agg']] += $flow['data'];
-						$interval_count[$flow['agg']] += 1;
-					}
-				} else {
-					$interval_total += $flow['data'];
-					$interval_count += 1;
-				}
-			}
-		} while ($read_flag == 1);
-		
-		if ($aggregate != 'none') {
-			foreach ($interval_total as $agg => $val) {
-				if ($interval_count[$agg] != 0) {
-					$values['data'][$timestamp][$agg] = (int) ($interval_total[$agg] / $interval_count[$agg]);
-					$values['sources'][$agg] = 1;
-				}
-			}
-		} else {
-			if ($interval_count == 0) {
-				$values[$timestamp]['data'] = 0;
-			} else {
-				$values[$timestamp]['data'] = (int) ($interval_total / $interval_count);
-			}
-		}
+		unlink ($temp_file);
 	}
 
-	fclose ($fh);
-	unlink ($temp_file);
+	// Save cache
+	if ($aggregate == 'none') {
+		netflow_save_cache ($values, $cache_file);
+	}
 
 	return $values;
 }
@@ -617,6 +523,258 @@ function netflow_get_command ($filter) {
 	}
 
 	return $command;
+}
+
+
+/**
+ * Parses netflow data from the given file.
+ *
+ * @param string start_date Period start date.
+ * @param string end_date Period end date.
+ * @param string file File that contains netflow data.
+ * @param array values Array where netflow data will be placed.
+ * @param string aggregate Aggregate field.
+ * @param string unit Unit to show.
+ *
+ * @return Timestamp of the last data read.
+ *
+ */
+function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate, $unit) {
+	global $config;
+
+	// Last timestamp read
+	$last_timestamp = $start_date;
+
+	// Open the data file
+	$fh = @fopen ($file, "r");
+	if ($fh === FALSE) {
+		return $last_timestamp;
+	}
+
+	// Calculate the number of intervals
+	$num_intervals = $config['graph_res'] * 50;
+	$period = $end_date - $start_date;
+	$interval_length = (int) ($period / $num_intervals);
+
+	// Parse flow data
+	$read_flag = 1;
+	$flow = array ();
+	for ($i = 0; $i < $num_intervals; $i++) {
+		$timestamp = $start_date + ($interval_length * $i);
+		
+		if ($aggregate != 'none') {
+			$interval_total = array ();
+			$interval_count = array ();
+		} else {
+			$interval_total = 0;
+			$interval_count = 0;
+		}
+
+		do {
+			if ($read_flag == 1) {
+				$read_flag = 0;
+				$line = fgets($fh, 4096);
+				if ($line === false) {
+					$read_flag = 1;
+					break;
+				}
+				
+				$line = preg_replace('/\s+/',' ',$line);
+				$val = explode(' ',$line);
+				if (! isset ($val[6])) {
+					$read_flag = 1;
+					break;
+				}
+				
+				$flow['date'] = $val[0];
+				$flow['time'] = $val[1];
+				
+				switch ($aggregate){
+					case "proto":
+						$flow['agg'] = $val[3];
+						break;
+					case "srcip":
+						$val2 = explode(':', $val[4]);
+						$flow['agg'] = $val2[0];
+						break;
+					case "srcport":
+						$val2 = explode(':', $val[4]);
+						$flow['agg'] = $val2[1];
+						break;
+					case "dstip":
+						$val2 = explode(':', $val[6]);
+						$flow['agg'] = $val2[0];
+						break;
+					case "dstport":
+						$val2 = explode(':', $val[6]);
+						$flow['agg'] = $val2[1];
+						break;
+				}
+				
+				switch ($unit) {
+					case "packets":
+						$flow['data'] = $val[7];
+						break;
+					case "bytes":
+						$flow['data'] = $val[8];
+						break;
+					case "flows":
+						$flow['data'] = $val[9];
+						break;
+				}
+				$flow['timestamp'] = strtotime ($flow['date'] . " " . $flow['time']);
+				$last_timestamp = $flow['timestamp'];
+			}
+			if ($flow['timestamp'] >= $timestamp && $flow['timestamp'] <= $timestamp + $interval_length) {
+				$read_flag = 1;
+				if ($aggregate != 'none') {
+					if (isset ($values['sources'][$flow['agg']])) {
+						if (! isset ($interval_total[$flow['agg']])) {
+							$interval_total[$flow['agg']] = 0;
+							$interval_count[$flow['agg']] = 0;
+						}
+						$interval_total[$flow['agg']] += $flow['data'];
+						$interval_count[$flow['agg']] += 1;
+					}
+				} else {
+					$interval_total += $flow['data'];
+					$interval_count += 1;
+				}
+			}
+		} while ($read_flag == 1);
+		
+		if ($aggregate != 'none') {
+			foreach ($interval_total as $agg => $val) {
+				
+				// No data for this interval/aggregate
+				if ($interval_count[$agg] == 0) {
+					continue;
+				}
+
+				// Read previous data for this interval
+				if (isset ($values['data'][$timestamp][$agg])) {
+					$previous_value = $values['data'][$timestamp][$agg];
+				} else {
+					$previous_value = 0;
+				}
+
+				// Calculate interval data
+				$values['data'][$timestamp][$agg] = (int) ($interval_total[$agg] / $interval_count[$agg]);
+			
+				// Average with previous data
+				if ($previous_value != 0) {
+					$values['data'][$timestamp][$agg] = (int) (($values['data'][$timestamp][$agg] + $previous_data) / 2);
+				}
+			}
+		} else {
+
+			// No data for this interval
+			if ($interval_count == 0) {
+				continue;
+			}
+			
+			// Read previous data for this interval
+			if (isset ($values[$timestamp]['data'])) {
+				$previous_value = $values[$timestamp]['data'];
+			} else {
+				$previous_value = 0;
+			}
+
+			// Calculate interval data
+			$values[$timestamp]['data'] = (int) ($interval_total / $interval_count);
+			
+			// Average with previous data
+			if ($previous_value != 0) {
+				$values[$timestamp]['data'] = (int) (($values[$timestamp]['data'] + $previous_value) / 2);
+			}
+
+			
+		}
+	}
+
+	fclose ($fh);
+	return $last_timestamp;
+}
+
+/**
+ * Save data to the specified cache file.
+ *
+ * @param array data Data array.
+ * @param string cache_file Cache file name.
+ *
+ */
+function netflow_save_cache ($data, $cache_file) {
+
+	@file_put_contents ($cache_file, serialize ($data));
+
+	return;
+}
+	
+/**
+ * Load data from the specified cache file.
+ *
+ * @param string data Array were cache data will be stored.
+ * @param string cache_file Cache file name.
+ * @param string start_date Period start date.
+ * @param string end_date Period end date.
+ *
+ * @return Timestamp of the last data read from cache.
+ *
+ */
+function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggregate) {
+	global $config;
+
+	// Open cache file
+	$cache_data = @file_get_contents ($cache_file);
+	$cache_data = @unserialize ($cache_data);
+
+	// Calculate the number of intervals
+	$num_intervals = $config['graph_res'] * 50;
+	$period = $end_date - $start_date;
+	$interval_length = (int) ($period / $num_intervals);
+	$last_timestamp = $start_date;
+
+	// Initializa chart data
+	if ($aggregate == 'none') {
+		if ($cache_data === FALSE) {
+			$cache_data = array ();
+		}
+		for ($i = 0; $i < $num_intervals; $i++) {
+			$timestamp = $start_date + ($interval_length * $i);
+			$interval_count = 0;
+			$interval_total = 0;
+			foreach ($cache_data as $cache_timestamp => $cache_value) {
+				if ($cache_timestamp < $timestamp + $interval_length) {
+					if ($cache_timestamp >= $timestamp) {
+						$interval_count++;
+						$interval_total += $cache_value['data'];
+						$last_timestamp = $cache_timestamp;
+					}
+					unset ($cache_data[$cache_timestamp]);
+				} else {
+					break;
+				}
+			}
+	
+			if ($interval_count > 0) {
+				$data[$timestamp]['data'] = (int) ($interval_total / $interval_count);
+			} else {
+				$data[$timestamp]['data'] = 0;
+			}
+		}
+	} else {
+               for ($i = 0; $i < $num_intervals; $i++) {
+                        $timestamp = $start_date + ($interval_length * $i);
+                        $interval_count = array ();
+                        $interval_total = array ();
+
+                        foreach ($data['sources'] as $source => $null) {
+                                $data['data'][$timestamp][$source] = 0;
+                        }
+                }
+	}
+
+	return $last_timestamp;
 }
 
 ?>

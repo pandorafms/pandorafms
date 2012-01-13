@@ -1966,6 +1966,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $title, 
 
 	// Calculate source indexes
 	$i = 0;
+	$sources = array ();
 	foreach ($data['sources'] as $source => $value) {
 		$source_indexes[$source] = $i;
 		$sources[$i] = $source;

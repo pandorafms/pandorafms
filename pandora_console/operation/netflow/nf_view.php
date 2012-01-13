@@ -127,7 +127,9 @@ if (empty ($all_rcs)) {
 for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 
 	// Get report item
-	$content_report = db_get_row_sql("SELECT * FROM tnetflow_report_content WHERE id_rc='" . $all_rcs[$x]['id_rc'] . "'");
+	$report_id = $all_rcs[$x]['id_rc'];
+	$content_report = db_get_row_sql("SELECT * FROM tnetflow_report_content WHERE id_rc='$report_id'");
+	$content_id = $content_report['id_rc'];
 	$max_aggregates= $content_report['max'];
 	$type = $content_report['show_graph'];
 	
@@ -140,7 +142,8 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 	// Process item
 	switch ($type){
 		case '0':
-			$data = netflow_get_data ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
+			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
+			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
 			if ($aggregate != 'none') {
 				echo graph_netflow_aggregate_area($data, $interval, 660, 320, '', '', '', '', $end_date, $unit);
 			} else {
@@ -152,7 +155,8 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 			echo graph_netflow_aggregate_pie($result);
 			break;
 		case '2':
-			$data = netflow_get_data ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
+			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
+			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
 			echo netflow_data_table ($data, $start_date, $end_date, $unit);
 			break;
 		case '3':

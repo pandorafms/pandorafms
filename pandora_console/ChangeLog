@@ -1,5 +1,10 @@
 2012-01-13  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* godmode/netflow/nf_item_list.php: Changes sort
+	rows in netflow items.
+
+2012-01-13  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* pandoradb.oracle.sql
 	  pandoradb.postgreSQL.sql
 	  pandoradb_migrate_4.0.x_to_4.1.mysql.sql

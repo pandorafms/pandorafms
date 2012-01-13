@@ -207,6 +207,23 @@ else {
 }
 
 ##########################################################################
+## Delete an alert template.
+##########################################################################
+sub pandora_delete_alert_template ($$) {
+my ($dbh, $template_name) = @_;
+
+# Delete the alert_template
+my $return = db_do ($dbh, 'DELETE FROM talert_templates WHERE name = ?', safe_input($template_name));
+
+if($return eq '0E0') {
+	return -1;
+}
+else {
+	return 0;
+}
+}
+
+##########################################################################
 ## Assign a profile to the given user/group.
 ##########################################################################
 sub pandora_create_user_profile ($$$$) {
@@ -336,6 +353,16 @@ sub pandora_update_user_from_hash ($$$$) {
 	
 	my $user_id = db_process_update($dbh, 'tusuario', $parameters, $where_column, $where_value);
 	return $user_id;
+}
+
+##########################################################################
+## Update an alert template from hash
+##########################################################################
+sub pandora_update_alert_template_from_hash ($$$$) {
+	my ($parameters, $where_column, $where_value, $dbh) = @_;
+	
+	my $template_id = db_process_update($dbh, 'talert_templates', $parameters, $where_column, $where_value);
+	return $template_id;
 }
 
 ###############################################################################
@@ -491,6 +518,8 @@ sub help_screen{
 	help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
 	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
+	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
+	help_screen_line('--update_alert_template', '<template_name> <field_to_change> <new_value>', 'Update a field of an alert template');
 	
     print "\n";
 	exit;
@@ -662,7 +691,6 @@ sub cli_create_alert_template() {
 	$parameters{'id_alert_action'} = $id_alert_action unless $id_alert_action <= 0;
 	
 	$parameters{'id_group'} = $group_id;
-	$parameters{'priority'} = defined ($priority) ? $priority : '';
 	$parameters{'field1'} = defined ($field1) ? safe_input($field1) : '';
 	$parameters{'field2'} = defined ($field2) ? safe_input($field2) : '';
 	$parameters{'field3'} = defined ($field3) ? safe_input($field3) : '';
@@ -1472,6 +1500,68 @@ sub cli_user_update() {
 }
 
 ##############################################################################
+# Update an alert template.
+# Related option: --update_alert_template
+##############################################################################
+
+sub cli_alert_template_update() {
+	my ($template_name,$field,$new_value) = @ARGV[2..4];
+	
+	my $template_id = pandora_get_alert_template_id ($dbh, $template_name);
+	exist_check($template_id,'alert template',$template_name);
+	
+	if($field eq 'matches_value' || $field eq 'value' || $field eq 'min_value' || 
+		$field eq 'max_value' || $field eq 'type' || $field eq 'time_threshold' || 
+		$field eq 'time_from' || $field eq 'time_to' || $field eq 'monday' || 
+		$field eq 'tuesday' || $field eq 'wednesday' || $field eq 'thursday' || 
+		$field eq 'friday' || $field eq 'saturday' || $field eq 'sunday' || 
+		$field eq 'min_alerts' || $field eq 'max_alerts' || $field eq 'recovery_notify') {
+		# Fields admited, no changes
+	}
+	elsif($field eq 'name' || $field eq 'description' || $field eq 'field1' || $field eq 'field2' || $field eq 'field3' || $field eq 'recovery_field2' || $field eq 'recovery_field3') {
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'priority') {
+		if($new_value < 0 || $new_value > 4) {
+			print "[ERROR] Field '$field' is out of interval (0-4)\n\n";
+			exit;
+		}
+	}
+	elsif($field eq 'default_action') {
+		# Check if exist
+		my $id_alert_action = get_action_id ($dbh, safe_input($new_value));
+		if($id_alert_action == -1) {
+			print "[ERROR] Alert action '$new_value' doesnt exist\n\n";
+			exit;
+		}
+		$new_value = $id_alert_action;
+		$field = 'id_alert_action';
+	}
+	elsif($field eq 'group_name') {
+		# Check if exist
+		my $id_group = get_group_id($dbh, $new_value);
+		if($id_group == -1) {
+			print "[ERROR] Group '$new_value' doesnt exist\n\n";
+			exit;
+		}
+		$new_value = $id_group;
+		$field = 'id_group';
+	}
+	else {
+		print "[ERROR] Field '$field' doesnt exist\n\n";
+		exit;
+	}
+		
+	print "[INFO] Updating field '$field' in user '$template_name'\n\n";
+	
+	my $update;
+	
+	$update->{$field} = $new_value;
+	
+	pandora_update_alert_template_from_hash ($update, 'id', $template_id, $dbh);
+}
+
+##############################################################################
 # Add a profile to a User in a Group
 # Related option: --add_profile_to_user
 ##############################################################################
@@ -1513,6 +1603,20 @@ sub cli_delete_user() {
 	
 	my $result = pandora_delete_user($dbh,$user_name);
 	exist_check($result,'user',$user_name);
+}
+
+##############################################################################
+# Delete an alert_template.
+# Related option: --delete_user
+##############################################################################
+
+sub cli_delete_alert_template() {
+	my $template_name = @ARGV[2];
+	
+	print "[INFO] Deleting template '$template_name' \n\n";
+	
+	my $result = pandora_delete_alert_template($dbh,$template_name);
+	exist_check($result,'alert template',$template_name);
 }
 
 ##############################################################################
@@ -2172,6 +2276,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_alert_template') {
 			param_check($ltotal, 19, 15);
 			cli_create_alert_template();
+		}
+		elsif ($param eq '--delete_alert_template') {
+			param_check($ltotal, 1);
+			cli_delete_alert_template();
+		}
+		elsif ($param eq '--update_alert_template') {
+			param_check($ltotal, 3);
+			cli_alert_template_update();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

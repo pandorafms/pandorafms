@@ -2,6 +2,12 @@
 
 	* include/functions_graph.php,
 	  include/functions_netflow.php,
+	  operation/netflow/nf_view.php: Aesthetic fixes.
+
+2012-01-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php,
+	  include/functions_netflow.php,
 	  operation/netflow/nf_view.php: Fixed data source ordering for some
 	  netflow charts and implemented a basic disk cache.
 

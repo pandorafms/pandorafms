@@ -184,7 +184,7 @@ function sort_netflow_data (&$netflow_data) {
      usort($netflow_data, "compare_flows");
 }
 
-function netflow_stat_table ($data, $start_date, $end_date, $show){
+function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	global $nfdump_date_format;
 
 	$start_date = date ($nfdump_date_format, $start_date);
@@ -193,29 +193,28 @@ function netflow_stat_table ($data, $start_date, $end_date, $show){
 	$table->width = '50%';
 	$table->class = 'databox';
 	$table->data = array();
-	$title = __('From')." ".$start_date." ".__('to')." ".$end_date;
 	$j = 0;
 	$x = 1;
 
-	echo"<h4>".__('Amount per period')." (".$show.")</h4>";
-	$table->data[0][0] = '<b>'.__('Rank').'</b>';
-	$table->data[0][1] = '<b>'.$title.'</b>';
+	$table->data[0][0] = '<b>' . __($aggregate) . '</b>';
+	$table->data[0][1] = '<b>' . __($unit) . '</b>';
 	
 	while (isset ($data[$j])) {
 		$agg = $data[$j]['agg'];
 		if (!isset($values[$agg])){
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = format_numeric ($data[$j]['data']) .' '.$show;
+			$table->data[$x][1] = format_numeric ($data[$j]['data']);
 		} else {
 			$values[$agg] += $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = format_numeric ($data[$j]['data']) .' '.$show;
+			$table->data[$x][1] = format_numeric ($data[$j]['data']);
 		}
 		$j++;
 		$x++;
 	}
-html_print_table($table);
+
+	html_print_table($table);
 }
 
 /**
@@ -224,11 +223,11 @@ html_print_table($table);
  * @param array data Statistic data.
  * @param string start_date Start date.
  * @param string end_date End date.
- * @param string unit Unit to display.
+ * @param string aggregate Aggregate field.
  *
  * @return The statistics table.
  */
-function netflow_data_table ($data, $start_date, $end_date, $unit){
+function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 	global $nfdump_date_format;
 
 	$period = $end_date - $start_date;
@@ -253,12 +252,11 @@ function netflow_data_table ($data, $start_date, $end_date, $unit){
 	}
 
 	$values = array();
-	//$table->size = array ('50%');
+	$table->size = array ('50%');
 	$table->class = 'databox';
 	$table->data = array();
 	
-	echo"<h4>".__('Table values'). " (".$unit.")</h4>";
-	$table->data[0][0] = '<b>'.__('Rank').'</b>';
+	$table->data[0][0] = '<b>'.__($aggregate).'</b>';
 
 	$j = 0;
 	$source_index = array ();
@@ -326,6 +324,7 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
 		$values['sources'] = array ();
 		$agg_command = $command . " -s $aggregate/$unit -n $max -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 		exec($agg_command, $string);
+
 		foreach($string as $line){
 			if ($line=='') {
 				continue;
@@ -381,7 +380,7 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
 function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, $unit){
 	global $nfdump_date_format;
 
-	$command .= ' -s ' . $aggregate . ' -n ' . $max . ' -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+	$command .= " -s $aggregate/$unit -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
 
 	if(! is_array($string)){

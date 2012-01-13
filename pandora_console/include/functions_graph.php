@@ -1936,12 +1936,11 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
  * Print an area graph with netflow aggregated
  */
 
-function graph_netflow_aggregate_area ($data, $period, $width, $height, $title, $unit_name, $avg_only = 0, $pure=0, $date = 0, $only_image = false, $homeurl = '') {
+function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_image) {
 	global $config;
 	global $graphic_type;
 
-	echo"<h4>".__('Area graph')."</h4>";
-	include_flash_chart_script($homeurl);
+	include_flash_chart_script($config['homeurl']);
 
 	if (empty ($data)) {
 		echo fs_error_image ();
@@ -1991,8 +1990,14 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $title, 
 		$flash_chart = false;
 	}
 
-	return stacked_area_graph($flash_chart, $chart, $width, $height, null, $sources,
-		 null, "images/image_problem.opaque.png", "", "",
+	if ($config['homeurl'] != '') {
+		$homeurl = $config['homeurl'] . '/';
+	} else {
+		$homeurl = '';
+	}
+
+	return area_graph($flash_chart, $chart, $width, $height, array (), $sources,
+		 null, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], "");
 }
@@ -2002,12 +2007,11 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $title, 
 /**
  * Print an area graph with netflow total
  */
-function graph_netflow_total_area ($data, $period, $width, $height, $title, $unit_name, $avg_only = 0, $pure=0, $date = 0, $only_image = false, $homeurl = '') {
+function graph_netflow_total_area ($data, $period, $width, $height, $only_image) {
 	global $config;
 	global $graphic_type;
 
-	echo"<h4>Gráfica de área</h4>";
-	include_flash_chart_script($homeurl);
+	include_flash_chart_script($config['homeurl']);
 
 	if (empty ($data)) {
 		echo fs_error_image ();
@@ -2041,6 +2045,12 @@ function graph_netflow_total_area ($data, $period, $width, $height, $title, $uni
 		$flash_chart = false;
 	}
 
+	if ($config['homeurl'] != '') {
+		$homeurl = $config['homeurl'] . '/';
+	} else {
+		$homeurl = '';
+	}
+
 	return area_graph($flash_chart, $chart, $width, $height, array (), array (),
 		array (), "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2050,11 +2060,9 @@ function graph_netflow_total_area ($data, $period, $width, $height, $title, $uni
 /**
  * Print a pie graph with netflow aggregated
  */
-function graph_netflow_aggregate_pie ($data) {
+function graph_netflow_aggregate_pie ($data, $aggregate) {
 	global $config;
 	global $graphic_type;
-	
-	echo"<h4>".__('Graphic totalized')."</h4>";
 	
 	if (empty ($data)) {
 		echo fs_error_image ();
@@ -2073,6 +2081,7 @@ function graph_netflow_aggregate_pie ($data) {
 		}
 		$i++;
 	}
+
 	return pie3d_graph($config['flash_charts'], $values, 320, 200,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);

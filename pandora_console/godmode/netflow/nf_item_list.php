@@ -40,10 +40,29 @@ ui_print_page_header (__('Item list'), "images/god6.png", false, "", true, $butt
 
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
+$order = get_parameter('order');
 //id report
 $id = (int) get_parameter ('id');
 //id item
 $id_rc = (int) get_parameter ('id_rc');
+
+if ($order) {
+	$dir = get_parameter ('dir');
+	$old_order = db_get_value_sql('SELECT `order` FROM tnetflow_report_content WHERE id_rc = ' . $id_rc);
+	switch ($dir) {
+		case 'up':
+			$new_order = $old_order-1;
+			break;
+		case 'down':
+			$new_order = $old_order + 1;
+			break;
+	}
+	$sql = "select id_rc from tnetflow_report_content where id_report=$id and `order`=$new_order";
+	$item_cont = db_get_row_sql($sql);
+	$id_item_mod = $item_cont['id_rc'];
+	$result = db_process_sql_update('tnetflow_report_content', array('`order`' => $new_order), array('id_rc' => $id_rc));
+	$result2 = db_process_sql_update('tnetflow_report_content', array('`order`' => $old_order), array('id_rc' => $id_item_mod));
+}
 
 if ($delete) {
 	$result = db_process_sql_delete ('tnetflow_report_content',
@@ -92,35 +111,37 @@ $filter['limit'] = (int) $config['block_size'];
 
 $reports_item = db_get_all_rows_filter ('tnetflow_report_content', $filter);
 
-$reports_item = db_get_all_rows_sql('
+$reports_item = db_get_all_rows_sql("
 		SELECT *
 		FROM tnetflow_report_content
-		WHERE id_report = ' . $id);
+		WHERE id_report=$id ORDER BY `order`");
 
 if ($reports_item === false)
 	$reports_item = array ();
 	
-$table->width = '90%';
+$table->width = '98%';
 $table->head = array ();
-$table->head[0] = __('Id item');
-$table->head[1] = __('Filter');
-$table->head[2] = __('Max values');
-$table->head[3] = __('Graph');
-$table->head[4] = __('Action') .
+$table->head[0] = __('Sort');
+$table->head[1] = __('Id item');
+$table->head[2] = __('Filter');
+$table->head[3] = __('Max values');
+$table->head[4] = __('Graph');
+$table->head[5] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
+$table->style[1] = 'font-weight: bold';
 $table->align = array ();
-$table->align[0] = 'center';
-$table->align[2] = 'center';
-$table->align[4] = 'right';
+$table->align[1] = 'center';
+$table->align[3] = 'center';
+$table->align[5] = 'right';
 $table->size = array ();
-$table->size[0] = '10%';
-$table->size[1] = '50%';
-$table->size[2] = '10%';
-$table->size[3] = '30%';
-$table->size[4] = '20px';
+$table->size[0] = '20px';
+$table->size[1] = '10%';
+$table->size[2] = '50%';
+$table->size[3] = '10%';
+$table->size[4] = '20%';
+$table->size[5] = '20px';
 
 $table->data = array ();
 
@@ -129,33 +150,54 @@ $total_reports_item = $total_reports_item[0]['total'];
 
 //ui_pagination ($total_reports_item, $url);
 
+$sql = "SELECT id_rc FROM tnetflow_report_content where `order`= (select min(`order`) 
+		from tnetflow_report_content 
+		where id_report=$id) and id_report=$id";
+$item_min = db_get_row_sql($sql);
+$first_item = $item_min['id_rc'];
+
+$sql = "SELECT id_rc FROM tnetflow_report_content where `order`= (select max(`order`) 
+		from tnetflow_report_content 
+		where id_report=$id) and id_report=$id";
+$item_max = db_get_row_sql($sql);
+$last_item = $item_max['id_rc'];
+
  foreach ($reports_item as $item) {
 
 	$data = array ();
-
-	$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$item['id_rc'].'</a>';
-	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $item['id_filter']);
-	//$data[1] = $item['id_filter'];
-	$data[1] = $name_filter;
+	if ($item['id_rc'] == $first_item){
+		$data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
+		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
+	} else if ($item['id_rc'] == $last_item){
+		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
+	} else {
+		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
+		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
+	}
 	
-	$data[2] = $item['max'];
+	$data[1] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$item['id_rc'].'</a>';
+	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $item['id_filter']);
+	
+	$data[2] = $name_filter;
+	
+	$data[3] = $item['max'];
 	
 	switch ($item['show_graph']) {
 		case 0:
-			$data[3] = 'Area graph';
+			$data[4] = 'Area graph';
 			break;
 		case 1:
-			$data[3] = 'Pie graph';
+			$data[4] = 'Pie graph';
 			break;
 		case 2:
-			$data[3] = 'Table values';
+			$data[4] = 'Table values';
 			break;
 		case 3:
-			$data[3] = 'Table total period';
+			$data[4] = 'Table total period';
 			break;
 	}
 	
-	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+	$data[5] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
@@ -197,5 +239,4 @@ function check_all_checkboxes() {
 		$(".check_delete").attr('checked', false);
 	}
 }
-
 </script>

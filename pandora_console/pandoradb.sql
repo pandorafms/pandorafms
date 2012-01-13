@@ -1321,6 +1321,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	`period` int(11) NOT NULL default 0,
 	`max` int (11) NOT NULL default 0,
 	`show_graph` varchar(60),
+	`order` int (11) NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES tnetflow_report(`id_report`)
 	ON DELETE CASCADE,

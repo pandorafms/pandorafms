@@ -93,7 +93,7 @@ $reports = db_get_all_rows_sql($sql);
 if ($reports === false)
 	$reports = array();
 	
-$table->width = '90%';
+$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
@@ -121,7 +121,6 @@ $total_reports = $total_reports[0]['total'];
  foreach ($reports as $report) {
 
 	$data = array ();
-	
 	$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$report['id_report'].'">'.$report['id_name'].'</a>';
 	
 	$data[1] = $report['description'];

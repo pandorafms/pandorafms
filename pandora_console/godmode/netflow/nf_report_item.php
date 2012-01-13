@@ -53,6 +53,7 @@ if ($id_rc) {
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = $item['max'];
 	$show_graph = $item['show_graph'];
+	
 } else {
 	$name_filter = '';
 	$max_val = '';
@@ -84,12 +85,24 @@ if ($create){
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
-
+	
+	//insertion order
+	$sql = "SELECT max(`order`) as max_order FROM tnetflow_report_content where id_report=$id";
+	$result = db_get_row_sql($sql);
+	$order = $result['max_order'];
+	if ($order == '') {
+		$order = 0;
+	} else {
+		$order++;
+	}
+	//
+	
 	$values = array (
 				'id_report' => $id,
 				'id_filter' => $id_filter,
 				'max' => $max_val,
-				'show_graph' => $show_graph
+				'show_graph' => $show_graph,
+				'`order`' => $order
 			);
 			$result = db_process_sql_insert('tnetflow_report_content', $values);
 		

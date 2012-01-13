@@ -1,5 +1,14 @@
 2012-01-13  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Update
+	table tnetflow_report_content.
+
+2012-01-13  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* godmode/netflow/nf_item_list.php
 	  godmode/netflow/nf_report.php
 	  godmode/netflow/nf_report_item.php

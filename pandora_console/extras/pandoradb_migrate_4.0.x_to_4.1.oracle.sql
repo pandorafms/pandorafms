@@ -48,7 +48,8 @@ id_filter NUMBER(10,0) NOT NULL REFERENCES tnetflow_filter(id_sg) ON DELETE CASC
 "date" NUMBER(20, 0) default 0 NOT NULL,
 period NUMBER(11, 0) default 0 NOT NULL,
 max NUMBER(11, 0) default 0 NOT NULL,
-show_graph VARCHAR2(60)
+show_graph VARCHAR2(60),
+"order" NUMBER(11,0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;

@@ -136,6 +136,7 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 	// Get item filters
 	$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . io_safe_input ($content_report['id_filter']) . "'", false, true);
 	$command = netflow_get_command ($filter);
+	$title = $filter['id_name'];
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	
@@ -145,23 +146,28 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
 			if ($aggregate != 'none') {
-				echo graph_netflow_aggregate_area($data, $interval, 660, 320, '', '', '', '', $end_date, $unit);
+				echo '<h4>' . $title . ' (' . __($aggregate) . '/' . __($unit) . ')</h4>';
+				echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
 			} else {
-				echo graph_netflow_total_area($data, $interval, 660, 320, '', '','','',$date);
+				echo '<h4>' . $title . ' (' . __($unit) . ')</h4>';
+				echo graph_netflow_total_area($data, $interval, 660, 320, 0);
 			}
 			break;
 		case '1':
-			$result = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo graph_netflow_aggregate_pie($result);
+			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
+			echo '<h4>' . $title . ' (' . __($aggregate) . '/' . __($unit) . ')</h4>';
+			echo graph_netflow_aggregate_pie($data, $aggregate, $unit, $title);
 			break;
 		case '2':
 			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
-			echo netflow_data_table ($data, $start_date, $end_date, $unit);
+			echo '<h4>' . $title . ' (' . __($aggregate) . '/' . __($unit) . ')</h4>';
+			echo netflow_data_table ($data, $start_date, $end_date, $aggregate);
 			break;
 		case '3':
 			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo netflow_stat_table ($data, $start_date, $end_date, $unit);
+			echo '<h4>' . $title . '</h4>';
+			echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
 			break;
 		default:
 			echo fs_error_image();

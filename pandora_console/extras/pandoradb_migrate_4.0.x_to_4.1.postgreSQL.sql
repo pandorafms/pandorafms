@@ -39,6 +39,7 @@ CREATE TABLE "tnetflow_report_content" (
 	"date" BIGINT NOT NULL default 0,
 	"period" INTEGER NOT NULL default 0,
 	"max" INTEGER NOT NULL default 0,
-	"show_graph" varchar(60)
+	"show_graph" varchar(60),
+	"order" INTEGER NOT NULL default 0
 );
 

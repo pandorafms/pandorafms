@@ -759,7 +759,7 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
- *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
@@ -818,15 +818,72 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 	}
 }
 
+/**
+ * Update a network module in agent. And return a message with the result of the operation.
+ * 
+ * @param string $id Name of the network module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_network_module&id=example_module_name&other=44|0|2|10|15||16|18||7|0|127.0.0.1|0||0|300|30.00|0|0|0|latency%20ping%20modified%20by%20the%20Api&other_mode=url_encode_separator_|
+ * 
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_update_network_module($module_name, $thrash1, $other, $thrash3){
 
-		$plugin_user = (string) get_parameter ('plugin_user');
-		if (get_parameter('id_module_component_type') == 7)
-			$plugin_pass = (int) get_parameter ('plugin_pass');
-		else
-			$plugin_pass = (string) get_parameter ('plugin_pass');
-			
-		$plugin_parameter = (string) get_parameter ('plugin_parameter');
+	if ($module_name == ""){
+		returnError('error_update_network_module', __('Error updating network module. Module name cannot be left blank.'));
+		return;		
+	}
+	
+	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
 
+	if (!$id_module){
+		returnError('error_update_network_module', __('Error updating network module. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_network_module', __('Error updating network module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+	
+	$network_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+	'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'snmp_community', 
+	'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion');	
+
+	$values = array();
+	$cont = 0;
+	foreach ($network_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_network_module', 'Error updating network module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Network module updated.')));	
+}
 
 /**
  * Create a plugin module in agent. And return the id_agent_module of new module.
@@ -903,6 +960,73 @@ function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Update a plugin module in agent. And return the id_agent_module of new module.
+ * @param string $id Name of the plugin module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_plugin_module&id=example_plugin_name&other=44|0|2|0|0||0|0||0|0|127.0.0.1|0||0|300|0|0|0|0|plugin%20module%20from%20api|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
+ * 
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_update_plugin_module($module_name, $thrash1, $other, $thrash3){
+
+	if ($module_name == ""){
+		returnError('error_update_plugin_module', __('Error updating plugin module. Module name cannot be left blank.'));
+		return;		
+	}
+	
+	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+
+	if (!$id_module){
+		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exists.'));
+		return;			
+	}
+
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_plugin_module', __('Error updating plugin module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+	
+	$plugin_module_fields =	array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target',
+		'tcp_port', 'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max',
+		'custom_id', 'descripcion', 'id_plugin', 'plugin_user', 'plugin_pass', 'plugin_parameter');	
+	
+	$values = array();
+	$cont = 0;
+	foreach ($plugin_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_plugin_module', 'Error updating plugin module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Plugin module updated.')));	
+}
+
+/**
  * Create a data module in agent. And return the id_agent_module of new module. 
  * Note: Only adds database information, this function doesn't alter config file information.
  * 
@@ -965,6 +1089,74 @@ function set_create_data_module($id, $thrash1, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => $idModule));
 	}
 }
+
+/**
+ * Update a data module in agent. And return a message with the result of the operation.
+ * 
+ * @param string $id Name of the data module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_data_module&id=example_module_name&other=44|0|data%20module%20modified%20from%20API|6|0|0|50.00|300|10|15||16|18||0&other_mode=url_encode_separator_|
+ * 
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_update_data_module($module_name, $thrash1, $other, $thrash3){
+
+	if ($module_name == ""){
+		returnError('error_update_data_module', __('Error updating data module. Module name cannot be left blank.'));
+		return;		
+	}
+	
+	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+
+	if (!$id_module){
+		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_data_module', __('Error updating data module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+	
+	$data_module_fields = array('id_agente', 'disabled', 'descripcion', 'id_module_group', 'min', 'max', 
+	'post_process', 'module_interval', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 
+	'history_data');	
+
+	$values = array();
+	$cont = 0;
+	foreach ($data_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_data_module', 'Error updating data module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Data module updated.')));
+}
+
 
 /**
  * Create a SNMP module in agent. And return the id_agent_module of new module. 
@@ -1100,6 +1292,101 @@ function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	else {
 		returnData('string', array('type' => 'string', 'data' => $idModule));
 	}
+}
+
+/**
+ * Update a SNMP module in agent. And return a message with the result of the operation.
+ * 
+ * @param string $id Name of agent to update the module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example (update snmp v: 3, snmp3_priv_method: AES, passw|authNoPriv|MD5|pepito_user|example_priv_passw) 
+ * 
+ *  api.php?op=set&op2=update_snmp_module&id=example_snmp_module_name&other=44|0|6|20|25||26|30||15|1|127.0.0.1|60|3|public|.1.3.6.1.2.1.1.1.0|180|50.00|10|60|0|SNMP%20module%20modified%20by%20API|AES|example_priv_passw|authNoPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_| 
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_snmp_module($module_name, $thrash1, $other, $thrash3) {
+	
+	if ($module_name == ""){
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Module name cannot be left blank.'));
+		return;		
+	}
+	
+	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+
+	if (!$id_module){
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+
+	# SNMP version 3
+	if ($other['data'][13] == "3"){
+		
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv"){
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA"){
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}
+		
+		$snmp_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'tcp_send', 
+		'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion', 'custom_string_1', 
+		'custom_string_2', 'custom_string_3', 'plugin_parameter', 'plugin_user', 'plugin_pass');
+				
+	}
+	else {
+		$snmp_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'tcp_send', 
+		'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion');
+	}	
+
+	$values = array();
+	$cont = 0;
+	foreach ($snmp_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_snmp_module', 'Error updating SNMP module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('SNMP module updated.')));	
 }
 
 /**

@@ -155,8 +155,8 @@ $table->data[2][0] = '<b>'.__('Elements').'</b>';
 $show_graph_options = Array();
 $show_graph_options[0] = __('Area graph');
 $show_graph_options[1] = __('Pie graph');
-$show_graph_options[2] = __('Table values');
-$show_graph_options[3] = __('Total period');
+$show_graph_options[2] = __('Data table');
+$show_graph_options[3] = __('Statistics table');
 
 $table->data[2][1] = html_print_select ($show_graph_options, 'show_graph', $show_graph,'','',0,true);
 

@@ -31,7 +31,7 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 }
 		
 //Header
-ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true);
 
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);

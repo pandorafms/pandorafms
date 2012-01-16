@@ -29,10 +29,6 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 	require ("general/noaccess.php");
 	return;
 }
-
-$buttons['add'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
-		. html_print_image ("images/add.png", true, array ("title" => __('Add filter')))
-		. '</a>';
 		
 //Header
 ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
@@ -157,7 +153,13 @@ if(isset($data)) {
 else {
 	echo "<div class='nf'>".__('There are no defined filters')."</div>";
 }
-	
+
+echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
+	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
+	echo "</div>";
+	echo "</form>";
+
 ?>
 
 <script type="text/javascript">

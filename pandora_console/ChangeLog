@@ -1,5 +1,11 @@
 2012-01-16  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_item_list.php
+	  godmode/netflow/nf_report_item.php: Changed name items.
+
+2012-01-16  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* operation/agentes/estado_monitores.php: Fixed bug: count in the group
 	mode is not well done because ignore the disabled modules.
 

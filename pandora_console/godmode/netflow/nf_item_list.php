@@ -125,7 +125,7 @@ $table->head[0] = __('Sort');
 $table->head[1] = __('Id item');
 $table->head[2] = __('Filter');
 $table->head[3] = __('Max values');
-$table->head[4] = __('Graph');
+$table->head[4] = __('Item');
 $table->head[5] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
@@ -192,10 +192,10 @@ $last_item = $item_max['id_rc'];
 			$data[4] = 'Pie graph';
 			break;
 		case 2:
-			$data[4] = 'Table values';
+			$data[4] = 'Data table';
 			break;
 		case 3:
-			$data[4] = 'Table total period';
+			$data[4] = 'Statistics table';
 			break;
 	}
 	

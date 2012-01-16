@@ -1,3 +1,11 @@
+2012-01-16  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added a missed safe input in
+	the get_agent_module_id function
+
+	* util/pandora_manage.pl: Added options to update a 
+	field of a data, network, plugin or snmp module
+
 2012-01-13  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added update_alert_template

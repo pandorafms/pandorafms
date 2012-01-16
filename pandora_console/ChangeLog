@@ -1,5 +1,10 @@
 2012-01-16  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* operation/agentes/estado_monitores.php: Fixed bug: count in the group
+	mode is not well done because ignore the disabled modules.
+
+2012-01-16  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* godmode/netflow/nf_edit.php
 	  godmode/netflow/nf_edit_form.php: Changed add button.
 

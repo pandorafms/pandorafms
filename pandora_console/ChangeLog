@@ -1,3 +1,9 @@
+2012-01-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: New functions in Api 
+	update_network_module, update_plugin_module, update_data_module and
+	update_snmp_module.
+
 2012-01-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_graph.php,
@@ -43,7 +49,6 @@
 	 set_delete_module_template, set_update_user, set_add_user_profile,
 	 set_create_module_template.
 
->>>>>>> .r5367
 2012-01-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/netflow/nf_edit.php

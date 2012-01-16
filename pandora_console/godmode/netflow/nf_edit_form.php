@@ -135,7 +135,7 @@ if ($create){
 		}
 		if ($result === false)
 				echo '<h3 class="error">'.__ ('Error creating filter').'</h3>';
-			else
+			else 
 				echo '<h3 class="suc">'.__ ('filter created successfully').'</h3>';
 }
 

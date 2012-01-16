@@ -1,3 +1,8 @@
+2012-01-16  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/netflow/nf_edit.php
+	  godmode/netflow/nf_edit_form.php: Changed add button.
+
 2012-01-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: New functions in Api 

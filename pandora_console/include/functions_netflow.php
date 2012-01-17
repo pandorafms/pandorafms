@@ -449,7 +449,7 @@ function netflow_get_command ($filter) {
 	// Advanced filter
 	$filter_args = '';
 	if ($filter['advanced_filter'] != '') {
-		$filter_args = preg_replace('/"/','', io_safe_output ($filter['advanced_filter']));
+		$filter_args = preg_replace('/["\r\n]/','', io_safe_output ($filter['advanced_filter']));
 		$command .= ' "(' . $filter_args . ')"';
 		return $command;
 	}

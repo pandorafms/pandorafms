@@ -79,52 +79,62 @@ exit;
 ##############################################################################
 sub help_screen{
 	print "Usage: $0 <path to pandora_server.conf> [options] \n\n" unless $param ne '';
-	print "Available options:\n\n" unless $param ne '';
+	print "Available options by category:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
-	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups (system wide)');
-	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
-	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
-	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
-	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
-   	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
+	print "AGENTS:\n\n" unless $param ne '';
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
+	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
+   	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
+    help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon>]', 'Create an agent group');
+	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
+	print "MODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
 	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to agent');
 	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
+    help_screen_line('--data_module', '<server_name> <agent_name> <module_name> <module_type> [<datetime>]', 'Insert data to module');
+    help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
+    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
+	help_screen_line('--update_module', '<agent_name> <module_name> <field_to_change> <new_value>', 'Update a module field');
+	print "ALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
     help_screen_line('--create_template_action', '<action_name> <template_name> <module_name> <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template');
     help_screen_line('--delete_template_action', '<action_name> <template_name> <module_name> <agent_name>', 'Delete alert action from module-template');
-    help_screen_line('--data_module', '<server_name> <agent_name> <module_name> <module_type> [<datetime>]', 'Insert data to module');
+	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups (system wide)');
+	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
+	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
+	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
+	help_screen_line('--update_alert_template', '<template_name> <field_to_change> <new_value>', 'Update a field of an alert template');
+	print "USERS:\n\n" unless $param ne '';
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
     help_screen_line('--delete_user', '<user_name>', 'Delete user');
+    help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', 'Update a user field. The fields can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1), comments, fullname, password');
+    help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
+    help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
     help_screen_line('--create_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
     help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete perfil from user');
-    help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
-    help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events');
-    help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
-    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
-    help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
-    help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
-    help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
-    help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon>]', 'Create an agent group');
-    help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
-    help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
-    help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
-    help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', 'Update a user field. The fields can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1), comments, fullname, password');
     help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
-    help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
+	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
+	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
+	print "EVENTS:\n\n" unless $param ne '';
+	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
+    help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
+	print "INCIDENTS:\n\n" unless $param ne '';
+    help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
+	print "POLICIES:\n\n" unless $param ne '';
+    help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
+    help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
+    help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
+    help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
+    help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
 	help_screen_line('--create_policy_data_module', '<policy_name> <module_name> <module_type> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> <critical_str>]', 'Add data server module to policy');
 	help_screen_line('--create_policy_network_module', '<policy_name> <module_name> <module_type> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to policy');
 	help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
-	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
-	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
-	help_screen_line('--update_alert_template', '<template_name> <field_to_change> <new_value>', 'Update a field of an alert template');
-	help_screen_line('--update_module', '<agent_name> <module_name> <field_to_change> <new_value>', 'Update a module field');
+	print "TOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
 	
     print "\n";
@@ -443,6 +453,18 @@ sub pandora_get_alert_template_id ($$) {
 	my $template_id = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", safe_input($template_name));
 
 	return defined ($template_id) ? $template_id : -1;
+}
+
+##########################################################################
+## SUB get_planned_downtime_id(id)
+## Return the planned downtime id, given "downtime_name"
+##########################################################################
+sub pandora_get_planned_downtime_id ($$) {
+	my ($dbh, $downtime_name) = @_;
+	
+	my $downtime_id = get_db_value ($dbh, "SELECT id FROM tplanned_downtime WHERE name = ?", safe_input($downtime_name));
+
+	return defined ($downtime_id) ? $downtime_id : -1;
 }
 
 ###############################################################################
@@ -2239,14 +2261,12 @@ sub cli_delete_data($) {
 
 ##############################################################################
 # Add policy to apply queue.
-# Related option: --apply policy
+# Related option: --apply_policy
 ##############################################################################
 
 sub cli_apply_policy() {
 	my $policy_name = @ARGV[2];
 	
-	my $configuration_data = "";
-
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
 	
@@ -2261,6 +2281,33 @@ sub cli_apply_policy() {
 }
 
 ##############################################################################
+# Add all policies to apply queue.
+# Related option: --apply_all_policies
+##############################################################################
+
+sub cli_apply_all_policies() {
+	my $policies = enterprise_hook('get_policies', [$dbh, 0]);
+	
+	my $npolicies = scalar(@{$policies});
+	
+	print "[INFO] $npolicies policies found\n\n";
+	
+	my $added = 0;
+	foreach my $policy (@{$policies}) {
+		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply']);
+		if($ret != -1) {
+			$added++;
+			print "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";
+		}
+	}
+		
+	if($npolicies > $added) {
+		my $failed = $npolicies - $added;
+		print "[ERROR] $failed policies cannot be added to apply queue. Maybe the queue already contains these operations.\n";
+	}
+}
+
+##############################################################################
 # Disable policy alerts.
 # Related option: --disable_policy_alerts
 ##############################################################################
@@ -2268,8 +2315,6 @@ sub cli_apply_policy() {
 sub cli_disable_policy_alerts() {
 	my $policy_name = @ARGV[2];
 	
-	my $configuration_data = "";
-
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
 	
@@ -2440,6 +2485,31 @@ sub cli_user_disable () {
     db_do ($dbh, "UPDATE tusuario SET `disabled` = '1' WHERE `id_user` = '$user_id'");
     	
     exit;
+}
+
+###############################################################################
+# Stop Planned downtime
+# Related option: --stop_downtime
+###############################################################################
+sub cli_stop_downtime () {
+	my $downtime_name = @ARGV[2];
+
+	my $downtime_id = pandora_get_planned_downtime_id ($dbh, $downtime_name);
+	exist_check($downtime_id,'planned downtime',$downtime_id);
+	
+	my $current_time = time;
+	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
+	
+	if($current_time >= $downtime_date_to) {
+		print "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
+		exit;
+	}
+
+	print "[INFO] Stopping planned downtime '$downtime_name'\n\n";
+		
+	my $parameters->{'date_to'} = time;
+		
+	db_process_update($dbh, 'tplanned_downtime', $parameters, 'id', $downtime_id);
 }
 
 ###############################################################################
@@ -2685,6 +2755,13 @@ sub pandora_manage_main ($$$) {
 		}
 		elsif ($param eq '--exec_from_file') {
 			cli_exec_from_file();
+		}
+		elsif ($param eq '--stop_downtime') {
+			cli_stop_downtime();
+		}
+		elsif ($param eq '--apply_all_policies') {
+			param_check($ltotal, 0);
+			cli_apply_all_policies();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

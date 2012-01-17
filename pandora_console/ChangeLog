@@ -1,5 +1,10 @@
 2012-01-17  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_netflow.php: Clean \r and \n from advanced
+	  filters.
+
+2012-01-17  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_graph.php, include/functions_netflow.php,
 	  godmode/netflow/nf_edit_form.php, pandoradb.sql,
 	  pandoradb.postgreSQL.sql, pandoradb.oracle.sql: Added suport for

@@ -125,6 +125,7 @@ sub help_screen{
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
 	help_screen_line('--update_alert_template', '<template_name> <field_to_change> <new_value>', 'Update a field of an alert template');
 	help_screen_line('--update_module', '<agent_name> <module_name> <field_to_change> <new_value>', 'Update a module field');
+	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
 	
     print "\n";
 	exit;
@@ -239,7 +240,7 @@ my ($dbh, $name, $password, $is_admin, $comments) = @_;
 
 
 return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
-                         VALUES (?, ?, ?, ?, ?)', $name, $name, $password, $comments, $is_admin);
+                         VALUES (?, ?, ?, ?, ?)', safe_input($name), safe_input($name), $password, safe_input($comments), $is_admin);
 }
 
 ##########################################################################
@@ -1456,6 +1457,9 @@ sub cli_create_user() {
 	
 	$comments = (defined ($comments) ? safe_input($comments)  : '' );
 	
+	my $user_exists = get_user_exists ($dbh, $user_name);
+	non_exist_check($user_exists,'user',$user_name);
+	
 	print "[INFO] Creating user '$user_name'\n\n";
 	
 	pandora_create_user ($dbh, $user_name, md5($password), $is_admin, $comments);
@@ -1856,6 +1860,67 @@ sub cli_module_update() {
 }
 
 ##############################################################################
+# Exec a CLI option from file
+# Related option: --exec_from_file
+##############################################################################
+
+sub cli_exec_from_file() {
+	my $c = 0;
+	my $command = $0;
+	my $file;
+	foreach my $opt (@ARGV) {
+		$c++;
+
+		# First and second are the script and conf paths
+		if($c < 2) {
+			$command = "$command $opt";
+		}	
+		# Third param is ignored, because is --exec_from_file
+		# Fourth param is the file path
+		elsif($c == 3) {
+			$file = $opt;
+			if(!(-e $file)) {
+				print "[ERROR] File '$file' not exists or cannot be opened\n\n";
+				exit;
+			}
+		}
+		# Fifth parameter is the option (we add -- before it)
+		elsif($c == 4) {
+			$command = "$command --$opt";
+		}
+		# Next parameters are the option params, we add quotes to them to avoid errors
+		elsif($c > 4) {
+			if($opt =~ m/\s/g) {
+				$command = $command . ' "' . $opt .'"';
+			}
+			else {
+				$command = $command . ' ' . $opt;
+			}
+		}
+	}
+	
+	open (FILE, $file);
+	while (<FILE>) {
+		my $command_tr = $command;
+		chomp;
+		my @fields = split(',',$_);
+		$c = 0;
+		foreach my $field (@fields) {
+			$c++;
+			my $macro_name = "__FIELD".$c."__";
+			if($field =~ m/\s/g && $field !~ m/^"/) {
+				$field = '"'.$field.'"';
+			}
+			$command_tr !~ s/$macro_name/$field/g;
+		}
+		print `./$command_tr`;
+	}
+	close (FILE);
+	
+	exit;
+}
+
+##############################################################################
 # Return the type of given module (data, network, snmp or plugin)
 ##############################################################################
 
@@ -2233,7 +2298,7 @@ sub cli_policy_add_agent() {
 		print "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
 	}
 	else {
-		print "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary apply the policy to changes take effect.\n\n";
+		print "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary to apply the policy in order to changes take effect.\n\n";
 	}
 }
 
@@ -2617,6 +2682,9 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--update_module') {
 			param_check($ltotal, 4);
 			cli_module_update();
+		}
+		elsif ($param eq '--exec_from_file') {
+			cli_exec_from_file();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

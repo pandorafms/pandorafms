@@ -22,6 +22,8 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . "/include/functions.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_groups.php");
+include_once($config['homedir'] . "/include/functions_network_components.php");
+enterprise_include_once ('include/functions_local_components.php');
 
 /**
  * Parse the "other" parameter.
@@ -1401,31 +1403,323 @@ function set_update_snmp_module($module_name, $thrash1, $other, $thrash3) {
 }
 
 /**
- * Create new module template.
+ * Create new network component.
  * 
- * @param $id string Name of the module template.
+ * @param $id string Name of the network component.
  * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <description> in this
+ * @param array $other it's array, $other as param is <network_component_type>;<description>;
+ *  <module_interval>;<max_value>;<min_value>;<snmp_community>;<id_module_group>;<max_timeout>;
+ *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
+ *  <ff_threshold>;<post_process>;<network_component_group>  in this
  *  order and separator char (after text ; ) and separator (pass in param
  *  othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=new_module_template&id=example_template_name&other=This%20is%20a%20module%20template%20created%20by%20the%20Api&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=new_network_component&id=example_network_component_name&other=7|network%20component%20created%20by%20Api|300|30|10|public|3||1|10|20|str|21|30|str1|10|50.00|12&other_mode=url_encode_separator_|
  *  
  * @param $thrash2 Don't use.
 
  */
-function set_new_module_template($id, $thrash1, $other, $thrash2) {
+function set_new_network_component($id, $thrash1, $other, $thrash2) {
 
-	$values['name'] = $id;
-	$values['description'] = $other['data'][0];
+	if ($id == ""){
+		returnError('error_set_new_network_component', __('Error creating network component. Network component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][0] < 6 or $other['data'][0] > 18){
+		returnError('error_set_new_network_component', __('Error creating network component. Incorrect value for Network component type field.'));
+		return;			
+	}
+	
+	if ($other['data'][17] == ""){
+		returnError('error_set_new_network_component', __('Error creating network component. Network component group cannot be left blank.'));
+		return;			
+	}	
+	
+	$values = array ( 
+			'description' => $other['data'][1],
+			'module_interval' => $other['data'][2],
+			'max' => $other['data'][3],
+			'min' => $other['data'][4],
+			'snmp_community' => $other['data'][5],
+			'id_module_group' => $other['data'][6],
+			'id_modulo' => 2,
+			'max_timeout' => $other['data'][7],
+			'history_data' => $other['data'][8],
+			'min_warning' => $other['data'][9],
+			'max_warning' => $other['data'][10],
+			'str_warning' => $other['data'][11],
+			'min_critical' => $other['data'][12],
+			'max_critical' => $other['data'][13],
+			'str_critical' => $other['data'][14],
+			'min_ff_event' => $other['data'][15],
+			'post_process' => $other['data'][16]);	
+	
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
+	
+	if ($name_check !== false){
+		returnError('error_set_new_network_component', __('Error creating network component. This network component already exists.'));
+		return;			
+	}
+	
+	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][17], $values);
 
-	$result = db_process_sql_insert('tnetwork_profile', $values);
-
-	if (!$result)
-		returnError('error_new_module_template', 'Error creating module template.');
+	if (!$id)
+		returnError('error_set_new_network_component', 'Error creating network component.');
 	else
-		returnData('string', array('type' => 'string', 'data' => __('Module template created.')));
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Create new plugin component.
+ * 
+ * @param $id string Name of the plugin component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <plugin_component_type>;<description>;
+ *  <module_interval>;<max_value>;<min_value>;<module_port>;<id_module_group>;<id_plugin>;<max_timeout>;
+ *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
+ *  <ff_threshold>;<post_process>;<plugin_component_group>  in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_plugin_component&id=example_plugin_component_name&other=2|plugin%20component%20created%20by%20Api|300|30|10|66|3|2|example_user|example_pass|-p%20max||1|10|20|str|21|30|str1|10|50.00|12&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_plugin_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][7] == ""){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. Incorrect value for Id plugin.'));
+		return;			
+	}
+
+	if ($other['data'][21] == ""){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component group cannot be left blank.'));
+		return;			
+	}	
+	
+	$values = array ( 
+			'description' => $other['data'][1],
+			'module_interval' => $other['data'][2],
+			'max' => $other['data'][3],
+			'min' => $other['data'][4],
+			'tcp_port' => $other['data'][5],
+			'id_module_group' => $other['data'][6],
+			'id_modulo' => 4,
+			'id_plugin' => $other['data'][7],
+			'plugin_user' => $other['data'][8],	
+			'plugin_pass' => $other['data'][9],	
+			'plugin_parameter' => $other['data'][10],	
+			'max_timeout' => $other['data'][11],
+			'history_data' => $other['data'][12],
+			'min_warning' => $other['data'][13],
+			'max_warning' => $other['data'][14],
+			'str_warning' => $other['data'][15],
+			'min_critical' => $other['data'][16],
+			'max_critical' => $other['data'][17],
+			'str_critical' => $other['data'][18],
+			'min_ff_event' => $other['data'][19],
+			'post_process' => $other['data'][20]);	
+	
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
+	
+	if ($name_check !== false){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. This plugin component already exists.'));
+		return;			
+	}
+	
+	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][21], $values);
+
+	if (!$id)
+		returnError('error_set_new_plugin_component', 'Error creating plugin component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Create new SNMP component.
+ * 
+ * @param $id string Name of the SNMP component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <snmp_component_type>;<description>;
+ *  <module_interval>;<max_value>;<min_value>;<id_module_group>;<max_timeout>;
+ *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
+ *  <ff_threshold>;<post_process>;<snmp_version>;<snmp_oid>;<snmp_community>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass>;<module_port>;<snmp3_privacy_method>;<snmp3_privacy_pass>;<snmp3_auth_method>;<snmp3_security_level>;<snmp_component_group> in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_snmp_component&id=example_snmp_component_name&other=16|SNMP%20component%20created%20by%20Api|300|30|10|3||1|10|20|str|21|30|str1|15|50.00|3|.1.3.6.1.2.1.2.2.1.8.2|public|example_auth_user|example_auth_pass|66|AES|example_priv_pass|MD5|authNoPriv|12&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_snmp_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. SNMP component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][0] < 15 or $other['data'][0] > 17){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. Incorrect value for Snmp component type field.'));
+		return;			
+	}
+
+	if ($other['data'][25] == ""){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. Snmp component group cannot be left blank.'));
+		return;			
+	}	
+	
+	# SNMP version 3
+	if ($other['data'][16] == "3"){
+		
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv"){
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA"){
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}		
+	
+		$values = array ( 
+				'description' => $other['data'][1],
+				'module_interval' => $other['data'][2],
+				'max' => $other['data'][3],
+				'min' => $other['data'][4],
+				'id_module_group' => $other['data'][5],		
+				'max_timeout' => $other['data'][6],			
+				'history_data' => $other['data'][7],
+				'min_warning' => $other['data'][8],
+				'max_warning' => $other['data'][9],
+				'str_warning' => $other['data'][10],
+				'min_critical' => $other['data'][11],
+				'max_critical' => $other['data'][12],
+				'str_critical' => $other['data'][13],
+				'min_ff_event' => $other['data'][14],
+				'post_process' => $other['data'][15],
+				'tcp_send' => $other['data'][16],
+				'snmp_oid' => $other['data'][17],
+				'snmp_community' => $other['data'][18],
+				'plugin_user' => $other['data'][19],		// snmp3_auth_user
+				'plugin_pass' => $other['data'][20],		// snmp3_auth_pass
+				'tcp_port' => $other['data'][21],
+				'id_modulo' => 2,				
+				'custom_string_1' => $other['data'][22],	// snmp3_privacy_method
+				'custom_string_2' => $other['data'][23],  	// snmp3_privacy_pass
+				'plugin_parameter' => $other['data'][24],	// snmp3_auth_method
+				'custom_string_3' => $other['data'][25],	// snmp3_security_level
+				);	
+	}
+	else {
+		$values = array ( 
+				'description' => $other['data'][1],
+				'module_interval' => $other['data'][2],
+				'max' => $other['data'][3],
+				'min' => $other['data'][4],
+				'id_module_group' => $other['data'][5],		
+				'max_timeout' => $other['data'][6],			
+				'history_data' => $other['data'][7],
+				'min_warning' => $other['data'][8],
+				'max_warning' => $other['data'][9],
+				'str_warning' => $other['data'][10],
+				'min_critical' => $other['data'][11],
+				'max_critical' => $other['data'][12],
+				'str_critical' => $other['data'][13],
+				'min_ff_event' => $other['data'][14],
+				'post_process' => $other['data'][15],
+				'tcp_send' => $other['data'][16],
+				'snmp_oid' => $other['data'][17],
+				'snmp_community' => $other['data'][18],
+				'plugin_user' => '',
+				'plugin_pass' => '',		
+				'tcp_port' => $other['data'][21],
+				'id_modulo' => 2
+				);			
+	}
+	
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
+	
+	if ($name_check !== false){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. This SNMP component already exists.'));
+		return;			
+	}
+	
+	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][25], $values);
+
+	if (!$id)
+		returnError('error_set_new_snmp_component', 'Error creating SNMP component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Create new local (data) component.
+ * 
+ * @param $id string Name of the local component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <description>;<id_os>;
+ *  <local_component_group>;<configuration_data>  in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_local_component&id=example_local_component_name&other=local%20component%20created%20by%20Api~5~12~module_begin%0dmodule_name%20example_local_component_name%0dmodule_type%20generic_data%0dmodule_exec%20ps%20|%20grep%20pid%20|%20wc%20-l%0dmodule_interval%202%0dmodule_end&other_mode=url_encode_separator_~
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_local_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_local_component', __('Error creating local component. Local component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][1] == ""){
+		returnError('error_set_new_local_component', __('Error creating local component. Local component group cannot be left blank.'));
+		return;			
+	}	
+	
+	$values = array ( 
+		'description' => $other['data'][0],
+		'id_network_component_group' => $other['data'][1]
+	);	
+
+	$name_check = enterprise_hook('local_components_get_local_components', array(array('name' => $id), 'name'));
+
+	if ($name_check === ENTERPRISE_NOT_HOOK) {
+		returnError('error_set_new_local_component', __('Error creating local component.'));
+		return;	
+	}
+	
+	if ($name_check !== false){
+		returnError('error_set_new_local_component', __('Error creating local component. This local component already exists.'));
+		return;			
+	}
+	
+	$id = enterprise_hook('local_components_create_local_component', array($id, $other['data'][3], $other['data'][1], $values));
+
+	if (!$id)
+		returnError('error_set_new_local_component', 'Error creating local component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
 }
 
 /**
@@ -2169,6 +2463,120 @@ function set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	else
 		returnError('error_add_snmp_module_policy', 'Error adding SNMP module to policy.');	
 
+}
+
+
+/**
+ * Apply policy. And return id from the applying operation.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:  
+ * 
+ *  api.php?op=set&op2=apply_policy&id=1
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_apply_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_apply_policy', __('Error applying policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	# Check if this operation is duplicated
+	$duplicated = enterprise_hook('policies_get_policy_queue_status', array($id));
+	
+	if ($duplicated === ENTERPRISE_NOT_HOOK) {
+		// We want to return a value
+		if ($other == "return"){
+			return -1;
+		}else{
+			returnError('error_apply_policy', __('Error applying policy.'));
+			return;
+		}	
+	}
+
+	if ($duplicated == STATUS_IN_QUEUE_APPLYING or $duplicated == STATUS_IN_QUEUE_IN){
+		// We want to return a value
+		if ($other == "return"){
+			return -1;
+		}else{		
+			returnError('error_apply_policy', __('Error applying policy. This policy is already pending to apply.'));
+			return;	
+		}		
+	}
+
+	$id = enterprise_hook('add_policy_queue_operation', array($id, 0, 'apply'));
+	
+	if ($id === ENTERPRISE_NOT_HOOK) {
+		// We want to return a value
+		if ($other == "return"){
+			return -1;
+		}else{			
+			returnError('error_apply_policy', __('Error applying policy.'));
+			return;	
+		}
+	}	
+	
+	// We want to return a value
+	if ($other == "return"){
+		if ($id)
+			return $id;
+		else
+			return -1;		
+	} else {
+		if ($id)
+			returnData('string', array('type' => 'string', 'data' => $id));
+		else
+			returnError('error_apply_policy', 'Error applying policy.');		
+	}
+}
+
+
+/**
+ * Apply all policy in database. And return the number of policies applied.
+ * 
+ * @param string $id Don't use.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:  
+ * 
+ *  api.php?op=set&op2=apply_all_policies
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_apply_all_policies($id, $thrash1, $other, $thrash3) {
+	$policies = array();
+
+	# Get all policies
+	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
+
+	if ($duplicated === ENTERPRISE_NOT_HOOK) {
+		returnError('error_apply_all_policy', __('Error applying all policies.'));
+		return;	
+	}	
+
+	$num_policies = count($policies);
+	$count_results = 0;
+	foreach ($policies as $policy){
+		$return_value = set_apply_policy($policy['id'], '', 'return', '');
+
+		if ($return_value != -1){
+			$count_results++;
+		}
+	}
+	
+	if ($num_policies > $count_results){
+		$errors = $num_policies - $count_results;
+		
+		returnError('error_apply_policy', 'Error applying policy. ' . $errors . ' failed. ');	
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $count_results));		
+	}		
 }
 
 /**

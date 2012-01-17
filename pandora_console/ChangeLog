@@ -1,3 +1,14 @@
+2012-01-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php, include/functions_netflow.php,
+	  godmode/netflow/nf_edit_form.php, pandoradb.sql,
+	  pandoradb.postgreSQL.sql, pandoradb.oracle.sql: Added suport for
+	  custom filters. Small fixes.
+
+	* include/help/en/help_pcap_filter.php,
+	  include/help/es/help_pcap_filter.php: Added to repository. Nfdump
+	  filter syntax help files.
+
 2012-01-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: Added new functions add_agent_policy,

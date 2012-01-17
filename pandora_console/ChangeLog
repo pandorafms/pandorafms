@@ -1,3 +1,9 @@
+2012-01-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: Added new functions add_agent_policy,
+	add_data_module_policy, add_network_module_policy, 
+	add_snmp_module_policy and add_plugin_module_policy to Api.
+
 2012-01-17  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_agents.php

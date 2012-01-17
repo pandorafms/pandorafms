@@ -31,14 +31,14 @@ include_once($config['homedir'] . "/include/functions_groups.php");
  * @return mixed
  */
 function parseOtherParameter($other, $otherType) {
-	
+
 	switch ($otherType) {
 		case 'url_encode':
 			$returnVar = array('type' => 'string', 'data' => urldecode($other));
 			break;
 		default:
 			if (strpos($otherType, 'url_encode_separator_') !== false) {
-				$separator = str_replace('url_encode_separator_', '', $otherType);
+				$separator = str_replace('url_encode_separator_', '', $otherType); 
 				$returnVar = array('type' => 'array', 'data' => explode($separator, $other));
 				foreach ($returnVar['data'] as $index => $element)
 					$returnVar['data'][$index] = urldecode($element); 
@@ -779,6 +779,11 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	if ($other['data'][2] < 6 or $other['data'][2] > 18){
+		returnError('error_create_network_module', __('Error in creation network module. Id_module_type is not correct for network modules.'));
+		return;		
+	}
+	
 	$name = $other['data'][0];
 	
 	$values = array(
@@ -1327,6 +1332,12 @@ function set_update_snmp_module($module_name, $thrash1, $other, $thrash3) {
 		return;			
 	}
 	
+	
+	if ($other['data'][2] < 15 or $other['data'][2] > 18){
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module_type is not correct for SNMP modules.'));
+		return;		
+	}			
+	
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != ""){
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
@@ -1706,6 +1717,459 @@ function set_delete_module_template($id, $thrash1, $other, $thrash3) {
 	}
 }
 
+/**
+ * Stop a schedule downtime. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the downtime to stop.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=stop_downtime&id=38
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_stop_downtime($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_stop_downtime', __('Error stopping downtime. Id_downtime cannot be left blank.'));
+		return;	
+	}
+	
+	$date_stop = date ("Y-m-j",get_system_time ());
+	$time_stop = date ("h:iA",get_system_time ());
+	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
+
+	$values = array();
+	$values['date_to'] = $date_time_stop;
+	
+	$result_update = db_process_sql_update('tplanned_downtime', $values, array ('id' => $id));
+	
+	if ($result_update < 0)
+		returnError('error_stop_downtime', 'Error stopping downtime.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Downtime stopped.')));		
+}
+
+/**
+ * Add agent to a policy. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=add_agent_policy&id=1&other=167&other_mode=url_encode_separator_|  
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_agent_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent cannot be left blank.'));
+		return;			
+	}
+	
+	// Check if the agent exists
+	$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
+
+	if (!$result_agent){
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exists.'));
+		return;			
+	}	
+
+	// Check if the agent is already in the policy
+	$id_agent_policy = enterprise_hook('policies_get_agents', array($id, array('id_agent' => $other['data'][0]), 'id', true));
+
+	if ($id_agent_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_agent_policy', __('Error adding agent to policy.'));
+		return;	
+	}	
+	
+	if ($id_agent_policy === false){
+		$success = enterprise_hook('policies_create_agent', array($other['data'][0], $id, true));
+	} 
+	else {
+		returnError('error_add_agent_policy', __('Error adding agent to policy. The agent is already in the policy.'));
+		return;			
+	}
+
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_agent_policy', 'Error adding agent to policy.');
+
+}
+
+/**
+ * Add data module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <module_name>;<id_module_type>;<description>;
+ * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
+ * <min_critical>;<max_critical>;<str_critical>;<history_data>;<configuration_data> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=add_data_module_policy&id=1&other=data_module_policy_example_name~2~data%20module%20created%20by%20Api~2~0~0~50.00~10~20~180~~21~35~~1~module_begin%0dmodule_name%20pandora_process%0dmodule_type%20generic_data%0dmodule_exec%20ps%20aux%20|%20grep%20pandora%20|%20wc%20-l%0dmodule_end&other_mode=url_encode_separator_~
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_data_module_policy', __('Error adding data module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_add_data_module_policy', __('Error adding data module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_data_module_policy', __('Error adding data module to policy.'));
+		return;	
+	}	
+
+	$values = array();
+	$values['id_tipo_modulo'] = $other['data'][1];
+	$values['description'] = $other['data'][2];
+	$values['id_module_group'] = $other['data'][3];
+	$values['min'] = $other['data'][4];
+	$values['max'] = $other['data'][5];
+	$values['post_process'] = $other['data'][6];
+	$values['module_interval'] = $other['data'][7];
+	$values['min_warning'] = $other['data'][8];
+	$values['max_warning'] = $other['data'][9];
+	$values['str_warning'] = $other['data'][10];
+	$values['min_critical'] = $other['data'][11];
+	$values['max_critical'] = $other['data'][12];
+	$values['str_critical'] = $other['data'][13];
+ 	$values['history_data'] = $other['data'][14];
+ 	$values['configuration_data'] = $other['data'][15];	
+ 	
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_add_data_module_policy', __('Error adding data module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 1, $values, false, true)); 
+	
+	if ($success)
+		//returnData('string', array('type' => 'string', 'data' => __('Data module added to policy. Is necessary to apply the policy in order to changes take effect.')));		
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_data_module_policy', 'Error adding data module to policy.');	
+
+}
+
+/**
+ * Add network module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <module_name>;<id_module_type>;<description>;
+ * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
+ * <min_critical>;<max_critical>;<str_critical>;<history_data>;<time_threshold>;<disabled>;<module_port>;
+ * <snmp_community>;<snmp_oid>;<custom_id> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=add_network_module_policy&id=1&other=network_module_policy_example_name|6|network%20module%20created%20by%20Api|2|0|0|50.00|180|10|20||21|35||1|15|0|66|||0&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][1] < 6 or $other['data'][1] > 18){
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_module_type is not correct for network modules.'));
+		return;		
+	}	
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_network_data_module_policy', __('Error adding network module to policy.'));
+		return;	
+	}	
+	
+	$values = array();
+	$values['id_tipo_modulo'] = $other['data'][1];
+	$values['description'] = $other['data'][2];
+	$values['id_module_group'] = $other['data'][3];
+	$values['min'] = $other['data'][4];
+	$values['max'] = $other['data'][5];
+	$values['post_process'] = $other['data'][6];
+	$values['module_interval'] = $other['data'][7];
+	$values['min_warning'] = $other['data'][8];
+	$values['max_warning'] = $other['data'][9];
+	$values['str_warning'] = $other['data'][10];
+	$values['min_critical'] = $other['data'][11];
+	$values['max_critical'] = $other['data'][12];
+	$values['str_critical'] = $other['data'][13];
+ 	$values['history_data'] = $other['data'][14];
+ 	$values['min_ff_event'] = $other['data'][15];	
+ 	$values['disabled'] = $other['data'][16];
+    $values['tcp_port'] = $other['data'][17];			
+    $values['snmp_community'] = $other['data'][18];
+    $values['snmp_oid'] = $other['data'][19]; 	
+    $values['custom_id'] = $other['data'][20];
+ 	
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_network_data_module_policy', __('Error adding network module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false, true)); 
+	
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_network_module_policy', 'Error adding network module to policy.');	
+
+}
+
+/**
+ * Add plugin module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  api.php?op=set&op2=add_plugin_module_policy&id=1&other=example%20plugin%20module%20name|0|1|2|0|0||0|0||15|0|66|||300|50.00|0|0|0|plugin%20module%20from%20api|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][22] == ""){
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_plugin cannot be left blank.'));
+		return;		
+	}
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy.'));
+		return;	
+	}			
+
+	$values = array();
+	$values['disabled'] = $other['data'][1];
+	$values['id_tipo_modulo'] = $other['data'][2];
+	$values['id_module_group'] = $other['data'][3];
+	$values['min_warning'] = $other['data'][4];
+	$values['max_warning'] = $other['data'][5];
+	$values['str_warning'] = $other['data'][6];
+	$values['min_critical'] = $other['data'][7];
+	$values['max_critical'] = $other['data'][8];
+	$values['str_critical'] = $other['data'][9];
+	$values['min_ff_event'] = $other['data'][10];
+	$values['history_data'] = $other['data'][11];
+	$values['tcp_port'] = $other['data'][12];
+	$values['snmp_community'] = $other['data'][13];
+ 	$values['snmp_oid'] = $other['data'][14];
+ 	$values['module_interval'] = $other['data'][15];	
+ 	$values['post_process'] = $other['data'][16];			
+    $values['min'] = $other['data'][17];
+    $values['max'] = $other['data'][18]; 	
+    $values['custom_id'] = $other['data'][19];
+    $values['description'] = $other['data'][20];
+    $values['id_plugin'] = $other['data'][21];    
+    $values['plugin_user'] = $other['data'][22];  
+    $values['plugin_pass'] = $other['data'][23];
+    $values['plugin_parameter'] = $other['data'][24];              
+  	
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 4, $values, false, true)); 
+	
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_plugin_module_policy', 'Error adding plugin module to policy.');	
+
+}
+
+/**
+ * Add SNMP module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:  
+ * 
+ *  api.php?op=set&op2=add_snmp_module_policy&id=1&other=example%20SNMP%20module%20name|0|15|2|0|0||0|0||15|1|66|3|public|.1.3.6.1.2.1.1.1.0|180|50.00|10|60|0|SNMP%20module%20modified%20by%20API|AES|example_priv_passw|authNoPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy.'));
+		return;	
+	}
+	
+	if ($other['data'][2] < 15 or $other['data'][2] > 18){
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_module_type is not correct for SNMP modules.'));
+		return;		
+	}			
+
+	# SNMP version 3
+	if ($other['data'][13] == "3"){
+		
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv"){
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA"){
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}		
+		
+		$values = array(
+			'disabled' => $other['data'][1],
+			'id_tipo_modulo' => $other['data'][2],
+			'id_module_group' => $other['data'][3],
+			'min_warning' => $other['data'][4],
+			'max_warning' => $other['data'][5],
+			'str_warning' => $other['data'][6],
+			'min_critical' => $other['data'][7],
+			'max_critical' => $other['data'][8],
+			'str_critical' => $other['data'][9],
+			'min_ff_event' => $other['data'][10],		
+			'history_data' => $other['data'][11],			
+			'tcp_port' => $other['data'][12],	
+			'tcp_send' => $other['data'][13],				
+			'snmp_community' => $other['data'][14],		
+			'snmp_oid' => $other['data'][15],
+			'module_interval' => $other['data'][16],
+			'post_process' => $other['data'][17],
+			'min' => $other['data'][18],
+			'max' => $other['data'][19],	
+			'custom_id' => $other['data'][20],
+			'description' => $other['data'][21],
+			'custom_string_1' => $other['data'][22],
+			'custom_string_2' => $other['data'][23],
+			'custom_string_3' => $other['data'][24],
+			'plugin_parameter' => $other['data'][25],
+			'plugin_user' => $other['data'][26],
+			'plugin_pass' => $other['data'][27]
+		);			
+	}
+	else {
+		$values = array(
+			'disabled' => $other['data'][1],
+			'id_tipo_modulo' => $other['data'][2],
+			'id_module_group' => $other['data'][3],
+			'min_warning' => $other['data'][4],
+			'max_warning' => $other['data'][5],
+			'str_warning' => $other['data'][6],
+			'min_critical' => $other['data'][7],
+			'max_critical' => $other['data'][8],
+			'str_critical' => $other['data'][9],
+			'min_ff_event' => $other['data'][10],		
+			'history_data' => $other['data'][11],			
+			'tcp_port' => $other['data'][12],	
+			'tcp_send' => $other['data'][13],				
+			'snmp_community' => $other['data'][14],		
+			'snmp_oid' => $other['data'][15],
+			'module_interval' => $other['data'][16],
+			'post_process' => $other['data'][17],
+			'min' => $other['data'][18],
+			'max' => $other['data'][19],	
+			'custom_id' => $other['data'][20],
+			'description' => $other['data'][21]
+		);			
+	}             
+
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false, true)); 
+	
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_snmp_module_policy', 'Error adding SNMP module to policy.');	
+
+}
 
 /**
  * Create a new group. And return the id_group of the new group. 

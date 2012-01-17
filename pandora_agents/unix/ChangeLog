@@ -1,3 +1,7 @@
+2012-01-17  Kikuchi Koichiro  <koichiro@rworks.jp>
+
+	* pandora_agent.redhat.spec: Update version string (to 4.0.1).
+
 2011-12-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Merged from trunk. Wait for broker childs instead of ignoring

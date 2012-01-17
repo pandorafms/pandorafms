@@ -1,3 +1,9 @@
+2012-01-17  Kikuchi Koichiro <koichiro@rworks.jp>
+
+	* pandora_server.redhat.spec: Merged from trunk. Fixed a wrong
+	  dependency. RHEL has a net-snmp-perl, not a perl-SNMP.
+	  Also update version string (to 4.0.1).
+
 2012-01-12  Hirofumi Kosaka <kosaka@rworks.jp>
 
         * util/pandora_manage.pl: Merged from trunk. Added a new option

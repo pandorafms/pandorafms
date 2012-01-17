@@ -28,9 +28,9 @@ if (is_ajax ()) {
 
 	$data = false;	
 	if ($get_info_alert_module_group) {
-		$agents = agents_get_group_agents($id_agent_group);
+		$agents = agents_get_group_agents($id_agent_group);	
 		if (!empty($agents)) { 
-			$alerts = agents_get_alerts_simple($agents); 
+			$alerts = agents_get_alerts_simple(array_keys($agents)); 
 			foreach ($alerts as $alert) {
 				$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
 				if ($module_group == $module['id_module_group']) {
@@ -49,8 +49,7 @@ if (is_ajax ()) {
 							FROM talert_template_module_actions AS t1
 								INNER JOIN talert_actions AS t2 ON t1.id_alert_action = t2.id
 							WHERE t1.id_alert_template_module = ' . $template['id'] . '
-								OR t2.id = ' . $template['id_alert_action'] . ';';
-						
+								OR t2.id = ' . $template['id_alert_action'] . ';';			
 						$actions = db_get_all_rows_sql($sql);
 						if ($actions === false) {
 							$actions = array();
@@ -129,7 +128,7 @@ function mainModuleGroups() {
 	ui_print_page_header (__("Combined table of agent group and module group"), "images/brick.png", false, "", false, '');
 	
 	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
-	
+
 	
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
 	$modelGroups = users_get_all_model_groups();
@@ -165,18 +164,17 @@ function mainModuleGroups() {
 		
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$query = sprintf($sql,$idAgentGroup, $idModelGroup);
-				
+			
 				$rowsDB = db_get_all_rows_sql ($query);
-				
-				
+		
 				$agents = agents_get_group_agents($idAgentGroup);
-				
+
 				if (!empty($agents)) {
-					$alerts = agents_get_alerts_simple($agents);
-					
+					$alerts = agents_get_alerts_simple(array_keys($agents));
+								
 					foreach ($alerts as $alert) {
 						$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
-						
+					
 						if ($idModelGroup == $module['id_module_group']) {
 							if ($alert["times_fired"] > 0) {
 								$fired = true;
@@ -184,7 +182,7 @@ function mainModuleGroups() {
 						}
 					}
 				}			
-				
+			
 				$states = array();
 				if ($rowsDB !== false) {
 					foreach ($rowsDB as $rowDB) {
@@ -193,6 +191,7 @@ function mainModuleGroups() {
 				}
 				
 				$count = 0;
+				
 				foreach ($states as $idState => $state) {
 					$count += $state;
 				}

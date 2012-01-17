@@ -16,6 +16,7 @@
 
 
 include_once("include/functions_users.php");
+include_once("include/functions_io.php");
 
 // Date format for nfdump
 $nfdump_date_format = 'Y/m/d.H:i:s';
@@ -408,14 +409,11 @@ function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, 
 		$values[$i]['agg'] = $val[4];
 		
 		switch ($unit){
+			case "flows":
+				$values[$i]['data'] = $val[5];
+				break;
 			case "packets":
 				$values[$i]['data'] = $val[6];
-				break;
-			case "bps":
-				$values[$i]['data'] = $val[9];
-				break;
-			case "bpp":
-				$values[$i]['data'] = $val[10];
 				break;
 			case "bytes":
 			default:
@@ -447,9 +445,16 @@ function netflow_get_command ($filter) {
 	if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
 		$command .= ' -R '.$config['netflow_path'];
 	}
-	
-	// Filter options
+
+	// Advanced filter
 	$filter_args = '';
+	if ($filter['advanced_filter'] != '') {
+		$filter_args = preg_replace('/"/','', io_safe_output ($filter['advanced_filter']));
+		$command .= ' "(' . $filter_args . ')"';
+		return $command;
+	}
+
+	// Normal filter
 	if ($filter['ip_dst'] != ''){
 		$filter_args .= ' "(';
 		$val_ipdst = explode(',', $filter['ip_dst']);
@@ -611,14 +616,14 @@ function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate
 				}
 				
 				switch ($unit) {
+					case "flows":
+						$flow['data'] = $val[6];
+						break;
 					case "packets":
 						$flow['data'] = $val[7];
 						break;
 					case "bytes":
 						$flow['data'] = $val[8];
-						break;
-					case "flows":
-						$flow['data'] = $val[9];
 						break;
 				}
 				$flow['timestamp'] = strtotime ($flow['date'] . " " . $flow['time']);

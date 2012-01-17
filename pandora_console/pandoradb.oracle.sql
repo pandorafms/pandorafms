@@ -1482,12 +1482,13 @@ CREATE INDEX ttag_event_id_evento_idx ON ttag_event(id_evento);
 
 CREATE TABLE tnetflow_filter (
 id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_name VARCHAR2(100) NOT NULL,
+id_name VARCHAR2(600) NOT NULL,
 id_group NUMBER(10, 0),
-ip_dst VARCHAR2(100),
-ip_src VARCHAR2(100),
-dst_port VARCHAR2(100),
-src_port VARCHAR2(100),
+ip_dst CLOB NOT NULL,
+ip_src CLOB NOT NULL,
+dst_port CLOB NOT NULL,
+src_port CLOB NOT NULL,
+advanced_filter CLOB NOT NULL,
 aggregate VARCHAR2(60),
 output VARCHAR2(60)
 );

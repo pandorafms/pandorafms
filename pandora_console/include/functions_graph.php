@@ -1996,8 +1996,8 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_im
 		$homeurl = '';
 	}
 
-	return area_graph($flash_chart, $chart, $width, $height, array (), $sources,
-		 null, "images/image_problem.opaque.png", "", "", $homeurl,
+	return stacked_area_graph($flash_chart, $chart, $width, $height, null, $sources,
+		 null, "images/image_problem.opaque.png", "", "",
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], "");
 }

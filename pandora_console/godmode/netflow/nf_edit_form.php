@@ -65,6 +65,7 @@ if ($id) {
 	$src_port = $filter['src_port'];
 	$aggregate = $filter['aggregate'];
 	$output = $filter['output'];
+	$advanced_filter = $filter['advanced_filter'];
 
 } else {
 	$name = '';
@@ -75,6 +76,7 @@ if ($id) {
 	$src_port = '';
 	$aggregate = 'none';
 	$output = 'bytes';	
+	$advanced_filter = '';
 }
 
 if ($update) {
@@ -86,6 +88,7 @@ if ($update) {
 	$ip_src = get_parameter('ip_src','');
 	$dst_port = get_parameter('dst_port','');
 	$src_port = get_parameter('src_port','');
+	$advanced_filter = get_parameter('advanced_filter','');
 	
 	if ($name == '') {
                 ui_print_error_message (__('Not updated. Blank name'));
@@ -99,6 +102,7 @@ if ($update) {
 				'ip_src' => $ip_src,
 				'dst_port' => $dst_port,
 				'src_port' => $src_port,
+				'advanced_filter' => $advanced_filter,
 				'output' => $output),
 			array ('id_sg' => $id));
 			
@@ -117,6 +121,7 @@ if ($create){
 	$ip_src = get_parameter('ip_src','');
 	$dst_port = get_parameter('dst_port','');
 	$src_port = get_parameter('src_port','');
+	$advanced_filter = (string) get_parameter('advanced_filter', '');
 
 		if($name == db_get_value('id_name', 'tnetflow_filter', 'id_name', $name)){	
 			$result = false;
@@ -129,6 +134,7 @@ if ($create){
 				'dst_port'=>$dst_port,
 				'src_port'=>$src_port,
 				'aggregate'=>$aggregate,
+				'advanced_filter'=>$advanced_filter,
 				'output'=>$output
 			);
 			$result = db_process_sql_insert('tnetflow_filter', $values);
@@ -157,8 +163,16 @@ $table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
 		$own_info['is_admin'], 'assign_group', $assign_group, '', '', -1, true,
 		false, false);
 	
+if ($advanced_filter != '') {
+	$filter_type = 1;
+} else {
+	$filter_type = 0;
+}
+
 $table->data[2][0] = '<b>'.__('Filter:').'</b>';
-	
+$table->data[2][1] = __('Normal') . ' ' . html_print_radio_button_extended ('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Advanced') . ' ' . html_print_radio_button_extended ('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true);
+
 $table->data[3][0] = __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
 $table->data[3][1] = html_print_input_text ('ip_dst', $ip_dst, false, 40, 80, true);
 	
@@ -171,17 +185,19 @@ $table->data[5][1] = html_print_input_text ('dst_port', $dst_port, false, 40, 80
 $table->data[6][0] = __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
 $table->data[6][1] = html_print_input_text ('src_port', $src_port, false, 40, 80, true);
 
+$table->data[7][0] = ui_print_help_icon ('pcap_filter', true);
+$table->data[7][1] = html_print_textarea ('advanced_filter', 4, 40, $advanced_filter, '', true);
 	
-$table->data[7][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
+$table->data[8][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
 $aggregate_list = array();
 $aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 
-$table->data[7][1] = html_print_select ($aggregate_list, "aggregate", $aggregate, '', '', 0, true, false, true, '', false);
+$table->data[8][1] = html_print_select ($aggregate_list, "aggregate", $aggregate, '', '', 0, true, false, true, '', false);
 	
-$table->data[8][0] = '<b>'.__('Output format').'</b>';
+$table->data[9][0] = '<b>'.__('Output format').'</b>';
 $show_output = array();
-$show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'bps' =>__('Bits per second'), 'bpp' =>__('Bytes per packet'));
-$table->data[8][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
+$show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
+$table->data[9][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
 echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
 html_print_table ($table);
@@ -197,5 +213,50 @@ if ($id) {
 echo '</div>';
 echo '</form>';
 ?>
+
+<script type="text/javascript">
+
+	function displayAdvancedFilter () {
+	
+		// Erase the normal filter
+		document.getElementById("text-ip_dst").value = '';
+		document.getElementById("text-ip_src").value = '';
+		document.getElementById("text-dst_port").value = '';
+		document.getElementById("text-src_port").value = '';
+
+		// Hide the normal filter
+		document.getElementById("table1-3").style.display = 'none';
+		document.getElementById("table1-4").style.display = 'none';
+		document.getElementById("table1-5").style.display = 'none';
+		document.getElementById("table1-6").style.display = 'none';
+		
+		// Show the advanced filter
+		document.getElementById("table1-7").style.display = '';
+	};
+
+	function displayNormalFilter () {
+	
+		// Erase the advanced filter
+		document.getElementById("textarea_advanced_filter").value = '';
+
+		// Hide the advanced filter
+		document.getElementById("table1-7").style.display = 'none';
+	
+		// Show the normal filter
+		document.getElementById("table1-3").style.display = '';
+		document.getElementById("table1-4").style.display = '';
+		document.getElementById("table1-5").style.display = '';
+		document.getElementById("table1-6").style.display = '';
+	};
+
+	var filter_type = <?php echo $filter_type ?>;
+	if (filter_type == 0) {
+		displayNormalFilter ();
+	} else {
+		displayAdvancedFilter ();
+	}
+
+</script>
+
 
 

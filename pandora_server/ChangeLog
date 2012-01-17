@@ -1,3 +1,9 @@
+2012-01-17  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added option to add all
+	policy to application queue in CLI. Organize help
+	by categories
+
 2012-01-17  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_server.redhat.spec: Fixed a wrong dependency.

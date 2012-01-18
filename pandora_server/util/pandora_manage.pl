@@ -88,6 +88,8 @@ sub help_screen{
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
     help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon>]', 'Create an agent group');
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
+	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
+	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
 	print "MODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
 	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to agent');
@@ -98,6 +100,7 @@ sub help_screen{
     help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
 	help_screen_line('--update_module', '<agent_name> <module_name> <field_to_change> <new_value>', 'Update a module field');
+    help_screen_line('--get_agents_module_current_data', '<module_name>', 'Get the agent and current data of all the modules with the same name');
 	print "ALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -108,6 +111,7 @@ sub help_screen{
 	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
 	help_screen_line('--update_alert_template', '<template_name> <field_to_change> <new_value>', 'Update a field of an alert template');
+	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
 	print "USERS:\n\n" unless $param ne '';
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
     help_screen_line('--delete_user', '<user_name>', 'Delete user');
@@ -134,6 +138,8 @@ sub help_screen{
 	help_screen_line('--create_policy_network_module', '<policy_name> <module_name> <module_type> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to policy');
 	help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
+	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
+	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
 	print "TOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
 	
@@ -436,11 +442,45 @@ sub pandora_update_alert_template_from_hash ($$$$) {
 # Get list of all downed agents
 ###############################################################################
 sub pandora_get_downed_agents () {    	
-	my @downed_agents = get_db_rows ($dbh, "SELECT tagente.nombre, truncate((NOW() - tagente.ultimo_contacto/60),0) as downed_time, tagente.server_name from tagente
+	my @downed_agents = get_db_rows ($dbh, "SELECT tagente.id_agente, tagente.nombre, truncate((NOW() - tagente.ultimo_contacto/60),0) as downed_time, tagente.server_name from tagente
 where  UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tagente.ultimo_contacto)>(tagente.intervalo*2)
 OR tagente.ultimo_contacto=0");
 	
 	return \@downed_agents;
+}
+
+###############################################################################
+# Get the agent (id of agent and module and agent name) list with a given module
+###############################################################################
+sub pandora_get_module_agents ($$) {
+	my ($dbh,$module_name) = @_;
+	    	
+	my @agents = get_db_rows ($dbh, "SELECT tagente_modulo.id_agente_modulo, tagente.id_agente, tagente.nombre FROM tagente, tagente_modulo 
+	WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.nombre = ?", safe_input($module_name));
+	
+	return \@agents;
+}
+
+##########################################################################
+## Return the modules of a given agent
+##########################################################################
+sub pandora_get_agent_modules ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	my @modules = get_db_rows ($dbh, "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = ?", $agent_id);
+
+	return \@modules;
+}
+
+###############################################################################
+# Get module current data
+###############################################################################
+sub pandora_get_module_current_data ($$) {
+	my ($dbh,$id_agent_module) = @_;
+	    	
+	my $current_data = get_db_value ($dbh, "SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?", $id_agent_module);
+	
+	return $current_data;
 }
 
 ##########################################################################
@@ -2308,6 +2348,137 @@ sub cli_apply_all_policies() {
 }
 
 ##############################################################################
+# Validate all the alerts
+# Related option: --validate_all_alerts
+##############################################################################
+
+sub cli_validate_all_alerts() {
+	print "[INFO] Validating all the alerts\n\n";
+		
+	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0");
+	
+	if($res == -1) {
+		print "[ERROR] Alerts cannot be validated\n\n";
+	}
+}
+
+##############################################################################
+# Validate the alerts of a given policy
+# Related option: --validate_policy_alerts
+##############################################################################
+
+sub cli_validate_policy_alerts() {
+	my $policy_name = @ARGV[2];
+	
+	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+	exist_check($policy_id,'policy',$policy_name);
+	
+	my $policy_alerts = enterprise_hook('get_policy_alerts',[$dbh, $policy_id]);
+	
+	my @policy_alerts_id_array;
+	my $policy_alerts_id = '';
+	
+	my $cont = 0;
+	foreach my $alert (@{$policy_alerts}) {
+		$policy_alerts_id_array[$cont] = $alert->{'id'};
+		$cont++;
+	}
+	
+	if($#policy_alerts_id_array == -1) {
+		print "[INFO] No alerts found in the policy '$policy_name'\n\n";
+	}
+	
+	$policy_alerts_id = join(',',@policy_alerts_id_array);
+	
+	print "[INFO] Validating the alerts of the policy '$policy_name'\n\n";
+		
+	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0 WHERE id_policy_alerts IN (?)", $policy_alerts_id);
+	
+	if($res == -1) {
+		print "[ERROR] Alerts cannot be validated\n\n";
+	}
+}
+
+##############################################################################
+# Show the group name where is a given agent
+# Related option: --get_agent_group
+##############################################################################
+
+sub cli_get_agent_group() {
+	my $agent_name = @ARGV[2];
+	
+	my $id_agent = get_agent_id($dbh,$agent_name);
+	exist_check($id_agent,'agent',$agent_name);
+	
+	my $id_group = get_agent_group ($dbh, $id_agent);
+	
+	my $group_name = get_group_name ($dbh, $id_group);
+
+	print $group_name;
+}
+
+##############################################################################
+# Show the agent and current data of all the modules with the same name
+# Related option: --get_agents_module_current_data
+##############################################################################
+
+sub cli_get_agents_module_current_data() {
+	my $module_name = @ARGV[2];
+	
+	my $agents = pandora_get_module_agents($dbh, $module_name);
+	exist_check(scalar(@{$agents})-1,'data of module',$module_name);
+	
+	print "id_agent,agent_name,module_data\n";
+	foreach my $agent (@{$agents}) {
+		my $current_data = pandora_get_module_current_data($dbh, $agent->{'id_agente_modulo'});
+		print $agent->{'id_agente'}.",".$agent->{'nombre'}.",$current_data\n";
+	}
+}
+
+##############################################################################
+# Show all the modules of an agent
+# Related option: --get_agent_modules
+##############################################################################
+
+sub cli_get_agent_modules() {
+	my $agent_name = @ARGV[2];
+	
+	my $id_agent = get_agent_id($dbh,$agent_name);
+	exist_check($id_agent,'agent',$agent_name);
+	
+	my $modules = pandora_get_agent_modules ($dbh, $id_agent);
+
+	if(scalar(@{$modules}) == 0) {
+		print "[INFO] The agent '$agent_name' have not modules\n\n";
+	}
+	
+	print "id_module, module_name\n";
+	foreach my $module (@{$modules}) {
+		print $module->{'id_agente_modulo'}.",".safe_output($module->{'nombre'})."\n";
+	}
+}
+
+##############################################################################
+# Show all the modules of a policy
+# Related option: --get_policy_modules
+##############################################################################
+
+sub cli_get_policy_modules() {
+	my $policy_name = @ARGV[2];
+	
+	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+	exist_check($policy_id,'policy',$policy_name);
+	
+	my $policy_modules = enterprise_hook('get_policy_modules',[$dbh, $policy_id]);
+	exist_check(scalar(@{$policy_modules})-1,'modules in policy',$policy_name);
+	
+	print "id_policy_module, module_name\n";
+	foreach my $module (@{$policy_modules}) {
+		print $module->{'id'}.",".safe_output($module->{'name'})."\n";
+	}
+}
+
+##############################################################################
 # Disable policy alerts.
 # Related option: --disable_policy_alerts
 ##############################################################################
@@ -2762,6 +2933,30 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--apply_all_policies') {
 			param_check($ltotal, 0);
 			cli_apply_all_policies();
+		}
+		elsif ($param eq '--validate_all_alerts') {
+			param_check($ltotal, 0);
+			cli_validate_all_alerts();
+		}
+		elsif ($param eq '--validate_policy_alerts') {
+			param_check($ltotal, 1);
+			cli_validate_policy_alerts();
+		}
+		elsif ($param eq '--get_agent_group') {
+			param_check($ltotal, 1);
+			cli_get_agent_group();
+		}
+		elsif ($param eq '--get_agents_module_current_data') {
+			param_check($ltotal, 1);
+			cli_get_agents_module_current_data();
+		}
+		elsif ($param eq '--get_agent_modules') {
+			param_check($ltotal, 1);
+			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_policy_modules') {
+			param_check($ltotal, 1);
+			cli_get_policy_modules();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

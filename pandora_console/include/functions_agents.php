@@ -192,7 +192,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 
-	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.'));
+	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.', false));
 	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 		$extra_sql = '';
 	}else if ($extra_sql != '') {
@@ -981,7 +981,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 
 	$extra_sql = '';
 	if ($id_agent != 0){
-		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
+		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent, '', false));
 		if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 			$extra_sql = '';
 		}else if ($extra_sql != '') {

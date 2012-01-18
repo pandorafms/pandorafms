@@ -1,5 +1,10 @@
 2012-01-18  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Add option to CLI to 
+	get all policies or the policies with a given agent
+
+2012-01-18  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Added new options to
 	CLI as get agent modules, get policy modules, 
 	validate alerts, and more

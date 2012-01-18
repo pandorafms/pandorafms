@@ -100,7 +100,7 @@ sub help_screen{
     help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
 	help_screen_line('--update_module', '<agent_name> <module_name> <field_to_change> <new_value>', 'Update a module field');
-    help_screen_line('--get_agents_module_current_data', '<module_name>', 'Get the agent and current data of all the modules with the same name');
+    help_screen_line('--get_agents_module_current_data', '<module_name>', 'Get the agent and current data of all the modules with a given name');
 	print "ALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -140,6 +140,7 @@ sub help_screen{
 	help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
+	help_screen_line('--get_policies', '[<agent_name>]', 'Get all the policies (without parameters) or the policies of a given agent (agent name as parameter)');
 	print "TOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
 	
@@ -2479,6 +2480,40 @@ sub cli_get_policy_modules() {
 }
 
 ##############################################################################
+# Show all the policies (without parameters) or the policies of given agent
+# Related option: --get_policies
+##############################################################################
+
+sub cli_get_policies() {
+	my $agent_name = @ARGV[2];
+	my $policies;
+
+	if(defined($agent_name)) {
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		
+		$policies = enterprise_hook('get_agent_policies',[$dbh,$id_agent]);
+
+		if(scalar(@{$policies}) == 0) {
+			print "[INFO] No policies found on agent '$agent_name'\n\n";
+			exit;
+		}
+	}
+	else {
+		$policies = enterprise_hook('get_policies',[$dbh]);
+		if(scalar(@{$policies}) == 0) {
+			print "[INFO] No policies found\n\n";
+			exit;
+		}
+	}
+	
+	print "id_policy, policy_name\n";
+	foreach my $module (@{$policies}) {
+		print $module->{'id'}.",".safe_output($module->{'name'})."\n";
+	}
+}
+
+##############################################################################
 # Disable policy alerts.
 # Related option: --disable_policy_alerts
 ##############################################################################
@@ -2957,6 +2992,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_policy_modules') {
 			param_check($ltotal, 1);
 			cli_get_policy_modules();
+		}
+		elsif ($param eq '--get_policies') {
+			param_check($ltotal, 1, 1);
+			cli_get_policies();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

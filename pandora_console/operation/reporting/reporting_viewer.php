@@ -77,6 +77,12 @@ if ($config["pure"] == 0) {
 
 ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"], "images/reporting.png", false, "", false, $options);
 
+if ($enable_init_date) {
+	if ($datetime_init > $datetime) {
+		ui_print_error_message ("Invalid date selected. Initial date must be before end date.");
+	}
+}
+
 $table->width = '99%';
 $table->class = 'databox';
 $table->style = array ();
@@ -186,7 +192,9 @@ foreach ($contents as $content) {
 	
 	// Calculate new inteval for all reports
 	if ($enable_init_date){
-		$datetime_init = strtotime ($date_init.' '.$time_init);
+		if ($datetime_init >= $datetime) {
+			$datetime_init = $date_init_less;
+		}
 		$new_interval = $report['datetime'] - $datetime_init; 		
 		$content['period'] = $new_interval;
 	}		

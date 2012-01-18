@@ -1,5 +1,10 @@
 2012-01-18  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* operation/reporting/reporting_viewer.php: Check that the date range
+	entered is correct.
+
+2012-01-18  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* include/functions_agents.php
 	  operation/agentes/estado_monitores.php: Counter modified to ignore
 	disabled modules.

@@ -143,13 +143,28 @@ void
 Pandora_Module_Odbc::doQuery () {
 	string retval;
 	auto_ptr<Statement> statement;
+	Statement *statement_ptr;
 	auto_ptr<ResultSet> results;
+	ResultSet *results_ptr;
 	ResultSetMetaData  *metadata;
 	int                 columns;
 	
-	statement = auto_ptr<Statement> (this->con->createStatement ());
-	results = auto_ptr<ResultSet> (statement->executeQuery (query));
+	statement_ptr = this->con->createStatement ();
+	if (statement_ptr == NULL) {
+		return;
+	}
+	statement = auto_ptr<Statement> (statement_ptr);
+
+	results_ptr = statement->executeQuery (query);
+	if (results_ptr == NULL) {
+		return;
+	}
+	results = auto_ptr<ResultSet> (results_ptr);
 	metadata = results->getMetaData ();
+	if (metadata == NULL) {
+		return;
+	}
+
 	columns = metadata->getColumnCount ();
 	
 	if (results->next ()) {

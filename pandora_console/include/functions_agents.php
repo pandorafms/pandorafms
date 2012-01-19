@@ -186,19 +186,19 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			$orderbyText = sprintf("ORDER BY %s", $orderby);
 		}
 	}
-	
+
 	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.nombre AS agent_name, t4.name AS template_name';
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 
-	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.'));
+	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.', false));
 	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 		$extra_sql = '';
 	}else if ($extra_sql != '') {
 		$extra_sql .= ' OR ';
 	}
-	
+
 	$sql = sprintf ("SELECT %s
 	FROM talert_template_modules
 		INNER JOIN tagente_modulo t2
@@ -951,11 +951,10 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
  */
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
-
+	
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
-		
 		if(empty($groups)) {
 			return array();
 		}
@@ -975,12 +974,14 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		}
 		$id_agent = $temp;
 	}
-
-	$id_agent = safe_int ($id_agent, 1);
+	
+	if (!is_array($id_agent)) {
+		$id_agent = safe_int ($id_agent, 1);
+	}
 
 	$extra_sql = '';
 	if ($id_agent != 0){
-		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
+		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent, '', false));
 		if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 			$extra_sql = '';
 		}else if ($extra_sql != '') {

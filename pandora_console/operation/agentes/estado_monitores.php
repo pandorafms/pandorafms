@@ -178,7 +178,7 @@ switch ($config["dbtype"]) {
 			ORDER BY tagente_modulo.id_module_group , %s %s
 			", $id_agente, $order['field'], $order['order']);	*/
 		$sql = sprintf("
-			SELECT * FROM tagente_estado, (SELECT * FROM tagente_modulo WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0) tagente_modulo 
+			SELECT * FROM tagente_estado, (SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = 0 AND disabled = 0) tagente_modulo 
 				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND %s tagente_estado.utimestamp != 0  
@@ -197,8 +197,8 @@ switch ($config["dbtype"]) {
 				ON tmodule_group.id_mg = tagente_modulo.id_module_group
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.id_agente = %d 
-				AND tagente_modulo.disabled = 0
 				AND tagente_modulo.delete_pending = 0
+				AND tagente_modulo.disabled = 0
 				AND tagente_estado.utimestamp != 0 
 			ORDER BY tagente_modulo.id_module_group , %s %s
 			", $id_agente, $order['field'], $order['order']);

@@ -1,3 +1,9 @@
+2012-01-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php
+	 include/functions_agents.php
+	 include/functions_alerts.php: New functionality for the Api.
+
 2012-01-18  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/reporting/reporting_viewer.php: Check that the date range

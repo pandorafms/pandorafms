@@ -170,10 +170,10 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	else {
 		$id_agent = (array) $id_agent;
 		$id_modules = array_keys (agents_get_modules ($id_agent, false, array('delete_pending' => 0)));
-		
+
 		if (empty ($id_modules))
 			return array ();
-			
+
 		$subQuery = implode (",", $id_modules);
 	}
 
@@ -422,7 +422,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			$agents = oracle_recode_query ($sql, $set, 'AND', false);
 			break;
 	}
-	
+
 	return $agents;
 	return db_get_all_rows_sql($sql);
 }
@@ -799,7 +799,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 			return array ();
 		}
 	}
-
+	
 	if ($childGroups) {
 		if (is_array($id_group)) {
 			foreach ($id_group as $parent) {
@@ -949,7 +949,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
+function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true, $noACLs = false) {
 	global $config;
 	
 	if ($id_agent === null) {
@@ -990,7 +990,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
-	
+
 	if(empty($userGroups)) {
 		return array();
 	}
@@ -1470,14 +1470,32 @@ function agents_get_addresses ($id_agent) {
  * Get the worst status of all modules of a given agent.
  *
  * @param int Id agent to check.
+ * @param bool Whether the call check ACLs or not 
  *
  * @return int Worst status of an agent for all of its modules.
  * The value -1 is returned in case the agent has exceed its interval.
  */
-function agents_get_status($id_agent = 0) {
+function agents_get_status($id_agent = 0, $noACLs = false) {
 	global $config;
 	
-	$modules = agents_get_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
+	if (!$noACLs){
+		$modules = agents_get_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
+	}
+	else{
+		$filter_modules['id_agente'] = $id_agent;
+		$filter_modules['disabled'] = 0;
+		$filter_modules['delete_pending'] = 0;
+		// Get all non disabled modules of the agent
+		$all_modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
+
+		$result_modules = array(); 
+		// Skip non init modules
+		foreach ($all_modules as $module){
+			if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
+				$modules[] = $module['id_agente_modulo'];
+			}	
+		}
+	}
 
 	$modules_status = array();
 	$modules_async = 0;

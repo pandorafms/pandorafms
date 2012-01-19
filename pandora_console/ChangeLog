@@ -1,5 +1,10 @@
 2012-01-19  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* extensions/module_groups.php: Fixed bug: sql error in
+	extension "Module Groups" and popup alert.
+
+2012-01-19  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* include/functions_agents.php
 	  operation/agentes/estado_monitores.php: Counter modified to ignore
 	disabled modules.

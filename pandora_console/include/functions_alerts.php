@@ -1133,13 +1133,14 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
  *  Validates an alert id or an array of alert id's.
  *
  * @param mixed Array of alerts ids or single id.
+ * @param bool Whether to check ACLs
  *
  * @return bool True if it was successful, false otherwise.
  */
-function alerts_validate_alert_agent_module ($id_alert_agent_module) {
+function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = false) {
 	global $config;
-	require_once ("include/functions_events.php");
-	
+	include_once ("include/functions_events.php");
+
 	$alerts = safe_int ($id_alert_agent_module, 1);
 	
 	if (empty ($alerts)) {
@@ -1153,8 +1154,10 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module) {
 		$agent_id = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		$group_id = agents_get_agentmodule_group ($agent_id);
 		
-		if (! check_acl ($config['id_user'], $group_id, "AW")) {
-			continue;
+		if (!$noACLs){
+			if (! check_acl ($config['id_user'], $group_id, "AW")) {
+				continue; 
+			}
 		}
 		$result = db_process_sql_update ('talert_template_modules',
 			array ('times_fired' => 0,

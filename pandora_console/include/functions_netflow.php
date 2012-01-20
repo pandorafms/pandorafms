@@ -781,4 +781,96 @@ function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggre
 	return $last_timestamp;
 }
 
+/**
+ * Get the types of netflow charts.
+ *
+ * @return Array of types.
+ *
+ */
+function netflow_get_chart_types () {
+
+	return array(
+	               __('Area graph'),
+	               __('Pie graph'),
+	               __('Data table'),
+	               __('Statistics table')
+	);
+}
+
+/**
+ * Gets valid intervals for a netflow chart in the format:
+ *
+ *     interval_length => interval_description
+ *
+ * @return Array of valid intervals.
+ *
+ */
+function netflow_get_valid_intervals () {
+        return array ('600' => __('10 mins'),
+                      '900' => __('15 mins'),
+                      '1800' => __('30 mins'),
+                      '3600' => __('1 hour'),
+                      '7200' => __('2 hours'),
+                      '18000' => __('5 hours'),
+                      '43200' => __('12 hours'),
+                      '86400' => __('1 day'),
+                      '172800' => __('2 days'),
+                      '432000' => __('5 days'),
+                      '1296000' => __('15 days'),
+                      '604800' => __('Last week'),
+                      '2592000' => __('Last month'),
+                      '5184000' => __('2 months'),
+                      '7776000' => __('3 months'),
+                      '15552000' => __('6 months'),
+                      '31104000' => __('Last year'),
+                      '62208000' => __('2 years')
+	);
+}
+
+/**
+ * Draw a netflow report item.
+ *
+ * @param string start_date Period start date.
+ * @param string end_date Period end date.
+ * @param string type Chart type.
+ * @param string command Command used to retrieve netflow data.
+ * @param array filter Netflow filter.
+ * @param int max_aggregates Maximum number of aggregates.
+ * @param string unique_id A unique number that is used to generate a cache file.
+ *
+ */
+function netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $filter, $max_aggregates, $unique_id) {
+
+	$aggregate = $filter['aggregate'];
+	$unit = $filter['output'];
+	$interval = $end_date - $start_date;
+
+	// Process item
+	switch ($type){
+		case '0':
+			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
+			if ($aggregate != 'none') {
+				echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
+			} else {
+				echo graph_netflow_total_area($data, $interval, 660, 320, 0);
+			}
+			break;
+		case '1':
+			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
+			echo graph_netflow_aggregate_pie($data, $aggregate);
+			break;
+		case '2':
+			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
+			echo netflow_data_table ($data, $start_date, $end_date, $aggregate);
+			break;
+		case '3':
+			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
+			echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
+			break;
+		default:
+			echo fs_error_image();
+			break;
+	}
+}
+
 ?>

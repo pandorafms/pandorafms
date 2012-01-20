@@ -1,3 +1,13 @@
+2012-01-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_netflow.php,
+	  operation/menu.php,
+	  operation/netflow/nf_view.php,
+	  godmode/netflow/nf_report_item.php: Netflow live view support and small
+	  fixes.
+
+	* operation/netflow/nf_live_view.php: Added to repository: Netflow live view.
+
 2012-01-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: Modified in parameters in 

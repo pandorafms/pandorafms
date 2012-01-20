@@ -263,8 +263,11 @@ $menu["usuarios"]["id"] = "oper-users";
 if (check_acl ($config['id_user'], 0, "IR")) {
 	if ($config['activate_netflow']) {
 		$menu["netf"]["text"] = __('Netflow');
-		$menu["netf"]["sec2"] = "operation/netflow/nf_reporting";
+		$menu["netf"]["sec2"] = "operation/netflow/nf_live_view";
 		$menu["netf"]["id"] = "oper-netflow";
+		$sub = array ();
+		$sub["operation/netflow/nf_reporting"]["text"] = __('Reports');
+		$menu["netf"]["sub"] = $sub;
 	}
 }
 		

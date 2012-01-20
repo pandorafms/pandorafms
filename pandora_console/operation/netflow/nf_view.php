@@ -81,26 +81,7 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 	$table->data[0][1] .= html_print_input_text ('time', $time, false, 10, 5, true);
 
 	$table->data[1][0] = '<b>'.__('Interval').'</b>';
-	$values_period = array ('600' => __('10 mins'),
-				'900' => __('15 mins'),
-				'1800' => __('30 mins'),
-				'3600' => __('1 hour'),
-				'7200' => __('2 hours'),
-				'18000' => __('5 hours'),
-				'43200' => __('12 hours'),
-				'86400' => __('1 day'),
-				'172800' => __('2 days'),
-				'432000' => __('5 days'),
-				'1296000' => __('15 days'),
-				'604800' => __('Last week'),
-				'2592000' => __('Last month'),
-				'5184000' => __('2 months'),
-				'7776000' => __('3 months'),
-				'15552000' => __('6 months'),
-				'31104000' => __('Last year'),
-				'62208000' => __('2 years')
-	);
-	$table->data[1][1] = html_print_select ($values_period, 'period', $period, '', '', 0, true, false, false);
+	$table->data[1][1] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
 	html_print_table ($table);
 
 	echo '<div class="action-buttons" style="width:60%;">';
@@ -135,44 +116,22 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 	
 	// Get item filters
 	$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . io_safe_input ($content_report['id_filter']) . "'", false, true);
-	$command = netflow_get_command ($filter);
-	$title = $filter['id_name'];
-	$aggregate = $filter['aggregate'];
-	$unit = $filter['output'];
 	
-	// Process item
-	switch ($type){
-		case '0':
-			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
-			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
-			if ($aggregate != 'none') {
-				echo '<h4>' . $title . ' (' . __($aggregate) . '/' . __($unit) . ')</h4>';
-				echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
-			} else {
-				echo '<h4>' . $title . ' (' . __($unit) . ')</h4>';
-				echo graph_netflow_total_area($data, $interval, 660, 320, 0);
-			}
-			break;
-		case '1':
-			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo '<h4>' . $title . ' (' . __($aggregate) . '/' . __($unit) . ')</h4>';
-			echo graph_netflow_aggregate_pie($data, $aggregate, $unit, $title);
-			break;
-		case '2':
-			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
-			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
-			echo '<h4>' . $title . ' (' . __($aggregate) . '/' . __($unit) . ')</h4>';
-			echo netflow_data_table ($data, $start_date, $end_date, $aggregate);
-			break;
-		case '3':
-			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo '<h4>' . $title . '</h4>';
-			echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
-			break;
-		default:
-			echo fs_error_image();
-			break;
+	// Get the command to call nfdump
+	$command = netflow_get_command ($filter);
+
+	if ($filter['aggregate'] != 'none') {
+		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')</h4>';
+	} else {
+		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['output']) . ')</h4>';
 	}
+
+	// Build a unique id for the cache
+	$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
+
+	// Draw
+	netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $filter, $max_aggregates, $unique_id);
+
 }
 
 ?>

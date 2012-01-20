@@ -151,14 +151,7 @@ $table->data[1][0] = '<b>'.__('Max values aggregated').'</b>';
 $table->data[1][1] = html_print_select ($max_values, 'max', $max_val, '', '', 0, true);
 
 $table->data[2][0] = '<b>'.__('Elements').'</b>';
-
-$show_graph_options = Array();
-$show_graph_options[0] = __('Area graph');
-$show_graph_options[1] = __('Pie graph');
-$show_graph_options[2] = __('Data table');
-$show_graph_options[3] = __('Statistics table');
-
-$table->data[2][1] = html_print_select ($show_graph_options, 'show_graph', $show_graph,'','',0,true);
+$table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
 
 echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';
 html_print_table ($table);

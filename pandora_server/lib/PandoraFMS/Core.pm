@@ -86,6 +86,8 @@ Exported Functions:
 
 =item * C<pandora_update_module_on_error>
 
+=item * C<pandora_update_table_from_hash>
+
 =item * C<pandora_update_server>
 
 =item * C<pandora_group_statistics>
@@ -164,6 +166,7 @@ our @EXPORT = qw(
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
 	pandora_update_server
+	pandora_update_table_from_hash
 	pandora_update_template_module
 	pandora_group_statistics
 	pandora_server_statistics
@@ -1371,6 +1374,16 @@ sub pandora_update_module_from_hash ($$$$$) {
 }
 
 ##########################################################################
+## Update a table from hash
+##########################################################################
+sub pandora_update_table_from_hash ($$$$$$) {
+	my ($pa_config, $parameters, $where_column, $where_value, $table, $dbh) = @_;
+	
+	my $module_id = db_process_update($dbh, $table, $parameters, $where_column, $where_value);
+	return $module_id;
+}
+
+##########################################################################
 ## Create a group
 ##########################################################################
 sub pandora_create_group ($$$$$$$$) {
@@ -2310,7 +2323,7 @@ sub pandora_server_statistics ($$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_group_statistics (I<$pa_config>, I<$dbh>) >>
+=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
 
 Process groups statistics for statistics table
 

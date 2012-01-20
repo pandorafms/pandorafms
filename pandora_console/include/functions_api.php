@@ -1067,7 +1067,7 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 /**
  * Update a network module in agent. And return a message with the result of the operation.
  * 
- * @param string $id Name of the network module to update.
+ * @param string $id Id of the network module to update.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <id_agent>;<disabled>
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
@@ -1076,21 +1076,21 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=update_network_module&id=example_module_name&other=44|0|2|10|15||16|18||7|0|127.0.0.1|0||0|300|30.00|0|0|0|latency%20ping%20modified%20by%20the%20Api&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=update_network_module&id=271&other=156|0|2|10|15||16|18||7|0|127.0.0.1|0||0|300|30.00|0|0|0|latency%20ping%20modified%20by%20the%20Api&other_mode=url_encode_separator_|
  * 
  * 
  * @param $thrash3 Don't use
  */
-function set_update_network_module($module_name, $thrash1, $other, $thrash3){
+function set_update_network_module($id_module, $thrash1, $other, $thrash3){
 
-	if ($module_name == ""){
+	if ($id_module == ""){
 		returnError('error_update_network_module', __('Error updating network module. Module name cannot be left blank.'));
 		return;		
 	}
 	
-	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 
-	if (!$id_module){
+	if (!$check_id_module){
 		returnError('error_update_network_module', __('Error updating network module. Id_module doesn\'t exists.'));
 		return;			
 	}
@@ -1207,7 +1207,7 @@ function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 
 /**
  * Update a plugin module in agent. And return the id_agent_module of new module.
- * @param string $id Name of the plugin module to update.
+ * @param string $id Id of the plugin module to update.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <id_agent>;<disabled>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
@@ -1216,21 +1216,21 @@ function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=update_plugin_module&id=example_plugin_name&other=44|0|2|0|0||0|0||0|0|127.0.0.1|0||0|300|0|0|0|0|plugin%20module%20from%20api|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=update_plugin_module&id=293&other=156|0|2|0|0||0|0||0|0|127.0.0.1|0||0|300|0|0|0|0|plugin%20module%20from%20api|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
  * 
  * 
  * @param $thrash3 Don't use
  */
-function set_update_plugin_module($module_name, $thrash1, $other, $thrash3){
+function set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
 
-	if ($module_name == ""){
-		returnError('error_update_plugin_module', __('Error updating plugin module. Module name cannot be left blank.'));
+	if ($id_module == ""){
+		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module cannot be left blank.'));
 		return;		
 	}
 	
-	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 
-	if (!$id_module){
+	if (!$check_id_module){
 		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exists.'));
 		return;			
 	}
@@ -1339,30 +1339,30 @@ function set_create_data_module($id, $thrash1, $other, $thrash3) {
 /**
  * Update a data module in agent. And return a message with the result of the operation.
  * 
- * @param string $id Name of the data module to update.
+ * @param string $id Id of the data module to update.
  * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <id_agent>;<disabled>
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>;<description>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *  <min>;<max>;<custom_id>;<description> in this order
+ *  <min>;<max>;<custom_id> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=update_data_module&id=example_module_name&other=44|0|data%20module%20modified%20from%20API|6|0|0|50.00|300|10|15||16|18||0&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=update_data_module&id=170&other=44|0|data%20module%20modified%20from%20API|6|0|0|50.00|300|10|15||16|18||0&other_mode=url_encode_separator_|
  * 
  * 
  * @param $thrash3 Don't use
  */
-function set_update_data_module($module_name, $thrash1, $other, $thrash3){
+function set_update_data_module($id_module, $thrash1, $other, $thrash3){
 
-	if ($module_name == ""){
-		returnError('error_update_data_module', __('Error updating data module. Module name cannot be left blank.'));
+	if ($id_module == ""){
+		returnError('error_update_data_module', __('Error updating data module. Id_module cannot be left blank.'));
 		return;		
 	}
 	
-	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 
-	if (!$id_module){
+	if (!$check_id_module){
 		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exists.'));
 		return;			
 	}
@@ -1370,7 +1370,7 @@ function set_update_data_module($module_name, $thrash1, $other, $thrash3){
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != ""){
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
-		
+
 		if ($id_agent_old != $other['data'][0]){
 			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
 	
@@ -1543,7 +1543,7 @@ function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 /**
  * Update a SNMP module in agent. And return a message with the result of the operation.
  * 
- * @param string $id Name of agent to update the module.
+ * @param string $id Id of module to update.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <id_agent>;<disabled>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
@@ -1559,25 +1559,19 @@ function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_snmp_module($module_name, $thrash1, $other, $thrash3) {
+function set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 	
-	if ($module_name == ""){
-		returnError('error_update_snmp_module', __('Error updating SNMP module. Module name cannot be left blank.'));
+	if ($id_module == ""){
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module cannot be left blank.'));
 		return;		
 	}
 	
-	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $module_name);
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 
-	if (!$id_module){
+	if (!$check_id_module){
 		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exists.'));
 		return;			
-	}
-	
-	
-	if ($other['data'][2] < 15 or $other['data'][2] > 18){
-		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module_type is not correct for SNMP modules.'));
-		return;		
-	}			
+	}	
 	
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != ""){

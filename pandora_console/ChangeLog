@@ -1,3 +1,8 @@
+2012-01-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: Modified in parameters in 
+	update_modules functions (network, data, snmp and plugin).
+
 2012-01-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php

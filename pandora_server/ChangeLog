@@ -1,5 +1,10 @@
 2012-01-20  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Fixed some typos and
+	help
+
+2012-01-20  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Core.pm
 	util/pandora_manage.pl: Added new options to CLI
 	managing conf files and updating agents...

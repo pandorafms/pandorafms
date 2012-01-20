@@ -93,7 +93,7 @@ sub help_screen{
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', 'Get list of agents with optative filter parameters');
 	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
-	help_screen_line('--clean_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
+	help_screen_line('--clean_conf_file', '<agent_name>', 'Clean a local conf of a given agent deleting all modules, policies, file collections and comments');
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	print "MODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
@@ -2759,7 +2759,7 @@ sub cli_get_bad_conf_files() {
 	foreach my $file (@files) {
 		# Check important tokens
 		my $missings = 0;
-		my @tokens = ("server_ip","server_path","temporal","logfile","trol");
+		my @tokens = ("server_ip","server_path","temporal","logfile");
 		
 		foreach my $token (@tokens) {
 			if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {

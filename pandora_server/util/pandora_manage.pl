@@ -83,6 +83,7 @@ sub help_screen{
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
+    help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', 'Update an agent field. The fields can be the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
@@ -90,6 +91,10 @@ sub help_screen{
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
+	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', 'Get list of agents with optative filter parameters');
+	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
+	help_screen_line('--clean_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
+	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	print "MODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
 	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to agent');
@@ -460,6 +465,28 @@ sub pandora_get_module_agents ($$) {
 	WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.nombre = ?", safe_input($module_name));
 	
 	return \@agents;
+}
+
+###############################################################################
+# Get agent status (critical, warning, unknown or normal)
+###############################################################################
+sub pandora_get_agent_status ($$) {
+	my ($dbh,$agent_id) = @_;
+	
+	my $critical = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
+	return 'critical' unless $critical == 0;
+	
+	my $warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
+	return 'warning' unless $warning == 0;
+	
+	my $unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0");
+	return 'unknown' unless $unknown == 0;
+	
+	my $normal = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND (utimestamp != 0 OR tagente_modulo.id_tipo_modulo IN (21,22,23)) AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
+	return 'normal' unless $normal == 0;
+	return 'normal' unless $normal == 0;
+		
+	return '';
 }
 
 ##########################################################################
@@ -1568,6 +1595,81 @@ sub cli_user_update() {
 }
 
 ##############################################################################
+# Update an agent field.
+# Related option: --update_agent
+##############################################################################
+
+sub cli_agent_update() {
+	my ($agent_name,$field,$new_value) = @ARGV[2..4];
+	
+	my $id_agent = get_agent_id($dbh,$agent_name);
+	exist_check($id_agent,'agent',$agent_name);
+	
+	# agent_name, address, description, group_name, interval, os_name, disabled, parent_name, cascade_protection, icon_path, update_gis_data, custom_id
+	
+	if($field eq 'disabled' || $field eq 'cascade_protection' || $field eq 'icon_path' || 
+	$field eq 'update_gis_data' || $field eq 'custom_id') {
+		# Fields admited, no changes
+	}
+	elsif($field eq 'interval') {
+		$field = 'intervalo';
+	}
+	elsif($field eq 'description') {
+		$field = 'comentarios';
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'parent_name') {
+		my $id_parent = get_agent_id($dbh,$new_value);
+		exist_check($id_parent,'agent',$new_value);
+		$field = 'id_parent';
+		$new_value = $id_parent;
+	}
+	elsif($field eq 'agent_name') {
+		my $agent_exists = get_agent_id($dbh,$new_value);
+		non_exist_check($agent_exists,'agent',$new_value);
+		$field = 'nombre';
+	}
+	elsif($field eq 'group_name') {
+		my $id_group = get_group_id($dbh, $new_value);
+		exist_check($id_group,'group',$new_value);
+		$new_value = $id_group;
+		$field = 'id_grupo';
+	}
+	elsif($field eq 'os_name') {
+		my $id_os = get_os_id($dbh, $new_value);
+		exist_check($id_os,'operating system',$new_value);
+		$new_value = $id_os;
+		$field = 'id_os';
+	}
+	elsif($field eq 'address') {
+		# Check if the address already exist
+		my $address_id = get_addr_id($dbh,$new_value);
+		
+		# If the addres doesnt exist, we add it to the addresses list
+		if($address_id == -1) {
+			$address_id = add_address($dbh,$new_value);
+		}
+		
+		# Add the address to the agent
+		add_new_address_agent ($dbh, $address_id, $id_agent);
+		
+		$field = 'direccion';
+	}
+	else {
+		print "[ERROR] Field '$field' doesnt exist\n\n";
+		exit;
+	}
+		
+	print "[INFO] Updating field '$field' in agent '$agent_name'\n\n";
+	
+	my $update;
+	
+	$update->{$field} = $new_value;
+
+	pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id_agent), 'tagente', $dbh);
+}
+
+##############################################################################
 # Update an alert template.
 # Related option: --update_alert_template
 ##############################################################################
@@ -1598,20 +1700,14 @@ sub cli_alert_template_update() {
 	elsif($field eq 'default_action') {
 		# Check if exist
 		my $id_alert_action = get_action_id ($dbh, safe_input($new_value));
-		if($id_alert_action == -1) {
-			print "[ERROR] Alert action '$new_value' doesnt exist\n\n";
-			exit;
-		}
+		exist_check($id_alert_action,'alert action',$new_value);
 		$new_value = $id_alert_action;
 		$field = 'id_alert_action';
 	}
 	elsif($field eq 'group_name') {
 		# Check if exist
 		my $id_group = get_group_id($dbh, $new_value);
-		if($id_group == -1) {
-			print "[ERROR] Group '$new_value' doesnt exist\n\n";
-			exit;
-		}
+		exist_check($id_group,'group',$new_value);
 		$new_value = $id_group;
 		$field = 'id_group';
 	}
@@ -2514,6 +2610,176 @@ sub cli_get_policies() {
 }
 
 ##############################################################################
+# Show all the agents (without parameters) or the agents with a filter parameters
+# Related option: --get_agents
+##############################################################################
+
+sub cli_get_agents() {
+	my ($group_name, $os_name, $status, $max_modules, $filter_substring, $policy_name) = @ARGV[2..7];
+	
+	my $condition = ' 1=1';
+	
+	my $id_group;
+	my $id_os;
+	my $policy_id;
+
+	if($group_name ne '') {
+		$id_group = get_group_id($dbh, $group_name);
+		exist_check($id_group,'group',$group_name);
+		
+		$condition .= " AND id_grupo = $id_group ";
+	}
+	
+	if($os_name ne '') {
+		$id_os = get_os_id($dbh, $os_name);
+		exist_check($id_os,'operative system',$os_name);
+		
+		$condition .= " AND id_os = $id_os ";
+	}
+	
+	if($policy_name ne '') {
+		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+		exist_check($policy_id,'policy',$policy_name);
+		
+		$condition .= " AND id_agente IN (SELECT id_agent FROM tpolicy_agents 
+		WHERE id_policy = $policy_id )";
+	}
+	
+	if($max_modules ne '') {	
+		$condition .= " AND id_agente NOT IN (SELECT id_agente FROM tagente_modulo t1 
+		WHERE (SELECT count(*) FROM tagente_modulo WHERE id_agente = t1.id_agente) > $max_modules)";
+	}
+	
+	if($filter_substring ne '') {
+		$condition .= " AND nombre LIKE '%".safe_input($filter_substring)."%'";
+	}
+		
+	my @agents = get_db_rows ($dbh, "SELECT * FROM tagente WHERE $condition");	
+
+	if(scalar(@agents) == 0) {
+		print "[INFO] No agents found\n\n";
+		exit;
+	}
+	
+	my $agent_status;
+	
+	my $head_print = 0;
+	foreach my $agent (@agents) {
+		if($status ne '') {
+			$agent_status = pandora_get_agent_status($dbh,$agent->{'id_agente'});
+			if($status ne $agent_status || $agent_status eq '') {
+				next;
+			}
+		}
+		if($head_print == 0) {
+			$head_print = 1;
+			print "id_agent, agent_name\n";
+		}
+		print $agent->{'id_agente'}.",".safe_output($agent->{'nombre'})."\n";
+	}
+	
+	if($head_print == 0) {
+		print "[INFO] No agents found\n\n";
+	}
+}
+
+##############################################################################
+# Delete agent conf.
+# Related option: --delete_conf_file
+##############################################################################
+
+sub cli_delete_conf_file() {
+	my $agent_name = @ARGV[2];
+	
+	my $conf_deleted = 0;
+	my $md5_deleted = 0;
+	
+	if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+		unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+		$conf_deleted = 1;
+	}
+	if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
+		unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
+		$md5_deleted = 1;
+	}
+	
+	if($conf_deleted == 1 || $md5_deleted == 1) {
+		print "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
+	}
+	else {
+		print "[ERROR] Local conf file of the agent '$agent_name' didn't found\n\n";
+		exit;
+	}
+}
+
+##############################################################################
+# Delete modules from all conf files (without parameters) or of the conf file of the given agent.
+# Related option: --clean_conf_file
+##############################################################################
+
+sub cli_clean_conf_file() {
+	my $agent_name = @ARGV[2];
+	my $result;
+	
+	if(defined($agent_name)) {
+		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+			$result = enterprise_hook('pandora_clean_conf_file',[$conf, md5($agent_name)]);
+			if($result != -1) {
+				print "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.md5($agent_name).".conf has been cleaned'\n\n";
+			}
+		}
+	}
+	else {
+		my $list_command = 'ls '.$conf->{incomingdir}.'/conf/';
+		my $out = `$list_command`;
+		my @files = split('\n',$out);
+		# TODO: FINISH OPTION! NOW ONLY SHOW FILES
+		foreach my $file (@files) {
+			# Get the md5 hash
+			my @filesplit = split('.',$file);
+			$result = enterprise_hook('pandora_clean_conf_file',[$conf,$filesplit[0]]);
+			if($result != -1) {
+				print "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.$filesplit[0].".conf has been cleaned'\n\n";
+			}
+		}
+	}
+}
+
+##############################################################################
+# Get the files bad configured (without essential tokens)
+# Related option: --get_bad_conf_files
+##############################################################################
+
+sub cli_get_bad_conf_files() {
+	my $list_command = 'ls '.$conf->{incomingdir}.'/conf/';
+	my $out = `$list_command`;
+	my @files = split('\n',$out);
+	my $bad_files = 0;
+
+	foreach my $file (@files) {
+		# Check important tokens
+		my $missings = 0;
+		my @tokens = ("server_ip","server_path","temporal","logfile","trol");
+		
+		foreach my $token (@tokens) {
+			if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
+				$missings++;
+			}
+		}
+		
+		# If any token of checked is missed we print the file path
+		if($missings > 0) {
+			print $conf->{incomingdir}.'/conf/'.$file."\n";
+			$bad_files++;
+		}
+	}
+	
+	if($bad_files == 0) {
+		print "[INFO] No bad files found\n\n";
+	}
+}
+
+##############################################################################
 # Disable policy alerts.
 # Related option: --disable_policy_alerts
 ##############################################################################
@@ -2996,6 +3262,26 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_policies') {
 			param_check($ltotal, 1, 1);
 			cli_get_policies();
+		}
+		elsif ($param eq '--get_agents') {
+			param_check($ltotal, 6, 6);
+			cli_get_agents();
+		}
+		elsif ($param eq '--delete_conf_file') {
+			param_check($ltotal, 1);
+			cli_delete_conf_file();
+		}
+		elsif ($param eq '--clean_conf_file') {
+			param_check($ltotal, 1, 1);
+			cli_clean_conf_file();
+		}
+		elsif ($param eq '--update_agent') {
+			param_check($ltotal, 3);
+			cli_agent_update();
+		}
+		elsif ($param eq '--get_bad_conf_files') {
+			param_check($ltotal, 0);
+			cli_get_bad_conf_files();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

@@ -195,10 +195,11 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$table->class = 'databox';
 	$table->data = array();
 	$j = 0;
-	$x = 1;
-
-	$table->data[0][0] = '<b>' . __($aggregate) . '</b>';
-	$table->data[0][1] = '<b>' . __($unit) . '</b>';
+	$x = 0;
+	
+	$table->head = array ();
+	$table->head[0] = '<b>' . __($aggregate) . '</b>';
+	$table->head[1] = '<b>' . __($unit) . '</b>';
 	
 	while (isset ($data[$j])) {
 		$agg = $data[$j]['agg'];
@@ -256,20 +257,21 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 	$table->size = array ('50%');
 	$table->class = 'databox';
 	$table->data = array();
-	
-	$table->data[0][0] = '<b>'.__($aggregate).'</b>';
+
+	$table->head = array();
+	$table->head[0] = '<b>'.__('Timestamp').'</b>';
 
 	$j = 0;
 	$source_index = array ();
 	$source_count = 0;
 	foreach ($data['sources'] as $source => $null) {
-		$table->data[0][$j+1] = $source;
+		$table->head[$j+1] = $source;
 		$source_index[$j] = $source;
 		$source_count++;
 		$j++;
 	}
 
-	$i = 1;
+	$i = 0;
 	foreach ($data['data'] as $timestamp => $values) {
 		$table->data[$i][0] = date ($time_format, $timestamp);
 		for ($j = 0; $j < $source_count; $j++) {

@@ -1,5 +1,10 @@
 2012-01-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_netflow.php: Aesthetic fixes to netflow report
+	  tables.
+
+2012-01-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* operation/menu.php,
 	  operation/netflow/nf_live_view.php,
 	  godmode/netflow/nf_edit_form.php,

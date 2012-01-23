@@ -91,13 +91,7 @@ if ($multiple_delete) {
 $own_info = get_user_info ($config['id_user']);
 // Get group list that user has access
 $groups_user = users_get_groups ($config['id_user'], "AW", $own_info['is_admin'], true);
-
-$groups_id = array();
-foreach($groups_user as $key => $groups){
-	$groups_id[] = $groups['id_grupo'];
-}
-
-$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
+$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($groups_user)).")";
 $filters = db_get_all_rows_sql($sql);
 if ($filters === false)
 	$filters = array ();

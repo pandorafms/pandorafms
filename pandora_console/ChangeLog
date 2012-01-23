@@ -1,3 +1,14 @@
+2012-01-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/menu.php,
+	  operation/netflow/nf_live_view.php,
+	  godmode/netflow/nf_edit_form.php,
+	  godmode/netflow/nf_item_list.php,
+	  godmode/netflow/nf_report_item.php,
+	  godmode/netflow/nf_report_form.php,
+	  godmode/netflow/nf_edit.php: Multiple improvements to netflow live
+	  view and report and filter edition.
+
 2012-01-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Removed Php warning in function 

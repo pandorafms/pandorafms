@@ -785,7 +785,10 @@ function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	}	
 	// Filter by policy
 	if ($other['data'][4] != ""){
-		$where .= sprintf(" AND id_agente IN (select id_agent from tpolicy_agents where id_policy = %d)", $other['data'][4]);
+		$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
+		if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
+			$where .= $filter_by_policy;	
+		}
 	}
 	
 	// Filter by state

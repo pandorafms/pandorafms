@@ -420,7 +420,8 @@ CREATE TABLE "tincidencia" (
 	"id_creator" varchar(60) default NULL,
 	"id_lastupdate" varchar(60) default NULL,
 	"id_agente_modulo" BIGINT NOT NULL,
-	"notify_email" INTEGER NOT NULL default 0
+	"notify_email" INTEGER NOT NULL default 0,
+	"id_agent" INTEGER(10) NULL default 0
 );
 CREATE INDEX "tincidencia_id_1_idx" ON "tincidencia"("id_usuario","id_incidencia");
 CREATE INDEX "tincidencia_id_agente_modulo_idx" ON "tincidencia"("id_agente_modulo");

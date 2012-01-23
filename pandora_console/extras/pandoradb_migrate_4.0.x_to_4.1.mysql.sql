@@ -53,3 +53,8 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 
 ALTER TABLE `tusuario` ADD COLUMN `disabled` int(4) NOT NULL DEFAULT 0;
 
+-- -----------------------------------------------------
+-- Table `tincidencia`
+-- -----------------------------------------------------
+
+ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;

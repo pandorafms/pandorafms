@@ -43,3 +43,8 @@ CREATE TABLE "tnetflow_report_content" (
 	"order" INTEGER NOT NULL default 0
 );
 
+-- -----------------------------------------------------
+-- Table `tincidencia`
+-- -----------------------------------------------------
+
+ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER(10) NULL DEFAULT 0;

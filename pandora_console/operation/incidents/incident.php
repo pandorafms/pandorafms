@@ -88,9 +88,10 @@ elseif ($action == "update") {
 	$estado = get_parameter ("estado_form", 0);
 	$grupo = get_parameter ("grupo_form", 1);
 	$usuario = get_parameter ("usuario_form", $config["id_user"]);
+	$id_agent = get_parameter ("incident_agents");
 	
-	$sql = sprintf ("UPDATE tincidencia SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s' WHERE id_incidencia = %d", 
-					$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_inc);
+	$sql = sprintf ("UPDATE tincidencia SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s', id_agent = %d WHERE id_incidencia = %d", 
+					$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_agent, $id_inc);
 	$result = db_process_sql ($sql);
 
 	if ($result !== false) {
@@ -120,8 +121,9 @@ elseif ($action == "insert") {
 	$prioridad = get_parameter ("prioridad_form");
 	$id_creator = $config['id_user'];
 	$estado = get_parameter ("estado_form");
-	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator) VALUES 
-					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"]);
+	$id_agent = get_parameter ("incident_agents");
+	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent) VALUES 
+					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d)", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
 	$id_inc = db_process_sql ($sql, "insert_id");
 
 	if ($id_inc === false) {
@@ -161,6 +163,11 @@ $prioridad = (int) get_parameter ("prioridad", -1);
 if ($prioridad != -1) //-1 = All
 	$filter .= sprintf (" AND prioridad = %d", $prioridad);
 
+$agent_search = (int) get_parameter("agent_search");
+if ($agent_search != 0){
+	$filter .= sprintf(" AND id_agent = %d", $agent_search);
+}
+
 $offset = (int) get_parameter ("offset", 0);
 $groups = users_get_groups ($config["id_user"], "IR");
 
@@ -171,14 +178,17 @@ $sql = "SELECT * FROM tincidencia WHERE
 	ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
 
 $result = db_get_all_rows_sql ($sql);
+
+$count_sql = "SELECT count(*) FROM tincidencia WHERE 
+	id_grupo IN (".implode (",",array_keys ($groups)).")".$filter." 
+	ORDER BY actualizacion DESC";
+
+$count = db_get_value_sql ($count_sql);
+
 if (empty ($result)) {
 	$result = array ();
 	$count = 0;
 }
-else {
-	$count = count ($result);
-}
-
 
 echo '<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">';
 
@@ -214,6 +224,20 @@ echo '</td></tr><tr><td>';
 
 html_print_select (users_get_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
 
+echo '</td></tr><tr><td>';
+
+$agents_incidents = agents_get_agents(false, array('id_agente', 'nombre'));
+
+if ($agents_incidents === false){
+	$agents_incidents = array();
+}
+
+foreach ($agents_incidents as $agent_incident){
+	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
+}
+
+html_print_select ($result_agent_incidents, "agent_search", $agent_search, 'javascript:this.form.submit();', __('All agents'), "", false, false, false, "w155");
+
 echo '</td></tr><tr><td colspan=3>';
 	
 html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
@@ -248,7 +272,7 @@ if ($count < 1) {
 		$url .= "&amp;texto=".$texto;
 
 	// Show pagination
-	ui_pagination ($count + $offset, $url, $offset, 15, false);	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
+	ui_pagination ($count, $url, $offset, 0, false);	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
 	echo '<br />';
 	
 	// Show headers

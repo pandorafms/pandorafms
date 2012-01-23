@@ -50,6 +50,7 @@ if (isset ($_GET["id"])) {
 	$id_grupo = $row["id_grupo"];
 	$id_creator = $row["id_creator"]; //creator
 	$id_lastupdate = $row["id_lastupdate"]; //last updater
+	$id_agent = $row["id_agent"]; 		// Agent
 	
 	// Note add - everybody that can read incidents, can add notes
 	if (isset ($_GET["insertar_nota"])) {
@@ -179,6 +180,7 @@ elseif (isset ($_GET["insert_form"])) {
 	$usuario = $config["id_user"];
 	$id_creator = $config["id_user"];
 	$id_grupo = 0;
+	$id_agent = 0;
 
 	if (isset ($_GET["from_event"])) {
 		$event = get_parameter ("from_event");
@@ -299,6 +301,20 @@ if (empty ($id_creator)) {
 } else {
 	echo $id_creator.' (<i>'.get_user_fullname($id_creator).'</i>)';
 }
+
+$agents_incidents = agents_get_agents(false, array('id_agente', 'nombre'));
+
+if ($agents_incidents === false){
+	$agents_incidents = array();
+}
+
+foreach ($agents_incidents as $agent_incident){
+	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
+}
+
+echo '</td></tr><tr><td class="datos"><b>'.__('Agent').'</b></td><td class="datos">';
+
+html_print_select ($result_agent_incidents, "incident_agents", $id_agent, '', __('None'), 0, false, false, false, 'w135', false);
 
 echo '</td></tr><tr><td class="datos2" colspan="4">';
 

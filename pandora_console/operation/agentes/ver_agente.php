@@ -580,6 +580,20 @@ if ($config['activate_gis']) {
 		$gistab['active'] = false;
 }
 
+$total_incidents = agents_get_count_incidents($id_agente);
+
+	/* Incident tab */
+if ($config['integria_enabled'] == 0 and $total_incidents > 0){
+	$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">' 
+			. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
+			. '</a>';
+	
+	if($tab == 'incident')
+		$incidenttab['active'] = true;
+	else
+		$incidenttab['active'] = false;
+}	
+	
 $custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
 		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
 		. '</a>';
@@ -606,6 +620,11 @@ $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab,
 				'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 
 				'inventory' => $inventorytab, 'collection' => $collectiontab, 
 				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs, 'policy' => $policyTab);
+
+// If the agent has incidents associated				
+if ($total_incidents){
+	$onheader['incident'] = $incidenttab;
+}
 
 foreach($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
@@ -677,7 +696,10 @@ switch($tab) {
 		break;	
 	case "policy":
 		$header_description = ' - ' . __('Policy');
-		break;	
+		break;
+	case "incident":	
+		$header_description = ' - ' . __('Incident');
+		break;
 }
 
 ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(agents_get_name($id_agente),0,25) . $header_description, $icon, false, "", false, $onheader);
@@ -722,6 +744,9 @@ switch ($tab) {
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");
+		break;
+	case "incident":
+		require("godmode/agentes/agent_incidents.php");
 		break;
 	case "extension":
 		$found = false;

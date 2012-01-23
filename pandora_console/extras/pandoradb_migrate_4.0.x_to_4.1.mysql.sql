@@ -58,3 +58,9 @@ ALTER TABLE `tusuario` ADD COLUMN `disabled` int(4) NOT NULL DEFAULT 0;
 -- -----------------------------------------------------
 
 ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;
+
+-- -----------------------------------------------------
+-- Table `tagente`
+-- -----------------------------------------------------
+
+ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL default '';

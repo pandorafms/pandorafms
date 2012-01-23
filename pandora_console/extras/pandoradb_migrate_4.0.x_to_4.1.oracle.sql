@@ -60,3 +60,8 @@ CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_
 -- -----------------------------------------------------
 
 alter table tincidencia add (id_agent NUMBER(10,0) default 0 NULL);
+
+-- -----------------------------------------------------
+-- Table `tagente`
+-- -----------------------------------------------------
+alter table tagente add (url_address CLOB default '' NULL);

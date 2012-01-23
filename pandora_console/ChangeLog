@@ -1,3 +1,22 @@
+2012-01-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.sql
+	 pandoradb.postgreSQL.sql
+ 	 pandoradb.oracle.sql
+ 	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Modified
+	 tagente table.
+ 	
+	* operation/agentes/estado_generalagente.php
+	 operation/agentes/url_address.php
+	 operation/agentes/ver_agente.php
+	 godmode/agentes/agent_incidents.php
+	 godmode/agentes/configurar_agente.php
+	 godmode/agentes/agent_manager.php: Added url_address functionality.
+
+	Pending task: #3472445
+
 2012-01-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_netflow.php: Aesthetic fixes to netflow report

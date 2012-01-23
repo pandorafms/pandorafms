@@ -582,7 +582,7 @@ if ($config['activate_gis']) {
 
 $total_incidents = agents_get_count_incidents($id_agente);
 
-	/* Incident tab */
+/* Incident tab */
 if ($config['integria_enabled'] == 0 and $total_incidents > 0){
 	$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">' 
 			. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
@@ -597,6 +597,23 @@ if ($config['integria_enabled'] == 0 and $total_incidents > 0){
 $custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
 		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
 		. '</a>';
+
+/* Url address tab */
+if ($agent['url_address'] != ''){
+	$urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">' 
+		. html_print_image ("images/link2.png", true, array ("title" =>__('Url address')))
+		. '</a>';
+}
+
+if($tab == 'url_address')
+	$urladdresstab['active'] = true;
+else
+	$urladdresstab['active'] = false;
+	
+$custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
+		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
+		. '</a>';
+
 
 if ($tab == 'custom_fields') {
 	$custom_fields['active'] = true;
@@ -624,6 +641,10 @@ $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab,
 // If the agent has incidents associated				
 if ($total_incidents){
 	$onheader['incident'] = $incidenttab;
+}
+
+if ($agent['url_address'] != ''){
+	$onheader['url_address'] = $urladdresstab;	
 }
 
 foreach($config['extensions'] as $extension) {
@@ -700,6 +721,9 @@ switch($tab) {
 	case "incident":	
 		$header_description = ' - ' . __('Incident');
 		break;
+	case "url_address":
+		$header_description = ' - ' . __('Url address');
+		break;
 }
 
 ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(agents_get_name($id_agente),0,25) . $header_description, $icon, false, "", false, $onheader);
@@ -747,6 +771,9 @@ switch ($tab) {
 		break;
 	case "incident":
 		require("godmode/agentes/agent_incidents.php");
+		break;
+	case "url_address":
+		require("operation/agentes/url_address.php");
 		break;
 	case "extension":
 		$found = false;

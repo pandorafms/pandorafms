@@ -312,6 +312,9 @@ if ($config['activate_gis']) {
 	$table->data[5][1] .= __('Enabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
+$table->data[6][0] = __('Url address:');
+$table->data[6][1] = html_print_input_text ('url_description', $url_description, '', 45, 255, true);
+
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 

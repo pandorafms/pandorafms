@@ -1,3 +1,24 @@
+2012-01-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php
+	 operation/incidents/incident.php
+	 operation/incidents/incident_detail.php
+     operation/agentes/ver_agente.php
+	 godmode/agentes/agent_incidents.php
+	 godmode/agentes/configurar_agente.php: Added the possibility to add
+	 agent to an incident and added new tab in agent view if the agent
+	 has incidents associated.
+  
+	 * pandoradb.postgreSQL.sql
+	 pandoradb.oracle.sql
+	 pandoradb.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql	
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: modified 
+	 table tincidencia.
+	 
+	 Pending task: # 3472447
+	 
 2012-01-23  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/agentes/estado_agente.php

@@ -54,3 +54,9 @@ show_graph VARCHAR2(60),
 
 CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.ID_RC FROM dual; END tnetflow_report_content_inc;;
+
+-- -----------------------------------------------------
+-- Table `tincidencia`
+-- -----------------------------------------------------
+
+alter table tincidencia add (id_agent NUMBER(10,0) default 0 NULL);

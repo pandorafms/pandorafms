@@ -1808,4 +1808,19 @@ function agents_get_agent_group ($id_agent) {
 	return (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
 }
 
+/**
+ * This function gets the count of incidents attached to the agent
+ *
+ * @param int The agent id
+ *
+ * @return mixed The incidents attached or false
+ */
+function agents_get_count_incidents ($id_agent) {
+	if (empty($id_agent)){
+		return false;
+	}
+	
+	return db_get_value('count(*)', 'tincidencia', 'id_agent', $id_agent);
+}
+
 ?>

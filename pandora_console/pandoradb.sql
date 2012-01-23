@@ -470,6 +470,7 @@ CREATE TABLE IF NOT EXISTS `tincidencia` (
   `id_lastupdate` varchar(60) default NULL,
   `id_agente_modulo` bigint(100) NOT NULL,
   `notify_email` tinyint(3) unsigned NOT NULL default '0',
+  `id_agent` int(10) unsigned NULL default 0, 
   PRIMARY KEY  (`id_incidencia`),
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`),
   KEY `id_agente_modulo` (`id_agente_modulo`)

@@ -247,7 +247,7 @@ if ($id_agente) {
 	if($tab == 'alert')
 		$alerttab['active'] = true;
 	else
-		$alerttab['active'] = false;		
+		$alerttab['active'] = false;			
 		
 	/* Template tab */
 	$templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
@@ -295,9 +295,28 @@ if ($id_agente) {
 			$gistab['active'] = false;
 	}
 	
+	$total_incidents = agents_get_count_incidents($id_agente);
+	
+	/* Incident tab */
+	if ($config['integria_enabled'] == 0 and $total_incidents > 0){
+		$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">' 
+				. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
+				. '</a>';
+		
+		if($tab == 'incident')
+			$incidenttab['active'] = true;
+		else
+			$incidenttab['active'] = false;
+	}	
+	
 	$onheader = array('view' => $viewtab, 'separator' => "", 'main' => $maintab,
 		'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab,
 		'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+	
+	// Only if the agent has incidents associated show incidents tab
+	if ($total_incidents){
+		$onheader['incident'] = $incidenttab;
+	}
 	
 	foreach($config['extensions'] as $extension) {
 		if (isset($extension['extension_god_tab'])) {
@@ -345,6 +364,9 @@ if ($id_agente) {
 		case "gis":
 			$tab_description = '- ' . __('Gis') . ui_print_help_icon('gis_tab', true);
 			break;
+		case "incident":
+			$tab_description = '- ' . __('Incidents');
+			break;			
 		case "extension":
 			$id_extension = get_parameter('id_extension', '');
 			switch ($id_extension){
@@ -1064,6 +1086,9 @@ switch ($tab) {
 		break;
 	case "gis":
 		require("agent_conf_gis.php");
+		break;
+	case "incident":
+		require("agent_incidents.php");
 		break;
 	case "extension":
 		$found = false;

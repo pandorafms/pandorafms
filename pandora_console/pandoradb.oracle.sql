@@ -534,7 +534,8 @@ CREATE TABLE tincidencia (
 	id_creator VARCHAR2(60) default NULL,
 	id_lastupdate VARCHAR2(60) default NULL,
 	id_agente_modulo NUMBER(19, 0) NOT NULL,
-	notify_email NUMBER(10, 0) default 0 NOT NULL
+	notify_email NUMBER(10, 0) default 0 NOT NULL,
+	id_agent NUMBER(19, 0) default 0 NULL 
 );
 CREATE INDEX tincidencia_id_1_idx ON tincidencia(id_usuario,id_incidencia);
 CREATE INDEX tincidencia_id_agente_mod_idx ON tincidencia(id_agente_modulo);

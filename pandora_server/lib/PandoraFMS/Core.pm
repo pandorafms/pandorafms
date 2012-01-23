@@ -1182,7 +1182,7 @@ sub pandora_update_template_module ($$$;$$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_create_template_module(I<$pa_config>, I<$parameters>, I<$dbh>) >>
+=head2 C<< pandora_create_template_module_action(I<$pa_config>, I<$parameters>, I<$dbh>) >>
 
 Create a template action.
 

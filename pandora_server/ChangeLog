@@ -1,3 +1,11 @@
+2012-01-23  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_manage.pl: Merged from trunk. Fixed mismatch
+	arguments call of pandora_create_template_module.
+
+	* lib/PandoraFMS/Core.pm: Merged from trunk. Fixed misleading
+	comment of pandora_create_template_module function signature.
+
 2012-01-17  Kikuchi Koichiro <koichiro@rworks.jp>
 
 	* pandora_server.redhat.spec: Merged from trunk. Fixed a wrong

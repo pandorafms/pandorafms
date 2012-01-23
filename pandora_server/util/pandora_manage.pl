@@ -1061,7 +1061,7 @@ sub cli_create_template_module() {
 	my $template_id = get_template_id($dbh,$template_name);
 	exist_check($template_id,'template',$template_name);
 	
-	pandora_create_template_module ($conf, $module_id, $template_id, $dbh);
+	pandora_create_template_module ($conf, $dbh, $module_id, $template_id);
 }
 
 ##############################################################################

@@ -317,8 +317,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 
 	if(isset($filter['search'])) {
-	$search = $filter['search'];
-	unset($filter['search']);
+		$search = $filter['search'];
+		unset($filter['search']);
+	}
+	else{
+		$search = '';
 	}
 	
 	if(isset($filter['offset'])) {

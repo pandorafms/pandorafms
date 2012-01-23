@@ -17,9 +17,6 @@
 global $config;
 
 require_once ('include/functions_incidents.php');
-/*enterprise_include ('include/functions_policies.php');
-enterprise_include ('include/functions_modules.php');
-include_once($config['homedir'] . "/include/functions_agents.php");*/
 
 check_login ();
 

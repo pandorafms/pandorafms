@@ -120,6 +120,7 @@ $update_gis_data = 0;
 $unit = "";
 $id_tag = array();
 $tab_description = '';
+$url_description = '';
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -140,6 +141,7 @@ if ($create_agent) {
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
+	$url_description = (string) get_parameter("url_description");
 
 
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -172,7 +174,8 @@ if ($create_agent) {
 				'server_name' => $server_name,
 				'id_parent' => $id_parent, 'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
-				'update_gis_data' => $update_gis_data));
+				'update_gis_data' => $update_gis_data,
+				'url_address' => $url_description));
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
 			// Create custom fields for this agent
@@ -191,7 +194,8 @@ if ($create_agent) {
 				' ID_parent: ' . $id_parent . ' Server: ' . $server_name .
 				' ID os: ' . $id_os . ' Disabled: ' . $disabled .
 				' Custom ID: ' . $custom_id . ' Cascade protection: '  . $cascade_protection . 
-				' Icon path: ' . $icon_path . ' Update GIS data: ' . $update_gis_data;
+				' Icon path: ' . $icon_path . ' Update GIS data: ' . $update_gis_data . 
+				' Url description: ' . $url_description;
 			
 			db_pandora_audit("Agent management",
 				"Created agent $nombre_agente", false, false, $info);
@@ -472,6 +476,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
+	$url_description = (string) get_parameter("url_description");
 	
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
@@ -532,7 +537,8 @@ if ($update_agent) { // if modified some agent paramenter
 				'server_name' => $server_name,
 				'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
-				'update_gis_data' => $update_gis_data),
+				'update_gis_data' => $update_gis_data,
+				'url_address' => $url_description),
 			array ('id_agente' => $id_agente));
 			
 		if ($result === false) {
@@ -544,7 +550,8 @@ if ($update_agent) { // if modified some agent paramenter
 				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 
 				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
 				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
-				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data;
+				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data .
+				' Url description: ' . $url_description;
 			
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
@@ -593,6 +600,7 @@ if ($id_agente) {
 	$cascade_protection = $agent["cascade_protection"];
 	$icon_path = $agent["icon_path"];
 	$update_gis_data = $agent["update_gis_data"];
+	$url_description = $agent["url_address"];
 }
 
 $update_module = (bool) get_parameter ('update_module');

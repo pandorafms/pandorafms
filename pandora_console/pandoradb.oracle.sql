@@ -72,7 +72,8 @@ CREATE TABLE tagente (
 	 --path in the server to the image of the icon representing the agent
 	icon_path VARCHAR2(127) DEFAULT NULL NULL ,
 	 --set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it
-	update_gis_data NUMBER(5, 0) DEFAULT 1 NOT NULL 
+	update_gis_data NUMBER(5, 0) DEFAULT 1 NOT NULL,
+	url_address CLOB DEFAULT '' NULL 
 );
 CREATE INDEX tagente_nombre_idx ON tagente(nombre);
 CREATE INDEX tagente_direccion_idx ON tagente(direccion);

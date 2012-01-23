@@ -165,6 +165,13 @@ if ($config['activate_gis']) {
 
     echo '</td></tr>';
 }
+
+// If the url description is setted
+if ($agent['url_address'] != ''){
+	echo '<tr><td class="datos"><b>'.__('Url address').'</b></td>';	
+	echo '<td class="datos2" colspan="2"><a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a></td></tr>';
+}
+
 // Last contact
 echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
 ui_print_timestamp ($agent["ultimo_contacto"]);

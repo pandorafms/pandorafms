@@ -980,10 +980,13 @@ function get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
 		returnError('error_policy_modules', 'Error retrieving policy modules. Id_policy cannot be left blank.');	
 		return;	
 	}
-		
-	$sql = sprintf("select policy.id, policy.name, pol_modules.id id_module FROM tpolicies policy, tpolicy_modules pol_modules where policy.id = pol_modules.id_policy AND policy.id = %d", $other['data'][0]);		
-	
-	$policies = db_get_all_rows_sql($sql);	
+
+	$policies = enterprise_hook('policies_get_modules_api', array($other['data'][0], $other['data'][1]));
+
+	if ($policies === ENTERPRISE_NOT_HOOK){
+		returnError('error_policy_modules', 'Error retrieving policy modules.');	
+		return;			
+	}
 
 	if (count($policies) > 0 and $policies !== false){
 		$data = array('type' => 'array', 'data' => $policies);

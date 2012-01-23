@@ -1292,7 +1292,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
   `ip_src` TEXT NOT NULL,
   `dst_port` TEXT NOT NULL,
   `src_port` TEXT NOT NULL,
-  `advanced_filter` TEXT NOT NULL,,
+  `advanced_filter` TEXT NOT NULL,
   `aggregate` varchar(60),
   `output` varchar(60),
 PRIMARY KEY  (`id_sg`)

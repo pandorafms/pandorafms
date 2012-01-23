@@ -1,3 +1,11 @@
+2012-01-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql, pandoradb.sql,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql,
+	  godmode/netflow/nf_manage.php: Added netflow daemon configuration
+	  options.
+
 2012-01-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: Modified get_policy_modules function.

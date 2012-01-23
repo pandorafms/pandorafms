@@ -38,14 +38,12 @@ $update = (bool) get_parameter ("update");
 if ($update) {
 	
 	$config['netflow_path'] = (string)get_parameter('netflow_path');
+	$config['netflow_interval'] = (int)get_parameter('netflow_interval');
+	$config['netflow_daemon'] = (string)get_parameter('netflow_daemon');
 	
-	if (db_get_value('token', 'tconfig', 'token', 'netflow_path') === false) {
-		config_create_value('netflow_path', $config['netflow_path']);
-	} else {
-		db_process_sql_update ('tconfig', 
-				array ('value' => $config['netflow_path']),
-				array ('token' => 'netflow_path'));
-	}
+	db_process_sql_update ('tconfig', array ('value' => $config['netflow_path']), array ('token' => 'netflow_path'));
+	db_process_sql_update ('tconfig', array ('value' => $config['netflow_interval']), array ('token' => 'netflow_interval'));
+	db_process_sql_update ('tconfig', array ('value' => $config['netflow_daemon']), array ('token' => 'netflow_daemon'));
 }
 
 $table->width = '70%';
@@ -57,8 +55,12 @@ $table->style[0] = 'vertical-align: top;';
 
 $table->data = array ();
 	
-$table->data[0][0] = '<b>'.__('Path').'</b>'. ui_print_help_tip (__("Read input from a sequence of files in the same directory."), true);
+$table->data[0][0] = '<b>'.__('Data storage path').'</b>'. ui_print_help_tip (__("Directory where netflow data will be stored."), true);
 $table->data[0][1] = html_print_input_text ('netflow_path', $config['netflow_path'], false, 50, 200, true);
+$table->data[1][0] = '<b>'.__('Daemon interval').'</b>';
+$table->data[1][1] = html_print_input_text ('netflow_interval', $config['netflow_interval'], false, 50, 200, true);
+$table->data[2][0] = '<b>'.__('Daemon binary path').'</b>';
+$table->data[2][1] = html_print_input_text ('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true);
 	
 echo '<form id="netflow_setup" method="post">';
 			

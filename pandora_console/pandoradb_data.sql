@@ -80,7 +80,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('integria_enabled', '0'),
 ('integria_api_password', ''),
 ('integria_inventory', '0'),
-('integria_url', '');
+('integria_url', ''),
+('netflow_path', '/var/spool/pandora/data_in/netflow'),
+('netflow_interval', '300'),
+('netflow_daemon', '/usr/bin/nfcapd');
 
 UNLOCK TABLES;
 

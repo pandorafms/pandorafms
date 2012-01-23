@@ -85,6 +85,9 @@ INSERT INTO tconfig (token, value) VALUES ('integria_enabled', '0');
 INSERT INTO tconfig (token, value) VALUES ('integria_api_password', ' ');
 INSERT INTO tconfig (token, value) VALUES ('integria_inventory', '0');
 INSERT INTO tconfig (token, value) VALUES ('integria_url', ' ');
+INSERT INTO tconfig (token, value) VALUES ('netflow_path', '/var/spool/pandora/data_in/netflow');
+INSERT INTO tconfig (token, value) VALUES ('netflow_interval', '300');
+INSERT INTO tconfig (token, value) VALUES ('netflow_daemon', '/usr/bin/nfcapd');
 COMMIT;
 END;;
 

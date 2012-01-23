@@ -1,3 +1,7 @@
+2012-01-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: Modified get_policy_modules function.
+
 2012-01-23  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* include/functions_servers.php: Exclude modules which belong to

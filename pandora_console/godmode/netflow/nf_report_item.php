@@ -36,16 +36,23 @@ $id_rc = (int)get_parameter('id_rc');
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
-$buttons['list_items'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'
-		. html_print_image ("images/god6.png", true, array ("title" => __('Item list')))
-		. '</a>';
-		
-$buttons['list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
+$buttons['report_list']['active'] = false;
+$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
 		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
 		. '</a>';
+		
+$buttons['report_items']['active'] = true;
+$buttons['report_items']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'
+		. html_print_image ("images/god6.png", true, array ("title" => __('Report items')))
+		. '</a>';
+		
+$buttons['edit_report']['active'] = false;
+$buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'
+		. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
+		. '</a>';
+		
 //Header
-ui_print_page_header (__('Netflow Report'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
-
+ui_print_page_header (__('Report item editor'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
 
 if ($id_rc) {
 	$item = netflow_reports_get_content ($id_rc);
@@ -95,22 +102,21 @@ if ($create){
 	} else {
 		$order++;
 	}
-	//
 	
 	$values = array (
-				'id_report' => $id,
-				'id_filter' => $id_filter,
-				'max' => $max_val,
-				'show_graph' => $show_graph,
-				'`order`' => $order
-			);
-			$result = db_process_sql_insert('tnetflow_report_content', $values);
-		
-		if ($result === false)
-			echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
-		else
-			echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';
+		'id_report' => $id,
+		'id_filter' => $id_filter,
+		'max' => $max_val,
+		'show_graph' => $show_graph,
+		'`order`' => $order
+	);
+	$id_rc = db_process_sql_insert('tnetflow_report_content', $values);
+	if ($id_rc === false) {
+		echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
+	} else {
+		echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';
 	}
+}
 	
 $table->width = '70%';
 $table->border = 0;
@@ -136,10 +142,10 @@ foreach($groups_user as $key => $groups){
 }
 
 $sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
-$table->data[0][0] = '<b>'.__('Filters').'</b>';
+$table->data[0][0] = '<b>'.__('Filter').'</b>';
 $table->data[0][1] = html_print_select_from_sql($sql, 'id_filter', $name_filter, '', '', 0, true);
 
-$table->data[1][0] = '<b>'.__('Max values aggregated').'</b>';
+$table->data[1][0] = '<b>'.__('Max. values').'</b>';
 		$max_values = array ('2' => '2',
 			'5' => '5',
 			'10' => '10',
@@ -150,7 +156,8 @@ $table->data[1][0] = '<b>'.__('Max values aggregated').'</b>';
 		);
 $table->data[1][1] = html_print_select ($max_values, 'max', $max_val, '', '', 0, true);
 
-$table->data[2][0] = '<b>'.__('Elements').'</b>';
+$table->data[2][0] = '<b>'.__('Chart type').'</b>';
+$table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
 $table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
 
 echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';

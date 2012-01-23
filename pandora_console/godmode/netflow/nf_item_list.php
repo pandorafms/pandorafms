@@ -31,13 +31,24 @@ if (! check_acl ($config["id_user"], 0, "IW")) {
 	return;
 }
 		
-$buttons['list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
+$buttons['report_list']['active'] = false;
+$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
 		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
 		. '</a>';
 		
+$buttons['report_items']['active'] = true;
+$buttons['report_items']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'
+		. html_print_image ("images/god6.png", true, array ("title" => __('Report items')))
+		. '</a>';
+		
+$buttons['edit_report']['active'] = false;
+$buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'
+		. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
+		. '</a>';
+		
 //Header
-ui_print_page_header (__('Item list'), "images/god6.png", false, "", true, $buttons);
-
+ui_print_page_header (__('Report items'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+		
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $order = get_parameter('order');
@@ -121,27 +132,25 @@ if ($reports_item === false)
 	
 $table->width = '98%';
 $table->head = array ();
-$table->head[0] = __('Sort');
-$table->head[1] = __('Id item');
-$table->head[2] = __('Filter');
-$table->head[3] = __('Max values');
-$table->head[4] = __('Item');
-$table->head[5] = __('Action') .
-	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+$table->head[0] = __('Order');
+$table->head[1] = __('Filter');
+$table->head[2] = __('Max. values');
+$table->head[3] = __('Chart type');
+$table->head[3] = __('Chart type');
+$table->head[4] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
 $table->style = array ();
 $table->style[1] = 'font-weight: bold';
 $table->align = array ();
-$table->align[1] = 'center';
+$table->align[1] = 'left';
+$table->align[2] = 'center';
 $table->align[3] = 'center';
-$table->align[5] = 'right';
+$table->align[4] = 'right';
 $table->size = array ();
 $table->size[0] = '20px';
-$table->size[1] = '10%';
-$table->size[2] = '50%';
-$table->size[3] = '10%';
-$table->size[4] = '20%';
-$table->size[5] = '20px';
+$table->size[2] = '5%';
+$table->size[3] = '15%';
+$table->size[4] = '60px';
 
 $table->data = array ();
 
@@ -177,29 +186,27 @@ $last_item = $item_max['id_rc'];
 		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
 	}
 	
-	$data[1] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$item['id_rc'].'</a>';
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $item['id_filter']);
+	$data[1] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$name_filter.'</a>';
 	
-	$data[2] = $name_filter;
-	
-	$data[3] = $item['max'];
+	$data[2] = $item['max'];
 	
 	switch ($item['show_graph']) {
 		case 0:
-			$data[4] = 'Area graph';
+			$data[3] = 'Area graph';
 			break;
 		case 1:
-			$data[4] = 'Pie graph';
+			$data[3] = 'Pie graph';
 			break;
 		case 2:
-			$data[4] = 'Data table';
+			$data[3] = 'Data table';
 			break;
 		case 3:
-			$data[4] = 'Statistics table';
+			$data[3] = 'Statistics table';
 			break;
 	}
 	
-	$data[5] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);

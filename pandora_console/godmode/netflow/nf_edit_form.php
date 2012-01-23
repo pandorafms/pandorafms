@@ -123,26 +123,24 @@ if ($create){
 	$src_port = get_parameter('src_port','');
 	$advanced_filter = (string) get_parameter('advanced_filter', '');
 
-		if($name == db_get_value('id_name', 'tnetflow_filter', 'id_name', $name)){	
-			$result = false;
-		} else {
-			$values = array (
-				'id_name'=>$name,
-				'id_group' => $assign_group,
-				'ip_dst'=>$ip_dst,
-				'ip_src'=>$ip_src,
-				'dst_port'=>$dst_port,
-				'src_port'=>$src_port,
-				'aggregate'=>$aggregate,
-				'advanced_filter'=>$advanced_filter,
-				'output'=>$output
-			);
-			$result = db_process_sql_insert('tnetflow_filter', $values);
-		}
-		if ($result === false)
-				echo '<h3 class="error">'.__ ('Error creating filter').'</h3>';
-			else 
-				echo '<h3 class="suc">'.__ ('filter created successfully').'</h3>';
+	$values = array (
+			'id_name'=>$name,
+			'id_group' => $assign_group,
+			'ip_dst'=>$ip_dst,
+			'ip_src'=>$ip_src,
+			'dst_port'=>$dst_port,
+			'src_port'=>$src_port,
+			'aggregate'=>$aggregate,
+			'advanced_filter'=>$advanced_filter,
+			'output'=>$output
+	);
+
+	$id = db_process_sql_insert('tnetflow_filter', $values);
+	if ($id === false) {
+		ui_print_error_message ('Error creating filter');
+	} else {
+		ui_print_success_message ('Filter created successfully');
+	}
 }
 
 $table->width = '80%';

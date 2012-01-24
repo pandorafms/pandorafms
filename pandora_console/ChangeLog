@@ -1,3 +1,11 @@
+2012-01-24  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk. Added new
+	functions to API set_create_module_template,
+	set_add_user_profile, set_update_template, set_update_user,
+	update_network_module, add_network_module_policy,
+	set_delete_template, set_delete_module_template, and more.
+
 2012-01-24  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* include/functions_servers.php: Merged from trunk. Exclude

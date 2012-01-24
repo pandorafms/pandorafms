@@ -21,6 +21,9 @@ require_once('functions_modules.php');
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . "/include/functions.php");
 include_once($config['homedir'] . "/include/functions_events.php");
+include_once($config['homedir'] . "/include/functions_groups.php");
+include_once($config['homedir'] . "/include/functions_network_components.php");
+enterprise_include_once ('include/functions_local_components.php');
 
 /**
  * Parse the "other" parameter.
@@ -30,14 +33,14 @@ include_once($config['homedir'] . "/include/functions_events.php");
  * @return mixed
  */
 function parseOtherParameter($other, $otherType) {
-	
+
 	switch ($otherType) {
 		case 'url_encode':
 			$returnVar = array('type' => 'string', 'data' => urldecode($other));
 			break;
 		default:
 			if (strpos($otherType, 'url_encode_separator_') !== false) {
-				$separator = str_replace('url_encode_separator_', '', $otherType);
+				$separator = str_replace('url_encode_separator_', '', $otherType); 
 				$returnVar = array('type' => 'array', 'data' => explode($separator, $other));
 				foreach ($returnVar['data'] as $index => $element)
 					$returnVar['data'][$index] = urldecode($element); 
@@ -656,7 +659,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 				'alert_templates_id_group',
 				'alert_actions_id_group'
 			);
-	
+		
 		returnData($returnType, $data, $separator);
 }
 
@@ -752,13 +755,258 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 }
 
 /**
+ * Get all agents, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=all_agents&return_type=csv&other=1|2|warning|j|2&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
+
+	$where = '';
+
+	// Filter by SO
+	if ($other['data'][0] != ""){
+		$where .= " AND id_os = " . $other['data'][0];
+	}
+	// Filter by group
+	if ($other['data'][1] != ""){
+		$where .= " AND id_grupo = " . $other['data'][1];
+	}
+	// Filter by name
+	if ($other['data'][3] != ""){
+		$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
+	}	
+	// Filter by policy
+	if ($other['data'][4] != ""){
+		$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
+		if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
+			$where .= $filter_by_policy;	
+		}
+	}
+	
+	// Filter by state
+	$sql = "SELECT id_agente, nombre FROM tagente WHERE disabled = 0 " . $where;
+
+	$all_agents = db_get_all_rows_sql($sql);	
+
+	// Filter by status: unknown, warning, critical, without modules 
+	if ($other['data'][2] != "") {
+		foreach($all_agents as $agent){
+			$filter_modules['id_agente'] = $agent['id_agente'];
+			$filter_modules['disabled'] = 0;
+			$filter_modules['delete_pending'] = 0;
+			$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
+			$result_modules = array(); 
+			// Skip non init modules
+			foreach ($modules as $module){
+				if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
+					$result_modules[] = $module;
+				}	
+			}
+
+			// Without modules NO_MODULES
+			if ($other['data'][2] == 'no_modules'){
+				if (empty($result_modules) and $other['data'][2] == 'no_modules'){
+					$result_agents[] = $agent;
+				}
+			}
+			// filter by NORMAL, WARNING, CRITICAL, UNKNOWN
+			else {
+				$status = agents_get_status($agent['id_agente'], true);
+				// Filter by status
+				switch ($other['data'][2]){
+					case 'warning':
+						if ($status == 2){
+							$result_agents[] = $agent;
+						}
+						break;		
+					case 'critical':
+						if ($status == 1){
+							$result_agents[] = $agent;
+						}
+						break;
+					case 'unknown':
+						if ($status == 3){
+							$result_agents[] = $agent;					
+						}
+						break;
+					case 'normal':
+						if ($status == 0){
+							$result_agents[] = $agent;					
+						}
+						break;					
+				}
+			}
+		}
+	}
+	else {
+		$result_agents = $all_agents;
+	}
+
+	if (count($result_agents) > 0 and $result_agents !== false){
+		$data = array('type' => 'array', 'data' => $result_agents);
+		
+		returnData('csv', $data, ';');	
+	}
+	else {
+		returnError('error_all_agents', 'No agents retrieved.');			
+	}	
+}
+
+/**
+ * Get modules for an agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=agents_modules&return_type=csv&other=14&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
+
+	$sql = sprintf("SELECT id_agente, id_agente_modulo, nombre 
+	FROM tagente_modulo WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0", $other['data'][0]);
+
+	$all_modules = db_get_all_rows_sql($sql);	
+
+	if (count($all_modules) > 0 and $all_modules !== false){
+		$data = array('type' => 'array', 'data' => $all_modules);
+		
+		returnData('csv', $data, ';');	
+	}
+	else {
+		returnError('error_agent_modules', 'No modules retrieved.');			
+	}	
+}
+
+/**
+ * Get modules for an agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=group_agent&return_type=csv&other=14&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function get_group_agent($thrash1, $thrash2, $other, $thrash3) {
+
+	$sql = sprintf("SELECT groups.nombre nombre 
+	FROM tagente agents, tgrupo groups WHERE id_agente = %d AND agents.disabled = 0 AND groups.disabled = 0
+	AND agents.id_grupo = groups.id_grupo", $other['data'][0]);
+
+	$group_names = db_get_all_rows_sql($sql);	
+
+	if (count($group_names) > 0 and $group_names !== false){
+		$data = array('type' => 'array', 'data' => $group_names);
+		
+		returnData('csv', $data, ';');	
+	}
+	else {
+		returnError('error_group_agent', 'No groups retrieved.');			
+	}	
+}
+
+/**
+ * Get all policies, possible filtered by agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=policies&return_type=csv&other=&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function get_policies($thrash1, $thrash2, $other, $thrash3) {
+
+	$where = '';
+
+	if ($other['data'][0] != ""){
+		$where .= ' AND id_agent = ' . $other['data'][0];
+		
+		$sql = sprintf("SELECT policy.id, name, id_agent FROM tpolicies policy, tpolicy_agents pol_agents 
+		WHERE policy.id = pol_agents.id %s", $where);		
+	} else {
+		$sql = "SELECT id, name FROM tpolicies policy";		
+	}
+	
+	$policies = db_get_all_rows_sql($sql);	
+
+	if (count($policies) > 0 and $policies !== false){
+		$data = array('type' => 'array', 'data' => $policies);
+		
+		returnData('csv', $data, ';');	
+	}
+	else {
+		returnError('error_get_policies', 'No policies retrieved.');			
+	}	
+}
+
+/**
+ * Get policy modules, possible filtered by agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=policy_modules&return_type=csv&other=2&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
+
+	$where = '';
+
+	if ($other['data'][0] == ""){
+		returnError('error_policy_modules', 'Error retrieving policy modules. Id_policy cannot be left blank.');	
+		return;	
+	}
+
+	$policies = enterprise_hook('policies_get_modules_api', array($other['data'][0], $other['data'][1]));
+
+	if ($policies === ENTERPRISE_NOT_HOOK){
+		returnError('error_policy_modules', 'Error retrieving policy modules.');	
+		return;			
+	}
+
+	if (count($policies) > 0 and $policies !== false){
+		$data = array('type' => 'array', 'data' => $policies);
+		
+		returnData('csv', $data, ';');	
+	}
+	else {
+		returnError('error_policy_modules', 'No policy modules retrieved.');			
+	}	
+}
+
+
+/**
  * Create a network module in agent. And return the id_agent_module of new module.
  * 
  * @param string $id Name of agent to add the module.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
- *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
@@ -776,6 +1024,11 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 	if (!$idAgent){
 		returnError('error_create_network_module', __('Error in creation network module. Agent name doesn\'t exists.'));
 		return;
+	}
+	
+	if ($other['data'][2] < 6 or $other['data'][2] > 18){
+		returnError('error_create_network_module', __('Error in creation network module. Id_module_type is not correct for network modules.'));
+		return;		
 	}
 	
 	$name = $other['data'][0];
@@ -817,15 +1070,72 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
 	}
 }
 
+/**
+ * Update a network module in agent. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the network module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_network_module&id=271&other=156|0|2|10|15||16|18||7|0|127.0.0.1|0||0|300|30.00|0|0|0|latency%20ping%20modified%20by%20the%20Api&other_mode=url_encode_separator_|
+ * 
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_update_network_module($id_module, $thrash1, $other, $thrash3){
 
-		$plugin_user = (string) get_parameter ('plugin_user');
-		if (get_parameter('id_module_component_type') == 7)
-			$plugin_pass = (int) get_parameter ('plugin_pass');
-		else
-			$plugin_pass = (string) get_parameter ('plugin_pass');
-			
-		$plugin_parameter = (string) get_parameter ('plugin_parameter');
+	if ($id_module == ""){
+		returnError('error_update_network_module', __('Error updating network module. Module name cannot be left blank.'));
+		return;		
+	}
+	
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 
+	if (!$check_id_module){
+		returnError('error_update_network_module', __('Error updating network module. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_network_module', __('Error updating network module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+	
+	$network_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+	'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'snmp_community', 
+	'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion');	
+
+	$values = array();
+	$cont = 0;
+	foreach ($network_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_network_module', 'Error updating network module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Network module updated.')));	
+}
 
 /**
  * Create a plugin module in agent. And return the id_agent_module of new module.
@@ -902,6 +1212,73 @@ function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Update a plugin module in agent. And return the id_agent_module of new module.
+ * @param string $id Id of the plugin module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_plugin_module&id=293&other=156|0|2|0|0||0|0||0|0|127.0.0.1|0||0|300|0|0|0|0|plugin%20module%20from%20api|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
+ * 
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
+
+	if ($id_module == ""){
+		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module cannot be left blank.'));
+		return;		
+	}
+	
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
+
+	if (!$check_id_module){
+		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exists.'));
+		return;			
+	}
+
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_plugin_module', __('Error updating plugin module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+	
+	$plugin_module_fields =	array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target',
+		'tcp_port', 'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max',
+		'custom_id', 'descripcion', 'id_plugin', 'plugin_user', 'plugin_pass', 'plugin_parameter');	
+	
+	$values = array();
+	$cont = 0;
+	foreach ($plugin_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_plugin_module', 'Error updating plugin module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Plugin module updated.')));	
+}
+
+/**
  * Create a data module in agent. And return the id_agent_module of new module. 
  * Note: Only adds database information, this function doesn't alter config file information.
  * 
@@ -964,6 +1341,74 @@ function set_create_data_module($id, $thrash1, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => $idModule));
 	}
 }
+
+/**
+ * Update a data module in agent. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the data module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>;<description>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_data_module&id=170&other=44|0|data%20module%20modified%20from%20API|6|0|0|50.00|300|10|15||16|18||0&other_mode=url_encode_separator_|
+ * 
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_update_data_module($id_module, $thrash1, $other, $thrash3){
+
+	if ($id_module == ""){
+		returnError('error_update_data_module', __('Error updating data module. Id_module cannot be left blank.'));
+		return;		
+	}
+	
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
+
+	if (!$check_id_module){
+		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_data_module', __('Error updating data module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+	
+	$data_module_fields = array('id_agente', 'disabled', 'descripcion', 'id_module_group', 'min', 'max', 
+	'post_process', 'module_interval', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 
+	'history_data');	
+
+	$values = array();
+	$cont = 0;
+	foreach ($data_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_data_module', 'Error updating data module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Data module updated.')));
+}
+
 
 /**
  * Create a SNMP module in agent. And return the id_agent_module of new module. 
@@ -1102,6 +1547,462 @@ function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Update a SNMP module in agent. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of module to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent>;<disabled>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example (update snmp v: 3, snmp3_priv_method: AES, passw|authNoPriv|MD5|pepito_user|example_priv_passw) 
+ * 
+ *  api.php?op=set&op2=update_snmp_module&id=example_snmp_module_name&other=44|0|6|20|25||26|30||15|1|127.0.0.1|60|3|public|.1.3.6.1.2.1.1.1.0|180|50.00|10|60|0|SNMP%20module%20modified%20by%20API|AES|example_priv_passw|authNoPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_| 
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
+	
+	if ($id_module == ""){
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module cannot be left blank.'));
+		return;		
+	}
+	
+	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
+
+	if (!$check_id_module){
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exists.'));
+		return;			
+	}	
+	
+	// If we want to change the module to a new agent
+	if ($other['data'][0] != ""){
+		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		
+		if ($id_agent_old != $other['data'][0]){
+			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
+	
+			if ($id_module_exists){
+				returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module exists in the new agent.'));
+				return;			
+			}
+		}
+	}
+
+	# SNMP version 3
+	if ($other['data'][13] == "3"){
+		
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv"){
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA"){
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}
+		
+		$snmp_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'tcp_send', 
+		'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion', 'custom_string_1', 
+		'custom_string_2', 'custom_string_3', 'plugin_parameter', 'plugin_user', 'plugin_pass');
+				
+	}
+	else {
+		$snmp_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'tcp_send', 
+		'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion');
+	}	
+
+	$values = array();
+	$cont = 0;
+	foreach ($snmp_module_fields as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	$result_update = modules_update_agent_module($id_module, $values);
+
+	if ($result_update < 0)
+		returnError('error_update_snmp_module', 'Error updating SNMP module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('SNMP module updated.')));	
+}
+
+/**
+ * Create new network component.
+ * 
+ * @param $id string Name of the network component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <network_component_type>;<description>;
+ *  <module_interval>;<max_value>;<min_value>;<snmp_community>;<id_module_group>;<max_timeout>;
+ *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
+ *  <ff_threshold>;<post_process>;<network_component_group>  in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_network_component&id=example_network_component_name&other=7|network%20component%20created%20by%20Api|300|30|10|public|3||1|10|20|str|21|30|str1|10|50.00|12&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_network_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_network_component', __('Error creating network component. Network component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][0] < 6 or $other['data'][0] > 18){
+		returnError('error_set_new_network_component', __('Error creating network component. Incorrect value for Network component type field.'));
+		return;			
+	}
+	
+	if ($other['data'][17] == ""){
+		returnError('error_set_new_network_component', __('Error creating network component. Network component group cannot be left blank.'));
+		return;			
+	}	
+	
+	$values = array ( 
+			'description' => $other['data'][1],
+			'module_interval' => $other['data'][2],
+			'max' => $other['data'][3],
+			'min' => $other['data'][4],
+			'snmp_community' => $other['data'][5],
+			'id_module_group' => $other['data'][6],
+			'id_modulo' => 2,
+			'max_timeout' => $other['data'][7],
+			'history_data' => $other['data'][8],
+			'min_warning' => $other['data'][9],
+			'max_warning' => $other['data'][10],
+			'str_warning' => $other['data'][11],
+			'min_critical' => $other['data'][12],
+			'max_critical' => $other['data'][13],
+			'str_critical' => $other['data'][14],
+			'min_ff_event' => $other['data'][15],
+			'post_process' => $other['data'][16]);	
+	
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
+	
+	if ($name_check !== false){
+		returnError('error_set_new_network_component', __('Error creating network component. This network component already exists.'));
+		return;			
+	}
+	
+	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][17], $values);
+
+	if (!$id)
+		returnError('error_set_new_network_component', 'Error creating network component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Create new plugin component.
+ * 
+ * @param $id string Name of the plugin component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <plugin_component_type>;<description>;
+ *  <module_interval>;<max_value>;<min_value>;<module_port>;<id_module_group>;<id_plugin>;<max_timeout>;
+ *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
+ *  <ff_threshold>;<post_process>;<plugin_component_group>  in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_plugin_component&id=example_plugin_component_name&other=2|plugin%20component%20created%20by%20Api|300|30|10|66|3|2|example_user|example_pass|-p%20max||1|10|20|str|21|30|str1|10|50.00|12&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_plugin_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][7] == ""){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. Incorrect value for Id plugin.'));
+		return;			
+	}
+
+	if ($other['data'][21] == ""){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component group cannot be left blank.'));
+		return;			
+	}	
+	
+	$values = array ( 
+			'description' => $other['data'][1],
+			'module_interval' => $other['data'][2],
+			'max' => $other['data'][3],
+			'min' => $other['data'][4],
+			'tcp_port' => $other['data'][5],
+			'id_module_group' => $other['data'][6],
+			'id_modulo' => 4,
+			'id_plugin' => $other['data'][7],
+			'plugin_user' => $other['data'][8],	
+			'plugin_pass' => $other['data'][9],	
+			'plugin_parameter' => $other['data'][10],	
+			'max_timeout' => $other['data'][11],
+			'history_data' => $other['data'][12],
+			'min_warning' => $other['data'][13],
+			'max_warning' => $other['data'][14],
+			'str_warning' => $other['data'][15],
+			'min_critical' => $other['data'][16],
+			'max_critical' => $other['data'][17],
+			'str_critical' => $other['data'][18],
+			'min_ff_event' => $other['data'][19],
+			'post_process' => $other['data'][20]);	
+	
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
+	
+	if ($name_check !== false){
+		returnError('error_set_new_plugin_component', __('Error creating plugin component. This plugin component already exists.'));
+		return;			
+	}
+	
+	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][21], $values);
+
+	if (!$id)
+		returnError('error_set_new_plugin_component', 'Error creating plugin component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Create new SNMP component.
+ * 
+ * @param $id string Name of the SNMP component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <snmp_component_type>;<description>;
+ *  <module_interval>;<max_value>;<min_value>;<id_module_group>;<max_timeout>;
+ *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
+ *  <ff_threshold>;<post_process>;<snmp_version>;<snmp_oid>;<snmp_community>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass>;<module_port>;<snmp3_privacy_method>;<snmp3_privacy_pass>;<snmp3_auth_method>;<snmp3_security_level>;<snmp_component_group> in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_snmp_component&id=example_snmp_component_name&other=16|SNMP%20component%20created%20by%20Api|300|30|10|3||1|10|20|str|21|30|str1|15|50.00|3|.1.3.6.1.2.1.2.2.1.8.2|public|example_auth_user|example_auth_pass|66|AES|example_priv_pass|MD5|authNoPriv|12&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_snmp_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. SNMP component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][0] < 15 or $other['data'][0] > 17){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. Incorrect value for Snmp component type field.'));
+		return;			
+	}
+
+	if ($other['data'][25] == ""){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. Snmp component group cannot be left blank.'));
+		return;			
+	}	
+	
+	# SNMP version 3
+	if ($other['data'][16] == "3"){
+		
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv"){
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA"){
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}		
+	
+		$values = array ( 
+				'description' => $other['data'][1],
+				'module_interval' => $other['data'][2],
+				'max' => $other['data'][3],
+				'min' => $other['data'][4],
+				'id_module_group' => $other['data'][5],		
+				'max_timeout' => $other['data'][6],			
+				'history_data' => $other['data'][7],
+				'min_warning' => $other['data'][8],
+				'max_warning' => $other['data'][9],
+				'str_warning' => $other['data'][10],
+				'min_critical' => $other['data'][11],
+				'max_critical' => $other['data'][12],
+				'str_critical' => $other['data'][13],
+				'min_ff_event' => $other['data'][14],
+				'post_process' => $other['data'][15],
+				'tcp_send' => $other['data'][16],
+				'snmp_oid' => $other['data'][17],
+				'snmp_community' => $other['data'][18],
+				'plugin_user' => $other['data'][19],		// snmp3_auth_user
+				'plugin_pass' => $other['data'][20],		// snmp3_auth_pass
+				'tcp_port' => $other['data'][21],
+				'id_modulo' => 2,				
+				'custom_string_1' => $other['data'][22],	// snmp3_privacy_method
+				'custom_string_2' => $other['data'][23],  	// snmp3_privacy_pass
+				'plugin_parameter' => $other['data'][24],	// snmp3_auth_method
+				'custom_string_3' => $other['data'][25],	// snmp3_security_level
+				);	
+	}
+	else {
+		$values = array ( 
+				'description' => $other['data'][1],
+				'module_interval' => $other['data'][2],
+				'max' => $other['data'][3],
+				'min' => $other['data'][4],
+				'id_module_group' => $other['data'][5],		
+				'max_timeout' => $other['data'][6],			
+				'history_data' => $other['data'][7],
+				'min_warning' => $other['data'][8],
+				'max_warning' => $other['data'][9],
+				'str_warning' => $other['data'][10],
+				'min_critical' => $other['data'][11],
+				'max_critical' => $other['data'][12],
+				'str_critical' => $other['data'][13],
+				'min_ff_event' => $other['data'][14],
+				'post_process' => $other['data'][15],
+				'tcp_send' => $other['data'][16],
+				'snmp_oid' => $other['data'][17],
+				'snmp_community' => $other['data'][18],
+				'plugin_user' => '',
+				'plugin_pass' => '',		
+				'tcp_port' => $other['data'][21],
+				'id_modulo' => 2
+				);			
+	}
+	
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
+	
+	if ($name_check !== false){
+		returnError('error_set_new_snmp_component', __('Error creating SNMP component. This SNMP component already exists.'));
+		return;			
+	}
+	
+	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][25], $values);
+
+	if (!$id)
+		returnError('error_set_new_snmp_component', 'Error creating SNMP component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Create new local (data) component.
+ * 
+ * @param $id string Name of the local component.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <description>;<id_os>;
+ *  <local_component_group>;<configuration_data>  in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_local_component&id=example_local_component_name&other=local%20component%20created%20by%20Api~5~12~module_begin%0dmodule_name%20example_local_component_name%0dmodule_type%20generic_data%0dmodule_exec%20ps%20|%20grep%20pid%20|%20wc%20-l%0dmodule_interval%202%0dmodule_end&other_mode=url_encode_separator_~
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_new_local_component($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_set_new_local_component', __('Error creating local component. Local component name cannot be left blank.'));
+		return;				
+	}
+	
+	if ($other['data'][1] == ""){
+		returnError('error_set_new_local_component', __('Error creating local component. Local component group cannot be left blank.'));
+		return;			
+	}	
+	
+	$values = array ( 
+		'description' => $other['data'][0],
+		'id_network_component_group' => $other['data'][1]
+	);	
+
+	$name_check = enterprise_hook('local_components_get_local_components', array(array('name' => $id), 'name'));
+
+	if ($name_check === ENTERPRISE_NOT_HOOK) {
+		returnError('error_set_new_local_component', __('Error creating local component.'));
+		return;	
+	}
+	
+	if ($name_check !== false){
+		returnError('error_set_new_local_component', __('Error creating local component. This local component already exists.'));
+		return;			
+	}
+	
+	$id = enterprise_hook('local_components_create_local_component', array($id, $other['data'][3], $other['data'][1], $values));
+
+	if (!$id)
+		returnError('error_set_new_local_component', 'Error creating local component.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $id));
+}
+
+/**
+ * Get module data value from all agents filter by module name. And return id_agents, agent_name and module value.
+ * 
+ * @param $id string Name of the module.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use.
+ *  example:
+ *  
+ *  api.php?op=get&op2=module_value_all_agents&id=example_module_name
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
+
+	if ($id == ""){
+		returnError('error_get_module_value_all_agents', __('Error getting module value from all agents. Module name cannot be left blank.'));
+		return;				
+	}
+
+	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $id);
+
+	if ($id_module === false){
+		returnError('error_get_module_value_all_agents', __('Error getting module value from all agents. Module name doesn\'t exists.'));
+		return;			
+	}
+
+	$sql = sprintf("SELECT agent.id_agente, agent.nombre, module_state.datos FROM tagente agent, tagente_modulo module, tagente_estado module_state WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'", $id);
+
+	$module_values = db_get_all_rows_sql($sql);
+
+	if (!$module_values){
+		returnError('error_get_module_value_all_agents', 'Error getting module values from all agents.');
+	}
+	else{
+		$data = array('type' => 'array', 'data' => $module_values);
+		
+		returnData('csv', $data, ';');	
+	}
+}
+
+/**
  * Create an alert template. And return the id of new template.
  * 
  * @param string $id Name of alert template to add.
@@ -1201,7 +2102,1268 @@ function set_create_alert_template($name, $thrash1, $other, $thrash3) {
 	}
 }
 
+/**
+ * Update an alert template. And return a message with the result of the operation.
+ * 
+ * @param string $id_template Id of the template to update.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <template_name>;<type>;<description>;<id_alert_action>;
+ *  <field1>;<field2>;<field3>;<value>;<matches_value>;<max_value>;<min_value>;<time_threshold>;
+ *  <max_alerts>;<min_alerts>;<time_from>;<time_to>;<monday>;<tuesday>;<wednesday>;
+ *  <thursday>;<friday>;<saturday>;<sunday>;<recovery_notify>;<field2_recovery>;<field3_recovery>;<priority>;<id_group> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=update_alert_template&id=38&other=example_template_with_changed_name|onchange|changing%20from%20min_max%20to%20onchange||||||1||||5|1|||1|1|0|1|1|0|0|1|field%20recovery%20example%201|field%20recovery%20example%202|1|8&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_alert_template($id_template, $thrash1, $other, $thrash3) {
 
+	if ($id_template == "") {
+		returnError('error_update_alert_template', __('Error updating alert template. Id_template cannot be left blank.'));
+		return;
+	}
+
+	$result_template = alerts_get_alert_template_name($id_template);
+	
+	if (!$result_template){
+		returnError('error_update_alert_template', __('Error updating alert template. Id_template doesn\'t exists.'));
+		return;
+	}
+	
+	$fields_template = array('name', 'type', 'description', 'id_alert_action', 'field1', 'field2', 'field3', 'value', 'matches_value', 
+							 'max_value', 'min_value', 'time_threshold', 'max_alerts', 'min_alerts', 'time_from', 'time_to', 
+							 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'recovery_notify', 
+							 'field2_recovery', 'field3_recovery', 'priority', 'id_group');
+
+	$cont = 0;
+	foreach ($fields_template as $field){
+		if ($other['data'][$cont] != ""){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+			
+	$id_template = alerts_update_alert_template($id_template, $values);
+	
+	if (is_error($id_template)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_alert_template', __('Error updating alert template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct updating of alert template')));
+	}
+}
+
+/**
+ * Delete an alert template. And return a message with the result of the operation.
+ * 
+ * @param string $id_template Id of the template to delete.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=delete_alert_template&id=38
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
+
+	if ($id_template == "") {
+		returnError('error_delete_alert_template', __('Error deleting alert template. Id_template cannot be left blank.'));
+		return;
+	}
+
+	$result = alerts_delete_alert_template($id_template);
+	
+	if ($result == 0) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_alert_template', __('Error deleting alert template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of alert template.')));
+	}
+}
+
+/**
+ * Assign a module to an alert template. And return the id of new relationship.
+ * 
+ * @param string $id_template Name of alert template to add.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_module>;<id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  api.php?op=set&op2=create_module_template&id=1&other=1|10&other_mode=url_encode_separator_|  
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_create_module_template($id, $thrash1, $other, $thrash3) {
+	if ($id == "") {
+		returnError('error_module_to_template', __('Error assigning module to template. Id_template cannot be left blank.'));
+		return;
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_module cannot be left blank.'));
+		return;
+	}
+
+	if ($other['data'][1] == ""){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_agent cannot be left blank.'));
+		return;
+	}
+	
+	$result_template = alerts_get_alert_template($id);
+		
+	if (!$result_template){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_template doensn\'t exists.'));
+		return;
+	}	
+		
+	$id_module = $other['data'][0];
+	$id_agent = $other['data'][1];
+	
+	$result_agent = agents_get_name($id_agent);
+	
+	if (!$result_agent){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exists.'));
+		return;		
+	}
+
+	$result_module = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
+
+	if (!$result_module){
+		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exists.'));
+		return;			
+	}
+	
+	$id_template_module = alerts_create_alert_agent_module($id_module, $id);
+	
+	if (is_error($id_template_module)) {
+		// TODO: Improve the error returning more info
+		returnError('error_module_to_template', __('Error assigning module to template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $id_template_module));
+	}
+}
+
+/**
+ * Delete an module assigned to a template. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the relationship between module and template (talert_template_modules) to delete.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=delete_module_template&id=38
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_delete_module_template($id, $thrash1, $other, $thrash3) {
+
+	if ($id == "") {
+		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template cannot be left blank.'));
+		return;
+	}
+
+	$result_module_template = alerts_get_alert_agent_module($id);
+
+	if (!$result_module_template){
+		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exists.'));
+		return;		
+	}
+	
+	$result = alerts_delete_alert_agent_module($id);
+
+	if ($result == 0) {
+		// TODO: Improve the error returning more info
+		returnError('error_delete_module_template', __('Error deleting module template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of module template.')));
+	}
+}
+
+/**
+ * Validate all alerts. And return a message with the result of the operation.
+ * 
+ * @param string Don't use.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=validate_all_alerts
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
+
+	// Return all groups
+	$allGroups = db_get_all_rows_filter('tgrupo', array(), 'id_grupo');
+	
+	$groups = array();
+	
+	foreach ($allGroups as $row) {
+		$groups[] = $row['id_grupo'];
+	}
+	// Added group All
+	$groups[] = 0;
+	
+	$id_groups = implode(',', $groups);
+
+	$sql = sprintf ("SELECT id_agente  
+		FROM tagente 
+		WHERE id_grupo IN (%s) AND disabled = 0", 
+		$id_groups);
+		
+	$id_agents = array();
+	$result_agents = array();
+
+	$id_agents = db_get_all_rows_sql($sql);
+	
+	foreach ($id_agents as $id_agent){
+		$result_agents[] = $id_agent['id_agente'];
+	}
+
+	$agents_string = implode(',', $result_agents);
+	
+	$sql = sprintf ("SELECT talert_template_modules.id
+	FROM talert_template_modules
+		INNER JOIN tagente_modulo t2
+			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+		INNER JOIN tagente t3
+			ON t2.id_agente = t3.id_agente
+		INNER JOIN talert_templates t4
+			ON talert_template_modules.id_alert_template = t4.id
+	WHERE id_agent_module in (%s)", $agents_string);	
+	
+	$alerts = db_get_all_rows_sql($sql);
+	
+	$total_alerts = count($alerts);
+	$count_results = 0;
+	foreach ($alerts as $alert) {		
+		$result = alerts_validate_alert_agent_module($alert['id'], true);
+		
+		if ($result){
+			$count_results++;
+		}
+	}
+
+	if ($total_alerts > $count_results){
+		$errors = $total_alerts - $count_results;	
+		returnError('error_validate_all_alerts', __('Error validate all alerts. Failed ' . $errors . '.'));
+	}
+	else{
+		returnData('string', array('type' => 'string', 'data' => __('Correct validating of all alerts.')));	
+	}
+}
+
+/**
+ * Validate all policy alerts. And return a message with the result of the operation.
+ * 
+ * @param string Don't use.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=validate_all_policy_alerts
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
+
+	# Get all policies
+	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
+
+	if ($duplicated === ENTERPRISE_NOT_HOOK) {
+		returnError('error_validate_all_policy_alerts', __('Error validating all alert policies.'));
+		return;	
+	}	
+
+	// Count of valid results
+	$total_alerts = 0;
+	$count_results = 0;
+	// Check all policies
+	foreach ($policies as $policy){
+		$policy_alerts = array();
+		$policy_alerts = enterprise_hook('policies_get_alerts',  array($policy['id'], false, false, true));
+	
+
+		
+		// Number of alerts in this policy
+		if ($policy_alerts != false){
+			$partial_alerts = count($policy_alerts);
+			// Added alerts of this policy to the total
+			$total_alerts = $total_alerts + $partial_alerts;
+		}
+		
+		$result_pol_alerts = array();
+		foreach ($policy_alerts as $policy_alert){
+			$result_pol_alerts[] = $policy_alert['id'];
+		}
+
+		$id_pol_alerts = implode(',', $result_pol_alerts);
+				
+		// If the policy has alerts
+		if (count($result_pol_alerts) != 0){
+			$sql = sprintf ("SELECT id  
+				FROM talert_template_modules 
+				WHERE id_policy_alerts IN (%s)", 
+				$id_pol_alerts);
+
+			$id_alerts = db_get_all_rows_sql($sql);		
+						
+			$result_alerts = array();
+			foreach ($id_alerts as $id_alert){
+				$result_alerts[] = $id_alert['id'];
+			}	
+			
+			// Validate alerts of these modules
+			foreach ($result_alerts as $result_alert){	
+				$result = alerts_validate_alert_agent_module($result_alert, true);
+
+				if ($result){
+					$count_results++;
+				}
+			}		
+		}
+		
+	}
+	
+	// Check results
+	if ($total_alerts > $count_results){
+		$errors = $total_alerts - $count_results;	
+		returnError('error_validate_all_alerts', __('Error validate all policy alerts. Failed ' . $errors . '.'));
+	}	
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct validating of all policy alerts.')));	
+	}
+}
+
+/**
+ * Stop a schedule downtime. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the downtime to stop.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=stop_downtime&id=38
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_stop_downtime($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_stop_downtime', __('Error stopping downtime. Id_downtime cannot be left blank.'));
+		return;	
+	}
+	
+	$date_stop = date ("Y-m-j",get_system_time ());
+	$time_stop = date ("h:iA",get_system_time ());
+	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
+
+	$values = array();
+	$values['date_to'] = $date_time_stop;
+	
+	$result_update = db_process_sql_update('tplanned_downtime', $values, array ('id' => $id));
+	
+	if ($result_update < 0)
+		returnError('error_stop_downtime', 'Error stopping downtime.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Downtime stopped.')));		
+}
+
+/**
+ * Add agent to a policy. And return a message with the result of the operation.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ * api.php?op=set&op2=add_agent_policy&id=1&other=167&other_mode=url_encode_separator_|  
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_agent_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent cannot be left blank.'));
+		return;			
+	}
+	
+	// Check if the agent exists
+	$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
+
+	if (!$result_agent){
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exists.'));
+		return;			
+	}	
+
+	// Check if the agent is already in the policy
+	$id_agent_policy = enterprise_hook('policies_get_agents', array($id, array('id_agent' => $other['data'][0]), 'id', true));
+
+	if ($id_agent_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_agent_policy', __('Error adding agent to policy.'));
+		return;	
+	}	
+	
+	if ($id_agent_policy === false){
+		$success = enterprise_hook('policies_create_agent', array($other['data'][0], $id, true));
+	} 
+	else {
+		returnError('error_add_agent_policy', __('Error adding agent to policy. The agent is already in the policy.'));
+		return;			
+	}
+
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_agent_policy', 'Error adding agent to policy.');
+
+}
+
+/**
+ * Add data module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <module_name>;<id_module_type>;<description>;
+ * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
+ * <min_critical>;<max_critical>;<str_critical>;<history_data>;<configuration_data> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=add_data_module_policy&id=1&other=data_module_policy_example_name~2~data%20module%20created%20by%20Api~2~0~0~50.00~10~20~180~~21~35~~1~module_begin%0dmodule_name%20pandora_process%0dmodule_type%20generic_data%0dmodule_exec%20ps%20aux%20|%20grep%20pandora%20|%20wc%20-l%0dmodule_end&other_mode=url_encode_separator_~
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_data_module_policy', __('Error adding data module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_add_data_module_policy', __('Error adding data module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_data_module_policy', __('Error adding data module to policy.'));
+		return;	
+	}	
+
+	$values = array();
+	$values['id_tipo_modulo'] = $other['data'][1];
+	$values['description'] = $other['data'][2];
+	$values['id_module_group'] = $other['data'][3];
+	$values['min'] = $other['data'][4];
+	$values['max'] = $other['data'][5];
+	$values['post_process'] = $other['data'][6];
+	$values['module_interval'] = $other['data'][7];
+	$values['min_warning'] = $other['data'][8];
+	$values['max_warning'] = $other['data'][9];
+	$values['str_warning'] = $other['data'][10];
+	$values['min_critical'] = $other['data'][11];
+	$values['max_critical'] = $other['data'][12];
+	$values['str_critical'] = $other['data'][13];
+ 	$values['history_data'] = $other['data'][14];
+ 	$values['configuration_data'] = $other['data'][15];	
+ 	
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_add_data_module_policy', __('Error adding data module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 1, $values, false, true)); 
+	
+	if ($success)
+		//returnData('string', array('type' => 'string', 'data' => __('Data module added to policy. Is necessary to apply the policy in order to changes take effect.')));		
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_data_module_policy', 'Error adding data module to policy.');	
+
+}
+
+/**
+ * Update data module in policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_policy_module>;<description>;
+ * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
+ * <min_critical>;<max_critical>;<str_critical>;<history_data>;<configuration_data> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=update_data_module_policy&id=1&other=10~data%20module%20updated%20by%20Api~2~0~0~50.00~10~20~180~~21~35~~1~module_begin%0dmodule_name%20pandora_process%0dmodule_type%20generic_data%0dmodule_exec%20ps%20aux%20|%20grep%20pandora%20|%20wc%20-l%0dmodule_end&other_mode=url_encode_separator_~
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy_module cannot be left blank.'));
+		return;			
+	}	
+	
+	// Check if the module exists
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+
+	if ($module_policy === false) {
+		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exists.'));
+		return;					
+	}
+	
+	if ($module_policy[0]['id_module'] != 1){
+		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module type is not network type.'));
+		return;	
+	}	
+
+	$fields_data_module = array('id','description', 'id_module_group', 'min', 'max', 'post_process', 'module_interval', 
+						 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical',
+						 'history_data', 'configuration_data');
+	
+	$cont = 0;
+	foreach ($fields_data_module as $field){
+		if ($other['data'][$cont] != "" and $field != 'id'){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+	 	
+ 
+	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
+	
+	
+	if ($result_update < 0)
+		returnError('error_update_data_module_policy', 'Error updating policy module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Data policy module updated.')));		
+}
+
+/**
+ * Add network module to policy. And return a result message.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <module_name>;<id_module_type>;<description>;
+ * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
+ * <min_critical>;<max_critical>;<str_critical>;<history_data>;<time_threshold>;<disabled>;<module_port>;
+ * <snmp_community>;<snmp_oid>;<custom_id> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=add_network_module_policy&id=1&other=network_module_policy_example_name|6|network%20module%20created%20by%20Api|2|0|0|50.00|180|10|20||21|35||1|15|0|66|||0&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][1] < 6 or $other['data'][1] > 18){
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_module_type is not correct for network modules.'));
+		return;		
+	}	
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_network_data_module_policy', __('Error adding network module to policy.'));
+		return;	
+	}	
+	
+	$values = array();
+	$values['id_tipo_modulo'] = $other['data'][1];
+	$values['description'] = $other['data'][2];
+	$values['id_module_group'] = $other['data'][3];
+	$values['min'] = $other['data'][4];
+	$values['max'] = $other['data'][5];
+	$values['post_process'] = $other['data'][6];
+	$values['module_interval'] = $other['data'][7];
+	$values['min_warning'] = $other['data'][8];
+	$values['max_warning'] = $other['data'][9];
+	$values['str_warning'] = $other['data'][10];
+	$values['min_critical'] = $other['data'][11];
+	$values['max_critical'] = $other['data'][12];
+	$values['str_critical'] = $other['data'][13];
+ 	$values['history_data'] = $other['data'][14];
+ 	$values['min_ff_event'] = $other['data'][15];	
+ 	$values['disabled'] = $other['data'][16];
+    $values['tcp_port'] = $other['data'][17];			
+    $values['snmp_community'] = $other['data'][18];
+    $values['snmp_oid'] = $other['data'][19]; 	
+    $values['custom_id'] = $other['data'][20];
+ 	
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_network_data_module_policy', __('Error adding network module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false, true)); 
+	
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_network_module_policy', 'Error adding network module to policy.');	
+}
+
+/**
+ * Update network module in policy. And return a result message.
+ * 
+ * @param string $id Id of the target policy module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_policy_module>;<description>;
+ * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
+ * <min_critical>;<max_critical>;<str_critical>;<history_data>;<time_threshold>;<disabled>;<module_port>;
+ * <snmp_community>;<snmp_oid>;<custom_id> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=update_network_module_policy&id=1&other=14|network%20module%20updated%20by%20Api|2|0|0|150.00|300|10|20||21|35||1|15|0|66|||0&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy_module cannot be left blank.'));
+		return;			
+	}	
+	
+	// Check if the module exists
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+
+	if ($module_policy === false) {
+		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module doesn\'t exists.'));
+		return;					
+	}
+	
+	if ($module_policy[0]['id_module'] != 2){
+		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module type is not network type.'));
+		return;	
+	}
+
+	$fields_network_module = array('id','description', 'id_module_group', 'min', 'max', 'post_process', 'module_interval', 
+						 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical',
+						 'history_data', 'min_ff_event', 'disabled', 'tcp_port', 'snmp_community', 'snmp_oid', 'custom_id');
+	
+	$cont = 0;
+	foreach ($fields_network_module as $field){
+		if ($other['data'][$cont] != "" and $field != 'id'){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+	 	
+ 
+	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
+	
+	
+	if ($result_update < 0)
+		returnError('error_update_network_module_policy', 'Error updating policy module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Network policy module updated.')));		
+}
+
+/**
+ * Add plugin module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  api.php?op=set&op2=add_plugin_module_policy&id=1&other=example%20plugin%20module%20name|0|1|2|0|0||0|0||15|0|66|||300|50.00|0|0|0|plugin%20module%20from%20api|2|admin|pass|-p%20max&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][22] == ""){
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_plugin cannot be left blank.'));
+		return;		
+	}
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy.'));
+		return;	
+	}			
+
+	$values = array();
+	$values['disabled'] = $other['data'][1];
+	$values['id_tipo_modulo'] = $other['data'][2];
+	$values['id_module_group'] = $other['data'][3];
+	$values['min_warning'] = $other['data'][4];
+	$values['max_warning'] = $other['data'][5];
+	$values['str_warning'] = $other['data'][6];
+	$values['min_critical'] = $other['data'][7];
+	$values['max_critical'] = $other['data'][8];
+	$values['str_critical'] = $other['data'][9];
+	$values['min_ff_event'] = $other['data'][10];
+	$values['history_data'] = $other['data'][11];
+	$values['tcp_port'] = $other['data'][12];
+	$values['snmp_community'] = $other['data'][13];
+ 	$values['snmp_oid'] = $other['data'][14];
+ 	$values['module_interval'] = $other['data'][15];	
+ 	$values['post_process'] = $other['data'][16];			
+    $values['min'] = $other['data'][17];
+    $values['max'] = $other['data'][18]; 	
+    $values['custom_id'] = $other['data'][19];
+    $values['description'] = $other['data'][20];
+    $values['id_plugin'] = $other['data'][21];    
+    $values['plugin_user'] = $other['data'][22];  
+    $values['plugin_pass'] = $other['data'][23];
+    $values['plugin_parameter'] = $other['data'][24];              
+  	
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 4, $values, false, true)); 
+	
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_plugin_module_policy', 'Error adding plugin module to policy.');	
+
+}
+
+/**
+ * Update plugin module in policy. And return a result message.
+ * 
+ * @param string $id Id of the target policy module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_policy_module>;<disabled>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=update_plugin_module_policy&id=1&other=23|0|1|0|0||0|0||15|0|166|||180|150.00|0|0|0|plugin%20module%20updated%20from%20api|2|example_user|pass|-p%20min&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_update_plugin_module_policy', __('Error updating plugin module in policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_update_plugin_module_policy', __('Error updating plugin module in policy. Id_policy_module cannot be left blank.'));
+		return;			
+	}	
+	
+	// Check if the module exists
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+
+	if ($module_policy === false) {
+		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module doesn\'t exists.'));
+		return;					
+	}
+	
+	if ($module_policy[0]['id_module'] != 4){
+		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module type is not network type.'));
+		return;	
+	}
+	
+	$fields_plugin_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
+						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'snmp_community',
+						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description', 'id_plugin', 'plugin_user',
+						 'plugin_pass', 'plugin_parameter');
+	
+	$cont = 0;
+	foreach ($fields_plugin_module as $field){
+		if ($other['data'][$cont] != "" and $field != 'id'){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+	 	
+	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
+	
+	
+	if ($result_update < 0)
+		returnError('error_update_plugin_module_policy', 'Error updating policy module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Plugin policy module updated.')));		
+}
+
+/**
+ * Add SNMP module to policy. And return id from new module.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:  
+ * 
+ *  api.php?op=set&op2=add_snmp_module_policy&id=1&other=example%20SNMP%20module%20name|0|15|2|0|0||0|0||15|1|66|3|public|.1.3.6.1.2.1.1.1.0|180|50.00|10|60|0|SNMP%20module%20modified%20by%20API|AES|example_priv_passw|authNoPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	if ($other['data'][0] == ""){
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Module_name cannot be left blank.'));
+		return;			
+	}
+	
+	// Check if the module is already in the policy
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+
+	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy.'));
+		return;	
+	}
+	
+	if ($other['data'][2] < 15 or $other['data'][2] > 18){
+		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_module_type is not correct for SNMP modules.'));
+		return;		
+	}			
+
+	# SNMP version 3
+	if ($other['data'][13] == "3"){
+		
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv"){
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA"){
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}		
+		
+		$values = array(
+			'disabled' => $other['data'][1],
+			'id_tipo_modulo' => $other['data'][2],
+			'id_module_group' => $other['data'][3],
+			'min_warning' => $other['data'][4],
+			'max_warning' => $other['data'][5],
+			'str_warning' => $other['data'][6],
+			'min_critical' => $other['data'][7],
+			'max_critical' => $other['data'][8],
+			'str_critical' => $other['data'][9],
+			'min_ff_event' => $other['data'][10],		
+			'history_data' => $other['data'][11],			
+			'tcp_port' => $other['data'][12],	
+			'tcp_send' => $other['data'][13],				
+			'snmp_community' => $other['data'][14],		
+			'snmp_oid' => $other['data'][15],
+			'module_interval' => $other['data'][16],
+			'post_process' => $other['data'][17],
+			'min' => $other['data'][18],
+			'max' => $other['data'][19],	
+			'custom_id' => $other['data'][20],
+			'description' => $other['data'][21],
+			'custom_string_1' => $other['data'][22],
+			'custom_string_2' => $other['data'][23],
+			'custom_string_3' => $other['data'][24],
+			'plugin_parameter' => $other['data'][25],
+			'plugin_user' => $other['data'][26],
+			'plugin_pass' => $other['data'][27]
+		);			
+	}
+	else {
+		$values = array(
+			'disabled' => $other['data'][1],
+			'id_tipo_modulo' => $other['data'][2],
+			'id_module_group' => $other['data'][3],
+			'min_warning' => $other['data'][4],
+			'max_warning' => $other['data'][5],
+			'str_warning' => $other['data'][6],
+			'min_critical' => $other['data'][7],
+			'max_critical' => $other['data'][8],
+			'str_critical' => $other['data'][9],
+			'min_ff_event' => $other['data'][10],		
+			'history_data' => $other['data'][11],			
+			'tcp_port' => $other['data'][12],	
+			'tcp_send' => $other['data'][13],				
+			'snmp_community' => $other['data'][14],		
+			'snmp_oid' => $other['data'][15],
+			'module_interval' => $other['data'][16],
+			'post_process' => $other['data'][17],
+			'min' => $other['data'][18],
+			'max' => $other['data'][19],	
+			'custom_id' => $other['data'][20],
+			'description' => $other['data'][21]
+		);			
+	}             
+
+ 	if ($name_module_policy !== false){
+		if ($name_module_policy[0]['name'] == $other['data'][0]){
+			returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. The module is already in the policy.'));
+			return;				
+		}
+	}
+ 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false, true)); 
+	
+	if ($success)
+		returnData('string', array('type' => 'string', 'data' => $success));
+	else
+		returnError('error_add_snmp_module_policy', 'Error adding SNMP module to policy.');	
+
+}
+
+/**
+ * Update SNMP module in policy. And return a result message.
+ * 
+ * @param string $id Id of the target policy module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_policy_module>;<disabled>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
+ *  <history_data>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
+ *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ *  example:
+ * 
+ *  api.php?op=set&op2=update_snmp_module_policy&id=1&other=14|0|2|0|0||0|0||30|1|66|3|nonpublic|.1.3.6.1.2.1.1.1.0|300|150.00|10|60|0|SNMP%20module%20updated%20by%20API|DES|example_priv_passw|authPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_|
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Id_policy_module cannot be left blank.'));
+		return;			
+	}	
+	
+	// Check if the module exists
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+
+	if ($module_policy === false) {
+		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exists.'));
+		return;					
+	}
+	
+	if ($module_policy[0]['id_module'] != 2){
+		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module type is not SNMP type.'));
+		return;	
+	}
+	
+	
+	# SNMP version 3
+	if ($other['data'][12] == "3"){
+		
+		if ($other['data'][21] != "AES" and $other['data'][21] != "DES"){
+			returnError('error_update_snmp_module_policy', __('Error updating SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			return;	
+		}
+		
+		if ($other['data'][23] != "authNoPriv" and $other['data'][23] != "authPriv" and $other['data'][23] != "noAuthNoPriv"){
+			returnError('error_update_snmp_module_policy', __('Error updating SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			return;	
+		}		
+		
+		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA"){
+			returnError('error_update_snmp_module_policy', __('Error updating SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			return;	
+		}		
+
+		$fields_snmp_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
+						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'tcp_send', 'snmp_community',
+						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description', 'custom_string_1',
+						 'custom_string_2', 'custom_string_3', 'plugin_parameter', 'plugin_user', 'plugin_pass');
+	}
+	else {		
+		$fields_snmp_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
+						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'tcp_send', 'snmp_community',
+						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description');				
+	}       	
+	
+	$cont = 0;
+	foreach ($fields_snmp_module as $field){
+		if ($other['data'][$cont] != "" and $field != 'id'){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+	 	
+	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
+	
+	
+	if ($result_update < 0)
+		returnError('error_update_snmp_module_policy', 'Error updating policy module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('SNMP policy module updated.')));		
+}
+
+
+/**
+ * Apply policy. And return id from the applying operation.
+ * 
+ * @param string $id Id of the target policy.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:  
+ * 
+ *  api.php?op=set&op2=apply_policy&id=1
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_apply_policy($id, $thrash1, $other, $thrash3) {
+	if ($id == ""){
+		returnError('error_apply_policy', __('Error applying policy. Id_policy cannot be left blank.'));
+		return;			
+	}
+
+	# Check if this operation is duplicated
+	$duplicated = enterprise_hook('policies_get_policy_queue_status', array($id));
+	
+	if ($duplicated === ENTERPRISE_NOT_HOOK) {
+		// We want to return a value
+		if ($other == "return"){
+			return -1;
+		}else{
+			returnError('error_apply_policy', __('Error applying policy.'));
+			return;
+		}	
+	}
+
+	if ($duplicated == STATUS_IN_QUEUE_APPLYING or $duplicated == STATUS_IN_QUEUE_IN){
+		// We want to return a value
+		if ($other == "return"){
+			return -1;
+		}else{		
+			returnError('error_apply_policy', __('Error applying policy. This policy is already pending to apply.'));
+			return;	
+		}		
+	}
+
+	$id = enterprise_hook('add_policy_queue_operation', array($id, 0, 'apply'));
+	
+	if ($id === ENTERPRISE_NOT_HOOK) {
+		// We want to return a value
+		if ($other == "return"){
+			return -1;
+		}else{			
+			returnError('error_apply_policy', __('Error applying policy.'));
+			return;	
+		}
+	}	
+	
+	// We want to return a value
+	if ($other == "return"){
+		if ($id)
+			return $id;
+		else
+			return -1;		
+	} else {
+		if ($id)
+			returnData('string', array('type' => 'string', 'data' => $id));
+		else
+			returnError('error_apply_policy', 'Error applying policy.');		
+	}
+}
+
+
+/**
+ * Apply all policy in database. And return the number of policies applied.
+ * 
+ * @param string $id Don't use.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:  
+ * 
+ *  api.php?op=set&op2=apply_all_policies
+ *    
+ * @param $thrash3 Don't use
+ */
+function set_apply_all_policies($id, $thrash1, $other, $thrash3) {
+	$policies = array();
+
+	# Get all policies
+	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
+
+	if ($duplicated === ENTERPRISE_NOT_HOOK) {
+		returnError('error_apply_all_policy', __('Error applying all policies.'));
+		return;	
+	}	
+
+	$num_policies = count($policies);
+	$count_results = 0;
+	foreach ($policies as $policy){
+		$return_value = set_apply_policy($policy['id'], '', 'return', '');
+
+		if ($return_value != -1){
+			$count_results++;
+		}
+	}
+	
+	if ($num_policies > $count_results){
+		$errors = $num_policies - $count_results;
+		
+		returnError('error_apply_policy', 'Error applying policy. ' . $errors . ' failed. ');	
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $count_results));		
+	}		
+}
+
+/**
+ * Create a new group. And return the id_group of the new group. 
+ * 
+ * @param string $id Name of the new group.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <icon_name>;<id_group_parent>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example 1 (with parent group: Servers) 
+ * 
+ *  api.php?op=set&op2=create_group&id=example_group_name&other=applications|1&other_mode=url_encode_separator_|
+ *  
+ * 	example 2 (without parent group)
+ * 
+ * 	api.php?op=set&op2=create_group&id=example_group_name2&other=computer|&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use
+ */
+function set_create_group($id, $thrash1, $other, $thrash3) {
+	$group_name = $id;
+	
+	if ($id == ""){
+		returnError('error_create_group', __('Error in group creation. Group_name cannot be left blank.'));
+		return;		
+	}
+	
+	if ($other['data'][0] == ""){
+		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
+		return;
+	}	
+
+	if ($other['data'][1] != ""){
+		$group = groups_get_group_by_id($other['data'][1]);
+
+		if ($group == false){
+			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
+			return;			
+		}
+	}
+	
+	if ($other['data'][1] != ""){	
+		$values = array(
+			'icon' => $other['data'][0],
+			'parent' => $other['data'][1]
+		);
+	}
+	else {
+		$values = array(
+			'icon' => $other['data'][0]		
+		);
+	}	
+	
+	$id_group = groups_create_group($group_name, $values);
+	
+	if (is_error($id_group)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_group', __('Error in group creation.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $id_group));
+	}
+}
 
 /**
  * Get module data in CSV format.
@@ -1267,6 +3429,116 @@ function set_new_user($id, $thrash2, $other, $thrash3) {
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Create user.')));
 }
+
+/**
+ * Update new user.
+ * 
+ * @param string $id String username for user login in Pandora
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <fullname>;<firstname>;<lastname>;<middlename>;<password>;
+ *  <email>;<phone>;<language>;<comments>;<is_admin>;<block_size>;<flash_chart> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=update_user&id=example_user_name&other=example_fullname||example_lastname||example_new_passwd|example_email||example_language|example%20comment|1|30|&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use.
+ */
+function set_update_user($id, $thrash2, $other, $thrash3) {
+
+	$fields_user = array('fullname', 'firstname', 'lastname', 'middlename', 'password', 'email', 
+						 'phone', 'language', 'comments', 'is_admin', 'block_size', 'flash_chart');
+
+
+	if ($id == "") {
+		returnError('error_update_user', __('Error updating user. Id_user cannot be left blank.'));
+		return;
+	}
+
+	$result_user = users_get_user_by_id($id);
+	
+	if (!$result_user){
+		returnError('error_update_user', __('Error updating user. Id_user doesn\'t exists.'));
+		return;
+	}
+	
+	$cont = 0;
+	foreach ($fields_user as $field){
+		if ($other['data'][$cont] != "" and $field != "password"){
+			$values[$field] = $other['data'][$cont];
+		}
+		
+		$cont++;
+	}
+
+	// If password field has data
+	if ($other['data'][4] != ""){
+		if (!update_user_password($id, $other['data'][4])){
+			returnError('error_update_user', __('Error updating user. Password info incorrect.'));
+			return;
+		}
+	}
+	
+	if (!update_user ($id, $values))
+		returnError('error_create_user', 'Error updating user');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Updated user.')));
+}
+
+/**
+ * Enable/disable user given an id
+ * 
+ * @param string $id String username for user login in Pandora
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <enable/disable value> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example 1 (Disable user 'example_name') 
+ * 
+ *  api.php?op=set&op2=enable_disable_user&id=example_name&other=0&other_mode=url_encode_separator_|
+ *  
+ * 	example 2 (Enable user 'example_name')
+ * 
+ *  api.php?op=set&op2=enable_disable_user&id=example_name&other=1&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+
+function set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
+
+	if ($id == ""){
+		returnError('error_enable_disable_user', 'Error enable/disable user. Id_user cannot be left blank.');
+		return;
+	}
+
+
+	if ($other['data'][0] != "0" and $other['data'][0] != "1"){
+		returnError('error_enable_disable_user', 'Error enable/disable user. Enable/disable value cannot be left blank.');
+		return;		
+	}
+	
+	if (users_get_user_by_id($id) == false){
+		returnError('error_enable_disable_user', 'Error enable/disable user. The user doesn\'t exists.');
+		return;				
+	}
+
+	$result = users_disable($id, $other['data'][0]);
+    
+	if (is_error($result)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_network_module', __('Error in user enabling/disabling.'));
+	}
+	else {
+		if ($other['data'][0] == "0"){
+			returnData('string', array('type' => 'string', 'data' => __('Enabled user.')));
+		}
+		else {
+			returnData('string', array('type' => 'string', 'data' => __('Disabled user.')));			
+		}
+	}
+}
+
 
 function otherParameter2Filter($other, $array = false) {
 	$filter = array();
@@ -2304,7 +4576,7 @@ function set_delete_user($id, $thrash1, $thrash2, $thrash3) {
  *  othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=add_user_profile&id=md&other=12|4&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=add_user_profile&id=example_user_name&other=12|4&other_mode=url_encode_separator_|
  *  
  * @param $thrash2 Don't use.
 

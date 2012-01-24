@@ -1,3 +1,8 @@
+2010-01-24 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/massive/massive_delete_modules.php: Fixed a small entities
+	bug. Added io_safe_output
+
 2012-01-24  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/agentes/estado_agente.php: Simplify code estado_agente

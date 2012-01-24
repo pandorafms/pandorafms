@@ -118,7 +118,7 @@ $table->data[0][0] = __('Modules');
 $modules = agents_get_modules();
 $modulesSelect = array();
 foreach ($modules as $module) {
-	$modulesSelect[$module] = $module;
+	$modulesSelect[$module] = io_safe_output($module);
 }
 $table->data[0][1] = html_print_select($modulesSelect,
 	'module_name', $module_name, false, __('Select'), '', true);

@@ -281,126 +281,54 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != ""){
-	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
+	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
 }
 
 // Show only selected groups	
 if ($group_id > 0) {
-	$groups = $group_id;
-	$agent_names = agents_get_group_agents ($group_id, $filter, "upper", false, $recursion);
+	$groups = array($group_id);
 	if ($recursion) {
 		$groups = groups_get_id_recursive($group_id, true);
 	}
 }
 else {
 	$groups = array();
-	
-	$user_group = users_get_groups($config["id_user"], "PM");
-	$groups = array_keys($user_group);
-	$user_group = users_get_groups($config["id_user"], "AR");
-	$groups = array_unique(array_merge($groups, array_keys($user_group)));
-	$agent_names = agents_get_group_agents($groups, $filter, "upper");
+	$user_groups = users_get_groups($config["id_user"], "AR");
+	$groups = array_keys($user_groups);
 }
 
 $total_agents = 0;
 $agents = false;
 
-if (! empty ($agent_names)) {
-		$total_agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
-			'order' => 'nombre ASC',
-			'disabled' => 0,
-			'id_grupo' => $groups),
-			array ('COUNT(*) as total'));
-		$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
-		
-		$agents = agents_get_agents(array ('id_agente' => array_keys ($agent_names),
-			'order' => 'nombre ASC',
-			'id_grupo' => $groups,
-		/*	'offset' => (int) get_parameter ('offset'),
-			'limit' => (int) $config['block_size'] */ ),
-			array ('id_agente',
-				'id_grupo',
-				'id_os',
-				'ultimo_contacto',
-				'intervalo',
-				'comentarios description'),
-			'AR',
-			$order);
-}
+$total_agents = agents_get_agents(array (
+	'order' => 'nombre ASC',
+	'disabled' => 0,
+	'id_grupo' => $groups,
+	'search' => $search_sql,
+	'status' => $status),
+	array ('COUNT(*) as total'));
+$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+
+$agents = agents_get_agents(array (
+	'order' => 'nombre ASC',
+	'id_grupo' => $groups,
+	'disabled' => 0,
+	'status' => $status,
+	'search' => $search_sql,
+	'offset' => (int) get_parameter ('offset'),
+	'limit' => (int) $config['block_size']  ),
+
+	array ('id_agente',
+		'id_grupo',
+		'id_os',
+		'ultimo_contacto',
+		'intervalo',
+		'comentarios description'),
+	'AR',
+	$order);
 
 if (empty ($agents)) {
 	$agents = array ();
-}
-
-$result_agents = array();
-// This will be use above to simulate pagination
-$i = 0;
-$limit_agents = $offset + $config['block_size'];
-// Filter by agents status
-if ($status != -1){
-	$result_agents_tmp = array();
-	foreach ($agents as $agent_filter){
-		$filter_by_status = false;
-		$agent_stat = reporting_get_agent_module_info ($agent_filter["id_agente"]);	
-		switch ($status){
-				// Normal
-				case 0: 
-						if ($agent_stat['status'] != STATUS_AGENT_OK)
-							$filter_by_status = true;
-						break;
-				// Warning
-				case 1:
-						if ($agent_stat['status'] != STATUS_AGENT_WARNING)
-							$filter_by_status = true;
-						break;
-				// Critical
-				case 2: 
-						if ($agent_stat['status'] != STATUS_AGENT_CRITICAL)
-							$filter_by_status = true;
-						break;
-				// Unknown
-				case 3:
-						if ($agent_stat['status'] != STATUS_AGENT_DOWN)
-							$filter_by_status = true;			
-						break;
-				// Not normal
-				case 4:
-						if ($agent_stat['status'] == STATUS_AGENT_OK)
-							$filter_by_status = true;				
-						break;
-				// Not init
-				case 5:	
-						if ($agent_stat['status'] != STATUS_AGENT_NO_DATA)
-							$filter_by_status = true;
-						break;
-		}
-		
-		// If status is different from filter, don't show agent
-		if (! $filter_by_status)
-			$result_agents_tmp[] = $agent_filter;
-	}
-
-	// Recalculate total agents
-	if (! empty ($result_agents_tmp))
-		$total_agents = count($result_agents_tmp);	
-	else
-		$total_agents = 0;
-	
-	// Simulate pagination
-	foreach ($result_agents_tmp as $agent_filter_off){
-		if ($i >= $offset and $i < $limit_agents)
-			$result_agents[] = $agent_filter_off;
-		$i++;
-	}	
-	
-}
-else {
-	// Simulate pagination
-	foreach ($agents as $agent_filter){
-		if ($i >= $offset and $i < $limit_agents)
-			$result_agents[] = $agent_filter;
-		$i++;
-	}
 }
 
 // Prepare pagination
@@ -457,7 +385,7 @@ $table->data = array ();
 
 $rowPair = true;
 $iterator = 0;
-foreach ($result_agents as $agent) {
+foreach ($agents as $agent) {
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else

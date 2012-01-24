@@ -1,3 +1,8 @@
+2012-01-24  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* operation/agentes/estado_agente.php: Simplify code estado_agente
+	and fix bug in search filter.
+
 2012-01-24  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_agents.php, include/functions_alerts.php,

@@ -155,6 +155,13 @@ sub exec_prediction_module ($$$$) {
 		return;
 	}
 
+	# Netflow modules
+	if ($agent_module->{'prediction_module'} == 4) {
+		logger ($pa_config, "Executing netflow module " . $agent_module->{'nombre'}, 10);
+		enterprise_hook ('exec_netflow_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		return;
+	}
+
     # Get a full hash for target agent_module record reference ($target_module)
     my $target_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $agent_module->{'prediction_module'});
 	return unless defined $target_module;

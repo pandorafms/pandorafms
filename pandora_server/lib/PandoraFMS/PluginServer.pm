@@ -170,7 +170,10 @@ sub data_consumer ($$) {
 	# Execute command
 	$command = $pa_config->{'plugin_exec'} . ' ' . $timeout . ' ' . quotemeta ($command);
 
-	my $module_data = `$command`;
+	my $module_data;
+	eval {
+		$module_data = `$command`;
+	};
 	my $ReturnCode = ($? >> 8) & 0xff;
 
 

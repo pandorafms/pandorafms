@@ -38,6 +38,7 @@ our @EXPORT = qw(
 	pandora_load_config
 	pandora_start_log
 	pandora_get_sharedconfig
+	pandora_get_tconfig_token
 	);
 
 # version: Defines actual version of Pandora Server for this module only
@@ -128,36 +129,25 @@ sub pandora_init {
 ##########################################################################
 # Read some config tokens from database set by the console
 ##########################################################################
-
 sub pandora_get_sharedconfig ($$) {
-	my $pa_config = $_[0];
-	my $dbh = $_[1];
-
-	my $temp;
+	my ($pa_config, $dbh) = @_;
 
 	# Agentaccess option
-
-	$temp = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'agentaccess'");
-	if (defined($temp)) {
-		$pa_config->{"agentaccess"} = $temp;
-	}
+	$pa_config->{"agentaccess"} = pandora_get_tconfig_token ($dbh, 'agentaccess', 1);
 
 	# Realtimestats 0 disabled, 1 enabled.
 	# Master servers will generate all the information (global tactical stats).
 	# and each server will generate it's own server stats (lag, etc).
-
-	$temp = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'realtimestats'");
-	if (defined($temp)) {
-		$pa_config->{"realtimestats"} = $temp;
-	}
+	$pa_config->{"realtimestats"} = pandora_get_tconfig_token ($dbh, 'realtimestats', 0);
 
 	# Stats_interval option
+	$pa_config->{"stats_interval"} = pandora_get_tconfig_token ($dbh, 'stats_interval', 300);
 
-	$temp = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'stats_interval'");
-	if (defined($temp)) {
-		$pa_config->{"stats_interval"} = $temp;
-	}
-
+	# Netflow configuration options
+	$pa_config->{"activate_netflow"} = pandora_get_tconfig_token ($dbh, 'activate_netflow', 0);
+	$pa_config->{"netflow_path"} = pandora_get_tconfig_token ($dbh, 'netflow_path', '/var/spool/pandora/data_in/netflow');
+	$pa_config->{"netflow_interval"} = pandora_get_tconfig_token ($dbh, 'netflow_interval', 300);
+	$pa_config->{"netflow_daemon"} = pandora_get_tconfig_token ($dbh, 'netflow_daemon', '/usr/bin/nfcapd');
 }
 
 ##########################################################################
@@ -296,12 +286,6 @@ sub pandora_load_config {
 	$pa_config->{"agentaccess"} = 1; 
 	# -------------------------------------------------------------------------
 
-	# Netflow server (4.1)
-	$pa_config->{'netflowserver'} = 0;
-	$pa_config->{'netflow_daemon'} = '/usr/bin/nfcapd';
-	$pa_config->{'netflow_interval'} = 300;
-	$pa_config->{'netflow_basedir'} = '/var/spool/pandora/data_in/netflow';
-	
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -620,18 +604,6 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^block_size\s+([0-9]*)/i) {
 			$pa_config->{'block_size'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^netflowserver\s+([0-9]*)/i) {
-			$pa_config->{'netflowserver'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^netflow_daemon\s+(.*)/i) {
-			$pa_config->{'netflow_daemon'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^netflow_interval\s+([0-9]*)/i) {
-			$pa_config->{'netflow_interval'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^netflow_basedir\s+(.*)/i) {
-			$pa_config->{'netflow_basedir'}= clean_blank($1);
-		}
 	} # end of loop for parameter #
 
 	if (($pa_config->{"verbosity"} > 4) && ($pa_config->{"quiet"} == 0)){
@@ -666,12 +638,29 @@ sub pandora_load_config {
 }
 
 
+##########################################################################
+# Open the log file and start logging.
+##########################################################################
 sub pandora_start_log ($){
 	my $pa_config = shift;
 
 	# Dump all errors to errorlog
 	open (STDERR, ">> " . $pa_config->{'errorlogfile'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
 	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . $pa_config->{'servermode'} . " Starting Pandora FMS Server. Error logging activated.\n";
+}
+
+##########################################################################
+# Read the given token from the tconfig table.
+##########################################################################
+sub pandora_get_tconfig_token ($$$) {
+	my ($dbh, $token, $default_value) = @_;
+	
+	my $token_value = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", $token);
+	if (defined ($token_value)) {
+		return safe_output ($token_value);
+	}
+	
+	return $default_value;
 }
 
 # End of function declaration

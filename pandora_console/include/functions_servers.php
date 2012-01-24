@@ -78,18 +78,20 @@ function servers_get_performance () {
 
 	if ($config["realtimestats"] == 1){
 		$data["total_remote_modules"] =  db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
-			FROM tagente_modulo, tagente_estado
+			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND tagente_modulo.id_modulo != 1 AND disabled = 0 AND utimestamp > 0");
+				AND tagente_modulo.id_modulo != 1 AND tagente_modulo.disabled = 0 AND utimestamp > 0
+				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente");
 	}
 	else {
 		$data["total_remote_modules"] = db_get_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type != 0");
 	}
 
 	$data["avg_interval_remote_modules"] = db_get_sql ("SELECT AVG(module_interval)
-		FROM tagente_modulo, tagente_estado
+		FROM tagente_modulo, tagente_estado, tagente
 		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0");
+			AND tagente_modulo.disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0
+			AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente");
 
 	if ($data["avg_interval_remote_modules"] == 0)
 		$data["remote_modules_rate"] = 0;
@@ -99,9 +101,10 @@ function servers_get_performance () {
 	// For local modules (ignoring local modules with custom invervals for simplicity).
 	if ($config["realtimestats"] == 1){
 		$data["total_local_modules"] =  db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
-			FROM tagente_modulo, tagente_estado
+			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND id_modulo = 1 AND disabled = 0 AND utimestamp > 0");
+				AND id_modulo = 1 AND tagente_modulo.disabled = 0 AND utimestamp > 0
+				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente");
 	}
 	else {
 		$data["total_local_modules"] = db_get_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type = 0");
@@ -262,8 +265,10 @@ function servers_get_info ($id_server = -1) {
 				if ($server["server_type"] != 0) {
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
+								AND tagente.disabled = 0
+								AND tagente.id_agente = tagente_estado.id_agente
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 								AND current_interval > 0
@@ -272,8 +277,10 @@ function servers_get_info ($id_server = -1) {
 								AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
 							break;
 						case "postgresql":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
+								AND tagente.disabled = 0
+								AND tagente.id_agente = tagente_estado.id_agente
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 								AND current_interval > 0
@@ -282,8 +289,10 @@ function servers_get_info ($id_server = -1) {
 								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > current_interval");
 							break;
 						case "oracle":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
+								AND tagente.disabled = 0
+								AND tagente.id_agente = tagente_estado.id_agente
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 								AND current_interval > 0
@@ -297,8 +306,10 @@ function servers_get_info ($id_server = -1) {
 					// Local/Dataserver server LAG calculation:
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
+								AND tagente.disabled = 0
+								AND tagente.id_agente = tagente_estado.id_agente
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_tipo_modulo < 5
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -308,8 +319,10 @@ function servers_get_info ($id_server = -1) {
 								AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
 							break;
 						case "postgresql":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
+								AND tagente.disabled = 0
+								AND tagente.id_agente = tagente_estado.id_agente
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_tipo_modulo < 5 
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
@@ -319,8 +332,10 @@ function servers_get_info ($id_server = -1) {
 								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > (current_interval * 1.1)");
 							break;
 						case "oracle":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
+								AND tagente.disabled = 0
+								AND tagente.id_agente = tagente_estado.id_agente
 								AND tagente_modulo.disabled = 0
 								AND tagente_modulo.id_tipo_modulo < 5 
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo

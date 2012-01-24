@@ -1,3 +1,9 @@
+2012-01-24  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* include/functions_servers.php: Merged from trunk. Exclude
+	  modules which belong to disabled agent from server performance
+	  and lag calculation.
+
 2012-01-19  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* extensions/module_groups.php: Fixed bug: sql error in

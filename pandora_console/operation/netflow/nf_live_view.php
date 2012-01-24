@@ -67,6 +67,10 @@ ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.p
 
 // Save user defined filter
 if  ($save != '') {
+
+	// Save filter args
+	$filter['filter_args'] = netflow_get_filter_arguments ($filter);
+
 	$filter_id = db_process_sql_insert ('tnetflow_filter', $filter);
 	if ($filter_id === false) {
 		$filter_id = 0;
@@ -81,6 +85,9 @@ else if  ($update != '' && $filter_id > 0) {
 	$filter_copy = $filter;
 	unset ($filter_copy['id_name']);
 	unset ($filter_copy['id_group']);
+	
+	// Save filter args
+	$filter_copy['filter_args'] = netflow_get_filter_arguments ($filter_copy);
 
 	$result = db_process_sql_update ('tnetflow_filter', $filter_copy, array ('id_sg' => $filter_id));
 	ui_print_result_message ($result, __('Filter updated successfully'), __('Error updating filter'));

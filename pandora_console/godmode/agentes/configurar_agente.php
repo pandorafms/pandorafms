@@ -706,7 +706,7 @@ if ($update_module || $create_module) {
 	$id_tag = (array) get_parameter('id_tag_selected');
 	$serialize_ops = (string) get_parameter('serialize_ops');
 	
-	if($prediction_module < 3) {
+	if($prediction_module != 3) {
 		unset($serialize_ops);
 		enterprise_hook('modules_delete_synthetic_operations', array($id_agent_module));
 	}

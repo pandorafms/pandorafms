@@ -35,17 +35,6 @@ ui_print_page_header (__('Netflow Manager'), "images/networkmap/so_cisco_new.png
 
 $update = (bool) get_parameter ("update");
 
-if ($update) {
-	
-	$config['netflow_path'] = (string)get_parameter('netflow_path');
-	$config['netflow_interval'] = (int)get_parameter('netflow_interval');
-	$config['netflow_daemon'] = (string)get_parameter('netflow_daemon');
-	
-	db_process_sql_update ('tconfig', array ('value' => $config['netflow_path']), array ('token' => 'netflow_path'));
-	db_process_sql_update ('tconfig', array ('value' => $config['netflow_interval']), array ('token' => 'netflow_interval'));
-	db_process_sql_update ('tconfig', array ('value' => $config['netflow_daemon']), array ('token' => 'netflow_daemon'));
-}
-
 $table->width = '70%';
 $table->border = 0;
 $table->cellspacing = 3;
@@ -68,7 +57,7 @@ html_print_table ($table);
 
 // Update button
 echo '<div class="action-buttons" style="width:70%;">';
-	html_print_input_hidden ('update', 1);
+	html_print_input_hidden ('update_config', 1);
 	html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</div></form>';
 	

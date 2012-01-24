@@ -185,6 +185,9 @@ function config_update_config () {
 	config_update_value ('timezone', (string) get_parameter ('timezone', $config['timezone']));
 	config_update_value ('activate_gis', (bool) get_parameter ('activate_gis', $config['activate_gis']));
 	config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow', $config['activate_netflow']));
+	config_update_value ('netflow_path', get_parameter ('netflow_path', $config['netflow_path']));
+	config_update_value ('netflow_interval', get_parameter ('netflow_interval', $config['netflow_interval']));
+	config_update_value ('netflow_daemon', get_parameter ('netflow_daemon', $config['netflow_daemon']));
 	config_update_value ('stats_interval', get_parameter ('stats_interval', $config['stats_interval']));
 	config_update_value ('realtimestats', get_parameter ('realtimestats', $config['realtimestats']));
 	config_update_value ('event_purge', get_parameter ('event_purge', $config['event_purge']));
@@ -480,6 +483,18 @@ function config_process_config () {
 	
 	if (!isset ($config['activate_netflow'])) {
 		config_update_value ( 'activate_netflow', 0);
+	}
+
+	if (!isset ($config['netflow_path'])) {
+		config_update_value ( 'netflow_path', '/var/spool/pandora/data_in/netflow');
+	}
+
+	if (!isset ($config['netflow_interval'])) {
+		config_update_value ( 'netflow_interval', 300);
+	}
+
+	if (!isset ($config['netflow_daemon'])) {
+		config_update_value ( 'netflow_daemon', '/usr/bin/nfcapd');
 	}
 
 	if (!isset ($config['auth'])) {

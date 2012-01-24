@@ -54,6 +54,9 @@ sub pandora_shutdown () {
 		$server->stop ();
 	}
 
+	# Stop the netflow daemon
+	pandora_stop_netflow_daemon ();
+	
 	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 1);
 	db_disconnect ($DBH);
 	if ($Config{'PID'} ne "") {
@@ -92,6 +95,9 @@ sub pandora_startup () {
 
 	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
 
+	# Start the netflow daemon if necessary
+	pandora_start_netflow_daemon ();
+	
 	# Remove disabled servers
 	@Servers = grep { defined ($_) } @Servers;
 
@@ -170,6 +176,62 @@ sub pandora_crash () {
 	print_message (\%Config, " Error description:\n", 0);
 	print_message (\%Config, $full_error, 0);
 
+}
+
+########################################################################################
+# Start the netflow daemon if necessary.
+########################################################################################
+sub pandora_start_netflow_daemon () {
+	my $pid_file = '/var/run/pandora_nfcapd.pid';
+	
+	# Check if netflow is enabled
+	if ($Config{'activate_netflow'} != 1) {
+		logger (\%Config, "Netflow daemon disabled.", 1);
+		print_message (\%Config, "Netflow daemon disabled.", 1);
+		return;
+	}
+	
+	# Stop nfcapd if it's already running
+	my $pid = pandora_stop_netflow_daemon ();
+	if (pandora_stop_netflow_daemon () != 0) {
+		logger (\%Config, "nfcapd (pid $pid) is already running, attempting to kill it...", 1);
+		print_message (\%Config, "nfcapd (pid $pid) is already running, attempting to kill it...", 1);
+	}
+
+	# Start nfcapd	
+	my $command = $Config{'netflow_daemon'} . ' -D -T all -w -t ' . $Config{'netflow_interval'} . ' -P ' . $pid_file . ' -l ' . $Config{'netflow_path'};
+	if (system ("$command >/dev/null 2>&1") != 0) {
+		logger (\%Config, " [E] Could not start nfcapd: $command", 1);
+		print_message (\%Config, " [E] Could not start nfcapd: $command", 1);
+		return;
+	}
+	
+	logger (\%Config, "Netflow daemon started.", 1);
+	print_message (\%Config, "Netflow daemon started.", 1);
+}
+
+########################################################################################
+# Stop the netflow daemon if it's running.
+########################################################################################
+sub pandora_stop_netflow_daemon () {
+	
+	my $pid_file = '/var/run/pandora_nfcapd.pid';
+	
+	# Open the pid file
+	if ( ! (-e $pid_file && open (PIDFILE, $pid_file))) {
+		return 0;
+	}
+	
+	my $pid = <PIDFILE>;
+	close PIDFILE;
+
+	# Check if nfcapd is running
+	if (kill (0, $pid) > 0) {
+		kill (9, $pid);
+		return $pid;
+	}
+	
+	return 0;
 }
 
 $SIG{'TERM'} = 'pandora_shutdown';

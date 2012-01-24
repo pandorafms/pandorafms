@@ -1,3 +1,13 @@
+2012-01-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/PredictionServer.pm,
+	  lib/PandoraFMS/Core.pm,
+	  bin/pandora_server: Added support for enterprise netflow modules.
+
+	* lib/PandoraFMS/PluginServer.pm: Run plugins inside eval to avoid
+	  server crashes.
+
 2012-01-23  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_manage.pl: Fixed mismatch arguments call of

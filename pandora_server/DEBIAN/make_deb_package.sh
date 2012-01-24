@@ -76,6 +76,8 @@ then
 	chmod 770 temp_package/var/spool/pandora/data_in/md5
 	mkdir -p temp_package/var/spool/pandora/data_in/collections
 	chmod 770 temp_package/var/spool/pandora/data_in/collections
+	mkdir -p temp_package/var/spool/pandora/data_in/netflow
+	chmod 770 temp_package/var/spool/pandora/data_in/netflow
 	mkdir -p temp_package/var/log/pandora/
 	mkdir -p temp_package/usr/share/pandora_server/conf/
 	mkdir -p temp_package/usr/lib/perl5/

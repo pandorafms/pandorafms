@@ -1,5 +1,13 @@
 2012-01-24  Ramon Novoa  <rnovoa@artica.es>
 
+	* DEBIAN/make_deb_package.sh,
+	  pandora_server_installer,
+	  pandora_server.spec: Auto-create the netflow storage dir.
+
+	* bin/pandora_server: Aesthetic changes.
+
+2012-01-24  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/PredictionServer.pm,
 	  lib/PandoraFMS/Core.pm,

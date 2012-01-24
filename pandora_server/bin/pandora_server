@@ -186,8 +186,8 @@ sub pandora_start_netflow_daemon () {
 	
 	# Check if netflow is enabled
 	if ($Config{'activate_netflow'} != 1) {
-		logger (\%Config, "Netflow daemon disabled.", 1);
-		print_message (\%Config, "Netflow daemon disabled.", 1);
+		logger (\%Config, "[*] Netflow daemon disabled.", 1);
+		print_message (\%Config, "[*] Netflow daemon disabled.", 1);
 		return;
 	}
 	
@@ -206,8 +206,8 @@ sub pandora_start_netflow_daemon () {
 		return;
 	}
 	
-	logger (\%Config, "Netflow daemon started.", 1);
-	print_message (\%Config, "Netflow daemon started.", 1);
+	logger (\%Config, "[*] Netflow daemon started.", 1);
+	print_message (\%Config, "[*] Netflow daemon started.", 1);
 }
 
 ########################################################################################

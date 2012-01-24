@@ -623,9 +623,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	// Store printed group to not print it again
 	$printed_groups[$id_group] = 1;
-		
-	if ($id_group < 1) 
-		return; // Skip group 0
+	
+	if ($id_group < 0) 
+		return; 
 
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);
@@ -750,4 +750,50 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		groups_get_group_row($child, $group_all, $group_all[$child], $printed_groups);
 	}
 }
+
+/**
+ * Gets a group by id_group
+ *
+ * @param int $id_group The group id of the row
+ *
+ * @return mixed Return the group row or false
+ * 
+ */
+function groups_get_group_by_id($id_group) {
+	$result_group = db_get_row('tgrupo', 'id_grupo', $id_group);
+
+	return $result_group;
+}
+
+/**
+ * Create new group
+ *
+ * @param string Group name
+ * @param array Rest of the fields of the group
+ *
+ * @return mixed Return group_id or false if something goes wrong
+ * 
+ */
+function groups_create_group($group_name, $rest_values){
+	
+	if ($group_name == ""){
+		return false;
+	}
+	
+	$array_tmp = array('nombre' => $group_name);
+	
+	$values = array_merge($rest_values, $array_tmp);
+
+	$check = db_get_value('nombre', 'tgrupo', 'nombre', $group_name);
+	
+	if (!$check){
+		$result = db_process_sql_insert('tgrupo', $values);
+	} else {
+		$result = false;
+	}
+	
+	return $result;
+}
+
+
 ?>

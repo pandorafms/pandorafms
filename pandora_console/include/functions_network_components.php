@@ -21,9 +21,9 @@
 /**
  * Include modules functions
  */
-require_once ('include/functions_modules.php');
-require_once ('include/functions_agents.php');
-require_once ('include/functions_users.php');
+include_once ('include/functions_modules.php');
+include_once ('include/functions_agents.php');
+include_once ('include/functions_users.php');
 
 /**
  * Get a list of network components.

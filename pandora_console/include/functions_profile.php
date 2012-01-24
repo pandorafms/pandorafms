@@ -71,7 +71,14 @@ function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, 
 
 	if (empty ($id_profile) || $id_group < 0)
 	return false;
-
+	
+	// Checks if the user exists
+	$result_user = users_get_user_by_id($id_user);
+	
+	if (!$result_user){
+		return false;
+	}	
+	
 	if (isset ($config["id_user"])) {
 		//Usually this is set unless we call it while logging in (user known by auth scheme but not by pandora)
 		$assign = $config["id_user"];

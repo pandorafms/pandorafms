@@ -39,6 +39,18 @@ function users_get_info ($order = "fullname", $info = "fullname") {
 }
 
 /**
+ * Enable/Disable a user
+ *
+ * @param int user id
+ * @param int new disabled value (0 when enable, 1 when disable)
+ *
+ * @return int sucess return
+ */
+function users_disable ($user_id, $new_disabled_value) {
+	return db_process_sql_update('tusuario', array('disabled' => $new_disabled_value), array('id_user' => $user_id));
+}
+
+/**
  * Get all the Model groups a user has reading privileges.
  *
  * @param string User id
@@ -195,6 +207,19 @@ function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 
 	$id_group = (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
 	return (bool) check_acl ($id_user, $id_group, $mode);
+}
+
+/**
+ * Return user by id (user name)
+ *
+ * @param string User id.
+ *
+ * @return mixed User row or false if something goes wrong
+ */
+function users_get_user_by_id ($id_user){
+	$result_user = db_get_row('tusuario', 'id_user', $id_user);
+
+	return $result_user;	
 }
 
 ?>

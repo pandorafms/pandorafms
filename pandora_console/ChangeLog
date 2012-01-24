@@ -1,5 +1,13 @@
 2012-01-24  Hirofumi Kosaka  <kosaka@rworks.jp>
 
+	* include/functions_agents.php, include/functions_alerts.php,
+	include/functions_profile.php, include/functions_users.php,
+	include/functions_network_components.php,
+	include/functions_groups.php: Merged from trunk. Required
+	update for the previous changes on include/functions_api.php.
+
+2012-01-24  Hirofumi Kosaka  <kosaka@rworks.jp>
+
 	* include/functions_api.php: Merged from trunk. Added new
 	functions to API set_create_module_template,
 	set_add_user_profile, set_update_template, set_update_user,

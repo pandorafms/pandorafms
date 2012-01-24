@@ -1,5 +1,11 @@
 2012-01-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/incidents/incident.php
+	 operation/incidents/incident_detail.php: Modified agent text search
+	 due to usability issues.
+
+2012-01-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	 include/graphs/functions_pchart.php: Added units in Y axis and 
 	 fixed min, max and avg values. Also fixed colors fo min, max and

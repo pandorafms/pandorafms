@@ -88,7 +88,7 @@ elseif ($action == "update") {
 	$estado = get_parameter ("estado_form", 0);
 	$grupo = get_parameter ("grupo_form", 1);
 	$usuario = get_parameter ("usuario_form", $config["id_user"]);
-	$id_agent = get_parameter ("incident_agents");
+	$id_agent = get_parameter ("id_agent");
 	
 	$sql = sprintf ("UPDATE tincidencia SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s', id_agent = %d WHERE id_incidencia = %d", 
 					$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_agent, $id_inc);
@@ -121,11 +121,11 @@ elseif ($action == "insert") {
 	$prioridad = get_parameter ("prioridad_form");
 	$id_creator = $config['id_user'];
 	$estado = get_parameter ("estado_form");
-	$id_agent = get_parameter ("incident_agents");
+	$id_agent = get_parameter ("id_agent"); 
 	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent) VALUES 
 					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d)", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
 	$id_inc = db_process_sql ($sql, "insert_id");
-
+html_debug_print($sql);
 	if ($id_inc === false) {
 		echo '<h3 class="error">'.__('Error creating incident').'</h3>';		
 	}

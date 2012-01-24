@@ -58,6 +58,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/conf
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/collections
+mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/netflow
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
@@ -174,6 +175,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /var/spool/pandora/data_in
 /var/spool/pandora/data_in/md5
 /var/spool/pandora/data_in/collections
+/var/spool/pandora/data_in/netflow
 /var/spool/pandora/data_in/conf
 
 %defattr(750,pandora,root)

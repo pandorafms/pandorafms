@@ -1,3 +1,13 @@
+2012-01-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 include/graphs/functions_pchart.php: Added units in Y axis and 
+	 fixed min, max and avg values. Also fixed colors fo min, max and
+	 avg series.
+	 
+	Pending task: #3153343
+
+
 2012-01-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_config.php,

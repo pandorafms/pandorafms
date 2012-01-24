@@ -93,18 +93,22 @@ if ($update) {
 	if ($name == '') {
                 ui_print_error_message (__('Not updated. Blank name'));
         } else {
-		$result = db_process_sql_update ('tnetflow_filter',
-			array ('id_sg' => $id,
-				'id_name' => $name,
-				'id_group' => $assign_group,
-				'aggregate' => $aggregate,
-				'ip_dst' => $ip_dst,
-				'ip_src' => $ip_src,
-				'dst_port' => $dst_port,
-				'src_port' => $src_port,
-				'advanced_filter' => $advanced_filter,
-				'output' => $output),
-			array ('id_sg' => $id));
+		$values = array ('id_sg' => $id,
+			'id_name' => $name,
+			'id_group' => $assign_group,
+			'aggregate' => $aggregate,
+			'ip_dst' => $ip_dst,
+			'ip_src' => $ip_src,
+			'dst_port' => $dst_port,
+			'src_port' => $src_port,
+			'advanced_filter' => $advanced_filter,
+			'output' => $output
+		);
+
+		// Save filter args
+		$values['filter_args'] = netflow_get_filter_arguments ($values);
+
+		$result = db_process_sql_update ('tnetflow_filter', $values, array ('id_sg' => $id));
 			
 		ui_print_result_message ($result,
 			__('Successfully updated'),
@@ -134,6 +138,9 @@ if ($create){
 			'advanced_filter'=>$advanced_filter,
 			'output'=>$output
 	);
+	
+	// Save filter args
+	$values['filter_args'] = netflow_get_filter_arguments ($values);
 
 	$id = db_process_sql_insert('tnetflow_filter', $values);
 	if ($id === false) {

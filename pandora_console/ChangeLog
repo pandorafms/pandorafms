@@ -1,3 +1,25 @@
+2012-01-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_config.php,
+	  include/functions_netflow.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  operation/netflow/nf_live_view.php,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql,
+	  godmode/agentes/module_manager_editor_prediction.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/menu.php,
+	  godmode/netflow/nf_edit_form.php: Added support for enterprise
+	  netflow modules.
+
+	* godmode/netflow/nf_manage.php: Moved to
+	  godmode/setup/setup_netflow.php.
+
+	* godmode/netflow/nf_option_form.php: Removed from repository. Not used.
+
 2010-01-24 Javier Lanz <javier.lanz@artica.es>
 	* godmode/massive/massive_delete_modules.php: Fixed a small entities
 	bug. Added io_safe_output

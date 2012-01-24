@@ -1491,6 +1491,7 @@ ip_src CLOB NOT NULL,
 dst_port CLOB NOT NULL,
 src_port CLOB NOT NULL,
 advanced_filter CLOB NOT NULL,
+filter_args CLOB NOT NULL,
 aggregate VARCHAR2(60),
 output VARCHAR2(60)
 );

@@ -448,12 +448,27 @@ function netflow_get_command ($filter) {
 		$command .= ' -R '.$config['netflow_path'];
 	}
 
+	// Filter options
+	$command .= netflow_get_filter_arguments ($filter);
+
+	return $command;
+}
+
+/**
+ * Returns the nfdump command line arguments that match the given filter.
+ *
+ * @param array filter Netflow filter.
+ *
+ * @return Command line argument string.
+ *
+ */
+function netflow_get_filter_arguments ($filter) {
+
 	// Advanced filter
 	$filter_args = '';
 	if ($filter['advanced_filter'] != '') {
 		$filter_args = preg_replace('/["\r\n]/','', io_safe_output ($filter['advanced_filter']));
-		$command .= ' "(' . $filter_args . ')"';
-		return $command;
+		return ' "(' . $filter_args . ')"';
 	}
 
 	// Normal filter
@@ -524,11 +539,10 @@ function netflow_get_command ($filter) {
 		$filter_args .=  ')';
 	}
 	if ($filter_args != '') {
-		$filter_args .=  '"';
-		$command .= $filter_args;
+		$filter_args .= '"';
 	}
 
-	return $command;
+	return $filter_args;
 }
 
 

@@ -314,7 +314,11 @@ foreach ($agents_incidents as $agent_incident){
 
 echo '</td></tr><tr><td class="datos"><b>'.__('Agent').'</b></td><td class="datos">';
 
-html_print_select ($result_agent_incidents, "incident_agents", $id_agent, '', __('None'), 0, false, false, false, 'w135', false);
+html_print_input_hidden('id_agent', $id_agent);
+html_print_input_text_extended ('agent', agents_get_name ($id_agent), 'text-agent', '', 30, 100, false, '', array('style' => 'background: url(images/lightning.png) no-repeat right;'));
+ui_print_help_tip(__("Type at least two characters to search"), false);
+
+//html_print_select ($result_agent_incidents, "incident_agents", $id_agent, '', __('None'), 0, false, false, false, 'w135', false);
 
 echo '</td></tr><tr><td class="datos2" colspan="4">';
 
@@ -460,3 +464,9 @@ if (isset ($id_inc)) {
 	}
 }
 ?>
+
+<script>
+$(document).ready (function () {
+	agent_autocomplete('#text-agent', '#hidden-server_name', '#hidden-id_agent');
+});
+</script>

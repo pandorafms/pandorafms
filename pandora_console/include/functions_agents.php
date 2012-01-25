@@ -900,16 +900,20 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	}
 
 	if (is_array($id_group)) {
-		$search_sql = sprintf ('id_grupo IN (%s)', implode (",", $id_group));
+		$all_groups = false;
+		$search_group_sql = sprintf ('id_grupo IN (%s)', implode (",", $id_group));
 	}
 	else if ($id_group == 0) { //All group
-		$search_sql = '1 = 1';
+		$all_groups = true;
+		$search_group_sql = '1 = 1';
 	}
 	else {
-		$search_sql = sprintf ('id_grupo = %d', $id_group);
+		$all_groups = false;
+		$search_group_sql = sprintf ('id_grupo = %d', $id_group);
 	}
 
-
+	$search_sql = '1 = 1';
+	
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
 	}
@@ -965,7 +969,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	
 	enterprise_include_once ('include/functions_policies.php');
 	
-	if ($extra_access){
+	if ($extra_access && $all_groups){ //if you have all group, search extra policies.
 		$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
 		if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 			$extra_sql = '';
@@ -980,13 +984,13 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE %s (%s) ORDER BY nombre", $extra_sql, $search_sql);
+			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE (%s %s) AND (%s) ORDER BY nombre", $extra_sql, $search_group_sql, $search_sql);
 			break;
 		case "oracle":
-			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE %s (%s) ORDER BY dbms_lob.substr(nombre,4000,1)", $extra_sql, $search_sql);
+			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE (%s %s) AND (%s) ORDER BY dbms_lob.substr(nombre,4000,1)", $extra_sql, $search_group_sql, $search_sql);
 			break;
 	}
-
+	
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false)

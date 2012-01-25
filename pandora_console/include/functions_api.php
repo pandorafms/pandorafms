@@ -759,11 +759,11 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * 
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
- * @param array $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy> in this order
+ * @param array $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=get&op2=all_agents&return_type=csv&other=1|2|warning|j|2&other_mode=url_encode_separator_|
+ *  api.php?op=get&op2=all_agents&return_type=csv&other=1|2|warning|j|2|~&other_mode=url_encode_separator_|
  * 
  * @param $thrash3 Don't use.
  */
@@ -799,6 +799,11 @@ function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 		}
 	}
 	
+	if (!isset($other['data'][5]))
+		$separator = ';'; //by default
+	else
+		$separator = $other['data'][5];
+		
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
@@ -868,7 +873,7 @@ function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	if (count($result_agents) > 0 and $result_agents !== false){
 		$data = array('type' => 'array', 'data' => $result_agents);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, $separator);	
 	}
 	else {
 		returnError('error_all_agents', 'No agents retrieved.');			

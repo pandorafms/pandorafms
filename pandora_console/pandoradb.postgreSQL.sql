@@ -269,7 +269,8 @@ CREATE TABLE "talert_templates" (
 	"field2_recovery" text NOT NULL default '',
 	"field3_recovery" text NOT NULL,
 	"priority" INTEGER NOT NULL default 0,
-	"id_group" INTEGER NOT NULL default 0
+	"id_group" INTEGER NOT NULL default 0,
+	"special_day" SMALLINT default 0
 );
 CREATE INDEX "talert_templates_id_alert_action_idx" ON "talert_templates"("id_alert_action");
 
@@ -340,6 +341,14 @@ CREATE TABLE "talert_compound_actions" (
 	"id_alert_action" INTEGER NOT NULL REFERENCES talert_actions("id") ON DELETE CASCADE ON UPDATE CASCADE,
 	"fires_min"  INTEGER default 0,
 	"fires_max"  INTEGER default 0
+);
+
+CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+CREATE TABLE "talert_special_days" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"date" DATE NOT NULL default '0000-00-00',
+	"same_day" type_talert_special_days_same_day NOT NULL default 'sunday',
+	"description" TEXT
 );
 
 -- Priority : 0 - Maintance (grey)

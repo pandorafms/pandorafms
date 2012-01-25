@@ -56,3 +56,21 @@ ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER(10) NULL DEFAULT 0;
 -- -----------------------------------------------------
 
 ALTER TABLE "tagente" ADD COLUMN "url_address" text NULL default '';
+
+-- -----------------------------------------------------
+-- Table `talert_special_days`
+-- -----------------------------------------------------
+
+CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+CREATE TABLE "talert_special_days" (
+        "id" SERIAL NOT NULL PRIMARY KEY,
+        "date" DATE NOT NULL default '0000-00-00',
+        "same_day" type_talert_special_days_same_day NOT NULL default 'sunday',
+        "description" TEXT
+);
+
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
+
+ALTER TABLE "talert_templates" ADD COLUMN "special_day" SMALLINT default 0;

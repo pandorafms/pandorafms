@@ -281,6 +281,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field3_recovery` text NOT NULL,
   `priority` tinyint(4) default '0',
   `id_group` mediumint(8) unsigned NULL default 0,
+  `special_day` tinyint(1) default 0,
   PRIMARY KEY  (`id`),
   KEY `idx_template_action` (`id_alert_action`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -379,6 +380,14 @@ CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `talert_special_days` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL DEFAULT '0000-00-00',
+  `same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
+  `description` text,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Priority : 0 - Maintance (grey)

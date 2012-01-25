@@ -1,3 +1,9 @@
+2012-01-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_action_threshold.php,
+	  include/help/es/help_action_threshold.php: Rewrote the
+	  action_threshold help page and added an example.
+
 2012-01-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: Added csv separator in function 
@@ -57,7 +63,6 @@
 	 avg series.
 	 
 	Pending task: #3153343
-
 
 2012-01-24  Ramon Novoa  <rnovoa@artica.es>
 

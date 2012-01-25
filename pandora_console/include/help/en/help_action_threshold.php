@@ -3,11 +3,13 @@
  * @package Include/help/en
  */
 ?>
-<h1>Time Threshold</h1>
+<h1>Action Threshold</h1>
 
 <p>
-Time Threshold
-</p>
-<p>
-Defines the time interval in which it is guaranteed that an alert is not going to be fired more times than the number fixed in Maximum number of alerts. If the defined interval is exceeded, an alert will not recover if it comes to an specific value, except if the alert Recover value would be activated. In this case it is recovered inmediatelly after receiving an specific value,regardless the threshold.
+An alert action will not be executed more than once every action_threshold seconds, regardless of the number of times the alert is fired.
+
+For example, if you have configured an action that sends you an email when the alert fires and you don't want to receive more than one email per hour, you can set the action_threshold to 3600.
+
+Bear in mind that the individual action_threshold of an action overrides the global action_threshold of the alert.  
+
 </p>

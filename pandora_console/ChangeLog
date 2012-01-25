@@ -1,3 +1,8 @@
+2012-01-25  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_agents.php: Fixed bug: Don't show
+	good agents modules.
+
 2010-01-24 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/massive/massive_delete_modules.php: Fixed a small entities

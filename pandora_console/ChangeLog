@@ -1,5 +1,10 @@
 2012-01-25  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_network_components.php: Fixed some
+	include relative paths to API calls
+
+2012-01-25  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_incidents.php
 	operation/integria_incidents/incident.incident.php
 	operation/integria_incidents/incident.php: Fixed some bugs

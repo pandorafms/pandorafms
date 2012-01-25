@@ -1,3 +1,8 @@
+2012-01-25  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_agents.php: Bad behavior group filter
+	in massive operations and policies management.
+
 2012-01-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_api.php: removed warning from get_all_agents

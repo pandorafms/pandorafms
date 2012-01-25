@@ -1,3 +1,10 @@
+2012-01-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_reporting.php: Fixed Sla graph when it has 
+	a boolean module data.	
+	
+	Bugfix: #3477786
+
 2012-01-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_action_threshold.php,

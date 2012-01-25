@@ -620,35 +620,45 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$interval_data = array ();
 	}
 	
-	// Get previous data
+	// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
 
-	// Get next data
+	// Get next data (This adds data before the interval of the report)
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
 	else if (count ($interval_data) > 0) {
-		// Propagate the last known data to the end of the interval
+		// Propagate the last known data to the end of the interval (if there is no module data at the end point)
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
 
+	// We need more or equal two points
 	if (count ($interval_data) < 2) {
 		return false;
 	}
 
 	//Get the percentage for the limits
 	$diff = $max_value - $min_value; 
-	//Getting 10% of $diff --> $percent = ($diff/100)*10, so...
-	$percent = $diff / 10;
+	
+	// Get module type
+	$id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	// If module is boolean don't create translation intervals (on the edge intervals)
+	if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18){
+		$percent = 0;
+	}
+	else {
+		// Getting 10% of $diff --> $percent = ($diff/100)*10, so...
+		$percent = $diff / 10;
+	}
 	
 	//Set initial conditions
 	$first_data = array_shift ($interval_data);
@@ -660,12 +670,12 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		
 		if ($previous_value < 0) {// 4 for the Unknown value
 				$previous_status = 4;
-		} elseif ((($previous_value >= ($min_value - $percent)) && ($previous_value <= ($min_value + $percent))) || 
-				(($previous_value >= ($max_value - $percent)) && ($previous_value <= ($max_value + $percent)))) {//2 when value is within the edges
+		} elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+				(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
 			$previous_status = 2;
-		} elseif (($previous_value > ($min_value + $percent)) && ($previous_value < ($max_value - $percent))) { //1 when value is OK
+		} elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
 			$previous_status = 1;
-		} elseif (($previous_value < ($min_value - $percent)) || ($previous_value > ($max_value + $percent))) { //3 when value is Wrong
+		} elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
 			$previous_status = 3;
 		}
 	}
@@ -680,12 +690,12 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$value = $data['datos'];
 		if ($value < 0) {// 4 for the Unknown value
 			$status = 4;
-		} elseif ((($value >= ($min_value - $percent)) && ($value <= ($min_value + $percent))) || 
-				(($value >= ($max_value - $percent)) && ($value <= ($max_value + $percent)))) {//2 when value is within the edges
+		} elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
+				(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
 			$status = 2;
-		} elseif (($value > ($min_value + $percent)) && ($value < ($max_value - $percent))) { //1 when value is OK
+		} elseif (($value >= ($min_value + $percent)) && ($value <= ($max_value - $percent))) { //1 when value is OK
 			$status = 1;
-		} elseif (($value < ($min_value - $percent)) || ($value > ($max_value + $percent))) { //3 when value is Wrong
+		} elseif (($value <= ($min_value - $percent)) || ($value >= ($max_value + $percent))) { //3 when value is Wrong
 			$status = 3;
 		}
 		if ($status != $previous_status) {
@@ -2350,7 +2360,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
-				
+
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;

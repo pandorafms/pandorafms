@@ -1216,7 +1216,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 			$details = io_safe_input ($details);
 	}
 	
-	$where .= " AND id_policy_module = 0 ";
+	//$where .= " AND id_policy_module = 0 ";
 	
 	switch ($config["dbtype"]) {
 		case "mysql":

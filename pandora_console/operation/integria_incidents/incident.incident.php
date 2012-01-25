@@ -48,6 +48,10 @@ if (isset ($result_users['id_user'])) {
 		$users[$usr] = $usr;
 	}
 }
+else {
+	$users[$config['id_user']] = $config['id_user'];
+	
+}
 if(!isset($result['id_incidencia'])) {
 	$result['titulo'] = '';
 	$result['sla_disabled'] = 0;
@@ -124,7 +128,7 @@ if(isset($result['id_incidencia'])) {
 	echo "</form>";
 }
 else {
-	echo "<form method='post' action=''>";
+	echo "<form method='post' action='index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident'>";
 	html_print_table($table);
 	html_print_submit_button(__('Create'), 'submit_button');
 	html_print_input_hidden('tab', 'incident');

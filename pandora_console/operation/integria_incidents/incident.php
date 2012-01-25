@@ -30,6 +30,48 @@ $id_incident = get_parameter('id_incident', 0);
 // We choose a strange token to use texts with commas, etc.
 $token = ';,;';
 
+$update_incident = get_parameter('update_incident', 0);
+
+$integria_api = $config['integria_url']."/include/api.php?return_type=xml&user=".$config['id_user']."&pass=".$config['integria_api_password'];
+
+if($update_incident == 1) {				
+	$values[0] = $id_incident;
+	$values[1] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
+	$values[2] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
+	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('epilog')));
+	$values[4] = get_parameter('group');
+	$values[5] = get_parameter('priority');
+	$values[6] = get_parameter('source');
+	$values[7] = get_parameter('resolution');
+	$values[8] = get_parameter('status');
+	$values[9] = get_parameter('creator', get_parameter('creator_fix'));
+
+	$params = implode($token, $values);
+
+	$url = $integria_api."&op=update_incident&token=".$token."&params=".$params;
+	// Call the integria API
+	$result = incidents_call_api($url);
+}
+
+$create_incident = get_parameter('create_incident', 0);
+
+if($create_incident == 1) {
+	$values[0] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
+	$values[1] = get_parameter('group');
+	$values[2] = get_parameter('priority');
+	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
+	$values[4] = $config['integria_inventory'];
+	
+	$params = implode($token, $values);
+
+	$url = $integria_api."&op=create_incident&token=".$token."&params=".$params;
+
+	// Call the integria API
+	$result = incidents_xml_to_array(incidents_call_api($url));
+	
+	$id_incident = $result['data'];
+}
+
 // Header
 if($tab == 'list' || $tab == 'editor') {
 	$buttons = array(
@@ -69,46 +111,6 @@ else {
 $buttons[$tab]['active'] = true;
 
 ui_print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, $buttons);
-
-$update_incident = get_parameter('update_incident', 0);
-
-$integria_api = $config['integria_url']."/include/api.php?return_type=xml&user=".$config['id_user']."&pass=".$config['integria_api_password'];
-
-if($update_incident == 1) {				
-	$values[0] = $id_incident;
-	$values[1] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
-	$values[2] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
-	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('epilog')));
-	$values[4] = get_parameter('group');
-	$values[5] = get_parameter('priority');
-	$values[6] = get_parameter('source');
-	$values[7] = get_parameter('resolution');
-	$values[8] = get_parameter('status');
-	$values[9] = get_parameter('creator', get_parameter('creator_fix'));
-
-	$params = implode($token, $values);
-
-	$url = $integria_api."&op=update_incident&token=".$token."&params=".$params;
-	// Call the integria API
-	$result = incidents_call_api($url);
-}
-
-$create_incident = get_parameter('create_incident', 0);
-
-if($create_incident == 1) {
-	$values[0] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
-	$values[1] = get_parameter('group');
-	$values[2] = get_parameter('priority');
-	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
-	$values[4] = $config['integria_inventory'];
-	
-	$params = implode($token, $values);
-
-	$url = $integria_api."&op=create_incident&token=".$token."&params=".$params;
-
-	// Call the integria API
-	$result = incidents_call_api($url);
-}
 
 $attach_file = get_parameter('attach_file', 0);
 

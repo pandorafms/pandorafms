@@ -771,85 +771,100 @@ function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 
 	$where = '';
 
-	// Filter by SO
-	if ($other['data'][0] != ""){
-		$where .= " AND id_os = " . $other['data'][0];
+	if (isset($other['data'][0])){
+		// Filter by SO
+		if ($other['data'][0] != ""){
+			$where .= " AND id_os = " . $other['data'][0];
+		}
 	}
-	// Filter by group
-	if ($other['data'][1] != ""){
-		$where .= " AND id_grupo = " . $other['data'][1];
+	if (isset($other['data'][1])){	
+		// Filter by group
+		if ($other['data'][1] != ""){
+			$where .= " AND id_grupo = " . $other['data'][1];
+		}
 	}
-	// Filter by name
-	if ($other['data'][3] != ""){
-		$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
-	}	
-	// Filter by policy
-	if ($other['data'][4] != ""){
-		$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
-		if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
-			$where .= $filter_by_policy;	
+	if (isset($other['data'][3])){	
+		// Filter by name
+		if ($other['data'][3] != ""){
+			$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
+		}	
+	}
+	if (isset($other['data'][4])){	
+		// Filter by policy
+		if ($other['data'][4] != ""){
+			$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
+			if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
+				$where .= $filter_by_policy;	
+			}
 		}
 	}
 	
+	// Initialization of array
+	$result_agents = array();
 	// Filter by state
 	$sql = "SELECT id_agente, nombre FROM tagente WHERE disabled = 0 " . $where;
 
 	$all_agents = db_get_all_rows_sql($sql);	
 
 	// Filter by status: unknown, warning, critical, without modules 
-	if ($other['data'][2] != "") {
-		foreach($all_agents as $agent){
-			$filter_modules['id_agente'] = $agent['id_agente'];
-			$filter_modules['disabled'] = 0;
-			$filter_modules['delete_pending'] = 0;
-			$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
-			$result_modules = array(); 
-			// Skip non init modules
-			foreach ($modules as $module){
-				if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
-					$result_modules[] = $module;
-				}	
-			}
-
-			// Without modules NO_MODULES
-			if ($other['data'][2] == 'no_modules'){
-				if (empty($result_modules) and $other['data'][2] == 'no_modules'){
-					$result_agents[] = $agent;
+	if (isset($other['data'][2])){
+		if ($other['data'][2] != "") {
+			foreach($all_agents as $agent){
+				$filter_modules['id_agente'] = $agent['id_agente'];
+				$filter_modules['disabled'] = 0;
+				$filter_modules['delete_pending'] = 0;
+				$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
+				$result_modules = array(); 
+				// Skip non init modules
+				foreach ($modules as $module){
+					if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
+						$result_modules[] = $module;
+					}	
 				}
-			}
-			// filter by NORMAL, WARNING, CRITICAL, UNKNOWN
-			else {
-				$status = agents_get_status($agent['id_agente'], true);
-				// Filter by status
-				switch ($other['data'][2]){
-					case 'warning':
-						if ($status == 2){
-							$result_agents[] = $agent;
-						}
-						break;		
-					case 'critical':
-						if ($status == 1){
-							$result_agents[] = $agent;
-						}
-						break;
-					case 'unknown':
-						if ($status == 3){
-							$result_agents[] = $agent;					
-						}
-						break;
-					case 'normal':
-						if ($status == 0){
-							$result_agents[] = $agent;					
-						}
-						break;					
+
+				// Without modules NO_MODULES
+				if ($other['data'][2] == 'no_modules'){
+					if (empty($result_modules) and $other['data'][2] == 'no_modules'){
+						$result_agents[] = $agent;
+					}
+				}
+				// filter by NORMAL, WARNING, CRITICAL, UNKNOWN
+				else {
+					$status = agents_get_status($agent['id_agente'], true);
+					// Filter by status
+					switch ($other['data'][2]){
+						case 'warning':
+							if ($status == 2){
+								$result_agents[] = $agent;
+							}
+							break;		
+						case 'critical':
+							if ($status == 1){
+								$result_agents[] = $agent;
+							}
+							break;
+						case 'unknown':
+							if ($status == 3){
+								$result_agents[] = $agent;					
+							}
+							break;
+						case 'normal':
+							if ($status == 0){
+								$result_agents[] = $agent;					
+							}
+							break;					
+					}
 				}
 			}
 		}
-	}
+		else {
+			$result_agents = $all_agents;
+		}
+	} 
 	else {
 		$result_agents = $all_agents;
 	}
-
+	
 	if (count($result_agents) > 0 and $result_agents !== false){
 		$data = array('type' => 'array', 'data' => $result_agents);
 		

@@ -1,5 +1,10 @@
 2012-01-25  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* include/functions_agents.php: Fixed: bad behavior group
+	filter in massive operations and policies management.
+
+2012-01-25  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* include/functions_agents.php: Fixed bug: Don't show
 	good agents modules.
 

@@ -1830,4 +1830,77 @@ function get_alert_last_fire_timestamp_in_period ($id_alert_module, $period, $da
 	return db_get_sql ($sql);
 }
 
+/**
+ * Insert in talert_special_days a new special day.
+ *
+ * @param date of special day.
+ * @param same day of the week.
+ * @param mixed A single value or array of values to insert (can be a multiple a mount of rows).
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise.
+ */
+function alerts_create_alert_special_day ($date, $same_day, $values = false) {
+	if (empty ($date))
+		return false;
+	if (empty ($same_day))
+		return false;
+	if (! is_array ($values))
+		$values = array ();
+	$values['date'] = $date;
+	$values['same_day'] = $same_day;
+ 
+	return @db_process_sql_insert ('talert_special_days', $values);
+}  
+
+/**
+ * Update a special day in talert_special_days.
+ *
+ * @param int special day Id.
+ * @param mixed Array of values to update.
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function alerts_update_alert_special_day ($id_special_day, $values) { 
+	$id_special_day = safe_int ($id_special_day, 1);
+	if (empty ($id_special_day))
+		return false;
+	if (! is_array ($values))
+		return false;
+ 
+	return (@db_process_sql_update ('talert_special_days',
+		$values,
+		array ('id' => $id_special_day))) !== false;
+}
+
+/**
+ * Delete a special day in talert_special_days.
+ *
+ * @param int special day Id.
+ *
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function alerts_delete_alert_special_day ($id_special_day) {
+	$id_special_day = safe_int ($id_special_day, 1);
+	if (empty ($id_special_day))
+		return false;
+
+	return (@db_process_sql_delete ('talert_special_days',
+		array ('id' => $id_special_day))) !== false;
+}
+
+/**
+ * Get a special day in talert_special_days.
+ *
+ * @param int special day Id.
+ * 
+ * @return mixed False in case of error or invalid values passed. All row of the selected command otherwise
+ */
+function alerts_get_alert_special_day ($id_special_day) {
+	$id_special_day = safe_int ($id_special_day, 1);
+	if (empty ($id_special_day))
+		return false;
+ 
+	return db_get_row ('talert_special_days', 'id', $id_special_day);
+}
+
 ?>

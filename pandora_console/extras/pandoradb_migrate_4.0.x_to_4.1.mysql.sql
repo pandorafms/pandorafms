@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	ON DELETE CASCADE,
 	FOREIGN KEY (`id_filter`) REFERENCES tnetflow_filter(`id_sg`)
 	ON DELETE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET=utf8
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `tusuario`
@@ -66,3 +66,21 @@ ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;
 -- -----------------------------------------------------
 
 ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL default '';
+
+-- -----------------------------------------------------
+-- Table `talert_special_days`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `talert_special_days` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`date` date NOT NULL DEFAULT '0000-00-00',
+	`same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
+	`description` text,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
+
+ALTER TABLE `talert_templates` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';

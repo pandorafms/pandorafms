@@ -67,3 +67,24 @@ alter table tincidencia add (id_agent NUMBER(10,0) default 0 NULL);
 -- Table `tagente`
 -- -----------------------------------------------------
 alter table tagente add (url_address CLOB default '' NULL);
+
+-- -----------------------------------------------------
+-- Table `talert_special_days`
+-- -----------------------------------------------------
+
+CREATE TABLE talert_special_days (
+id NUMBER(10,0) NOT NULL PRIMARY KEY,
+date DATE default '0000-00-00' NOT NULL,
+same_day VARCHAR2(20) default 'sunday',
+description CLOB,
+CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
+);
+
+CREATE SEQUENCE talert_special_days_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_special_days REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_special_days_s.nextval INTO :NEW.ID FROM dual; END talert_special_days_inc;;
+
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
+
+alter table talert_templates add (special_day NUMBER(5,0) default 0);

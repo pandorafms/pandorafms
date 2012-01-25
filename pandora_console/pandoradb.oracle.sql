@@ -312,6 +312,7 @@ CREATE TABLE talert_templates (
 	field3_recovery CLOB NOT NULL,
 	priority NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL, 
+	special_day NUMBER(5, 0) default 0,
 	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'))
 );
 CREATE INDEX talert_templates_id_al_act_idx ON talert_templates(id_alert_action);
@@ -438,6 +439,18 @@ CREATE OR REPLACE TRIGGER talert_compound_actions_update AFTER UPDATE OF ID ON t
 
 -- on update trigger 1
 CREATE OR REPLACE TRIGGER talert_compound_action_update1 AFTER UPDATE OF ID ON talert_actions FOR EACH ROW BEGIN UPDATE talert_compound_actions SET ID_ALERT_ACTION = :NEW.ID WHERE ID_ALERT_ACTION = :OLD.ID; END;;
+
+CREATE TABLE talert_special_days (
+id NUMBER(10,0) NOT NULL PRIMARY KEY,
+date DATE default '0000-00-00' NOT NULL,
+same_day VARCHAR2(20) default 'sunday',
+description CLOB,
+CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
+);
+
+-- on update trigger
+CREATE SEQUENCE talert_special_days_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_special_days REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_special_days_s.nextval INTO :NEW.ID FROM dual; END talert_special_days_inc;;
 
 -- Priority : 0 - Maintance (grey)
 -- Priority : 1 - Low (green)

@@ -1,3 +1,16 @@
+2012-01-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/menu.php, godmode/alerts/alert_special_days.php,
+	godmode/alerts/configure_alert_special_days.php,
+	godmode/alerts/configure_alert_template.php,
+	extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql,
+	pandoradb.oracle.sql, pandoradb.postgreSQL.sql, pandoradb.sql,
+	include/functions_alerts.php: Added special days feature. It allows
+	to define special days (holidays and special working days) for 
+	alert templates.
+
 2012-01-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/incidents/incident.php

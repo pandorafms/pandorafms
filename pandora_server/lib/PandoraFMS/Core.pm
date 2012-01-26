@@ -265,7 +265,22 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 	my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time());
 
 	# Check weekday
-	return 1 if ($alert->{$DayNames[$wday]} != 1);
+	if ($alert->{'special_day'}) {
+		logger ($pa_config, "Checking special days '" . $alert->{'name'} . "'.", 10);
+		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
+		# '0001' means every year.
+		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
+		my $special_day = get_db_value ($dbh, 'SELECT same_day FROM talert_special_days WHERE date = ? OR date = ? ORDER BY date DESC', $date, $date_every_year);
+		if ($special_day ne '') {
+			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $special_day . ")", 10);
+			return 1 if ($alert->{$special_day} != 1);
+		} else {
+			logger ($pa_config, $date . " is *NOT* a special day for " . $alert->{'name'}, 10);
+			return 1 if ($alert->{$DayNames[$wday]} != 1);
+		}
+	} else {
+		return 1 if ($alert->{$DayNames[$wday]} != 1);
+	}
 
 	# Check time slot
 	my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);

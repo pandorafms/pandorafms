@@ -1,3 +1,9 @@
+2012-01-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Improved the get all agents
+	API function to retrieve more data as address, description, 
+	operating system and url address
+
 2012-01-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_reporting.php: Fixed Sla graph when it has 

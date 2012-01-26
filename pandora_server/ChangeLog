@@ -1,3 +1,7 @@
+2012-01-26  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Added support for special days.
+
 2012-01-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/make_deb_package.sh,

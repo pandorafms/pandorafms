@@ -69,6 +69,9 @@ echo graph_event_module (290, 120, $id_agente);
 if ($config['flash_charts']) {
 	echo graphic_agentevents ($id_agente, 290, 60, 86400);
 }
+else{
+	graph_graphic_agentevents_static ($id_agente, 290, 15, 86400, '');
+}
 echo '</div>';
 	
 echo '<div width="450px">';

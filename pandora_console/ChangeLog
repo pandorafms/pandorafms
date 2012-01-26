@@ -1,5 +1,11 @@
 2012-01-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+     * include/functions_graph.php
+	 include/graphs/functions_fsgraph.php: Modified background color in
+	 flash charts.
+
+2012-01-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	 operation/agentes/estado_generalagente.php: Added static event 
 	 agent graph in main agent view.

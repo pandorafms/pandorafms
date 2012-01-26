@@ -908,7 +908,6 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1) {
 
 function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url) {
 	global $config;
-	
 
 	$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
 	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
@@ -1551,12 +1550,14 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
 	
-	include_flash_chart_script();
+	if ($config['flash_charts']) {
+		include_flash_chart_script();
+	}
 
 	$data = array ();
 
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	
+
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();
 	$datelimit = $date - $period;
@@ -1591,6 +1592,81 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 
 	if (! $graphic_type) {
 		return fs_agent_event_chart ($data, $width, $height, $resolution / 750);
+	}
+}
+
+/**
+ * Print a static graph with event data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
+function graph_graphic_agentevents_static($id_agent, $width, $height, $period = 0, $homeurl) {
+	global $config;
+	global $graphic_type;
+	
+	$data = array ();
+
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	$legend = array();
+	
+	$cont = 0;
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			$name = date('H\h', $bottom);
+		} else {
+			$name = $bottom;
+		}
+		
+		// Show less values in legend
+		if ($cont == 0 or $cont % 2)
+			$legend[$name] = $name;
+		
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$event = db_get_row_filter ('tevento', 
+			array ('id_agente' => $id_agent,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 'criticity, utimestamp');
+
+		if (!empty($event['utimestamp'])){
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case 3: $data[$cont]['data'] = 2;
+						break;
+				case 4: $data[$cont]['data'] = 3;
+						break;
+				default:$data[$cont]['data'] = 1;
+						break;
+			}
+		}
+		else{
+			 $data[$cont]['utimestamp'] = $periodtime;			
+			 $data[$cont]['data'] = 1;
+		}	
+		$cont++;
+	}
+	
+	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
+
+	// Draw slicebar graph
+	echo slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+
+	// Draw legend
+	echo "<br>";
+	echo "&nbsp;";
+	foreach ($legend as $hour){
+		echo "<span style='font-size: 6pt'>" . $hour . "</span>";
+		echo "&nbsp;";
 	}
 }
 

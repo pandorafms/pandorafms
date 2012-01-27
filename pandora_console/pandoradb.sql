@@ -997,7 +997,7 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
   `id` int(20) unsigned NOT NULL auto_increment,
   `id_agent` mediumint(8) unsigned NOT NULL default '0',
-  `id_downtime` mediumint(8) unsigned NOT NULL default '0',
+  `id_downtime` mediumint(8) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_downtime`) REFERENCES tplanned_downtime(`id`)
 	ON DELETE CASCADE

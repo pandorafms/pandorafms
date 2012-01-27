@@ -84,3 +84,11 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 -- -----------------------------------------------------
 
 ALTER TABLE `talert_templates` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_agents`
+-- -----------------------------------------------------
+
+ALTER TABLE tplanned_downtime_agents
+ADD FOREIGN KEY(`id_downtime`) REFERENCES tplanned_downtime(`id`)
+ON DELETE CASCADE;

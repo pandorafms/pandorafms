@@ -74,3 +74,13 @@ CREATE TABLE "talert_special_days" (
 -- -----------------------------------------------------
 
 ALTER TABLE "talert_templates" ADD COLUMN "special_day" SMALLINT default 0;
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_agents`
+-- -----------------------------------------------------
+
+ALTER TABLE "tplanned_downtime_agents"
+ADD CONSTRAINT downtime_foreign
+FOREIGN KEY("id_downtime")
+REFERENCES "tplanned_downtime"("id");
+

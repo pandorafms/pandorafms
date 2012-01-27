@@ -1,3 +1,8 @@
+2012-01-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/es/help_alert_special_days.php: Added to repository.
+	  Translated the special days help file to Spanish.
+
 2012-01-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_action_threshold.php: Rewrote the

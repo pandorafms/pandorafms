@@ -88,3 +88,13 @@ CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_specia
 -- -----------------------------------------------------
 
 alter table talert_templates add (special_day NUMBER(5,0) default 0);
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_agents`
+-- -----------------------------------------------------
+
+alter table tplanned_downtime_agents
+add constraint tplanned_downtimes_foreign_key
+foreign key (id_downtime)
+references tplanned_downtime (id);
+

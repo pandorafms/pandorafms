@@ -88,6 +88,8 @@ ALTER TABLE `talert_templates` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
 -- -----------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
+DELETE FROM tplanned_downtime_agents
+WHERE id_downtime NOT IN (SELECT id FROM tplanned_downtime);
 
 ALTER TABLE tplanned_downtime_agents
 ADD FOREIGN KEY(`id_downtime`) REFERENCES tplanned_downtime(`id`)

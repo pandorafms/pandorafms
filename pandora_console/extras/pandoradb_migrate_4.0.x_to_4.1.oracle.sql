@@ -93,6 +93,9 @@ alter table talert_templates add (special_day NUMBER(5,0) default 0);
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
 
+DELETE FROM tplanned_downtime_agents
+WHERE id_downtime NOT IN (SELECT id FROM tplanned_downtime);
+
 alter table tplanned_downtime_agents
 add constraint tplanned_downtimes_foreign_key
 foreign key (id_downtime)

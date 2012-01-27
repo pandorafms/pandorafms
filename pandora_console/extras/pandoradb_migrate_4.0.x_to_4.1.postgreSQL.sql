@@ -78,6 +78,8 @@ ALTER TABLE "talert_templates" ADD COLUMN "special_day" SMALLINT default 0;
 -- -----------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
+DELETE FROM "tplanned_downtime_agents"
+WHERE "id_downtime" NOT IN (SELECT "id" FROM "tplanned_downtime");
 
 ALTER TABLE "tplanned_downtime_agents"
 ADD CONSTRAINT downtime_foreign

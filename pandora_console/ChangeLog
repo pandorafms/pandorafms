@@ -1,3 +1,11 @@
+2012-01-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/google_chrome.png
+	 images/advise_navigator_background.png
+	 images/mozilla_firefox.png
+	 general/login_page.php: Added web browser advise if the user use
+	 Internet Explorer.
+
 2012-01-27  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb.sql

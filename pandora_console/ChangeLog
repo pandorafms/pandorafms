@@ -1,5 +1,10 @@
 2012-01-27  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/help/ja/help_action_threshold.php: Rewrote the
+	  action_threshold help page and added an example.
+
+2012-01-27  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/help/en/help_alert_special_days.php,
 	include/help/ja/help_alert_special_days.php: Added new help files
 	for special days feature.

@@ -1,3 +1,9 @@
+2012-01-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/en/help_alert_special_days.php,
+	include/help/ja/help_alert_special_days.php: Added new help files
+	for special days feature.
+
 2012-01-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
      * include/functions_graph.php

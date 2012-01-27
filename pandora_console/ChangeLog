@@ -1,5 +1,12 @@
 2012-01-27  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Fixed error adding delete
+	cascade	in tplanned_dowtime_agents.
+
+2012-01-27  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* pandoradb.sql
 	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
 	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql

@@ -79,9 +79,62 @@ echo '</td><td class="f9b">
 	</div>
 	<div id="ip">'.__('Your IP').': <b class="f10">'.$config["remote_addr"].'</b></div>
 </div>';
+
+
+//html_debug_print('http://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/advise_navigator.php');
+ui_require_css_file ('dialog');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.dialog');
 ?>
+
+
+<!--[if IE]>
+<div id="dialog" title="Pandora FMS Web browser advise" style="-ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)'; filter: alpha(opacity=50); background:url(images/advise_navigator_background.png) no-repeat center bottom">
+
+	<div style="position:absolute; top:20%; text-align: center; left:0%; right:0%; width:600px;">
+		  <img src="images/error.png">
+		<?php	  
+		  echo __("In order to have the best user experience with Pandora FMS, we <b>strongly recommend</b> to use") . "<br>";
+		  echo __("<a href='http://www.mozilla.org/en-US/firefox/fx/'>Mozilla Firefox</a> or <a href='https://www.google.com/chrome'>Google Chrome</a> browsers.") . "<br>"; 
+		?>
+		  <div style="position: absolute; top:200%; left:20%;">
+		  <a href="http://www.mozilla.org/en-US/firefox/fx/"><img alt="Mozilla Firefox" title="Mozilla Firefox" src="images/mozilla_firefox.png"></a>
+		  </div>
+		  <div style="position: absolute; top:195%; right:20%;">
+		  <a href="https://www.google.com/chrome"><img alt="Google Chrome" title="Google Chrome" src="images/google_chrome.png"></a>
+		  </div>
+
+		<div style="position: absolute; top:180px; right:43%;">	  
+		<?php html_print_submit_button("Ok",'hide-advise',false,'class="sub" style="width:100px;"'); ?>	  
+		</div>
+	 </div> 
+</div>
+<![endif]-->
+
+
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
+
+$(document).ready (function () {		
+	$(function() {
+		$( "#dialog" ).dialog({
+				resizable: true,
+				draggable: true,
+				height: 300,
+				width: 600,
+				overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+				bgiframe: jQuery.browser.msie
+			});
+	});
+	
+	$("#submit-hide-advise").click (function () {
+		$("#dialog" ).dialog('close')
+	});
+});
+
 document.getElementById('nick').focus();
 /* ]]> */
 </script>

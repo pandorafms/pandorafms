@@ -1,3 +1,9 @@
+2012-01-27  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql: Added delete cascade in tplanned_dowtime_agents.
+
 2012-01-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/es/help_alert_special_days.php: Added to repository.

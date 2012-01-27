@@ -898,7 +898,7 @@ CREATE TABLE "tplanned_downtime" (
 CREATE TABLE "tplanned_downtime_agents" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agent" BIGINT NOT NULL default 0,
-	"id_downtime" BIGINT NOT NULL default 0
+	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE 
 );
 
 -- GIS extension Tables

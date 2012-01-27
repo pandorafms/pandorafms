@@ -1142,7 +1142,7 @@ CREATE OR REPLACE TRIGGER tplanned_downtime_inc BEFORE INSERT ON tplanned_downti
 CREATE TABLE tplanned_downtime_agents (
 	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_agent NUMBER(19, 0) default 0 NOT NULL,
-	id_downtime NUMBER(19, 0) default 0 NOT NULL
+	id_downtime NUMBER(19, 0) default 0 NOT NULL REFERENCES tplanned_downtime(id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE tplanned_downtime_agents_s INCREMENT BY 1 START WITH 1;

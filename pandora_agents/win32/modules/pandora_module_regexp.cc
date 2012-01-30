@@ -47,12 +47,10 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
        pandoraLog ("Invalid regular expression %s", pattern.c_str ());
     }
  
-    // Open the file and skip to the end
+    // Check whether the file can be opened
     this->file.open (source.c_str ());
     if (this->file.is_open ()) {
-		if (no_seek_eof == 0) {
-			this->file.seekg (0, ios_base::end);
-		}
+		this->file.close ();
     } else {
         pandoraLog ("Error opening file %s", source.c_str ());
     }

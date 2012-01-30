@@ -1,3 +1,9 @@
+2012-01-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_regexp.cc: Do not open the file in the
+	  constructor to avoid trouble if other modules modify it before
+	  the regexp module runs.
+
 2012-01-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_odbc.cc: Check for NULL pointers.

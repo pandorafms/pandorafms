@@ -47,10 +47,10 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
        pandoraLog ("Invalid regular expression %s", pattern.c_str ());
     }
  
-    // Open the file and skip to the end
+    // Check whether the file can be opened
     this->file.open (source.c_str ());
-    if (this->file.is_open () && no_seek_eof == 0) {
-        this->file.seekg (0, ios_base::end);
+    if (this->file.is_open ()) {
+		this->file.close ();
     } else {
         pandoraLog ("Error opening file %s", source.c_str ());
     }
@@ -66,7 +66,9 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
  */
 Pandora_Module_Regexp::~Pandora_Module_Regexp () {
 	regfree (&this->regexp);
-    this->file.close();
+	if (this->file.is_open ()) {
+		this->file.close();
+	}
 }
 
 void
@@ -99,6 +101,11 @@ Pandora_Module_Regexp::run () {
 		
 		// Save current file size
 		this->size = file_stat.st_size;
+	}
+
+	// Check again, in case an open or a restart failed
+    if (! file.is_open () || ! file.good ()) {
+		return;
 	}
 
     // Read new lines
@@ -145,7 +152,9 @@ Pandora_Module_Regexp::run () {
  */
 void
 Pandora_Module_Regexp::restart (unsigned char no_seek_eof) {
-    this->file.close ();
+	if (this->file.is_open ()) {
+		this->file.close ();
+	}
     this->file.open (this->source.c_str ());
     if (this->file.is_open ()) {
 		if (no_seek_eof == 0) {

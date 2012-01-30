@@ -1,3 +1,7 @@
+2012-01-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_regexp.cc: Merged from trunk. Several fixes.
+
 2011-08-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_regexp.cc,

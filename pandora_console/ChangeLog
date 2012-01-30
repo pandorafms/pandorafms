@@ -1,5 +1,10 @@
 2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>	
 
+	* images/skin/skin_default/include/styles/pandora.css: Added grid 
+	feature in visual console for default skin.
+
+2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>	
+
 	* images/grid.png 
 	 images/grid.disabled.png 
 	 include/styles/pandora.css: Added these images for new grid feature

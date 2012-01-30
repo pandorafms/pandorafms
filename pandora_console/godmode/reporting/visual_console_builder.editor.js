@@ -396,6 +396,7 @@ function actionClick() {
 	
 	activeToolboxButton('edit_item', false);
 	activeToolboxButton('delete_item', false);
+	activeToolboxButton('show_grid', false);
 	
 	if (creationItem != null) {
 		//Create a item
@@ -1163,6 +1164,7 @@ function eventsItems() {
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
 			}
 			if ($(divParent).hasClass('percentile_bar')) {
 				creationItem = null;
@@ -1170,6 +1172,7 @@ function eventsItems() {
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);			
 			}
 			if ($(divParent).hasClass('module_graph')) {
 				creationItem = null;
@@ -1177,6 +1180,7 @@ function eventsItems() {
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
 			}
 			if ($(divParent).hasClass('simple_value')) {
 				creationItem = null;
@@ -1184,6 +1188,7 @@ function eventsItems() {
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
 			}
 			if ($(divParent).hasClass('label')) {
 				creationItem = null;
@@ -1191,6 +1196,7 @@ function eventsItems() {
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
 			}
 			if ($(divParent).hasClass('icon')) {
 				creationItem = null;
@@ -1198,6 +1204,7 @@ function eventsItems() {
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
 			}
 		}
 	});
@@ -1329,6 +1336,9 @@ function eventsBackground() {
 			original_height = ui.originalSize['height'];
 			
 			move_elements_resize(original_width, original_height, width, height);
+			
+			$('#background_grid').css('width', width);
+			$('#background_grid').css('height', height);
 		}
 	});
 	
@@ -1340,6 +1350,7 @@ function eventsBackground() {
 			$("#background").css('border', '2px blue dotted');
 			activeToolboxButton('edit_item', true);
 			activeToolboxButton('delete_item', false);
+			activeToolboxButton('show_grid', true);
 			
 			idItem = 0;
 			creationItem = null;
@@ -1392,6 +1403,9 @@ function click2(id) {
 			break;
 		case 'delete_item':
 			deleteItem();
+			break;
+		case 'show_grid':
+			showGrid();
 			break;
 	}
 }
@@ -1457,5 +1471,19 @@ function showPreviewIcon(icon) {
 				$("#preview").append(data);
 			}
 		});	
+	}
+}
+
+function showGrid() {
+	var display = $("#background_grid").css('display');
+	if (display == 'none'){
+		$("#background_grid").css('display', '');
+		$("#background_img").css('opacity', '0.55');
+		$("#background_img").css('filter', 'alpha(opacity=55)');		
+		$("#background_grid").css('background', 'url("images/console/background/white_boxed.jpg")');
+	}else{
+		$("#background_grid").css('display', 'none');	
+		$("#background_img").css('opacity', '1');
+		$("#background_img").css('filter', 'alpha(opacity=100)');
 	}
 }

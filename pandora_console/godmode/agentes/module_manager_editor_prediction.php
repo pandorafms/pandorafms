@@ -30,7 +30,7 @@ $is_synthetic = false;
 $is_synthetic_avg = false;
 $is_netflow = false;
 $ops = false;
-if ($row !== false && is_array($row)) {
+if ($row !== false && is_array($row)) { 
 	$prediction_module = $row['prediction_module'];
 	$custom_integer_2 = $row ['custom_integer_2'];
 	// Services are an Enterprise feature.
@@ -164,8 +164,7 @@ if ($netflow_module_form !== ENTERPRISE_NOT_HOOK) {
 
 /* Removed common useless parameter */
 unset ($table_advanced->data[3]);
-unset ($table_advanced->data[2][2]);
-unset ($table_advanced->data[2][3]);
+
 ?>
 <script type="text/javascript">
 $(document).ready(function() {

@@ -1,3 +1,10 @@
+2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>	
+	
+	* godmode/agentes/module_manager_editor_prediction.php: Added module
+	postprocess in prediction module.
+	
+	Fixes: #3480054
+
 2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js

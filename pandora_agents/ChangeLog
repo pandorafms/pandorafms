@@ -1,3 +1,9 @@
+2012-01-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module_regexp.cc: Merged from trunk. Do not open
+	  the file in the constructor to avoid trouble if other modules modify
+	  it before the regexp module runs.
+
 2011-12-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/pandora_agent: Merged from trunk. Empty modules, plugins

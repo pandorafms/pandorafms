@@ -68,6 +68,7 @@ echo '<div id="editor" style="margin-top: -10px;">';
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
 		
+		visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'grid_min', true);
 		visual_map_print_button_editor('edit_item', __('Edit item'), 'right', true, 'config_min', true);
 		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
 	echo '</div>';
@@ -264,6 +265,8 @@ echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;"
 //	border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
 echo '<div id="background" class="ui-widget-content" style="
 	border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
+//echo "<img style='opacity:.5' id='background_img' src='images/console/background/white_boxed.jpg' width='100%' height='100%' />";
+echo "<div id='background_grid' style='position:absolute; display:none; overflow:none; background:url(images/console/background/white_boxed.jpg) x-repeat y-repeat; width: " . $widthBackground . "px; height: " . $heightBackground . "px;'></div>"; //<img id='background_grid' style='display:none' src='images/console/background/white_boxed.jpg' width='100%' height='100%' /></div>";
 echo "<img id='background_img' src='images/console/background/" . $background . "' width='100%' height='100%' />";
 
 foreach ($layoutDatas as $layoutData) {

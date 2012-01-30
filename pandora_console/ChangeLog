@@ -1,3 +1,9 @@
+2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js
+	 godmode/reporting/visual_console_builder.editor.php: Added optional 
+	 grid in visual console editor.
+
 2012-01-27  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql

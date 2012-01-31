@@ -1,3 +1,8 @@
+2012-01-31  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_reporting: Modified SLA reports when
+	downtime planned.
+
 2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>	
 
 	* images/skin/skin_default/include/styles/pandora.css: Added grid 

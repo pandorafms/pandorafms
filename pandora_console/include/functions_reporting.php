@@ -718,29 +718,24 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $date - $period;
 	
-	if ($previous_utimestamp == $first_data['utimestamp']) {
-		$previous_value = $first_data ['datos'];
-		$previous_status = 0;
-		
-		if ($previous_value < 0) {// 4 for the Unknown value
-				$previous_status = 4;
-		} elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
-				(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
-			$previous_status = 2;
-		} elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
-			$previous_status = 1;
-		} elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
-			$previous_status = 3;
-		}
-		
-		foreach ($downtime_dates as $date_dt) {
-			if (($date_dt['date_from'] <= $first_data['utimestamp']) AND ($date_dt['date_to'] >= $first_data['utimestamp'])) {
-				$previous_status = 1;
-			}
-		}
-	}
-	else {
+	$previous_value = $first_data ['datos'];
+	$previous_status = 0;
+	
+	if ($previous_value < 0) {// 4 for the Unknown value
+			$previous_status = 4;
+	} elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+			(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
+		$previous_status = 2;
+	} elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
 		$previous_status = 1;
+	} elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
+		$previous_status = 3;
+	}
+	
+	foreach ($downtime_dates as $date_dt) {
+		if (($date_dt['date_from'] <= $first_data['utimestamp']) AND ($date_dt['date_to'] >= $first_data['utimestamp'])) {
+			$previous_status = 1;
+		}
 	}
 
 	$data_colors = array();

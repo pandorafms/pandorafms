@@ -1,3 +1,8 @@
+2012-01-31  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_reporting: Modified SLA reports when
+	downtime planned.
+
 2012-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php

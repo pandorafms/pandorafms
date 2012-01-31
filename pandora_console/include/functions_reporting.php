@@ -421,7 +421,6 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
-
 	if ($daysWeek) {
 		foreach ($daysWeek as $key => $value) {
 			if (!$value) {
@@ -449,7 +448,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 			}
 		}
 	}
-
+	
 	if (count($days) > 0) {
 		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
 	}
@@ -462,9 +461,32 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	}
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, true);
+
 	if ($interval_data === false) {
 		$interval_data = array ();
 	}
+	
+	//calculate planned downtime dates
+	$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	$sql_downtime = "SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent=$id_agent";
+	$downtimes = db_get_all_rows_sql($sql_downtime); 
+	if ($downtimes == false) {
+		$downtimes = array();
+	}
+	$i = 0;
+	$downtime_dates = array();
+	foreach ($downtimes as $downtime) {
+		$id_downtime = $downtime['id_downtime'];
+		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
+		$date_downtime = db_get_row_sql($sql_date);
+	
+		if ($date_downtime != false) {
+			$downtime_dates[$i]['date_from'] = $date_downtime['date_from'];
+			$downtime_dates[$i]['date_to'] = $date_downtime['date_to'];
+			$i++;
+		}
+	}
+	/////
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
@@ -503,7 +525,12 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
 		($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
-		$previous_status = 1;	
+			$previous_status = 1;
+			foreach ($downtime_dates as $date_dt) {
+				if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
+					$previous_status = 0;
+				}
+			}	
 	} else {
 		$previous_status = 0;
 	}
@@ -518,16 +545,21 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 			// Re-calculate previous status for the next data
 			if ((($max_value > $min_value AND ($data['datos'] > $max_value OR $data['datos'] < $min_value))) OR
 				($max_value <= $min_value AND $data['datos'] < $min_value)) {
+				
 				$previous_status = 1;
-			}
-			else {
+				foreach ($downtime_dates as $date_dt) {
+					if (($date_dt['date_from'] <= $data['utimestamp']) AND ($date_dt['date_to'] >= $data['utimestamp'])) {
+						$previous_status = 0;
+					}
+				}
+			} else { 
 				$previous_status = 0;
 			}
 		}
-		
+		 
 		$previous_utimestamp = $data['utimestamp'];
 	}
-	
+
 	// Return the percentage of SLA compliance
 	return (float) (100 - ($bad_period / $period) * 100);
 }
@@ -548,7 +580,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
  */
 function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
-	
+
 	// Initialize variables
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -599,7 +631,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			}
 		}
 	}
-
+	
 	if (count($days) > 0) {
 		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
 	}
@@ -616,6 +648,28 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, true);
 
+	//calculate planned downtime dates
+	$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	$sql_downtime = "SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent=$id_agent";
+	$downtimes = db_get_all_rows_sql($sql_downtime); 
+	if ($downtimes == false) {
+		$downtimes = array();
+	}
+	$i = 0;
+	$downtime_dates = array();
+	foreach ($downtimes as $downtime) {
+		$id_downtime = $downtime['id_downtime'];
+		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
+		$date_downtime = db_get_row_sql($sql_date);
+	
+		if ($date_downtime != false) {
+			$downtime_dates[$i]['date_from'] = $date_downtime['date_from'];
+			$downtime_dates[$i]['date_to'] = $date_downtime['date_to'];
+			$i++;
+		}
+	}
+	/////
+	
 	if ($interval_data === false) {
 		$interval_data = array ();
 	}
@@ -664,27 +718,29 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $date - $period;
 	
-	if ($previous_utimestamp == $first_data['utimestamp']) {
-		$previous_value = $first_data ['datos'];
-		$previous_status = 0;
-		
-		if ($previous_value < 0) {// 4 for the Unknown value
-				$previous_status = 4;
-		} elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
-				(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
-			$previous_status = 2;
-		} elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
-			$previous_status = 1;
-		} elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
-			$previous_status = 3;
-		}
-	}
-	else {
+	$previous_value = $first_data ['datos'];
+	$previous_status = 0;
+	
+	if ($previous_value < 0) {// 4 for the Unknown value
+			$previous_status = 4;
+	} elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+			(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
+		$previous_status = 2;
+	} elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
 		$previous_status = 1;
+	} elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
+		$previous_status = 3;
+	}
+	
+	foreach ($downtime_dates as $date_dt) {
+		if (($date_dt['date_from'] <= $first_data['utimestamp']) AND ($date_dt['date_to'] >= $first_data['utimestamp'])) {
+			$previous_status = 1;
+		}
 	}
 
 	$data_colors = array();
 	$i = 0;
+
 	foreach ($interval_data as $data) {
 		$change = false;
 		$value = $data['datos'];
@@ -698,6 +754,13 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		} elseif (($value <= ($min_value - $percent)) || ($value >= ($max_value + $percent))) { //3 when value is Wrong
 			$status = 3;
 		}
+		
+		foreach ($downtime_dates as $date_dt) {
+			if (($date_dt['date_from'] <= $data['utimestamp']) AND ($date_dt['date_to'] >= $data['utimestamp'])) {
+				$status = 1;
+			}
+		}
+		
 		if ($status != $previous_status) {
 			$change = true;
 			$data_colors[$i]['data'] = $previous_status;
@@ -2356,11 +2419,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						continue;
 					}
 				}
+
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
-
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;

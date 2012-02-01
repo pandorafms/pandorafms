@@ -1,3 +1,9 @@
+2012-02-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/DB.pm: fixed the function "get_agent_module_id".
+	
+	Merged bugfix from trunk.
+
 2012-02-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf,

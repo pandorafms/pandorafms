@@ -102,3 +102,12 @@ add constraint tplanned_downtimes_foreign_key
 foreign key (id_downtime)
 references tplanned_downtime (id);
 
+-- -----------------------------------------------------
+-- Table `tevento`
+-- -----------------------------------------------------
+
+alter table tevento add (source VARCHAR2(100) default '' NOT NULL);
+alter table tevento add (unique_id VARCHAR2(100) default '' NOT NULL);
+alter table tevento add (id_extra VARCHAR2(100) default '' NOT NULL);
+
+

@@ -584,9 +584,14 @@ foreach ($result as $event) {
 	//Hiden row with extended description
 	$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
 	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
+	$string .= '<b>' . __('Event ID') . '</b></td><td align="left">';
+	$string .= io_safe_output($event["id_evento"]);
+	$string .= '</td></tr><tr class="rowOdd">';	
+
+	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
 	$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
 	$string .= io_safe_output($event["evento"]);
-	$string .= '</td></tr><tr style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
+	$string .= '</td></tr><tr>';	
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
 	$string .= html_print_image ($img_sev, true, 
@@ -595,16 +600,16 @@ foreach ($result as $event) {
 			"height" => 12,
 			"title" => get_priority_name ($event["criticity"])));
 	$string .= ' '.get_priority_name ($event["criticity"]);
-	$string .= '</td></tr><tr>';
+	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Type') . '</b></td><td align="left">';
 	$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
-	$string .= '</td></tr><tr class="rowOdd">';
+	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Status') . '</b></td><td align="left">';
 	$string .= $title_st;
-	$string .= '</td></tr><tr>';
-		$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
+	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Timestamp') . '</b></td><td align="left">';
 	if ($group_rep == 1) {
 		$string .= date ($config["date_format"], $event['timestamp_rep']);
@@ -612,8 +617,9 @@ foreach ($result as $event) {
 	else {
 		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
 	}		
-	$string .= '</td></tr><tr class="rowOdd">';	
-	$odd = '';
+	$string .= '</td></tr><tr>';
+
+	$odd = 'rowOdd';
 	
 	if ($event["id_agente"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';

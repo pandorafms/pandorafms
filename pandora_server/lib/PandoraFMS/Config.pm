@@ -204,7 +204,7 @@ sub pandora_load_config {
 	$pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
 	$pa_config->{"snmp_proc_deadresponse"} = 1; # Introduced on 1.3.1 10 Feb08
 	$pa_config->{"plugin_threads"} = 2; # Introduced on 2.0
-	$pa_config->{"plugin_exec"} = '/usr/bin/pandora_exec'; # 3.0
+	$pa_config->{"plugin_exec"} = '/usr/bin/timeout'; # 3.0
 	$pa_config->{"recon_threads"} = 2; # Introduced on 2.0
 	$pa_config->{"prediction_threads"} = 1; # Introduced on 2.0
 	$pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0

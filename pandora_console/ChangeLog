@@ -1,5 +1,10 @@
 2012-02-01  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* operation/events/events_validate.php: Allowed post a comment 
+	without changing the event's state.
+
+2012-02-01  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* operation/events/events_list.php: Show event id in view events.
 
 2012-02-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

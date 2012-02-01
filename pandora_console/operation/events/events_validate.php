@@ -89,9 +89,6 @@ foreach($ids as $key => $id) {
 	if($event['id_alert_am'] != 0) {
 		$any_alert = true;
 	}
-	if($event['estado'] == 2) {
-		$any_inprocess = true;
-	}
 }
 
 //Hiden row with description form
@@ -102,13 +99,11 @@ $string .= html_print_input_hidden('eventid', implode(',',$ids), true);
 $string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment", 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 $string .= '<td align="left" width="200px">'; 
 $string .= '<div style="text-align:center;">';
-if(!$any_inprocess) {
-	$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
-	$string .= html_print_submit_button (__('Change status'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
-}else {
-	$string .= html_print_submit_button (__('Validate'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
-}
+
+$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+$string .= html_print_submit_button (__('Change status'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
 $string .= '</td><td width="400px">';
+
 if($any_alert) {
 	$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert', 'ff2', false, true).'</div>';
 }

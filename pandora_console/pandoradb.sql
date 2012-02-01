@@ -762,6 +762,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `flash_chart` int(4) NOT NULL DEFAULT 1,
   `id_skin` int(10) unsigned NOT NULL,
   `disabled` int(4) NOT NULL DEFAULT 0,
+  `shortcut` tinyint(1) DEFAULT 0,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

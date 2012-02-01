@@ -3,6 +3,7 @@
 -- -----------------------------------------------------
 
 ALTER TABLE "tusuario" ADD COLUMN "disabled" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tnetflow_filter`

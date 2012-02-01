@@ -21,7 +21,7 @@ if (function_exists ('mb_internal_encoding')) {
 
 // Set to 1 to do not check for installer or config file (for development!).
 // Activate gives more error information, not useful for production sites
-$develop_bypass = 0;
+$develop_bypass = 1;
 
 if ($develop_bypass != 1) {
 	// If no config file, automatically try to install
@@ -96,8 +96,7 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 $config["pure"] = (bool) get_parameter ("pure");
 
 // Auto Refresh page (can now be disabled anywhere in the script)
-$config["refr"] = (int) get_parameter ("refr");
-
+$config["refr"] = (int) get_parameter ("refr", $config["refr"]);
 
 ob_start ();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
@@ -160,6 +159,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
 	$nick = db_escape_string_sql($nick);
 	$pass = db_escape_string_sql($pass);
+
 	// process_user_login is a virtual function which should be defined in each auth file.
 	// It accepts username and password. The rest should be internal to the auth file.
 	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
@@ -194,6 +194,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 }
 elseif (! isset ($config['id_user'])) {
 	// There is no user connected
+	
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");
@@ -221,7 +222,7 @@ extensions_load_extensions ($config['extensions']);
 // Header
 if ($config["pure"] == 0) {
 	echo '<div id="container"><div id="head">';
-	require ("general/header.php"); 
+	require ("general/header.php");  
 	echo '</div><div id="page"><div id="menu">';
 	require ("general/main_menu.php");
 	echo '</div>';
@@ -267,6 +268,7 @@ else {
 		else echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
 	}
 	else require ("general/logon_ok.php");
+	require("general/shortcut_bar.php");
 }
 
 if ($config["pure"] == 0) {

@@ -1,3 +1,20 @@
+2012-02-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/incidents/incident.php: removed trace.
+	
+	* operation/agentes/alerts_status.php
+	 index.php
+	 operation/users/user_edit.php
+	 general/shortcut_bar.php: Added shortcut bar.
+
+	* pandoradb.sql
+	 pandoradb.postgreSQL.sql
+	 pandoradb.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added shorcut
+	 field in tusuario table.	 
+	 
 2012-01-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_reporting: Fixed bug when the module has only 

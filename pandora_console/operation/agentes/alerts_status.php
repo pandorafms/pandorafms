@@ -18,6 +18,20 @@ global $config;
 // Login check
 check_login ();
 
+if (is_ajax()){
+	require_once("include/functions_reporting.php");
+	
+	$get_alert_fired = get_parameter("get_alert_fired", 0);
+
+	if ($get_alert_fired){
+		// Calculate alerts fired 
+		$data_reporting = reporting_get_group_stats();
+		echo $data_reporting['monitor_alerts_fired'];
+	}
+	
+	return;
+}
+
 require_once ("include/functions_agents.php");
 require_once ('operation/agentes/alerts_status.functions.php');
 require_once ('include/functions_users.php');

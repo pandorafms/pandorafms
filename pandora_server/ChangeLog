@@ -1,3 +1,10 @@
+2012-02-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/PluginServer.pm: Use timeout by default instead of
+	  pandora_exec.
+
 2012-01-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Updated version string.

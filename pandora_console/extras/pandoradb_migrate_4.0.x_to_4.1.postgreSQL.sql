@@ -87,3 +87,10 @@ ADD CONSTRAINT downtime_foreign
 FOREIGN KEY("id_downtime")
 REFERENCES "tplanned_downtime"("id");
 
+-- -----------------------------------------------------
+-- Table `tevento`
+-- -----------------------------------------------------
+
+ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
+ALTER TABLE "tevento" ADD COLUMN "unique_id" text NULL default '';
+ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';

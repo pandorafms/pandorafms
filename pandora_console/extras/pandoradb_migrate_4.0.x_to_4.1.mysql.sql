@@ -95,3 +95,10 @@ WHERE id_downtime NOT IN (SELECT id FROM tplanned_downtime);
 ALTER TABLE tplanned_downtime_agents
 ADD FOREIGN KEY(`id_downtime`) REFERENCES tplanned_downtime(`id`)
 ON DELETE CASCADE;
+
+-- -----------------------------------------------------
+-- Table `tevento`
+-- -----------------------------------------------------
+
+ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL DEFAULT '',
+`unique_id` tinytext NOT NULL DEFAULT '', `id_extra` tinytext NOT NULL DEFAULT '');

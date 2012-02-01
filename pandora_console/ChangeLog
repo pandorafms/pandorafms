@@ -1,3 +1,7 @@
+2012-02-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* general/shortcut_bar.php: Fixed realtime update of alerts counter.
+
 2012-02-01  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb.sql

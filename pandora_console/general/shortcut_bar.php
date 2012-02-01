@@ -47,11 +47,11 @@
 			$shortcut_events_update = events_get_group_events($own_groups, 28800, time());
 			if ($shortcut_events_update == false)
 				$shortcut_events_update = array();
-			
+
 			$critical_events_update = 0;
 			foreach($shortcut_events_update as $event_update){
 				if ($event_update['criticity'] == 4 and $event_update['estado'] == 0){
-					$critical_events++;
+					$critical_events_update++;
 				}
 			}			
 			

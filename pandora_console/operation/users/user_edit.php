@@ -42,9 +42,34 @@ if (($config["id_user"] == $id || check_acl ($config["id_user"], users_get_group
 	$view_mode = true;
 }
 
+if (is_ajax ()){
+	
+	$shortcut_update = get_parameter("shortcut_update", 0);
+	
+	// Update of user to show/don't show shortcut bar	
+	if ($shortcut_update){
+	
+		// First we get the actual state
+		$shortcut_value = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $id));
+		
+		//Deactivate shorcut var
+		if ($shortcut_value == 1){
+			db_process_sql_update('tusuario', array('shortcut' => 0), array('id_user' => $id));
+		}
+		// Activate shortcut var
+		else {
+			db_process_sql_update('tusuario', array('shortcut' => 1), array('id_user' => $id));		
+		}
+	
+	}
+
+	return;
+}
+
 // Header
 ui_print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
 
+// Update user info
 if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info = array ();
 	$upd_info["fullname"] = get_parameter_post ("fullname", $user_info["fullname"]);
@@ -64,6 +89,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	}
 	
 	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
+	$upd_info["shortcut"] = get_parameter ("shortcut_bar", 0);
 
 	if ( !empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
@@ -196,6 +222,9 @@ else {
 echo html_print_input_text ('block_size', $block_size, '', 5, 5, true);
 echo html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
 echo __('Default').' ('.$config["global_block_size"].')';
+
+echo '</td></tr><tr><td class="datos">'.__('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true) . '</td><td class="datos2">';
+echo html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 
 echo '</td></tr></table>';
 

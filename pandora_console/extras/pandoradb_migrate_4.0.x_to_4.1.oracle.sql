@@ -3,7 +3,8 @@
 -- -----------------------------------------------------
 
 alter table tusuario add (disabled NUMBER(10,0) default 0 NOT NULL);
-
+alter table tusuario add (shortcut NUMBER(5, 0) DEFAULT 0);
+	
 -- -----------------------------------------------------
 -- Table "tnetflow_filter"
 -- -----------------------------------------------------

@@ -686,7 +686,8 @@ CREATE TABLE "tusuario" (
 	"block_size" INTEGER NOT NULL default 20,
 	"flash_chart" INTEGER NOT NULL default 1,
 	"id_skin" INTEGER NOT NULL DEFAULT 0,
-	"disabled" INTEGER NOT NULL default 1
+	"disabled" INTEGER NOT NULL default 1,
+	"shortcut" SMALLINT DEFAULT 0
 );
 
 CREATE TABLE "tusuario_perfil" (

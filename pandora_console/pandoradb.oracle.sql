@@ -856,7 +856,8 @@ CREATE TABLE tusuario (
 	block_size NUMBER(10, 0) default 20 NOT NULL,
 	flash_chart NUMBER(10, 0) default 1 NOT NULL,
 	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL,
-	disabled NUMBER(10, 0) default 0 NOT NULL
+	disabled NUMBER(10, 0) default 0 NOT NULL,
+	shortcut NUMBER(5, 0) DEFAULT 0
 );
 
 CREATE TABLE tusuario_perfil (

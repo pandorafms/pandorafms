@@ -125,7 +125,7 @@ elseif ($action == "insert") {
 	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent) VALUES 
 					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d)", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
 	$id_inc = db_process_sql ($sql, "insert_id");
-html_debug_print($sql);
+
 	if ($id_inc === false) {
 		echo '<h3 class="error">'.__('Error creating incident').'</h3>';		
 	}

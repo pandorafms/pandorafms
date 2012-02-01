@@ -1,3 +1,10 @@
+2012-02-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/PluginServer.pm: Merged from trunk. Use timeout
+	  instead of pandora_exec by default.
+
 2012-01-23  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_manage.pl: Merged from trunk. Fixed mismatch

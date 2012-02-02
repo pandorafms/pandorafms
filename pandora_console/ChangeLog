@@ -1,3 +1,9 @@
+2012-02-02  Sancho Lerena <slerena@artica.es>
+
+        * godmode/massive/massive_edit_modules.php: Fixed problem with export
+        server target edition. "None" was missing.
+
+
 2012-01-31  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_reporting: Modified SLA reports when

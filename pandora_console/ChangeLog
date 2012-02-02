@@ -1,5 +1,12 @@
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_api.php: Added get_alert_template function to 
+	Api.
+
+	Feature request: #3478217
+
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* Changelog: I forgot to update Changelog.
 	
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

@@ -1,5 +1,10 @@
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php: Fixed a bug in flash charts due to
+	my last commit.
+
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php
 	 include/graphs/functions_pchart.php
 	 include/functions_visual_map.php: Improvement over module graphs in 

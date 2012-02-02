@@ -2209,6 +2209,36 @@ function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
 	}
 }
 
+function get_alert_template($id_template, $thrash1, $other, $thrash3) {
+	
+	$filter_templates = false;
+
+	if ($id_template != "") {
+		$result_template = alerts_get_alert_template_name($id_template);
+	
+		if (!$result_template){
+			returnError('error_get_alert_template', __('Error getting alert template. Id_template doesn\'t exists.'));
+			return;
+		}
+		
+		$filter_templates = array('id' => $id_template);
+	}	
+
+	$template = alerts_get_alert_templates($filter_templates, array('id', 'name', 'description', 'id_alert_action', 'type', 'id_group'));	
+	
+	if ($template !== false) {	
+		$data['type'] = 'array';
+		$data['data'] = $template;			
+	}	
+		
+	if (!$template) {
+		returnError('error_get_alert_template', __('Error getting alert template.'));
+	}
+	else {
+		returnData('csv', $data, ';');
+	}
+}
+
 /**
  * Assign a module to an alert template. And return the id of new relationship.
  * 

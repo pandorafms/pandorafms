@@ -1,3 +1,9 @@
+2012-02-02  Sancho Lerena <slerena@artica.es>
+
+        * godmode/massive/massive_edit_modules.php: Fixed problem with export
+        server target edition. "None" was missing.
+
+
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/shortcut_bar.php: Fixed bug when the user doesn't have

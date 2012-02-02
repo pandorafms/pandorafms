@@ -217,7 +217,15 @@ CREATE TABLE "talert_snmp" (
 	"max_alerts" INTEGER NOT NULL default 1,
 	"min_alerts" INTEGER NOT NULL default 1,
 	"internal_counter" INTEGER NOT NULL default 0,
-	"priority" INTEGER default 0
+	"priority" INTEGER default 0,
+	"_snmp_f1_" text DEFAULT '', 
+	"_snmp_f2_" text DEFAULT '', 
+	"_snmp_f3_" text DEFAULT '',
+	"_snmp_f4_" text DEFAULT '', 
+	"_snmp_f5_" text DEFAULT '', 
+	"_snmp_f6_" text DEFAULT '',
+	"trap_type" INTEGER NOT NULL DEFAULT '-1',
+	"single_value" varchar(255) DEFAULT ''
 );
 
 CREATE TABLE "talert_commands" (

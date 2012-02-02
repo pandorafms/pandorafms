@@ -40,8 +40,9 @@ $search_string = (string) get_parameter ("search_string", '');
 $free_search_string = (string) get_parameter ("free_search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
+$trap_type = (int) get_parameter ('trap_type', -1);
 
-$url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset;
+$url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type;
 
 
 if ($config["pure"]) {
@@ -277,7 +278,14 @@ if ($filter_severity != -1) {
 }
 if ($filter_status != -1)
 	$whereSubquery .= ' AND status = ' . $filter_status;
-
+	
+if ($trap_type == -1) {
+	$whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';	
+}
+else {
+	$whereSubquery .= ' AND type = ' . $trap_type;
+}
+	
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
@@ -340,6 +348,11 @@ $table->data[3][1] = html_print_select ($status, 'filter_status', $filter_status
 // Free search (search by all alphanumeric fields)
 $table->data[3][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
 $table->data[3][4] = html_print_input_text ('free_search_string', $free_search_string, '', 40, 0, true);
+
+// Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
+$table->data[4][1] = '<strong>'.__('Type').'</strong>' . ui_print_help_tip(__('Search by trap type'), true);
+$trap_types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', -1 => 'Other');
+$table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
 $filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
 $filter .= html_print_table($table, true);

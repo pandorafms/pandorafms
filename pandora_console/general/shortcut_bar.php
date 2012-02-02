@@ -71,8 +71,13 @@
 				id_grupo IN (".implode (",",array_keys ($own_groups)).") AND estado IN (0) 
 				ORDER BY actualizacion";
 				
-			$result_incidents_update = db_get_all_rows_sql ($sql);
-
+				
+			if (!empty($own_groups)){					
+				$result_incidents_update = db_get_all_rows_sql ($sql);
+			}
+			else{
+				$result_incidents_update = false;
+			}
 
 			if ($result_incidents_update ===  false)
 				$shortcut_incidents = 0;
@@ -145,9 +150,13 @@
 			$sql = "SELECT count(*) total_incidents FROM tincidencia WHERE 
 				id_grupo IN (".implode (",",array_keys ($own_groups)).") AND estado IN (0) 
 				ORDER BY actualizacion";
-				
-			$result_incidents = db_get_all_rows_sql ($sql);
 
+			if (!empty($own_groups)){	
+				$result_incidents = db_get_all_rows_sql ($sql);
+			}
+			else {
+				$result_incidents = false;
+			}
 
 			if ($result_incidents ===  false)
 				$shortcut_incidents = 0;

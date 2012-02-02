@@ -1,5 +1,10 @@
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* general/shortcut_bar.php: Fixed bug when the user doesn't have
+	'LM' permissions.  
+
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_api.php: Added get_alert_template function to 
 	Api.
 

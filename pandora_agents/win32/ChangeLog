@@ -1,3 +1,11 @@
+2012-02-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* installer/pandora.mpi: Merged from trunk. Added an uninstall action
+	  to delete the agent's at job.
+
+	* installer/scripts/delete_at_job.bat: Added to repository. Batch
+	  script to delete the agent's at job.
+
 2011-12-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_perfcounter.cc,

@@ -508,6 +508,7 @@ File ::2BBBE1D9-BA80-E6CA-835E-9D958A4CF3C3 -type dir -name props -active 0 -par
 File ::486CB634-5092-8E3B-7621-5B3A044ACCCC -type dir -name text-base -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
 File ::012BFA02-7F3D-897C-072A-877021FDC7D7 -name restart_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 File ::02213E74-8E86-E4AC-58D0-B70412A05656 -name install_service_restart.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
+File ::BAF0FDDB-F0D7-1326-D3CE-7C6676636B83 -name delete_at_job.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 File ::94EE5172-C243-4F11-80CE-C356D9055323 -type dir -name ../bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::38108568-E397-4360-9FDD-BBD7574607E0 -name how_to_keys.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
 File ::096DCAC9-2E8F-4765-9EC5-E40DAFC26B36 -name how_to_keys_es.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
@@ -655,6 +656,7 @@ InstallComponent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -setup Uninstall -type act
 Condition 103DC6E3-97DC-46AC-81C5-DED8E4E319E7 -active Yes -parent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -title {String Is Condition} -component StringIsCondition -TreeObject::id 103DC6E3-97DC-46AC-81C5-DED8E4E319E7
 Condition DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB -active Yes -parent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -title {Ask Yes or No} -component AskYesOrNo -TreeObject::id DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB
 InstallComponent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C -setup Uninstall -type actiongroup -title {Uninstall Actions} -active Yes -parent ActionGroupsUninstall
+InstallComponent 19131BB8-88ED-C9E4-A5CF-8873BE8F5D09 -setup Uninstall -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent 3A1294BA-6D93-95C0-D81D-3435E62A69F3 -setup Uninstall -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent 73C87D6F-ACBB-026B-157C-1CC1FD4C4EEC -setup Uninstall -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent D2829903-F232-F03E-070A-386860F74F4A -setup Uninstall -type action -title {Delete File} -component DeleteFile -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
@@ -771,6 +773,18 @@ array set Properties {
 
 18774B81-6D13-4BD2-B6F2-852BF95814BD,Conditions
 {0 conditions}
+
+19131BB8-88ED-C9E4-A5CF-8873BE8F5D09,Conditions
+{0 conditions}
+
+19131BB8-88ED-C9E4-A5CF-8873BE8F5D09,ConsoleTitle
+{<%AppName%> Deleting Pandora FMS Agent AT job}
+
+19131BB8-88ED-C9E4-A5CF-8873BE8F5D09,ProgramCommandLine
+{delete_at_job.bat}
+
+19131BB8-88ED-C9E4-A5CF-8873BE8F5D09,WorkingDirectory
+{<%InstallDir%>/scripts}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,BackButton,subst
 {1}

@@ -1,3 +1,7 @@
+2012-02-02  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_aggregate_by.php: Added a missing help file.
+
 2012-02-01  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/events/events_validate.php: Allowed post a comment 

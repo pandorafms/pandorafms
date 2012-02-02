@@ -225,6 +225,14 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
   `min_alerts` int(11) NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
   `priority` tinyint(4) default '0',
+  `_snmp_f1_` text DEFAULT '', 
+  `_snmp_f2_` text DEFAULT '', 
+  `_snmp_f3_` text DEFAULT '',
+  `_snmp_f4_` text DEFAULT '', 
+  `_snmp_f5_` text DEFAULT '', 
+  `_snmp_f6_` text DEFAULT '',
+  `trap_type` int(11) NOT NULL default '-1',
+  `single_value` varchar(255) default '', 
   PRIMARY KEY  (`id_as`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -100,7 +100,7 @@
 			
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		echo "<a href='index.php?sec=estado&sec2=operation/agentes/alerts_status&refr=120&filter=fired&free_search=&filter_button=Filter'>";
-		html_print_image("images/bell.png", false, array("title" => __("Alerts fired")));
+		html_print_image("images/bell.png", false, array("title" => __("Alerts fired"), "style" => "margin-bottom: -5px;"));
 		echo "&nbsp;";
 		
 		// Calculate alerts fired 
@@ -110,7 +110,7 @@
 		echo "</a>";
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		echo "<a href='index.php?sec=eventos&sec2=operation/events/events&status=3&severity=4&event_view_hr=8&ev_group=0&group_rep=1&filter_only_alert=-1'>";		
-		html_print_image("images/lightning_go.png", false, array("title" => __("Critical events")));
+		html_print_image("images/lightning_go.png", false, array("title" => __("Critical events"), "style" => "margin-bottom: -5px;"));
 		echo "&nbsp;";		
 		
 		// Calculate critical events (not validated)
@@ -139,7 +139,7 @@
 		// Calculate opened incidents (id integria incidents are not enabled)
 		if ($config['integria_enabled'] == 0){
 			echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident&estado=0'>";
-			html_print_image("images/book_edit.png", false, array("title" => __("Incidents opened")));
+			html_print_image("images/book_edit.png", false, array("title" => __("Incidents opened"),  "style" => "margin-bottom: -5px;"));
 			echo "&nbsp;";	
 			// Select only opened incidents
 			$sql = "SELECT count(*) total_incidents FROM tincidencia WHERE 
@@ -165,13 +165,13 @@
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 		
 		echo "<a href='index.php?sec=reporting&sec2=operation/reporting/custom_reporting'>";
-		html_print_image("images/reporting.png", false, array("title" => __("View reports")));
+		html_print_image("images/reporting.png", false, array("title" => __("View reports"), "style" => "margin-bottom: -5px;"));
 		echo "</a>";
 		
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		
 		echo "<a href='index.php?sec=messages&sec2=operation/messages/message'>";
-		html_print_image("images/email.png", false, array("title" => __("Create new message")));
+		html_print_image("images/email.png", false, array("title" => __("Create new message"), "style" => "margin-bottom: -5px;"));
 		echo "</a>";
 		
 		// Login in Console and shortcut bar is disabled

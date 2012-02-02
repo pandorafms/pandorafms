@@ -110,4 +110,15 @@ alter table tevento add (source VARCHAR2(100) default '' NOT NULL);
 alter table tevento add (unique_id VARCHAR2(100) default '' NOT NULL);
 alter table tevento add (id_extra VARCHAR2(100) default '' NOT NULL);
 
+-- -----------------------------------------------------
+-- Table `talert_snmp`
+-- -----------------------------------------------------
 
+ALTER TABLE talert_snmp add (_snmp_f1_ CLOB default ''); 
+ALTER TABLE talert_snmp add (_snmp_f2_ CLOB default ''); 
+ALTER TABLE talert_snmp add (_snmp_f3_ CLOB default ''); 
+ALTER TABLE talert_snmp add (_snmp_f4_ CLOB default ''); 
+ALTER TABLE talert_snmp add (_snmp_f5_ CLOB default ''); 
+ALTER TABLE talert_snmp add (_snmp_f6_ CLOB default '');
+ALTER TABLE talert_snmp add (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
+ALTER TABLE talert_snmp add (single_value VARCHAR2(255) DEFAULT '');

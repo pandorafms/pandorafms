@@ -243,7 +243,15 @@ CREATE TABLE talert_snmp (
 	max_alerts NUMBER(10, 0) default 1 NOT NULL,
 	min_alerts NUMBER(10, 0) default 1 NOT NULL,
 	internal_counter NUMBER(10, 0) default 0 NOT NULL,
-	priority NUMBER(10, 0) default 0
+	priority NUMBER(10, 0) default 0,
+	_snmp_f1_ CLOB default '', 
+	_snmp_f2_ CLOB default '', 
+	_snmp_f3_ CLOB default '',
+	_snmp_f4_ CLOB default '', 
+	_snmp_f5_ CLOB default '', 
+	_snmp_f6_ CLOB default '',
+	trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL,
+	single_value VARCHAR2(255) DEFAULT ''
 );
 
 CREATE SEQUENCE talert_snmp_s INCREMENT BY 1 START WITH 1;

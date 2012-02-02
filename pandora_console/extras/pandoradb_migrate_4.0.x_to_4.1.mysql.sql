@@ -102,3 +102,10 @@ ON DELETE CASCADE;
 
 ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL DEFAULT '',
 `unique_id` tinytext NOT NULL DEFAULT '', `id_extra` tinytext NOT NULL DEFAULT '');
+
+-- -----------------------------------------------------
+-- Table `talert_snmp`
+-- -----------------------------------------------------
+ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text DEFAULT '', `_snmp_f2_` text DEFAULT '', `_snmp_f3_` text DEFAULT '',
+`_snmp_f4_` text DEFAULT '', `_snmp_f5_` text DEFAULT '', `_snmp_f6_` text DEFAULT '', `trap_type` int(11) NOT NULL default '-1',
+`single_value` varchar(255) DEFAULT '');

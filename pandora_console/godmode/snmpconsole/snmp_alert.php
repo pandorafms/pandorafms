@@ -46,6 +46,14 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 	$max_alerts = (int) get_parameter_post ("max_alerts", 1);
 	$min_alerts = (int) get_parameter_post ("min_alerts", 0);
 	$priority = (int) get_parameter_post ("priority", 0);
+	$custom_oid_data_1 = (string) get_parameter ("custom_oid_data_1"); 
+	$custom_oid_data_2 = (string) get_parameter ("custom_oid_data_2"); 
+	$custom_oid_data_3 = (string) get_parameter ("custom_oid_data_3"); 
+	$custom_oid_data_4 = (string) get_parameter ("custom_oid_data_4"); 
+	$custom_oid_data_5 = (string) get_parameter ("custom_oid_data_5"); 
+	$custom_oid_data_6 = (string) get_parameter ("custom_oid_data_6");
+	$trap_type = (int) get_parameter ("trap_type", -1);
+	$single_value = (string) get_parameter ("single_value"); 
 	
 	if ($time_threshold == -1) {
 		$time_threshold = $time_other;
@@ -64,7 +72,15 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 			'time_threshold' => $time_threshold,
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts,
-			'priority' => $priority);
+			'priority' => $priority,
+			'_snmp_f1_' => $custom_oid_data_1,
+			'_snmp_f2_' => $custom_oid_data_2,
+			'_snmp_f3_' => $custom_oid_data_3,
+			'_snmp_f4_' => $custom_oid_data_4,
+			'_snmp_f5_' => $custom_oid_data_5,
+			'_snmp_f6_' => $custom_oid_data_6,
+			'trap_type' => $trap_type,
+			'single_value' => $single_value);
 
 			$result = db_process_sql_insert('talert_snmp', $values);
 		
@@ -78,9 +94,12 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 	} else {
 		$sql = sprintf ("UPDATE talert_snmp SET
 				priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', agent = '%s', custom_oid = '%s',
-				oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d WHERE id_as = %d",
+				oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d, _snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s', _snmp_f4_ = '%s',
+				_snmp_f5_ = '%s', _snmp_f6_ = '%s', trap_type = %d, single_value = '%s'   
+				 WHERE id_as = %d",
 				$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
-				$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
+				$oid, $time_threshold, $max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2, $custom_oid_data_3,
+				$custom_oid_data_4, $custom_oid_data_5, $custom_oid_data_6, $trap_type, $single_value, $id_as);
 		
 		$result = db_process_sql ($sql);
 
@@ -113,6 +132,14 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$max_alerts = $alert["max_alerts"];
 	$min_alerts = $alert["min_alerts"];
 	$priority = $alert["priority"];	
+	$custom_oid_data_1 = $alert["_snmp_f1_"];
+	$custom_oid_data_2 = $alert["_snmp_f2_"];
+	$custom_oid_data_3 = $alert["_snmp_f3_"];
+	$custom_oid_data_4 = $alert["_snmp_f4_"];
+	$custom_oid_data_5 = $alert["_snmp_f5_"];
+	$custom_oid_data_6 = $alert["_snmp_f6_"];
+	$trap_type = $alert["trap_type"];
+	$single_value = $alert["single_value"]; 
 } elseif (isset ($_GET["update_alert"])) {
 	// Variable init
 	$id_as = -1;
@@ -128,6 +155,14 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$max_alerts = 1;
 	$min_alerts = 0;
 	$priority = 0;
+	$custom_oid_data_1 = '';
+	$custom_oid_data_2 = '';
+	$custom_oid_data_3 = '';
+	$custom_oid_data_4 = '';
+	$custom_oid_data_5 = '';
+	$custom_oid_data_6 = '';
+	$trap_type = -1;
+	$single_value = '';
 }
 
 // Header
@@ -189,12 +224,60 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 
 	// Custom
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom data');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Global match');
     echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
     html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
 
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #1
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #1');
+    //echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_input_text ("custom_oid_data_1", $custom_oid_data_1, '', 60);
+	echo '</td></tr>';	
+	
+	//  Custom OID/Data #2
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #2');
+    //echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_input_text ("custom_oid_data_2", $custom_oid_data_2, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #3
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #3');
+    //echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_input_text ("custom_oid_data_3", $custom_oid_data_3, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #4
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #4');
+    //echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_input_text ("custom_oid_data_4", $custom_oid_data_4, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #5
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #5');
+    //echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_input_text ("custom_oid_data_5", $custom_oid_data_5, '', 60);
+	echo '</td></tr>';			
+
+	//  Custom OID/Data #6
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #6');
+    //echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
 
 	// SNMP Agent
@@ -250,6 +333,17 @@ if (isset ($_GET["update_alert"])) {
 	// Priority
 	echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
 	echo html_print_select (get_priorities (), "priority", $priority, '', '', '0', false, false, false);
+	echo '</td></tr>';
+
+	// Trap type
+	echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
+	$trap_types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', -1 => 'Other');
+	echo html_print_select ($trap_types, 'trap_type', $trap_type, '', '', '', false, false, false);
+	echo '</td></tr>';
+
+	// Single value
+	echo '<tr><td class="datos">'.__('Single value').'</td><td class="datos">';
+	html_print_input_text ("single_value", $single_value, '', 20);
 	echo '</td></tr>';
 
 	//Button

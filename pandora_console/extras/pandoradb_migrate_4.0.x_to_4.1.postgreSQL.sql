@@ -94,3 +94,16 @@ REFERENCES "tplanned_downtime"("id");
 ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "unique_id" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';
+
+-- -----------------------------------------------------
+-- Table `talert_snmp`
+-- -----------------------------------------------------
+
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f1_" text DEFAULT ''; 
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f2_" text DEFAULT ''; 
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f3_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f4_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f5_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f6_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "trap_type" INTEGER NOT NULL DEFAULT '-1';
+ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';

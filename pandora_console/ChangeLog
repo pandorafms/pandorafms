@@ -1,3 +1,11 @@
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 include/graphs/functions_pchart.php
+	 include/functions_visual_map.php: Improvement over module graphs in 
+	 visual console and fixed bug in sparse graphs when 'avg only' is not
+	 clicked.
+
 2012-02-02  Sancho Lerena <slerena@artica.es>
 
         * godmode/massive/massive_edit_modules.php: Fixed problem with export

@@ -622,7 +622,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		 else {
 			$point_id = $i;
 		 }
-		 
+
 		$MyData->addPoints($values,$point_id);
 		if (!empty($rgb_color)) {
 			$MyData->setPalette($point_id, 
@@ -700,15 +700,24 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$myPicture->drawFromPNG(($width - $water_mark_width),
 	 		($height - $water_mark_height) - $margin_bottom, $water_mark);
 	 }
-	 
+
+	/* Area depends on yaxisname */
+	if ($yaxisname != ''){
+		$chart_size = 80;	
+	}
+	else{
+		$chart_size = 40;
+	}	 
 	 
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40,$size['Height'],$width - $water_mark_width,$height - $margin_bottom);
+	 	//if ($yaxisname != ''){
+		//}
+	 	$myPicture->setGraphArea($chart_size,$size['Height'],$width - $water_mark_width,$height - $margin_bottom);
 	 }
 	 else {
 	 	/* Define the chart area */
-	 	$myPicture->setGraphArea(40, 5,$width - $water_mark_width,$height - $margin_bottom);
+	 	$myPicture->setGraphArea($chart_size, 5,$width - $water_mark_width,$height - $margin_bottom);
 	 }
 
 	 /* Draw the scale */

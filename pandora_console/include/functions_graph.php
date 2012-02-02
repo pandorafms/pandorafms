@@ -145,9 +145,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			}
 		}
 	}
-	
-	$units = modules_get_unit($agent_module_id);
-	
+
+	if (empty($unit)){
+		$unit = modules_get_unit($agent_module_id);
+	}
+
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
@@ -202,13 +204,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$time_format = 'H:i';
 		}
 		elseif ($period < 1296000) {
-			$time_format = 'M d H:i';
+			$time_format = "M \nd H:i";
 		}
 		elseif ($period < 2592000) {
-			$time_format = 'M d H\h';
+			$time_format = "M \nd H\h";
 		} 
 		else {
-			$time_format = 'M d H\h';
+			$time_format = "M \nd H\h";
 		}
 
 		$timestamp_short = date($time_format, $timestamp);
@@ -223,8 +225,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$chart[$timestamp]['sum'] = $total;
 			}
 			else {
-				$chart[$timestamp]['utimestamp'] = $timestamp;
-				$chart[$timestamp]['datos'] = $total;
+				//$chart[$timestamp]['utimestamp'] = $timestamp;
+				//$chart[$timestamp]['datos'] = $total;
 				$chart[$timestamp]['sum'] = $total;
 				$chart[$timestamp]['min'] = $interval_min;
 				$chart[$timestamp]['max'] = $interval_max;
@@ -272,10 +274,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$chart[$timestamp]['baseline'] = 0;
 			}
 		}
-		
-		if (!empty($units)) {
-			$chart[$timestamp]['unit'] = 0;
-		}
 	}
 	
 	// Return chart data and don't draw
@@ -302,12 +300,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
     // Only show caption if graph is not small
     if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT)
     	//Flash chart
-		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value . '    ' . __('Units. Value') . ': ' . $units;
+		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value . '    ' . __('Units. Value') . ': ' . $unit;
     else
 		$caption = array();
 	
 	///////
-	$color = array();
+	// Color commented not to restrict serie colors
+	/*$color = array();
 	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	if($show_events) {
 		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
@@ -318,7 +317,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);
+	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		*/
 	
 	$legend = array();
 	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
@@ -331,7 +330,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
 	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
 	$legend['baseline'] = __('Baseline');
-	$legend['unit'] = __('Units'). ' (' . $units . ')';
 	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
@@ -341,8 +339,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($flash_chart) {
 		include_flash_chart_script($homeurl);
 	}
-
-	return area_graph($flash_chart, $chart, $width, $height, $color,$legend,
+	
+	// Color commented not to restrict serie colors
+	return area_graph($flash_chart, $chart, $width, $height, '' /*$color*/ ,$legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], $unit, $ttl);
@@ -909,7 +908,6 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1) {
 
 function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url) {
 	global $config;
-	
 
 	$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
 	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
@@ -1552,12 +1550,14 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
 	
-	include_flash_chart_script();
+	if ($config['flash_charts']) {
+		include_flash_chart_script();
+	}
 
 	$data = array ();
 
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	
+
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();
 	$datelimit = $date - $period;

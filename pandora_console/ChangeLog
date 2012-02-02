@@ -1,3 +1,9 @@
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 include/functions_visual_map.php: Improved module graphs on visual
+	 console.
+
 2012-02-02  Sancho Lerena <slerena@artica.es>
 
 	* config_process.php: Updated build.

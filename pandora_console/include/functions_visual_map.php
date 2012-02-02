@@ -123,7 +123,7 @@ function visual_map_print_item($layoutData) {
 			break;
 		case MODULE_GRAPH:
 			$img = grafico_modulo_sparse($id_module, $period, 0, $width,
-				$height, '', null, false, 0, false, 0, '', 0, 0, true, true);
+				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
 			echo '<div id="' . $id . '" class="item module_graph" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
@@ -954,12 +954,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 
 						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 							false, ((integer)($proportion * $layout_data['width'])), ((integer)($proportion * $layout_data['height'])),
-							'', null, false, 0, false, 0, '', 0, 0, true, true);
+							'', null, false, 1, false, 0, '', 0, 0, true, true);
 					}
 					else {
 						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 							false, $layout_data['width'], $layout_data['height'],
-							'', null, false, 0, false, 0, '', 0, 0, true, true);
+							'', null, false, 1, false, 0, '', 0, 0, true, true);
 					}
 					echo "</a>";
 					echo "</div>";

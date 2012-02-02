@@ -1,5 +1,7 @@
 2012-02-02  Sancho Lerena <slerena@artica.es>
 
+	* config_process.php: Updated build.
+
         * godmode/massive/massive_edit_modules.php: Fixed problem with export
         server target edition. "None" was missing.
 

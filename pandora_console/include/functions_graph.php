@@ -50,6 +50,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	
+	$flash_chart = $config['flash_charts'];
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
@@ -196,23 +198,43 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$k++;
 		}
 		
-		// Set the title and time format
-		if ($period <= 21600) {
-			$time_format = 'H:i:s';
+		if (!$flash_chart) {
+			// Set the title and time format
+			if ($period <= 21600) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < 86400) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < 1296000) {
+				$time_format = "M \nd H:i";
+			}
+			elseif ($period < 2592000) {
+				$time_format = "M \nd H\h";
+			} 
+			else {
+				$time_format = "M \nd H\h";
+			}
 		}
-		elseif ($period < 86400) {
-			$time_format = 'H:i';
-		}
-		elseif ($period < 1296000) {
-			$time_format = "M \nd H:i";
-		}
-		elseif ($period < 2592000) {
-			$time_format = "M \nd H\h";
-		} 
 		else {
-			$time_format = "M \nd H\h";
+			// Set the title and time format
+			if ($period <= 21600) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < 86400) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < 1296000) {
+				$time_format = "M d H:i";
+			}
+			elseif ($period < 2592000) {
+				$time_format = "M d H\h";
+			} 
+			else {
+				$time_format = "M d H\h";
+			}		
 		}
-
+		
 		$timestamp_short = date($time_format, $timestamp);
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
@@ -331,7 +353,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
 	$legend['baseline'] = __('Baseline');
 	
-	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}

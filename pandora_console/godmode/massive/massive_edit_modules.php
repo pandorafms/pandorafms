@@ -348,10 +348,11 @@ $table->data['edit5'][1] = html_print_input_text ('plugin_user', '', '', 15, 60,
 $table->data['edit5'][2] = __('Password');
 $table->data['edit5'][3] = html_print_input_password ('plugin_pass', '', '', 15, 60, true);
 
+// Export target
 $table->data['edit6'][0] = __('Export target');
-$table->data['edit6'][1] = html_print_select_from_sql ('SELECT id, name
-	FROM tserver_export ORDER BY name',
-	'id_export', '', '',__('No change'),'', true, false, false);
+$targets2 = db_get_all_rows_sql ("SELECT id, name FROM tserver_export ORDER by name");
+$targets =  array_merge(array(0 => __('None')), $targets2 );
+$table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 
 /* FF stands for Flip-flop */
 $table->data['edit7'][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);

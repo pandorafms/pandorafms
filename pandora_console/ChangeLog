@@ -1,5 +1,10 @@
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+        * include/graph/functions_fsgraph.php: Fixed a bug in flash charts
+        when there is no module data.
+
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php: Fixed a bug in flash charts due to
 	my last commit.
 

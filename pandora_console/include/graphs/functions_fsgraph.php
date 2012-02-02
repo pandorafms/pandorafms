@@ -409,7 +409,9 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 				$show_name = '0';
 			}
 			
-			$empty = 0;
+			if ($v != 0) {
+				$empty = 0;
+			}
 			
 			if ($a < 3) {
 				$a++;

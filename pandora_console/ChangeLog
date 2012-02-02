@@ -1,5 +1,9 @@
 2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* Changelog: I forgot to update Changelog.
+	
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/help/en/help_snmp_alert_custom.php
 	 include/help/es/help_snmp_alert_custom.php
 	 operation/snmpconsole/snmp_view.php

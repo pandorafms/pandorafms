@@ -89,7 +89,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($data, $previous_data);
 		}
-
+	
 		// Get next data
 		$nextData = modules_get_next_data ($agent_module_id, $date);
 		if ($nextData !== false) {
@@ -204,13 +204,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$time_format = 'H:i';
 		}
 		elseif ($period < 1296000) {
-			$time_format = 'M d H:i';
+			$time_format = "M \nd H:i";
 		}
 		elseif ($period < 2592000) {
-			$time_format = 'M d H\h';
+			$time_format = "M \nd H\h";
 		} 
 		else {
-			$time_format = 'M d H\h';
+			$time_format = "M \nd H\h";
 		}
 
 		$timestamp_short = date($time_format, $timestamp);
@@ -275,7 +275,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			}
 		}
 	}
-
+	
 	// Return chart data and don't draw
 	if ($return_data == 1) {
 		return $chart;

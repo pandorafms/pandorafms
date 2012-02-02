@@ -1,3 +1,22 @@
+2012-02-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/en/help_snmp_alert_custom.php
+	 include/help/es/help_snmp_alert_custom.php
+	 operation/snmpconsole/snmp_view.php
+	 godmode/snmpconsole/snmp_alert.php: Added eight new fields for snmp
+	 alerts and a filter in trap search. 
+
+	 pandoradb.sql
+	 pandoradb.postgreSQL.sql
+	 pandoradb.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added 
+	 _snmp_f1_ ... _snmp_f6_, trap_type and single_value fields to 
+	 talert_snmp table.
+
+	* general/shortcut_bar.php: Fixed shorcut style.
+
 2012-02-02  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_aggregate_by.php: Added a missing help file.

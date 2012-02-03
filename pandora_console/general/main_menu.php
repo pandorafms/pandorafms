@@ -23,7 +23,17 @@ if (! isset ($config["id_user"])) {
 echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
 require ("operation/menu.php");
 
-echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
+//Check all enterprise ACL used in godmenu items to print menu headers
+if (check_acl ($config['id_user'], 0, "AW") ||
+        check_acl ($config['id_user'], 0, "PM") ||
+        check_acl ($config['id_user'], 0, "LM") ||
+        check_acl ($config['id_user'], 0, "UM") ||
+        check_acl ($config['id_user'], 0, "LW") ||
+        check_acl ($config['id_user'], 0, "IW") ||
+        check_acl ($config['id_user'], 0, "DW")) {
+        echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
+}
+
 require ("godmode/menu.php");
 
 require ("links_menu.php");

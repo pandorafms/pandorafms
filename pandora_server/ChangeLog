@@ -1,3 +1,11 @@
+2012-02-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added support for ff interval. Small
+	  improvements.
+	
+	* lib/PandoraFMS/DataServer.pm: Added "timestamp" to the list of
+	  valid XML tags.
+
 2012-02-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf,

@@ -895,15 +895,28 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
 
+	# Calculate the current interval
+	my $current_interval = ($module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'});
+	
 	#Update module status
 	my $current_utimestamp = time ();
 	if ($last_status == $new_status) {
+		
+		# Avoid overflows
+		$status_changes = $module->{'min_ff_event'} if ($status_changes > $module->{'min_ff_event'});
+		
 		$status_changes++;
 	} else {
 		$status_changes = 0;
 	}
 
-	if ($status_changes == $module->{'min_ff_event'}) {
+	# Active ff interval
+	if ($module->{'module_ff_interval'} != 0 && $status_changes < $module->{'min_ff_event'}) {
+		$current_interval = $module->{'module_ff_interval'};
+	}
+
+	# Change status
+	if ($status_changes == $module->{'min_ff_event'} && $status != $new_status) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $dbh);
 		$status = $new_status;
 	}
@@ -929,8 +942,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
-		
-	my $current_interval = ($module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'});
+
 	db_do ($dbh, 'UPDATE tagente_estado SET datos = ?, estado = ?, last_status = ?, status_changes = ?, utimestamp = ?, timestamp = ?,
 		id_agente = ?, current_interval = ?, running_by = ?, last_execution_try = ?, last_try = ?
 		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $status_changes,

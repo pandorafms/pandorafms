@@ -109,3 +109,9 @@ ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL DEFAULT '',
 ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text DEFAULT '', `_snmp_f2_` text DEFAULT '', `_snmp_f3_` text DEFAULT '',
 `_snmp_f4_` text DEFAULT '', `_snmp_f5_` text DEFAULT '', `_snmp_f6_` text DEFAULT '', `trap_type` int(11) NOT NULL default '-1',
 `single_value` varchar(255) DEFAULT '');
+
+-- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
+ALTER TABLE `tagente_modulo` ADD COLUMN `module_ff_interval` int(4) unsigned default '0';
+

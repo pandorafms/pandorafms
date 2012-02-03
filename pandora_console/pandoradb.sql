@@ -153,6 +153,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `max` bigint(20) default '0',
   `min` bigint(20) default '0',
   `module_interval` int(4) unsigned default '0',
+  `module_ff_interval` int(4) unsigned default '0',
   `tcp_port` int(4) unsigned default '0',
   `tcp_send` TEXT default '',
   `tcp_rcv` TEXT default '',

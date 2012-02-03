@@ -225,6 +225,10 @@ $table_advanced->data[1][0] = __('Custom ID');
 $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 	'', 20, 65, true);
 
+$table_advanced->data[1][2] = __('FF interval');
+$table_advanced->data[1][3] = html_print_input_text ('module_ff_interval', $ff_interval,
+	'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
+
 $table_advanced->data[2][0] = __('Interval');
 $table_advanced->data[2][1] = html_print_input_text ('module_interval', $interval,
 	'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution time interval (in secs).'), true);

@@ -619,6 +619,7 @@ CREATE TABLE tnetwork_component (
 	max NUMBER(10, 0) default 0 NOT NULL,
 	min NUMBER(19, 0) default 0 NOT NULL,
 	module_interval NUMBER(19, 0) default 0 NOT NULL,
+	module_ff_interval NUMBER(19, 0) default 0 NOT NULL,
 	tcp_port NUMBER(10, 0) default 0 NOT NULL,
 	tcp_send CLOB NOT NULL,
 	tcp_rcv CLOB NOT NULL,

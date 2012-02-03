@@ -114,4 +114,9 @@ ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text DEFAULT '', `_snmp_f2_` t
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 ALTER TABLE `tagente_modulo` ADD COLUMN `module_ff_interval` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;
 
+-- -----------------------------------------------------
+-- Table `tnetwork_component`
+-- -----------------------------------------------------
+ALTER TABLE `tnetwork_component` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;

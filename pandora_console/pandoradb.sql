@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `plugin_pass` text default '',
   `plugin_parameter` text,
   `id_plugin` int(10) default '0',
-  `post_process` double(18,13) default NULL,
+  `post_process` double(18,5) default NULL,
   `prediction_module` bigint(14) default '0',
   `max_timeout` int(4) unsigned default '0',
   `custom_id` varchar(255) default '',
@@ -566,7 +566,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `custom_string_3` text default '',
   `custom_integer_1` int(10) default 0,
   `custom_integer_2` int(10) default 0,
-  `post_process` double(18,13) default 0,
+  `post_process` double(18,5) default 0,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

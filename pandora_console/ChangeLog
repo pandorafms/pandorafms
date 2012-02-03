@@ -1,3 +1,11 @@
+2012-02-03  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* pandoradb.sql, extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql: change the
+	size of the field "post_process" in the tables "tagente_modulo" and
+	"tnetwork_component".
+	
+	Fixes: #3483814 
+
 2012-02-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql,

@@ -151,6 +151,7 @@ CREATE TABLE "tagente_modulo" (
 	"max" BIGINT NOT NULL default 0,
 	"min" BIGINT NOT NULL default 0,
 	"module_interval" INTEGER NOT NULL default 0,
+	"module_ff_interval" INTEGER NOT NULL default 0,
 	"tcp_port" INTEGER NOT NULL default 0,
 	"tcp_send" TEXT default '',
 	"tcp_rcv" TEXT default '',

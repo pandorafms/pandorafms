@@ -4348,8 +4348,14 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	//to a function.
 	
 	$groups = users_get_groups ($user_in_db, "IR");
+	$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $user_in_db);
 	
-	$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+	if (!empty($groups)) {
+		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+	}
+	else if ($is_admin) {
+		$sql_post = " AND 1 = 0";
+	}
 	
 	// Skip system messages if user is not PM
 	if (!check_acl ($user_in_db, 0, "PM")) {

@@ -1,3 +1,8 @@
+2012-02-06  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from 4.0. Add a missing
+	description of get_alert_template() in its leading comment.
+
 2012-02-03  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* pandoradb.sql, extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql: change the

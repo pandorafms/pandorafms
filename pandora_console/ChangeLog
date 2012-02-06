@@ -1,3 +1,11 @@
+2012-02-06  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk.  Improved the
+	get all agents API function to added csv separator, and to
+	retrieve more data as address, description, operating system
+	and url address.  Added get_alert_template function.  
+	Removed warning from get_all_agents function.
+
 2012-02-03 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* general/main_menu.php: Fixed godmode menu header visualization.

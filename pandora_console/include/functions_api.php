@@ -759,11 +759,11 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * 
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
- * @param array $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy> in this order
+ * @param array $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=get&op2=all_agents&return_type=csv&other=1|2|warning|j|2&other_mode=url_encode_separator_|
+ *  api.php?op=get&op2=all_agents&return_type=csv&other=1|2|warning|j|2|~&other_mode=url_encode_separator_|
  * 
  * @param $thrash3 Don't use.
  */
@@ -771,89 +771,109 @@ function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 
 	$where = '';
 
-	// Filter by SO
-	if ($other['data'][0] != ""){
-		$where .= " AND id_os = " . $other['data'][0];
+	if (isset($other['data'][0])){
+		// Filter by SO
+		if ($other['data'][0] != ""){
+			$where .= " AND id_os = " . $other['data'][0];
+		}
 	}
-	// Filter by group
-	if ($other['data'][1] != ""){
-		$where .= " AND id_grupo = " . $other['data'][1];
+	if (isset($other['data'][1])){	
+		// Filter by group
+		if ($other['data'][1] != ""){
+			$where .= " AND id_grupo = " . $other['data'][1];
+		}
 	}
-	// Filter by name
-	if ($other['data'][3] != ""){
-		$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
-	}	
-	// Filter by policy
-	if ($other['data'][4] != ""){
-		$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
-		if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
-			$where .= $filter_by_policy;	
+	if (isset($other['data'][3])){	
+		// Filter by name
+		if ($other['data'][3] != ""){
+			$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
+		}	
+	}
+	if (isset($other['data'][4])){	
+		// Filter by policy
+		if ($other['data'][4] != ""){
+			$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
+			if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
+				$where .= $filter_by_policy;	
+			}
 		}
 	}
 	
+	if (!isset($other['data'][5]))
+		$separator = ';'; //by default
+	else
+		$separator = $other['data'][5];
+		
+	// Initialization of array
+	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, nombre FROM tagente WHERE disabled = 0 " . $where;
+	$sql = "SELECT id_agente, nombre, direccion, comentarios, tconfig_os.name, url_address FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os AND disabled = 0 " . $where;
 
 	$all_agents = db_get_all_rows_sql($sql);	
 
 	// Filter by status: unknown, warning, critical, without modules 
-	if ($other['data'][2] != "") {
-		foreach($all_agents as $agent){
-			$filter_modules['id_agente'] = $agent['id_agente'];
-			$filter_modules['disabled'] = 0;
-			$filter_modules['delete_pending'] = 0;
-			$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
-			$result_modules = array(); 
-			// Skip non init modules
-			foreach ($modules as $module){
-				if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
-					$result_modules[] = $module;
-				}	
-			}
-
-			// Without modules NO_MODULES
-			if ($other['data'][2] == 'no_modules'){
-				if (empty($result_modules) and $other['data'][2] == 'no_modules'){
-					$result_agents[] = $agent;
+	if (isset($other['data'][2])){
+		if ($other['data'][2] != "") {
+			foreach($all_agents as $agent){
+				$filter_modules['id_agente'] = $agent['id_agente'];
+				$filter_modules['disabled'] = 0;
+				$filter_modules['delete_pending'] = 0;
+				$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
+				$result_modules = array(); 
+				// Skip non init modules
+				foreach ($modules as $module){
+					if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
+						$result_modules[] = $module;
+					}	
 				}
-			}
-			// filter by NORMAL, WARNING, CRITICAL, UNKNOWN
-			else {
-				$status = agents_get_status($agent['id_agente'], true);
-				// Filter by status
-				switch ($other['data'][2]){
-					case 'warning':
-						if ($status == 2){
-							$result_agents[] = $agent;
-						}
-						break;		
-					case 'critical':
-						if ($status == 1){
-							$result_agents[] = $agent;
-						}
-						break;
-					case 'unknown':
-						if ($status == 3){
-							$result_agents[] = $agent;					
-						}
-						break;
-					case 'normal':
-						if ($status == 0){
-							$result_agents[] = $agent;					
-						}
-						break;					
+
+				// Without modules NO_MODULES
+				if ($other['data'][2] == 'no_modules'){
+					if (empty($result_modules) and $other['data'][2] == 'no_modules'){
+						$result_agents[] = $agent;
+					}
+				}
+				// filter by NORMAL, WARNING, CRITICAL, UNKNOWN
+				else {
+					$status = agents_get_status($agent['id_agente'], true);
+					// Filter by status
+					switch ($other['data'][2]){
+						case 'warning':
+							if ($status == 2){
+								$result_agents[] = $agent;
+							}
+							break;		
+						case 'critical':
+							if ($status == 1){
+								$result_agents[] = $agent;
+							}
+							break;
+						case 'unknown':
+							if ($status == 3){
+								$result_agents[] = $agent;					
+							}
+							break;
+						case 'normal':
+							if ($status == 0){
+								$result_agents[] = $agent;					
+							}
+							break;					
+					}
 				}
 			}
 		}
-	}
+		else {
+			$result_agents = $all_agents;
+		}
+	} 
 	else {
 		$result_agents = $all_agents;
 	}
-
+	
 	if (count($result_agents) > 0 and $result_agents !== false){
 		$data = array('type' => 'array', 'data' => $result_agents);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, $separator);	
 	}
 	else {
 		returnError('error_all_agents', 'No agents retrieved.');			
@@ -2186,6 +2206,49 @@ function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
 	}
 	else {
 		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of alert template.')));
+	}
+}
+
+/**
+ * Get an alert tamplate, and print the result like a csv.
+ * 
+ * @param string $id_template Id of the template to get.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=get&op2=alert_template&id=25
+ *    
+ * @param $thrash3 Don't use
+ */
+function get_alert_template($id_template, $thrash1, $other, $thrash3) {
+	
+	$filter_templates = false;
+
+	if ($id_template != "") {
+		$result_template = alerts_get_alert_template_name($id_template);
+	
+		if (!$result_template){
+			returnError('error_get_alert_template', __('Error getting alert template. Id_template doesn\'t exists.'));
+			return;
+		}
+		
+		$filter_templates = array('id' => $id_template);
+	}	
+
+	$template = alerts_get_alert_templates($filter_templates, array('id', 'name', 'description', 'id_alert_action', 'type', 'id_group'));	
+	
+	if ($template !== false) {	
+		$data['type'] = 'array';
+		$data['data'] = $template;			
+	}	
+		
+	if (!$template) {
+		returnError('error_get_alert_template', __('Error getting alert template.'));
+	}
+	else {
+		returnData('csv', $data, ';');
 	}
 }
 

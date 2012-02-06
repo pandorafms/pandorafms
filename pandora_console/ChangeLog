@@ -1,3 +1,8 @@
+2012-02-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/netflow/nf_live_view.php: Added ACL checks for filter
+	  creation.
+
 2012-02-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager.php: only added a comment for to explain

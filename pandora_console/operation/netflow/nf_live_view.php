@@ -66,7 +66,7 @@ $start_date = $end_date - $period;
 ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
 
 // Save user defined filter
-if  ($save != '') {
+if ($save != '' && check_acl ($config["id_user"], 0, "AW")) {
 
 	// Save filter args
 	$filter['filter_args'] = netflow_get_filter_arguments ($filter);
@@ -80,7 +80,7 @@ if  ($save != '') {
 	}
 }
 // Update current filter
-else if  ($update != '' && $filter_id > 0) {
+else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 	// Do not update the filter name and group
 	$filter_copy = $filter;
 	unset ($filter_copy['id_name']);
@@ -195,9 +195,11 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	html_print_table ($table);
 
 	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');
-	html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-	if ($filter_id > 0) {
-		html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
+	if (check_acl ($config["id_user"], 0, "AW")) {
+		html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
+		if ($filter_id > 0) {
+			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
+		}
 	}
 echo'</form>';
 

@@ -2209,6 +2209,19 @@ function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
 	}
 }
 
+/**
+ * Get an alert tamplate, and print the result like a csv.
+ * 
+ * @param string $id_template Id of the template to get.
+ * @param $thrash1 Don't use.
+ * @param array $other Don't use 
+ * 
+ *  example:
+ * 
+ * api.php?op=get&op2=alert_template&id=25
+ *    
+ * @param $thrash3 Don't use
+ */
 function get_alert_template($id_template, $thrash1, $other, $thrash3) {
 	
 	$filter_templates = false;

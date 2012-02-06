@@ -632,7 +632,7 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 				my $timezone_offset = get_conf_token($conf, 'timezone_offset', '0');
 				
 				my $module_txt = '';
-				my $temp = '';
+				my $temp = "";
 				
 				# Create the block of modules.
 				foreach my $module (@{$modules}) {
@@ -819,7 +819,7 @@ my $interval = get_conf_token (\%conf, 'agent_interval', '300');
 log_message (\%conf, "Generating XML data files for $Agents agents from $time_from to $time_to interval $interval.");
 
 # Wait for all threads to finish
-foreach my $thr (threads->list(threads::all)) {
+foreach my $thr (threads->list()) {
 	$thr->join ();
 }
 

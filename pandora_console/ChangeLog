@@ -1,3 +1,10 @@
+2012-02-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager.php: only added a comment for to explain
+	the reason because the modules from predictionserver is erased for the
+	creation policies modules. The reason is because there aren't the table
+	tmodule_synth and some code to apply this kind modules in policy too.
+
 2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql
 	  pandoradb.postgreSQL.sql

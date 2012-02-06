@@ -41,7 +41,7 @@ $table->data = array();
 $table->data[0][0] = '<h3>'.__('Show event fields').'</h3>';
 
 $table->data[1][0] = '<b>'.__('Event ID').'</b>';
-$table->data[1][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_evento', 1, '', $config['show_id_evento'], true).'&nbsp;';
+$table->data[1][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_evento', 1, '', $config['show_id_evento'], true);
 $table->data[1][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_evento', 0, '', $config['show_id_evento'], true);
 
 $table->data[2][0] = '<b>'.__('Event name').'</b>';

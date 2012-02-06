@@ -1,4 +1,9 @@
 2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/events/custom_events.php
+	  operation/events/events_list.php: Addes criticity info
+	in event view.
+
+2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/events/custom_events.php: Added file.
 
 2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>

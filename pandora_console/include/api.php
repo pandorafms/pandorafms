@@ -52,7 +52,12 @@ if (!empty($apiPassword)) {
 	}
 }
 else {
-	if (isInACL($ipOrigin)) {
+	$user_in_db = process_user_login($user, $password);
+	if ($user_in_db !== false) {
+		$config['id_user'] = $user_in_db;
+		$correctLogin = true;
+	}
+	else if (isInACL($ipOrigin)) {
 		$correctLogin = true;
 	}
 }

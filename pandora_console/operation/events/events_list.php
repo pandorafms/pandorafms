@@ -386,32 +386,118 @@ $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
 
-$table->head[0] = __('Status');
-$table->align[0] = 'center';
-
-$table->head[1] = __('Event name');
-
-$table->head[2] = __('Agent name');
-$table->align[2] = 'center';
-
-$table->head[3] = __('Timestamp');
-$table->align[3] = 'center';
-
-$table->head[4] = __('Action');
-$table->align[4] = 'center';
-$table->size[4] = '80px';
-
-$table->head[5] = html_print_checkbox ("allbox", "1", false, true);
-$table->align[5] = 'center';
+//fields that the user has selected to show
+//headers
+$i = 0;
+$show_fields = array();
+if ($config['show_estado']) {
+	$show_fields[$i] = 'estado';
+	$table->head[$i] = __('Status');
+	$table->align[$i] = 'center';
+	
+	$i++;
+}
+if ($config['show_id_evento']) {
+	$show_fields[$i] = 'id_evento';
+	$table->head[$i] = __('Event ID');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_evento']) {
+	$show_fields[$i] = 'evento';
+	$table->head[$i] = __('Event Name');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_id_agente']) {
+	$show_fields[$i] = 'id_agente';
+	$table->head[$i] = __('Agent name');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_timestamp']) {
+	$show_fields[$i] = 'timestamp';
+	$table->head[$i] = __('Timestamp');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_id_usuario']) {
+	$show_fields[$i] = 'id_usuario';
+	$table->head[$i] = __('User');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_id_grupo']) {
+	$show_fields[$i] = 'id_grupo';
+	$table->head[$i] = __('Group');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_event_type']) {
+	$show_fields[$i] = 'event_type';
+	$table->head[$i] = __('Event type');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_id_agentmodule']) {
+	$show_fields[$i] = 'id_agentmodule';
+	$table->head[$i] = __('Agent Module');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_id_alert_am']) {
+	$show_fields[$i] = 'id_alert_am';
+	$table->head[$i] = __('Alert');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_criticity']) {
+	$show_fields[$i] = 'criticity';
+	$table->head[$i] = __('Criticity');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_user_comment']) {
+	$show_fields[$i] = 'user_comment';
+	$table->head[$i] = __('Comment');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_tags']) {
+	$show_fields[$i] = 'tags';
+	$table->head[$i] = __('Tags');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_source']) {
+	$show_fields[$i] = 'source';
+	$table->head[$i] = __('Source');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($config['show_id_extra']) {
+	$show_fields[$i] = 'id_extra';
+	$table->head[$i] = __('Extra ID');
+	$table->align[$i] = 'center';
+	$i++;
+}
+if ($i != 0) {
+	$table->head[$i] = __('Action');
+	$table->align[$i] = 'center';
+	$table->size[$i] = '80px';
+	$i++;
+	$table->head[$i] = html_print_checkbox ("allbox", "1", false, true);
+	$table->align[$i] = 'center';
+}
 
 $idx = 0;
 //Arrange data. We already did ACL's in the query
 foreach ($result as $event) {
 	$data = array ();
-	
 	//First pass along the class of this row
 	$table->rowclass[] = get_priority_class ($event["criticity"]);
 	
+	//print status
 	// Grouped events
 	if ($group_rep != 0) {
 		if ($event["max_estado"] == 2) {
@@ -426,7 +512,6 @@ foreach ($result as $event) {
 	else {
 		$estado = $event["estado"];
 	}
-	
 	// Colored box	
 	switch($estado) {
 		case 0:
@@ -442,184 +527,260 @@ foreach ($result as $event) {
 			$title_st = __('Event in process');
 			break;
 	}
-
-	$data[0] = html_print_image ($img_st, true, 
-		array ("class" => "image_status",
-			"width" => 16,
-			"height" => 16,
-			"title" => $title_st,
-			"id" => 'status_img_'.$event["id_evento"]));
+	
+	$i = 0;
+	
+	if (in_array('estado',$show_fields)) {
+			$data[$i] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title_st,
+					"id" => 'status_img_'.$event["id_evento"]));
+			$i++;
+	}
+	if (in_array('id_evento',$show_fields)) {
+		$data[$i] = $event["id_evento"];
+		$i++;
+	}
 	
 	switch ($event["criticity"]) {
-		default:
-		case 0:
-			$img_sev = "images/status_sets/default/severity_maintenance.png";
-			break;
-		case 1:
-			$img_sev = "images/status_sets/default/severity_informational.png";
-			break;
-		case 2:
-			$img_sev = "images/status_sets/default/severity_normal.png";
-			break;
-		case 3:
-			$img_sev = "images/status_sets/default/severity_warning.png";
-			break;
-		case 4:
-			$img_sev = "images/status_sets/default/severity_critical.png";
-			break;
+			default:
+			case 0:
+				$img_sev = "images/status_sets/default/severity_maintenance.png";
+				break;
+			case 1:
+				$img_sev = "images/status_sets/default/severity_informational.png";
+				break;
+			case 2:
+				$img_sev = "images/status_sets/default/severity_normal.png";
+				break;
+			case 3:
+				$img_sev = "images/status_sets/default/severity_warning.png";
+				break;
+			case 4:
+				$img_sev = "images/status_sets/default/severity_critical.png";
+				break;
 	}
+		
+	if (in_array('evento', $show_fields)) {
+		// Event description
+		$data[$i] = '<span title="'.$event["evento"].'" class="f9">';
+		$data[$i] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode(io_safe_input($event["evento"])).'">';
+		$data[$i] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
+		$data[$i] .= '</a></span>';
+		$i++;
+		
+	}	
 	
-	// Event description
-	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
-	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode(io_safe_input($event["evento"])).'">';
-	$data[1] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
-	$data[1] .= '</a></span>';
-
-	$data[2] = '<span style="color: #000000">';
-	if ($event["event_type"] == "system") {
-		$data[2] .= __('System');
-	}
-	elseif ($event["id_agente"] > 0) {
-		// Agent name
-		$data[2] .= ui_print_agent_name ($event["id_agente"], true);
-	}
-	else {
-		$data[2] .= '';
-	}
-	$data[2] .= '</span>';
-	
-	//Time
-	$data[3] = '<span style="color: #000000">';
-	if ($group_rep == 1) {
-		$data[3] .= ui_print_timestamp ($event['timestamp_rep'], true);
-	}
-	else {
-		$data[3] .= ui_print_timestamp ($event["timestamp"], true);
-	}
-	$data[3] .= '</span>';
-
-	//Actions
-	$data[4] = '';
-	// Validate event
-	if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
-		$data[4] .= '<a href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
-		$data[4] .= html_print_image ("images/ok.png", true,
-			array ("title" => __('Validate event')));
-		$data[4] .= '</a>&nbsp;';
-	}
-	else {
-	/*	$data[4] .= html_print_image ("images/tick.png", true,
-			array ("title" => __('Event validated'))).'&nbsp;';		*/	
-		$data[4] .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-	}
-	// Delete event
-	if (check_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
-		if($event['estado'] != 2) {
-			$data[4] .= '<a class="delete_event" href="#"  onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;" id="delete-'.$event['id_evento'].'">';
-			$data[4] .= html_print_image ("images/cross.png", true,
-				array ("title" => __('Delete event')));
-			$data[4] .= '</a>&nbsp;';
+	if (in_array('id_agente', $show_fields)) {
+		$data[$i] = '<span style="color: #000000">';
+		if ($event["event_type"] == "system") {
+			$data[$i] .= __('System');
+		}
+		elseif ($event["id_agente"] > 0) {
+			// Agent name
+			$data[$i] .= ui_print_agent_name ($event["id_agente"], true);
 		}
 		else {
-			$data[4] .= html_print_image ("images/cross.disabled.png", true,
-				array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
+			$data[$i] .= '';
 		}
+		$data[$i] .= '</span>';
+		$i++;
 	}
 	
-	$data[4] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
-	$data[4] .= html_print_image ("images/eye.png", true,
-			array ("title" => __('Show more')));	
-	$data[4] .= '</a>&nbsp;';
-	
-	// Create incident from this event
-	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
-		if(isset($config['integria_enabled']) && $config['integria_enabled'] == 1) {
-			$incidents_path = 'integria_incidents/incident&amp;tab=editor';
+	if (in_array('timestamp', $show_fields)) {
+		//Time
+		$data[$i] = '<span style="color: #000000">';
+		if ($group_rep == 1) {
+			$data[$i] .= ui_print_timestamp ($event['timestamp_rep'], true);
 		}
 		else {
-			$incidents_path = 'incidents/incident_detail&amp;insert_form';
+			$data[$i] .= ui_print_timestamp ($event["timestamp"], true);
 		}
-		$data[4] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/'.$incidents_path.'&amp;from_event='.$event["id_evento"].'">';
-		$data[4] .= html_print_image ("images/page_lightning.png", true,
-			array ("title" => __('Create incident from event')));
-		$data[4] .= '</a>';
+		$data[$i] .= '</span>';
+		$i++;
 	}
 	
-	//Checkbox
-	$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
-	array_push ($table->data, $data);
-
-	//Hiden row with description form
-	$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
-	$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
-	$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
-	$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
-	$string .= '<td align="left" width="200px">'; 
-	$string .= '<div style="text-align:center;">';
-	if($event["estado"] == 0) {
-		$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+	if (in_array('id_usuario',$show_fields)) {
+		$id_user = $event["id_usuario"];
+		$user_name = db_get_value('fullname', 'tusuario', 'id_user', $id_user);
+		$data[$i] = $user_name;
+		$i++;
 	}
-	$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
-	if($event["estado"] == 2) {
-		$string .= html_print_button (__('Validate'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
-	}else {
-		$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
-	}
-	$string .= '</a>';
-	$string .= '</td><td width="400px">';
-	if($event["id_alert_am"] != 0) {
-		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
-	}
-	$string .= '</td></tr></table>'; //</form>';	
 	
-	$data = array($string);
-	
-	$idx++;
-	
-	$table->rowclass[$idx] = 'event_form_' . $event["id_evento"].' event_form';
-	$table->colspan[$idx][0] = 10;
-	$table->rowstyle[$idx] = 'display: none;';
-	array_push ($table->data, $data);
-
-	//Hiden row with extended description
-	$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
-	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
-	$string .= '<b>' . __('Event ID') . '</b></td><td align="left">';
-	$string .= io_safe_output($event["id_evento"]);
-	$string .= '</td></tr><tr class="rowOdd">';	
-
-	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
-	$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
-	$string .= io_safe_output($event["evento"]);
-	$string .= '</td></tr><tr>';	
-	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
-	$string .= html_print_image ($img_sev, true, 
-		array ("class" => "image_status",
-			"width" => 12,
-			"height" => 12,
-			"title" => get_priority_name ($event["criticity"])));
-	$string .= ' '.get_priority_name ($event["criticity"]);
-	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
-	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Type') . '</b></td><td align="left">';
-	$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
-	$string .= '</td></tr><tr>';
-	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Status') . '</b></td><td align="left">';
-	$string .= $title_st;
-	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
-	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Timestamp') . '</b></td><td align="left">';
-	if ($group_rep == 1) {
-		$string .= date ($config["date_format"], $event['timestamp_rep']);
+	if (in_array('id_grupo',$show_fields)) {
+		$id_group = $event["id_grupo"];
+		$group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
+		$data[$i] = $group_name;
+		$i++;
 	}
-	else {
-		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
-	}		
-	$string .= '</td></tr><tr>';
+	
+	if (in_array('event_type',$show_fields)) {
+		$data[$i] = $event["event_type"];
+		$i++;
+	}
+	
+	if (in_array('id_agentmodule',$show_fields)) {
+		$data[$i] = $event["id_agentmodule"];
+		$i++;
+	}
+	
+	if (in_array('id_alert_am',$show_fields)) {
+		$data[$i] = $event["id_alert_am"];
+		$i++;
+	}
+	
+	if (in_array('criticity',$show_fields)) {
+		$data[$i] = $event["criticity"];
+		$i++;
+	}
+	
+	if (in_array('user_comment',$show_fields)) {
+		$data[$i] = $event["user_comment"];
+		$i++;
+	}
+	
+	if (in_array('tags',$show_fields)) {
+		$data[$i] = $event["tags"];
+		$i++;
+	}
+	
+	if (in_array('source',$show_fields)) {
+		$data[$i] = $event["source"];
+		$i++;
+	}
+	
+	if (in_array('id_extra',$show_fields)) {
+		$data[$i] = $event["id_extra"];
+		$i++;
+	}
+	
+	
+	if ($i != 0) {
+		//Actions
+		$data[$i] = '';
+		// Validate event
+		if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
+			$data[$i] .= '<a href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
+			$data[$i] .= html_print_image ("images/ok.png", true,
+					array ("title" => __('Validate event')));
+			$data[$i] .= '</a>&nbsp;';
+		}
+		else {
+		/*	$data[4] .= html_print_image ("images/tick.png", true,
+				array ("title" => __('Event validated'))).'&nbsp;';		*/	
+			$data[$i] .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		// Delete event
+		if (check_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
+			if($event['estado'] != 2) {
+				$data[$i] .= '<a class="delete_event" href="#"  onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;" id="delete-'.$event['id_evento'].'">';
+				$data[$i] .= html_print_image ("images/cross.png", true,
+					array ("title" => __('Delete event')));
+				$data[$i] .= '</a>&nbsp;';
+			}
+			else {
+				$data[$i] .= html_print_image ("images/cross.disabled.png", true,
+					array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
+			}
+		}
+	
+		$data[$i] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
+		$data[$i] .= html_print_image ("images/eye.png", true,
+				array ("title" => __('Show more')));	
+		$data[$i] .= '</a>&nbsp;';
+	
+		// Create incident from this event
+		if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+			if(isset($config['integria_enabled']) && $config['integria_enabled'] == 1) {
+				$incidents_path = 'integria_incidents/incident&amp;tab=editor';
+			}
+			else {
+				$incidents_path = 'incidents/incident_detail&amp;insert_form';
+			}
+			$data[$i] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/'.$incidents_path.'&amp;from_event='.$event["id_evento"].'">';
+			$data[$i] .= html_print_image ("images/page_lightning.png", true,
+				array ("title" => __('Create incident from event')));
+			$data[$i] .= '</a>';
+		}
+		$i++;
+	
+		//Checkbox
+		$data[$i] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+		array_push ($table->data, $data);
+	}
+		//Hiden row with description form
+		$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
+		$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
+		$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
+		$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
+		$string .= '<td align="left" width="200px">'; 
+		$string .= '<div style="text-align:center;">';
+		if($event["estado"] == 0) {
+			$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+		}
+		$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
+		if($event["estado"] == 2) {
+			$string .= html_print_button (__('Validate'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+		}else {
+			$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+		}
+		$string .= '</a>';
+		$string .= '</td><td width="400px">';
+		if($event["id_alert_am"] != 0) {
+			$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
+		}
+		$string .= '</td></tr></table>'; //</form>';	
+	
+		$data = array($string);
+	
+		$idx++;
+	
+		$table->rowclass[$idx] = 'event_form_' . $event["id_evento"].' event_form';
+		$table->colspan[$idx][0] = 10;
+		$table->rowstyle[$idx] = 'display: none;';
+		array_push ($table->data, $data);
 
-	$odd = 'rowOdd';
+		//Hiden row with extended description
+		$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
+		$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
+		$string .= '<b>' . __('Event ID') . '</b></td><td align="left">';
+		$string .= io_safe_output($event["id_evento"]);
+		$string .= '</td></tr><tr class="rowOdd">';	
+
+		$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
+		$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
+		$string .= io_safe_output($event["evento"]);
+		$string .= '</td></tr><tr>';	
+		$string .= '<td align="left" valign="top" width="15%">';
+		$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
+		$string .= html_print_image ($img_sev, true, 
+				array ("class" => "image_status",
+				"width" => 12,
+				"height" => 12,
+				"title" => get_priority_name ($event["criticity"])));
+		$string .= ' '.get_priority_name ($event["criticity"]);
+		$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
+		$string .= '<td align="left" valign="top" width="15%">';
+		$string .= '<b>' . __('Type') . '</b></td><td align="left">';
+		$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
+		$string .= '</td></tr><tr>';
+		$string .= '<td align="left" valign="top" width="15%">';
+		$string .= '<b>' . __('Status') . '</b></td><td align="left">';
+		$string .= $title_st;
+		$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
+		$string .= '<td align="left" valign="top" width="15%">';
+		$string .= '<b>' . __('Timestamp') . '</b></td><td align="left">';
+		if ($group_rep == 1) {
+			$string .= date ($config["date_format"], $event['timestamp_rep']);
+		}
+		else {
+			$string .= date ($config["date_format"], strtotime($event["timestamp"]));
+		}		
+		$string .= '</td></tr><tr>';
+
+		$odd = 'rowOdd';
 	
 	if ($event["id_agente"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';

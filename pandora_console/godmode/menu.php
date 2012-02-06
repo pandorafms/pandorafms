@@ -223,6 +223,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
+	
+	$sub["godmode/events/custom_events"]["text"] = __('Custom events');
 
 	$menu["gsetup"]["sub"] = $sub;
 }

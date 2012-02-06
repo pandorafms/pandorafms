@@ -248,7 +248,23 @@ function config_update_config () {
 
 	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
 	config_update_value ('refr', get_parameter('refr', $config['refr']));	
-	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));	
+	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
+	
+	config_update_value ('show_id_evento', get_parameter('show_id_evento', $config['show_id_evento']));
+	config_update_value ('show_evento', get_parameter('show_evento', $config['show_evento']));
+	config_update_value ('show_id_agente', get_parameter('show_id_agente', $config['show_id_agente']));
+	config_update_value ('show_id_usuario', get_parameter('show_id_usuario', $config['show_id_usuario']));
+	config_update_value ('show_id_grupo', get_parameter('show_id_grupo', $config['show_id_grupo']));
+	config_update_value ('show_estado', get_parameter('show_estado', $config['show_estado']));
+	config_update_value ('show_timestamp', get_parameter('show_timestamp', $config['show_timestamp']));
+	config_update_value ('show_event_type', get_parameter('show_event_type', $config['show_event_type']));
+	config_update_value ('show_id_agentmodule', get_parameter('show_id_agentmodule', $config['show_id_agentmodule']));
+	config_update_value ('show_id_alert_am', get_parameter('show_id_alert_am', $config['show_id_alert_am']));
+	config_update_value ('show_criticity', get_parameter('show_criticity', $config['show_criticity']));
+	config_update_value ('show_user_comment', get_parameter('show_user_comment', $config['show_user_comment']));
+	config_update_value ('show_tags', get_parameter('show_tags', $config['show_tags']));
+	config_update_value ('show_source', get_parameter('show_source', $config['show_source']));
+	config_update_value ('show_id_extra', get_parameter('show_id_extra', $config['show_id_extra']));
 	
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');

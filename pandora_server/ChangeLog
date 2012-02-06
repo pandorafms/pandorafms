@@ -1,3 +1,7 @@
+2012-02-06  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/SNMPServer.pm: Added SNMPv2 Trap support!
+
 2012-02-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added support for ff interval. Small

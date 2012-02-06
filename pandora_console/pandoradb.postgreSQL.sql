@@ -404,7 +404,6 @@ CREATE TABLE "tevento" (
 	"user_comment" text NOT NULL,
 	"tags" text NOT NULL,
 	"source" text NOT NULL default '',
-	"unique_id" text NOT NULL default '',
 	"id_extra" text NOT NULL default ''
 );
 CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");

@@ -162,7 +162,7 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	$table->data[2][1] = __('Normal') . ' ' . html_print_radio_button_extended ('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true);
 	$table->data[2][1] .= __('Advanced') . ' ' . html_print_radio_button_extended ('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true);
 	$table->data[2][2] = '<b>'.__('Load filter').'</b>';
-	$user_groups = users_get_groups ($config['id_user'], "AW", $own_info['is_admin'], true);
+	$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
 	$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
 	$table->data[2][3] = html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true);
 	$table->data[2][3] .= html_print_submit_button (__('Load'), 'load_button', false, 'class="sub upd"', true);

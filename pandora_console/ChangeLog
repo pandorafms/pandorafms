@@ -1,3 +1,7 @@
+2012-02-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/netflow/nf_live_view.php: Fixed filter load ACL check.
+
 2012-02-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed into function "get_events__with_user"

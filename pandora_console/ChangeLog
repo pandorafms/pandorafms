@@ -1,3 +1,12 @@
+2012-02-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed into function "get_events__with_user"
+	when try get list events when empty list of groups for user.
+	
+	* include/api.php: fixed the auth.
+
+	Bigfix merged from trunk.
+
 2012-02-06  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Merged from trunk.  Improved the

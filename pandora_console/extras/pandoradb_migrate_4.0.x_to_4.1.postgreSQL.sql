@@ -92,7 +92,6 @@ REFERENCES "tplanned_downtime"("id");
 -- -----------------------------------------------------
 
 ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
-ALTER TABLE "tevento" ADD COLUMN "unique_id" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';
 
 -- -----------------------------------------------------

@@ -448,7 +448,6 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `user_comment` text NOT NULL,
   `tags` text NOT NULL,
   `source` tinytext NOT NULL default '',
-  `unique_id` tinytext NOT NULL default '',
   `id_extra` tinytext NOT NULL default '',
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),

@@ -892,9 +892,17 @@ foreach ($result as $event) {
 			$string .= ',';
 		}
 		$string = rtrim($string, ',');
+		$odd = ($odd == '')? 'rowOdd' : '';
 	}
 	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
+		$odd = ($odd == '')? 'rowOdd' : '';
+	}
+	if ($event["criticity"] != '') {
+		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity') . '</td><td align="left">';
+		$string .= $event["criticity"];
+		$string .= '</td></tr><tr>';
+		$odd = ($odd == '')? 'rowOdd' : '';
 	}
 	$string .= '</td></tr>';
 	$string .= '</table>';

@@ -612,6 +612,9 @@ foreach ($result as $event) {
 	if (in_array('id_grupo',$show_fields)) {
 		$id_group = $event["id_grupo"];
 		$group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
+		if ($id_group == 0) {
+			$group_name = __('All');
+		}
 		$data[$i] = $group_name;
 		$i++;
 	}

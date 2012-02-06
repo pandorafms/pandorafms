@@ -1,3 +1,16 @@
+2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb_data.sql,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql: Added fields to display the event view.
+
+	* godmode/menu.php
+	  include/functions_config.php
+	  operation/events/events_list.php: Configure the fields to be
+	displayed in the event view.
+
+	* godmode/events/custom_events.php: Added file.
+
 2012-02-06  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Merged from 4.0. Add a missing

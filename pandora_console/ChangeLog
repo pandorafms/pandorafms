@@ -1,4 +1,7 @@
 2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/events/custom_events.php: Added file.
+
+2012-02-06  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb_data.sql,
 	  pandoradb.data.postgreSQL.sql,

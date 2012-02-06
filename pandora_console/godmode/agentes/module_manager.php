@@ -61,6 +61,12 @@ enterprise_hook ('set_enterprise_module_types', array (&$modules));
 
 $sec2 = get_parameter('sec2', '');
 if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
+	//It is unset because the policies haven't a table tmodule_synth and the
+	//some part of code to apply this kind of modules in policy agents.
+	
+	//But in the future maybe will be good to make this feature, but remember
+	//the modules to show in syntetic module policy form must be the policy
+	//modules from the same policy.
 	unset($modules['predictionserver']);
 }
 

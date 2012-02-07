@@ -1,3 +1,9 @@
+2012-02-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandoradb.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql: Fixed an error with 
+	weight field of custom graphs
+
 2012-02-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/netflow/nf_live_view.php: Fixed filter load ACL check.

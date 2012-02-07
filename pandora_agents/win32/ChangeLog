@@ -1,3 +1,8 @@
+2012-02-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Merged from trunk. Added a timeout to the
+	  tentacle client execution
+
 2012-01-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_regexp.cc: Merged from trunk. Several fixes.

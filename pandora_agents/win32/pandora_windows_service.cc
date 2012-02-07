@@ -241,6 +241,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	string	tentacle_cmd, working_dir;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;
+	int tentacle_timeout = 0;
 
 	var = conf->getValue ("temporal");
 	if (var[var.length () - 1] != '\\') {
@@ -281,9 +282,20 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	    CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
 		return -1;
 	}
+	
+	/* Timeout */
+	tentacle_timeout = atoi (conf->getValue ("tentacle_timeout").c_str ());
+	if (tentacle_timeout <= 0) {
+		tentacle_timeout = INFINITE;
+	}
 
-	/* Get the return code of the tentacle client*/
-    WaitForSingleObject(pi.hProcess, INFINITE);
+    if (WaitForSingleObject(pi.hProcess, tentacle_timeout) == WAIT_TIMEOUT) {
+		TerminateProcess(pi.hThread, STILL_ACTIVE);
+		CloseHandle (pi.hProcess);
+		return -1;
+	}
+
+	/* Get the return code of the tentacle client*/	
     GetExitCodeProcess (pi.hProcess, &rc);
 	if (rc != 0) {
 		CloseHandle (pi.hProcess);

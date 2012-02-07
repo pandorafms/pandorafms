@@ -1,3 +1,15 @@
+2012-02-07  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql
+	  godmode/agentes/module_manager_editor_common.php
+	  godmode/events/custom_events.php
+	  operation/events/events_list.php: Modify fields selection to
+	show events.
+
 2012-02-07 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/graphs/functions_pchart.php: Fixed a problem charting lineal

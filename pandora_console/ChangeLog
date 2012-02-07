@@ -1,5 +1,10 @@
 2012-02-07 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/graphs/functions_pchart.php: Fixed a problem charting lineal
+	and area graph with negative values in static mode.
+
+2012-02-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* pandoradb.sql: Fixed an error with weight field of custom graphs.
 
 2012-02-06  Miguel de Dios  <miguel.dedios@artica.es>

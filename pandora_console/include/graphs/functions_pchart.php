@@ -719,13 +719,21 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 	/* Define the chart area */
 	 	$myPicture->setGraphArea($chart_size, 5,$width - $water_mark_width,$height - $margin_bottom);
 	 }
+	
+	 /*Get minimun value to draw axis properly*/
+	 $min_data = min(min($data));
+
+	 $mode = SCALE_MODE_START0;
+	 if ($min_data < 0) {
+		$mode = SCALE_MODE_FLOATING;
+	 }
 
 	 /* Draw the scale */
 	 $scaleSettings = array("GridR"=>200,
 		 "GridG"=>200,
 		 "GridB"=>200,
 		 "DrawSubTicks"=>TRUE,
-		 "CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "LabelRotation" => 60, "XMargin" => 0, "MinDivHeight" => 20);
+		 "CycleBackground"=>TRUE, "Mode" => $mode, "LabelRotation" => 60, "XMargin" => 0, "MinDivHeight" => 20);
 	 $myPicture->drawScale($scaleSettings);
 	 
 	 /* Turn on shadow computing */ 
@@ -748,7 +756,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 	"DisplayZeroValues"=>FALSE,
 	 	"DisplayR"=>100,
 	 	"DisplayZeros"=> FALSE,
-	 	"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
+	 	"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>TRUE);
 	 
 		
 	 switch($graph_type) {

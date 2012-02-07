@@ -292,7 +292,7 @@ $(document).ready (function () {
 	$("#right").click (function () {
 		jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
 			tag_name = $(value).html();
-			if (tag_name != 'None'){
+			if (tag_name != <?php echo "'".__('None')."'"; ?>){
 				id_tag = $(value).attr('value');
 				$("select[name='id_tag_selected[]']").append($("<option selected='selected'>").val(id_tag).html('<i>' + tag_name + '</i>'));
 				$("#id_tag_available").find("option[value='" + id_tag + "']").remove();
@@ -302,7 +302,7 @@ $(document).ready (function () {
 	$("#left").click (function () {
 		jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
 				tag_name = $(value).html();
-				if (tag_name != 'None'){
+				if (tag_name != <?php echo "'".__('None')."'"; ?>){
 					id_tag = $(value).attr('value');
 					$("select[name='id_tag_available[]']").append($("<option>").val(id_tag).html('<i>' + tag_name + '</i>'));
 					$("#id_tag_selected").find("option[value='" + id_tag + "']").remove();

@@ -372,7 +372,7 @@ else {
 		WHERE 1=1 $sql_post GROUP BY evento, id_agentmodule) AS t";
 }
 
-//Count the events with this filter (TODO but not utimestamp).
+
 $total_events = (int) db_get_sql ($sql);
 if (empty ($result)) {
 	$result = array ();
@@ -387,96 +387,81 @@ $table->head = array ();
 $table->data = array ();
 
 //fields that the user has selected to show
+$show_fields = explode (',', $config['event_fields']);
+
 //headers
 $i = 0;
-$show_fields = array();
-if ($config['show_estado']) {
-	$show_fields[$i] = 'estado';
+if (in_array('estado', $show_fields)) {
 	$table->head[$i] = __('Status');
 	$table->align[$i] = 'center';
-	
 	$i++;
 }
-if ($config['show_id_evento']) {
-	$show_fields[$i] = 'id_evento';
+if (in_array('id_evento', $show_fields)) {
 	$table->head[$i] = __('Event ID');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_evento']) {
-	$show_fields[$i] = 'evento';
+if (in_array('evento', $show_fields)) {
 	$table->head[$i] = __('Event Name');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_id_agente']) {
-	$show_fields[$i] = 'id_agente';
+if (in_array('id_agente', $show_fields)) {
 	$table->head[$i] = __('Agent name');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_timestamp']) {
-	$show_fields[$i] = 'timestamp';
+if (in_array('timestamp', $show_fields)) {
 	$table->head[$i] = __('Timestamp');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_id_usuario']) {
-	$show_fields[$i] = 'id_usuario';
+if (in_array('id_usuario', $show_fields)) {
 	$table->head[$i] = __('User');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_id_grupo']) {
-	$show_fields[$i] = 'id_grupo';
+if (in_array('id_grupo', $show_fields)) {
 	$table->head[$i] = __('Group');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_event_type']) {
-	$show_fields[$i] = 'event_type';
+if (in_array('event_type', $show_fields)) {
 	$table->head[$i] = __('Event type');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_id_agentmodule']) {
-	$show_fields[$i] = 'id_agentmodule';
+if (in_array('id_agentmodule', $show_fields)) {
 	$table->head[$i] = __('Agent Module');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_id_alert_am']) {
-	$show_fields[$i] = 'id_alert_am';
+if (in_array('id_alert_am', $show_fields)) {
 	$table->head[$i] = __('Alert');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_criticity']) {
-	$show_fields[$i] = 'criticity';
+if (in_array('criticity', $show_fields)) {
 	$table->head[$i] = __('Criticity');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_user_comment']) {
-	$show_fields[$i] = 'user_comment';
+if (in_array('user_comment', $show_fields)) {
 	$table->head[$i] = __('Comment');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_tags']) {
-	$show_fields[$i] = 'tags';
+if (in_array('tags', $show_fields)) {
 	$table->head[$i] = __('Tags');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_source']) {
-	$show_fields[$i] = 'source';
+if (in_array('source', $show_fields)) {
 	$table->head[$i] = __('Source');
 	$table->align[$i] = 'center';
 	$i++;
 }
-if ($config['show_id_extra']) {
-	$show_fields[$i] = 'id_extra';
+if (in_array('id_extra', $show_fields)) {
 	$table->head[$i] = __('Extra ID');
 	$table->align[$i] = 'center';
 	$i++;
@@ -531,13 +516,13 @@ foreach ($result as $event) {
 	$i = 0;
 	
 	if (in_array('estado',$show_fields)) {
-			$data[$i] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"width" => 16,
-					"height" => 16,
-					"title" => $title_st,
-					"id" => 'status_img_'.$event["id_evento"]));
-			$i++;
+		$data[$i] = html_print_image ($img_st, true, 
+			array ("class" => "image_status",
+				"width" => 16,
+				"height" => 16,
+				"title" => $title_st,
+				"id" => 'status_img_'.$event["id_evento"]));
+		$i++;
 	}
 	if (in_array('id_evento',$show_fields)) {
 		$data[$i] = $event["id_evento"];
@@ -658,7 +643,6 @@ foreach ($result as $event) {
 		$data[$i] = $event["id_extra"];
 		$i++;
 	}
-	
 	
 	if ($i != 0) {
 		//Actions

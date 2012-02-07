@@ -84,21 +84,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('netflow_path', '/var/spool/pandora/data_in/netflow'),
 ('netflow_interval', '300'),
 ('netflow_daemon', '/usr/bin/nfcapd'),
-('show_id_evento', '0'),
-('show_evento', '1'),
-('show_id_agente', '1'),
-('show_id_usuario', '0'),
-('show_id_grupo', '0'),
-('show_estado', '1'),
-('show_timestamp', '1'),
-('show_event_type', '0'),
-('show_id_agentmodule', '0'),
-('show_id_alert_am', '0'),
-('show_criticity', '0'),
-('show_user_comment', '0'),
-('show_tags', '0'),
-('show_source', '0'),
-('show_id_extra', '0');
+('event_fields', 'evento,id_agente,estado,timestamp');
+
 
 UNLOCK TABLES;
 

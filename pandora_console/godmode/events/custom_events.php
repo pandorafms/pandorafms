@@ -28,7 +28,37 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 // Header
 ui_print_page_header (__('Custom events'), "", false, "", true);
 
-$update = get_parameter('update', 0);
+$update = get_parameter('update_config', 0);
+
+$fields_selected = array();
+$event_fields = '';
+$fields_selected = explode (',', $config['event_fields']);
+
+if ($update) {
+	$fields_selected = (array)get_parameter('fields_selected');
+	
+	if ($fields_selected[0] == '') {
+		$event_fields = 'evento,id_agente,estado,timestamp';
+		$fields_selected = explode (',', $event_fields);
+	} else {
+		$event_fields = implode (',', $fields_selected);
+	}
+
+	$values = array(
+		'token' => 'event_fields',
+		'value' => $event_fields
+	);
+	//update 'event_fields' in tconfig table to keep the value at update.
+	$result = db_process_sql_update('tconfig', $values, array ('token' => 'event_fields'));
+}
+
+$result_selected = array();
+if ($fields_selected[0]!='') {
+	foreach ($fields_selected as $field_selected) {
+		$result_selected[$field_selected] = $field_selected;
+	}
+}
+
 $event = array();
 
 $table->width = '90%';
@@ -40,67 +70,41 @@ $table->size[2] = '20%';
 $table->data = array();
 $table->data[0][0] = '<h3>'.__('Show event fields').'</h3>';
 
-$table->data[1][0] = '<b>'.__('Event ID').'</b>';
-$table->data[1][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_evento', 1, '', $config['show_id_evento'], true);
-$table->data[1][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_evento', 0, '', $config['show_id_evento'], true);
+$fields_available = array();
+$fields_available['id_evento'] = 'id_evento';
+$fields_available['evento'] = 'evento';
+$fields_available['id_agente'] = 'id_agente';
+$fields_available['id_usuario'] = 'id_usuario';
+$fields_available['id_grupo'] = 'id_grupo';
+$fields_available['estado'] = 'estado';
+$fields_available['timestamp'] = 'timestamp';
+$fields_available['event_type'] = 'event_type';
+$fields_available['id_agentmodule'] = 'id_agentmodule';
+$fields_available['id_alert_am'] = 'id_alert_am';
+$fields_available['criticity'] = 'criticity';
+$fields_available['user_comment'] = 'user_comment';
+$fields_available['tags'] = 'tags';
+$fields_available['source'] = 'source';
+$fields_available['id_extra'] = 'id_extra';
 
-$table->data[2][0] = '<b>'.__('Event name').'</b>';
-$table->data[2][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_evento', 1, '', $config['show_evento'], true);
-$table->data[2][1] .= __('No').'&nbsp;'.html_print_radio_button('show_evento', 0, '', $config['show_evento'], true);
+//remove fields already selected
+foreach ($fields_available as $available) {
+	foreach ($result_selected as $selected) {
+		if ($selected == $available) {
+			unset($fields_available[$selected]);
+		}
+	}
+}
 
-$table->data[3][0] = '<b>'.__('Agent ID').'</b>';
-$table->data[3][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_agente', 1, '', $config['show_id_agente'], true);
-$table->data[3][1] .=__('No').'&nbsp;'. html_print_radio_button('show_id_agente', 0, '', $config['show_id_agente'], true);
+$table->data[1][0] =  '<b>' . __('Fields available').'</b>';
+$table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', __('None'), '', true, true, false);
+$table->data[1][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
+$table->data[1][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+	
+$table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
+$table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', __('None'), '', true, true, false);	
 
-$table->data[4][0] = '<b>'.__('User ID').'</b>';
-$table->data[4][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_usuario', 1, '', $config['show_id_usuario'], true);
-$table->data[4][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_usuario', 0, '', $config['show_id_usuario'], true);
-
-$table->data[5][0] = '<b>'.__('Group ID').'</b>';
-$table->data[5][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_grupo', 1, '', $config['show_id_grupo'], true);
-$table->data[5][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_grupo', 0, '', $config['show_id_grupo'], true);
-
-$table->data[6][0] ='<b>'. __('Status').'</b>';
-$table->data[6][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_estado', 1, '', $config['show_estado'], true);
-$table->data[6][1] .= __('No').'&nbsp;'.html_print_radio_button('show_estado', 0, '', $config['show_estado'], true);
-
-$table->data[7][0] = '<b>'.__('Timestamp').'</b>';
-$table->data[7][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_timestamp', 1, '', $config['show_timestamp'], true);
-$table->data[7][1] .= __('No').'&nbsp;'.html_print_radio_button('show_timestamp', 0, '', $config['show_timestamp'], true);
-
-$table->data[8][0] = '<b>'.__('Event type');
-$table->data[8][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_event_type', 1, '', $config['show_event_type'], true);
-$table->data[8][1] .= __('No').'&nbsp;'.html_print_radio_button('show_event_type', 0, '', $config['show_event_type'], true);
-
-$table->data[9][0] = '<b>'.__('Agent Module').'</b>';
-$table->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_agentmodule', 1, '', $config['show_id_agentmodule'], true);
-$table->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_agentmodule', 0, '', $config['show_id_agentmodule'], true);
-
-$table->data[10][0] = '<b>'.__('Alert ID').'</b>';
-$table->data[10][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_alert_am', 1, '', $config['show_id_alert_am'], true);
-$table->data[10][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_alert_am', 0, '', $config['show_id_alert_am'], true);
-
-$table->data[11][0] = '<b>'.__('Criticity').'</b>';
-$table->data[11][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_criticity', 1, '', $config['show_criticity'], true);
-$table->data[11][1] .= __('No').'&nbsp;'.html_print_radio_button('show_criticity', 0, '', $config['show_criticity'], true);
-
-$table->data[12][0] = '<b>'.__('Comment').'</b>';
-$table->data[12][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_user_comment', 1, '', $config['show_user_comment'], true);
-$table->data[12][1] .= __('No').'&nbsp;'.html_print_radio_button('show_user_comment', 0, '', $config['show_user_comment'], true);
-
-$table->data[13][0] = '<b>'.__('Tags').'</b>';
-$table->data[13][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_tags', 1, '', $config['show_tags'], true);
-$table->data[13][1] .= __('No').'&nbsp;'.html_print_radio_button('show_tags', 0, '', $config['show_tags'], true);
-
-$table->data[14][0] = '<b>'.__('Source').'</b>';
-$table->data[14][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_source', 1, '', $config['show_source'], true);
-$table->data[14][1] .= __('No').'&nbsp;'.html_print_radio_button('show_source', 0, '', $config['show_source'], true);
-
-$table->data[15][0] = '<b>'.__('Extra ID').'</b>';
-$table->data[15][1] = __('Yes').'&nbsp;'.html_print_radio_button('show_id_extra', 1, '', $config['show_id_extra'], true);
-$table->data[15][1] .= __('No').'&nbsp;'.html_print_radio_button('show_id_extra', 0, '', $config['show_id_extra'], true);
-
-echo '<form id="custom_events" method="post">';
+echo '<form id="custom_events" method="post" action="index.php?sec=gsetup&sec2=godmode/events/custom_events">';
 
 html_print_table($table);
 
@@ -110,12 +114,35 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	echo '</form>';
 echo '</div>';
 ?>
-<script>
 
-/*
-$('#radiobtn0002').css('display', 'none');
-*/
+<script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready (function () {
+	$("#right").click (function () {
+		jQuery.each($("select[name='fields_available[]'] option:selected"), function (key, value) {
+			field_name = $(value).html();
+			if (field_name != <?php echo "'".__('None')."'"; ?>){
+				id_field = $(value).attr('value');
+				//$("select[name='fields_available[]']").append($("<option selected='selected'></option>").val(field_name));
+				$("select[name='fields_selected[]']").append($("<option selected='selected'></option>").html(field_name).attr("value", field_name));
+				//$("select[name='fields_selected[]']").append($("<option></option>").val(field_name).html('<i>' + field_name + '</i>'));
+				$("#fields_available").find("option[value='" + id_field + "']").remove();
+			}
+		});			
+	});
 
+	$("#left").click (function () {
+		jQuery.each($("select[name='fields_selected[]'] option:selected"), function (key, value) {
+				field_name = $(value).html();
+				if (field_name != <?php echo "'".__('None')."'"; ?>){
+					id_field = $(value).attr('value');
+					//alert(id_field);
+					$("select[name='fields_available[]']").append($("<option></option>").val(field_name).html('<i>' + field_name + '</i>'));
+					$("#fields_selected").find("option[value='" + id_field + "']").remove();
+				}
+		});			
+	});
+});
 
 </script>
 

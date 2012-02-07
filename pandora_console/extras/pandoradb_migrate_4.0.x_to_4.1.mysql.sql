@@ -120,3 +120,8 @@ ALTER TABLE `tagente_modulo` CHANGE COLUMN `post_process` `post_process` double(
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
 ALTER TABLE `tnetwork_component` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;
+
+-- -----------------------------------------------------
+-- Table `tgraph_source` Alter table to allow negative values in weight
+-- -----------------------------------------------------
+ALTER TABLE tgraph_source MODIFY weight FLOAT(5,3) NOT NULL DEFAULT '0.000';

@@ -1,5 +1,10 @@
 2012-02-07  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_windows_service.cc: Merged from trunk. Convert
+	  tentacle_timeout to milliseconds.
+
+2012-02-07  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_windows_service.cc: Merged from trunk. Added a timeout to the
 	  tentacle client execution
 

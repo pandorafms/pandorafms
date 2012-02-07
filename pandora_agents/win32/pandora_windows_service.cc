@@ -287,6 +287,9 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	tentacle_timeout = atoi (conf->getValue ("tentacle_timeout").c_str ());
 	if (tentacle_timeout <= 0) {
 		tentacle_timeout = INFINITE;
+	} else {
+		/* Convert to milliseconds */
+		tentacle_timeout *= 1000;
 	}
 
     if (WaitForSingleObject(pi.hProcess, tentacle_timeout) == WAIT_TIMEOUT) {

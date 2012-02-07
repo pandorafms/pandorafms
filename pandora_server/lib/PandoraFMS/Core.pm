@@ -1676,45 +1676,57 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			$alert_data .= "OID: $oid ";
 		}
 
-        # Specific SNMP Trap alert macros for regexp selectors in trap info
-        my $snmp_f1 = "";
-        my $snmp_f2 = "";
-        my $snmp_f3 = "";
-
-		# Custom OID/value
-        # Decode first, this could be a complex regexp !
-
-        $alert->{'custom_oid'} = decode_entities($alert->{'custom_oid'});
-		my $custom_oid = $alert->{'custom_oid'};
-
-		if ($custom_oid ne '') {
-            if ($trap_custom_oid =~ m/^$custom_oid$/i){
-                $alert_data .= " Custom: $trap_custom_oid";
-
-                # Let's capture some data using regexp selectors !
-
-                if (defined($1)){
-                    $snmp_f1 = $1;
-                }
-                if (defined($2)){
-                    $snmp_f2 = $2;
-                }
-                if (defined($3)){
-                    $snmp_f3 = $3;
-                }
-
-            } else {
-                next;
-            }
+		# Trap type
+		if ($alert->{'trap_type'} >= 0) {
+			next if ($trap_type != $alert->{'trap_type'});
+			$alert_data .= "Type: $trap_type ";
 		}
 
-        # SANCHO DEBUG
+		# Trap value
+		if ($alert->{'single_value'} >= 0) {
+			next if ($trap_value ne $alert->{'single_value'});
+			$alert_data .= "Value: $trap_value ";
+		}
 
-        my %macros;
-        $macros{_snmp_f1_} = $snmp_f1;
-        $macros{_snmp_f2_} = $snmp_f2;
-        $macros{_snmp_f3_} = $snmp_f3;
+        # Specific SNMP Trap alert macros for regexp selectors in trap info
+		my %macros;
+		
+		# Custom OID/value
+        # Decode first, this could be a complex regexp !
+		my $custom_oid = decode_entities($alert->{'custom_oid'});
+		if ($custom_oid ne '') {
+			
+			# No match
+            next if ($trap_custom_oid !~ m/^$custom_oid$/i);
 
+            # Match!            
+			$macros{'_snmp_f1_'} = $1 if (defined($1));
+			$macros{'_snmp_f2_'} = $2 if (defined($2));
+			$macros{'_snmp_f3_'} = $3 if (defined($3));
+
+			$alert_data .= " Custom: $trap_custom_oid";
+
+		}
+
+		# Evaluate _snmp_fx_ macros
+		for (my $i = 1; $i <= 6; $i++) {
+			my $macro_name = '_snmp_f' . $i . '_';
+			my $macro_regexp = safe_output ($alert->{$macro_name});
+			
+			# Create an empty macro, unless the macro was already defined (_snmp_f1_, _snmp_f2_, _snmp_f3_)
+			$macros{$macro_name} = '' unless defined ($macros{$macro_name});
+			
+			# Not regexp defined
+			next if ($macro_regexp eq '');
+			
+			# No match
+			next if ($trap_custom_oid !~ $macro_regexp);
+			
+			# Match!
+			$macros{$macro_name} = $1 if defined ($1);
+		}
+
+		# Replace macros
         $alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
         $alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
         $alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
@@ -1788,7 +1800,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_type. " " . $trap_custom_oid;
 
-			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
+			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp, \%macros) if (defined ($action));
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
             if ($action->{'id_alert_command'} != 3){

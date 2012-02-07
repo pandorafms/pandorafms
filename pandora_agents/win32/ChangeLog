@@ -1,3 +1,8 @@
+2012-02-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Merged from trunk. Added a timeout to the
+	  tentacle client execution
+
 2012-02-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* installer/pandora.mpi: Merged from trunk. Added an uninstall action

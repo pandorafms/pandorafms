@@ -1,3 +1,7 @@
+2012-02-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Convert tentacle_timeout to milliseconds.
+
 2012-02-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* installer/pandora.mpi: Added an uninstall action to delete

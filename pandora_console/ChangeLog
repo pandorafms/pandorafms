@@ -1,4 +1,7 @@
 2012-02-08  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/events/custom_events.php: Added default fields button.
+
+2012-02-08  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql
 	  pandoradb.postgreSQL.sql
 	  pandoradb.oracle.sql

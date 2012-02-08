@@ -404,7 +404,8 @@ CREATE TABLE "tevento" (
 	"user_comment" text NOT NULL,
 	"tags" text NOT NULL,
 	"source" text NOT NULL default '',
-	"id_extra" text NOT NULL default ''
+	"id_extra" text NOT NULL default '',
+	"criticity_alert" INTEGER NOT NULL default 0
 );
 CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");
 CREATE INDEX "tevento_id_2_idx" ON "tevento"("utimestamp", "id_evento");

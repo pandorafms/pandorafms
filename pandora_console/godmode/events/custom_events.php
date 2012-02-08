@@ -123,9 +123,7 @@ $(document).ready (function () {
 			field_name = $(value).html();
 			if (field_name != <?php echo "'".__('None')."'"; ?>){
 				id_field = $(value).attr('value');
-				//$("select[name='fields_available[]']").append($("<option selected='selected'></option>").val(field_name));
 				$("select[name='fields_selected[]']").append($("<option selected='selected'></option>").html(field_name).attr("value", field_name));
-				//$("select[name='fields_selected[]']").append($("<option></option>").val(field_name).html('<i>' + field_name + '</i>'));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();
 			}
 		});			
@@ -136,7 +134,6 @@ $(document).ready (function () {
 				field_name = $(value).html();
 				if (field_name != <?php echo "'".__('None')."'"; ?>){
 					id_field = $(value).attr('value');
-					//alert(id_field);
 					$("select[name='fields_available[]']").append($("<option></option>").val(field_name).html('<i>' + field_name + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
 				}

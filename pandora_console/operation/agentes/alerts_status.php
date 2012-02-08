@@ -208,6 +208,24 @@ switch ($sortField) {
 		break;
 }
 
+
+//Add checks for user ACL
+$groups = users_get_groups($config["id_user"]);
+$id_groups = array_keys($groups);
+
+if (empty($id_groups)) {
+	$whereAlertSimple .= ' AND (1 = 0) ';
+}
+else {
+	$whereAlertSimple .= ' AND id_agent_module IN (
+		SELECT tam.id_agente_modulo
+		FROM tagente_modulo AS tam
+		WHERE tam.id_agente IN (SELECT ta.id_agente
+			FROM tagente AS ta
+			WHERE ta.id_grupo IN (' . implode(',', $id_groups) . '))) ';
+}
+
+
 $alerts = array();
 $options_simple = array('offset' => $offset_simple, 'limit' => $config['block_size'], 'order' => $order);
 $options_combined = array('limit' => $config["block_size"], 'offset' => $offset_combined);
@@ -216,16 +234,20 @@ $filter_alert = array();
 if($filter_standby == 'standby_on') {
 	$filter_alert['disabled'] = $filter;
 	$filter_alert['standby'] = '1';
-}else if($filter_standby == 'standby_off') {
+}
+else if($filter_standby == 'standby_off') {
 	$filter_alert['disabled'] = $filter;
 	$filter_alert['standby'] = '0';
-}else {
+}
+else {
 	$filter_alert['disabled'] = $filter;
 }
 
-$alerts['alerts_simple'] = agents_get_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+$alerts['alerts_simple'] = agents_get_alerts_simple ($agents,
+	$filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
 
-$countAlertsSimple = agents_get_alerts_simple ($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true);
+$countAlertsSimple = agents_get_alerts_simple ($agents, $filter_alert,
+	false, $whereAlertSimple, false, false, $idGroup, true);
 
 $alerts['alerts_combined'] = agents_get_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
 $countAlertsCombined = agents_get_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);

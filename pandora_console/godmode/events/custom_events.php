@@ -25,12 +25,17 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-
 $update = get_parameter('update_config', 0);
+$default = get_parameter('default', 0);
 
 $fields_selected = array();
 $event_fields = '';
 $fields_selected = explode (',', $config['event_fields']);
+
+if ($default) {
+	$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
+	$fields_selected = explode (',', $event_fields);
+}
 
 if ($update) {
 	$fields_selected = (array)get_parameter('fields_selected');
@@ -52,6 +57,7 @@ if ($update) {
 
 $result_selected = array();
 
+//show list of fields selected.
 if ($fields_selected[0]!='') {
 	foreach ($fields_selected as $field_selected) {
 		switch ($field_selected) {
@@ -86,7 +92,7 @@ if ($fields_selected[0]!='') {
 				$result = __('Alert');
 				break;
 			case 'criticity':
-				$result = __('Criticity id');
+				$result = __('Criticity');
 				break;
 			case 'user_comment':
 				$result = __('Comment');
@@ -101,7 +107,6 @@ if ($fields_selected[0]!='') {
 				$result = __('Extra id');
 				break;
 		}
-		
 		$result_selected[$field_selected] = $result;
 	}
 }
@@ -136,7 +141,6 @@ $fields_available['tags'] = __('Tags');
 $fields_available['source'] = __('Source');
 $fields_available['id_extra'] = __('Extra id');
 
-
 //remove fields already selected
 foreach ($fields_available as $key=>$available) {
 	foreach ($result_selected as $selected) {
@@ -161,7 +165,11 @@ html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 		html_print_input_hidden ('update_config', 1);
 		html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
-	echo '</form>';
+echo '</form>';
+echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
+		html_print_input_hidden ('default', 1);
+		html_print_submit_button (__('Default fields'), 'default_fields', false, 'class="sub upd"');
+echo '</form>';	
 echo '</div>';
 ?>
 

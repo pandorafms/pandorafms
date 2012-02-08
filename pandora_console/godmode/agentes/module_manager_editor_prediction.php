@@ -28,7 +28,7 @@ $row = db_get_row_sql($sql);
 $is_service = false;
 $is_synthetic = false;
 $is_synthetic_avg = false;
-$is_netflow = false;
+
 $ops = false;
 if ($row !== false && is_array($row)) { 
 	$prediction_module = $row['prediction_module'];
@@ -57,10 +57,6 @@ if ($row !== false && is_array($row)) {
 			$custom_integer_1 = 0;
 			$custom_integer_2 = 0;
 			break;
-		case 4:
-			$is_netflow = true;
-			$custom_integer_2 = 0;
-			break;
 		default:
 			$prediction_module = $custom_integer_1;
 	}
@@ -84,7 +80,7 @@ $data[0] = __('Source module');
 $data[0] .= ui_print_help_icon ('prediction_source_module', true);
 $data[1] = '';
 // Services and Synthetic are an Enterprise feature.
-$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', array($is_service, $is_synthetic, $is_synthetic_avg, $is_netflow));  
+$module_service_synthetic_selector = enterprise_hook('get_module_service_synthetic_selector', array($is_service, $is_synthetic, $is_synthetic_avg));  
 if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
 	$data[1] = $module_service_synthetic_selector;
 	
@@ -150,18 +146,6 @@ if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
 	push_table_simple ($data, 'synthetic_module');
 }
 
-// Netflow modules are an Enterprise feature.
-$netflow_module_form = enterprise_hook ('get_netflow_module_form', array($custom_integer_1));
-if ($netflow_module_form !== ENTERPRISE_NOT_HOOK) {
-	$data = array();
-	$data[0] = '';
-	$data[1] = $netflow_module_form;
-	
-	$table_simple->colspan['netflow_module_form'][1] = 3;
-	push_table_simple ($data, 'netflow_module');
-}
-
-
 /* Removed common useless parameter */
 unset ($table_advanced->data[3]);
 
@@ -170,7 +154,7 @@ unset ($table_advanced->data[3]);
 $(document).ready(function() {
 	agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module");
 	<?php 
-		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $is_netflow, $ops));
+		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $ops));
 	?>
 });
 	

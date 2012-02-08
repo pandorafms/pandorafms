@@ -1,3 +1,8 @@
+2012-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_prediction.php: Fixed error
+	merging bugfix from trunk.
+
 2012-02-08  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/alerts_status.php: added a check for user ACL groups in

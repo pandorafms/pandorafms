@@ -1556,3 +1556,23 @@ show_graph VARCHAR2(60),
 
 CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.ID_RC FROM dual; END tnetflow_report_content_inc;;
+
+-- -----------------------------------------------------
+-- Table `tevent_filter`
+-- -----------------------------------------------------
+CREATE TABLE tevent_filter (
+  id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
+  id_name VARCHAR2(600) NOT NULL,
+  id_group NUMBER(10, 0) default 0 NOT NULL,
+  event_type CLOB default '' NOT NULL,
+  severity NUMBER(10, 0) default -1 NOT NULL,
+  status NUMBER(10, 0) default -1 NOT NULL,
+  search CLOB default '',
+  text_agent CLOB default '', 
+  pagination NUMBER(10, 0) default 25 NOT NULL,
+  event_view_hr NUMBER(10, 0) default 8 NOT NULL,
+  id_user_ack CLOB,
+  group_rep NUMBER(10, 0) default 0 NOT NULL,
+  tag VARCHAR2(600) default '' NOT NULL,
+  filter_only_alert NUMBER(10, 0) default -1 NOT NULL
+);

@@ -1254,3 +1254,23 @@ CREATE TABLE "tnetflow_report_content" (
 	"show_graph" varchar(60),
 	"order" INTEGER NOT NULL default 0
 );
+
+-- -----------------------------------------------------
+-- Table `tevent_filter`
+-- -----------------------------------------------------
+CREATE TABLE "tevent_filter" (
+  "id_filter"  SERIAL NOT NULL PRIMARY KEY,
+  "id_name" varchar(600) NOT NULL,
+  "id_group" INTEGER NOT NULL default 0,
+  "event_type" TEXT NOT NULL default '',
+  "severity" INTEGER NOT NULL default -1,
+  "status" INTEGER NOT NULL default -1,
+  "search" TEXT default '',
+  "text_agent" TEXT default '', 
+  "pagination" INTEGER NOT NULL default 25,
+  "event_view_hr" INTEGER NOT NULL default 8,
+  "id_user_ack" TEXT,
+  "group_rep" INTEGER NOT NULL default 0,
+  "tag" varchar(600) NOT NULL default '',
+  "filter_only_alert" INTEGER NOT NULL default -1
+);

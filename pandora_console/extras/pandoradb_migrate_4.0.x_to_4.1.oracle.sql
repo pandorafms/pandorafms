@@ -122,3 +122,23 @@ ALTER TABLE talert_snmp add (_snmp_f5_ CLOB default '');
 ALTER TABLE talert_snmp add (_snmp_f6_ CLOB default '');
 ALTER TABLE talert_snmp add (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
 ALTER TABLE talert_snmp add (single_value VARCHAR2(255) DEFAULT '');
+
+-- -----------------------------------------------------
+-- Table `tevent_filter`
+-- -----------------------------------------------------
+CREATE TABLE tevent_filter (
+  id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
+  id_name VARCHAR2(600) NOT NULL,
+  id_group NUMBER(10, 0) default 0 NOT NULL,
+  event_type CLOB default '' NOT NULL,
+  severity NUMBER(10, 0) default -1 NOT NULL,
+  status NUMBER(10, 0) default -1 NOT NULL,
+  search CLOB default '',
+  text_agent CLOB default '', 
+  pagination NUMBER(10, 0) default 25 NOT NULL,
+  event_view_hr NUMBER(10, 0) default 8 NOT NULL,
+  id_user_ack CLOB,
+  group_rep NUMBER(10, 0) default 0 NOT NULL,
+  tag VARCHAR2(600) default '' NOT NULL,
+  filter_only_alert NUMBER(10, 0) default -1 NOT NULL
+);

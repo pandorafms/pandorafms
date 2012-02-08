@@ -166,8 +166,10 @@ $group_rep = (int) get_parameter ("group_rep", 1);
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate", 0);
 $section = (string) get_parameter ("section", "list");
-$text_agent = (string)get_parameter('text_agent', __("All"));
-$filter_only_alert = (int)get_parameter('filter_only_alert', -1);
+$text_agent = (string) get_parameter('text_agent', __("All"));
+$filter_only_alert = (int) get_parameter('filter_only_alert', -1);
+$filter_id = (int) get_parameter('filter_id', 0);
+$id_name = (string) get_parameter('id_name', '');
 
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 
@@ -187,27 +189,57 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 if ($config["pure"] == 0) {
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'] . $pss['password']);
+			
+	// Fullscreen
+	$fullscreen['active'] = false;		
+	$fullscreen['text'] = '<a href="'.$url.'&amp;pure=1">' . 
+					html_print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>';
 	
-	$buttons = array(
-		'fullscreen' => array('active' => false,
-			'text' => '<a href="'.$url.'&amp;pure=1">' . 
-				html_print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
-		'rss' => array('active' => false,
-			'text' => '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
-				'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
-				html_print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
-		'marquee' => array('active' => false,
-			'text' => '<a href="operation/events/events_marquee.php">' . 
-				html_print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
-		'csv' => array('active' => false,
-			'text' => '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
-				'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
-				html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>'),
-		'sound_event' => array('active' => false,
-			'text' => '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')
-		);
+	// Event list
+	$list['active'] = false;		
+	$list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events">' . 
+					html_print_image("images/god6.png", true, array("title" => __('Event list'))) . '</a>';
+	$rss['active'] = false;		
+	$rss['text'] = 	'<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
+					'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+					html_print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>';
 	
-	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
+	// Marquee
+	$marquee['active'] = false;		
+	$marquee['text'] = '<a href="operation/events/events_marquee.php">' . 
+					html_print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>';
+	$csv['active'] = false;	
+	$csv['text'] = '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
+					'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+					html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>';
+	
+	// Sound events
+	$sound_event['active'] = false;	
+	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>';			
+			
+	// If the user has administrator permission display manage tab
+	if (check_acl ($config["id_user"], 0, "IW")) {
+		// Manage events				
+		$manage_events['active'] = false;
+		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
+			html_print_image("images/setup.png", true, array ("title" => __('Manage events'))) . '</a>';		
+	
+		$onheader = array('manage_events' => $manage_events, 'separator' => '', 'fullscreen' => $fullscreen,
+						  'list' => $list, 'rss' => $rss, 'marquee' => $marquee, 'csv' => $csv, 'sound_event' => $sound_event) ;
+	}
+	else {
+		$onheader = array('fullscreen' => $fullscreen,
+						  'list' => $list, 'rss' => $rss, 'marquee' => $marquee, 'csv' => $csv, 'sound_event' => $sound_event) ;
+	}
+	
+	switch ($section){
+		case 'sound_event': $onheader['sound_event']['active'] = true;
+							break;
+		default: 			$onheader['list']['active'] = true;
+							break;
+	}
+	
+	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $onheader);
 
 	?>
 	<script type="text/javascript">

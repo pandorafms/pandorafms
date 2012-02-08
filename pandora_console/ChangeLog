@@ -1,3 +1,34 @@
+2012-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* images/skin/skin_default/include/styles/menu.css
+	 include/styles/menu.css: Added godmode events icon in menu.
+
+	* include/functions_events.php: Added functions to support custom 
+	event filters. 
+
+	* pandoradb.sql
+	 pandoradb.postgreSQL.sql
+	 pandoradb.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added table 
+	 tevent_filter.
+      
+	* operation/events/events_list.php
+	 operation/events/events.php: Added event filters 'live' editor.
+
+	* general/shortcut_bar.php: Fixed some bugs due to ACLs.
+	
+	* general/header.php: Removed trace.
+
+	* godmode/menu.php: Added event godmode section.
+	 
+	* godmode/events/event_edit_filter.php
+	 godmode/events/custom_events.php
+	 godmode/events/events.php
+	 godmode/events/event_filter.php: Added files: Entry point in event
+	 godmode section, events filter editor and event custom fields view.
+
 2012-02-08  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/events/custom_events.php
 	* operation/events/events_list.php: Added criticity alert to event view.

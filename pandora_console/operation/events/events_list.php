@@ -35,6 +35,92 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
+if (is_ajax()){
+	$get_filter_values = get_parameter('get_filter_values', 0);
+	$save_event_filter = get_parameter('save_event_filter', 0);
+	$update_event_filter = get_parameter('update_event_filter', 0);
+	$get_event_filters = get_parameter('get_event_filters', 0);
+
+	// Get db values of a single filter
+	if ($get_filter_values){
+		$id_filter = get_parameter('id');
+		
+		$event_filter = events_get_event_filter($id_filter);
+
+		$event_filter['tag'] = io_safe_output($event_filter['tag']);
+		$event_filter['id_name'] = io_safe_output($event_filter['id_name']);
+		
+		echo json_encode($event_filter);
+	}
+	
+	// Saves an event filter
+	if ($save_event_filter){
+		$values = array();
+		$values['id_name'] = get_parameter('id_name');
+		$values['id_group'] = get_parameter('id_group'); 
+		$values['event_type'] = get_parameter('event_type');
+		$values['severity'] = get_parameter('severity');
+		$values['status'] = get_parameter('status');
+		$values['search'] = get_parameter('search');
+		$values['text_agent'] = get_parameter('text_agent');
+		$values['pagination'] = get_parameter('pagination');
+		$values['event_view_hr'] = get_parameter('event_view_hr');	
+		$values['id_user_ack'] = get_parameter('id_user_ack');
+		$values['group_rep'] = get_parameter('group_rep');
+		$values['tag'] = get_parameter('tag');
+		$values['filter_only_alert'] = get_parameter('filter_only_alert');		
+		
+		$result = db_process_sql_insert('tevent_filter', $values);
+		
+		if ($result === false){
+			echo 'error';
+		}
+		else {
+			echo $result;
+		}
+	}
+	
+	if ($update_event_filter){
+		$values = array();
+		$id = get_parameter('id');
+		$values['id_name'] = get_parameter('id_name');
+		$values['id_group'] = get_parameter('id_group'); 
+		$values['event_type'] = get_parameter('event_type');
+		$values['severity'] = get_parameter('severity');
+		$values['status'] = get_parameter('status');
+		$values['search'] = get_parameter('search');
+		$values['text_agent'] = get_parameter('text_agent');
+		$values['pagination'] = get_parameter('pagination');
+		$values['event_view_hr'] = get_parameter('event_view_hr');	
+		$values['id_user_ack'] = get_parameter('id_user_ack');
+		$values['group_rep'] = get_parameter('group_rep');
+		$values['tag'] = get_parameter('tag');
+		$values['filter_only_alert'] = get_parameter('filter_only_alert');	
+		
+		
+		$result = db_process_sql_update('tevent_filter', $values, array('id_filter' => $id));		
+	
+		if ($result === false){
+			echo 'error';
+		}
+		else {
+			echo 'ok';
+		}		
+	}
+	
+	if ($get_event_filters){
+		$event_filter = events_get_event_filter_select();
+		
+		echo json_encode($event_filter);		
+	}
+		
+	return;
+}
+
+// Error div for ajax messages
+echo "<div id='show_filter_error'>";
+echo "</div>";
+
 $tag = get_parameter("tag", "");
 
 if ($id_agent == -2) {
@@ -166,7 +252,12 @@ echo '<div id="event_control" style="display:none">';
 
 // Table for filter controls
 echo '<form method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=list">';
-echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" class="databox"><tr>';
+echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" class="databox"><tr id="row_name" style="visibility: hidden">';
+
+// Group combo
+echo "<td>".__('Filter name')."</td><td>";
+html_print_input_text ('id_name', $id_name, '', 15);
+echo "</td></tr>";
 
 // Group combo
 echo "<td>".__('Group')."</td><td>";
@@ -190,12 +281,8 @@ echo '</td>';
 
 // Status
 echo "<td>".__('Event status')."</td><td>";
-$fields = array ();
-$fields[-1] = __('All event');
-$fields[0] = __('Only new');
-$fields[1] = __('Only validated');
-$fields[2] = __('Only in process');
-$fields[3] = __('Only not validated');
+
+$fields = events_get_all_status();
 
 html_print_select ($fields, 'status', $status, '', '', '');
 
@@ -277,10 +364,22 @@ html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1
 
 echo "</td></tr>";
 
+echo '<tr><td>';
+
+echo __("Load filter");
+
+echo '</td><td>';
+// Custom filters from user
+$filters = events_get_event_filter_select();
+html_print_select ($filters, "filter_id", $filter_id, '', __('none'), 0, false);
+
+echo '</td></tr>';
 
 
 echo '<tr><td colspan="4" style="text-align:right">';
 //The buttons
+html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd" style="visibility:hidden"');
+html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"');
 html_print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 echo "</td></tr></table></form>"; //This is the filter div
@@ -958,3 +1057,211 @@ echo '</div>';
 unset ($table);
 
 ?>
+
+<script language="javascript" type="text/javascript">
+/* 
+ <![CDATA[ */
+$(document).ready( function() {
+	// If selected is not 'none' show filter name
+	if ( $("#filter_id").val() != 0 ) {
+		$("#row_name").css('visibility', '');
+		$("#submit-update_filter").css('visibility', '');
+	}
+	
+	$("#filter_id").change(function () {
+		// If selected 'none' flush filter
+		if ( $("#filter_id").val() == 0 ){
+			$("#text-id_name").val('');
+			$("#ev_group").val(0);
+			$("#event_type").val('');
+			$("#severity").val(-1);
+			$("#status").val(3);
+			$("#text-search").val('');
+			$("#text_id_agent").val( <?php echo '"' . __('All') . '"' ?> );
+			$("#pagination").val(25);
+			$("#text-event_view_hr").val(8);
+			$("#id_user_ack").val(0);
+			$("#group_rep").val(1);
+			$("#tag").val('');
+			$("#filter_only_alert").val(-1);
+			$("#row_name").css('visibility', 'hidden');	
+			$("#submit-update_filter").css('visibility', 'hidden');		
+		}
+		// If filter selected then load filter
+		else {
+			$('#row_name').css('visibility', '');
+			$("#submit-update_filter").css('visibility', '');
+			jQuery.post ("ajax.php",
+				{"page" : "operation/events/events_list",
+				"get_filter_values" : 1,
+				"id" : $('#filter_id').val()
+				},
+				function (data) {
+				  jQuery.each (data, function (i, val) {
+					  if (i == 'id_name')
+						$("#text-id_name").val(val);
+					  if (i == 'id_group')
+						$("#ev_group").val(val);
+					  if (i == 'event_type')
+						$("#event_type").val(val);
+					  if (i == 'severity')
+						$("#severity").val(val);
+					  if (i == 'status')
+						$("#status").val(val);
+					  if (i == 'search')
+						$("#text-search").val(val);
+					  if (i == 'text_agent')
+						$("#text_id_agent").val(val);
+					  if (i == 'pagination')
+						$("#pagination").val(val);
+					  if (i == 'event_view_hr')
+						$("#text-event_view_hr").val(val);	
+					  if (i == 'id_user_ack')
+						$("#id_user_ack").val(val);	
+					  if (i == 'group_rep')
+						$("#group_rep").val(val);		
+					  if (i == 'tag')
+						$("#tag").val(val);	
+					  if (i == 'filter_only_alert')
+						$("#filter_only_alert").val(val);
+				  });
+				},
+				"json"
+			);
+		}
+	});
+	
+	// This saves an event filter
+	$("#submit-save_filter").click(function () {		
+		// Checks if the filter has name or not
+		if ($('#row_name').css('visibility') == 'hidden') {
+			$('#row_name').css('visibility', '');
+			$('#show_filter_error').html('<h3 class="error">Define a name for the filter and click on Save filter again</h3>');
+		// If the filter has name insert in database
+		}else{
+			// If the filter name is blank show error
+			if ($('#text-id_name').val() == '') {
+				$('#show_filter_error').html('<h3 class="error">Filter name cannot be left blank</h3>');
+				return false;
+			}
+			
+			var id_filter_save;
+			
+			jQuery.post ("ajax.php",
+				{"page" : "operation/events/events_list",
+				"save_event_filter" : 1,
+				"id_name" : $("#text-id_name").val(),
+				"id_group" : $("#ev_group").val(),
+				"event_type" : $("#event_type").val(),
+				"severity" : $("#severity").val(),
+				"status" : $("#status").val(),
+				"search" : $("#text-search").val(),
+				"text_agent" : $("#text_id_agent").val(),
+				"pagination" : $("#pagination").val(),
+				"event_view_hr" : $("#text-event_view_hr").val(),	
+				"id_user_ack" : $("#id_user_ack").val(),
+				"group_rep" : $("#group_rep").val(),
+				"tag" : $("#tag").val(),
+				"filter_only_alert" : $("#filter_only_alert").val()
+				},
+				function (data) {
+					if (data == 'error'){
+						$('#show_filter_error').html('<h3 class="error">Error creating filter</h3>');
+					}else{
+						id_filter_save = data;
+						$('#show_filter_error').html('<h3 class="suc">Filter created</h3>');
+					}
+				});
+			
+			// First remove all options of filters select
+			$('#filter_id').find('option').remove().end();
+			// Add 'none' option the first
+			$('#filter_id').append ($('<option></option>').html ( <?php echo "'" . __('none') . "'" ?> ).attr ("value", 0));	
+			// Reload filters select
+			jQuery.post ("ajax.php",
+							{"page" : "operation/events/events_list",
+							"get_event_filters" : 1
+						},
+						function (data) {
+							jQuery.each (data, function (i, val) {
+								  s = js_html_entity_decode(val);
+
+								  if (i == id_filter_save){
+									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+								  } else {
+									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
+								  }
+							});
+						},
+						"json"	
+						);			
+					}			
+		return false;
+	});
+	
+	// This updates an event filter
+	$("#submit-update_filter").click(function () {	
+		
+		// If the filter name is blank show error
+		if ($('#text-id_name').val() == '') {
+			$('#show_filter_error').html('<h3 class="error">Filter name cannot be left blank</h3>');
+			return false;
+		}		
+		
+		var id_filter_update =  $("#filter_id").val();
+		
+		jQuery.post ("ajax.php",
+			{"page" : "operation/events/events_list",
+			"update_event_filter" : 1,
+			"id" : $("#filter_id").val(),
+			"id_name" : $("#text-id_name").val(),
+			"id_group" : $("#ev_group").val(),
+			"event_type" : $("#event_type").val(),
+			"severity" : $("#severity").val(),
+			"status" : $("#status").val(),
+			"search" : $("#text-search").val(),
+			"text_agent" : $("#text_id_agent").val(),
+			"pagination" : $("#pagination").val(),
+			"event_view_hr" : $("#text-event_view_hr").val(),	
+			"id_user_ack" : $("#id_user_ack").val(),
+			"group_rep" : $("#group_rep").val(),
+			"tag" : $("#tag").val(),
+			"filter_only_alert" : $("#filter_only_alert").val()
+			},
+			function (data) {
+				if (data == 'ok'){
+					$('#show_filter_error').html('<h3 class="suc">Filter updated</h3>');
+				}else{
+					$('#show_filter_error').html('<h3 class="error">Error updating filter</h3>');
+				}
+			});	
+			
+			// First remove all options of filters select
+			$('#filter_id').find('option').remove().end();
+			// Add 'none' option the first
+			$('#filter_id').append ($('<option></option>').html ( <?php echo "'" . __('none') . "'" ?> ).attr ("value", 0));	
+			// Reload filters select
+			jQuery.post ("ajax.php",
+							{"page" : "operation/events/events_list",
+							"get_event_filters" : 1
+						},
+						function (data) {
+							jQuery.each (data, function (i, val) {
+								  s = js_html_entity_decode(val);
+								  if (i == id_filter_update){
+									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+								  } else {
+									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
+								  }
+							});
+						},
+						"json"	
+						);				
+			
+		return false;
+	});	
+		
+});
+/* ]]> */
+</script>
+

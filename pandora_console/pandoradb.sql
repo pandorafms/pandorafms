@@ -1356,3 +1356,25 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	FOREIGN KEY (`id_filter`) REFERENCES tnetflow_filter(`id_sg`)
 	ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tevent_filter`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tevent_filter` (
+  `id_filter`  int(10) unsigned NOT NULL auto_increment,
+  `id_name` varchar(600) NOT NULL,
+  `id_group` int(10) NOT NULL default 0,
+  `event_type` text NOT NULL default '',
+  `severity` int(10) NOT NULL default -1,
+  `status` int(10) NOT NULL default -1,
+  `search` TEXT default '',
+  `text_agent` TEXT default '', 
+  `pagination` int(10) NOT NULL default 25,
+  `event_view_hr` int(10) NOT NULL default 8,
+  `id_user_ack` TEXT,
+  `group_rep` int(10) NOT NULL default 0,
+  `tag` varchar(600) NOT NULL default '',
+  `filter_only_alert` int(10) NOT NULL default -1, 
+PRIMARY KEY  (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

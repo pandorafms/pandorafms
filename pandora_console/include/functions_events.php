@@ -727,4 +727,207 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 	return db_get_all_rows_sql ($sql);
 }
 
+/**
+ * Decode a numeric type into type description.
+ *
+ * @param int $type_id Numeric type.
+ *
+ * @return string Type description.
+ */
+function events_get_event_types ($type_id){
+	
+	$diferent_types = get_event_types ();
+
+	$type_desc = '';
+	switch($type_id) {
+		case 'unknown': $type_desc = __('Unknown');
+				break;
+		case 'critical': $type_desc = __('Monitor Critical');
+				break;
+		case 'warning': $type_desc = __('Monitor Warning');
+				break;
+		case 'normal': $type_desc = __('Monitor Normal');
+				break;
+		case 'alert_fired': $type_desc = __('Alert fired');
+				break;	
+		case 'alert_recovered': $type_desc = __('Alert recovered');
+				break;	
+		case 'alert_ceased': $type_desc = __('Alert ceased');
+				break;
+		case 'alert_manual_validation': $type_desc = __('Alert manual validation');
+				break;
+		case 'recon_host_detected': $type_desc = __('Recon host detected');
+				break;
+		case 'system': $type_desc = __('System');
+				break;
+		case 'error': $type_desc = __('Error');
+				break;
+		case 'not_normal': $type_desc = __('Not normal');
+				break;
+		default:
+				if (isset($config['text_char_long'])) {
+					foreach ($diferent_types as $key => $type) {
+						if ($key == $type_id){
+							$type_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
+						}
+					}
+				}
+				break;
+	}
+		
+	return $type_desc;	
+} 
+
+
+/**
+ * Decode a numeric severity into severity description.
+ *
+ * @param int $severity_id Numeric severity.
+ *
+ * @return string Severity description.
+ */
+function events_get_severity_types ($severity_id){
+	
+	$diferent_types = get_priorities ();
+
+	$severity_desc = '';
+	switch ($severity_id) {
+		case 0: $severity_desc = __('Maintenance');
+				break;
+		case 1: $severity_desc = __('Informational');
+				break;
+		case 2: $severity_desc = __('Normal');
+				break;
+		case 3: $severity_desc = __('Warning');
+				break;
+		case 4: $severity_desc = __('Critical');
+				break;	
+		default:
+				if (isset($config['text_char_long'])) {
+					foreach ($diferent_types as $key => $type) {
+						if ($key == $severity_id){
+							$severity_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
+						}
+					}
+				}
+				break;
+	}
+		
+	return $severity_desc;	
+} 
+
+/**
+ * Return all descriptions of event status.
+ *
+ * @return array Status description array.
+ */
+function events_get_all_status (){
+	$fields = array ();
+	$fields[-1] = __('All event');
+	$fields[0] = __('Only new');
+	$fields[1] = __('Only validated');
+	$fields[2] = __('Only in process');
+	$fields[3] = __('Only not validated');	
+	
+	return $fields;
+} 
+
+/**
+ * Decode a numeric status into status description.
+ *
+ * @param int $status_id Numeric status.
+ *
+ * @return string Status description.
+ */
+function events_get_status ($status_id){
+	switch($status_id) {
+		case -1: $status_desc = __('All event');
+				break;
+		case 0: $status_desc = __('Only new');
+				break;
+		case 1: $status_desc = __('Only validated');
+				break;
+		case 2: $status_desc = __('Only in process');
+				break;
+		case 3: $status_desc = __('Only not validated');
+				break;
+	}
+	
+	return $status_desc;
+}
+
+/**
+ * Checks if a user has permissions to see an event filter.
+ *
+ * @param int $id_filter Id of the event filter.
+ *
+ * @return bool True if the user has permissions or false otherwise.
+ */
+function events_check_event_filter_group ($id_filter) {
+	global $config;
+	
+	$id_group = db_get_value('id_group', 'tevent_filter', 'id_filter', $id_filter);	
+	$own_info = get_user_info ($config['id_user']);
+	// Get group list that user has access
+	$groups_user = users_get_groups ($config['id_user'], "IW", $own_info['is_admin'], true);
+	$groups_id = array();
+	$has_permission = false;
+	
+	foreach($groups_user as $key => $groups){
+		if ($groups['id_grupo'] == $id_group)
+			return true;
+	}
+	
+	return false;
+}
+
+/**
+ *  Get a event filter.
+ * 
+ * @param int Filter id to be fetched.
+ * @param array Extra filter.
+ * @param array Fields to be fetched.
+ *
+ * @return array A event filter matching id and filter or false.
+ */
+function events_get_event_filter ($id_filter, $filter = false, $fields = false) {
+
+		if (empty($id_filter)){
+			return false;
+		}
+
+		if (! is_array ($filter)){
+			$filter = array ();
+			$filter['id_filter'] = (int) $id_filter;
+		}
+	
+		return db_get_row_filter ('tevent_filter', $filter, $fields);
+}
+
+/**
+ *  Get a event filters in select format.
+ *
+ * @return array A event filter matching id and filter or false.
+ */
+function events_get_event_filter_select(){
+	global $config;
+	
+	$user_groups = users_get_groups ($config['id_user'], "AW", true, true);
+	$sql = "SELECT id_filter, id_name FROM tevent_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
+
+	$event_filters = db_get_all_rows_sql($sql);
+
+	if ($event_filters === false){
+		return array();
+	}
+	else{
+		$result = array();
+		foreach ($event_filters as $event_filter){
+			$result[$event_filter['id_filter']] = $event_filter['id_name'];
+		}
+	}
+	
+	return $result;
+}
+
 ?>

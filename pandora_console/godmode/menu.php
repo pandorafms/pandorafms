@@ -164,6 +164,19 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 	}
 }
 
+if (check_acl ($config['id_user'], 0, "IW")) {
+	// Manage events
+	$menu["geventos"]["text"] = __('Manage events');
+	$menu["geventos"]["sec2"] = "godmode/events/events&amp;section=filter";
+	$menu["geventos"]["id"] = "god-events";
+	
+	// Custom event fields
+	$sub = array ();
+	$sub["godmode/events/events&amp;section=fields"]["text"] = __('Custom events');
+	
+	$menu["geventos"]["sub"] = $sub;
+}
+
 if (check_acl ($config['id_user'], 0, "AW")) {
 
 	// Servers
@@ -223,8 +236,6 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
-	
-	$sub["godmode/events/custom_events"]["text"] = __('Custom events');
 
 	$menu["gsetup"]["sub"] = $sub;
 }

@@ -86,6 +86,7 @@ $fields_available['user_comment'] = 'user_comment';
 $fields_available['tags'] = 'tags';
 $fields_available['source'] = 'source';
 $fields_available['id_extra'] = 'id_extra';
+$fields_available['criticity_alert'] = 'criticity_alert';
 
 //remove fields already selected
 foreach ($fields_available as $available) {

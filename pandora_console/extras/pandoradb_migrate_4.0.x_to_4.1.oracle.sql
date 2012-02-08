@@ -108,7 +108,6 @@ references tplanned_downtime (id);
 
 alter table tevento add (source VARCHAR2(100) default '' NOT NULL);
 alter table tevento add (id_extra VARCHAR2(100) default '' NOT NULL);
-alter table tevento add (criticity_alert NUMBER(10, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`

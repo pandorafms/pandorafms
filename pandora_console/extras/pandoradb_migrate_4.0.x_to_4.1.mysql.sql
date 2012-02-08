@@ -101,7 +101,7 @@ ON DELETE CASCADE;
 -- -----------------------------------------------------
 
 ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL DEFAULT '',
-`id_extra` tinytext NOT NULL DEFAULT '', `criticity_alert` int(4) unsigned NOT NULL default '0');
+`id_extra` tinytext NOT NULL DEFAULT '');
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`

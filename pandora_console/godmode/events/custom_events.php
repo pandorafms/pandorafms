@@ -36,7 +36,7 @@ if ($update) {
 	$fields_selected = (array)get_parameter('fields_selected');
 	
 	if ($fields_selected[0] == '') {
-		$event_fields = 'evento,id_agente,estado,timestamp';
+		$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
 		$fields_selected = explode (',', $event_fields);
 	} else {
 		$event_fields = implode (',', $fields_selected);
@@ -51,13 +51,64 @@ if ($update) {
 }
 
 $result_selected = array();
+
 if ($fields_selected[0]!='') {
 	foreach ($fields_selected as $field_selected) {
-		$result_selected[$field_selected] = $field_selected;
+		switch ($field_selected) {
+			case 'id_evento':
+				$result = __('Event id');
+				break;
+			case 'evento':
+				$result = __('Event name');
+				break;
+			case 'id_agente':
+				$result = __('Agent name');
+				break;
+			case 'id_usuario':
+				$result = __('User');
+				break;
+			case 'id_grupo':
+				$result = __('Group');
+				break;
+			case 'estado':
+				$result = __('Status');
+				break;
+			case 'timestamp':
+				$result = __('Timestamp');
+				break;
+			case 'event_type':
+				$result = __('Event type');
+				break;
+			case 'id_agentmodule':
+				$result = __('Agent module');
+				break;
+			case 'id_alert_am':
+				$result = __('Alert');
+				break;
+			case 'criticity':
+				$result = __('Criticity id');
+				break;
+			case 'user_comment':
+				$result = __('Comment');
+				break;
+			case 'tags':
+				$result = __('Tags');
+				break;
+			case 'source':
+				$result = __('Source');
+				break;
+			case 'id_extra':
+				$result = __('Extra id');
+				break;
+		}
+		
+		$result_selected[$field_selected] = $result;
 	}
 }
 
 $event = array();
+
+echo '<h3>'.__('Show event fields').'</h3>';
 
 $table->width = '90%';
 
@@ -66,42 +117,42 @@ $table->size[0] = '20%';
 $table->size[2] = '20%';
 
 $table->data = array();
-$table->data[0][0] = '<h3>'.__('Show event fields').'</h3>';
 
 $fields_available = array();
-$fields_available['id_evento'] = 'id_evento';
-$fields_available['evento'] = 'evento';
-$fields_available['id_agente'] = 'id_agente';
-$fields_available['id_usuario'] = 'id_usuario';
-$fields_available['id_grupo'] = 'id_grupo';
-$fields_available['estado'] = 'estado';
-$fields_available['timestamp'] = 'timestamp';
-$fields_available['event_type'] = 'event_type';
-$fields_available['id_agentmodule'] = 'id_agentmodule';
-$fields_available['id_alert_am'] = 'id_alert_am';
-$fields_available['criticity'] = 'criticity';
-$fields_available['user_comment'] = 'user_comment';
-$fields_available['tags'] = 'tags';
-$fields_available['source'] = 'source';
-$fields_available['id_extra'] = 'id_extra';
-$fields_available['criticity_alert'] = 'criticity_alert';
+
+$fields_available['id_evento'] = __('Event id');
+$fields_available['evento'] = __('Event name');
+$fields_available['id_agente'] = __('Agent name');
+$fields_available['id_usuario'] = __('User');
+$fields_available['id_grupo'] = __('Group');
+$fields_available['estado'] = __('Status');
+$fields_available['timestamp'] = __('Timestamp');
+$fields_available['event_type'] = __('Event type');
+$fields_available['id_agentmodule'] = __('Agent module');
+$fields_available['id_alert_am'] = __('Alert');
+$fields_available['criticity'] = __('Criticity');
+$fields_available['user_comment'] = __('Comment');
+$fields_available['tags'] = __('Tags');
+$fields_available['source'] = __('Source');
+$fields_available['id_extra'] = __('Extra id');
+
 
 //remove fields already selected
-foreach ($fields_available as $available) {
+foreach ($fields_available as $key=>$available) {
 	foreach ($result_selected as $selected) {
 		if ($selected == $available) {
-			unset($fields_available[$selected]);
+			unset($fields_available[$key]);
 		}
 	}
 }
 
 $table->data[1][0] =  '<b>' . __('Fields available').'</b>';
-$table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', __('None'), '', true, true, false);
+$table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false);
 $table->data[1][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table->data[1][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 	
 $table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
-$table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', __('None'), '', true, true, false);	
+$table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false);	
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
 
@@ -122,7 +173,7 @@ $(document).ready (function () {
 			field_name = $(value).html();
 			if (field_name != <?php echo "'".__('None')."'"; ?>){
 				id_field = $(value).attr('value');
-				$("select[name='fields_selected[]']").append($("<option selected='selected'></option>").html(field_name).attr("value", field_name));
+				$("select[name='fields_selected[]']").append($("<option selected='selected'></option>").html(field_name).attr("value", id_field));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();
 			}
 		});			
@@ -133,7 +184,7 @@ $(document).ready (function () {
 				field_name = $(value).html();
 				if (field_name != <?php echo "'".__('None')."'"; ?>){
 					id_field = $(value).attr('value');
-					$("select[name='fields_available[]']").append($("<option></option>").val(field_name).html('<i>' + field_name + '</i>'));
+					$("select[name='fields_available[]']").append($("<option></option>").val(field_name).html('<i>' + id_field + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
 				}
 		});			

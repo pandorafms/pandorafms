@@ -1,3 +1,15 @@
+2012-02-08  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Removed 'criticity_alert'
+	to tevento table.
+ 
+	 * godmode/events/custom_events.php: Modify fields selection to
+	show events.
+
 2012-02-08  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/alerts_status.php: added a check for user ACL groups in

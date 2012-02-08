@@ -93,6 +93,7 @@ REFERENCES "tplanned_downtime"("id");
 
 ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';
+ALTER TABLE "tevento" ADD COLUMN "criticity" INTEGER NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`

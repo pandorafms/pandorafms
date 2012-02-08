@@ -449,6 +449,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `tags` text NOT NULL,
   `source` tinytext NOT NULL default '',
   `id_extra` tinytext NOT NULL default '',
+  `criticity_alert` int(4) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`utimestamp`,`id_evento`),

@@ -440,6 +440,11 @@ if (in_array('id_alert_am', $show_fields)) {
 	$table->head[$i] = __('Alert');
 	$table->align[$i] = 'center';
 	$i++;
+	if (in_array('criticity_alert', $show_fields)) {
+		$table->head[$i] = __('Criticity alert');
+		$table->align[$i] = 'center';
+		$i++;
+	}
 }
 if (in_array('criticity', $show_fields)) {
 	$table->head[$i] = __('Criticity');
@@ -617,6 +622,10 @@ foreach ($result as $event) {
 	if (in_array('id_alert_am',$show_fields)) {
 		$data[$i] = $event["id_alert_am"];
 		$i++;
+		if (in_array('criticity_alert',$show_fields)) {
+			$data[$i] = $event["criticity_alert"];
+			$i++;
+		}
 	}
 	
 	if (in_array('criticity',$show_fields)) {
@@ -826,9 +835,9 @@ foreach ($result as $event) {
 		//$odd = '';
 		$odd = ($odd == '')? 'rowOdd' : '';
 		
-		if ($event["criticity"] != '') {
-			$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity') . '</td><td align="left">';
-			$string .= $event["criticity"];
+		if ($event["criticity_alert"] != 0) {
+			$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity alert') . '</td><td align="left">';
+			$string .= $event["criticity_alert"];
 			$string .= '</td></tr><tr>';
 			$odd = ($odd == '')? 'rowOdd' : '';
 		}
@@ -892,7 +901,12 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
-
+	if ($event["criticity"] != 0) {
+		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity') . '</td><td align="left">';
+		$string .= $event["criticity"];
+		$string .= '</td></tr><tr>';
+		$odd = ($odd == '')? 'rowOdd' : '';
+	}
 	$string .= '</td></tr>';
 	$string .= '</table>';
 	

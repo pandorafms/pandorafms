@@ -103,7 +103,7 @@ $table->data[1][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.p
 $table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
 $table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', __('None'), '', true, true, false);	
 
-echo '<form id="custom_events" method="post" action="index.php?sec=gsetup&sec2=godmode/events/events&section=fields">';
+echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
 
 html_print_table($table);
 

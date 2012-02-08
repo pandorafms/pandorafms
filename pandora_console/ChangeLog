@@ -1,4 +1,9 @@
 2012-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/events/custom_events.php: Changed 'sec' link parameter
+	in this view.
+
+2012-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* images/skin/skin_default/include/styles/menu.css
 	 include/styles/menu.css: Added godmode events icon in menu.

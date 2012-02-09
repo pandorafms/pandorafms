@@ -31,6 +31,37 @@ if (! check_acl ($config["id_user"], 0, "AR")) {
 	return;
 }
 
+// Ajax callbacks
+if (is_ajax()){
+	$get_filter_type = get_parameter('get_filter_type', 0);
+	$get_filter_values = get_parameter('get_filter_values', 0);
+	
+	// Get filter of the current netflow filter
+	if ($get_filter_type){
+		$id = get_parameter('id');
+		
+		$advanced_filter = db_get_value_filter('advanced_filter', 'tnetflow_filter', array('id_sg' => $id));
+		
+		if (empty($advanced_filter))
+			$type = 0;
+		else
+			$type = 1;
+		
+		echo $type;
+	}	
+	
+	// Get values of the current netflow filter
+	if ($get_filter_values){
+		$id = get_parameter('id');
+		
+		$filter_values = db_get_row_filter ('tnetflow_filter', array('id_sg' => $id));
+
+		echo json_encode($filter_values);
+	}		
+	
+	return;
+}
+
 // Read filter configuration
 $filter_id = (int) get_parameter ('filter_id', 0);
 $filter['id_name'] = (string) get_parameter ('name', '');
@@ -56,7 +87,7 @@ $time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
 $draw = get_parameter('draw_button', '');
 $save = get_parameter('save_button', '');
 $update = get_parameter('update_button', '');
-$load = get_parameter('load_button', '');
+
 
 // Calculate start and end dates
 $end_date = strtotime ($date . " " . $time);
@@ -92,13 +123,7 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 	$result = db_process_sql_update ('tnetflow_filter', $filter_copy, array ('id_sg' => $filter_id));
 	ui_print_result_message ($result, __('Filter updated successfully'), __('Error updating filter'));
 } 
-// Load an existing filter
-else if ($load != '' && $filter_id > 0) {
-	$result = db_get_row_sql ("SELECT * FROM tnetflow_filter WHERE id_sg = $filter_id");
-	if ($result !== false) {
-		$filter = $result;
-	}
-}
+
 
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
@@ -165,7 +190,7 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
 	$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
 	$table->data[2][3] = html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true);
-	$table->data[2][3] .= html_print_submit_button (__('Load'), 'load_button', false, 'class="sub upd"', true);
+
 	
 	$table->data[3][0] = __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
 	$table->data[3][1] = html_print_input_text ('ip_dst', $filter['ip_dst'], false, 40, 80, true);
@@ -197,9 +222,9 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');
 	if (check_acl ($config["id_user"], 0, "AW")) {
 		html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-		if ($filter_id > 0) {
+
 			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
-		}
+
 	}
 echo'</form>';
 
@@ -271,5 +296,101 @@ if  ($draw != '') {
 	// Hide filter name and group
 	document.getElementById("table2-0").style.display = 'none';
 	document.getElementById("table2-1").style.display = 'none';
+	
+	$("#filter_id").change(function () {
+		var filter_type;
+		//console.log($("#filter_id").val());
+		
+		// Clean fields
+		if ($("#filter_id").val() == 0){
+			//displayNormalFilter ();
+			$("#table2-3").css('display', '');
+			$("#table2-4").css('display', '');
+			$("#table2-5").css('display', 'none');			
+			
+			// Check right filter type
+			$("#radiobtn0001").attr("checked", "checked");
+			$("#radiobtn0002").attr("checked", "");			
+
+			$("#text-ip_dst").val('');
+			$("#text-ip_src").val('');
+			$("#text-dst_port").val('');
+			$("#text-src_port").val('');
+			$("#textarea_advanced_filter").val('');		
+			$("#aggregate").val('');					
+			$("#output").val('');
+			
+			// Hide update filter button
+			$("#submit-update_button").css("visibility", "hidden");	
+		// Load fields from DB
+		} else {
+			// Get filter type
+			jQuery.post ("ajax.php",
+				{"page" : "operation/netflow/nf_live_view",
+				"get_filter_type" : 1,
+				"id" : $("#filter_id").val()
+				},
+				function (data) {
+					filter_type = data;
+					// Display the appropriate filter
+					if (filter_type == 0) {
+						$("#table2-3").css('display', '');
+						$("#table2-4").css('display', '');
+						$("#table2-5").css('display', 'none');
+						
+						// Check right filter type
+						$("#radiobtn0001").attr("checked", "checked");
+						$("#radiobtn0002").attr("checked", "");
+					} else {
+						$("#table2-3").css('display', 'none');
+						$("#table2-4").css('display', 'none');
+						$("#table2-5").css('display', '');
+						
+						// Check right filter type
+						$("#radiobtn0001").attr("checked", "");
+						$("#radiobtn0002").attr("checked", "checked");					
+					}			
+				});	
+				
+			// Shows update filter button
+			$("#submit-update_button").css("visibility", "");			
+			
+			// Get filter values from DB
+			jQuery.post ("ajax.php",
+				{"page" : "operation/netflow/nf_live_view",
+				"get_filter_values" : 1,
+				"id" : $("#filter_id").val()
+				},
+				function (data) {
+				  jQuery.each (data, function (i, val) {
+					  if (i == 'ip_dst')
+						$("#text-ip_dst").val(val);
+					  if (i == 'ip_src')
+						$("#text-ip_src").val(val);
+					  if (i == 'dst_port')
+						$("#text-dst_port").val(val);
+					  if (i == 'src_port')
+						$("#text-src_port").val(val);
+					  if (i == 'advanced_filter')
+						$("#textarea_advanced_filter").val(val);							
+					  if (i == 'aggregate')
+						$("#aggregate").val(val);
+					  if (i == 'output')
+						$("#output").val(val);
+				  });					
+				},
+				"json");				
+		}
+		
+	});
+	
+	$(document).ready( function() {
+		// Hide update filter button
+		if ($("#filter_id").val() == 0){
+			$("#submit-update_button").css("visibility", "hidden");		
+		}else{
+			$("#submit-update_button").css("visibility", "");				
+		}
+	});
 
 </script>

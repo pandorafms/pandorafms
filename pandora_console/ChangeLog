@@ -1,3 +1,10 @@
+2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/en/help_field_match_snmp.php
+	 include/help/es/help_field_match_snmp.php
+	 godmode/snmpconsole/snmp_alert.php: Changed order of fields in this 
+	 view.
+
 2012-02-09  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/groups/group_list.php: Cleaned old code used in

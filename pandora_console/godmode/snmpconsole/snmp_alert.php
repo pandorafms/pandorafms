@@ -188,9 +188,16 @@ if (isset ($_GET["update_alert"])) {
 
 	/* SNMP alert filters */
 
-	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
+	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color">';
 
-	echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
+	// Description
+	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
+	html_print_input_text ("description", $description, '', 60);
+	echo '</td></tr>';
+
+
+
+	//echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
 
 	// OID
 	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
@@ -222,51 +229,8 @@ if (isset ($_GET["update_alert"])) {
 	html_print_input_text ("single_value", $single_value, '', 20);
 	echo '</td></tr>';
 
-	//Button
-	//echo '<tr><td></td><td align="right">';
-
-	// End table
-	echo "</td></tr></table>";
-	
-	// Alert configuration
-
-	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
-	
-	echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
-	
-	// Alert type (e-mail, event etc.)
-	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
-	
-	$fields = array ();
-	$result = db_get_all_rows_in_table ('talert_actions', "name");
-	if ($result === false) {
-		$result = array ();
-	}
-
-	foreach ($result as $row) {
-		$fields[$row["id"]] = $row["name"];
-	}
-	
-	switch ($config['dbtype']){
-		case "mysql":
-		case "postgresql":
-			html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
-			"alert_type", $alert_type, '', '', 0, false, false, false);
-			break;
-		case "oracle":
-			html_print_select_from_sql ('SELECT id, dbms_lob.substr(name,4000,1) as name FROM talert_actions ORDER BY dbms_lob.substr(name,4000,1)',
-			"alert_type", $alert_type, '', '', 0, false, false, false);
-			break;
-	}
-	echo '</td></tr>';
-	
-	// Description
-	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
-	html_print_input_text ("description", $description, '', 60);
-	echo '</td></tr>';
-	
 	//  Custom OID/Data #1
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #1 Match');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #1');
     echo ui_print_help_icon ("field_match_snmp", true);
 
     echo '</td><td class="datos">';
@@ -274,7 +238,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';	
 	
 	//  Custom OID/Data #2
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #2 Match');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #2');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -282,7 +246,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #3
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #3 Match');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #3');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -290,7 +254,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #4
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #4 Match');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #4');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -298,7 +262,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #5
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #5 Match');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #5');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -306,12 +270,24 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';			
 
 	//  Custom OID/Data #6
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #6 Match');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #6');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
     html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
+	
+	//Button
+	//echo '<tr><td></td><td align="right">';
+
+	// End table
+	//echo "</td></tr></table>";
+	
+	// Alert configuration
+
+	//echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
+	
+//	echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
 	
 	// Alert fields
 	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)');
@@ -362,6 +338,33 @@ if (isset ($_GET["update_alert"])) {
 	echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
 	echo html_print_select (get_priorities (), "priority", $priority, '', '', '0', false, false, false);
 	echo '</td></tr>';
+	
+	// Alert type (e-mail, event etc.)
+	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
+	
+	$fields = array ();
+	$result = db_get_all_rows_in_table ('talert_actions', "name");
+	if ($result === false) {
+		$result = array ();
+	}
+
+	foreach ($result as $row) {
+		$fields[$row["id"]] = $row["name"];
+	}
+	
+	switch ($config['dbtype']){
+		case "mysql":
+		case "postgresql":
+			html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+			"alert_type", $alert_type, '', '', 0, false, false, false);
+			break;
+		case "oracle":
+			html_print_select_from_sql ('SELECT id, dbms_lob.substr(name,4000,1) as name FROM talert_actions ORDER BY dbms_lob.substr(name,4000,1)',
+			"alert_type", $alert_type, '', '', 0, false, false, false);
+			break;
+	}
+	echo '</td></tr>';	
+	
 	echo '</table>';	
 
 	echo "<table style='width:98%'>";

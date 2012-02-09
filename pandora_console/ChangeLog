@@ -1,5 +1,10 @@
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: Now id_group and id_name it's 
+	keeped when pagination is used in this view.
+
+2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php: Now toogle filter is not hide
 	when pagination is used in thie view.
 

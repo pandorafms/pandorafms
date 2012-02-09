@@ -307,14 +307,16 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 		$lastopttype = '';
 		foreach ($fields as $value => $label) {
 			$optlabel = $label;
-			if(is_array($label)){
-				if($label['optgroup'] != $lastopttype) {
-					if($lastopttype != '') {
-						$output .=  '</optgroup>';
+			if(is_array($label)) {
+				if (isset($label['optgroup'])) {
+					if($label['optgroup'] != $lastopttype) {
+						if($lastopttype != '') {
+							$output .=  '</optgroup>';
+						}
+						$output .=  '<optgroup label="'.$label['optgroup'].'">';
+						$lastopttype = $label['optgroup'];
 					}
-					$output .=  '<optgroup label="'.$label['optgroup'].'">';
-					$lastopttype = $label['optgroup'];
-				}				
+				}
 				$optlabel = $label['name'];
 			}
 			

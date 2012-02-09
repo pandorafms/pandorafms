@@ -1,3 +1,8 @@
+2012-02-09  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/groups/group_list.php: Clean old code used in
+	policy agents filter ajax calling merged from trunk
+
 2012-02-09  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_html.php: cleaned source code style, and into the

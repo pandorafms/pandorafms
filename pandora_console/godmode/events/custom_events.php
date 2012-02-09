@@ -25,19 +25,17 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-$update = get_parameter('update_config', 0);
-$default = get_parameter('default', 0);
+$update = get_parameter('upd_button', '');
+$default = (int) get_parameter('default', 0);
 
 $fields_selected = array();
 $event_fields = '';
 $fields_selected = explode (',', $config['event_fields']);
 
-if ($default) {
+if ($default != 0) {
 	$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
 	$fields_selected = explode (',', $event_fields);
-}
-
-if ($update) {
+} else if ($update != '') {
 	$fields_selected = (array)get_parameter('fields_selected');
 	
 	if ($fields_selected[0] == '') {
@@ -113,13 +111,17 @@ if ($fields_selected[0]!='') {
 
 $event = array();
 
-echo '<h3>'.__('Show event fields').'</h3>';
+echo '<h3>'.__('Show event fields');
+echo '&nbsp;<a href="index.php?sec=geventos&sec2=godmode/events/events&section=fields&default=1">';
+html_print_image ('images/clean.png', false, array ('title' => __('Load default event fields'), 'onclick' => "if (! confirm ('" . __('Default event fields will be loaded. Do you want to continue?') ."')) return false"));
+echo '</a></h3>';
 
 $table->width = '90%';
 
 $table->size = array();
 $table->size[0] = '20%';
-$table->size[2] = '20%';
+$table->size[2] = '10px';
+$table->size[3] = '20%';
 
 $table->data = array();
 
@@ -159,14 +161,9 @@ $table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
 $table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-		html_print_input_hidden ('default', 1);
-		html_print_submit_button (__('Default'), 'default_fields', false, 'class="sub upd"');
-echo '</div>';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-		html_print_input_hidden ('update_config', 1);
 		html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</form>';
 echo '</div>';

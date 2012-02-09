@@ -65,7 +65,6 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		$disabled = (int) get_parameter ('disabled', 0);
 		$search = (string) get_parameter ('search', '');
-		$keycount = (int) get_parameter ('keycount', 0);
 		$recursion = (int) get_parameter ('recursion', 0);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
@@ -81,8 +80,7 @@ if (is_ajax ()) {
 			$filter['string'] = $search;
 		}
 			
-		$agents['keycount'] = $keycount;
-		$agents = $agents + agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+		$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
 		echo json_encode ($agents);
 		return;
 	}

@@ -1,3 +1,13 @@
+2012-02-09  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_html.php: cleaned source code style, and into the
+	function "html_print_select" fixed when the data hasn't "optgroup" items.
+	
+	* include/functions_reports.php: cleaned source code style, and into the
+	function "reports_get_report" fixed empty arrays of reports.
+
+	Bigfix merged from trunk.
+
 2012-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php: Fixed error

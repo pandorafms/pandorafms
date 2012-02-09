@@ -127,6 +127,7 @@ ALTER TABLE talert_snmp add (single_value VARCHAR2(255) DEFAULT '');
 -- -----------------------------------------------------
 CREATE TABLE tevent_filter (
   id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
+  id_group_filter NUMBER(10, 0) default 0 NOT NULL, 
   id_name VARCHAR2(600) NOT NULL,
   id_group NUMBER(10, 0) default 0 NOT NULL,
   event_type CLOB default '' NOT NULL,

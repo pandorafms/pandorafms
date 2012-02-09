@@ -170,6 +170,7 @@ $text_agent = (string) get_parameter('text_agent', __("All"));
 $filter_only_alert = (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
+$id_group = (int) get_parameter('id_group', 0);
 
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 
@@ -379,6 +380,13 @@ $(document).ready( function() {
 	
 	$("#tgl_event_control").click (function () {
 		$("#event_control").toggle ();
+		// Trick to don't collapse filter if autorefresh button has been pushed
+		if ($("#hidden-toogle_filter").val() == 'true'){
+			$("#hidden-toogle_filter").val('false');
+		}
+		else{
+			$("#hidden-toogle_filter").val('true');
+		}
 		return false;
 	});
 	

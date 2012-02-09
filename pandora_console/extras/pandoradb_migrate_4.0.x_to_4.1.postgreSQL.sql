@@ -112,6 +112,7 @@ ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
 -- -----------------------------------------------------
 CREATE TABLE "tevent_filter" (
   "id_filter"  SERIAL NOT NULL PRIMARY KEY,
+  "id_group_filter" INTEGER NOT NULL default 0,
   "id_name" varchar(600) NOT NULL,
   "id_group" INTEGER NOT NULL default 0,
   "event_type" TEXT NOT NULL default '',

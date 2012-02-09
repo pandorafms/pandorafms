@@ -242,7 +242,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset;
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset . "&amp;toogle_filter=no";
 
 echo "<br>";
 //Link to toggle filter
@@ -393,6 +393,11 @@ if ($autorefresh_toogle == 'false'){
 	html_print_input_hidden('toogle_filter', 'true');
 } 
 else{
+	// Keeps state with pagination
+	if ($autorefresh_toogle == 'no'){
+		html_print_input_hidden('toogle_filter', 'false');
+	}
+	
 	// If update button has been pushed then don't collapse filter
 	if ($update_pressed == 'false'){
 		html_print_input_hidden('toogle_filter', 'false');

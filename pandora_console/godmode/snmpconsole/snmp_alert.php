@@ -192,6 +192,11 @@ if (isset ($_GET["update_alert"])) {
 
 	echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
 
+	// OID
+	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
+	html_print_input_text ("oid", $oid, '', 50, 255);
+	echo '</td></tr>';
+
 	// Custom
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
     echo ui_print_help_icon ("snmp_alert_custom", true);
@@ -259,12 +264,6 @@ if (isset ($_GET["update_alert"])) {
 	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
 	html_print_input_text ("description", $description, '', 60);
 	echo '</td></tr>';
-	
-	// OID
-	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
-	html_print_input_text ("oid", $oid, '', 50);
-	echo '</td></tr>';
-
 	
 	//  Custom OID/Data #1
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #1 Match');

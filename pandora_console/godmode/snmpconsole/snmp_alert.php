@@ -185,7 +185,9 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
-	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color">';
+	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
+	
+	echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
 	
 	// Alert type (e-mail, event etc.)
 	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
@@ -223,25 +225,17 @@ if (isset ($_GET["update_alert"])) {
 	html_print_input_text ("oid", $oid, '', 50);
 	echo '</td></tr>';
 
-	// Custom
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Global match');
-    echo ui_print_help_icon ("snmp_alert_custom", true);
-
-    echo '</td><td class="datos">';
-    html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
-
-	echo '</td></tr>';
 	
 	//  Custom OID/Data #1
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #1');
-    //echo ui_print_help_icon ("snmp_alert_custom", true);
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #1 Match');
+    echo ui_print_help_icon ("field_match_snmp", true);
 
     echo '</td><td class="datos">';
     html_print_input_text ("custom_oid_data_1", $custom_oid_data_1, '', 60);
 	echo '</td></tr>';	
 	
 	//  Custom OID/Data #2
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #2');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #2 Match');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -249,7 +243,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #3
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #3');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #3 Match');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -257,7 +251,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #4
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #4');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #4 Match');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -265,7 +259,7 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #5
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #5');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #5 Match');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
@@ -273,18 +267,13 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';			
 
 	//  Custom OID/Data #6
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #6');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Field #6 Match');
     //echo ui_print_help_icon ("snmp_alert_custom", true);
 
     echo '</td><td class="datos">';
     html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
-
-	// SNMP Agent
-	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
-	html_print_input_text ("source_ip", $source_ip, '', 20);
-	echo '</td></tr>';
-		
+	
 	// Alert fields
 	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)');
     echo ui_print_help_icon ("snmp_alert_field1", true);
@@ -334,6 +323,27 @@ if (isset ($_GET["update_alert"])) {
 	echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
 	echo html_print_select (get_priorities (), "priority", $priority, '', '', '0', false, false, false);
 	echo '</td></tr>';
+	echo '</table>';	
+
+	/* SNMP alert filters */
+
+	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
+
+	echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
+
+	// Custom
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
+    echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
+
+	echo '</td></tr>';
+
+	// SNMP Agent
+	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
+	html_print_input_text ("source_ip", $source_ip, '', 20);
+	echo '</td></tr>';
 
 	// Trap type
 	echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
@@ -347,15 +357,21 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 
 	//Button
+	//echo '<tr><td></td><td align="right">';
+
+	
+	// End table
+	echo "</td></tr></table>";
+	
+	echo "<table style='width:98%'>";
 	echo '<tr><td></td><td align="right">';
 	if ($id_as > 0) {
 		html_print_submit_button (__('Update'), "submit", false, 'class="sub upd"', false);
 	} else {
 		html_print_submit_button (__('Create'), "submit", false, 'class="sub wand"', false);
 	}
-	
-	// End table
-	echo "</td></tr></table>";
+	echo '</td></tr></table>';
+	echo "</table>";
 } else {
 	
 	require_once ('include/functions_alerts.php');

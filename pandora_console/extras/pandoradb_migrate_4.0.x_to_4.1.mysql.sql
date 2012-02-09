@@ -132,6 +132,7 @@ ALTER TABLE tgraph_source MODIFY weight FLOAT(5,3) NOT NULL DEFAULT '0.000';
 
 CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_filter`  int(10) unsigned NOT NULL auto_increment,
+  `id_group_filter` int(10) NOT NULL default 0,
   `id_name` varchar(600) NOT NULL,
   `id_group` int(10) NOT NULL default 0,
   `event_type` text NOT NULL default '',

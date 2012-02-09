@@ -102,7 +102,7 @@ $own_info = get_user_info ($config['id_user']);
 // Get group list that user has access
 $groups_user = users_get_groups ($config['id_user'], "AW", $own_info['is_admin'], true);
 
-$sql = "SELECT * FROM tevent_filter WHERE id_group IN (".implode(',', array_keys ($groups_user)).")";
+$sql = "SELECT * FROM tevent_filter WHERE id_group_filter IN (".implode(',', array_keys ($groups_user)).")";
 $filters = db_get_all_rows_sql($sql);
 
 if ($filters === false)
@@ -111,7 +111,7 @@ if ($filters === false)
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Group');
+$table->head[1] = __('Filter group');
 $table->head[2] = __('Event type');
 $table->head[3] = __('Event status');
 $table->head[4] = __('Severity');
@@ -143,7 +143,7 @@ foreach ($filters as $filter) {
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/event_edit_filter&id='.$filter['id_filter'].'">'.$filter['id_name'].'</a>';
-	$data[1] = ui_print_group_icon ($filter['id_group'], true);
+	$data[1] = ui_print_group_icon ($filter['id_group_filter'], true);
 	$data[2] = events_get_event_types($filter['event_type']);
 	$data[3] = events_get_status($filter['status']);
 	$data[4] = events_get_severity_types($filter['severity']);

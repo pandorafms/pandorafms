@@ -68,7 +68,8 @@ if (is_ajax()){
 		$values['id_user_ack'] = get_parameter('id_user_ack');
 		$values['group_rep'] = get_parameter('group_rep');
 		$values['tag'] = get_parameter('tag');
-		$values['filter_only_alert'] = get_parameter('filter_only_alert');		
+		$values['filter_only_alert'] = get_parameter('filter_only_alert');
+		$values['id_group_filter'] = get_parameter('id_group_filter');
 		
 		$result = db_process_sql_insert('tevent_filter', $values);
 		
@@ -95,9 +96,9 @@ if (is_ajax()){
 		$values['id_user_ack'] = get_parameter('id_user_ack');
 		$values['group_rep'] = get_parameter('group_rep');
 		$values['tag'] = get_parameter('tag');
-		$values['filter_only_alert'] = get_parameter('filter_only_alert');	
-		
-		
+		$values['filter_only_alert'] = get_parameter('filter_only_alert');
+		$values['id_group_filter'] = get_parameter('id_group_filter');
+
 		$result = db_process_sql_update('tevent_filter', $values, array('id_filter' => $id));		
 	
 		if ($result === false){
@@ -251,12 +252,17 @@ echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&n
 echo '<div id="event_control" style="display:none">';
 
 // Table for filter controls
-echo '<form method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=list">';
+echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=list">';
 echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" class="databox"><tr id="row_name" style="visibility: hidden">';
 
-// Group combo
+// Filter name
 echo "<td>".__('Filter name')."</td><td>";
 html_print_input_text ('id_name', $id_name, '', 15);
+echo "</td>";
+
+// Filter group
+echo "<td>".__('Filter group')."</td><td>";
+html_print_select_groups($config["id_user"], "IR", true, 'id_group', $id_group, '', '', 0, false, false, false, 'w130');
 echo "</td></tr>";
 
 // Group combo
@@ -377,10 +383,29 @@ echo '</td></tr>';
 
 
 echo '<tr><td colspan="4" style="text-align:right">';
+
+// Trick to catch if the update button has been pushed (don't collapse filter)
+// or autorefresh is in use (collapse filter)
+$autorefresh_toogle = get_parameter_get('toogle_filter', 'true');
+$update_pressed = get_parameter_post('toogle_filter', 'true');
+// If autoupdate is in use collapse filter
+if ($autorefresh_toogle == 'false'){
+	html_print_input_hidden('toogle_filter', 'true');
+} 
+else{
+	// If update button has been pushed then don't collapse filter
+	if ($update_pressed == 'false'){
+		html_print_input_hidden('toogle_filter', 'false');
+	} // Else collapse filter
+	else{
+		html_print_input_hidden('toogle_filter', 'true');
+	}
+}
+
 //The buttons
 html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd" style="visibility:hidden"');
 html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"');
-html_print_submit_button (__('Update'), '', false, 'class="sub upd"');
+html_print_submit_button (__('Update'), 'update', false, 'class="sub upd"');
 
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
@@ -1062,6 +1087,12 @@ unset ($table);
 /* 
  <![CDATA[ */
 $(document).ready( function() {
+
+	// Don't collapse filter if update button has been pushed
+	if ($("#hidden-toogle_filter").val() == 'false'){
+		$("#event_control").toggle ();
+	}
+	
 	// If selected is not 'none' show filter name
 	if ( $("#filter_id").val() != 0 ) {
 		$("#row_name").css('visibility', '');
@@ -1085,7 +1116,8 @@ $(document).ready( function() {
 			$("#tag").val('');
 			$("#filter_only_alert").val(-1);
 			$("#row_name").css('visibility', 'hidden');	
-			$("#submit-update_filter").css('visibility', 'hidden');		
+			$("#submit-update_filter").css('visibility', 'hidden');
+			$("#id_group").val(0);	
 		}
 		// If filter selected then load filter
 		else {
@@ -1124,6 +1156,8 @@ $(document).ready( function() {
 						$("#tag").val(val);	
 					  if (i == 'filter_only_alert')
 						$("#filter_only_alert").val(val);
+					  if (i == 'id_group_filter')
+						$("#id_group").val(val);	
 				  });
 				},
 				"json"
@@ -1136,12 +1170,12 @@ $(document).ready( function() {
 		// Checks if the filter has name or not
 		if ($('#row_name').css('visibility') == 'hidden') {
 			$('#row_name').css('visibility', '');
-			$('#show_filter_error').html('<h3 class="error">Define a name for the filter and click on Save filter again</h3>');
+			$('#show_filter_error').html('<h3 class="error"> <? echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
 		// If the filter has name insert in database
 		}else{
 			// If the filter name is blank show error
 			if ($('#text-id_name').val() == '') {
-				$('#show_filter_error').html('<h3 class="error">Filter name cannot be left blank</h3>');
+				$('#show_filter_error').html('<h3 class="error"> <? echo __('Filter name cannot be left blank'); ?> </h3>');
 				return false;
 			}
 			
@@ -1162,14 +1196,15 @@ $(document).ready( function() {
 				"id_user_ack" : $("#id_user_ack").val(),
 				"group_rep" : $("#group_rep").val(),
 				"tag" : $("#tag").val(),
-				"filter_only_alert" : $("#filter_only_alert").val()
+				"filter_only_alert" : $("#filter_only_alert").val(),
+				"id_group_filter": $("#id_group").val()
 				},
 				function (data) {
 					if (data == 'error'){
-						$('#show_filter_error').html('<h3 class="error">Error creating filter</h3>');
+						$('#show_filter_error').html('<h3 class="error"> <? echo __('Error creating filter'); ?> </h3>');
 					}else{
 						id_filter_save = data;
-						$('#show_filter_error').html('<h3 class="suc">Filter created</h3>');
+						$('#show_filter_error').html('<h3 class="suc"> <? echo __('Filter created'); ?> </h3>');
 					}
 				});
 			
@@ -1204,7 +1239,7 @@ $(document).ready( function() {
 		
 		// If the filter name is blank show error
 		if ($('#text-id_name').val() == '') {
-			$('#show_filter_error').html('<h3 class="error">Filter name cannot be left blank</h3>');
+			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
 			return false;
 		}		
 		
@@ -1226,13 +1261,14 @@ $(document).ready( function() {
 			"id_user_ack" : $("#id_user_ack").val(),
 			"group_rep" : $("#group_rep").val(),
 			"tag" : $("#tag").val(),
-			"filter_only_alert" : $("#filter_only_alert").val()
+			"filter_only_alert" : $("#filter_only_alert").val(),
+			"id_group_filter": $("#id_group").val()
 			},
 			function (data) {
 				if (data == 'ok'){
-					$('#show_filter_error').html('<h3 class="suc">Filter updated</h3>');
+					$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter updated'); ?> </h3>');
 				}else{
-					$('#show_filter_error').html('<h3 class="error">Error updating filter</h3>');
+					$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error updating filter'); ?> </h3>');
 				}
 			});	
 			

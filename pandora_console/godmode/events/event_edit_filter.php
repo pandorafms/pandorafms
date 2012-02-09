@@ -53,6 +53,7 @@ ui_print_page_header (__("Manage events") . ' - ' . __('Filters'), "images/light
 
 if ($id) {
 	$filter = events_get_event_filter ($id);
+	$id_group_filter = $filter['id_group_filter'];
 	$id_group = $filter['id_group'];
 	$id_name = $filter['id_name'];	
 	$event_type = $filter['event_type'];
@@ -68,6 +69,7 @@ if ($id) {
 	$filter_only_alert = $filter['filter_only_alert'];
 } else {
 	$id_group = '';
+	$id_group_filter = '';
 	$id_name = '';
 	$event_type = '';
 	$severity = '';
@@ -84,6 +86,7 @@ if ($id) {
 
 if ($update) {
 	$id_group = (string) get_parameter ('id_group');
+	$id_group_filter = get_parameter('id_group_filter');
 	$id_name = (string) get_parameter ('id_name');
 	$event_type = get_parameter('event_type', '');
 	$severity = get_parameter('severity', '');
@@ -102,6 +105,7 @@ if ($update) {
     } else {
 		$values = array ('id_filter' => $id,
 			'id_name' => $id_name,			
+			'id_group_filter' => $id_group_filter,
 			'id_group' => $id_group,
 			'event_type' => $event_type,
 			'severity' => $severity,
@@ -127,6 +131,7 @@ if ($update) {
 if ($create) {
 	$id_group = (string) get_parameter ('id_group');
 	$id_name = (string) get_parameter ('id_name');
+	$id_group_filter = get_parameter('id_group_filter');
 	$event_type = get_parameter('event_type', '');
 	$severity = get_parameter('severity', '');
 	$status = get_parameter('status', '');
@@ -140,7 +145,8 @@ if ($create) {
 	$filter_only_alert = get_parameter('filter_only_alert', '');	
 
 	$values = array (
-			'id_name' => $id_name,			
+			'id_name' => $id_name,	
+			'id_group_filter' => $id_group_filter,		
 			'id_group' => $id_group,
 			'event_type' => $event_type,
 			'severity' => $severity,
@@ -172,12 +178,17 @@ $table->class = "databox_color";
 $table->style[0] = 'vertical-align: top;';
 
 $table->data = array ();
-$table->data[0][0] = '<b>'.__('Name').'</b>';
+$table->data[0][0] = '<b>'.__('Filter name').'</b>';
 $table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, true);
 
-$own_info = get_user_info ($config['id_user']);
-$table->data[1][0] = '<b>'.__('Group').'</b>';
+$table->data[1][0] = '<b>'.__('Filter group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
 $table->data[1][1] = html_print_select_groups($config['id_user'], "IW", 
+		$own_info['is_admin'], 'id_group_filter', $id_group_filter, '', '', -1, true,
+		false, false);
+
+$own_info = get_user_info ($config['id_user']);
+$table->data[2][0] = '<b>'.__('Group').'</b>';
+$table->data[2][1] = html_print_select_groups($config['id_user'], "IW", 
 		$own_info['is_admin'], 'id_group', $id_group, '', '', -1, true,
 		false, false);
 		
@@ -185,23 +196,23 @@ $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types["not_normal"] = __("Not normal");		
 	
-$table->data[2][0] = '<b>' . __('Event type') . '</b>';
-$table->data[2][1] = html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
+$table->data[3][0] = '<b>' . __('Event type') . '</b>';
+$table->data[3][1] = html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 
-$table->data[3][0] = '<b>' . __('Severity') . '</b>';
-$table->data[3][1] = html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
+$table->data[4][0] = '<b>' . __('Severity') . '</b>';
+$table->data[4][1] = html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
 	
 $fields = events_get_all_status();
 	
-$table->data[4][0] = '<b>' . __('Event status') . '</b>';
-$table->data[4][1] = html_print_select ($fields, 'status', $status, '', '', '', true);
+$table->data[5][0] = '<b>' . __('Event status') . '</b>';
+$table->data[5][1] = html_print_select ($fields, 'status', $status, '', '', '', true);
 	
-$table->data[5][0] = '<b>' . __('Free search') . '</b>';
-$table->data[5][1] = html_print_input_text ('search', io_safe_output($search), '', 15, 255, true);
+$table->data[6][0] = '<b>' . __('Free search') . '</b>';
+$table->data[6][1] = html_print_input_text ('search', io_safe_output($search), '', 15, 255, true);
 
-$table->data[6][0] = '<b>' . __('Agent search') . '</b>';
+$table->data[7][0] = '<b>' . __('Agent search') . '</b>';
 $src_code = html_print_image('images/lightning.png', true, false, true);
-$table->data[6][1] = html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
+$table->data[7][1] = html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
 . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	
@@ -210,20 +221,20 @@ $lpagination[50] = 50;
 $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;	
-$table->data[7][0] = '<b>' . __('Block size for pagination') . '</b>';
-$table->data[7][1] = html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
+$table->data[8][0] = '<b>' . __('Block size for pagination') . '</b>';
+$table->data[8][1] = html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
 	
-$table->data[8][0] = '<b>' . __('Max. hours old') . '</b>';
-$table->data[8][1] = html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
+$table->data[9][0] = '<b>' . __('Max. hours old') . '</b>';
+$table->data[9][1] = html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
 
-$table->data[9][0] = '<b>' . __('User ack.') . '</b>';
+$table->data[10][0] = '<b>' . __('User ack.') . '</b>';
 $users = users_get_info ();
-$table->data[9][1] = html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
+$table->data[10][1] = html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
 
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
-$table->data[10][0] = '<b>' . __('Repeated') . '</b>';
-$table->data[10][1] = html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', '', true);	
+$table->data[11][0] = '<b>' . __('Repeated') . '</b>';
+$table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', '', true);	
 
 $tags = tags_search_tag();
 if($tags === false) {
@@ -235,11 +246,11 @@ foreach($tags as $t) {
 	$tags_name[$t['name']] = $t['name'];
 }
 
-$table->data[11][0] = '<b>' . __('Tag') . '</b>';
-$table->data[11][1] = html_print_select ($tags_name, "tag", $tag, '', __('All'), "", true);	
+$table->data[12][0] = '<b>' . __('Tag') . '</b>';
+$table->data[12][1] = html_print_select ($tags_name, "tag", $tag, '', __('All'), "", true);	
 
-$table->data[12][0] = '<b>' . __('Alert events') . '</b>';
-$table->data[12][1] = html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
+$table->data[13][0] = '<b>' . __('Alert events') . '</b>';
+$table->data[13][1] = html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
 	
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/event_edit_filter">';
 html_print_table ($table);

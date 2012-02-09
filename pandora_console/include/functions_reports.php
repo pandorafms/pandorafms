@@ -36,17 +36,21 @@ function reports_get_report ($id_report, $filter = false, $fields = false) {
 	$id_report = safe_int ($id_report);
 	if (empty ($id_report))
 		return false;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter['id_report'] = $id_report;
 	if (!is_user_admin ($config["id_user"]))
-		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")', $config['id_user']);
+		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")',
+			$config['id_user']);
 	if (is_array ($fields))
 		$fields[] = 'id_group';
 	
 	$report = db_get_row_filter ('treport', $filter, $fields);
+	
 	if (! check_acl ($config['id_user'], $report['id_group'], 'AR'))
 		return false;
+	
 	return $report;
 }
 
@@ -70,21 +74,25 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 	if (! is_array ($filter))
 		$filter = array ();
 	if (!is_user_admin ($config["id_user"]))
-		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")', $config['id_user']);
+		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")',
+			$config['id_user']);
 	if (is_array ($fields)) {
 		$fields[] = 'id_group';
 		$fields[] = 'id_user';
 	}
 	
-	$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
-
 	$reports = array ();
 	$all_reports = @db_get_all_rows_filter ('treport', $filter, $fields);
-	if ($all_reports !== FALSE)
-	foreach ($all_reports as $report){
+	if (empty($all_reports))
+		$all_reports = array();
+	
+	//Recheck in all reports if the user have permissions to see each report.
+	$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
+	foreach ($all_reports as $report) {
 		if (!in_array($report['id_group'], array_keys($groups)))
 			continue;
-		if ($config['id_user'] != $report['id_user'] && ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
+		if ($config['id_user'] != $report['id_user']
+			&& ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
 			continue;
 		array_push ($reports, $report);
 	}

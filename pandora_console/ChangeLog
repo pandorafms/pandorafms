@@ -1,5 +1,9 @@
 2012-02-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/events/events_list.php: Removed short tags.
+
+2012-02-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* godmode/events/custom_events.php: Aesthetic fixes.
 
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

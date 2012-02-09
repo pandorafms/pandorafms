@@ -1176,12 +1176,12 @@ $(document).ready( function() {
 		// Checks if the filter has name or not
 		if ($('#row_name').css('visibility') == 'hidden') {
 			$('#row_name').css('visibility', '');
-			$('#show_filter_error').html('<h3 class="error"> <? echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
+			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
 		// If the filter has name insert in database
 		}else{
 			// If the filter name is blank show error
 			if ($('#text-id_name').val() == '') {
-				$('#show_filter_error').html('<h3 class="error"> <? echo __('Filter name cannot be left blank'); ?> </h3>');
+				$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
 				return false;
 			}
 			
@@ -1207,10 +1207,10 @@ $(document).ready( function() {
 				},
 				function (data) {
 					if (data == 'error'){
-						$('#show_filter_error').html('<h3 class="error"> <? echo __('Error creating filter'); ?> </h3>');
+						$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error creating filter'); ?> </h3>');
 					}else{
 						id_filter_save = data;
-						$('#show_filter_error').html('<h3 class="suc"> <? echo __('Filter created'); ?> </h3>');
+						$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter created'); ?> </h3>');
 					}
 				});
 			

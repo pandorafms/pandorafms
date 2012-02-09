@@ -1037,6 +1037,23 @@ foreach ($result as $event) {
 		$string .= '</td></tr><tr>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
+	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Source') . '</td><td align="left">';
+	if ($event["source"] != '') {
+		$string .= $event["source"];
+		$string .= '</td></tr><tr>';
+		$odd = ($odd == '')? 'rowOdd' : '';
+	} else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+		$odd = ($odd == '')? 'rowOdd' : '';
+	}
+	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Extra id') . '</td><td align="left">';
+	if ($event["id_extra"] != '') {
+		$string .= $event["id_extra"];
+		$string .= '</td></tr><tr>';
+		$odd = ($odd == '')? 'rowOdd' : '';
+	} else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+	}
 	$string .= '</td></tr>';
 	$string .= '</table>';
 	

@@ -1,3 +1,7 @@
+2012-02-09  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/events/events_list.php: show 'source' and 'extra id' fields
+	in event view when the value is empty.
+
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/snmpconsole/snmp_alert.php: Added 'None' value to trap 

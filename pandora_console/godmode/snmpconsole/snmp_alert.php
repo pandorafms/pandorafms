@@ -185,6 +185,46 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
+
+	/* SNMP alert filters */
+
+	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
+
+	echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
+
+	// Custom
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
+    echo ui_print_help_icon ("snmp_alert_custom", true);
+
+    echo '</td><td class="datos">';
+    html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
+
+	echo '</td></tr>';
+
+	// SNMP Agent
+	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
+	html_print_input_text ("source_ip", $source_ip, '', 20);
+	echo '</td></tr>';
+
+	// Trap type
+	echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
+	$trap_types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', -1 => 'Other');
+	echo html_print_select ($trap_types, 'trap_type', $trap_type, '', '', '', false, false, false);
+	echo '</td></tr>';
+
+	// Single value
+	echo '<tr><td class="datos">'.__('Single value').'</td><td class="datos">';
+	html_print_input_text ("single_value", $single_value, '', 20);
+	echo '</td></tr>';
+
+	//Button
+	//echo '<tr><td></td><td align="right">';
+
+	// End table
+	echo "</td></tr></table>";
+	
+	// Alert configuration
+
 	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
 	
 	echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
@@ -325,44 +365,6 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 	echo '</table>';	
 
-	/* SNMP alert filters */
-
-	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
-
-	echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
-
-	// Custom
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
-    echo ui_print_help_icon ("snmp_alert_custom", true);
-
-    echo '</td><td class="datos">';
-    html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
-
-	echo '</td></tr>';
-
-	// SNMP Agent
-	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
-	html_print_input_text ("source_ip", $source_ip, '', 20);
-	echo '</td></tr>';
-
-	// Trap type
-	echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
-	$trap_types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', -1 => 'Other');
-	echo html_print_select ($trap_types, 'trap_type', $trap_type, '', '', '', false, false, false);
-	echo '</td></tr>';
-
-	// Single value
-	echo '<tr><td class="datos">'.__('Single value').'</td><td class="datos">';
-	html_print_input_text ("single_value", $single_value, '', 20);
-	echo '</td></tr>';
-
-	//Button
-	//echo '<tr><td></td><td align="right">';
-
-	
-	// End table
-	echo "</td></tr></table>";
-	
 	echo "<table style='width:98%'>";
 	echo '<tr><td></td><td align="right">';
 	if ($id_as > 0) {

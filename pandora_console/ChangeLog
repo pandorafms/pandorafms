@@ -1,3 +1,8 @@
+2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/snmpconsole/snmp_alert.php: Changed position of tables
+	'Alert filters' and 'Alert configuration' in this view.
+
 2012-02-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/events/events_list.php: Removed short tags.

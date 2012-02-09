@@ -1,5 +1,10 @@
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/snmpconsole/snmp_alert.php: Added 'None' value to trap 
+	type filter.
+
+2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/snmpconsole/snmp_alert.php: Changed position of tables
 	'Alert filters' and 'Alert configuration' in this view.
 

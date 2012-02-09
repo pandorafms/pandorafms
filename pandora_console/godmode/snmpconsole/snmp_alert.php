@@ -208,7 +208,7 @@ if (isset ($_GET["update_alert"])) {
 
 	// Trap type
 	echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
-	$trap_types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', -1 => 'Other');
+	$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 	echo html_print_select ($trap_types, 'trap_type', $trap_type, '', '', '', false, false, false);
 	echo '</td></tr>';
 

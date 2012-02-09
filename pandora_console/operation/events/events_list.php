@@ -397,14 +397,15 @@ else{
 	// Keeps state with pagination
 	if ($autorefresh_toogle == 'no'){
 		html_print_input_hidden('toogle_filter', 'false');
-	}
-	
-	// If update button has been pushed then don't collapse filter
-	if ($update_pressed == 'false'){
-		html_print_input_hidden('toogle_filter', 'false');
-	} // Else collapse filter
-	else{
-		html_print_input_hidden('toogle_filter', 'true');
+	} else {
+		
+		// If update button has been pushed then don't collapse filter
+		if ($update_pressed == 'false'){
+			html_print_input_hidden('toogle_filter', 'false');
+		} // Else collapse filter
+		else{
+			html_print_input_hidden('toogle_filter', 'true');
+		}
 	}
 }
 

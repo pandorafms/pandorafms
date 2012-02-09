@@ -1,5 +1,12 @@
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: Changed toggle filter in this
+	view.
+	* operation/netflow/nf_live_view.php: Changed filters of netflow
+	to javascript code.
+
+2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* Changelog: I forgot to update Changelog.
 
 2012-02-09  Vanessa Gil  <vanessa.gil@artica.es>

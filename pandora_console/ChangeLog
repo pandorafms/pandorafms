@@ -1,4 +1,8 @@
 2012-02-09  Vanessa Gil  <vanessa.gil@artica.es>
+	* godmode/agentes/module_manager_editor_common.php: Fixed behavior combo
+	tag selected.
+
+2012-02-09  Vanessa Gil  <vanessa.gil@artica.es>
 	* godmode/events/custom_events.php: Changed combo box update.
 
 2012-02-08  Vanessa Gil  <vanessa.gil@artica.es>

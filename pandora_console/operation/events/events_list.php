@@ -242,7 +242,8 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset . "&amp;toogle_filter=no";
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset . "&amp;toogle_filter=no" .
+	"&amp;filter_id=" . $filter_id . "&amp;id_name=" . $id_name . "&amp;id_group=" . $id_group;
 
 echo "<br>";
 //Link to toggle filter

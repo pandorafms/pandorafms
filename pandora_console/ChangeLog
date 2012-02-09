@@ -1,5 +1,11 @@
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/events/events_list.php: Added colors in name and group
+	at creation time and now update button is showed when a filter is
+	created.
+
+2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/help/en/help_field_match_snmp.php
 	 include/help/es/help_field_match_snmp.php
 	 godmode/snmpconsole/snmp_alert.php: Changed order of fields in this 

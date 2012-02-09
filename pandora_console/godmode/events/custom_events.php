@@ -151,37 +151,37 @@ foreach ($fields_available as $key=>$available) {
 }
 
 $table->data[1][0] =  '<b>' . __('Fields available').'</b>';
-$table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false);
+$table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 200px');
 $table->data[1][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table->data[1][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 	
 $table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
-$table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false);	
+$table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
-
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+		html_print_input_hidden ('default', 1);
+		html_print_submit_button (__('Default'), 'default_fields', false, 'class="sub upd"');
+echo '</div>';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 		html_print_input_hidden ('update_config', 1);
 		html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</form>';
-echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
-		html_print_input_hidden ('default', 1);
-		html_print_submit_button (__('Default fields'), 'default_fields', false, 'class="sub upd"');
-echo '</form>';	
 echo '</div>';
 ?>
 
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+
 	$("#right").click (function () {
 		jQuery.each($("select[name='fields_available[]'] option:selected"), function (key, value) {
 			field_name = $(value).html();
 			if (field_name != <?php echo "'".__('None')."'"; ?>){
 				id_field = $(value).attr('value');
-				$("select[name='fields_selected[]']").append($("<option selected='selected'></option>").html(field_name).attr("value", id_field));
+				$("select[name='fields_selected[]']").append($("<option></option>").html(field_name).attr("value", id_field));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();
 			}
 		});			
@@ -196,6 +196,12 @@ $(document).ready (function () {
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
 				}
 		});			
+	});
+	
+	$("#submit-upd_button").click(function () {
+		$('#fields_selected option').map(function(){
+			$(this).attr('selected','selected');
+		});
 	});
 });
 

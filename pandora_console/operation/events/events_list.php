@@ -257,12 +257,12 @@ echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec
 echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" class="databox"><tr id="row_name" style="visibility: hidden">';
 
 // Filter name
-echo "<td>".__('Filter name')."</td><td>";
+echo "<td id='filter_name_color'>".__('Filter name')."</td><td>";
 html_print_input_text ('id_name', $id_name, '', 15);
 echo "</td>";
 
 // Filter group
-echo "<td>".__('Filter group')."</td><td>";
+echo "<td id='filter_group_color'>".__('Filter group')."</td><td>";
 html_print_select_groups($config["id_user"], "IR", true, 'id_group', $id_group, '', '', 0, false, false, false, 'w130');
 echo "</td></tr>";
 
@@ -1195,8 +1195,12 @@ $(document).ready( function() {
 		if ($('#row_name').css('visibility') == 'hidden') {
 			$('#row_name').css('visibility', '');
 			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
+			$('#filter_name_color').css('color', '#CC0000');
+			$('#filter_group_color').css('color', '#CC0000');
 		// If the filter has name insert in database
 		}else{
+			$('#filter_name_color').css('color', '#000000');
+			$('#filter_group_color').css('color', '#000000');			
 			// If the filter name is blank show error
 			if ($('#text-id_name').val() == '') {
 				$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
@@ -1253,7 +1257,8 @@ $(document).ready( function() {
 							});
 						},
 						"json"	
-						);			
+						);
+		$("#submit-update_filter").css('visibility', '');				
 					}			
 		return false;
 	});

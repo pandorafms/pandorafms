@@ -1,7 +1,15 @@
+2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql: Removed default value of 'value' field to
+	tconfig table.
+
 2012-02-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: Added type in snmp alert view
 	and added None option in trap type filter.
+
+2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql: Removed default value of 'value' field to
+	tconfig table.
 
 2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql

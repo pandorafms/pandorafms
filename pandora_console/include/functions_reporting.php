@@ -868,7 +868,24 @@ function reporting_get_group_stats ($id_group = 0) {
 
 		foreach ($id_group as $group){
 
+			$children = groups_get_childrens($group);
 
+			//Show empty groups only if they have children with agents
+			$group_array = array();
+
+			foreach($children as $sub) {
+				
+				array_push($group_array, $sub['id_grupo']);
+
+			}
+
+			//Add id of this group to create the clause
+			array_push($group_array, $group);
+			
+			$group_clause = implode(",",$group_array);
+
+			$group_clause = "(".$group_clause.")";
+			
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$data["agents_unknown"] += db_get_sql ("SELECT COUNT(*)
@@ -888,7 +905,7 @@ function reporting_get_group_stats ($id_group = 0) {
 			}
 
 			$data["total_agents"] += db_get_sql ("SELECT COUNT(*)
-					FROM tagente WHERE id_grupo = $group AND disabled = 0");
+					FROM tagente WHERE id_grupo IN $group_clause AND disabled = 0");
 
 			$data["monitor_checks"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
 				FROM tagente_estado, tagente, tagente_modulo

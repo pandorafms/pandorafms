@@ -418,7 +418,7 @@ CREATE TABLE IF NOT EXISTS `tattachment` (
 CREATE TABLE IF NOT EXISTS `tconfig` (
   `id_config` int(10) unsigned NOT NULL auto_increment,
   `token` varchar(100) NOT NULL default '',
-  `value` text NOT NULL default '',
+  `value` text NOT NULL,
   PRIMARY KEY  (`id_config`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

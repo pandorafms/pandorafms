@@ -480,8 +480,8 @@ CREATE OR REPLACE TRIGGER tattachment_inc BEFORE INSERT ON tattachment REFERENCI
 
 CREATE TABLE tconfig (
 	id_config NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	token VARCHAR2(255) default '',
-	value VARCHAR2(100) default '' 
+	token VARCHAR2(100) default '',
+	value VARCHAR2(255) default '' 
 );
 
 CREATE SEQUENCE tconfig_s INCREMENT BY 1 START WITH 1;

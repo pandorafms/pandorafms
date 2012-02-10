@@ -1,3 +1,8 @@
+2012-02-10 Dario Rodriguez <dario.rodriguez@artica.es>
+
+        * include/functions_modules.php: Changed module status image for unknown
+        status to gray.
+
 2012-02-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/events_list.php: Added colors in name and group

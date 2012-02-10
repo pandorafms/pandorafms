@@ -1193,15 +1193,15 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 		$last_status =  modules_get_agentmodule_last_status($id_agent_module);
 		switch($last_status) {
 			case 0:
-				$status = STATUS_MODULE_OK;
+				$status = STATUS_AGENT_DOWN;
 				$title = __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL');
 				break;
 			case 1:
-				$status = STATUS_MODULE_CRITICAL;
+				$status = STATUS_AGENT_DOWN;
 				$title = __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL');
 				break;
 			case 2:
-				$status = STATUS_MODULE_WARNING;
+				$status = STATUS_AGENT_DOWN;
 				$title = __('UNKNOWN')." - ".__('Last status')." ".__('WARNING');
 				break;
 		}

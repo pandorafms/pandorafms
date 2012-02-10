@@ -148,3 +148,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `filter_only_alert` int(10) NOT NULL default -1, 
 PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+ALTER TABLE tconfig MODIFY value TEXT NOT NULL;

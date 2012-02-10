@@ -127,3 +127,8 @@ CREATE TABLE "tevent_filter" (
   "tag" varchar(600) NOT NULL default '',
   "filter_only_alert" INTEGER NOT NULL default -1
 );
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+ALTER TABLE "tconfig" ALTER COLUMN "value" TEXT;

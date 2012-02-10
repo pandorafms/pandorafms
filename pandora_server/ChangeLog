@@ -1,3 +1,12 @@
+2012-02-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added support for regular expressions to
+	  the SNMP value filter. Small fixes.
+
+2012-02-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed a warning.
+
 2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* util/pandora_manage.pl: Added new Event validate given id.

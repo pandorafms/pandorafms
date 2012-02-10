@@ -1539,9 +1539,9 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$) {
+sub pandora_event ($$$$$$$$$$;$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh) = @_;
+		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source) = @_;
 
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 
@@ -1551,12 +1551,15 @@ sub pandora_event ($$$$$$$$$$) {
 		$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
 	}	
 		
+	# Set default values for optional parameters
+	$source = 'Pandora' unless defined ($source);
+	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
-	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, '', $module_tags);
+	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, '', $module_tags, $source);
 }
 
 ##########################################################################
@@ -1678,16 +1681,30 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 		# Trap type
 		if ($alert->{'trap_type'} >= 0) {
-			next if ($trap_type != $alert->{'trap_type'});
+			# 1-4
+			if ($alert->{'trap_type'} < 5) {
+				next  if ($trap_type != $alert->{'trap_type'});
+			# Other
+			} else {
+				next  if ($trap_type < 5);
+			}
 			$alert_data .= "Type: $trap_type ";
 		}
 
 		# Trap value
-		if ($alert->{'single_value'} >= 0) {
-			next if ($trap_value ne $alert->{'single_value'});
+		my $single_value = $alert->{'single_value'};
+		if ($single_value ne '') {
+			next if ($trap_value !~ m/^$single_value$/i);
 			$alert_data .= "Value: $trap_value ";
 		}
 
+		# Agent IP
+		my $agent = $alert->{'agent'};
+		if ($agent ne '') {
+			next if ($trap_agent !~ m/^$agent$/i );
+			$alert_data .= "Agent: $agent";
+		}
+		
         # Specific SNMP Trap alert macros for regexp selectors in trap info
 		my %macros;
 		
@@ -1730,13 +1747,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
         $alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
         $alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
         $alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
-
-		# Agent IP
-		my $agent = $alert->{'agent'};
-		if ($agent ne '') {
-			next if ($trap_agent !~ m/^$agent$/i );
-			$alert_data .= "AGENT: $agent";
-		}
 		
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});

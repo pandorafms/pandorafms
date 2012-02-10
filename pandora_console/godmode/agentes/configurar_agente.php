@@ -247,7 +247,7 @@ if ($id_agente) {
 	if($tab == 'alert')
 		$alerttab['active'] = true;
 	else
-		$alerttab['active'] = false;		
+		$alerttab['active'] = false;
 		
 	/* Template tab */
 	$templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
@@ -576,7 +576,8 @@ if ($id_agente) {
 $update_module = (bool) get_parameter ('update_module');
 $create_module = (bool) get_parameter ('create_module');
 $delete_module = (bool) get_parameter ('delete_module');
-$duplicate_module = (bool) get_parameter ('duplicate_module');
+//It is the id_agent_module to duplicate
+$duplicate_module = (int) get_parameter ('duplicate_module');
 $edit_module = (bool) get_parameter ('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
@@ -961,11 +962,26 @@ if ($delete_module) { // DELETE agent module !
 
 // MODULE DUPLICATION
 // =================
-if ($duplicate_module) { // DUPLICATE agent module !
-	$id_duplicate_module = (int) get_parameter_get ("duplicate_module",0);
+if (!empty($duplicate_module)) { // DUPLICATE agent module !
+	$id_duplicate_module = $duplicate_module;
+	
+	$original_name = modules_get_agentmodule_name($id_duplicate_module);
+	$copy_name = __('copy of') . ' ' . $original_name;
+	
+	$cont = 0;
+	$exists = true;
+	while($exists) {
+		$exists = (bool)db_get_value ('id_agente_modulo', 'tagente_modulo',
+			'nombre', $copy_name);
+		if ($exists) {
+			$cont++;
+			$copy_name = __('copy of') . ' ' . $original_name
+				. ' (' . $cont . ')';
+		}
+	}
+	
 	$result = modules_copy_agent_module_to_agent ($id_duplicate_module,
-		modules_get_agentmodule_agent($id_duplicate_module),
-		io_safe_input(__('copy of').' '.modules_get_agentmodule_name($id_duplicate_module)));
+		modules_get_agentmodule_agent($id_duplicate_module), $copy_name);
 	
 	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	

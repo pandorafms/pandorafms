@@ -521,11 +521,19 @@ sub read_config (;$) {
 		next if ($line =~ /^module\s*\w*/);
 		
 		# Additional configuration file
-		if ($line =~ /^include\s+(.*)\s*/){
-			open (FILE, "$1") or next;
-			my @file_conf = <FILE>;
-			parse_conf_modules(\@file_conf);	
-			close (FILE);
+		if ($line =~ /^include\s+(.*)\s*/) {
+			log_message ('setup', "include is $1");
+			$Conf{'include'} = $Conf{'include'} ? "$Conf{'include'} $1" : $1;
+
+			foreach my $file_name (glob("$1")) {
+				open (FILE, "$file_name") or next;
+
+				log_message ('setup', "reading $file_name");
+				my @file_conf = <FILE>;
+				parse_conf_modules(\@file_conf); 
+				close (FILE);
+			}
+			next;
 		}
 
 		#Configuration token

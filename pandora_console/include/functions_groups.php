@@ -671,6 +671,20 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["total_agents"] > 0)
 		echo "<a style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
+
+		//Total agent field given by function reporting_get_group_stats return the number of agents
+		//of this groups and its children. It was done to print empty fathers of children groups.
+		//We need to recalculate the total agents for this group here to get only the total agents
+		//for this group. Of course the group All (0) is a special case.
+
+		$data["total_agents"];
+
+		if($id_group != 0) {
+	
+			$data["total_agents"] = db_get_sql ("SELECT COUNT(*) FROM tagente 
+							WHERE id_grupo = $id_group AND disabled = 0");
+		}		
+
 		echo $data["total_agents"];
 		echo "</a>";
 

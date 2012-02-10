@@ -1,3 +1,9 @@
+2012-02-10 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_reporting.php,
+	include/functions_groups.php: Fixed a problem in Group View that hide empty parent
+	groups when their children has agents.
+
 2012-02-10  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* * extensions/module_groups.php, include/functions_modules.php,

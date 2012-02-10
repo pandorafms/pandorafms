@@ -1,3 +1,9 @@
+2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
+	* include/functions_events.php
+	  operation/events/events_list.php
+	  operation/events/events_validate: Allowed post a comment 
+	without changing the event's state.
+
 2012-02-10  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* * extensions/module_groups.php, include/functions_modules.php,

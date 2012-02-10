@@ -844,15 +844,17 @@ foreach ($result as $event) {
 		$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 		$string .= '<td align="left" width="200px">'; 
 		$string .= '<div style="text-align:center;">';
+		
 		if($event["estado"] == 0) {
-			$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+			$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 		}
-		$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
 		if($event["estado"] == 2) {
-			$string .= html_print_button (__('Validate'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
-		}else {
-			$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+			$string .= html_print_select(array('1' => __('Validate'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 		}
+		
+		$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
+		
+		$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
 		$string .= '</a>';
 		$string .= '</td><td width="400px">';
 		if($event["id_alert_am"] != 0) {

@@ -279,13 +279,13 @@ if ($filter_severity != -1) {
 if ($filter_status != -1)
 	$whereSubquery .= ' AND status = ' . $filter_status;
 	
-if ($trap_type == -1) {
+if ($trap_type == 5) {
 	$whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';	
 }
-else {
+else if ($trap_type != -1){
 	$whereSubquery .= ' AND type = ' . $trap_type;
 }
-	
+
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
@@ -351,7 +351,7 @@ $table->data[3][4] = html_print_input_text ('free_search_string', $free_search_s
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
 $table->data[4][1] = '<strong>'.__('Type').'</strong>' . ui_print_help_tip(__('Search by trap type'), true);
-$trap_types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', -1 => 'Other');
+$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
 $filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
@@ -531,6 +531,28 @@ if ($traps !== false) {
         if ($trap["description"] != ""){
             $string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
         }
+        
+        if ($trap["type"] != ""){
+$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
+
+			switch ($trap["type"]){
+				case -1: $desc_trap_type = __('None');
+						 break;
+				case 0: $desc_trap_type = __('Cold start (0)');
+						 break;
+				case 1: $desc_trap_type = __('Warm start (1)');
+						 break;
+				case 2: $desc_trap_type = __('Link down (2)');
+						 break;
+				case 3: $desc_trap_type = __('Link up (3)');
+						 break;
+				case 4: $desc_trap_type = __('Authentication failure (4)');
+						 break;	
+				default: $desc_trap_type = __('Other');
+						 break;	
+			}
+            $string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
+        }        
 
         $string .=  '</table>';
 

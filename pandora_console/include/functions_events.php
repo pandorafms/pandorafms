@@ -172,7 +172,10 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 			$new_status_string = __('Validated');
 			break;
 		case 2:
-			$new_status_string = __('Setted in process');
+			$new_status_string = __('Set in process');
+			break;
+		case 3:
+			$new_status_string = __('Added comment');
 			break;
 	}
 	
@@ -194,7 +197,11 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		if($fullevent['user_comment'] != ''){
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
-	
+		
+		if ($new_status == 3){ //only add a comment
+			$new_status = $fullevent["estado"];
+		}
+		
 		$values = array(
 			'estado' => $new_status,
 			'id_usuario' => $config['id_user'],

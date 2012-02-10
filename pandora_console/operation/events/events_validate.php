@@ -100,7 +100,8 @@ $string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment"
 $string .= '<td align="left" width="200px">'; 
 $string .= '<div style="text-align:center;">';
 
-$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+
 $string .= html_print_submit_button (__('Change status'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
 $string .= '</td><td width="400px">';
 

@@ -1,3 +1,8 @@
+2012-02-10  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* pandora_agent: Allow filename wildcards to specify
+	additional configuration files.
+
 2012-01-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Added support for intensive modules.

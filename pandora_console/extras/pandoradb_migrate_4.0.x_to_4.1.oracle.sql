@@ -142,3 +142,8 @@ CREATE TABLE tevent_filter (
   tag VARCHAR2(600) default '' NOT NULL,
   filter_only_alert NUMBER(10, 0) default -1 NOT NULL
 );
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+ALTER TABLE tconfig MODIFY value TEXT NOT NULL;

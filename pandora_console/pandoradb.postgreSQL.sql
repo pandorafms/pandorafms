@@ -377,7 +377,7 @@ CREATE TABLE "tattachment" (
 CREATE TABLE "tconfig" (
 	"id_config" SERIAL NOT NULL PRIMARY KEY,
 	"token" varchar(100) NOT NULL default '',
-	"value" varchar(100) NOT NULL default ''
+	"value" text NOT NULL default ''
 );
 
 CREATE TABLE "tconfig_os" (

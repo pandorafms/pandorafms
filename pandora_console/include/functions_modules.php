@@ -50,10 +50,10 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
-		
+	
 	$modulesDisabled = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => true));
-		
+	
 	if (!empty($modulesDisabled)) {
 		//the foreach have only one loop but extract the array index, and it's id_agente_modulo
 		foreach ($modulesDisabled as $id => $garbage) {
@@ -68,7 +68,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
 					array('id_agente_modulo' => $id_module, 'disabled' => true), 'AND', false);
 					break;
-			}					
+			}
 		}
 		
 		$values = array ();
@@ -104,14 +104,16 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 			unset ($new_module[$i]);
 		/* Unset original agent module id */
 		unset ($new_module['id_agente_modulo']);
-
+		
 		switch ($config['dbtype']) {
 			case "mysql":
-			case "postgresql":		
-				$id_new_module = db_process_sql_insert ('tagente_modulo', $new_module);
+			case "postgresql":
+				$id_new_module = db_process_sql_insert ('tagente_modulo',
+					$new_module);
 				break;
 			case "oracle":
-				$id_new_module = db_process_sql_insert ('tagente_modulo', $new_module, false);
+				$id_new_module = db_process_sql_insert ('tagente_modulo',
+					$new_module, false);
 				break;				
 		}
 		if ($id_new_module === false) {
@@ -589,7 +591,8 @@ function modules_get_type_icon ($id_type) {
  * @return int The id of the agent of given agent module
  */
 function modules_get_agentmodule_agent ($id_agentmodule) {
-	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+	return (int) db_get_value ('id_agente', 'tagente_modulo',
+		'id_agente_modulo', (int) $id_agentmodule);
 }
 
 /**

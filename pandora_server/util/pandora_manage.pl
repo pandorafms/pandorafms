@@ -131,6 +131,7 @@ sub help_screen{
 	print "EVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
+    help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
 	print "INCIDENTS:\n\n" unless $param ne '';
     help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
 	print "POLICIES:\n\n" unless $param ne '';
@@ -419,6 +420,21 @@ sub pandora_validate_event_filter ($$$$$$$$$) {
 	if ($criticity ne ''){
 		$filter .= " AND criticity = $criticity";
 	}
+
+	logger($pa_config, "Validating events", 10);
+	db_do ($dbh, "UPDATE tevento SET estado = 1 WHERE estado = 0".$filter);
+}
+
+##########################################################################
+# Validate event given a event id
+##########################################################################
+sub pandora_validate_event_id ($$$) {
+	my ($pa_config, $id_event, $dbh) = @_;
+	my $filter = '';
+	
+	if ($id_event ne ''){
+		$filter .= " AND id_evento = $id_event";
+	}	
 
 	logger($pa_config, "Validating events", 10);
 	db_do ($dbh, "UPDATE tevento SET estado = 1 WHERE estado = 0".$filter);
@@ -2335,6 +2351,21 @@ sub cli_validate_event() {
 }
 
 ##############################################################################
+# Validate event.
+# Related option: --validate_event_id
+##############################################################################
+
+sub cli_validate_event_id() {
+	my $id_event = @ARGV[2];
+	
+	print "[INFO] Validating event '$id_event'\n\n";
+				
+	my $result = pandora_validate_event_id ($conf, $id_event, $dbh);
+	exist_check($result,'event',$id_event);
+	
+}
+
+##############################################################################
 # Create incident.
 # Related option: --create_incident
 ##############################################################################
@@ -3148,6 +3179,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 7, 6);
 			cli_validate_event();
+		}
+		elsif ($param eq '--validate_event_id') {
+			param_check($ltotal, 1);
+			cli_validate_event_id();
 		}
 		elsif ($param eq '--create_incident') {
 			param_check($ltotal, 7, 1);

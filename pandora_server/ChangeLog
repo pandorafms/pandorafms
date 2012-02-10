@@ -1,3 +1,7 @@
+2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* util/pandora_manage.pl: Added new Event validate given id.
+
 2012-02-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added new SNMP alert fields and macros.

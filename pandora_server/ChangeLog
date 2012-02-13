@@ -1,3 +1,10 @@
+2012-02-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_exec: Quote command line arguments. Thanks to Junichi
+	  Satoh.
+
+	* lib/PandoraFMS/Core.pm: Small fixes to pandora_event.
+
 2012-02-13  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* util/pandora_manage.pl

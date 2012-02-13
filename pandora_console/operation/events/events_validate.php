@@ -99,8 +99,11 @@ $string .= html_print_input_hidden('eventid', implode(',',$ids), true);
 $string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment", 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 $string .= '<td align="left" width="200px">'; 
 $string .= '<div style="text-align:center;">';
-
-$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+if ($event["estado"] == 0 ) {
+	$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+} else if ($event["estado"] == 2 ) {
+	$string .= html_print_select(array('1' => __('Validate'), '3' => __('Add comment')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+}
 
 $string .= html_print_submit_button (__('Change status'), 'validate', false, 'class="sub ok validate_event" id="validate"', true).'</div>';
 $string .= '</td><td width="400px">';

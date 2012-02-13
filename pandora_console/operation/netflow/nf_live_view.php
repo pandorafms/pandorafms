@@ -170,10 +170,10 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	$table->data[0][0] = ui_print_error_message ('Define a name for the filter and click on Save as new filter again', '', true);
 	$table->colspan[0][0] = 4;
 
-	$table->data[1][0] = '<b>'.__('Name').'</b>';
+	$table->data[1][0] = '<span id="filter_name_color"><b>'.__('Name').'</b></span>';
 	$table->data[1][1] = html_print_input_text ('name', $filter['id_name'], false, 20, 80, true);
 	$own_info = get_user_info ($config['id_user']);
-	$table->data[1][2] = '<b>'.__('Group').'</b>';
+	$table->data[1][2] = '<span id="filter_group_color"><b>'.__('Group').'</b></span>';
 	$table->data[1][3] = html_print_select_groups($config['id_user'], "IW",	$own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false);
 	
 	// Read filter type
@@ -299,7 +299,10 @@ if  ($draw != '') {
 	
 	$("#filter_id").change(function () {
 		var filter_type;
-		//console.log($("#filter_id").val());
+		
+		// Hide information and name/group row
+		$("#table2-0").css('display', 'none');
+		$("#table2-1").css('display', 'none');
 		
 		// Clean fields
 		if ($("#filter_id").val() == 0){
@@ -391,6 +394,18 @@ if  ($draw != '') {
 		}else{
 			$("#submit-update_button").css("visibility", "");				
 		}
+		
+		// Change color of name and group if save button has been pushed
+		$("#submit-save_button").click(function () {
+			if ($("#text-name").val() == ""){
+				$('#filter_name_color').css('color', '#CC0000');
+				$('#filter_group_color').css('color', '#CC0000');			
+			}else{
+				$('#filter_name_color').css('color', '#000000');
+				$('#filter_group_color').css('color', '#000000');				
+			}
+		});	
+		
 	});
 
 </script>

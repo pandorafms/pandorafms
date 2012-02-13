@@ -1043,6 +1043,8 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true, $noACLs = false) {
 	global $config;
 	
+	$policy_sql = '';
+	
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
@@ -1064,24 +1066,23 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 			$temp[] = $item['id_agente'];
 		}
 		$id_agent = $temp;
+		
+		if (!empty($id_agent)) {
+			$extra_policy_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
+			if ($policy_sql === ENTERPRISE_NOT_HOOK) {
+				$policy_sql = '';
+			}
+			else if ($policy_sql != '') {
+				//It is AND instead OR, because It is necesary apply the filter.
+				$policy_sql = ' OR ' . $policy_sql; 
+			}
+		}
 	}
 	
 	if (!is_array($id_agent)) {
 		$id_agent = safe_int ($id_agent, 1);
 	}
-
-	$policy_sql = '';
-	if ($id_agent != 0){
-		$extra_policy_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
-		if ($policy_sql === ENTERPRISE_NOT_HOOK) {
-			$policy_sql = '';
-		}
-		else if ($policy_sql != '') {
-			//It is AND instead OR, because It is necesary apply the filter.
-			$policy_sql = ' OR ' . $policy_sql; 
-		}
-	}
-
+	
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	
 	if(empty($userGroups)) {

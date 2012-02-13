@@ -1,3 +1,10 @@
+2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php	
+	 include/javascript/pandora.js
+	 operation/agentes/stat_win.php: Added new graph for module events
+	 in the module popup graph window.
+
 2012-02-13  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* include/javascript/pandora_alerts.js: Removed double quotes which encolse

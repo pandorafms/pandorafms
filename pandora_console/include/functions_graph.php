@@ -1730,6 +1730,41 @@ function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
 }
 
+// Returns a Pandora FMS agent event chart
+function fs_module_event_chart ($data, $width, $height, $step = 1, $homedir = '', $rotate_names = 0) {
+	global $config;
+
+	if (sizeof ($data) == 0) {
+		return fs_error_image ();
+	}
+
+	// Generate the XML
+	$chart = new FusionCharts('Area2D', $width, 160);
+
+	$count = 0;
+	$num_vlines = 0;
+	foreach ($data as $name => $value) {
+			
+		if (($step >= 1) && ($count++ % $step == 0)) {
+			$show_name = '1';
+			$num_vlines++;
+		} else {
+			$show_name = '0';
+		}
+		$chart->addChartData(1, 'name=' . $name . ';showName=' . $show_name . ';color=' . $value);
+	}
+
+	if ($rotate_names == 0){
+		$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
+	}elseif ($rotate_names == 1){
+		$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
+	}
+
+	// Return the code
+	return get_chart_code ($chart, $width, 105, $homedir . 'include/FusionCharts/FCF_Area2D.swf');
+}
+
+
 // Prints an error image
 function fs_error_image () {
 	global $config;
@@ -2769,4 +2804,150 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 
         return "$n";
 }
+
+/**
+ * Print a graph with event data of module
+ * 
+ * @param integer id_module Module ID
+ * @param integer width graph width
+ * @param integer height graph height
+ * @param integer period time period
+ * @param string homeurl Home url if the complete path is needed
+ * @param int Zoom factor over the graph
+ */
+function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0) {
+	global $config;
+	global $graphic_type;
+
+	if ($config['flash_charts']) {
+		include_flash_chart_script($homeurl);
+	}
+
+	$data = array ();
+
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	
+	// Set the title and time format
+	if ($period <= 21600) {
+		$time_format = 'H:i:s';
+	}
+	elseif ($period < 86400) {
+		$time_format = 'H:i';
+	}
+	elseif ($period < 1296000) {
+		$time_format = "M d H:i";
+	}
+	elseif ($period < 2592000) {
+		$time_format = "M d H\h";
+	} 
+	else {
+		$time_format = "M d H\h";
+	}		
+
+	$legend = array();
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			$name = date($time_format, $bottom);
+			//$name = date('H\h', $bottom);
+		} else {
+			$name = $bottom;
+		}
+
+		$top = $datelimit + ($periodtime * ($i + 1));
+				
+		if ($config['flash_charts']){
+			$criticity = (int) db_get_value_filter ('criticity',
+			'tevento',
+			array ('id_agentmodule' => $id_module,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top));			
+			
+			switch ($criticity) {
+				case 3: $data[$name] = 'E5DF63';
+						break;
+				case 4: $data[$name] = 'FF3C4B';
+						break;
+				default: $data[$name] = '9ABD18';
+			}
+		}else{
+			$event = db_get_row_filter ('tevento', 
+			array ('id_agentmodule' => $id_module,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 'criticity, utimestamp');			
+			
+			if (!empty($event['utimestamp'])){
+				$data[$cont]['utimestamp'] = $periodtime;
+				switch ($event['criticity']) {
+					case 3: $data[$cont]['data'] = 2;
+							break;
+					case 4: $data[$cont]['data'] = 3;
+							break;
+					default:$data[$cont]['data'] = 1;
+							break;
+				}
+				$current_timestamp = $event['utimestamp'];
+			}
+			else{
+				 $data[$cont]['utimestamp'] = $periodtime;			
+				 $data[$cont]['data'] = 1;
+				 $current_timestamp = $bottom;
+			}
+			$legend[] = date($time_format, $current_timestamp);	
+			$cont++;		
+		}
+	}
+	
+	$pixels_between_xdata = 25;
+	$max_xdata_display = round($width / $pixels_between_xdata);
+	$ndata = count($data);
+	if($max_xdata_display > $ndata) {
+		$xdata_display = $ndata;
+	}
+	else {
+		$xdata_display = $max_xdata_display;
+	}
+	
+	$step = round($ndata/$xdata_display);	
+	
+	if ($config['flash_charts']) {
+		return fs_module_event_chart ($data, $width, $height, /*$resolution / 750*/ $step, $homeurl, 1);
+	} else {
+		$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
+
+		// Draw slicebar graph
+		echo slicesbar_graph($data, $period, $width, 30, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+
+		// Draw legend
+		echo "<br>";
+	
+		//echo "<div id='legend' style='overflow:hidden;'";
+		$count = 0;
+		foreach ($legend as $name => $value) {
+			$file_name = string2image(ui_print_truncate_text($value, 15, false, true, false, '...'), 115, 13, 2, 270, '#FFFFFF', '#696969', 4, 0);
+			
+			if (($step >= 1) && ($count++ % $step == 0)) {
+				if ($zoom == 1)
+					echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+				elseif ($zoom == 2)
+					echo "&nbsp;&nbsp;";
+				elseif ($zoom == 3)
+					echo "&nbsp;&nbsp;";
+				elseif ($zoom == 4)
+					echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";	
+					
+				echo html_print_image($file_name, true, array('title' => $value));
+			}
+		}
+		//echo "</div>";		
+	}	
+}
+
 ?>

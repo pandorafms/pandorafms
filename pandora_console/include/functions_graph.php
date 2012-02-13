@@ -2923,7 +2923,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 		$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
 		// Draw slicebar graph
-		echo slicesbar_graph($data, $period, $width, 30, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
 
 		// Draw legend
 		echo "<br>";

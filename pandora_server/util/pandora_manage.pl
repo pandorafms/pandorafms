@@ -129,7 +129,7 @@ sub help_screen{
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	print "EVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
+	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name> <user_name> <criticity> <comment> <source> <id_extra>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
     help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
 	print "INCIDENTS:\n\n" unless $param ne '';
@@ -2246,7 +2246,7 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name) = @ARGV[2..9];
+	my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name, $user_name, $criticity, $comment, $source, $id_extra) = @ARGV[2..14];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
@@ -2296,7 +2296,7 @@ sub cli_create_event() {
 	print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh);
+		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $criticity, $comment, $id_extra);
 }
 
 ##############################################################################
@@ -3188,9 +3188,9 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 8, 3);
+			param_check($ltotal, 13, 8);
 			cli_create_event();
-		}
+		}		
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 7, 6);
 			cli_validate_event();

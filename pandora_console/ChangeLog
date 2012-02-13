@@ -1,5 +1,9 @@
 2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php: Module event graph resized.
+
+2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/netflow/nf_live_view.php: Added red color in name and
 	group in netflow live filter creation.
 

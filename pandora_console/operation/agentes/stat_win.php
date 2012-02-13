@@ -135,12 +135,13 @@ $draw_events = get_parameter ("draw_events", 0);
 $graph_type = get_parameter ("type", "sparse");
 $zoom = get_parameter ("zoom", 1);
 $baseline = get_parameter ("baseline", 0);
+$show_events_graph = get_parameter ("show_events_graph", 0);
 
 if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
 
-	echo "<script type='text/javascript'>window.resizeTo($width + 10, $height + 80);</script>";
+	echo "<script type='text/javascript'>window.resizeTo($width + 10, $height + 280);</script>";
 }
 
 $utime = get_system_time ();
@@ -159,23 +160,36 @@ $urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
 
 // log4x doesnt support flash yet
 //
+echo "<br>";
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
 				$label, null, $draw_alerts, 1, false, $date, false, $urlImage);
+		echo '<br><br><br>';
+		if ($show_events_graph)
+			echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom);				
 		break;
 	case 'sparse':
 		echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 			$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
 			0, true, false, $urlImage);
+		echo '<br><br><br>';
+		if ($show_events_graph)
+			echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom);
 		break;
 	case 'string':
 		echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
 			$label, null, $draw_alerts, 1, false, $date, false, $urlImage);
+		echo '<br><br><br>';
+		if ($show_events_graph)
+			echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom);			
 		break;
 	case 'log4x':
 		echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
 			$label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+		echo '<br><br><br>';
+		if ($show_events_graph)
+			echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom);			
 		break;
 	default:
 		echo fs_error_image ('../images');
@@ -183,7 +197,7 @@ switch ($graph_type) {
 }
 
 //z-index is 1 because 2 made the calendar show under the divmenu.
-echo '<div id="divmenu" class="menu" style="z-index:1;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+echo '<div id="divmenu" class="menu" style="z-index:1; height:280px;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
 echo '<form method="get" action="stat_win.php">';
 html_print_input_hidden ("id", $id);
 html_print_input_hidden ("label", $label);
@@ -251,6 +265,11 @@ if ($config['enterprise_installed'] && $graph_type == "sparse") {
 	echo '</td></tr><tr><td>'.__('Draw baseline').'</td><td>';
 	html_print_checkbox ("baseline", 1, (bool) $baseline);
 }
+
+echo '</td><td>';
+
+echo '</td></tr><tr><td>'.__('Show event graph').'</td><td>';
+html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph);
 
 echo '</td><td>';
 

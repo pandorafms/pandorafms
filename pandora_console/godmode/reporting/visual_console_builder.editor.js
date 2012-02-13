@@ -485,18 +485,18 @@ function loadFieldsFromDB(item) {
 
 function setOriginalSizeBackground() {
 	$.ajax({
-        type: "POST",
-        url: "ajax.php",
-        data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
-        async:false,
-        dataType: "json",
-        success: function(data){			
+		type: "POST",
+		url: "ajax.php",
+		data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
+		async: false,
+		dataType: "json",
+		success: function(data) {
 			var values = {};
 			values['width'] = data[0];
 			values['height'] = data[1];
 			
 			updateDB('background', 0, values);
-        }
+		}
 	});
 	
 	actionClick();
@@ -504,32 +504,32 @@ function setOriginalSizeBackground() {
 
 function setAspectRatioBackground(side) {
 	$.ajax({
-        type: "POST",
-        url: "ajax.php",
-        data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
-        async:false,
-        dataType: "json",
-        success: function(data){
-        	old_width = parseInt($("#background").css('width').replace('px', ''));
-		old_height = parseInt($("#background").css('height').replace('px', ''));
+		type: "POST",
+		url: "ajax.php",
+		data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
+		async: false,
+		dataType: "json",
+		success: function(data){
+			old_width = parseInt($("#background").css('width').replace('px', ''));
+			old_height = parseInt($("#background").css('height').replace('px', ''));
 			
-		img_width = data[0];
-        	img_height = data[1];
-        	
-        	
-        	if (side == 'width') {
-        		ratio = old_width / img_width;
-        		
-        		width = old_width;
-        		height = img_height * ratio;
-        	}
-        	else if (side == 'height') {
-        		ratio = old_height / img_height;
-        		
-        		width = img_width * ratio;
-        		height = old_height;	
-        	}
-        	
+			img_width = data[0];
+			img_height = data[1];
+			
+			
+			if (side == 'width') {
+				ratio = old_width / img_width;
+				
+				width = old_width;
+				height = img_height * ratio;
+			}
+			else if (side == 'height') {
+				ratio = old_height / img_height;
+				
+				width = img_width * ratio;
+				height = old_height;
+			}
+			
 			var values = {};
 			values['width'] = width;
 			values['height'] = height;
@@ -537,7 +537,7 @@ function setAspectRatioBackground(side) {
 			
 			
 			updateDB('background', 0, values);
-        }
+		}
 	});
 	
 	actionClick();
@@ -659,7 +659,7 @@ function getModuleGraph(id_data) {
 			period = data['period'];
 		}
 	});
-
+	
 	//Cleaned array
 	parameter = Array();
 	
@@ -898,14 +898,14 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-
+			
 			var img_src= null;
 			var parameter = Array();
 			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
 			parameter.push ({name: "get_image_path", value: "1"});
 			parameter.push ({name: "img_src", value: getImageElement(id_data)});
 			parameter.push ({name: "only_src", value: "1"});
-
+			
 			jQuery.ajax ({
 				type: 'POST',
 				url: action="ajax.php",
@@ -916,7 +916,7 @@ function createItem(type, values, id_data) {
 					img_src = data;
 				}
 			});
-
+			
 			var item = $('<div id="' + id_data + '" class="item icon" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
 				'</div>'
@@ -978,6 +978,9 @@ function updateDB(type, idElement , values, event) {
 	//Check if the event parameter in function is passed in the call.
 	if (event != null) {
 		switch (event) {
+			case 'resizestop':
+			//Force to move action when resize a background, for to avoid
+			//lost the label.
 			case 'dragstop':
 				action = "move";
 				break;
@@ -1280,7 +1283,8 @@ function move_elements_resize(original_width, original_height, width, height) {
 	jQuery.each($(".item"), function(key, value) {
 		item = value;
 		idItem = $(item).attr('id');
-		classItem = $(item).attr('class').replace('item', '').replace('ui-draggable', '').replace(/^\s+/g,'').replace(/\s+$/g,'')
+		classItem = $(item).attr('class').replace('item', '')
+			.replace('ui-draggable', '').replace(/^\s+/g,'').replace(/\s+$/g,'')
 		
 		old_height = parseInt($(item).css('margin-top').replace('px', ''));
 		old_width = parseInt($(item).css('margin-left').replace('px', ''));
@@ -1299,7 +1303,7 @@ function move_elements_resize(original_width, original_height, width, height) {
 		values['absolute_left'] = new_width; 
 		values['absolute_top'] = new_height; 
 		
-		updateDB(classItem, idItem, values);
+		updateDB(classItem, idItem, values, "resizestop");
 	});
 }
 
@@ -1413,13 +1417,13 @@ function showPreviewStaticGraph(staticGraph) {
 	
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
-
+		
 		var img_src= null;
 		var parameter = Array();
 		parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 		parameter.push ({name: "get_image_path_status", value: "1"});
 		parameter.push ({name: "img_src", value: imgBase });
-
+		
 		jQuery.ajax ({
 			type: 'POST',
 			url: action="ajax.php",
@@ -1442,7 +1446,7 @@ function showPreviewIcon(icon) {
 	
 	if (icon != '') {
 		imgBase = "images/console/icons/" + icon;
-
+		
 		var params = [];
 		params.push("get_image_path=1");
 		params.push("img_src=" + imgBase + ".png");

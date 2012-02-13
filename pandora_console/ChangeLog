@@ -1,5 +1,14 @@
 2012-02-13  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.js: fixed the resize
+	background.
+	
+	Fixes: #3483645
+	
+	Merged bugfix from trunk.
+
+2012-02-13  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: cleaned source code style, and fixed the
 	size of graphs in "top_n" for the dashboard.
 	

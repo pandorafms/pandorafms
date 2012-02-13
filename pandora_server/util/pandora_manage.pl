@@ -2357,6 +2357,9 @@ sub cli_validate_event() {
 
 sub cli_validate_event_id() {
 	my $id_event = @ARGV[2];
+
+	my $event_name = pandora_get_event_name($dbh, $id_event);
+	exist_check($event_name,'event',$id_event);
 	
 	print "[INFO] Validating event '$id_event'\n\n";
 				
@@ -3050,6 +3053,18 @@ sub cli_module_get_data () {
 	}
 	
     exit;
+}
+
+##############################################################################
+# Return event name given a event id
+##############################################################################
+
+sub pandora_get_event_name($$) {
+	my ($dbh,$id_event) = @_;
+	
+	my $event_name = get_db_value($dbh, 'SELECT evento FROM tevento WHERE id_evento = ?',$id_event);
+	
+	return defined ($event_name) ? $event_name : -1;
 }
 
 ###############################################################################

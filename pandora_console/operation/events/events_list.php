@@ -247,7 +247,12 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 
 echo "<br>";
 //Link to toggle filter
-echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
+if (!empty($id_name)){
+	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
+}
+else{
+	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
+}
 
 //Start div
 echo '<div id="event_control" style="display:none">';
@@ -1327,6 +1332,43 @@ $(document).ready( function() {
 			
 		return false;
 	});	
+	
+	// Change toggle arrow when it's clicked
+	$("#toggle_arrow").click(function() {
+		if ($("#toggle_arrow").attr("src").match(/[^\.]+down\.png/) == null){
+			var params = [];
+			params.push("get_image_path=1");
+			params.push("img_src=images/down.png");
+			params.push("page=include/ajax/skins.ajax");
+			params.push("only_src=1");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					$("#toggle_arrow").attr('src', data);
+				}
+			});			
+		}else{
+			var params = [];
+			params.push("get_image_path=1");
+			params.push("img_src=images/go.png");
+			params.push("page=include/ajax/skins.ajax");
+			params.push("only_src=1");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					$("#toggle_arrow").attr('src', data);
+				}
+			});
+		}
+	});
 		
 });
 /* ]]> */

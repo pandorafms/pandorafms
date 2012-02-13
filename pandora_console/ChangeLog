@@ -1,3 +1,7 @@
+2012-02-13  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/events/events_validate: Display options: validate and
+	add a comment when the event status is "in process".
+
 2012-02-10  Vanessa Gil  <vanessa.gil@artica.es>
 	* include/functions_events.php
 	  operation/events/events_list.php

@@ -1,6 +1,15 @@
 2012-02-13  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: cleaned source code style, and fixed the
+	size of graphs in "top_n" for the dashboard.
+	
+	Fixes: #3483715
+	
+	Merged bugfix from trunk.
+
+2012-02-13  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: cleaned source code style, and fixed the
 	show graphs in "top_n" report item, now it is static graph and show a as
 	text of bars (or pie pieces) the agent name and module for more clear and
 	when you have same agents with distints modules, now the graph don't group

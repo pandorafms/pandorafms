@@ -531,7 +531,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 					$previous_status = 0;
 				}
 			}	
-	} else {
+	}
+	else {
 		$previous_status = 0;
 	}
 
@@ -723,7 +724,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	$previous_status = 0;
 	
 	if ($previous_value < 0) {// 4 for the Unknown value
-			$previous_status = 4;
+		$previous_status = 4;
 	}
 	elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
 			(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
@@ -2136,15 +2137,15 @@ function sla_value_asc_cmp($a, $b)
 function reporting_render_report_html_item ($content, $table, $report, $mini = false) {
 	global $config;
 	global $graphic_type;
-		
-	if($mini){
+	
+	if ($mini) {
 		$sizh = '';
 		$sizhfin = '';
 		$sizem = '1.5';
 		$sizgraph_w = '350';
 		$sizgraph_h = '100';
 	}
-	else{
+	else {
 		$sizh = '<h4>';
 		$sizhfin = '</h4>';
 		$sizem = '3';
@@ -2155,7 +2156,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$server_name = $content ['server_name'];
 	if (($config ['metaconsole'] == 1) && $server_name != '') {
 		$connection = metaconsole_get_connection($server_name);
-		if (!metaconsole_load_external_db($connection)){
+		if (!metaconsole_load_external_db($connection)) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
 		}
 	}
@@ -2586,7 +2587,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]);
 			if ($monitor_value === false) {
 				$monitor_value = __('Unknown');
-			} else {
+			}
+			else {
 				$monitor_value = format_numeric ($monitor_value);
 			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
@@ -2621,7 +2623,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$value = reporting_get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($value === false) {
 				$value = __('Unknown');
-			} else {
+			}
+			else {
 				$value = format_numeric ($value);
 			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
@@ -3686,7 +3689,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					600, 190, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
+					$sizgraph_w, $sizgraph_h, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				
 				array_push ($table->data, $data);
@@ -3694,7 +3697,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->colspan[4][0] = 3;
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
 
 				array_push ($table->data, $data);
 			}

@@ -1869,8 +1869,9 @@ function reporting_get_group_detailed_event ($id_group, $period = 0, $date = 0, 
 	$table->head = array ();
 	$table->head[0] = __('Event name');
 	$table->head[1] = __('Event type');
-	$table->head[2] = __('Criticity');
-	$table->head[3] = __('Timestamp');
+	$table->head[2] = __('Agent');
+	$table->head[3] = __('Criticity');
+	$table->head[4] = __('Timestamp');
 	
 	$events = events_get_group_events($id_group, $period, $date);
 	
@@ -1879,8 +1880,9 @@ function reporting_get_group_detailed_event ($id_group, $period = 0, $date = 0, 
 			$data = array ();
 			$data[0] = io_safe_output($event['evento']);
 			$data[1] = $event['event_type'];
-			$data[2] = get_priority_name ($event['criticity']);
-			$data[3] = $event['timestamp'];
+			$data[2] = agents_get_name ($event['id_agente']);
+			$data[3] = get_priority_name ($event['criticity']);
+			$data[4] = $event['timestamp'];
 			array_push ($table->data, $data);
 		}
 		

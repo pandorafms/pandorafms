@@ -1,5 +1,10 @@
 2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/ajax/visual_console_builder.ajax.php: Removed max, min
+	options when a module graph is created in visual console editor.
+
+2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_graph.php	
 	 include/javascript/pandora.js
 	 operation/agentes/stat_win.php: Added new graph for module events

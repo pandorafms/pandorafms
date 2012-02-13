@@ -1,3 +1,8 @@
+2012-02-13  Junichi Satoh <junichi@rworks.jp>
+
+	* FreeBSD/pandora_server.conf: Merged from trunk. Changed the
+	plugin_exec to 'gtimeout'.
+
 2012-02-06 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* util/pandora_xml_stress.pl: Fixed a problem with new version of perl

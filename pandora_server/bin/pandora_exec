@@ -34,7 +34,11 @@ if ($#ARGV < 1) {
 
 my @opts = @ARGV;
 my $timeout = shift(@opts);
-my $command = join(' ', @opts);
+my $command;
+foreach my $arg (@opts) {
+	$command .= quotemeta ($arg) . ' ';
+}
+chomp ($command);
 my $output = '';
 my $ReturnCode = 0;
 

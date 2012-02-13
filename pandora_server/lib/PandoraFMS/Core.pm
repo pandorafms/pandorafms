@@ -1539,18 +1539,12 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$;$;$;$;$) {
+sub pandora_event ($$$$$$$$$$;$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $criticity, $comment, $id_extra) = @_;
+		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra) = @_;
 
-	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 15);
+	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 	
-	if (!defined ($comment)) {
-		$comment = '';
-	}
-	if (!defined ($id_extra)) {
-		$id_extra = '';
-	}
 	# Get module tags
 	my $module_tags = '';
 	if (defined ($id_agentmodule) && $id_agentmodule > 0) {
@@ -1559,7 +1553,10 @@ sub pandora_event ($$$$$$$$$$;$;$;$;$;$) {
 		
 	# Set default values for optional parameters
 	$source = 'Pandora' unless defined ($source);
-	
+	$comment = '' unless defined ($comment);
+	$id_extra = '' unless defined ($id_extra);
+	$user_name = '' unless defined ($user_name);
+
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);

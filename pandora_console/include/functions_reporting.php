@@ -552,14 +552,15 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 						$previous_status = 0;
 					}
 				}
-			} else { 
+			}
+			else {
 				$previous_status = 0;
 			}
 		}
-		 
+		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	// Return the percentage of SLA compliance
 	return (float) (100 - ($bad_period / $period) * 100);
 }
@@ -580,7 +581,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
  */
 function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
-
+	
 	// Initialize variables
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -723,12 +724,15 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	if ($previous_value < 0) {// 4 for the Unknown value
 			$previous_status = 4;
-	} elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+	}
+	elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
 			(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
 		$previous_status = 2;
-	} elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
+	}
+	elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
 		$previous_status = 1;
-	} elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
+	}
+	elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
 		$previous_status = 3;
 	}
 	
@@ -746,12 +750,15 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$value = $data['datos'];
 		if ($value < 0) {// 4 for the Unknown value
 			$status = 4;
-		} elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
+		}
+		elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
 				(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
 			$status = 2;
-		} elseif (($value >= ($min_value + $percent)) && ($value <= ($max_value - $percent))) { //1 when value is OK
+		}
+		elseif (($value >= ($min_value + $percent)) && ($value <= ($max_value - $percent))) { //1 when value is OK
 			$status = 1;
-		} elseif (($value <= ($min_value - $percent)) || ($value >= ($max_value + $percent))) { //3 when value is Wrong
+		}
+		elseif (($value <= ($min_value - $percent)) || ($value >= ($max_value + $percent))) { //3 when value is Wrong
 			$status = 3;
 		}
 		
@@ -1071,13 +1078,15 @@ function reporting_get_group_stats ($id_group = 0) {
 
 	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_unknown"] / ($data["monitor_checks"] / 100)), 1);
-	} else {
+	}
+	else {
 		$data["monitor_health"] = 100;
 	}
 
 	if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0) {
 		$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
-	} else {
+	}
+	else {
 		$data["module_sanity"] = 100;
 	}
 
@@ -1097,7 +1106,8 @@ function reporting_get_group_stats ($id_group = 0) {
 
 	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
 		$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
-	} else {
+	}
+	else {
 		$data["global_health"] = 100;
 	}
 
@@ -2441,6 +2451,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
 					$data_graph[__('Unknown')]++;
@@ -3613,14 +3624,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 					break;
 			}
-
+			
 			if ($order_uptodown == 1 || $order_uptodown == 2) {
 				$i = 0;
 				$data_pie_graph = array();
 				$data_hbar = array();
 				foreach ($data_top as $dt) {
-					$data_hbar[$agent_name[$i]]['g'] = $dt; 
-					$data_pie_graph[$agent_name[$i]] = $dt;
+					$item_name = '';
+					$item_name =
+						ui_print_truncate_text($agent_name[$i], 12, false, true, false, "...") .
+						' - ' . 
+						ui_print_truncate_text($module_name[$i], 12, false, true, false, "...");
+					
+					$data_hbar[$item_name]['g'] = $dt; 
+					$data_pie_graph[$item_name] = $dt;
+					
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
 						$data[0] = printSmallFont($agent_name[$i]);
@@ -3635,10 +3653,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else if ($order_uptodown == 0 || $order_uptodown == 3) {
 				$i = 0;
 				$data_pie_graph = array();
-				$data_hbar = array(); 
+				$data_hbar = array();
 				foreach ($agent_name as $an) {
-					$data_pie_graph[$an] = $data_top[$i];
-					$data_hbar[$an]['g'] = $data_top[$i];
+					$item_name = '';
+					$item_name =
+						ui_print_truncate_text($agent_name[$i], 12, false, true, false, "...") .
+						' - ' . 
+						ui_print_truncate_text($module_name[$i], 12, false, true, false, "...");
+					
+					$data_pie_graph[$item_name] = $data_top[$i];
+					$data_hbar[$item_name]['g'] = $data_top[$i];
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
 						$data[0] = printSmallFont($an);
@@ -3660,9 +3684,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[3][0] = 3;
 			$data = array();
-			if ($show_graph == 1 || $show_graph == 2) { 
-				$data[0] = pie3d_graph($config['flash_charts'], $data_pie_graph,
-					600, 150, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
+			if ($show_graph == 1 || $show_graph == 2) {
+				$data[0] = pie3d_graph(false, $data_pie_graph,
+					600, 190, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				
 				array_push ($table->data, $data);
@@ -3670,7 +3694,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->colspan[4][0] = 3;
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph($config['flash_charts'], $data_hbar, 600, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
 
 				array_push ($table->data, $data);
 			}
@@ -3681,7 +3705,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				do {
 					$min = $data_top_values['data_top'][$i];
 					$i++;
-				} while ($min === false && $i < count($data_top_values));
+				}
+				while ($min === false && $i < count($data_top_values));
 				$max = $min;
 				$avg = 0;
 

@@ -129,9 +129,10 @@ sub help_screen{
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	print "EVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name> <user_name> <criticity> <comment> <source> <id_extra>]', 'Add event');
+	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name> <user_name> <comment> <source> <id_extra>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
     help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
+    help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id'); 
 	print "INCIDENTS:\n\n" unless $param ne '';
     help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
 	print "POLICIES:\n\n" unless $param ne '';
@@ -2246,7 +2247,7 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name, $user_name, $criticity, $comment, $source, $id_extra) = @ARGV[2..14];
+	my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra) = @ARGV[2..13];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
@@ -2296,7 +2297,7 @@ sub cli_create_event() {
 	print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $criticity, $comment, $id_extra);
+		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra);
 }
 
 ##############################################################################
@@ -2368,6 +2369,62 @@ sub cli_validate_event_id() {
 	
 }
 
+###############################################################################
+# Get event info
+# Related option: --get_event_info
+###############################################################################
+sub cli_get_event_info () {
+	my ($id_event,$csv_separator) = @ARGV[2..3];
+	
+	my $event_name = pandora_get_event_name($dbh, $id_event);
+	exist_check($event_name,'event',$id_event);
+	
+	$csv_separator = ';' unless defined($csv_separator);
+	
+	my $query = "SELECT * FROM tevento where id_evento=".$id_event;
+
+	my $header = "Event ID".$csv_separator."Event name".$csv_separator."Agent ID".$csv_separator."User ID".$csv_separator.
+				"Group ID".$csv_separator."Status".$csv_separator."Timestamp".$csv_separator."Event type".$csv_separator.
+				"Agent module ID".$csv_separator."Alert module ID".$csv_separator."Criticity".$csv_separator.
+				"Comment".$csv_separator."Tags".$csv_separator."Source".$csv_separator."Extra ID"."\n";
+	print $header;
+	
+	my @result = get_db_single_row($dbh, $query);
+	foreach my $event_data (@result) {
+		print $event_data->{'id_evento'};
+		print $csv_separator;
+		print $event_data->{'evento'};
+		print $csv_separator;
+		print $event_data->{'id_agente'};
+		print $csv_separator;
+		print $event_data->{'id_usuario'};
+		print $csv_separator;
+		print $event_data->{'id_grupo'};
+		print $csv_separator;
+		print $event_data->{'estado'};
+		print $csv_separator;
+		print $event_data->{'timestamp'};
+		print $csv_separator;
+		print $event_data->{'event_type'};
+		print $csv_separator;
+		print $event_data->{'id_agentmodule'};
+		print $csv_separator;
+		print $event_data->{'id_alert_am'};
+		print $csv_separator;
+		print $event_data->{'criticity'};
+		print $csv_separator;
+		print $event_data->{'user_comment'};
+		print $csv_separator;
+		print $event_data->{'tags'};
+		print $csv_separator;
+		print $event_data->{'source'};
+		print $csv_separator;
+		print $event_data->{'id_extra'};
+		print "\n";
+	}
+	
+    exit;
+}
 ##############################################################################
 # Create incident.
 # Related option: --create_incident
@@ -3188,7 +3245,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 13, 8);
+			param_check($ltotal, 12, 7);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {
@@ -3198,6 +3255,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--validate_event_id') {
 			param_check($ltotal, 1);
 			cli_validate_event_id();
+		}
+		elsif ($param eq '--get_event_info') {
+			param_check($ltotal, 2,1);
+			cli_get_event_info();
 		}
 		elsif ($param eq '--create_incident') {
 			param_check($ltotal, 7, 1);

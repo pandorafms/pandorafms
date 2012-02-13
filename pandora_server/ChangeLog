@@ -1,3 +1,7 @@
+2012-02-13  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* util/pandora_manage.pl: Added get_event_info.
+
 2012-02-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_exec: Quote command line arguments. Thanks to Junichi

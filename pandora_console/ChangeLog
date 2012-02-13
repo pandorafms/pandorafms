@@ -1,5 +1,10 @@
 2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/netflow/nf_live_view.php: Added red color in name and
+	group in netflow live filter creation.
+
+2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/ajax/visual_console_builder.ajax.php: Removed max, min
 	options when a module graph is created in visual console editor.
 

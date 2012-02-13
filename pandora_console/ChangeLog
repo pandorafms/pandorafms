@@ -1,3 +1,11 @@
+2012-02-13  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_monitores.php, operation/agentes/ver_agente.php:
+	cleaned source code style.
+	
+	* include/functions_agents.php: refixed the query to extract modules for the
+	ACL policies.
+
 2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Module event graph resized.
@@ -37,7 +45,7 @@
 
 2012-02-10  Miguel de Dios  <miguel.dedios@artica.es>
 	
-	* * extensions/module_groups.php, include/functions_modules.php,
+	* extensions/module_groups.php, include/functions_modules.php,
 	godmode/agentes/module_manager_editor_prediction.php: cleaned
 	source code style.
 

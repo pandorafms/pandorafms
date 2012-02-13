@@ -155,9 +155,10 @@ switch ($config["dbtype"]) {
 // Get the enterprise acl sql condition
 $extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
 
-if($extra_sql == ENTERPRISE_NOT_HOOK) {
+if ($extra_sql == ENTERPRISE_NOT_HOOK) {
 	$extra_sql = '';
-}else if ($extra_sql != '') {
+}
+else if ($extra_sql != '') {
 	$extra_sql = "(($extra_sql) OR id_policy_module = 0) AND";
 }
 
@@ -165,24 +166,18 @@ if($extra_sql == ENTERPRISE_NOT_HOOK) {
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-	/*	$sql = sprintf ("
-			SELECT *
-			FROM tagente_estado, tagente_modulo
-				LEFT JOIN tmodule_group
-				ON tagente_modulo.id_module_group = tmodule_group.id_mg
-			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.id_agente = %d 
-				AND tagente_modulo.disabled = 0
-				AND tagente_modulo.delete_pending = 0
-				AND tagente_estado.utimestamp != 0 
-			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $order['field'], $order['order']);	*/
 		$sql = sprintf("
-			SELECT * FROM tagente_estado, (SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = 0 AND disabled = 0) tagente_modulo 
+			SELECT *
+			FROM tagente_estado,
+				(SELECT *
+					FROM tagente_modulo
+					WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0) tagente_modulo 
 				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND %s tagente_estado.utimestamp != 0  
-			ORDER BY tagente_modulo.id_module_group , %s  %s", $id_agente, $extra_sql, $order['field'], $order['order']);	
+				AND %s
+				tagente_estado.utimestamp != 0  
+			ORDER BY tagente_modulo.id_module_group , %s  %s",
+			$id_agente, $extra_sql, $order['field'], $order['order']);
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":

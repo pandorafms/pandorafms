@@ -326,7 +326,7 @@ if (is_ajax ()) {
 					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
 		$alert_modules = db_get_sql ($sql);
-		if ($alert_modules > 0){
+		if ($alert_modules > 0) {
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
 				FROM talert_template_modules, tagente_modulo, tagente
 				WHERE tagente.id_agente = %d
@@ -414,7 +414,7 @@ if (is_ajax ()) {
 		if($groups_sons === false){ 
 			echo __('None').'<br />';
 		}
-		else{
+		else {
 			echo '<br /><br />';
 			foreach($groups_sons as $group_son) {
 				echo html_print_image("images/groups_small/" . groups_get_icon ($group_son['id_grupo']) . ".png", true);
@@ -425,11 +425,11 @@ if (is_ajax ()) {
 		return;
 	}
 
-	if ($get_agent_id){
-			$agent_name = (string) get_parameter ("agent_name");
-			
-			echo agents_get_agent_id ($agent_name);
-			return;
+	if ($get_agent_id) {
+		$agent_name = (string) get_parameter ("agent_name");
+		
+		echo agents_get_agent_id ($agent_name);
+		return;
 	}
 
 	return;
@@ -446,7 +446,7 @@ $id_grupo = $agent['id_grupo'];
 
 $is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 
-if($is_extra === ENTERPRISE_NOT_HOOK) {
+if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
@@ -468,7 +468,7 @@ if ($flag !== '') {
 }
 // Check for Network FLAG change request
 $flag_agent = get_parameter('flag_agent','');
-if ($flag_agent !== ''){
+if ($flag_agent !== '') {
 	if ($flag_agent == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
 		db_process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente' =>$id_agente));
 	}
@@ -607,7 +607,7 @@ $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab,
 				'inventory' => $inventorytab, 'collection' => $collectiontab, 
 				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs, 'policy' => $policyTab);
 
-foreach($config['extensions'] as $extension) {
+foreach ($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
 		
 		//VMware extension is only available for VMware OS

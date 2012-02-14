@@ -842,88 +842,91 @@ foreach ($result as $event) {
 		$data[$i] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
 		array_push ($table->data, $data);
 	}
-		//Hiden row with description form
-		$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
-		$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
-		$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
-		$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
-		$string .= '<td align="left" width="200px">'; 
-		$string .= '<div style="text-align:center;">';
-		
-		if($event["estado"] == 0) {
-			$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
-		}
-		if($event["estado"] == 2) {
-			$string .= html_print_select(array('1' => __('Validate'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
-		}
-		
-		$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
-		
-		$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
-		$string .= '</a>';
-		$string .= '</td><td width="400px">';
-		if($event["id_alert_am"] != 0) {
-			$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
-		}
-		$string .= '</td></tr></table>'; //</form>';	
 	
-		$data = array($string);
+	//Hiden row with description form
+	$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
+	$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
+	$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
+	$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
+	$string .= '<td align="left" width="200px">'; 
+	$string .= '<div style="text-align:center;">';
+		
+	if($event["estado"] == 0) {
+		$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+	}
+	if($event["estado"] == 2) {
+		$string .= html_print_select(array('1' => __('Validate'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
+	}
+		
+	$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
+		
+	$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+	$string .= '</a>';
+	$string .= '</td><td width="400px">';
+	if($event["id_alert_am"] != 0) {
+		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
+	}
+	$string .= '</td></tr></table>'; //</form>';	
 	
-		$idx++;
+	$data = array($string);
 	
-		$table->rowclass[$idx] = 'event_form_' . $event["id_evento"].' event_form';
-		$table->colspan[$idx][0] = 10;
-		$table->rowstyle[$idx] = 'display: none;';
-		array_push ($table->data, $data);
+	$idx++;
+	
+	$table->rowclass[$idx] = 'event_form_' . $event["id_evento"].' event_form';
+	$table->colspan[$idx][0] = 10;
+	$table->rowstyle[$idx] = 'display: none;';
+	array_push ($table->data, $data);
 
-		//Hiden row with extended description
-		$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
-		$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
-		$string .= '<b>' . __('Event ID') . '</b></td><td align="left">';
-		$string .= io_safe_output($event["id_evento"]);
-		$string .= '</td></tr><tr class="rowOdd">';	
+	//Hiden row with extended description
+	$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
+	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
+	$string .= '<b>' . __('Event ID') . '</b></td><td align="left">';
+	$string .= io_safe_output($event["id_evento"]);
+	$string .= '</td></tr><tr class="rowOdd">';	
 
-		$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
-		$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
-		$string .= io_safe_output($event["evento"]);
-		$string .= '</td></tr><tr>';	
-		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
-		$string .= html_print_image ($img_sev, true, 
+	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
+	$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
+	$string .= io_safe_output($event["evento"]);
+	$string .= '</td></tr><tr>';	
+	$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
+	$string .= html_print_image ($img_sev, true, 
 				array ("class" => "image_status",
 				"width" => 12,
 				"height" => 12,
 				"title" => get_priority_name ($event["criticity"])));
-		$string .= ' '.get_priority_name ($event["criticity"]);
-		$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
-		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Type') . '</b></td><td align="left">';
-		$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
-		$string .= '</td></tr><tr>';
-		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Status') . '</b></td><td align="left">';
-		$string .= $title_st;
-		$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
-		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Timestamp') . '</b></td><td align="left">';
-		if ($group_rep == 1) {
-			$string .= date ($config["date_format"], $event['timestamp_rep']);
-		}
-		else {
-			$string .= date ($config["date_format"], strtotime($event["timestamp"]));
-		}		
-		$string .= '</td></tr><tr>';
-
-		$odd = 'rowOdd';
-	
-	if ($event["id_agente"] != 0) {
-		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Agent name') . '</b></td><td align="left">';
-		$string .= ui_print_agent_name ($event["id_agente"], true);
-		$string .= '</td></tr><tr>';
-		//$odd = 'rowOdd';
-		$odd = ($odd == '')? 'rowOdd' : '';
+	$string .= ' '.get_priority_name ($event["criticity"]);
+	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
+	$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '<b>' . __('Type') . '</b></td><td align="left">';
+	$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
+	$string .= '</td></tr><tr>';
+	$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '<b>' . __('Status') . '</b></td><td align="left">';
+	$string .= $title_st;
+	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
+	$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '<b>' . __('Timestamp') . '</b></td><td align="left">';
+	if ($group_rep == 1) {
+		$string .= date ($config["date_format"], $event['timestamp_rep']);
 	}
+	else {
+		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
+	}		
+	$string .= '</td></tr><tr>';
+
+	$odd = 'rowOdd';
+		
+	$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '<b>' . __('Agent name') . '</b></td><td align="left">';
+	if ($event["id_agente"] != 0) {
+		$string .= ui_print_agent_name ($event["id_agente"], true);
+	} else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+	}
+	$string .= '</td></tr><tr class="'. $odd .'">';
+	//$odd = 'rowOdd';
+	$odd = ($odd == '')? 'rowOdd' : '';
 	
 	if ($event["id_agentmodule"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';
@@ -943,11 +946,23 @@ foreach ($result as $event) {
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
 		//$odd = 'rowOdd';
 		$odd = ($odd == '')? 'rowOdd' : '';
+	} else {
+		$string .= '<td align="left" valign="top" width="15%">';
+		$string .= '<b>' . __('Agent module') . '</b></td><td align="left">';
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+		$string .= '</a></td></tr><tr class="' . $odd . '">';
+		$odd = ($odd == '')? 'rowOdd' : '';
+		// Module group
+		$string .= '<td align="left" valign="top" width="15%">';
+		$string .= '<b>' . __('Module group') . '</b></td><td align="left">';
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+		$string .= '</a></td></tr><tr class="' . $odd . '">';
+		$odd = ($odd == '')? 'rowOdd' : '';
 	}
 	
+	$string .= '<td align="left" valign="top" width="15%">';
+	$string .= '<b>' . __('Alert source') . '</b></td><td align="left">';
 	if ($event["id_alert_am"] != 0) {
-		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Alert source') . '</b></td><td align="left">';
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
 		$standby = db_get_value('standby', 'talert_template_modules', 'id', $event["id_alert_am"]);
 		if(!$standby) {
@@ -958,27 +973,31 @@ foreach ($result as $event) {
 			$string .= html_print_image ("images/bell_pause.png", true,
 				array ("title" => __('Go to data overview')));
 		}
-		
+	
 		$sql = 'SELECT name
 			FROM talert_templates
 			WHERE id IN (SELECT id_alert_template
 					FROM talert_template_modules
 					WHERE id = ' . $event["id_alert_am"] . ');';
-		
+	
 		$templateName = db_get_sql($sql);
-		
+	
 		$string .= $templateName;
-		
+	
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
 		//$odd = '';
 		$odd = ($odd == '')? 'rowOdd' : '';
-		
+	
 		if ($event["criticity_alert"] != 0) {
 			$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity alert') . '</td><td align="left">';
 			$string .= $event["criticity_alert"];
 			$string .= '</td></tr><tr>';
 			$odd = ($odd == '')? 'rowOdd' : '';
-		}
+		}	
+	} else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+		$string .= '</a></td></tr><tr class="' . $odd . '">';
+		$odd = ($odd == '')? 'rowOdd' : '';
 	}
 	
 	$string .= '<td align="left" valign="top" width="15%">';
@@ -1034,17 +1053,19 @@ foreach ($result as $event) {
 		}
 		$string = rtrim($string, ',');
 		$odd = ($odd == '')? 'rowOdd' : '';
-	}
-	else {
+	} else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
+	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity') . '</td><td align="left">';
 	if ($event["criticity"] != 0) {
-		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity') . '</td><td align="left">';
 		$string .= $event["criticity"];
-		$string .= '</td></tr><tr>';
-		$odd = ($odd == '')? 'rowOdd' : '';
+	} else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
+	$string .= '</td></tr><tr>';
+	$odd = ($odd == '')? 'rowOdd' : '';
+
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Source') . '</td><td align="left">';
 	if ($event["source"] != '') {
 		$string .= $event["source"];
@@ -1063,6 +1084,17 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr>';
+	$odd = ($odd == '')? 'rowOdd' : '';
+	
+	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('User name') . '</td><td align="left">';
+	if ($event["id_usuario"]!= '0') {
+		$string .= $event["id_usuario"];
+	} 
+	else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+	} 
+	
+	$string .= '</td></tr><tr>';
 	$string .= '</table>';
 	
 	$data = array($string);

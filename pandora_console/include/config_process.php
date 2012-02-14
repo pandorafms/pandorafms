@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC111213';
-$pandora_version = 'v4.0.1';
+$build_version = 'PC120214';
+$pandora_version = 'v4.0.2dev';
 
 date_default_timezone_set("Europe/Berlin");
 

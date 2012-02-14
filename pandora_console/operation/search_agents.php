@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -277,8 +277,9 @@ else {
 			$time_style = '<b><span style="color: #ff0000">'.$time.'</span></b>';
 		
 		$manage_agent = '';
+
 		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
-			$manage_agent = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='. $agent["id_agente"] . '">' .
+			$manage_agent = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='. $agent["id_agente"] . '">' .
 				html_print_image("images/setup.png", true, array("title" => __('Manage'), "alt" => __('Manage'))) . '</a>';
 		}
 	

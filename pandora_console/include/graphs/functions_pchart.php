@@ -215,7 +215,7 @@ switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
 			break;
-	case 'default':
+	default:
 			if(!is_array(reset($data_values))) {
 				$data_values = array($data_values);
 				if(is_array($colors) && !empty($colors)) {
@@ -650,7 +650,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			}
 		
 			$MyData->setPalette($point_id, $palette_color);*/
-		}
+		}	
 		
 		$MyData->setSerieWeight($point_id, 0);
 	 }

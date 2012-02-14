@@ -947,20 +947,18 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}
-					if ($resizedMap) {
 
+					if ($resizedMap) {
+						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
+						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
+					}
+					
 					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
 					// resulting fault image links :(
-
-						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
-							false, ((integer)($proportion * $layout_data['width'])), ((integer)($proportion * $layout_data['height'])),
-							'', null, false, 1, false, 0, '', 0, 0, true, true);
-					}
-					else {
-						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
-							false, $layout_data['width'], $layout_data['height'],
-							'', null, false, 1, false, 0, '', 0, 0, true, true);
-					}
+					echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
+						false, $layout_data['width'], $layout_data['height'],
+						'', null, false, 1, false, 0, '', 0, 0, true, true, '', 2);
+					
 					echo "</a>";
 					echo "</div>";
 					break;

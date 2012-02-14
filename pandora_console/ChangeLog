@@ -1,3 +1,12 @@
+2012-02-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/fgraph.php
+	include/functions_visual_map.php: Fixed little
+	graphs into the visual maps of the widgets 
+	(min height control added)
+	Merged from trunk
+
 2012-02-14  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Merged from trunk. Added

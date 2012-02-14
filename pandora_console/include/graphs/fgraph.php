@@ -194,6 +194,11 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
 
+	// ATTENTION: The min height is 101
+	if($height <= 100) {
+		$height = 101;
+	}
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}

@@ -2210,6 +2210,42 @@ function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Get all alert tamplates, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, but only <csv_separator> is available.
+ *  example:
+ *  
+ *  api.php?op=get&op2=all_alert_templates&return_type=csv&other=;
+ * 
+ * @param $thrash3 Don't use.
+ */
+function get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
+
+	if (!isset($other['data'][0]))
+		$separator = ';'; // by default
+	else
+		$separator = $other['data'][0];
+
+	$filter_templates = false;
+
+	$template = alerts_get_alert_templates();
+	
+	if ($template !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $template;
+	}
+		
+	if (!$template) {
+		returnError('error_get_all_alert_templates', __('Error getting all alert templates.'));
+	}
+	else {
+		returnData('csv', $data, ';');
+	}
+}
+
+/**
  * Get an alert tamplate, and print the result like a csv.
  * 
  * @param string $id_template Id of the template to get.

@@ -1,3 +1,8 @@
+2012-02-14  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk. Added
+	get_all_alert_templates function to API.
+
 2012-02-14  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* include/javascript/pandora_alerts.js: Removed double quotes which encolse

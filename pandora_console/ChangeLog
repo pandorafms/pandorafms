@@ -1,5 +1,18 @@
 2012-02-14  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* ChangeLog: uploaded lost lines to repository. I am sorry.
+
+2012-02-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_config.php, godmode/setup/setup.php
+	extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql: fixed the list of ACL ip in
+	the table tconfig, before the data was in several rows, now it is in one
+	row, and of course I have made in the SQL for the migration.
+	
+	Fixes: #3486496
+
+2012-02-14  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: fixed function "check_refererer" when the http
 	server run in other port instead the normally 80 port.
 	

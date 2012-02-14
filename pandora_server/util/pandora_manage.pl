@@ -129,7 +129,7 @@ sub help_screen{
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	print "EVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', '<event> <event_type> <group_name> [<agent_name> <module_name> <event_status> <severity> <template_name> <user_name> <comment> <source> <id_extra>]', 'Add event');
+	help_screen_line('--create_event', '<event> <event_type> <group_name> [<agent_name> <module_name> <event_status> <severity> <template_name> <user_name> <comment> <source> <id_extra> <tags>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
     help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
     help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id'); 
@@ -2247,10 +2247,20 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra) = @ARGV[2..13];
+	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags) = @ARGV[2..14];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
+
+	my $id_user;
+	
+	if (!defined($user_name)) {
+		$id_user = 0;
+	}
+	else {
+		$id_user = pandora_get_user_id($dbh,$user_name);
+		exist_check($id_user,'user',$user_name);
+	}
 	
 	my $id_group;
 	
@@ -2284,11 +2294,11 @@ sub cli_create_event() {
 	
 	my $id_alert_agent_module;
 				
-	if(defined($template_name)) {
+	if(defined($template_name) && $template_name ne '') {
 		my $id_template = get_template_id($dbh,$template_name);
 		exist_check($id_template,'template',$template_name);
 		$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
-		exist_check($id_alert_agent_module,'template module',$template_name);
+		exist_check($id_alert_agent_module,'alert template module',$template_name);
 	}
 	else {
 		$id_alert_agent_module = 0;
@@ -2297,7 +2307,7 @@ sub cli_create_event() {
 	print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra);
+		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags);
 }
 
 ##############################################################################
@@ -3124,6 +3134,18 @@ sub pandora_get_event_name($$) {
 	return defined ($event_name) ? $event_name : -1;
 }
 
+##############################################################################
+# Return user id given a user name
+##############################################################################
+
+sub pandora_get_user_id($$) {
+	my ($dbh,$user_name) = @_;
+	
+	my $user_id = get_db_value($dbh, 'SELECT id_user FROM tusuario WHERE id_user = ? or fullname = ?',$user_name, $user_name);
+	
+	return defined ($user_id) ? $user_id : -1;
+}
+
 ###############################################################################
 ###############################################################################
 # MAIN
@@ -3245,7 +3267,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 12, 9);
+			param_check($ltotal, 13, 10);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {

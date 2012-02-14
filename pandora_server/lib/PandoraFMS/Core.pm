@@ -1539,16 +1539,20 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$$$$) {
+sub pandora_event ($$$$$$$$$$;$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra) = @_;
+		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags) = @_;
 
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 	
 	# Get module tags
 	my $module_tags = '';
-	if (defined ($id_agentmodule) && $id_agentmodule > 0) {
-		$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
+	if (defined ($tags) && ($tags ne '')) {
+		$module_tags = $tags
+	} else {
+		if (defined ($id_agentmodule) && $id_agentmodule > 0) {
+			$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
+		}
 	}	
 		
 	# Set default values for optional parameters
@@ -1561,8 +1565,8 @@ sub pandora_event ($$$$$$$$$$;$$$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
-	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra);
+	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name);
 }
 
 ##########################################################################

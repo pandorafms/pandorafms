@@ -1,3 +1,8 @@
+2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Migrate 
+	tconfig ACL list. Pending to change it in Oracle.
+
 2012-02-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: uploaded lost lines to repository. I am sorry.

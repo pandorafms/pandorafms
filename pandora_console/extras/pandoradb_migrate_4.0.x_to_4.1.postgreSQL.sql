@@ -131,4 +131,6 @@ CREATE TABLE "tevent_filter" (
 -- -----------------------------------------------------
 -- Table `tconfig`
 -- -----------------------------------------------------
-ALTER TABLE "tconfig" ALTER COLUMN "value" TEXT;
+ALTER TABLE "tconfig" ALTER COLUMN "value" TYPE TEXT;
+
+INSERT INTO tconfig ("token", "value") SELECT 'list_ACL_IPs_for_API', array_to_string(ARRAY(SELECT value FROM tconfig WHERE token LIKE 'list_ACL_IPs_for_API%'), ';') AS "value";

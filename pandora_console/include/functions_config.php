@@ -46,57 +46,11 @@ function config_update_value ($token, $value) {
 	
 	switch ($token) {
 		case 'list_ACL_IPs_for_API':
-			$rows = db_get_all_rows_sql("SELECT id_config
-				FROM tconfig 
-				WHERE token LIKE '%list_ACL_IPs_for_API_%'");
-			
-			if ($rows !== false) {
-				foreach ($rows as $row)
-					$idListACLofIP[] = $row['id_config'];
-				
-				db_process_sql_delete('tconfig', 'id_config IN (' . implode(',', $idListACLofIP) . ')' );
-			}
-			
-			$value = io_safe_output($value);
-
-			if (strpos($value, "\r\n") !== false)
-				$ips = explode("\r\n", $value);
-			else
-				$ips = explode("\n", $value);
-
-			$valueDB = '';
-			$count = 0;
-			$lastInsert = false;
-			foreach ($ips as $ip) {
-				$ip = trim($ip);
-				
-				$lastInsert = false;
-				if (strlen($valueDB . ';' . $ip) < 100) {
-					//100 is the size of field 'value' in tconfig.
-					if (strlen($valueDB) == 0)
-						$valueDB .= $ip;
-					else
-						$valueDB .= ';' . $ip;
-				}
-				else {
-					if (strlen($ip) > 100)
-						return false;
-						
-					db_process_sql_insert('tconfig',
-						array('token' => 'list_ACL_IPs_for_API_' . $count , 'value' => $valueDB));
-					$valueDB = $ip;
-					$count++;
-					$lastInsert = true;
-				}
-			}
-			if (!$lastInsert)
-				db_process_sql_insert('tconfig',
-					array('token' => 'list_ACL_IPs_for_API_' . $count , 'value' => $valueDB));
-			
+			return (bool) config_create_value ($token, $value);
 			break;
 		default:
-			if (!isset ($config[$token])){
-			$config[$token] = $value;
+			if (!isset ($config[$token])) {
+				$config[$token] = $value;
 				return (bool) config_create_value ($token, $value);
 			}
 			
@@ -389,25 +343,18 @@ function config_process_config () {
 	if (!isset ($config["font_size"])) {
 		config_update_value ('font_size', 7);
 	}
-
+	
 	/* 
-	 *Parse the ACL IP list for access API that it's save in chunks as
-	 *list_ACL_IPs_for_API_<num>, because the value has a limit of 100
-	 *characters.
+	 *Parse the ACL IP list for access API
 	 */
-	
-	$config['list_ACL_IPs_for_API'] = array();
+	$temp_list_ACL_IPs_for_API = array();
+	if (isset($config['list_ACL_IPs_for_API'])) {
+		$temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+	}
+	$config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
 	$keysConfig = array_keys($config);
-	foreach($keysConfig as $keyConfig)
-		if (strpos($keyConfig, 'list_ACL_IPs_for_API_') !== false) {
-			$ips = explode(';',$config[$keyConfig]);
-			$config['list_ACL_IPs_for_API'] =
-				array_merge($config['list_ACL_IPs_for_API'], $ips);
-			
-			unset($config[$keyConfig]);
-		}
 	
-
+	
 	// This is not set here. The first time, when no
 	// setup is done, update_manager extension manage it
 	// the first time make a conenction and disable itself

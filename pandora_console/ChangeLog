@@ -1,3 +1,7 @@
+2012-02-14  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/events/events_list: Display all fields including 
+	empty values.
+
 2012-02-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Migrate 

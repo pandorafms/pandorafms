@@ -129,7 +129,7 @@ sub help_screen{
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	print "EVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name> <user_name> <comment> <source> <id_extra>]', 'Add event');
+	help_screen_line('--create_event', '<event> <event_type> <group_name> [<agent_name> <module_name> <event_status> <severity> <template_name> <user_name> <comment> <source> <id_extra>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
     help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
     help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id'); 
@@ -2247,7 +2247,7 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra) = @ARGV[2..13];
+	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra) = @ARGV[2..13];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
@@ -2264,22 +2264,22 @@ sub cli_create_event() {
 	
 	my $id_agent;
 	
-	if (defined($agent_name) && $agent_name ne "") {
+	if (!defined($agent_name)) {
+		$id_agent = 0;
+	}
+	else {
 		$id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
-		
-	} else {
-		$id_agent = 0;
 	}
 	
 	my $id_agentmodule;
-		
-	if (defined($module_name) && $module_name ne "") {				
+	
+	if (!defined($module_name)) {
+		$id_agentmodule = 0;
+	}
+	else {
 		$id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
 		exist_check($id_agentmodule,'module',$module_name);
-
-	} else {
-		$id_agentmodule = 0;
 	}
 	
 	my $id_alert_agent_module;
@@ -3245,7 +3245,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 12, 7);
+			param_check($ltotal, 12, 9);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {

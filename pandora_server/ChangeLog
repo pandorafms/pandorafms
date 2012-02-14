@@ -1,3 +1,8 @@
+2012-02-14  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* util/pandora_manage.pl: Changed default field separator to 
+	get_event_info and get_module_data.
+
 2012-02-13  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* util/pandora_manage.pl: Added get_event_info.

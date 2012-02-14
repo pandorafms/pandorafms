@@ -2379,7 +2379,7 @@ sub cli_get_event_info () {
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
 	
-	$csv_separator = ';' unless defined($csv_separator);
+	$csv_separator = '|' unless defined($csv_separator);
 	
 	my $query = "SELECT * FROM tevento where id_evento=".$id_event;
 
@@ -3092,7 +3092,7 @@ sub cli_module_get_data () {
 		print "[ERROR] Interval must be a possitive value\n\n";
 	}
 	
-	$csv_separator = ';' unless defined($csv_separator);
+	$csv_separator = '|' unless defined($csv_separator);
 
 	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id);
 	

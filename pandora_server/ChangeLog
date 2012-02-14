@@ -1,3 +1,9 @@
+2012-02-14  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* util/pandora_manage.pl
+	  lib/PandoraFMS/Core.pm: Added 'tags'parameter
+	to create_event and check if user name exists.
+
 2012-02-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.conf: Removed a trailing blank space from

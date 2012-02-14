@@ -1,3 +1,10 @@
+2012-02-14  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* include/javascript/pandora_alerts.js: Removed double quotes which encolse
+	  substituted field[1-3] from command preview.  pandora_server doesn't add
+	  double quotes to enclose these fields.
+	  Merged from trunk
+
 2012-02-13  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: fixed the resize

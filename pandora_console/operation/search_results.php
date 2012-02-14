@@ -24,11 +24,13 @@ $searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0
 $searchUsers = check_acl($config['id_user'], 0, "UM");
 $searchMaps = $searchReports = $searchGraphs = check_acl($config["id_user"], 0, "IR");
 
-$arrayKeywords = explode(' ', $config['search_keywords']);
+$arrayKeywords = explode('&#x20;', $config['search_keywords']);
 $temp = array();
-foreach ($arrayKeywords as $keyword)
-	array_push($temp, "%" . io_safe_input($keyword) . "%");
-$stringSearchSQL = implode(" ",$temp);
+foreach ($arrayKeywords as $keyword){
+	// Remember, $keyword is already pass a safeinput filter.
+	array_push($temp, "%" . $keyword . "%");
+}
+$stringSearchSQL = implode("&#x20;",$temp);
 
 if ($config['search_category'] == "all") 
 	$searchTab = "agents";

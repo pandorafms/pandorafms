@@ -1,3 +1,12 @@
+2012-02-14  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process.php: updated build & version.
+
+	* operation/search_agents.php: Fixed bug: icon to manage agent
+
+	* operation/search_results.php: Fixed bug: search with blank spaces,
+	again another HTML entity problem :(
+
 2012-02-14  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Added get_all_alert_templates

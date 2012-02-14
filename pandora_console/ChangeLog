@@ -1,3 +1,12 @@
+2012-02-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: fixed function "check_refererer" when the http
+	server run in other port instead the normally 80 port.
+	
+	Fixes: #3452474
+	
+	Merged bugfix from trunk.
+
 2012-02-14  Sancho Lerena <slerena@artica.es>
 
 	* include/config_process.php: updated build & version.

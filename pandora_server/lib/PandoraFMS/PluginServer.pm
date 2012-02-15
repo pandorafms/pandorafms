@@ -197,7 +197,8 @@ sub data_consumer ($$) {
 			elsif ($ReturnCode == 2){
 				$module_data = 0;
 			} 
-			elsif ($ReturnCode == 3){
+			elsif ($ReturnCode == 3 || $ReturnCode == 124){
+				# 124 should be a exit code of the timeout command (command times out)
 				$module_data = ''; # not defined = Uknown 
 			} 
 			elsif ($ReturnCode == 4){

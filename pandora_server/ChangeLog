@@ -1,3 +1,8 @@
+2012-02-15  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_manage.pl: Merged from trunk. Added new options
+	to CLI: Update module.
+
 2012-02-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_exec: Merged from trunk. Quote command line arguments.

@@ -446,6 +446,7 @@ sub help_screen{
     help_screen_line('--create_template_action', '<action_name> <template_name> <module_name> <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template');
     help_screen_line('--delete_template_action', '<action_name> <template_name> <module_name> <agent_name>', 'Delete alert action from module-template');
     help_screen_line('--data_module', '<server_name> <agent_name> <module_name> <module_type> [<datetime>]', 'Insert data to module');
+	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
     help_screen_line('--delete_user', '<user_name>', 'Delete user');
     help_screen_line('--create_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
@@ -1207,6 +1208,334 @@ sub cli_create_user() {
 }
 
 ##############################################################################
+# Check the specific fields of data module when update
+##############################################################################
+
+sub pandora_check_data_module_fields($) {
+	my $field_value = shift;
+	
+	print "[ERROR] The field '".$field_value->{'field'}."' is not available for data modules\n\n";
+	
+	exit;
+}
+
+##############################################################################
+# Check the specific fields of network module when update
+##############################################################################
+
+sub pandora_check_network_module_fields($) {
+	my $field_value = shift;
+		
+	if($field_value->{'field'} eq 'ff_threshold') {
+		$field_value->{'field'} = 'min_ff_event';
+	}
+	elsif($field_value->{'field'} eq 'module_address') {
+		my $agent_name = @ARGV[3];
+		
+		my $id_agent = get_agent_id($dbh,$agent_name);
+	
+		$field_value->{'field'} = 'ip_target';
+		
+		# Check if the address already exist
+		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
+		
+		# If the addres doesnt exist, we add it to the addresses list
+		if($address_id == -1) {
+			$address_id = add_address($dbh,$field_value->{'new_value'});
+		}
+		
+		# Add the address to the agent
+		add_new_address_agent ($dbh, $address_id, $id_agent);
+		
+		# Only pending set as main address (Will be done at the end of the function)
+	}
+	elsif($field_value->{'field'} eq 'module_port') {
+		if ($field_value->{'new_value'} > 65535 || $field_value->{'new_value'} < 1) {
+			print "[ERROR] Port error. Port must into [1-65535]\n\n";
+			exit;
+		}
+		$field_value->{'field'} = 'tcp_port';
+	}
+	else {
+		print "[ERROR] The field '".$field_value->{'field'}."' is not available for network modules\n\n";
+		exit;
+	}
+}
+
+##############################################################################
+# Check the specific fields of snmp module when update
+##############################################################################
+
+sub pandora_check_snmp_module_fields($) {
+	my $field_value = shift;
+		
+	if($field_value->{'field'} eq 'version') {
+		$field_value->{'field'} = 'tcp_send';
+	}
+	elsif($field_value->{'field'} eq 'ff_threshold') {
+		$field_value->{'field'} = 'min_ff_event';
+	}
+	elsif($field_value->{'field'} eq 'community') {
+		$field_value->{'field'} = 'snmp_community';
+	}
+	elsif($field_value->{'field'} eq 'oid') {
+		$field_value->{'field'} = 'snmp_oid';
+	}
+	elsif($field_value->{'field'} eq 'snmp3_priv_method') {
+		$field_value->{'field'} = 'custom_string_1';
+	}
+	elsif($field_value->{'field'} eq 'snmp3_priv_pass') {
+		$field_value->{'field'} = 'custom_string_2';
+	}
+	elsif($field_value->{'field'} eq 'snmp3_sec_level') {
+		$field_value->{'field'} = 'custom_string_3';
+	}
+	elsif($field_value->{'field'} eq 'snmp3_auth_method') {
+		$field_value->{'field'} = 'plugin_parameter';
+	}
+	elsif($field_value->{'field'} eq 'snmp3_auth_user') {
+		$field_value->{'field'} = 'plugin_user';
+	}
+	elsif($field_value->{'field'} eq 'snmp3_auth_pass') {
+		$field_value->{'field'} = 'plugin_pass';
+	}
+	elsif($field_value->{'field'} eq 'module_address') {
+		my $agent_name = @ARGV[3];
+		
+		my $id_agent = get_agent_id($dbh,$agent_name);
+	
+		$field_value->{'field'} = 'ip_target';
+		
+		# Check if the address already exist
+		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
+		
+		# If the addres doesnt exist, we add it to the addresses list
+		if($address_id == -1) {
+			$address_id = add_address($dbh,$field_value->{'new_value'});
+		}
+		
+		# Add the address to the agent
+		add_new_address_agent ($dbh, $address_id, $id_agent);
+		
+		# Only pending set as main address (Will be done at the end of the function)
+	}
+	elsif($field_value->{'field'} eq 'module_port') {
+		if ($field_value->{'new_value'} > 65535 || $field_value->{'new_value'} < 1) {
+			print "[ERROR] Port error. Port must into [1-65535]\n\n";
+			exit;
+		}
+		$field_value->{'field'} = 'tcp_port';
+	}
+	else {
+		print "[ERROR] The field '".$field_value->{'field'}."' is not available for SNMP modules\n\n";
+		exit;
+	}
+}
+
+##############################################################################
+# Check the specific fields of plugin module when update
+##############################################################################
+
+sub pandora_check_plugin_module_fields($) {
+	my $field_value = shift;
+		
+	if($field_value->{'field'} eq 'plugin_name') {
+		my $plugin_id = get_plugin_id($dbh,$field_value->{'new_value'});
+		exist_check($plugin_id,'plugin',$field_value->{'new_value'});
+		
+		$field_value->{'new_value'} = $plugin_id;
+		$field_value->{'field'} = 'id_plugin';
+	}
+	elsif($field_value->{'field'} eq 'user') {
+		$field_value->{'field'} = 'plugin_user';
+	}
+	elsif($field_value->{'field'} eq 'password') {
+		$field_value->{'field'} = 'plugin_pass';
+	}
+	elsif($field_value->{'field'} eq 'parameters') {
+		$field_value->{'field'} = 'plugin_parameter';
+		$field_value->{'new_value'} = safe_input($field_value->{'new_value'});
+	}
+	elsif($field_value->{'field'} eq 'ff_threshold') {
+		$field_value->{'field'} = 'min_ff_event';
+	}
+	elsif($field_value->{'field'} eq 'module_address') {
+		my $agent_name = @ARGV[3];
+		
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		
+		$field_value->{'field'} = 'ip_target';
+		
+		# Check if the address already exist
+		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
+		
+		# If the addres doesnt exist, we add it to the addresses list
+		if($address_id == -1) {
+			$address_id = add_address($dbh,$field_value->{'new_value'});
+		}
+		
+		# Add the address to the agent
+		add_new_address_agent ($dbh, $address_id, $id_agent);
+		
+		# Only pending set as main address (Will be done at the end of the function)
+	}
+	elsif($field_value->{'field'} eq 'module_port') {
+		$field_value->{'field'} = 'tcp_port';
+	}
+	else {
+		print "[ERROR] The field '".$field_value->{'field'}."' is not available for plugin modules\n\n";
+		exit;
+	}
+}
+
+##############################################################################
+# Add a profile to a User in a Group
+# Related option: --update_module
+##############################################################################
+
+sub cli_module_update() {
+	my ($module_name,$agent_name,$field,$new_value) = @ARGV[2..5];
+	
+	my $id_agent = get_agent_id($dbh,$agent_name);
+	exist_check($id_agent,'agent',$agent_name);
+	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $id_agent);
+	exist_check($id_agent_module,'agent module',$module_name);
+	
+	# Check and adjust parameters in common values
+	
+	if($field eq 'min' || $field eq 'max' || $field eq 'post_process' || $field eq 'history_data') {
+		# Fields admited, no changes
+	}
+	elsif($field eq 'interval') {
+		$field = 'module_interval';
+	}
+	elsif($field eq 'warning_min') {
+		$field = 'min_warning';
+	}
+	elsif($field eq 'warning_max') {
+		$field = 'max_warning';
+	}
+	elsif($field eq 'critical_min') {
+		$field = 'min_critical';
+	}
+	elsif($field eq 'critical_max') {
+		$field = 'max_critical';
+	}
+	elsif($field eq 'warning_str') {
+		$field = 'str_warning';
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'critical_str') {
+		$field = 'str_critical';
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'agent_name') {
+		my $id_agent_change = get_agent_id($dbh,$new_value);
+		exist_check($id_agent_change,'agent',$new_value);
+		my $id_agent_module_exist = get_agent_module_id ($dbh, $module_name, $id_agent_change);
+		if($id_agent_module_exist != -1) {
+			print "[ERROR] A module called '$module_name' already exist in the agent '$new_value'\n\n";
+			exit;
+		}
+		$field = 'id_agente';
+		$new_value = $id_agent_change;
+	}
+	elsif($field eq 'module_name') {
+		my $id_agent_module_change = get_agent_module_id ($dbh, $new_value, $id_agent);
+		if($id_agent_module_change != -1) {
+			print "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
+			exit;
+		}
+		$field = 'nombre';
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'description') {
+		$field = 'descripcion';
+		$new_value = safe_input($new_value);
+	}
+	elsif($field eq 'module_group') {
+		my $module_group_id = get_module_group_id($dbh,$new_value);
+
+		if($module_group_id == -1) {
+			print "[ERROR] Module group '$new_value' doesnt exist\n\n";
+			exit;
+		}
+		$field = 'id_module_group';
+		$new_value = $module_group_id;
+	}
+	else {
+		# If is not a common value, check type and call type update funtion
+		my $type = pandora_get_module_type($dbh,$id_agent_module);
+		
+		my %field_value;
+		$field_value{'field'} = $field;
+		$field_value{'new_value'} = $new_value;
+
+		if($type eq 'data') {
+			pandora_check_data_module_fields(\%field_value);
+		}
+		elsif($type eq 'network') {
+			pandora_check_network_module_fields(\%field_value);
+		}
+		elsif($type eq 'snmp') {
+			pandora_check_snmp_module_fields(\%field_value);
+		}
+		elsif($type eq 'plugin') {
+			pandora_check_plugin_module_fields(\%field_value);
+		}
+		else {
+			print "[ERROR] The field '$field' is not available for this type of module\n\n";
+		}
+		
+		$field = $field_value{'field'};
+		$new_value = $field_value{'new_value'};
+	}
+	
+	print "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
+	
+	my $update;
+	
+	$update->{$field} = $new_value;
+	
+	pandora_update_module_from_hash ($conf, $update, 'id_agente_modulo', $id_agent_module, $dbh);
+}
+
+##############################################################################
+# Return the type of given module (data, network, snmp or plugin)
+##############################################################################
+
+sub pandora_get_module_type($$) {
+	my ($dbh,$id_agent_module) = @_;
+	
+	my $id_modulo = get_db_value($dbh, 'SELECT id_modulo FROM tagente_modulo WHERE id_agente_modulo = ?',$id_agent_module);
+	
+	if($id_modulo == 1) {
+		return 'data';
+	}
+	if($id_modulo == 2) {
+		my $id_module_type = get_db_value($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?',$id_agent_module);
+		if($id_module_type >= 15 && $id_module_type <= 18) {
+			return 'snmp';
+		}
+		else {
+			return 'network';
+		}
+	}
+	elsif($id_modulo == 4) {
+		return 'plugin';
+	}
+	elsif($id_modulo == 6) {
+		return 'wmi';
+	}
+	elsif($id_modulo == 7) {
+		return 'web';
+	}
+	else {
+		return 'unknown';
+	}
+}
+
+##############################################################################
 # Delete a user.
 # Related option: --delete_user
 ##############################################################################
@@ -1696,6 +2025,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_event') {
 			param_check($ltotal, 8, 3);
 			cli_create_event();
+		}
+		elsif ($param eq '--update_module') {
+			param_check($ltotal, 4);
+			cli_module_update();
 		}
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 7, 6);

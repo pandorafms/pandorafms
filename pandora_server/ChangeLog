@@ -1,3 +1,9 @@
+2012-02-15  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/PluginServer.pm: Treat exit status code 124 as
+	 Unknown when plugin type of the module is nagios and module type
+	 is boolean. timeout exits with 124 if command times out.
+
 2012-02-15  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_manage.pl: Fixed an error in help text.

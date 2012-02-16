@@ -631,6 +631,15 @@ function events_print_type_description ($type, $return = false) {
 	case "new_agent";
 		$output .= __('New agent created');
 		break;
+	case "configuration_change";
+		$output .= __('Configuration change');
+		break;
+	case "alert_ceased";
+		$output .= __('Alert ceased');
+		break;
+	case "error";
+		$output .= __('Error');
+		break;
 	case "unknown": 
 	default:
 		$output .= __('Unknown type:').': '.$type;
@@ -768,6 +777,8 @@ function events_get_event_types ($type_id){
 		case 'system': $type_desc = __('System');
 				break;
 		case 'error': $type_desc = __('Error');
+				break;
+		case 'configuration_change': $type_desc = __('Configuration change');
 				break;
 		case 'not_normal': $type_desc = __('Not normal');
 				break;

@@ -155,5 +155,6 @@ PRIMARY KEY  (`id_filter`)
 ALTER TABLE tconfig MODIFY value TEXT NOT NULL;
 --Join the all ips of "list_ACL_IPs_for_API_%" in one row (now We have a field "value" with hudge size)
 INSERT INTO tconfig (token, `value`) SELECT 'list_ACL_IPs_for_API', GROUP_CONCAT(`value` SEPARATOR ';') AS `value` FROM tconfig WHERE token LIKE "list_ACL_IPs_for_API%";
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
 DELETE FROM tconfig WHERE token LIKE "list_ACL_IPs_for_API_%";
 

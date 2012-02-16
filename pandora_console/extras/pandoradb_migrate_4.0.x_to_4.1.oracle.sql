@@ -147,3 +147,4 @@ CREATE TABLE tevent_filter (
 -- Table `tconfig`
 -- -----------------------------------------------------
 ALTER TABLE tconfig MODIFY value TEXT NOT NULL;
+INSERT INTO tconfig (token, value) VALUES ('event_fields', 'evento,id_agente,estado,timestamp');

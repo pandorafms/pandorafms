@@ -1,3 +1,10 @@
+2012-02-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added 
+	 'tevento_fields' row in tconfig table.
+
 2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/events/events_list: Changed extended info
 	to event list.

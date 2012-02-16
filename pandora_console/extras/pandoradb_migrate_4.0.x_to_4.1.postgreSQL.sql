@@ -134,3 +134,4 @@ CREATE TABLE "tevent_filter" (
 ALTER TABLE "tconfig" ALTER COLUMN "value" TYPE TEXT;
 
 INSERT INTO tconfig ("token", "value") SELECT 'list_ACL_IPs_for_API', array_to_string(ARRAY(SELECT value FROM tconfig WHERE token LIKE 'list_ACL_IPs_for_API%'), ';') AS "value";
+INSERT INTO "tconfig" ("token", "value") VALUES ('event_fields', 'evento,id_agente,estado,timestamp');

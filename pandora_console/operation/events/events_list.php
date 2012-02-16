@@ -19,6 +19,7 @@ global $config;
 
 require_once ("include/functions_events.php"); //Event processing functions
 require_once ("include/functions_alerts.php"); //Alerts processing functions
+require_once ("include/functions.php");
 require_once($config['homedir'] . "/include/functions_agents.php"); //Agents funtions
 require_once($config['homedir'] . "/include/functions_users.php"); //Users functions
 require_once ($config['homedir'] . '/include/functions_groups.php');
@@ -701,10 +702,8 @@ foreach ($result as $event) {
 	
 	if (in_array('id_agente', $show_fields)) {
 		$data[$i] = '<span style="color: #000000">';
-		if ($event["event_type"] == "system") {
-			$data[$i] .= __('System');
-		}
-		elseif ($event["id_agente"] > 0) {
+		
+		if ($event["id_agente"] > 0) {
 			// Agent name
 			$data[$i] .= ui_print_agent_name ($event["id_agente"], true);
 		}
@@ -860,7 +859,7 @@ foreach ($result as $event) {
 		
 	$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
 		
-	$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
+	$string .= html_print_button (__('Update'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
 	$string .= '</a>';
 	$string .= '</td><td width="400px">';
 	if($event["id_alert_am"] != 0) {
@@ -1087,7 +1086,7 @@ foreach ($result as $event) {
 	$odd = ($odd == '')? 'rowOdd' : '';
 	
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('User name') . '</td><td align="left">';
-	if ($event["id_usuario"]!= '0') {
+	if ($event["id_usuario"]!= 0) {
 		$string .= $event["id_usuario"];
 	} 
 	else {
@@ -1120,7 +1119,7 @@ if (!empty ($table->data)) {
 
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
-		html_print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
+		html_print_submit_button (__('Update'), 'validate_btn', false, 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
 

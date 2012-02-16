@@ -2305,7 +2305,7 @@ sub cli_create_event() {
 	}
 	
 	if (defined($comment) && $comment ne '') {
-		$comment = '-- Added comment by '.$user_name.' -- '.$comment;
+		$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
 	}
 	print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 

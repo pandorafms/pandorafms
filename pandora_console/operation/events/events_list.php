@@ -745,7 +745,8 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('id_agentmodule',$show_fields)) {
-		$data[$i] = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]);
+		$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">'
+					.db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
 		$i++;
 	}
 	
@@ -758,7 +759,7 @@ foreach ($result as $event) {
 				WHERE id = ' . $event["id_alert_am"] . ');';
 	
 			$templateName = db_get_sql($sql);
-			$data[$i] = $templateName;
+			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">'.$templateName.'</a>';
 		} else {
 			$data[$i] = '';
 		}
@@ -771,13 +772,29 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('user_comment',$show_fields)) {
-		$data[$i] = $event["user_comment"];
+		$data[$i] = ui_print_truncate_text(strip_tags($event["user_comment"]), 30);
 		$i++;
 	}
 	
 	if (in_array('tags',$show_fields)) {
-		$data[$i] = $event["tags"];
-		$i++;
+		if ($event["tags"] != '') {
+			$tag_array = explode(',', $event["tags"]);
+			$data[$i] = '';
+			foreach ($tag_array as $tag_element){
+				$blank_char_pos = strpos($tag_element, ' ');
+				$tag_name = substr($tag_element, 0, $blank_char_pos);
+				$tag_url = substr($tag_element, $blank_char_pos + 1);
+				$data[$i] .= ' ' .$tag_name;
+				if (!empty($tag_url)){
+					$data[$i] .= ' <a href="javascript: openURLTagWindow(\'' . $tag_url . '\');">' . html_print_image('images/lupa.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a> ';
+				}
+				$data[$i] .= ',';
+			}
+			$data[$i] = rtrim($data[$i], ',');
+		} else {
+			$data[$i] = '';
+		}
+			$i++;
 	}
 	
 	if (in_array('source',$show_fields)) {
@@ -915,7 +932,7 @@ foreach ($result as $event) {
 	$string .= '</td></tr><tr>';
 
 	$odd = 'rowOdd';
-		
+	
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Agent name') . '</b></td><td align="left">';
 	if ($event["id_agente"] != 0) {
@@ -924,7 +941,7 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr><tr class="'. $odd .'">';
-	//$odd = 'rowOdd';
+
 	$odd = ($odd == '')? 'rowOdd' : '';
 	
 	if ($event["id_agentmodule"] != 0) {
@@ -933,7 +950,7 @@ foreach ($result as $event) {
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">';
 		$string .= db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]);
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
-		//$odd = '';
+		
 		$odd = ($odd == '')? 'rowOdd' : '';
 		// Module group
 		$string .= '<td align="left" valign="top" width="15%">';
@@ -943,7 +960,7 @@ foreach ($result as $event) {
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . '">';
 		$string .= $module_group;
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
-		//$odd = 'rowOdd';
+	
 		$odd = ($odd == '')? 'rowOdd' : '';
 	} else {
 		$string .= '<td align="left" valign="top" width="15%">';
@@ -984,7 +1001,7 @@ foreach ($result as $event) {
 		$string .= $templateName;
 	
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
-		//$odd = '';
+		
 		$odd = ($odd == '')? 'rowOdd' : '';
 		
 	} else {
@@ -999,30 +1016,20 @@ foreach ($result as $event) {
 	$string .= groups_get_name ($event["id_grupo"]);
 	$string .= '</td></tr><tr class="' . $odd . '">';
 	$odd = ($odd == '')? 'rowOdd' : '';
-	$string .= '<td align="left" valign="top" width="15%">';
-	if ($group_rep == 0) {
-		$string .= '<b>' . __('User ID') . '</b></td><td align="left">';
-	} else {
+	
+	if ($group_rep != 0) {
+		$string .= '<td align="left" valign="top" width="15%">';
 		$string .= '<b>' . __('Count') . '</b></td><td align="left">';
 	}
 	
 	if ($group_rep == 1) {
 		$string .= $event["event_rep"];
+		$string .= '</td></tr><tr class="' . $odd . '">';
+		$odd = ($odd == '')? 'rowOdd' : '';
 	}
-	else {
-		if (!empty ($event["estado"])) {
-			if ($event["id_usuario"] != '0' && $event["id_usuario"] != '' && $event["id_usuario"] != 'system' && $event["id_usuario"] != "System"){
-				$string .= '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&id='.$event["id_usuario"].'" title="'.get_user_fullname ($event["id_usuario"]).'">'.mb_substr ($event["id_usuario"],0,8).'</a>';
-			}
-			else {
-				$string .= __('System');
-			}
-		}
-		else {
-			$string .= '<i>- ' . __('Empty') . ' -</i>';
-		}
-	}
+
 	$string .= '</td></tr>';
+	$odd = ($odd == '')? 'rowOdd' : '';
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Comments') . '</td><td align="left">';
 	if($event["user_comment"] != '') {
 		$string .= $event["user_comment"];
@@ -1060,6 +1067,7 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
+	
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Extra id') . '</td><td align="left">';
 	if ($event["id_extra"] != '') {
 		$string .= $event["id_extra"];
@@ -1069,7 +1077,6 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr>';
-	$odd = ($odd == '')? 'rowOdd' : '';
 	
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('User name') . '</td><td align="left">';
 	if (($event["id_usuario"]!= '') || ($event["id_usuario"]!= 0)){

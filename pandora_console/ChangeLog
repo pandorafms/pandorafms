@@ -1,3 +1,8 @@
+2012-02-16  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.builder.php: Fixed creation alerts 
+	modules combo where appears all the modules (not init included)
+
 2012-02-15  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_field_match_snmp.php: Added a new help file.

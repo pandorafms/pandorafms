@@ -1,5 +1,9 @@
 2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* util/pandora_manage.pl: Modify user comment format.
+
+2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* util/pandora_manage.pl: Changed user comment format.
 
 2012-02-16  Hirofumi Kosaka <kosaka@rworks.jp>

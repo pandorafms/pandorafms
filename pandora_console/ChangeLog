@@ -1,5 +1,11 @@
 2012-02-16  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/events/events.php: Fixed disable alerts in 
+	event validation when choose more than one event to validate
+	Merged from trunk
+
+2012-02-16  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.builder.php: Fixed creation alerts 
 	modules combo where appears all the modules (not init included)
 	Merged from trunk

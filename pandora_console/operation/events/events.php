@@ -247,7 +247,8 @@ if ($validate) {
 	$comment =  get_parameter ("comment", '');
 	$new_status =  get_parameter ("select_validate", 1);
 	$ids = explode(',',$ids);
-
+	$standby_alert = (bool) get_parameter("standby-alert");
+	
 	// Avoid to re-set inprocess events
 	if($new_status == 2) {
 		foreach($ids as $key => $id) {
@@ -257,6 +258,7 @@ if ($validate) {
 			}
 		}
 	}
+	
 	if(isset($ids[0]) && $ids[0] != -1){
 		$return = events_validate_event ($ids, ($group_rep == 1), $comment, $new_status);
 		if($new_status == 1) {
@@ -268,6 +270,15 @@ if ($validate) {
 			ui_print_result_message ($return,
 				__('Successfully set in process'),
 				__('Could not be set in process'));
+		}
+	}
+
+	if ($standby_alert) {
+		foreach($ids as $id) {
+			$event = events_get_event ($id);
+			if ($event !== false) {
+				alerts_agent_module_standby ($event['id_alert_am'], 1);
+			}
 		}
 	}
 }

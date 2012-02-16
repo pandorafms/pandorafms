@@ -1,16 +1,14 @@
 #!/usr/bin/perl
 ##########################################################################
 # Tentacle Server
-# See http://www.openideas.info/wiki/index.php?title=Tentacle for protocol 
-# description.
-# Tentacle has IANA assigned port tpc/41121 as official port.
+# See http://www.openideas.info/wiki for protocol description.
+# Tentacle have IANA assigned port tpc/41121 as official port.
 ##########################################################################
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
 # Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
-# tentacle_server.pl	Tentacle Server. See
-#			http://www.openideas.info/wiki/index.php?title=Tentacle 
-#			for protocol description.
+# tentacle_server.pl	Tentacle Server. See http://www.openideas.info/wiki for
+#                       protocol description.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +30,7 @@ tentacle_server - Tentacle Server
 
 =head1 VERSION
 
-Version 0.2.1
+Version 0.3.0
 
 =head1 USAGE
 
@@ -68,7 +66,7 @@ use Thread::Semaphore;
 use POSIX ":sys_wait_h";
 
 # Program version
-our $VERSION = '0.2.1';
+our $VERSION = '0.3.0';
 
 # Address to listen on
 my $t_address = '0.0.0.0';
@@ -86,7 +84,7 @@ my $t_daemon = 0;
 my $t_directory = '';
 
 # Filters
-my %t_filters;
+my @t_filters;
 
 # String containing quoted invalid file name characters
 my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
@@ -142,6 +140,18 @@ my $t_ssl_pwd = '';
 # Timeout for socket read/write operations in seconds
 my $t_timeout = 1;
 
+#Bridge IP to actuate as a proxy
+my $t_proxy_ip = undef;
+
+# Proxy port by default 41121
+my $t_proxy_port = 41121;
+
+# Proxy socket
+my $t_proxy_socket;
+
+# Proxy selected handler
+my $t_proxy_select;
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
@@ -149,7 +159,7 @@ my $t_timeout = 1;
 sub print_help {
 
 	print ("Usage: $0 -s <storage directory> [options]\n\n");
-	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki/index.php?title=Tentacle for protocol description.\n\n");
+	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
 	print ("Options:\n");
 	print ("\t-a ip_address\tAddress to listen on (default $t_address).\n");
 	print ("\t-c number\tMaximum number of simultaneous connections (default $t_max_conn).\n");
@@ -168,6 +178,8 @@ sub print_help {
 	print ("\t-v\t\tBe verbose.\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
 	print ("\t-x pwd\t\tServer password.\n\n");
+	print ("\t-b proxy_ip_address\t\tProxied server address.\n\n");	
+	print ("\t-g proxy_port\t\tPort of proxied server.\n\n");
 }
 
 ################################################################################
@@ -233,7 +245,7 @@ sub parse_options {
 	my $tmp;
 
 	# Get options
-	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:b:g:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -297,7 +309,7 @@ sub parse_options {
 			my $char = chop ($dir);
 			$dir .= $char if ($char) ne '/';
 
-			$t_filters{$regexp} = $dir;
+			push(@t_filters, [$regexp, $dir]);
 		}
 	}
 
@@ -365,8 +377,10 @@ sub parse_options {
 		}
 	}
 	else {
-		print_help ();
-		exit 1;
+		if (! defined($opts{'b'})) {
+			print_help ();
+			exit 1;
+		}
 	}
 
 	# Timeout
@@ -391,6 +405,24 @@ sub parse_options {
 	if (defined ($opts{'x'})) {
 		$t_pwd = $opts{'x'};
 	}
+	
+	#Proxy IP address
+	if (defined ($opts{'b'})) {
+		$t_proxy_ip = $opts{'b'};
+		if ($t_proxy_ip !~ /^[a-zA-Z\.]+$/ && ($t_proxy_ip  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
+			error ("Proxy address $t_proxy_ip is not valid.");
+		}		
+	}
+	
+	# Proxy Port
+	if (defined ($opts{'g'})) {
+		$t_proxy_port = $opts{'g'};
+		if ($t_proxy_port !~ /^\d+$/ || $t_proxy_port < 1 || $t_proxy_port > 65535) {
+			error ("Proxy port $t_port is not valid.");
+		}
+	}	
 }
 
 ################################################################################
@@ -404,6 +436,28 @@ sub sigchld_handler {
 	}
 
 	$SIG{CHLD} = \&sigchld_handler;
+}
+
+################################################################################
+## SUB start_proxy
+## Open the server socket.
+################################################################################
+sub open_proxy {
+
+	# Connect to server
+	$t_proxy_socket = IO::Socket::INET->new (
+	    PeerAddr => $t_proxy_ip,
+		PeerPort => $t_proxy_port,
+	);
+
+	if (! defined ($t_proxy_socket)) {
+		error ("Cannot connect to $t_proxy_ip on port $t_proxy_port: $!.");
+	}
+	
+	# Create proxy selector
+	$t_proxy_select = IO::Select->new ();	
+	$t_proxy_select->add ($t_proxy_socket);	
+	
 }
 
 ################################################################################
@@ -425,6 +479,71 @@ sub start_server {
 	}
 
 	print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
+	
+	# Say message if tentacle proxy is enable
+	if (defined ($t_proxy_ip)) {
+		print_log ("Proxy Mode enable, data will be sent to $t_proxy_ip port $t_proxy_port");	
+	}
+
+}
+
+################################################################################
+## SUB send_data_proxy
+## Send data to proxy socket.
+################################################################################
+sub send_data_proxy {
+	my $data = $_[0];
+	my $retries = 0;
+	my $size;
+	my $total = 0;
+	my $written;
+
+	$size = length ($data);
+
+	while (1) {
+
+		# Try to write data to the socket
+		if ($t_proxy_select->can_write ($t_timeout)) {
+
+			$written = syswrite ($t_proxy_socket, $data, $size - $total, $total);
+
+			# Write error
+			if (! defined ($written)) {
+				error ("Connection error from " . $t_proxy_socket->sockhost () . ": $!.");
+			}
+			
+			# EOF
+			if ($written == 0) {
+				error ("Connection from " . $t_proxy_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+		}
+
+		$total += $written;
+
+		# Check if all data was written
+		if ($total == $size) {
+			return;
+		}
+
+		# Retry
+		$retries++;
+
+		# But check for error conditions first
+		if ($retries > $t_retries) {
+			error ("Connection from " . $t_proxy_socket->sockhost () . " timed out.");
+		}
+	}
+}
+
+################################################################################
+## SUB close_proxy
+## Close the proxy socket.
+################################################################################
+sub close_proxy {
+	$t_proxy_socket->close ();
+	print_log ("Proxy socket closed");
+	
 }
 
 ################################################################################
@@ -513,7 +632,7 @@ sub accept_connection {
 	
 	# Child
 	if ($pid == 0) {
-
+		
 		# We do not need the server socket
 		$t_server_socket->close ();
 		
@@ -531,8 +650,16 @@ sub accept_connection {
 			auth_pwd ();
 		}
 
-		serve_connection ();
+		# Check if proxy mode is enable
+		if (defined ($t_proxy_ip)) {
 
+			serve_proxy_connection ();	
+			
+		} else {
+			
+			serve_connection ();
+		}
+		
 		$t_client_socket->close ();
 
 		# Must exit now
@@ -541,6 +668,48 @@ sub accept_connection {
 
 	# Parent
 	$t_client_socket->close ();
+}
+
+################################################################################
+## SUB serve_proxy_connection
+## Actuate as a proxy between its client and other tentacle server.
+################################################################################
+sub serve_proxy_connection {
+	my $read;
+	my $data=1;
+	
+	# Start a connection with the other Tentacle Server
+	open_proxy();		
+	
+	my $command;
+
+	# Read commands
+	while ($command = recv_command ($t_block_size)) {
+		# Client wants to send a file
+		if ($command =~ /^SEND <(.*)> SIZE (\d+)$/) {
+			recv_file_proxy($command, $2);
+		}
+		# Client wants to receive a file
+		elsif ($command =~ /^RECV <(.*)>$/) {
+			send_file_proxy ($command);
+		}		
+		# Quit
+		elsif ($command =~ /^QUIT$/) {
+			print_log ("Connection closed from " . $t_client_socket->sockhost ());
+			
+			# End proxy connection
+			send_data_proxy("QUIT\n");				
+			last;
+		}
+		# Unknown command
+		else {
+			print_log ("Unknown command '$command' from " . $t_client_socket->sockhost ());
+			last;
+		}		
+	}	
+
+	# End a connection with the other Tentacle Server
+	close_proxy();
 }
 
 ################################################################################
@@ -606,6 +775,43 @@ sub auth_pwd {
 }
 
 ################################################################################
+## SUB recv_file_proxy
+## Redirect file from agent to proxy
+################################################################################
+sub recv_file_proxy ($$) {
+	my ($command, $size) = @_;
+	
+	# Send command to proxy
+	print_log ("[PROXY] Host: ".$t_client_socket->sockhost()." send ".$command." to ".$t_proxy_socket->sockhost ());	
+	send_data_proxy($command."\n");
+
+	# Proxied server response 
+	my $rc = dump_data($t_proxy_socket, $t_client_socket);
+
+	# Check if there was an error	
+	if ($rc == -1) {
+		return;
+	}
+	
+	# Client send data to server
+	$rc = dump_data($t_client_socket, $t_proxy_socket, $size);		
+	
+	# Check if there was an error
+	if ($rc == -1) {
+		return;
+	}	
+	
+	# Server says if data was recieved or not
+	$rc = dump_data($t_proxy_socket, $t_client_socket);
+	
+	# Check if there was an error
+	if ($rc == -1) {	
+		return;
+	}		
+	
+}
+
+################################################################################
 ## SUB recv_file
 ## Receive a file of size $_[1] and save it in $t_directory as $_[0].
 ################################################################################
@@ -652,6 +858,45 @@ sub recv_file {
 
 	send_data ("SEND OK\n");
 	print_log ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB send_file_proxy
+## Redirect file from agent to proxy
+################################################################################
+sub send_file_proxy ($) {
+	my ($command) = @_;
+	my $size;
+	# Send command to proxy
+	print_log ("[PROXY] ".$t_client_socket->sockhost()." send ".$command." to ".$t_proxy_socket->sockhost ());	
+	send_data_proxy($command."\n");
+
+	$command = recv_command_proxy($t_block_size);
+	
+	if ($command =~ /^RECV SIZE (\d+)$/) {
+		$size = $1;
+	}
+	
+	print_log ("[PROXY] ".$t_proxy_socket->sockhost()." send ".$command." to ".$t_client_socket->sockhost ());		
+	
+	send_data($command."\n");
+	
+	# Client send OK to server
+	my $rc = dump_data($t_client_socket, $t_proxy_socket);
+	
+	# Check if there was an error	
+	if ($rc == -1) {
+		return;
+	}
+	
+	# Proxied server send the file to client
+	$rc = dump_data($t_proxy_socket, $t_client_socket, $size);		
+	
+	# Check if there was an error
+	if ($rc == -1) {
+		return;
+	}	
+	
 }
 
 ################################################################################
@@ -733,6 +978,46 @@ sub error {
 	exit 1;
 }
 
+################################################################################
+## SUB recv_data_proxy
+## Recv data from proxy socket.
+################################################################################
+sub recv_data_proxy {
+	my $data;
+	my $read;
+	my $retries = 0;
+	my $size = $_[0];
+
+	while (1) {
+
+		# Try to read data from the socket
+		if ($t_proxy_select->can_read ($t_timeout)) {
+			
+			# Read at most $size bytes
+			$read = sysread ($t_proxy_socket, $data, $size);
+
+			# Read error
+			if (! defined ($read)) {
+				error ("Read error from " . $t_proxy_socket->sockhost () . ": $!.");
+			}
+	
+			# EOF
+			if ($read == 0) {
+				error ("Connection from " . $t_proxy_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+			return ($read, $data);
+		}
+
+		# Retry
+		$retries++;
+
+		# But check for error conditions first
+		if ($retries > $t_retries) {
+			error ("Connection from " . $t_proxy_socket->sockhost () . " timed out.");
+		}
+	}
+}
 ################################################################################
 ## SUB recv_data
 ## Read data from the client socket. Returns the number of bytes read and the
@@ -820,6 +1105,127 @@ sub send_data {
 		# But check for error conditions first
 		if ($retries > $t_retries) {
 			error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+		}
+	}
+}
+
+################################################################################
+## SUB dump_data
+## Dump data from a socket to another one. Following Tentacle Protocol.
+################################################################################
+sub dump_data($$;$) {
+	my ($from, $to, $size) = @_;
+	my $read;
+	my $data;
+	my $buffer = "";
+	my $written;
+	my $total = $size;
+	my $t_select_read = undef;
+	my $t_select_write = undef;
+	
+	# Assign the correct selector for each socket
+	if ($from == $t_proxy_socket) {
+		# We must read from t_proxy_socket
+		$t_select_read = $t_proxy_select;
+		$t_select_write = $t_select;
+	} else {
+		# We must read from t_client_socket
+		$t_select_read = $t_select;
+		$t_select_write = $t_proxy_select;
+	}
+	
+	while (1) {
+		
+		# Ensure we can read from socket
+		if ($t_select_read->can_read()) {
+			# Ensure we can write from socket
+			if ($t_select_write->can_write()) {
+
+				$read = "";
+				$read = sysread ($from, $data, $t_block_size);
+
+				# Read error
+				if (! defined ($read)) {
+					error ("Read error from " . $from->sockhost () . ": $!.");
+					return -1;
+				}
+
+				# EOF
+				if ($read == 0) {
+					error ("Connection from " . $from->sockhost () . " unexpectedly closed.");
+					return -1;
+				}		
+				
+				$written = syswrite ($to, $data, $read);
+				
+				if ($written != $read) {
+					error ("Connection from " . $to->sockhost () . " unexpectedly closed.");
+					return -1;
+				}
+				
+				$buffer .= $data;
+				
+				if (! defined ($size)) {
+					# If no size defined check for \n
+					# because a command was sent.
+
+					if ($buffer =~ /\n$/) {
+						
+						# Delete CHAR \n
+						chop($buffer);
+						
+						print_log ("[PROXY] ".$from->sockhost()." send ".$buffer." to ".$to->sockhost ());
+						
+						# Returns error if proxy returns error to end connection
+						if ($buffer =~ /SEND ERR/) {
+							return -1;
+						} else {
+							return 0;
+						}
+					}
+				} else {
+					# If size is defined check if all bytes were sent
+					$size = $size - $read;
+					
+					if ($size == 0) {
+						print_log ("[PROXY] ".$from->sockhost()." send ".$total."b to ".$to->sockhost());
+						
+						return 0;
+					}
+				}
+			}
+		}
+	}
+}
+
+################################################################################
+## SUB recv_command_proxy
+## Read a command from the proxied server, ended by a new line character.
+################################################################################
+sub recv_command_proxy {
+	my $buffer;
+	my $char;
+	my $command = '';
+	my $read;
+	my $total = 0;
+
+	while (1) {
+		
+		($read, $buffer) = recv_data_proxy ($t_block_size);
+		$command .= $buffer;
+		$total += $read;
+
+		# Check if the command is complete
+		$char = chop ($command);
+		if ($char eq "\n") {
+			return $command;
+		}
+	
+		$command .= $char;
+
+		# Avoid overflow
+		if ($total > $t_block_size) {
+			error ("Received too much data from " . $t_proxy_socket->sockhost () . ".");
 		}
 	}
 }
@@ -923,7 +1329,8 @@ sub ask_passwd {
 sub apply_filters ($) {
 	my ($file_name) = @_;
 
-	while (my ($regexp, $dir) = each (%t_filters)) {
+	foreach my $filter (@t_filters) {
+		my ($regexp, $dir) = @{$filter};
 		if ($file_name =~ /$regexp/) {
 			print_log ("File '$file_name' matches filter '$regexp' (changing to directory '$dir')");
 			return $dir . '/';

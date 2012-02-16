@@ -1,3 +1,9 @@
+2012-02-16  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.builder.php: Fixed creation alerts 
+	modules combo where appears all the modules (not init included)
+	Merged from trunk
+
 2012-02-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions.php: fixed function "check_refererer" when the http

@@ -1,3 +1,8 @@
+2012-02-16  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.php: Fixed disable alerts in 
+	event validation when choose more than one event to validate
+
 2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/events/events_list: Changed user name to event list.
 

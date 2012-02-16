@@ -577,14 +577,10 @@ if (in_array('id_alert_am', $show_fields)) {
 	$table->head[$i] = __('Alert');
 	$table->align[$i] = 'center';
 	$i++;
-	if (in_array('criticity_alert', $show_fields)) {
-		$table->head[$i] = __('Criticity alert');
-		$table->align[$i] = 'center';
-		$i++;
-	}
 }
+
 if (in_array('criticity', $show_fields)) {
-	$table->head[$i] = __('Criticity');
+	$table->head[$i] = __('Severity');
 	$table->align[$i] = 'center';
 	$i++;
 }
@@ -744,26 +740,33 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('event_type',$show_fields)) {
-		$data[$i] = $event["event_type"];
+		$data[$i] = events_print_type_description($event["event_type"], true);
 		$i++;
 	}
 	
 	if (in_array('id_agentmodule',$show_fields)) {
-		$data[$i] = $event["id_agentmodule"];
+		$data[$i] = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]);
 		$i++;
 	}
 	
 	if (in_array('id_alert_am',$show_fields)) {
-		$data[$i] = $event["id_alert_am"];
-		$i++;
-		if (in_array('criticity_alert',$show_fields)) {
-			$data[$i] = $event["criticity_alert"];
-			$i++;
-		}
-	}
+		if ($event["id_alert_am"] != 0) {
+			$sql = 'SELECT name
+				FROM talert_templates
+				WHERE id IN (SELECT id_alert_template
+				FROM talert_template_modules
+				WHERE id = ' . $event["id_alert_am"] . ');';
 	
+			$templateName = db_get_sql($sql);
+			$data[$i] = $templateName;
+		} else {
+			$data[$i] = '';
+		}
+		$i++;
+	}
+
 	if (in_array('criticity',$show_fields)) {
-		$data[$i] = $event["criticity"];
+		$data[$i] = get_priority_name ($event["criticity"]);
 		$i++;
 	}
 	
@@ -798,8 +801,6 @@ foreach ($result as $event) {
 			$data[$i] .= '</a>&nbsp;';
 		}
 		else {
-		/*	$data[4] .= html_print_image ("images/tick.png", true,
-				array ("title" => __('Event validated'))).'&nbsp;';		*/	
 			$data[$i] .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 		// Delete event
@@ -842,7 +843,7 @@ foreach ($result as $event) {
 	}
 	
 	//Hiden row with description form
-	$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
+	$string = '';
 	$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
 	$string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
 	$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
@@ -864,7 +865,7 @@ foreach ($result as $event) {
 	if($event["id_alert_am"] != 0) {
 		$string .= '<div id="standby_alert_checkbox_' . $event['id_evento']. '" class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
 	}
-	$string .= '</td></tr></table>'; //</form>';	
+	$string .= '</td></tr></table>';	
 	
 	$data = array($string);
 	
@@ -985,13 +986,7 @@ foreach ($result as $event) {
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
 		//$odd = '';
 		$odd = ($odd == '')? 'rowOdd' : '';
-	
-		if ($event["criticity_alert"] != 0) {
-			$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity alert') . '</td><td align="left">';
-			$string .= $event["criticity_alert"];
-			$string .= '</td></tr><tr>';
-			$odd = ($odd == '')? 'rowOdd' : '';
-		}	
+		
 	} else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
@@ -1055,14 +1050,6 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
-	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Criticity') . '</td><td align="left">';
-	if ($event["criticity"] != 0) {
-		$string .= $event["criticity"];
-	} else {
-		$string .= '<i>- ' . __('Empty') . ' -</i>';
-	}
-	$string .= '</td></tr><tr>';
-	$odd = ($odd == '')? 'rowOdd' : '';
 
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Source') . '</td><td align="left">';
 	if ($event["source"] != '') {
@@ -1086,7 +1073,6 @@ foreach ($result as $event) {
 	
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('User name') . '</td><td align="left">';
 	if (($event["id_usuario"]!= '') || ($event["id_usuario"]!= 0)){
-		//$string .= $event["id_usuario"];
 		$string .= $user_name;
 	} 
 	else {

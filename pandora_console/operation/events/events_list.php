@@ -1086,8 +1086,9 @@ foreach ($result as $event) {
 	$odd = ($odd == '')? 'rowOdd' : '';
 	
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('User name') . '</td><td align="left">';
-	if ($event["id_usuario"]!= 0) {
-		$string .= $event["id_usuario"];
+	if (($event["id_usuario"]!= '') || ($event["id_usuario"]!= 0)){
+		//$string .= $event["id_usuario"];
+		$string .= $user_name;
 	} 
 	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';

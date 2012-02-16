@@ -2,6 +2,9 @@
 	* operation/events/events_list: Changed user name to event list.
 
 2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
+	* operation/events/events_list: Changed user name to event list.
+
+2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/events/events.php 
 	  operation/events/events_list: Show checkbox 'Set alert on stand by'
 	when the event is "In process".

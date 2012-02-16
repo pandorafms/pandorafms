@@ -727,9 +727,8 @@ foreach ($result as $event) {
 		$i++;
 	}
 	
+	$user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
 	if (in_array('id_usuario',$show_fields)) {
-		$id_user = $event["id_usuario"];
-		$user_name = db_get_value('fullname', 'tusuario', 'id_user', $id_user);
 		$data[$i] = $user_name;
 		$i++;
 	}

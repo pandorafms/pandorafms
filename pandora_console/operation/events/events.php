@@ -366,15 +366,14 @@ $(document).ready( function() {
 	$("input[name=allbox]").change (function() {
 		$("input[name='eventid[]']").attr('checked', $(this).attr('checked'));
 	});
+		
 	
-	$('.select_validate').change (function() {
-		display = $(".standby_alert_checkbox").css('display');
-
-		if (display != 'none') {
-			$(".standby_alert_checkbox").css('display', 'none');
-		}
-		else {
+	$('#select_validate').change (function() {
+		$option = $('#select_validate').val();
+		if ($option == 2) {
 			$(".standby_alert_checkbox").css('display', '');
+		} else {
+			$(".standby_alert_checkbox").css('display', 'none');
 		}
 	});
 	
@@ -394,7 +393,7 @@ $(document).ready( function() {
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
 		var comment = $('#textarea_comment_'+id).val();
-		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process
+		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment
 		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
 		var similars = $('#group_rep').val();
 
@@ -482,6 +481,15 @@ $(document).ready( function() {
 	function toggleCommentForm(id_event) {
 		display = $('.event_form_' + id_event).css('display');
 
+		$('#select_validate_' + id_event).change (function() {
+			$option = $('#select_validate_' + id_event).val();
+			if ($option == 2) {
+				$("#standby_alert_checkbox_" + id_event).css('display', '');
+			} else {
+				$("#standby_alert_checkbox_" + id_event).css('display', 'none');
+			}
+		});
+	
 		if (display != 'none') {
 			$('.event_form_' + id_event).css('display', 'none');
 			// Hide All showed rows

@@ -863,7 +863,7 @@ foreach ($result as $event) {
 	$string .= '</a>';
 	$string .= '</td><td width="400px">';
 	if($event["id_alert_am"] != 0) {
-		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
+		$string .= '<div id="standby_alert_checkbox_' . $event['id_evento']. '" class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
 	}
 	$string .= '</td></tr></table>'; //</form>';	
 	

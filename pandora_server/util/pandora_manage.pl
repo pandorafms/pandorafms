@@ -2304,6 +2304,9 @@ sub cli_create_event() {
 		$id_alert_agent_module = 0;
 	}
 	
+	if (defined($comment) && $comment ne '') {
+		$comment = '-- Added comment by '.$user_name.' -- '.$comment;
+	}
 	print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,

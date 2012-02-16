@@ -42,8 +42,28 @@ $idItem = get_parameter('id_item', 0);
 switch ($action) {
 	case 'delete_report':
 	case 'list':
+		$buttons = array(
+			'list_reports' => array('active' => false,
+				'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">' . 
+					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
+			);	
+
+		if ($enterpriseEnable){
+			$buttons = reporting_enterprise_add_main_Tabs($buttons);
+		}
+		
+		$subsection = '';
+		switch ($activeTab){
+
+			case 'main':			$buttons['list_reports']['active'] = true;
+									$subsection = ' &raquo; '.__('Custom reporting');
+									break;
+			default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, &$buttons);
+									break;
+		}
+	
 		// Report LIST
-		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting_edit.png", false, "", true);
+		ui_print_page_header (__('Reporting') . $subsection, "images/reporting_edit.png", false, "", true, $buttons);
 		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
@@ -617,6 +637,35 @@ switch ($action) {
 				}
 				break;
 		}
+		break;
+	// Added for report templates
+	default:
+		if ($enterpriseEnable){
+			$buttons = array(
+				'list_reports' => array('active' => false,
+					'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">' . 
+						html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
+				);	
+
+			$buttons = reporting_enterprise_add_main_Tabs($buttons);
+	
+			$subsection = '';
+			switch ($activeTab){
+
+				case 'main':			$buttons['list_reports']['active'] = true;
+										$subsection = ' &raquo; '.__('Custom reporting');
+										break;
+				default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, &$buttons);
+										break;
+			}
+		
+			// Report LIST
+			ui_print_page_header (__('Reporting') . $subsection, "images/reporting_edit.png", false, "", true, $buttons);
+
+			reporting_enterprise_select_main_tab($action);		
+		}
+		
+		return;
 		break;
 }
 

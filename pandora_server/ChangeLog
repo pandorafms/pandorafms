@@ -1,3 +1,8 @@
+2012-02-16  Hirofumi Kosaka <kosaka@rworks.jp>
+
+        * bin/tentacle_server: Upgraded to 0.3.0 (Merged from
+        pandora_agent package).
+
 2012-02-15  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* lib/PandoraFMS/PluginServer.pm: Now PluginServer treats exit

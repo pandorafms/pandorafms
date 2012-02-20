@@ -4640,4 +4640,53 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	return $critical_period;
 }
 
+/**
+ * Get all the template graphs a user can see.
+ *
+ * @param $id_user User id to check.
+ * @param $only_names Wheter to return only graphs names in an associative array
+ * or all the values.
+ * @param $returnAllGroup Wheter to return graphs of group All or not.
+ * @param $privileges Privileges to check in user group
+ *
+ * @return template graphs of a an user. Empty array if none.
+ */
+function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'IR') {
+	global $config;
+	
+	if (!$id_user) {
+		$id_user = $config['id_user'];
+	}
+
+ 	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
+
+	$all_templates = db_get_all_rows_in_table ('tgraph_template', 'name');
+	if ($all_templates === false)
+		return array ();
+
+	$templates = array ();
+	foreach ($all_templates as $template) {
+		if (!in_array($template['id_group'], array_keys($groups)))
+			continue;
+
+		if ($template["id_user"] != $id_user && $template['private'])
+			continue;
+
+		if ($template["id_group"] > 0)
+			if (!isset($groups[$template["id_group"]])){
+				continue;
+			}
+
+		if ($only_names) {
+			$templates[$template['id_graph_template']] = $template['name'];
+		}
+		else {
+			$templates[$template['id_graph_template']] = $template;
+			$templatesCount = db_get_value_sql("SELECT COUNT(id_gs) FROM tgraph_source WHERE id_graph = " . $template['id_graph_template']);
+			$templates[$template['id_graph_template']]['graphs_template_count'] = $templatesCount;
+		}
+	}
+
+	return $templates;
+}
 ?>

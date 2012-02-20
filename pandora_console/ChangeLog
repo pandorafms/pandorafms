@@ -1,3 +1,20 @@
+2012-02-20  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql
+	  pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added
+	'tgraph_template' and 'tgraph_source_template' tables.
+
+	* godmode/reporting/graphs.php
+	  include/functions_reporting.php: Added templates for combined
+	graphs.
+
+	* godmode/reporting/graph_template_editor.php
+	  godmode/reporting/graph_template_item_editor.php
+	  godmode/reporting/graph_template_list.php: Added files.
+
 2012-02-16  Vanessa Gil  <vanessa.gil@artica.es>
 	* operation/events/events_list: Changed extended info
 	to event list.

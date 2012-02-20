@@ -27,12 +27,16 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	return;
 }
 
+$buttons['template'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">'
+		. html_print_image ("images/paste_plain.png", true, array ("title" => __('Templates')))
+		. '</a>';
+		
 $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
 
 // Header
-ui_print_page_header (__('Graphs management'), "", false, "", true);
+ui_print_page_header (__('Graphs management'), "", false, "", true, $buttons);
 
 // Delete module SQL code
 if ($delete_graph) {

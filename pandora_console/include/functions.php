@@ -901,6 +901,7 @@ function get_event_types () {
 	$types['recon_host_detected'] = __('Recon host detected');
 	$types['system'] = __('System');
 	$types['error'] = __('Error');
+	$types['configuration_change'] = __('configuration change ');
 	
 	if (isset($config['text_char_long'])) {
 		foreach ($types as $key => $type) {

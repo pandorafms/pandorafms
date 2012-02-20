@@ -135,3 +135,35 @@ ALTER TABLE "tconfig" ALTER COLUMN "value" TYPE TEXT;
 
 INSERT INTO tconfig ("token", "value") SELECT 'list_ACL_IPs_for_API', array_to_string(ARRAY(SELECT value FROM tconfig WHERE token LIKE 'list_ACL_IPs_for_API%'), ';') AS "value";
 INSERT INTO "tconfig" ("token", "value") VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
+
+-- -----------------------------------------------------
+-- Table `tgraph_template`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS "tgraph_template" (
+  "id_graph_template" SERIAL NOT NULL PRIMARY KEY,
+  "id_user" TEXT NOT NULL default '',
+  "name" TEXT NOT NULL default '',
+  "description" TEXT NOT NULL default '',
+  "period" INTEGER NOT NULL default 0,
+  "width" SMALLINT NOT NULL default 0,
+  "height" SMALLINT NOT NULL default 0,
+  "private" SMALLINT NOT NULL default 0,
+  "events" SMALLINT NOT NULL default 0,
+  "stacked" SMALLINT NOT NULL default 0,
+  "id_group" INTEGER NOT NULL default 0
+ );
+ 
+ -- -----------------------------------------------------
+-- Table `tgraph_source_template`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS "tgraph_source_template" (
+  "id_gs_template" SERIAL NOT NULL PRIMARY KEY,
+  "id_template" INTEGER NOT NULL default 0,
+  "agent" TEXT NOT NULL default '',
+  "module" TEXT NOT NULL default '',
+  "period" INTEGER NOT NULL default 0,
+  "weight" DOUBLE PRECISION default 2.0,
+  "exact_match" SMALLINT NOT NULL default 0
+ );

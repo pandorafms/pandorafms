@@ -1,3 +1,11 @@
+2012-02-20  Junichi Satoh  <junichi@rworks.jp>
+	
+	* mobile/index.php: Merged from trunk. Fixed i18n translation does not
+	work with mobile console.
+	
+	* mobile/operation/agents/view_agents.php: Merged from trunk. Fixed
+	graph generation failure.
+
 2012-02-16  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events.php: Fixed disable alerts in 

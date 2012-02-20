@@ -282,7 +282,7 @@ class ViewAgent {
 			}
 		
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img height="15" width="15"') , ui_print_status_image($status, $title, true));
+				array('/images/status_sets', '<img height="15" width="15"') , ui_print_status_image($status, $title, true));
 			
 			if ($module["id_tipo_modulo"] == 24) { // log4x
 				switch($module["datos"]) {
@@ -371,7 +371,7 @@ class ViewAgent {
 			}
 			
 			$data[] = str_replace(array('images/status_sets', '<img'), 
-				array('../images/status_sets', '<img width="15" height="15"'), ui_print_status_image($status, $title, true));
+				array('/images/status_sets', '<img width="15" height="15"'), ui_print_status_image($status, $title, true));
 			
 			$table->data[] = $data;
 		}
@@ -410,8 +410,8 @@ class viewGraph {
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
 
 		echo grafico_modulo_sparse($this->idAgentModule, $this->period, 0, 240,
-			120, io_safe_output($this->agentModule['nombre']), null, true,
-			0, true, 0, true, true, true, true);
+			200, io_safe_output($this->agentModule['nombre']), null, false,
+			false, true, 0, '', true, false, true, true, '../');
 		
 		echo "<h3 class='title_h3'>" . __('Data') . "</h3>";
 		

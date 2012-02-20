@@ -231,9 +231,10 @@ sub pandora_load_config {
 	$pa_config->{"snmpserver"} = 0; # 4.0
 	$pa_config->{"snmp_threads"} = 3; # 4.0
 	$pa_config->{"block_size"} = 15; # 4.0
-	
 	$pa_config->{"max_queue_files"} = 500; 
-
+	$pa_config->{"snmp_ignore_authfailure"} = 1; # 5.0
+	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
+	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
 	$pa_config->{"mta_port"} = '25'; # Introduced on 2.0
@@ -383,6 +384,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
 			$pa_config->{'snmp_logfile'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmp_ignore_authfailure\s+([0-1])/i) { 
+			$pa_config->{'snmp_ignore_authfailure'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmp_pdu_address\s+([0-1])/i) { 
+			$pa_config->{'snmp_pdu_address'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^dbengine\s(.*)/i) { 
 			$pa_config->{'dbengine'}= clean_blank($1); 

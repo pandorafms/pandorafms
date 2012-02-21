@@ -1,3 +1,8 @@
+2012-02-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* mobile/operation/agents/view_alerts.php: Merged from trunk. Fixed
+	sql query error.
+
 2012-02-20  Junichi Satoh  <junichi@rworks.jp>
 	
 	* mobile/index.php: Merged from trunk. Fixed i18n translation does not

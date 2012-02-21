@@ -1,3 +1,13 @@
+2012-02-20  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/SNMPServer.pm: Parse source field to obtain source
+	 IP address not only when trap version is SNMPv2, but also 
+	 snmp_pdu_address set to 1.
+
+	* conf/pandora_server.conf: Fixed comment.
+
+	* FreeBSD/pandora_server.conf: Added missing configuration tokens.
+
 2012-02-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf,

@@ -1,3 +1,8 @@
+2012-02-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Merged from trunk. Update agent version in
+	  versioninfo.rc.
+
 2011-12-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_deb.sh: Fixed a path.

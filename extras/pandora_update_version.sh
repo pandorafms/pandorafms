@@ -45,6 +45,7 @@ CONSOLE_INSTALL_FILE="$CODEHOME/pandora_console/install.php"
 AGENT_UNIX_FILE="$CODEHOME/pandora_agents/unix/pandora_agent"
 AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
+AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
 
 # Update version in spec files
 function update_spec_version {
@@ -120,6 +121,7 @@ if [ $NB == 1 ]; then
 else
 	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 fi
+sed -e "s/\s*VALUE \"ProductVersion\".*/      VALUE \"ProductVersion\", \"($VERSION(Build $BUILD))\"/" "$AGENT_WIN_RC_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_RC_FILE"
 
 rm -f "$TEMP_FILE"
 

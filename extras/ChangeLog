@@ -1,3 +1,7 @@
+2012-02-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Update agent version in versioninfo.rc.
+
 2011-12-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_vars.sh: Added to repository. Defines environment variables

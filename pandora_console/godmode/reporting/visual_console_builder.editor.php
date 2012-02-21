@@ -27,21 +27,6 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once ('include/functions_visual_map.php');
 
-if (is_ajax ()) {
-	$get_original_size_background = get_parameter('get_original_size_background', false);
-	
-	if ($get_original_size_background) {
-		$background = get_parameter('background', '');
-		$replace = strlen($config["homeurl"] . '/');
-		if (substr($background, 0, $replace) == $config["homeurl"] . '/')
-			$size = getimagesize(substr($background, $replace));
-		else
-			$size = getimagesize($background);
-		echo json_encode($size);
-		return;
-	}
-}
-
 //Arrays for select box.
 $backgrounds_list = list_files('images/console/background/', "jpg", 1, 0);
 $backgrounds_list = array_merge($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
@@ -68,6 +53,9 @@ echo '<div id="editor" style="margin-top: -10px;">';
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
 		
+		visual_map_print_button_editor('save', __('Save'), 'right', true, 'save_min', true);
+		$text_autosave = __('Auto Save') . html_print_checkbox('auto_save', 0, true, true, false, "click_button_toolbox('auto_save');");
+		visual_map_print_item_toolbox('auto_save', $text_autosave, 'right');
 		visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'grid_min', true);
 		visual_map_print_button_editor('edit_item', __('Edit item'), 'right', true, 'config_min', true);
 		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
@@ -149,7 +137,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 		<tr id="background_row_2" class="background datos">
 			<td><?php echo __('Original Size');?></td>
-			<td><?php html_print_button(__('Apply'), 'original_false', false, 'setOriginalSizeBackground()', 'class="sub"');?></td>
+			<td><?php html_print_button(__('Apply'), 'original_false', false, "setAspectRatioBackground('original')", 'class="sub"');?></td>
 		</tr>
 		<tr id="background_row_3" class="background datos">
 			<td><?php echo __('Aspect ratio');?></td>
@@ -304,6 +292,9 @@ echo '<span style="display: none" id="message_alert_no_width_percentile">' . __(
 echo '<span style="display: none" id="message_alert_no_period">' . __('No period defined.') .'</span>';
 echo '<span style="display: none" id="message_alert_no_agent">' . __('No agent defined.') .'</span>';
 echo '<span style="display: none" id="message_alert_no_module">' . __('No module defined.') .'</span>';
+
+echo '<span style="display: none" id="hack_translation_correct_save">' . __('Successfully save the changes.') .'</span>';
+echo '<span style="display: none" id="hack_translation_incorrect_save">' . __('Could not be save') .'</span>';
 
 ui_require_css_file ('color-picker');
 

@@ -16,7 +16,12 @@ var openPropertiesPanel = false;
 var idItem = 0;
 var selectedItem = null;
 var lines = Array();
-var toolbuttonActive = null
+var toolbuttonActive = null;
+var autosave = true;
+var list_actions_pending_save = [];
+var temp_id_item = 0;
+
+var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
 function showAdvanceOptions(close) {
 	if ($("#advance_options").css('display') == 'none') {
@@ -141,9 +146,9 @@ function updateAction() {
 				success: function (data) {
 					$("#background_img").attr('src', data);
 				}
-			});	
-		
-			var idElement = 0;
+			});
+			
+			idElement = 0;
 			break;
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
@@ -400,7 +405,6 @@ function actionClick() {
 	
 	if (creationItem != null) {
 		//Create a item
-		
 		activeToolboxButton(creationItem, true);
 		item = creationItem;
 		$("#button_update_row").css('display', 'none');
@@ -410,7 +414,6 @@ function actionClick() {
 	}
 	else if (selectedItem != null) {
 		//Edit a item
-		
 		item = selectedItem;
 		toolbuttonActive = item;
 		$("#button_create_row").css('display', 'none');
@@ -484,39 +487,24 @@ function loadFieldsFromDB(item) {
 		});	
 }
 
-function setOriginalSizeBackground() {
-	$.ajax({
-		type: "POST",
-		url: "ajax.php",
-		data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
-		async: false,
-		dataType: "json",
-		success: function(data) {
-			var values = {};
-			values['width'] = data[0];
-			values['height'] = data[1];
-			
-			updateDB('background', 0, values);
-		}
-	});
-	
-	actionClick();
-}
-
 function setAspectRatioBackground(side) {
-	$.ajax({
-		type: "POST",
-		url: "ajax.php",
-		data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_original_size_background"});
+	parameter.push ({name: "background", value: $("#background_img").attr('src')});
+	
+	jQuery.ajax({
 		async: false,
-		dataType: "json",
-		success: function(data){
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
 			old_width = parseInt($("#background").css('width').replace('px', ''));
 			old_height = parseInt($("#background").css('height').replace('px', ''));
 			
 			img_width = data[0];
 			img_height = data[1];
-			
 			
 			if (side == 'width') {
 				ratio = old_width / img_width;
@@ -530,14 +518,18 @@ function setAspectRatioBackground(side) {
 				width = img_width * ratio;
 				height = old_height;
 			}
+			else if (side == 'original') {
+				width = img_width;
+				height = img_height;
+			}
 			
 			var values = {};
 			values['width'] = width;
 			values['height'] = height;
 			
-			
-			
 			updateDB('background', 0, values);
+			
+			move_elements_resize(old_width, old_height, width, height);
 		}
 	});
 	
@@ -707,6 +699,7 @@ function getModuleValue(id_data) {
 
 function getPercentileBar(id_data) {
 	var parameter = Array();
+	var percentile = 0;
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
@@ -745,9 +738,9 @@ function getPercentileBar(id_data) {
 	
 	
 	if ( max_percentile > 0)
-		var percentile = module_value / max_percentile * 100;
+		percentile = module_value / max_percentile * 100;
 	else
-		var percentile = 100;
+		percentile = 100;
 	
 	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
 		'width=' + width_percentile + '&mode=1&progress=' + percentile + '&font=' + font;
@@ -802,15 +795,19 @@ function visual_map_get_color_line_status(id) {
 }
 
 function createItem(type, values, id_data) {
+	var sizeStyle = '';
+	var imageSize = '';
+	var item = null;
+	
 	switch (type) {
 		case 'static_graph':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
-				var sizeStyle = '';
-				var imageSize = '';
+				sizeStyle = '';
+				imageSize = '';
 			}
 			else {
-				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
+				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 
 			var element_status= null;
@@ -848,56 +845,58 @@ function createItem(type, values, id_data) {
 				}
 			});
 			
-			var item = $('<div id="' + id_data + '" class="item static_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data
+				+ '" class="item static_graph" '
+				+ 'style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
 			);
 			break;
 		case 'percentile_bar':
-			var sizeStyle = '';
-			var imageSize = '';
+			sizeStyle = '';
+			imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
 					'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data)  + '" />' +
 					'</div>'
 			);
 			break;
 		case 'module_graph':
-			var sizeStyle = '';
-			var imageSize = '';
+			sizeStyle = '';
+			imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item module_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item module_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
 				'</div>'
 			);
 			break;
 		case 'simple_value':
-			var sizeStyle = '';
-			var imageSize = '';
+			sizeStyle = '';
+			imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item simple_value" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item simple_value" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span>' +
 					'<strong>' + getModuleValue(id_data) + '</strong>' +
 				'</div>'
 			);
 			break;
 		case 'label':
-			var item = $('<div id="' + id_data + '" class="item label" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item label" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 					'</div>'
 				);
 			break;
 		case 'icon':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
-				var sizeStyle = '';
-				var imageSize = '';
+				sizeStyle = '';
+				imageSize = '';
 			}
 			else {
-				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
+				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 			
 			var img_src= null;
@@ -917,8 +916,8 @@ function createItem(type, values, id_data) {
 					img_src = data;
 				}
 			});
-			
-			var item = $('<div id="' + id_data + '" class="item icon" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+
+			item = $('<div id="' + id_data + '" class="item icon" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
@@ -944,6 +943,8 @@ function addItemSelectParents(id_data, text) {
 }
 
 function insertDB(type, values) {
+	var id = null;
+	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "insert"});
@@ -962,8 +963,9 @@ function insertDB(type, values) {
 		success: function (data)
 			{
 				if (data['correct']) {
-					createItem(type, values, data['id_data']);
-					addItemSelectParents(data['id_data'], data['text']);
+					id = data['id_data'];
+					createItem(type, values, id);
+					addItemSelectParents(id, data['text']);
 					eventsItems();
 				}
 				else {
@@ -973,7 +975,71 @@ function insertDB(type, values) {
 		});
 }
 
+function updateDB_visual(type, idElement , values, event, top, left) {
+	switch (type) {
+		case 'module_graph':
+			$("#image_" + idElement).attr("src", getModuleGraph(idElement));
+		case 'static_graph':
+		case 'percentile_bar':
+		case 'simple_value':
+		case 'label':
+		case 'icon':
+			if ((typeof(values['mov_left']) != 'undefined') &&
+					(typeof(values['mov_top']) != 'undefined')) {
+				$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
+				$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+					(typeof(values['absolute_top']) != 'undefined')) {
+				$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
+				$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+			}
+			$("#" + idElement).css('color', values['label_color']);
+			found = false;
+			jQuery.each(lines, function(i, line) {
+				if (lines[i]['id'] == idElement) {
+					found = true;
+					if (values['parent'] == 0) {
+						lines.splice(i);
+					}
+					else {
+						if ((typeof(values['mov_left']) == 'undefined') &&
+							(typeof(values['mov_top']) == 'undefined') && 
+							(typeof(values['absolute_left']) == 'undefined') &&
+							(typeof(values['absolute_top']) == 'undefined')) {
+							lines[i]['node_begin'] = values['parent'];
+						}
+					}
+				}
+			});
+			
+			if (!found) {
+				var line = {"id": idElement,
+					"node_begin":  values['parent'],
+					"node_end": idElement,
+					"color": visual_map_get_color_line_status(idElement) };
+				lines.push(line);
+			}
+			
+			refresh_lines(lines, 'background');
+			break;
+		case 'background':
+			if(values['width'] == '0' || values['height'] == '0'){
+				$("#background").css('width', $("#hidden-background_width").val() + 'px');
+				$("#background").css('height', $("#hidden-background_height").val() + 'px');
+			}
+			else {
+				$("#background").css('width', values['width'] + 'px');
+				$("#background").css('height', values['height'] + 'px');
+			}
+			break;
+	}
+}
+
 function updateDB(type, idElement , values, event) {
+	var top = 0;
+	var left = 0;
+	
 	action = "update";
 	
 	//Check if the event parameter in function is passed in the call.
@@ -1001,16 +1067,16 @@ function updateDB(type, idElement , values, event) {
 	
 	if ((typeof(values['mov_left']) != 'undefined') &&
 		(typeof(values['mov_top']) != 'undefined')) {
-		var top = parseInt($("#" + idElement).css('margin-top').replace('px', ''));
-		var left = parseInt($("#" + idElement).css('margin-left').replace('px', ''));
+		top = parseInt($("#" + idElement).css('margin-top').replace('px', ''));
+		left = parseInt($("#" + idElement).css('margin-left').replace('px', ''));
 		
 		top = top + parseInt(values['mov_top']);
 		left = left + parseInt(values['mov_left']);
 	}
 	else if ((typeof(values['absolute_left']) != 'undefined') &&
 		(typeof(values['absolute_top']) != 'undefined')) {
-		var top = values['absolute_top'];
-		var left = values['absolute_left'];
+		top = values['absolute_top'];
+		left = values['absolute_left'];
 	}
 	
 	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
@@ -1018,73 +1084,24 @@ function updateDB(type, idElement , values, event) {
 		parameter.push ({name: 'left', value: left});
 	}
 	
-	jQuery.ajax({
-		url: "ajax.php",
-		data: parameter,
-		type: "POST",
-		dataType: 'text',
-		success: function (data)
-			{
-				switch (type) {
-					case 'module_graph':
-						$("#image_" + idElement).attr("src", getModuleGraph(idElement));
-					case 'static_graph':
-					case 'percentile_bar':
-					case 'simple_value':
-					case 'label':
-					case 'icon':
-						if ((typeof(values['mov_left']) != 'undefined') &&
-								(typeof(values['mov_top']) != 'undefined')) {
-							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
-							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
-						}
-						else if ((typeof(values['absolute_left']) != 'undefined') &&
-								(typeof(values['absolute_top']) != 'undefined')) {
-							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
-							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
-						}
-						$("#" + idElement).css('color', values['label_color']);
-						found = false;
-						jQuery.each(lines, function(i, line) {
-							if (lines[i]['id'] == idElement) {
-								found = true;
-								if (values['parent'] == 0) {
-									lines.splice(i);
-								}
-								else {
-									if ((typeof(values['mov_left']) == 'undefined') &&
-										(typeof(values['mov_top']) == 'undefined') && 
-										(typeof(values['absolute_left']) == 'undefined') &&
-										(typeof(values['absolute_top']) == 'undefined')) {
-										lines[i]['node_begin'] = values['parent'];
-									}
-								}
-							}
-						});
-						
-						if (!found) {
-							var line = {"id": idElement,
-									"node_begin":  values['parent'],
-									"node_end": idElement,
-									"color": visual_map_get_color_line_status(idElement) };
-							lines.push(line);
-						}
-						
-						refresh_lines(lines, 'background');
-						break;
-					case 'background':
-						if(values['width'] == '0' || values['height'] == '0'){
-							$("#background").css('width', $("#hidden-background_width").val() + 'px');
-							$("#background").css('height', $("#hidden-background_height").val() + 'px');
-						}
-						else {
-							$("#background").css('width', values['width'] + 'px');
-							$("#background").css('height', values['height'] + 'px');
-						}
-						break;
+	success_update = false;
+	if (!autosave) {
+		list_actions_pending_save.push(parameter);
+		//At the moment for to show correctly.
+		updateDB_visual(type, idElement , values, event, top, left);
+	}
+	else {
+		jQuery.ajax({
+			url: "ajax.php",
+			data: parameter,
+			type: "POST",
+			dataType: 'text',
+			success: function (data)
+				{
+					updateDB_visual(type, idElement , values, event, top, left);
 				}
-			}
-		});
+			});
+	}
 }
 
 function deleteDB(idElement) {
@@ -1125,13 +1142,9 @@ function deleteDB(idElement) {
 function activeToolboxButton(id, active) {
 	if (active) {
 		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
-//		$("#" + id).attr('class', 'button_toolbox');
-//		$(".label", $("#" + id)).css('color','#000000');
 	}
 	else {
 		$("input." + id + "[name=button_toolbox2]").attr('disabled', 'disabled');
-//		$("#" + id).attr('class', 'button_toolbox disabled');
-//		$(".label", $("#" + id)).css('color','#aaaaaa');
 	}
 }
 
@@ -1143,10 +1156,15 @@ function deleteItem() {
 }
 
 /**
- * All events in the visual map, resize map, click item, double click, drag and
+ * Events in the visual map, click item, double click, drag and
  * drop.
  */
-function eventsItems() {
+function eventsItems(drag) {
+	if (typeof(drag) == 'undefined') {
+		drag = false;
+	}
+	
+	
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
@@ -1215,12 +1233,12 @@ function eventsItems() {
 	//Double click in the item
 	$('.item').bind('dblclick', function(event, ui) {
 		event.stopPropagation();
-		if (!openPropertiesPanel) {
+		if ((!openPropertiesPanel) && (autosave)) {
 			actionClick();
 		}
 	});
 	
-	$(".item").draggable();
+	$(".item").draggable({grid: drag});
 	
 	$('.item').bind('dragstart', function(event, ui) {
 		event.stopPropagation();
@@ -1279,41 +1297,16 @@ function eventsItems() {
 		
 		var values = {};
 		
-		values['mov_left'] = ui.position.left; 
+		values['mov_left'] = ui.position.left;
 		values['mov_top'] = ui.position.top; 
 		
 		updateDB(selectedItem, idItem, values, 'dragstop');
 	});
 }
 
-function move_elements_resize(original_width, original_height, width, height) {
-	jQuery.each($(".item"), function(key, value) {
-		item = value;
-		idItem = $(item).attr('id');
-		classItem = $(item).attr('class').replace('item', '')
-			.replace('ui-draggable', '').replace(/^\s+/g,'').replace(/\s+$/g,'')
-		
-		old_height = parseInt($(item).css('margin-top').replace('px', ''));
-		old_width = parseInt($(item).css('margin-left').replace('px', ''));
-		
-		ratio_width =  width / original_width;
-		ratio_height =  height / original_height;
-		
-		new_height = old_height * ratio_height;
-		new_width = old_width * ratio_width;
-		
-		//$(item).css('margin-top', new_height);
-		//$(item).css('margin-left', new_width);
-		
-		var values = {};
-		
-		values['absolute_left'] = new_width; 
-		values['absolute_top'] = new_height; 
-		
-		updateDB(classItem, idItem, values, "resizestop");
-	});
-}
-
+/**
+ * Events for the background (click, resize and doubleclick).
+ */
 function eventsBackground() {
 	$("#background").resizable();
 	
@@ -1364,9 +1357,35 @@ function eventsBackground() {
 	
 	$('#background').bind('dblclick', function(event, ui) {
 		event.stopPropagation();
-		if (!openPropertiesPanel) {
+		if ((!openPropertiesPanel) && (autosave)) {
 			actionClick();
 		}
+	});
+}
+
+function move_elements_resize(original_width, original_height, width, height) {
+	jQuery.each($(".item"), function(key, value) {
+		item = value;
+		idItem = $(item).attr('id');
+		classItem = $(item).attr('class').replace('item', '')
+			.replace('ui-draggable', '').replace('ui-draggable-disabled', '')
+			.replace(/^\s+/g,'').replace(/\s+$/g,'');
+		
+		old_height = parseInt($(item).css('margin-top').replace('px', ''));
+		old_width = parseInt($(item).css('margin-left').replace('px', ''));
+		
+		ratio_width =  width / original_width;
+		ratio_height =  height / original_height;
+		
+		new_height = old_height * ratio_height;
+		new_width = old_width * ratio_width;
+		
+		var values = {};
+		
+		values['absolute_left'] = new_width; 
+		values['absolute_top'] = new_height; 
+		
+		updateDB(classItem, idItem, values);
 	});
 }
 
@@ -1375,7 +1394,7 @@ function unselectAll() {
 	$(".item").css('border', '');
 }
 
-function click2(id) {
+function click_button_toolbox(id) {
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';
@@ -1411,6 +1430,78 @@ function click2(id) {
 		case 'show_grid':
 			showGrid();
 			break;
+		case 'auto_save':
+			if (autosave) {
+				activeToolboxButton('save', true);
+				autosave = false;
+				
+				//Disable all toolbox buttons.
+				//Because when it is not autosave only trace the movements
+				//the other actions need to contant with the apache server.
+				//And it is necesary to re-code more parts of code to change
+				//this method.
+				activeToolboxButton('static_graph', false);
+				activeToolboxButton('percentile_bar', false);
+				activeToolboxButton('module_graph', false);
+				activeToolboxButton('simple_value', false);
+				activeToolboxButton('label', false);
+				activeToolboxButton('icon', false);
+				
+				activeToolboxButton('edit_item', false);
+				activeToolboxButton('delete_item', false);
+				activeToolboxButton('show_grid', false);
+			}
+			else {
+				activeToolboxButton('save', false);
+				autosave = true;
+				
+				//Reactive the buttons.
+				
+				if ((selectedItem != 'background') && (selectedItem != null)) {
+					activeToolboxButton('delete_item', true);
+				}
+				if (selectedItem == 'background') {
+					activeToolboxButton('show_grid', true);
+				}
+				if (selectedItem != null) {
+					activeToolboxButton('edit_item', true);
+				}
+				
+				activeToolboxButton('static_graph', true);
+				activeToolboxButton('percentile_bar', true);
+				activeToolboxButton('module_graph', true);
+				activeToolboxButton('simple_value', true);
+				activeToolboxButton('label', true);
+				activeToolboxButton('icon', true);
+			}
+			break;
+		case 'save':
+			status = true;
+			activeToolboxButton('save', false);
+			jQuery.each(list_actions_pending_save, function(key, action_pending_save) {
+				jQuery.ajax ({
+					type: 'POST',
+					url: action="ajax.php",
+					data: action_pending_save,
+					async: false,
+					dataType: 'json',
+					timeout: 10000,
+					success: function (data) {
+						if (data == '0') {
+							status = false;
+						}
+					}
+				});
+			});
+			
+			if (status) {
+				alert($('#hack_translation_correct_save').html());
+			}
+			else {
+				alert($('#hack_translation_incorrect_save').html());	
+			}
+			activeToolboxButton('save', true);
+			break;
 	}
 }
 
@@ -1432,7 +1523,6 @@ function showPreviewStaticGraph(staticGraph) {
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
 		
-		var img_src= null;
 		var parameter = Array();
 		parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 		parameter.push ({name: "get_image_path_status", value: "1"});
@@ -1485,9 +1575,36 @@ function showGrid() {
 		$("#background_img").css('opacity', '0.55');
 		$("#background_img").css('filter', 'alpha(opacity=55)');		
 		$("#background_grid").css('background', 'url("images/console/background/white_boxed.jpg")');
-	}else{
+		
+		//Snap to grid all elements.
+		jQuery.each($(".item"), function(key, value) {
+			item = value;
+			idItem = $(item).attr('id');
+			classItem = $(item).attr('class').replace('item', '')
+				.replace('ui-draggable', '').replace('ui-draggable-disabled', '')
+				.replace(/^\s+/g,'').replace(/\s+$/g,'');
+			
+			pos_y = parseInt($(item).css('margin-top').replace('px', ''));
+			pos_x = parseInt($(item).css('margin-left').replace('px', ''));
+			
+			pos_y = Math.floor(pos_y / SIZE_GRID) * SIZE_GRID;
+			pos_x = Math.floor(pos_x / SIZE_GRID) * SIZE_GRID;
+			
+			var values = {};
+			
+			values['absolute_left'] = pos_x; 
+			values['absolute_top'] = pos_y; 
+			
+			updateDB(classItem, idItem, values);
+		});
+		
+		eventsItems([SIZE_GRID, SIZE_GRID]);
+	}
+	else{
 		$("#background_grid").css('display', 'none');	
 		$("#background_img").css('opacity', '1');
 		$("#background_img").css('filter', 'alpha(opacity=100)');
+		
+		eventsItems();
 	}
 }

@@ -31,6 +31,22 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 
+function visual_map_print_item_toolbox($idDiv, $text, $float) {
+	if ($float == 'left') {
+		$margin = 'margin-right';
+	}
+	else {
+		$margin = 'margin-left';
+	}
+	
+	echo '<div class="button_toolbox" id="' . $idDiv . '"
+		style="font-weight: bolder; text-align: center; float: ' . $float . ';'
+		. $margin . ': 5px;">';
+	echo $text;
+	echo '</span>';
+	echo '</div>';
+}
+
 function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
 	if ($float == 'left') {
 		$margin = 'margin-right';
@@ -39,7 +55,7 @@ function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabl
 		$margin = 'margin-left';
 	}
 	
-	html_print_button($label, 'button_toolbox2', $disabled, "click2('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . ';"', false, $imageButton);
+	html_print_button($label, 'button_toolbox2', $disabled, "click_button_toolbox('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . ';"', false, $imageButton);
 	return;
 	
 	if (!$disabled) $disableClass = '';
@@ -47,7 +63,7 @@ function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabl
 	
 	echo '<div class="button_toolbox ' . $disableClass . '" id="' . $idDiv . '"
 		style="font-weight: bolder; text-align: center; float: ' . $float . ';' .
-			'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
+		'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
 	if ($disabled) {
 		echo '<span class="label" style="color: #aaaaaa;">';
 	}
@@ -949,16 +965,18 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 
 					if ($resizedMap) {
-						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
-						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
+						// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
+						// resulting fault image links :(
+
+						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
+							false, ((integer)($proportion * $layout_data['width'])), ((integer)($proportion * $layout_data['height'])),
+							'', null, false, 1, false, 0, '', 0, 0, true, true);
 					}
-					
-					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
-					// resulting fault image links :(
-					echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
-						false, $layout_data['width'], $layout_data['height'],
-						'', null, false, 1, false, 0, '', 0, 0, true, true, '', 2);
-					
+					else {
+						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
+							false, $layout_data['width'], $layout_data['height'],
+							'', null, false, 1, false, 0, '', 0, 0, true, true);
+					}
 					echo "</a>";
 					echo "</div>";
 					break;

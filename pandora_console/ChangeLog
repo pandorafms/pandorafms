@@ -1,5 +1,10 @@
 2012-02-21  Vanessa Gil  <vanessa.gil@artica.es>
 	
+	* godmode/reporting/graph_template_item_editor.php: Added option to edit
+	weight.
+
+2012-02-21  Vanessa Gil  <vanessa.gil@artica.es>
+	
 	* godmode/reporting/graph_template_item_editor.php
 	  godmode/reporting/graph_template_list.php
 	  include/functions_reporting.php: Modified templates for combined

@@ -27,6 +27,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 $id_template = get_parameter('id',0);
 $delete = get_parameter('delete',0);
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
+$change_weight = (bool)get_parameter('change_weight', 0);
 $create = get_parameter('add',0);
 
 $buttons['template_list'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">'
@@ -110,6 +111,15 @@ if ($multiple_delete) {
 		__('Not deleted. Error deleting data'));
 }
 
+if ($change_weight) {
+	$new_weight = get_parameter('new_weight');
+	$id_gs_template = get_parameter ('id_gs_template');
+	$value = array (
+		'weight' => $new_weight
+		);
+	$result = db_process_sql_update('tgraph_source_template', $value, array('id_gs_template'=>$id_gs_template)); 
+}
+			
 if ($id_template) {
 	$sql = "SELECT * FROM tgraph_source_template where id_template=$id_template";
 	$templates = db_get_all_rows_sql($sql);
@@ -138,7 +148,15 @@ if ($id_template) {
 			
 			//$data[0] = $template['agent'];
 			$data[1] = $template['module'];
-			$data[2] = $template['weight'];
+			
+			$dec_weight = $template['weight']-0.125;
+			$inc_weight = $template['weight']+0.125;
+			$data[2] = "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&id=".$template['id_template']."&change_weight=1&new_weight=".$dec_weight."&id_gs_template=". $template['id_gs_template']. "'>".
+				html_print_image('images/down.png', true, array ('title' => __('Decrease Weight')))."</a>".
+				$template['weight']. 
+				"<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&id=".$template['id_template']."&change_weight=1&new_weight=".$inc_weight."&id_gs_template=". $template['id_gs_template']. "'>".
+				html_print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a>";
+				
 			$data[3] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 				href='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&delete=1&id_gs_template=".$template['id_gs_template']."&id_template=".$template['id_template']."&offset=0'>" . 
 				html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .

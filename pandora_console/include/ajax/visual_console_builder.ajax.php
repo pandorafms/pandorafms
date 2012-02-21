@@ -146,7 +146,8 @@ switch ($action) {
 					$values['width'] = $width;
 				if ($height !== null)
 					$values['height'] = $height;
-				db_process_sql_update('tlayout', $values, array('id' => $id_visual_console));
+				$result = db_process_sql_update('tlayout', $values, array('id' => $id_visual_console));
+				echo (int)$result;
 				break;
 			case 'simple_value':
 			case 'percentile_bar':
@@ -161,7 +162,7 @@ switch ($action) {
 				if ($left !== null) {
 					$values['pos_x'] = $left;
 				}
-				if ($top !== null) { 
+				if ($top !== null) {
 					$values['pos_y'] = $top;
 				}
 				if ($agent !== null) {
@@ -220,6 +221,7 @@ switch ($action) {
 				}
 				
 				$result = db_process_sql_update('tlayout_data', $values, array('id' => $id_element));
+				echo (int)$result;
 				break;
 		}
 		break;
@@ -366,6 +368,16 @@ switch ($action) {
 		}
 		
 		echo json_encode($return);
+		break;
+	case 'get_original_size_background':
+		$replace = strlen($config["homeurl"] . '/');
+		
+		if (substr($background, 0, $replace) == $config["homeurl"] . '/')
+			$size = getimagesize(substr($background, $replace));
+		else
+			$size = getimagesize($background);
+		
+		echo json_encode($size);
 		break;
 }
 

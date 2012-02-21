@@ -142,15 +142,14 @@ div#login {
 }
 div#login_in, #login_f {
 	padding-top: 40px;
-	#padding-top: 20px;
+	/*padding-top: 20px;*/
 	margin: 0 auto;
 	width: 400px;
 }
 div#error_login {
 	margin-top:-35px; 
-	#margin-top:0px; 	
-	position: float;
-	#margin-left:120px;
+	/*margin-top:0px;*/
+	/*margin-left:120px;*/
 }
 div#login_f {
 	margin-top: 10px;
@@ -251,7 +250,7 @@ div#foot {
 }
 #ip {
 	margin-top: 20px;
-	#margin-top: 3px;
+	/*margin-top: 3px;*/
 	margin-bottom: 5px;
 	margin-left: 280px;
 }
@@ -305,7 +304,7 @@ input.camera, input.config, input.cancel {
 	padding-right: 21px;
 }
 input.delete_min, input.graph_min, input.percentile_min, input.binary_min,
-input.camera_min, input.config_min, input.label_min, input.icon_min, input.grid_min {
+input.camera_min, input.config_min, input.label_min, input.icon_min, input.grid_min, input.save {
 	padding-right: 25px;
 }
 input.next {
@@ -406,6 +405,12 @@ input.icon_min[disabled] {
 }
 input.grid_min {
 	background: #e5e5e5 url(../../images/grid.png) no-repeat center;
+}
+input.save_min {
+	background: #e5e5e5 url(../../images/file.png) no-repeat center;
+}
+input.save_min[disabled] {
+	background: #e5e5e5 url(../../images/file.disabled.png) no-repeat center;
 }
 input.grid_min[disabled] {
 	background: #e5e5e5 url(../../images/grid.disabled.png) no-repeat center;

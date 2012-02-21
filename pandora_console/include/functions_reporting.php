@@ -4682,7 +4682,7 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 		}
 		else {
 			$templates[$template['id_graph_template']] = $template;
-			$templatesCount = db_get_value_sql("SELECT COUNT(id_gs) FROM tgraph_source WHERE id_graph = " . $template['id_graph_template']);
+			$templatesCount = db_get_value_sql("SELECT COUNT(id_gs_template) FROM tgraph_source_template WHERE id_template = " . $template['id_graph_template']);
 			$templates[$template['id_graph_template']]['graphs_template_count'] = $templatesCount;
 		}
 	}

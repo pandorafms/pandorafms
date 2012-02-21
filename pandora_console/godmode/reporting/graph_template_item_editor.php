@@ -26,12 +26,13 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 
 $id_template = get_parameter('id',0);
 $delete = get_parameter('delete',0);
-
+$multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $create = get_parameter('add',0);
 
 $buttons['template_list'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">'
 		. html_print_image ("images/god6.png", true, array ("title" => __('Template list')))
 		. '</a>';
+		
 // Header
 ui_print_page_header (__('Graph template editor'), "", false, "", true, $buttons);
 
@@ -82,6 +83,33 @@ if ($delete) {
 		__('Not deleted. Error deleting data'));
 }
 
+if ($multiple_delete) {
+	$ids = (array)get_parameter('delete_multiple', array());
+	
+	db_process_sql_begin();
+	
+	foreach ($ids as $id) {
+		$result = db_process_sql_delete ('tgraph_source_template',
+			array ('id_gs_template' => $id));
+	
+		if ($result === false) {
+			db_process_sql_rollback();
+			break;
+		}
+	}
+	
+	if ($result !== false) {
+		db_process_sql_commit();
+	}
+	
+	if ($result !== false) $result = true;
+	else $result = false;
+		
+	ui_print_result_message ($result,
+		__('Successfully deleted'),
+		__('Not deleted. Error deleting data'));
+}
+
 if ($id_template) {
 	$sql = "SELECT * FROM tgraph_source_template where id_template=$id_template";
 	$templates = db_get_all_rows_sql($sql);
@@ -89,18 +117,18 @@ if ($id_template) {
 		$table_aux->width = '90%';
 
 		$table_aux->size = array();
-		$table_aux->size[0] = '40%';
-		$table_aux->size[1] = '30%';
-		$table_aux->size[2] = '20%';
-		$table_aux->size[3] = '30px';
+		//$table_aux->size[0] = '40%';
+		$table_aux->size[1] = '40%';
+		$table_aux->size[2] = '30%';
+		$table_aux->size[3] = '50px';
 	
-		$table_aux->head[0] = __('Agent');
-		$table_aux->align[0] = 'center';
+		//$table_aux->head[0] = __('Agent');
+		//$table_aux->align[0] = 'center';
 		$table_aux->head[1] = __('Module');
 		$table_aux->align[1] = 'center';
 		$table_aux->head[2] = __('Weight');
 		$table_aux->align[2] = 'center';
-		$table_aux->head[3] = __('Delete');
+		$table_aux->head[3] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 		$table_aux->align[3] = 'center';
 	
 		$table_aux->data = array();
@@ -108,17 +136,27 @@ if ($id_template) {
 		foreach ($templates as $template) {
 			$data = array();
 			
-			$data[0] = $template['agent'];
+			//$data[0] = $template['agent'];
 			$data[1] = $template['module'];
 			$data[2] = $template['weight'];
 			$data[3] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 				href='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&delete=1&id_gs_template=".$template['id_gs_template']."&id_template=".$template['id_template']."&offset=0'>" . 
-				html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>";
-			
+				html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
+				html_print_checkbox_extended ('delete_multiple[]', $template['id_gs_template'], false, false, '', 'class="check_delete"', true);
+					
 			array_push ($table_aux->data, $data);
 		}
+		
+		if(isset($data)) {
+			echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor'>";
+			html_print_input_hidden('multiple_delete', 1);
+			html_print_table ($table_aux);
+			echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table_aux->width . "'>";
+			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+			echo "</div>";
+			echo "</form>";
+		}
 			
-		html_print_table($table_aux);
 	}
 }
 
@@ -126,13 +164,13 @@ if ($id_template) {
 $table->width = '90%';
 
 $table->size = array();
-$table->size[0] = '40%';
+//$table->size[0] = '40%';
 $table->size[1] = '40%';
 
 $table->data = array();
 
-$table->data[0][0] = '<b>'.__('Agent').'</b>';
-$table->data[1][0] = html_print_input_text('agent', '', '', 30, 255, true);
+//$table->data[0][0] = '<b>'.__('Agent').'</b>';
+//$table->data[1][0] = html_print_input_text('agent', '', '', 30, 255, true);
 $table->data[0][1] = '<b>'.__('Module').'</b>';
 $table->data[1][1] = html_print_input_text('module', '', '', 30, 255, true);
 $table->data[2][0] = '<b>'.__('Weight').'</b>';
@@ -149,3 +187,16 @@ html_print_submit_button (__('Add'), 'crt', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 ?>
+
+<script type="text/javascript">
+
+function check_all_checkboxes() {
+	if ($("input[name=all_delete]").attr('checked')) {
+		$(".check_delete").attr('checked', true);
+	}
+	else {
+		$(".check_delete").attr('checked', false);
+	}
+}
+
+</script>

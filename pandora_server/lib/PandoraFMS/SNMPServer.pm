@@ -171,13 +171,6 @@ sub pandora_snmptrapd {
 					($date, $time, $source, $data) = split(/\[\*\*\]/, $line, 4);
 					my @data = split(/\t/, $data);
 
-					# extract IP address from %b part:
-					#  * destination part appears in Net-SNMP > 5.3
-					#  * protocol name part and bracketted IP addr w/ port number appear in
-					#    Net-SNMP > 5.1 (Net-SNMP 5.1 has IP addr only).
-					#  * port number is signed in Net-SNMP 5.2
-					$source =~ s/(?:(?:TCP|UDP):\s*)?\[?([^] ]+)\]?(?::-?\d+)?(?:\s*->.*)?$/$1/;
-
 					shift @data; # Drop unused 1st data.
 					$oid = shift @data;
 
@@ -187,6 +180,15 @@ sub pandora_snmptrapd {
 					}
 					$oid =~ s/.* = OID: //;
 					$data = join("\t", @data);
+				}
+
+				if ($trap_ver eq "SNMPv2" || $pa_config->{'snmp_pdu_address'} eq '1' ) {
+					# extract IP address from %b part:
+					#  * destination part (->[dest_ip]:dest_port) appears in Net-SNMP > 5.3
+					#  * protocol name (TCP: or UDP:) and bracketted IP addr w/ port number appear in
+					#    Net-SNMP > 5.1 (Net-SNMP 5.1 has IP addr only).
+					#  * port number is signed (often negative) in Net-SNMP 5.2
+					$source =~ s/(?:(?:TCP|UDP):\s*)?\[?([^] ]+)\]?(?::-?\d+)?(?:\s*->.*)?$/$1/;
 				}
 
 				my $timestamp = $date . ' ' . $time;

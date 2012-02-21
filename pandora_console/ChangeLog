@@ -1,3 +1,7 @@
+2012-02-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* mobile/operation/agents/view_alerts.php: Fixed sql query error.
+
 2012-02-20  Vanessa Gil  <vanessa.gil@artica.es>
 	* pandoradb.sql
 	  pandoradb.oracle.sql

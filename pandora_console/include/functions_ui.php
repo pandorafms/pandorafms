@@ -879,6 +879,7 @@ function ui_require_jquery_file ($name, $path = 'include/javascript/') {
 		return false;
 	
 	$config['jquery'][$name] = $filename;
+	
 	return true;
 }
 

@@ -51,7 +51,7 @@ function ChangeDBAction(causer) {
 	else {
 		window.document.step2_form.db_action.length=2;
 	}
-	while (i < window.document.step2_form.db_action.length){
+	while (i < window.document.step2_form.db_action.length) {
 		window.document.step2_form.db_action.options[i].value =options_values[i];
 		window.document.step2_form.db_action.options[i].text =options_text[i];
 		i++;
@@ -72,11 +72,11 @@ $banner = "v$version Build $build";
 
 error_reporting(0);
 
-function check_extension ( $ext, $label ){
+function check_extension ( $ext, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if (!extension_loaded($ext)){
+	if (!extension_loaded($ext)) {
 		echo "<img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -87,11 +87,11 @@ function check_extension ( $ext, $label ){
 	echo "</td></tr>";
 }
 
-function check_include ( $ext, $label ){
+function check_include ( $ext, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if (!include($ext)){
+	if (!include($ext)) {
 		echo "<img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -102,11 +102,11 @@ function check_include ( $ext, $label ){
 	echo "</td></tr>";
 }
 
-function check_exists ( $file, $label ){
+function check_exists ( $file, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if (!file_exists ($file)){
+	if (!file_exists ($file)) {
 		echo " <img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -117,11 +117,11 @@ function check_exists ( $file, $label ){
 	echo "</td></tr>";
 }
 
-function check_generic ( $ok, $label ){
+function check_generic ( $ok, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if ($ok == 0 ){
+	if ($ok == 0 ) {
 		echo " <img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -132,12 +132,12 @@ function check_generic ( $ok, $label ){
 	echo "</td></tr>";
 }
 
-function check_writable ( $fullpath, $label ){
+function check_writable ( $fullpath, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if (file_exists($fullpath))
-		if (is_writable($fullpath)){
+		if (is_writable($fullpath)) {
 			echo " <img src='images/dot_green.png'>";
 			echo "</td></tr>";
 			return 0;
@@ -155,12 +155,12 @@ function check_writable ( $fullpath, $label ){
 
 }
 
-function check_variable ( $var, $value, $label, $mode ){
+function check_variable ( $var, $value, $label, $mode ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if ($mode == 1){
-		if ($var >= $value){
+	if ($mode == 1) {
+		if ($var >= $value) {
 			echo " <img src='images/dot_green.png'>";
 			return 0;
 		}
@@ -169,7 +169,7 @@ function check_variable ( $var, $value, $label, $mode ){
 			return 1;
 		}
 	}
-	elseif ($var == $value){
+	elseif ($var == $value) {
 		echo " <img src='images/dot_green.png'>";
 		return 0;
 	}
@@ -180,14 +180,14 @@ function check_variable ( $var, $value, $label, $mode ){
 	echo "</td></tr>";
 }
 
-function parse_mysql_dump($url){
-	if (file_exists($url)){
+function parse_mysql_dump($url) {
+	if (file_exists($url)) {
 		$file_content = file($url);
 		$query = "";
-		foreach($file_content as $sql_line){
-			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
+		foreach($file_content as $sql_line) {
+			if(trim($sql_line) != "" && strpos($sql_line, "--") === false) {
 				$query .= $sql_line;
-				if(preg_match("/;[\040]*\$/", $sql_line)){
+				if(preg_match("/;[\040]*\$/", $sql_line)) {
 					if (!$result = mysql_query($query)) {
 					 	echo mysql_error(); //Uncomment for debug
 						echo "<i><br>$query<br></i>";
@@ -209,7 +209,7 @@ function parse_postgresql_dump($connection, $url, $debug = false) {
 		
 		$query = "";
 		
-		foreach($file_content as $sql_line){
+		foreach($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
@@ -259,7 +259,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 		$query = "";
 		$plsql_block = false;
 		
-		foreach($file_content as $sql_line){
+		foreach($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
@@ -271,7 +271,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 			}
 			
 			//Support for PL/SQL blocks
-			if (preg_match("/^BEGIN$/", $clean_line)){
+			if (preg_match("/^BEGIN$/", $clean_line)) {
 				$query .= $clean_line . ' ';
 				$plsql_block = true;
 			}			
@@ -281,7 +281,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 			
 			//Check query's end with a back slash and any returns in the end of line or if it's a PL/SQL block 'END;;' string
 			if ((preg_match("/;[\040]*\$/", $clean_line) && !$plsql_block) || 
-			    (preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
+				(preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
 				$plsql_block = false;
 				//Execute and clean buffer
 				
@@ -343,7 +343,7 @@ function oracle_drop_all_objects ($connection) {
 	return 0;
 }
 
-function random_name ($size){
+function random_name ($size) {
 	$temp = "";
 	for ($a=0;$a< $size;$a++)
 		$temp = $temp. chr(rand(122,97));
@@ -351,7 +351,7 @@ function random_name ($size){
 	return $temp;
 }
 
-function print_logo_status ($step, $step_total){
+function print_logo_status ($step, $step_total) {
 	global $banner;
 
 	echo "
@@ -366,7 +366,7 @@ function print_logo_status ($step, $step_total){
 
 function install_step1() {
 	global $banner;
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='height: 480px;'>
@@ -377,11 +377,11 @@ function install_step1() {
 			<p>For more information, please refer to documentation.<br>
 			<i>Pandora FMS Development Team</i></p>
 		";
-		if (file_exists("include/config.php")){
+		if (file_exists("include/config.php")) {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
 		}
-        echo "<br>";
+		echo "<br>";
 		echo "<table width=85%>";
 		$writable = check_writable ( "include", "Checking if ./include is writable");
 		if (file_exists("include/config.php"))
@@ -399,9 +399,9 @@ function install_step1() {
 		<a href='http://www.pandorafms.com'>PandoraFMS.com web site</a>.</div>";
 		
 		echo "</div>";
-
+		
 		print_logo_status (1, 5);
-
+		
 		echo "<div id='install_img'>";
 		if ($writable == 0) {
 			echo "
@@ -431,7 +431,7 @@ function install_step1_licence() {
 <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
 
-	if (!file_exists("COPYING")){
+	if (!file_exists("COPYING")) {
 		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
 		echo "</div>";
 	}
@@ -444,9 +444,9 @@ function install_step1_licence() {
 		echo "<input type=submit value='Yes, I accept licence terms'>";
 	}
 	echo "</div>";
-
+	
 	print_logo_status (2, 5);
-
+	
 	echo "</div>
 	<div style='clear: both;height: 1px;'><!-- --></div>
 	<div id='foot_install'>
@@ -702,7 +702,7 @@ function install_step4() {
 						}
 						
 						// Create schema
-						if ($dbaction == 'db_new' || $dbdrop == 1){
+						if ($dbaction == 'db_new' || $dbdrop == 1) {
 							$step1 = mysql_query ("CREATE DATABASE $dbname");
 							check_generic ($step1, "Creating database '$dbname'");
 						}
@@ -763,7 +763,7 @@ function install_step4() {
 					break;
 				case 'oracle':
 					$connection = oci_connect($dbuser, $dbpassword, '//' . $dbhost . '/' . $dbname);
-					if (!$connection){
+					if (!$connection) {
 						check_generic(0, "Connection with Database");
 					}
 					else {
@@ -840,7 +840,7 @@ function install_step4() {
 							$result = pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
 						}
 						
-						if ($dbaction != 'db_exist' || $dbdrop == 1){
+						if ($dbaction != 'db_exist' || $dbdrop == 1) {
 							pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
 							$result = pg_get_result($connection);
 							if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
@@ -1086,7 +1086,7 @@ function install_step5() {
 // Main page code
 // ---------------
 
-if (! isset($_GET["step"])){
+if (! isset($_GET["step"])) {
 	install_step1();
 }
 else {

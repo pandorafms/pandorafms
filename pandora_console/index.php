@@ -251,11 +251,11 @@ else {
 	if ($page != "") {
 		$page .= '.php';
 		// Enterprise ACL check
-		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $sec, $sec2)) == false){
+		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $sec, $sec2)) == false) {
 			require ("general/noaccess.php");
 		} 
 		elseif (file_exists ($page)) {
-			if (! extensions_is_extension ($page)){
+			if (! extensions_is_extension ($page)) {
 				require_once($page);
 			}
 			else {

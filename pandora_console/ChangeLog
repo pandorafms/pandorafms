@@ -1,3 +1,17 @@
+2012-02-22  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* install.php, index.php, include/functions_ui.php: cleaned source code
+	style.
+	
+	* include/styles/dialog.css: fix the bad selector that it finished with
+	colon.
+	
+	* godmode/reporting/visual_console_builder.editor.php: fixed the bad syntax
+	in the styles from the grid.
+
+	* godmode/reporting/visual_console_builder.editor.js: fixed a tiny
+	javascript warning.
+
 2012-02-21  Vanessa Gil  <vanessa.gil@artica.es>
 	
 	* godmode/reporting/graph_template_item_editor.php: Added option to edit

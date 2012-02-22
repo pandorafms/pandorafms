@@ -182,3 +182,13 @@ CREATE tgraph_source_template (
 );
 
 CREATE SEQUENCE tgraph_source_template_s INCREMENT BY 1 START WITH 1;
+
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+ALTER TABLE treport_content_item ADD FOREIGN KEY (id_report_content) REFERENCES treport_content(id_rc) ON DELETE CASCADE;
+
+-- -----------------------------------------------------
+-- Table `treport`
+-- -----------------------------------------------------
+ALTER TABLE treport ADD (id_template NUMBER(10, 0) default 0 NOT NULL);

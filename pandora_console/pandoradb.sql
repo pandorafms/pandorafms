@@ -832,7 +832,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
   `first_page` MEDIUMTEXT default NULL,
   `footer` MEDIUMTEXT default NULL,
   `custom_font` varchar(200) default NULL,
-
+  `id_template` INTEGER UNSIGNED DEFAULT 0,	
   PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -900,7 +900,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_item` (
   `id_report_content` INTEGER UNSIGNED NOT NULL, 
   `id_agent_module` int(10) unsigned NOT NULL, 
   `server_name` text default '',
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
+     ON UPDATE CASCADE ON DELETE CASCADE 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `treport_custom_sql` (

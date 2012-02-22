@@ -167,3 +167,13 @@ CREATE TABLE IF NOT EXISTS "tgraph_source_template" (
   "weight" DOUBLE PRECISION default 2.0,
   "exact_match" SMALLINT NOT NULL default 0
  );
+ 
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+ ALTER TABLE treport_content_item ADD FOREIGN KEY("id_report_content") REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE;
+
+-- -----------------------------------------------------
+-- Table `treport`
+-- -----------------------------------------------------
+ALTER TABLE "treport" ADD COLUMN "id_template" INTEGER NOT NULL default 0;

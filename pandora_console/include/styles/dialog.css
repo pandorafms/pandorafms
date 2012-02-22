@@ -93,7 +93,7 @@
 }
 
 /* Dialog handle styles */
-.ui-dialog .ui-resizable-n, {
+.ui-dialog .ui-resizable-n {
 	cursor: n-resize;
 	height: 6px;
 	width: 100%;

@@ -1476,7 +1476,7 @@ function click_button_toolbox(id) {
 			}
 			break;
 		case 'save':
-			status = true;
+			var status = true;
 			activeToolboxButton('save', false);
 			jQuery.each(list_actions_pending_save, function(key, action_pending_save) {
 				jQuery.ajax ({

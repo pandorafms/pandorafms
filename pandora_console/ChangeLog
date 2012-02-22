@@ -1,3 +1,14 @@
+2012-02-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.sql
+	 pandoradb.postgreSQL.sql
+	 pandoradb.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added fields 
+	 id_template to treport and foreign key to treport_content_item to 
+	 propagate delete over report tables.
+
 2012-02-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* install.php, index.php, include/functions_ui.php: cleaned source code

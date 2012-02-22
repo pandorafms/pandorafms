@@ -190,3 +190,12 @@ CREATE TABLE IF NOT EXISTS `tgraph_source_template` (
   PRIMARY KEY(`id_gs_template`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+ALTER TABLE treport_content_item ADD FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`) ON UPDATE CASCADE ON DELETE CASCADE;
+
+-- -----------------------------------------------------
+-- Table `treport`
+-- -----------------------------------------------------
+ALTER TABLE treport ADD COLUMN `id_template` INTEGER UNSIGNED DEFAULT 0;

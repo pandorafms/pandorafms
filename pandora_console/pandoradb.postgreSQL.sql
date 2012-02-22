@@ -750,7 +750,8 @@ CREATE TABLE "treport" (
 	"header" TEXT  default NULL,
 	"first_page" TEXT default NULL,
 	"footer" TEXT default NULL,
-	"custom_font" varchar(200) default NULL
+	"custom_font" varchar(200) default NULL,
+	"id_template" BIGINT NOT NULL default 0
 );
 
 -- -----------------------------------------------------
@@ -808,7 +809,7 @@ CREATE TABLE "treport_content_sla_combined" (
 
 CREATE TABLE "treport_content_item" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
-	"id_report_content" INTEGER NOT NULL,
+	"id_report_content" INTEGER NOT NULL REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE,
 	"id_agent_module" INTEGER NOT NULL,
 	"server_name" TEXT DEFAULT ''
 );

@@ -936,7 +936,8 @@ CREATE TABLE treport (
 	header CLOB  default NULL,
 	first_page CLOB default NULL,
 	footer CLOB default NULL,
-	custom_font VARCHAR2(200) default NULL
+	custom_font VARCHAR2(200) default NULL,
+	id_template NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE treport_s INCREMENT BY 1 START WITH 1;
@@ -1015,7 +1016,7 @@ CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF ID_RC ON 
 
 CREATE TABLE treport_content_item (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_report_content NUMBER(10, 0) NOT NULL,
+	id_report_content NUMBER(10, 0) NOT NULL REFERENCES treport_content(id_rc) ON DELETE CASCADE,
 	id_agent_module NUMBER(10, 0) NOT NULL,
 	server_name CLOB default ''
 );

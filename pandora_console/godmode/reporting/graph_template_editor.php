@@ -54,14 +54,22 @@ if ($create){
 	$id_template = db_process_sql_insert('tgraph_template', $values);
 }	
 
-$buttons['graph_list'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">'
-		. html_print_image ("images/god6.png", true, array ("title" => __('Template list')))
-		. '</a>';
+$buttons['graph_list'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">' .
+		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
 
-$buttons['template_editor'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&id='.$id_template.'">'
-		. html_print_image ("images/config.png", true, array ("title" => __('Template editor')))
-		. '</a>';
-			
+$buttons['wizard'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_wizard">' .
+		html_print_image("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>');
+
+$buttons['template'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">' .
+		html_print_image("images/paste_plain.png", true, array ("title" => __('Templates'))) .'</a>');
+		
+$buttons['template_editor'] = array('active' => true,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&id='.$id_template.'">' .
+		html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>');
+		
 // Header
 ui_print_page_header (__('Graph template editor'), "", false, "", true, $buttons);
 

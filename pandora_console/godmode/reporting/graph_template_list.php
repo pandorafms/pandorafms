@@ -27,13 +27,17 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	return;
 }
 
-$buttons['graph_list'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">'
-		. html_print_image ("images/god6.png", true, array ("title" => __('Graph list')))
-		. '</a>';
+$buttons['graph_list'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">' .
+		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
 
-$buttons['wizard'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_wizard">'
-		. html_print_image ("images/wand.png", true, array ("title" => __('Wizard')))
-		. '</a>';
+$buttons['wizard'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_wizard">' .
+		html_print_image("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>');
+
+$buttons['template'] = array('active' => true,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">' .
+		html_print_image("images/paste_plain.png", true, array ("title" => __('Templates'))) .'</a>');
 		
 // Header
 ui_print_page_header (__('Graph template management'), "", false, "", true, $buttons);
@@ -105,7 +109,7 @@ if (! empty ($templates)) {
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		$table->align[4] = 'center';
 		$table->head[4] = __('Action'). html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
-		$table->size[4] = '50px';
+		$table->size[4] = '60px';
 	}
 	$table->data = array ();
 	

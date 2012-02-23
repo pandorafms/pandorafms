@@ -907,7 +907,8 @@ CREATE TABLE tgraph (
 	private NUMBER(5, 0) default 0 NOT NULL,
 	events NUMBER(5, 0) default 0 NOT NULL,
 	stacked NUMBER(5, 0) default 0 NOT NULL,
-	id_group NUMBER(19, 0) default 0 NOT NULL
+	id_group NUMBER(19, 0) default 0 NOT NULL,
+	id_graph_template NUMBER(11, 0) default 0 NOT NULL 
 );
 
 CREATE SEQUENCE tgraph_s INCREMENT BY 1 START WITH 1;

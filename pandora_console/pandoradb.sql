@@ -809,6 +809,7 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
   `events` tinyint(1) UNSIGNED NOT NULL default 0,
   `stacked` tinyint(1) UNSIGNED NOT NULL default 0,
   `id_group` mediumint(8) unsigned NULL default 0,
+  `id_graph_template` int(11) NOT NULL default 0,
   PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

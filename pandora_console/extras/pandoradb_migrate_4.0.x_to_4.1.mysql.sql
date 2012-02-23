@@ -199,3 +199,8 @@ ALTER TABLE treport_content_item ADD FOREIGN KEY (`id_report_content`) REFERENCE
 -- Table `treport`
 -- -----------------------------------------------------
 ALTER TABLE treport ADD COLUMN `id_template` INTEGER UNSIGNED DEFAULT 0;
+
+-- -----------------------------------------------------
+-- Table `tgraph`
+-- -----------------------------------------------------
+ALTER TABLE `tgraph` ADD COLUMN `id_graph_template` int(11) NOT NULL DEFAULT 0;

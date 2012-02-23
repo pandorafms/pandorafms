@@ -1,3 +1,7 @@
+2012-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Set the intensive interval before reading modules.
+
 2012-02-10  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandora_agent: Allow filename wildcards to specify

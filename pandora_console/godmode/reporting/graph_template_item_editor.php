@@ -30,10 +30,22 @@ $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $change_weight = (bool)get_parameter('change_weight', 0);
 $create = get_parameter('add',0);
 
-$buttons['template_list'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">'
-		. html_print_image ("images/god6.png", true, array ("title" => __('Template list')))
-		. '</a>';
+$buttons['graph_list'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">' .
+		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
+
+$buttons['wizard'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_wizard">' .
+		html_print_image("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>');
+
+$buttons['template'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">' .
+		html_print_image("images/paste_plain.png", true, array ("title" => __('Templates'))) .'</a>');
 		
+$buttons['template_editor'] = array('active' => true,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_editor&id='.$id_template.'">' .
+		html_print_image("images/config.png", true, array ("title" => __('Template editor'))) .'</a>');
+	
 // Header
 ui_print_page_header (__('Graph template editor'), "", false, "", true, $buttons);
 
@@ -124,13 +136,14 @@ if ($id_template) {
 	$sql = "SELECT * FROM tgraph_source_template where id_template=$id_template";
 	$templates = db_get_all_rows_sql($sql);
 	if ($templates != false) {
-		$table_aux->width = '90%';
+		$table_aux->width = '98%';
 
 		$table_aux->size = array();
 		//$table_aux->size[0] = '40%';
 		$table_aux->size[1] = '40%';
 		$table_aux->size[2] = '30%';
-		$table_aux->size[3] = '50px';
+		$table_aux->size[3] = '20%';
+		$table_aux->size[4] = '60px';
 	
 		//$table_aux->head[0] = __('Agent');
 		//$table_aux->align[0] = 'center';
@@ -138,8 +151,10 @@ if ($id_template) {
 		$table_aux->align[1] = 'center';
 		$table_aux->head[2] = __('Weight');
 		$table_aux->align[2] = 'center';
-		$table_aux->head[3] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+		$table_aux->head[3] = __('Exact match');
 		$table_aux->align[3] = 'center';
+		$table_aux->head[4] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+		$table_aux->align[4] = 'center';
 	
 		$table_aux->data = array();
 		
@@ -157,7 +172,12 @@ if ($id_template) {
 				"<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&id=".$template['id_template']."&change_weight=1&new_weight=".$inc_weight."&id_gs_template=". $template['id_gs_template']. "'>".
 				html_print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a>";
 				
-			$data[3] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+			if ($template['exact_match'])
+				$data[3] = __('Yes');
+			else 
+				$data[3] = __('No');
+			
+			$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 				href='index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&delete=1&id_gs_template=".$template['id_gs_template']."&id_template=".$template['id_template']."&offset=0'>" . 
 				html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 				html_print_checkbox_extended ('delete_multiple[]', $template['id_gs_template'], false, false, '', 'class="check_delete"', true);
@@ -179,22 +199,18 @@ if ($id_template) {
 }
 
 //Configuration form
-$table->width = '90%';
-
-$table->size = array();
-//$table->size[0] = '40%';
-$table->size[1] = '40%';
+$table->width = '98%';
 
 $table->data = array();
 
 //$table->data[0][0] = '<b>'.__('Agent').'</b>';
 //$table->data[1][0] = html_print_input_text('agent', '', '', 30, 255, true);
-$table->data[0][1] = '<b>'.__('Module').'</b>';
-$table->data[1][1] = html_print_input_text('module', '', '', 30, 255, true);
-$table->data[2][0] = '<b>'.__('Weight').'</b>';
-$table->data[2][0] .= '&nbsp;&nbsp;&nbsp;&nbsp;'.html_print_input_text('weight', 2, '', 3, 5, true);
-$table->data[2][1] = __('Exact match');
-$table->data[2][1] .= html_print_checkbox('match', 1, 0, true);
+$table->data[0][0] = '<b>'.__('Module').'</b>'."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+$table->data[0][0] .= "&nbsp;&nbsp;&nbsp;&nbsp;".html_print_input_text('module', '', '', 30, 255, true);
+$table->data[1][0] = '<b>'.__('Weight').'</b>'."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+$table->data[1][0] .= '&nbsp;&nbsp;&nbsp;&nbsp;'.html_print_input_text('weight', 2, '', 3, 5, true);
+$table->data[2][0] = __('Exact match')."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+$table->data[2][0] .= html_print_checkbox('match', 1, 0, true);
 
 echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/graph_template_item_editor&add=1&id='.$id_template.'">';
 html_print_table($table);

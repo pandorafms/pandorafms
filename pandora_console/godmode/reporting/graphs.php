@@ -27,13 +27,22 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	return;
 }
 
-$buttons['template'] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">'
-		. html_print_image ("images/paste_plain.png", true, array ("title" => __('Templates')))
-		. '</a>';
-		
+$buttons['graph_list'] = array('active' => true,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">' .
+		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
+
+$buttons['wizard'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_wizard">' .
+		html_print_image("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>');
+
+$buttons['template'] = array('active' => false,
+		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">' .
+		html_print_image("images/paste_plain.png", true, array ("title" => __('Templates'))) .'</a>');
+	
 $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
+$multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
 // Header
 ui_print_page_header (__('Graphs management'), "", false, "", true, $buttons);
@@ -64,6 +73,32 @@ if ($delete_graph) {
 	}
 }
 
+if ($multiple_delete) {
+	$ids = (array)get_parameter('delete_multiple', array());
+	
+	db_process_sql_begin();
+	
+	foreach ($ids as $id) {
+		$result = db_process_sql_delete ('tgraph',
+			array ('id_graph' => $id));
+	
+		if ($result === false) {
+			db_process_sql_rollback();
+			break;
+		}
+	}
+	
+	if ($result !== false) {
+		db_process_sql_commit();
+	}
+	
+	if ($result !== false) $result = true;
+	else $result = false;
+		
+	ui_print_result_message ($result,
+		__('Successfully deleted'),
+		__('Not deleted. Error deleting data'));
+}
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_group = true;
@@ -90,7 +125,7 @@ if (! empty ($graphs)) {
 	$table->size[4] = '50px';
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		$table->align[5] = 'center';
-		$table->head[5] = __('Delete');
+		$table->head[5] = __('Delete'). html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 		$table->size[5] = '50px';
 	}
 	$table->data = array ();
@@ -110,20 +145,41 @@ if (! empty ($graphs)) {
 		if (check_acl ($config['id_user'], 0, "AW")) {
 			$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">' . html_print_image("images/cross.png", true) . '</a>';
+					return false;">' . html_print_image("images/cross.png", true) . '</a>' .
+					html_print_checkbox_extended ('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete"', true);
 		}
 		
 		array_push ($table->data, $data);
 	}
+	
+	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graphs'>";
+	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
+	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+	echo "</div>";
+	echo "</form>";
 }
 else {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }
-
+	
 echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/graph_builder">';
 echo '<div class="action-buttons" style="width: 98%;">';
 html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
 echo "</div>";
 echo "</form>";
 ?>
+
+<script type="text/javascript">
+
+function check_all_checkboxes() {
+	if ($("input[name=all_delete]").attr('checked')) {
+		$(".check_delete").attr('checked', true);
+	}
+	else {
+		$(".check_delete").attr('checked', false);
+	}
+}
+
+</script>

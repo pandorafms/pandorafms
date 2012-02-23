@@ -4731,7 +4731,7 @@ function reporting_apply_report_template_graph ($agents_selected, $template_sele
 			foreach ($source_templates as $source) {
 				$modules = agents_get_modules($id_agent, false, array('disabled' => 0));
 				$exact_match = $source['exact_match'];
-				
+		
 				foreach ($modules as $key => $module) {
 					$insert_module = false;
 					if ($exact_match) {
@@ -4739,7 +4739,8 @@ function reporting_apply_report_template_graph ($agents_selected, $template_sele
 							$insert_module = true;
 						}
 					} else {
-						$result = preg_match('/[.]*'.$source['module'].'[.]*/i', $module);
+						$exp = '/'.$source['module'].'/i';
+						$result = preg_match($exp, $module);
 						if ($result) {
 							$insert_module = true;
 						}

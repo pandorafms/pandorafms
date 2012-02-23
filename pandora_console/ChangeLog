@@ -1,3 +1,13 @@
+2012-02-23  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_reporting.php
+	  godmode/reporting/graph_template_editor.php
+	  godmode/reporting/graph_template_item_editor.php
+	  godmode/reporting/graph_template_list.php
+	  godmode/reporting/graph_template_wizard.php
+	  godmode/reporting/graphs.php: Added multiple delete option to graph
+	list and other visual changes.
+
 2012-02-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Changed location of 

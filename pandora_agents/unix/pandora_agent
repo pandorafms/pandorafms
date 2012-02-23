@@ -585,6 +585,11 @@ sub read_config (;$) {
 		# Single value token not found.
 		return undef;
 	}
+	
+	# Set the intensive interval
+	if ($Conf{'intensive_interval'} == 0) {
+		$Conf{'intensive_interval'} = $Conf{'interval'};
+	}
 
 	# Module, plugin and collection definitions
 	parse_conf_modules(\@file);
@@ -607,11 +612,6 @@ sub read_config (;$) {
 	if ($Conf{'secondary_transfer_mode'} eq 'tentacle') {
 		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
 		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq 'yes');		
-	}
-	
-	# Set the intensive interval
-	if ($Conf{'intensive_interval'} == 0) {
-		$Conf{'intensive_interval'} = $Conf{'interval'};
 	}
 }
 

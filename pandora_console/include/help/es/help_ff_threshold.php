@@ -46,5 +46,6 @@ Desde este punto lo vería como caído, pero no antes.
 La protección anti FLip-flop se usa para evitar estas fluctuaciones tan molestas, todos los módulos la implementan y la utilizan para evitar el cambio de estado (definido por sus limites definidos o sus sistemas diferenciales, como por ejemplo ocurre con los módulos *proc).
 
 
-
+<br><br>
+<b>AVISO</b>: Dado que los modulos KeepAlive solo cambian de estado una vez, este parámetro no se debería usar nunca con modulos Keepalive.
 

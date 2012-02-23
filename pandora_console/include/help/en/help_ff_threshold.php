@@ -38,5 +38,7 @@ However, the host is alive in all cases. What we really want is to tell Pandora 
 From this point you would see as down, but not before.
 <br>
 Protection anti Flip-Flop is used to avoid those annoying fluctuations, all modules implement it and use it to avoid the change of state (defined by their defined limits or boundaries machines, as is the case with modules * proc) . 
+<br><br>
+<b>NOTICE</b>: Due Keepalive only notify ONCE per change. This parameter SHOULD NOT be used in KeepAlive modules.
 
 

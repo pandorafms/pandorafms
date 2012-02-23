@@ -1,3 +1,10 @@
+2012-02-23  Sancho Lerena <slerena@artica.es>
+
+        * include/help/en/help_ff_threshold.php
+        include/help/es/help_ff_threshold.php: Small warning about do not
+        use FF Threshold in KeepAlive modules.
+
+
 2012-02-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* mobile/operation/agents/view_alerts.php: Merged from trunk. Fixed

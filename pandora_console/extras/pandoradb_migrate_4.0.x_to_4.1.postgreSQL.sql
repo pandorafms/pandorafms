@@ -177,3 +177,8 @@ CREATE TABLE IF NOT EXISTS "tgraph_source_template" (
 -- Table `treport`
 -- -----------------------------------------------------
 ALTER TABLE "treport" ADD COLUMN "id_template" INTEGER NOT NULL default 0;
+
+-- -----------------------------------------------------
+-- Table `tgraph`
+-- -----------------------------------------------------
+ALTER TABLE "tgraph" ADD COLUMN "id_graph_template" INTEGER NOT NULL default 0;

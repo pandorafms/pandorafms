@@ -1,3 +1,17 @@
+2012-02-23  Vanessa Gil  <vanessa.gil@artica.es>
+	* pandoradb.sql
+	  pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added
+	column 'id_graph_template' to 'tgraph' table.
+
+	* include/functions_reporting.php: Added function to apply
+	templates for combined graphs.
+
+	* godmode/reporting/graph_template_wizard.php: Added file.
+
 2012-02-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.sql

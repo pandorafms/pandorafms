@@ -729,7 +729,8 @@ CREATE TABLE "tgraph" (
 	"private" SMALLINT NOT NULL default 0,
 	"events" SMALLINT NOT NULL default 0,
 	"stacked" SMALLINT NOT NULL default 0,
-	"id_group" BIGINT NOT NULL default 0
+	"id_group" BIGINT NOT NULL default 0,
+	"id_graph_template" INTEGER NOT NULL default 0 
 );
 
 CREATE TABLE "tgraph_source" (

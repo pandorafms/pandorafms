@@ -37,6 +37,8 @@ if (is_ajax ()) {
 	$delete_event = (bool) get_parameter ('delete_event');
 	$get_events_fired = (bool) get_parameter('get_events_fired');
 	$standby_alert = (bool) get_parameter('standby_alert');
+	$get_comment = (bool) get_parameter('get_comment');
+	$get_comment_header = (bool) get_parameter('get_comment_header');
 	
 	if ($get_event_tooltip) {
 		$id = (int) get_parameter ('id');
@@ -148,6 +150,26 @@ if (is_ajax ()) {
 		
 		echo json_encode($return);
 	}
+	
+	if ($get_comment){
+		$id = (int) get_parameter ("id");
+		$event = events_get_event ($id);
+		
+		if ($event === false)
+			echo '';
+		else
+			echo $event['user_comment'];
+	}
+	
+	if ($get_comment_header){
+		$id = (int) get_parameter ("id");
+		$event = events_get_event ($id);
+		
+		if ($event === false)
+			echo '';
+		else
+			echo ui_print_truncate_text(strip_tags($event["user_comment"]));
+	}	
 	
 	return;
 }
@@ -402,6 +424,11 @@ $(document).ready( function() {
 	
 	$("a.validate_event").click (function () {
 		$tr = $(this).parents ("tr");
+		
+		
+
+		
+		
 		id = this.id.split ("-").pop ();
 		var comment = $('#textarea_comment_'+id).val();
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment
@@ -439,8 +466,140 @@ $(document).ready( function() {
 			},
 			function (data, status) {
 				if (data == "ok") {
-					$("#status_img_"+id).attr ("src", "images/spinner.gif");
-					location.reload();
+					
+					// Refresh interface elements, don't reload (awfull)
+					// Validate
+					if (select_validate == 1){
+						$("#status_img_"+id).attr ("src", "images/spinner.gif");
+						// Change status description
+						$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
+						
+						// Get event comment
+						jQuery.post ("ajax.php",
+							{"page" : "operation/events/events",
+							"get_comment" : 1,
+							"id" : id
+							},
+							function (data, status) {						
+								$("#comment_row_"+id).html(data);								
+							});
+							
+						// Get event comment in header
+						jQuery.post ("ajax.php",
+							{"page" : "operation/events/events",
+							"get_comment_header" : 1,
+							"id" : id
+							},
+							function (data, status) {
+								$("#comment_header_"+id).html(data);								
+							});							
+						
+						// Change state image
+						$("#validate-"+id).css("display", "none");
+						$("#status_img_"+id).attr ("src", "images/tick.png");
+						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event validated') . "'"; ?>);
+						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
+						
+						// Remove row due to new state
+						if (($("#status").val() == 2) || ($("#status").val() == 0) || ($("#status").val() == 3)){
+
+							$.each($tr, function(index, value){
+								row = value;
+
+								if ($(row).attr('id') != ''){
+
+									row_id_name = $(row).attr('id').split('-').shift();
+									row_id_number = $(row).attr('id').split('-').pop() - 1;
+									previous_row_id = $(row).attr('id');
+									current_row_id = row_id_name + "-" + row_id_number;
+									selected_row_id = row_id_name + "-" + row_id_number + "-0";
+									
+									$("#"+previous_row_id).css('display', 'none');
+									$("#"+current_row_id).css('display', 'none');
+									$("#"+selected_row_id).css('display', 'none');
+								}
+							});	
+						}							
+						
+					} // In process
+					else if (select_validate == 2){
+						$("#status_img_"+id).attr ("src", "images/spinner.gif");
+						// Change status description
+						$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
+						
+						// Get event comment
+						jQuery.post ("ajax.php",
+							{"page" : "operation/events/events",
+							"get_comment" : 1,
+							"id" : id
+							},
+							function (data, status) {						
+								$("#comment_row_"+id).html(data);								
+							});	
+					
+						// Get event comment in header
+						jQuery.post ("ajax.php",
+							{"page" : "operation/events/events",
+							"get_comment_header" : 1,
+							"id" : id
+							},
+							function (data, status) {
+								$("#comment_header_"+id).html(data);								
+							});						
+
+						// Remove delete link
+						$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="/trunk/pandora_console/images/cross.disabled.png">');
+						
+						// Change state image
+						$("#status_img_"+id).attr ("src", "images/hourglass.png");
+						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event in process') . "'"; ?>);
+						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);		
+												
+						// Remove row due to new state
+						if (($("#status").val() == 0) || ($("#status").val() == 1)){
+
+							$.each($tr, function(index, value){
+								row = value;
+								
+								if ($(row).attr('id') != ''){
+
+									row_id_name = $(row).attr('id').split('-').shift();
+									row_id_number = $(row).attr('id').split('-').pop() - 1;
+									previous_row_id = $(row).attr('id');
+									current_row_id = row_id_name + "-" + row_id_number;
+									selected_row_id = row_id_name + "-" + row_id_number + "-0";
+
+									$("#"+previous_row_id).css('display', 'none');
+									$("#"+current_row_id).css('display', 'none');
+									$("#"+selected_row_id).css('display', 'none');
+								}
+							});		
+
+						}					
+					} // Add comment
+					else if (select_validate == 3){
+						// Get event comment
+						jQuery.post ("ajax.php",
+							{"page" : "operation/events/events",
+							"get_comment" : 1,
+							"id" : id
+							},
+							function (data, status) {						
+								$("#comment_row_"+id).html(data);
+							});
+							
+						// Get event comment in header
+						jQuery.post ("ajax.php",
+							{"page" : "operation/events/events",
+							"get_comment_header" : 1,
+							"id" : id
+							},
+							function (data, status) {
+								$("#comment_header_"+id).html(data);								
+							});								
+					}
+					
+					//location.reload();
 				} else {
 					$("#result")
 						.showMessage ("<?php echo __('Could not be validated')?>")

@@ -772,7 +772,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('user_comment',$show_fields)) {
-		$data[$i] = ui_print_truncate_text(strip_tags($event["user_comment"]), 30);
+		$data[$i] = '<span id="comment_header_' . $event['id_evento'] . '">' .ui_print_truncate_text(strip_tags($event["user_comment"])) . '</span>';
 		$i++;
 	}
 	
@@ -825,7 +825,7 @@ foreach ($result as $event) {
 			if($event['estado'] != 2) {
 				$data[$i] .= '<a class="delete_event" href="#"  onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;" id="delete-'.$event['id_evento'].'">';
 				$data[$i] .= html_print_image ("images/cross.png", true,
-					array ("title" => __('Delete event')));
+					array ("title" => __('Delete event'), "id" => 'delete_cross_' . $event['id_evento']));
 				$data[$i] .= '</a>&nbsp;';
 			}
 			else {
@@ -918,7 +918,7 @@ foreach ($result as $event) {
 	$string .= events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
 	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
-	$string .= '<b>' . __('Status') . '</b></td><td align="left">';
+	$string .= '<b>' . __('Status') . '</b></td><td id="status_row_' . $event["id_evento"] . '" align="left">';
 	$string .= $title_st;
 	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
 	$string .= '<td align="left" valign="top" width="15%">';
@@ -1030,7 +1030,7 @@ foreach ($result as $event) {
 
 	$string .= '</td></tr>';
 	$odd = ($odd == '')? 'rowOdd' : '';
-	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Comments') . '</td><td align="left">';
+	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Comments') . '</td><td id="comment_row_' . $event['id_evento'] . '" align="left">';
 	if($event["user_comment"] != '') {
 		$string .= $event["user_comment"];
 	} else {

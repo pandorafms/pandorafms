@@ -110,6 +110,7 @@ function safe_int ($value, $min = false, $max = false) {
 			return false;
 		}
 	}
+	
 	return $value;
 }
 

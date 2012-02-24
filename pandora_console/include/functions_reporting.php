@@ -4640,7 +4640,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	return $critical_period;
 }
 
-/**
+/*
  * Get all the template graphs a user can see.
  *
  * @param $id_user User id to check.
@@ -4688,83 +4688,5 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 	}
 
 	return $templates;
-}
-
-/**
- * Apply a template graph
- *
- * @param array $agents_selected to apply the template.
- * @param $template_selected
- *
- * @return
- */
-function reporting_apply_report_template_graph ($agents_selected, $template_selected) {
-
-	if ($agents_selected[0] == '') {
-		unset($agents_selected[0]);
-	}
-
-	if ($agents_selected != null) {
-	
-		$template_data = db_get_row('tgraph_template','id_graph_template', $template_selected);
-
-		foreach ($agents_selected as $id_agent) {
-			$values = array(
-				'id_user' => $template_data['id_user'],
-				'name' => $template_data['name'],
-				'description' => $template_data['description'],
-				'period' => $template_data['period'],
-				'width' => $template_data['width'],
-				'height' => $template_data['height'],
-				'private' => $template_data['private'],
-				'events' => $template_data['events'],
-				'stacked' => $template_data['stacked'],
-				'id_group' => $template_data['id_group'],
-				'id_graph_template' => $template_selected
-			);
-				
-			$id_graph = db_process_sql_insert('tgraph', $values);
-			
-			$sql = "SELECT * FROM tgraph_source_template WHERE id_template=$template_selected";
-			$source_templates = db_get_all_rows_sql($sql);
-			
-			foreach ($source_templates as $source) {
-				$modules = agents_get_modules($id_agent, false, array('disabled' => 0));
-				$exact_match = $source['exact_match'];
-		
-				foreach ($modules as $key => $module) {
-					$insert_module = false;
-					if ($exact_match) {
-						if ($module == $source['module']) {
-							$insert_module = true;
-						}
-					} else {
-						$exp = '/'.$source['module'].'/i';
-						$result = preg_match($exp, $module);
-						if ($result) {
-							$insert_module = true;
-						}
-					}
-					if ($insert_module) {
-						$values_aux = array(
-							'id_graph' => $id_graph,
-							'id_agent_module' => $key,
-							'weight' => $source['weight']
-						);
-						$id_gs = db_process_sql_insert('tgraph_source', $values_aux);
-					}
-				}
-			}
-		}
-		if ($id_graph) {
-			ui_print_success_message ('Template applied successfully');
-			//return true;
-		} else {
-			ui_print_error_message ('An error has ocurred apllying template');
-		}
-	} else {
-		ui_print_error_message ('Agent must be selected');
-	}
-	return false;
 }
 ?>

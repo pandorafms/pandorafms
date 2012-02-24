@@ -27,17 +27,37 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	return;
 }
 
+$activeTab = get_parameter('tab', 'main');
+
+$enterpriseEnable = false;
+if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NOT_HOOK) {
+	$enterpriseEnable = true;
+}
+
 $buttons['graph_list'] = array('active' => true,
 		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">' .
 		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
+		
+if ($enterpriseEnable){
+	$buttons = reporting_enterprise_add_template_graph_tabs($buttons);
+}
 
-$buttons['wizard'] = array('active' => false,
-		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_wizard">' .
-		html_print_image("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>');
+$subsection = '';
+switch ($activeTab){
 
-$buttons['template'] = array('active' => false,
-		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_template_list">' .
-		html_print_image("images/paste_plain.png", true, array ("title" => __('Templates'))) .'</a>');
+	case 'main':	$buttons['graph_list']['active'] = true;
+					$subsection = ' &raquo; '.__('Graph list');
+					break;
+	default:		$subsection = reporting_enterprise_add_graph_template_subsection($activeTab, &$buttons);
+					break;
+	}
+
+switch ($activeTab) {
+	case 'main':	require_once('godmode/reporting/graphs.php');
+					break;
+	default:		reporting_enterprise_select_graph_template_tab($activeTab);
+					break;
+}
 	
 $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
@@ -126,7 +146,7 @@ if (! empty ($graphs)) {
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		$table->align[5] = 'center';
 		$table->head[5] = __('Delete'). html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
-		$table->size[5] = '50px';
+		$table->size[5] = '60px';
 	}
 	$table->data = array ();
 	

@@ -242,7 +242,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
-		url = '<?php echo 'http://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/operation/events/sound_events.php'; ?>';
+		<?php
+			$url = ui_get_full_url(false);
+		?>
+		url = '<?php echo $url . 'operation/events/sound_events.php'; ?>';
 		
 		window.open(url, '<?php __('Sound Alerts'); ?>','width=475, height=275, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 	}

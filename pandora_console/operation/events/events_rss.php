@@ -45,18 +45,17 @@ header("Content-Type: application/xml; charset=UTF-8"); //Send header before sta
 
 function rss_error_handler ($errno, $errstr, $errfile, $errline) {
 	global $config;
-
-	$base = 'http'.(isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '').'://'.$_SERVER['HTTP_HOST'];
-	$url = $base.$config["homeurl"];
-	$selfurl = $base.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
-
+	
+	$url = ui_get_full_url(false);
+	$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING']);
+	
 	$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'; //' Fixes certain highlighters freaking out on the PHP closing tag
 	$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'; 
 	$rss_feed .= '<channel><title>Pandora RSS Feed</title><description>Latest events on Pandora</description>';
 	$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, 0).'</lastBuildDate>';
 	$rss_feed .= '<link>'.$url.'</link>'; //Link back to the main Pandora page
 	$rss_feed .= '<atom:link href="'.io_safe_input ($selfurl).'" rel="self" type="application/rss+xml" />'; //Alternative for Atom feeds. It's the same.
-
+	
 	$rss_feed .= '<item><guid>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</guid><title>Error creating feed</title>';
 	$rss_feed .= '<description>There was an error creating the feed: '.$errno.' - '.$errstr.' in '.$errfile.' on line '.$errline.'</description>';
 	$rss_feed .= '<link>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</link></item>';
@@ -202,9 +201,8 @@ switch ($config["dbtype"]) {
 
 $result= db_get_all_rows_sql ($sql);
 
-$base = 'http'.(isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '').'://'.$_SERVER['HTTP_HOST'];
-$url = $base.$config["homeurl"];
-$selfurl = $base.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
+$url = ui_get_full_url(false);
+$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING']);
 
 if (empty ($result)) {
 	$lastbuild = 0; //Last build in 1970

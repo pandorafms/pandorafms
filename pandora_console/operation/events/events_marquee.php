@@ -91,10 +91,7 @@ echo "<html>";
 echo "<head>";
 echo "<title>Pandora FMS - Latest events </title>";
 
-$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-if ($_SERVER['SERVER_PORT'] != 80)
-	$query .= ":" . $_SERVER['SERVER_PORT'];	
-$query .= $_SERVER['SCRIPT_NAME'];
+$query = ui_get_full_url();
 echo '<meta http-equiv="refresh" content="' . $MARQUEE_INTERVAL . '; URL=' . $query . '">';
 echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico">';
 echo "</head>";

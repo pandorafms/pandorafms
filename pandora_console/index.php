@@ -69,7 +69,7 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
-	$query = 'https://' . $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
+	$query = '';
 	if (sizeof ($_REQUEST))
 		//Some (old) browsers don't like the ?&key=var
 		$query .= '?1=1';
@@ -83,11 +83,12 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	foreach ($_POST as $key => $value) {
 		$query .= '&'.$key.'='.$value;
 	}
+	$url = ui_get_full_url($query);
 	
 	// Prevent HTTP response splitting attacks
 	// http://en.wikipedia.org/wiki/HTTP_response_splitting
-	$query = str_replace ("\n", "", $query);
-
+	$url = str_replace ("\n", "", $url);
+	
 	header ('Location: '.$query);
 	exit; //Always exit after sending location headers
 }
@@ -96,7 +97,8 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 $config["pure"] = (bool) get_parameter ("pure");
 
 // Auto Refresh page (can now be disabled anywhere in the script)
-$config["refr"] = (int) get_parameter ("refr", $config["refr"]);
+$config["refr"] = (int) get_parameter ("refr");
+
 
 ob_start ();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";

@@ -323,14 +323,9 @@ function mainSystemInfo() {
 		$zipArchive = $config['attachment_store'] . '/last_info.zip';
 		@unlink($zipArchive);
 		
-		if ($config['https']) {
-			$http = 'https://';
-		}
-		else {
-			$http = "http://";
-		}
+		$url_zip = ui_get_full_url(false);
 
-		$url = '<a href="' .$http.$_SERVER['HTTP_HOST'].$config["homeurl"].'/attachment/last_info.zip">' . __('System info file zipped') . '</a>';
+		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('System info file zipped') . '</a>';
 		echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
 		echo '<b>' . __('Location:') . '</b> ' . $zipArchive;
     	

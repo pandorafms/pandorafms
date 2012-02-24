@@ -33,6 +33,7 @@ include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 include_once($config['homedir'] . "/include/functions_forecast.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
 
 /** 
  * Get the average value of an agent module in a period of time.
@@ -2353,11 +2354,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[1][0] = 3;
 			$data = array ();
 			
-			$urlImage = 'http://';
-			if ($config['https']) {
-				$urlImage = 'https://';
-			}
-			$urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';			
+			$urlImage = ui_get_full_url(false);
 			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module(

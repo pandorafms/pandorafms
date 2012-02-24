@@ -20,6 +20,7 @@ require_once('functions_agents.php');
 require_once('functions_modules.php');
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . "/include/functions.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_network_components.php");
@@ -4576,14 +4577,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 			$row['description_event'] = events_print_type_description($row["event_type"], true);
 			$row['img_description'] = events_print_type_img ($row["event_type"], true, true);
 			$row['criticity_name'] = get_priority_name ($row["criticity"]);
-			if ($config['https']) {
-				$urlImage = 'https://';
-			}
-			else {
-				$urlImage = "http://";
-			}
 			
-			$urlImage = $urlImage.$_SERVER['HTTP_HOST'].$config["homeurl"];
+			$urlImage = ui_get_full_url(false);
 			switch ($row["criticity"]) {
 				default:
 				case 0:

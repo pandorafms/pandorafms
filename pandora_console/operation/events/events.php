@@ -21,6 +21,7 @@ require_once ("include/functions_alerts.php"); //Alerts processing functions
 require_once ($config['homedir'].'/include/functions_agents.php'); //Agents functions
 require_once ($config['homedir'].'/include/functions_users.php'); //Users functions
 require_once ($config['homedir'].'/include/functions_graph.php');
+require_once ($config['homedir'].'/include/functions_ui.php');
 
 check_login ();
 
@@ -212,7 +213,10 @@ if ($config["pure"] == 0) {
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
-		url = '<?php $protocol = $config['https'] ? 'https' : 'http'; echo $protocol . '://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/operation/events/sound_events.php'; ?>';
+		<?php
+		$url = ui_get_full_url(false);
+		?>
+		url = '<?php echo $url . 'operation/events/sound_events.php'; ?>';
 		
 		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 	}

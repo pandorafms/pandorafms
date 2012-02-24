@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+include_once("include/functions_ui.php");
+
 /**
  * @package Include
  * @subpackage Events
@@ -461,14 +463,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 	
 	$output = '';
 	
-	if ($config['https']) {
-		$urlImage = 'https://';
-	}
-	else {
-		$urlImage = "http://";
-	}
-	
-	$urlImage = $urlImage.$_SERVER['HTTP_HOST'].$config["homeurl"];
+	$urlImage = ui_get_full_url(false);
 	
 	switch ($type) {
 		case "alert_recovered":

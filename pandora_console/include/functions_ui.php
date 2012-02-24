@@ -1675,31 +1675,27 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
 }
 
 /**
- * Returns a full URL in Pandora.
+ * Returns a full URL in Pandora. (with the port and https in some systems)
  *
  * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup
  *
- * @param string If provided, it will be added after the index.php
+ * @param mixed $url If provided, it will be added after the index.php, but it is false boolean value, put the homeurl in the url.
  *
  * @return string A full URL in Pandora.
  */
-function ui_get_full_url ($url = false) {
+function ui_get_full_url ($url = '') {
 	global $config;
-	
-	$was_empty = false;
-	if (empty ($url)) {
-		$was_empty = true;
-		$url = $_SERVER['REQUEST_URI'];
-	}
 	
 	if ($config['https']) {
 		//When $config["https"] is set, always force https
 		$protocol = 'https';
 		$ssl = true;
-	} elseif (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
+	}
+	elseif (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
 		$protocol = 'https';
 		$ssl = true;
-	} else {
+	}
+	else {
 		$protocol = 'http';
 		$ssl = false;
 	}
@@ -1710,13 +1706,19 @@ function ui_get_full_url ($url = false) {
 		$fullurl .= ":".$_SERVER['SERVER_PORT'];
 	}
 	
-	if (! $was_empty) {
+	if ($url === '') {
+		$url = $_SERVER['REQUEST_URI'];
+	}
+	elseif ($url === false) {
+		//Only add the home url
+		$url = $config['homeurl'] . '/';
+	}
+	else {
 		$fullurl .= $_SERVER['SCRIPT_NAME'];
 	}
 	
 	return $fullurl.$url;
 }
-
 
 /**
  * Return a standard page header (Pandora FMS 3.1 version)

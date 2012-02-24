@@ -112,7 +112,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
 			if (!$projection){
-				return false;
+				return fs_error_image ();
 			}
 			else{
 				return fs_error_image ();

@@ -1,14 +1,34 @@
+2012-02-24  Miguel de Dios  <miguel.dedios@artica.es>
+	* pandora_console/include/functions_ui.php: changed the source code into the
+	function "ui_get_full_url" for accept false for to return url with the home
+	url or with any string (as query) return url with the php file.
+
+	* pandora_console/include/functions_graph.php,
+	pandora_console/include/functions_html.php,
+	pandora_console/include/functions_events.php,
+	pandora_console/include/functions_reporting.php,
+	pandora_console/include/functions_api.php,
+	pandora_console/include/functions.php, pandora_console/index.php,
+	pandora_console/extensions/system_info.php,
+	pandora_console/operation/agentes/stat_win.php,
+	pandora_console/operation/menu.php,
+	pandora_console/operation/events/events_rss.php,
+	pandora_console/operation/events/events_marquee.php,
+	pandora_console/operation/events/events.php: change in more part of source
+	code to use "ui_get_full_url" instead the hard write method of $_SERVER
+	vars, now Pandora Console run fine (in all actions I hope) with web servers
+	in other ports instead the typical 80.
+
 2012-02-24  Junichi Satoh  <junichi@rworks.jp>
 
-	include/help/ja/help_ff_threshold.php: Small warning about do not
+	* include/help/ja/help_ff_threshold.php: Small warning about do not
 	use FF Threshold in KeepAlive modules.
 
 2012-02-23  Sancho Lerena <slerena@artica.es>
 
-        * include/help/en/help_ff_threshold.php
-        include/help/es/help_ff_threshold.php: Small warning about do not
-        use FF Threshold in KeepAlive modules.
-
+	* include/help/en/help_ff_threshold.php,
+	include/help/es/help_ff_threshold.php: Small warning about do not use
+	FF Threshold in KeepAlive modules.
 
 2012-02-21  Junichi Satoh  <junichi@rworks.jp>
 

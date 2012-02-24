@@ -33,6 +33,8 @@ if (!isset($config)) {
 
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions_groups.php');
+require_once ($config['homedir'].'/include/functions_ui.php');
+
 
 /**
  * Prints the print_r with < pre > tags
@@ -1139,10 +1141,14 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		if ($skin_path)
 			$src = $skin_path;	
 	}
-
-	// path to image (relative or absolute)
-	$src = ($relative? '' : $config["homeurl"] . '/') . $src;
-
+	
+	if (!$relative) {
+		$urlImage = ui_get_full_url(false);
+		
+		// path to image 
+		$src = $urlImage . $src;
+	}
+	
 	// Only return src field of image
 	if ($return_src) {
 		if (!$return) { 

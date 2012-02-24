@@ -29,6 +29,7 @@ require_once ($config['homedir'] . '/include/functions_db.php');
 require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
+require_once ($config['homedir'] . '/include/functions_ui.php');
 
 check_login ();
 
@@ -151,11 +152,7 @@ if ($start_date != $current)
 else
 	$date = $utime;
 
-$urlImage = 'http://';
-if ($config['https']) {
-	$urlImage = 'https://';
-}
-$urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
+$urlImage = ui_get_full_url(false);
 
 // log4x doesnt support flash yet
 //

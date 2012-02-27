@@ -76,7 +76,15 @@ if (isset ($_POST["template_id"])) {
 				'plugin_pass' => $row2["plugin_pass"],
 				'plugin_parameter' => $row2["plugin_parameter"],
 				'max_timeout' => $row2["max_timeout"],
-				'id_plugin' => $row2['id_plugin']);
+				'id_plugin' => $row2['id_plugin'],
+				'post_process' => $row2['post_process'],
+				'min_warning' => $row2['min_warning'],
+				'max_warning' => $row2['max_warning'],
+				'str_warning' => $row2['str_warning'],
+				'min_critical' => $row2['min_critical'],
+				'max_critical' => $row2['max_critical'],
+				'str_critical' => $row2['str_critical']
+				);
 			$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
 			
 			// Create with different estado if proc type or data type

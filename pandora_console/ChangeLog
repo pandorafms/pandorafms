@@ -1,3 +1,10 @@
+2012-02-27  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/graphs/functions_pchart.php: fixed when the var for $colors is a
+	other thing distint to array (for example a empty string).
+
+	Merged from trunk.
+
 2012-02-24  Miguel de Dios  <miguel.dedios@artica.es>
 	* pandora_console/include/functions_ui.php: changed the source code into the
 	function "ui_get_full_url" for accept false for to return url with the home

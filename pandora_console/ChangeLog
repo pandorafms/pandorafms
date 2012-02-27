@@ -1,3 +1,8 @@
+2012-02-27  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/graphs/functions_pchart.php: fixed when the var for $colors is a
+	other thing distint to array (for example a empty string).
+
 2012-02-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Added call to fs_error_image function 

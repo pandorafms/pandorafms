@@ -230,7 +230,11 @@ $rgb_color = array();
 if (!isset($colors))
 	$colors = array();
 
-foreach($colors as $i => $color) {		
+if (empty($colors)) {
+	$colors = array();
+}
+
+foreach($colors as $i => $color) {
 	$rgb['border'] = html_html2rgb($color['border']);
 	$rgb_color[$i]['border']['R'] = $rgb['border'][0];
 	$rgb_color[$i]['border']['G'] = $rgb['border'][1];

@@ -1,5 +1,11 @@
 2012-02-27  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* godmode/agentes/agent_template.php: Fixed bug: values 'max_warning',
+	'min_warning', 'max_critical', 'min_critical', 'postprocess' aren't saved in
+	the application template.
+
+2012-02-27  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* godmode/modules/manage_network_components.php: Fixed bug: values max and min
 	saved are integers instead of float.
 

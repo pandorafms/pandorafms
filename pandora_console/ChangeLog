@@ -1,3 +1,13 @@
+2012-02-27  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Removed
+	'tgraph_template' and 'tgraph_source_template' tables.
+
 2012-02-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/include/functions_ui.php: changed the source code into the

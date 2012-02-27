@@ -137,38 +137,6 @@ INSERT INTO tconfig ("token", "value") SELECT 'list_ACL_IPs_for_API', array_to_s
 INSERT INTO "tconfig" ("token", "value") VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
 
 -- -----------------------------------------------------
--- Table `tgraph_template`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS "tgraph_template" (
-  "id_graph_template" SERIAL NOT NULL PRIMARY KEY,
-  "id_user" TEXT NOT NULL default '',
-  "name" TEXT NOT NULL default '',
-  "description" TEXT NOT NULL default '',
-  "period" INTEGER NOT NULL default 0,
-  "width" SMALLINT NOT NULL default 0,
-  "height" SMALLINT NOT NULL default 0,
-  "private" SMALLINT NOT NULL default 0,
-  "events" SMALLINT NOT NULL default 0,
-  "stacked" SMALLINT NOT NULL default 0,
-  "id_group" INTEGER NOT NULL default 0
- );
- 
- -- -----------------------------------------------------
--- Table `tgraph_source_template`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS "tgraph_source_template" (
-  "id_gs_template" SERIAL NOT NULL PRIMARY KEY,
-  "id_template" INTEGER NOT NULL default 0,
-  "agent" TEXT NOT NULL default '',
-  "module" TEXT NOT NULL default '',
-  "period" INTEGER NOT NULL default 0,
-  "weight" DOUBLE PRECISION default 2.0,
-  "exact_match" SMALLINT NOT NULL default 0
- );
- 
--- -----------------------------------------------------
 -- Table `treport_content_item`
 -- -----------------------------------------------------
  ALTER TABLE treport_content_item ADD FOREIGN KEY("id_report_content") REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE;

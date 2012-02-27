@@ -1578,37 +1578,3 @@ CREATE TABLE tevent_filter (
   tag VARCHAR2(600) default '' NOT NULL,
   filter_only_alert NUMBER(10, 0) default -1 NOT NULL
 );
-
--- -----------------------------------------------------
--- Table `tgraph_template`
--- -----------------------------------------------------
-
-CREATE TABLE tgraph_template (
-  id_graph_template NUMBER(10, 0) NOT NULL PRIMARY KEY,
-  id_user VARCHAR2(255) NOT NULL,
-  name VARCHAR2(255) NOT NULL,
-  description CLOB default '',
-  period NUMBER(11, 0) default 0 NOT NULL,
-  width SMALLINT default 0 NOT NULL,
-  height SMALLINT default 0 NOT NULL,
-  private SMALLINT default 0 NOT NULL,
-  events SMALLINT default 0 NOT NULL,
-  stacked SMALLINT default 0 NOT NULL,
-  id_group NUMBER(8, 0) default 0 
-);
-
-CREATE SEQUENCE tgraph_template_s INCREMENT BY 1 START WITH 1;
-
--- -----------------------------------------------------
--- Table `tgraph_source_template`
--- -----------------------------------------------------
-CREATE tgraph_source_template (
-  id_gs_template NUMBER(10, 0) NOT NULL PRIMARY KEY,
-  id_template NUMBER(10, 0) default 0 NOT NULL,
-  agent VARCHAR2(255), 
-  module VARCHAR2(255),
-  weight FLOAT(5) DEFAULT 2 NOT NULL;
-  exact_match SMALLINT default 0 NOT NULL
-);
-
-CREATE SEQUENCE tgraph_source_template_s INCREMENT BY 1 START WITH 1;

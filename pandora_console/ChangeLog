@@ -1,3 +1,8 @@
+2012-02-27  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/modules/manage_network_components.php: Fixed bug: values max and min
+	saved are integers instead of float.
+
 2012-02-27  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/graphs/functions_pchart.php: fixed when the var for $colors is a

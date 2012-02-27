@@ -1,3 +1,18 @@
+2012-02-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php: Added avg_only option to boolean 
+	graphs, string graphs have more space between elements in legend,
+	added units to all graphs.
+	* include/graphs/functions_fsgraph.php: Added unit to flash chart
+	of type 2D column.
+	* include/graphs/fgraph.php: Added unit to static version.
+	* include/functions_forecast.php: Fixed division by zero in 
+	projection graphs when all data is zero.
+	* operation/agentes/stat_win.php: Added avg_only option for boolean
+	graph. 
+	
+	Bugfix merged from trunk.
+
 2012-02-27  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/graphs/functions_pchart.php: fixed when the var for $colors is a

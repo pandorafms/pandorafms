@@ -159,7 +159,7 @@ $urlImage = ui_get_full_url(false);
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-				$label, null, $draw_alerts, 1, false, $date, false, $urlImage);
+				$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage);
 		break;
 	case 'sparse':
 		echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,

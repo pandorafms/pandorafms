@@ -105,7 +105,10 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	// Linear correlation coefficient:
 	
 	$avg_x = $cont/$sum_xi;
-	$avg_y = $cont/$sum_yi;
+	if ($sum_yi != 0)
+		$avg_y = $cont/$sum_yi;
+	else
+		$avg_y = 0;
 	$covariance = $sum_xi_yi/$cont;
 	$dev_x = sqrt(($sum_xi2/$cont) - ($avg_x*$avg_x));
 	$dev_y = sqrt(($sum_yi2/$cont) - ($avg_y*$avg_y));
@@ -189,7 +192,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 		}
 		// Using this function for prediction_date
 		if ($prediction_period == false){
-			// This statements stop the prediction when interval is greater than 4 years
+			// These statements stop the prediction when interval is greater than 4 years
 			if ($current_ts - $last_timestamp >= 126144000){
 				return false;
 			} 

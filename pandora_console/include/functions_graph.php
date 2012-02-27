@@ -364,7 +364,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	// Color commented not to restrict serie colors
 	return area_graph($flash_chart, $chart, $width, $height, '' /*$color*/ ,$legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], $unit, $ttl);
 }
@@ -1746,6 +1746,11 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		}
 		graphic_error ();
 	}
+	
+	if (empty($unit_name)){
+		$unit = modules_get_unit($agent_module_id);
+	}else
+		$unit = $unit_name;
 
 	// Data iterator
 	$j = 0;
@@ -1825,8 +1830,12 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 
 		// Data and zeroes (draw a step)
 		if ($zero == 1 && $count > 0) {
-			$chart[$timestamp]['sum'] = $total;
-			$chart[$timestamp + 1] = array ('sum' => 0,
+			if ($avg_only) {
+				$chart[$timestamp]['sum'] = $total;
+			}
+			else {
+				$chart[$timestamp]['sum'] = $total;
+				$chart[$timestamp + 1] = array ('sum' => 0,
 			                                //'count' => 0,
 			                                //'timestamp_bottom' => $timestamp,
 			                                //'timestamp_top' => $timestamp + $interval,
@@ -1834,6 +1843,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			                                'max' => 0,
 			                                'event' => $event_value,
 			                                'alert' => $alert_value);
+			}
 			$previous_data = 0;
 		// Just zeros
 		} else if ($zero == 1) {
@@ -1855,8 +1865,10 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['count'] = 0;
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
-		$chart[$timestamp]['min'] = 0;
-		$chart[$timestamp]['max'] = 0;
+		if (!$avg_only){		
+			$chart[$timestamp]['min'] = 0;
+			$chart[$timestamp]['max'] = 0;
+		}	
 		if($show_events) {
 			$chart[$timestamp]['event'] = $event_value;
 		}
@@ -1948,9 +1960,9 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], "");
+		 $config['fontpath'], $config['font_size'], $unit);
 }
 
 
@@ -2351,6 +2363,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		}
 	}
 	
+	if (empty($unit_name)){
+		$unit = modules_get_unit($agent_module_id);
+	}
+	else
+		$unit = $unit_name;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$color = array();
@@ -2370,9 +2387,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$legend = null;
 	
 	return vbar_graph($flash_chart, $chart, $width, $height, $color,
-		$legend, "", "", $homeurl,
+		$legend, "", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size'], '', true, 1, true);
+		$config['fontpath'], $config['font_size'], true, true, 1, true);
 }
 
 function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,

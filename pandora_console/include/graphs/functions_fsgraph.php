@@ -425,7 +425,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 		}
 	}
 	
-	$chart->setChartParams('numberSuffix=' . $unit . ';'.'animation=0;numVDivLines=' . $num_vlines . 
+	$chart->setChartParams('yAxisName=' . $unit . ';'.'animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
 		'lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
@@ -482,7 +482,7 @@ function get_chart_code ($chart, $width, $height, $swf) {
 }
 
 // Prints a 3D pie chart
-function fs_3d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE") {
+function fs_3d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF") {
 	if ((sizeof ($data) != sizeof ($names)) OR (sizeof($data) == 0) ){
 		return;
 	}
@@ -502,7 +502,7 @@ function fs_3d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 }
 
 // Prints a 2D pie chart
-function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE") {
+function fs_2d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF") {
 	if ((sizeof ($data) != sizeof ($names)) OR (sizeof($data) == 0) ){
 		return;
 	}
@@ -522,7 +522,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "EEEEEE"
 }
 
 // Returns a 2D column chart
-function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false) {
+function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false, $yaxisname = '') {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -596,7 +596,7 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 		}
 	}
 
-    $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
+    $chart->setChartParams('yAxisName=' . $yaxisname . ';decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code

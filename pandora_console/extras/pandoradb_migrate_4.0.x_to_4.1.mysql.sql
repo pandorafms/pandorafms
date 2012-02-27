@@ -159,38 +159,6 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('event_fields', 'evento,id_agen
 DELETE FROM tconfig WHERE token LIKE "list_ACL_IPs_for_API_%";
 
 -- -----------------------------------------------------
--- Table `tgraph_template`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `tgraph_template` (
-  `id_graph_template` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_user` TEXT NOT NULL,
-  `name` TEXT NOT NULL,
-  `description` TEXT NOT NULL,
-  `period` int(11) NOT NULL default '0',
-  `width` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
-  `height` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
-  `private` tinyint(1) UNSIGNED NOT NULL default 0,
-  `events` tinyint(1) UNSIGNED NOT NULL default 0,
-  `stacked` tinyint(1) UNSIGNED NOT NULL default 0,
-  `id_group` mediumint(8) unsigned NULL default 0,
-  PRIMARY KEY(`id_graph_template`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- -----------------------------------------------------
--- Table `tgraph_source_template`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tgraph_source_template` (
-  `id_gs_template` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_template` int(11) NOT NULL default 0,
-  `agent` TEXT, 
-  `module` TEXT,
-  `weight` FLOAT(5,3) NOT NULL DEFAULT 2,
-  `exact_match` tinyint(1) default 0, 
-  PRIMARY KEY(`id_gs_template`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- -----------------------------------------------------
 -- Table `treport_content_item`
 -- -----------------------------------------------------
 ALTER TABLE treport_content_item ADD FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`) ON UPDATE CASCADE ON DELETE CASCADE;

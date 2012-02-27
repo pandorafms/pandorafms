@@ -522,7 +522,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF"
 }
 
 // Returns a 2D column chart
-function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false) {
+function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false, $yaxisname = '') {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -596,7 +596,7 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 		}
 	}
 
-    $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
+    $chart->setChartParams('yAxisName=' . $yaxisname . ';decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code

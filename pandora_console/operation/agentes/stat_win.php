@@ -164,7 +164,7 @@ echo "<br>";
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-				$label, null, $draw_alerts, 1, false, $date, false, $urlImage);
+				$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage);
 		echo '<br><br><br>';
 		if ($show_events_graph)
 			echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom);				

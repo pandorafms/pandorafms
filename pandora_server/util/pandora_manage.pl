@@ -1019,8 +1019,10 @@ sub cli_delete_module() {
 
 sub cli_delete_not_policy_modules() {
 	my $incomingdir;
+	my $incomingdirmd5;
 
 	$incomingdir = $conf->{incomingdir}.'/conf/';
+	$incomingdirmd5 = $conf->{incomingdir}.'/md5/';
 
 	# Open the folder
 	opendir FOLDER, $incomingdir || die "[ERROR] Opening incoming directory";
@@ -1028,12 +1030,17 @@ sub cli_delete_not_policy_modules() {
 	# Store the list of files
 	my @files = readdir(FOLDER);
 	my $file;
+	my $filemd5;
 	
 	print "[INFO] Deleting modules without policy from conf files \n\n";
 	foreach $file (@files)
 	{
 		if($file ne '.' && $file ne '..') {
-			my $ret = enterprise_hook('pandora_delete_not_policy_modules', [$incomingdir.$file]);
+			# Creates md5 filename of agent
+			$filemd5 = $file;
+			$filemd5 =~ s/\.conf/\.md5/g;
+
+			my $ret = enterprise_hook('pandora_delete_not_policy_modules', [$incomingdir.$file, $incomingdirmd5.$filemd5]);
 		}
 	}
 	

@@ -1,3 +1,11 @@
+2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* util/pandora_manage.pl: Modify call to function 
+	pandora_delete_not_policy_modules adding md5 filename like a 
+	parameter.
+
+	Bugfix merged from trunk.
+
 2012-02-16  Hirofumi Kosaka <kosaka@rworks.jp>
 
         * bin/tentacle_server: Upgraded to 0.3.0 (Merged from

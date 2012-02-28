@@ -1019,7 +1019,7 @@ foreach ($result as $event) {
 	
 	if ($group_rep != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<b>' . __('Count') . '</b></td><td align="left">';
+		$string .= '<b>' . __('Count') . '</b></td><td id="count_event_group_' . $event["id_evento"] . '" align="left">';
 	}
 	
 	if ($group_rep == 1) {

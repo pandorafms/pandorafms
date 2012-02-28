@@ -183,7 +183,7 @@ if (! empty ($graphs)) {
 else {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }
-	
+
 echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/graph_builder">';
 echo '<div class="action-buttons" style="width: 98%;">';
 html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');

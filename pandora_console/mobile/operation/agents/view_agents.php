@@ -296,7 +296,7 @@ class ViewAgent {
 				$salida = "<span style='$style'>$salida</span>";
 			}
 			else {
-				if (is_numeric($module["datos"])){
+				if (is_numeric($module["datos"])) {
 					$salida = format_numeric($module["datos"]);
 				}
 				else {
@@ -517,7 +517,7 @@ class viewGraph {
 			
 			$data = array ();
 		
-			foreach($columns as $col => $attr){
+			foreach($columns as $col => $attr) {
 				$data[] = $attr[1] ($row[$attr[0]]);
 			}
 		

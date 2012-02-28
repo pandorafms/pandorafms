@@ -291,7 +291,8 @@ echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="d
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (incidents_get_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	html_print_select (incidents_get_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
 }
 
@@ -304,11 +305,11 @@ if (empty ($id_creator)) {
 
 $agents_incidents = agents_get_agents(false, array('id_agente', 'nombre'));
 
-if ($agents_incidents === false){
+if ($agents_incidents === false) {
 	$agents_incidents = array();
 }
 
-foreach ($agents_incidents as $agent_incident){
+foreach ($agents_incidents as $agent_incident) {
 	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
 }
 
@@ -324,7 +325,8 @@ echo '</td></tr><tr><td class="datos2" colspan="4">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;"');
-} else {
+}
+else {
 	html_print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;" disabled');
 }
 

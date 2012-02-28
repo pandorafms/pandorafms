@@ -1,5 +1,16 @@
 2012-02-28  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_networkmap.php: fixed into the function
+	"networkmap_create_agent_node" the creation of url link for the node.
+
+	* godmode/reporting/graphs.php, godmode/reporting/reporting_builder.php,
+	include/functions_graph.php, include/functions_reporting.php,
+	mobile/operation/agents/view_agents.php, operation/agentes/datos_agente.php,
+	operation/incidents/incident_detail.php,
+	operation/reporting/reporting_viewer.php: cleaned source code style.
+
+2012-02-28  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/events/events.php, operation/agentes/datos_agente.php,
 	operation/agentes/custom_fields.php,
 	operation/agentes/alerts_status.functions.php, operation/search_reports.php,

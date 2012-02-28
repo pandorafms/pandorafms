@@ -4637,7 +4637,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	return $critical_period;
 }
 
-/*
+/**
  * Get all the template graphs a user can see.
  *
  * @param $id_user User id to check.

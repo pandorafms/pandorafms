@@ -1,3 +1,11 @@
+2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* util/pandora_manage.pl: Modify call to function 
+	pandora_delete_not_policy_modules adding md5 filename like a 
+	parameter.
+
+	Fixes: #3486481
+
 2012-02-28  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* bin/PandoraFMS/Core.pm: Fixed bug: double safe_input in event name.

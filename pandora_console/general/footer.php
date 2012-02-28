@@ -16,7 +16,8 @@
 
 if (isset($_SERVER['REQUEST_TIME'])) {
 	$time = $_SERVER['REQUEST_TIME'];
-} else {
+}
+else {
 	$time = get_system_time ();
 }
 

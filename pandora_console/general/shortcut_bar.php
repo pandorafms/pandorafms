@@ -92,14 +92,16 @@
 
 	if ($shortcut_state == 2){
 		echo "<div id='shortcut_button' style='position: fixed; overflow: hidden; bottom: 0px; left: 0px; width: 185px; height: 40px; background-color: #FFFFFF; border: 1px solid #808080;  border-top-left-radius: 10px; border-top-right-radius: 10px;'>";
-	}else{
+	}
+	else{
 		echo "<div id='shortcut_button' style='position: fixed; overflow: hidden; bottom: 0px; left: 0px; width: 185px; height: 0px; background-color: #FFFFFF; border: 1px solid #808080;  border-top-left-radius: 10px; border-top-right-radius: 10px;'>";
 	}
 		html_print_image("images/pandora_textlogo.png", false, array("title" => __("Press here to activate shortcut bar")));
 	echo "</div>";
 	if ($shortcut_state == 2){	
 		echo "<div id='shotcut_bar' style='position: fixed; overflow:hidden; bottom: 0px; left: 0px; width:100%; height: 20px; background-color:#DCDCDC; border: 1px solid #808080;'>";
-	} else {
+	}
+	else {
 		echo "<div id='shotcut_bar' style='position: fixed; overflow:hidden; bottom: 0px; left: 0px; width:100%; height: 0px; background-color:#DCDCDC; border: 1px solid #808080;'>";
 	}
 			
@@ -214,7 +216,8 @@
 		// This will show and hide the shortcut value in Javascript code
 		if (isset($_POST['nick']) and $shortcut_state != 2){
 			html_print_input_hidden("login_console", 1);
-		} else {
+		}
+		else {
 			html_print_input_hidden("login_console", 0);
 		}
 		
@@ -230,11 +233,13 @@
 			$('#shortcut_button').css({height: 22}).animate({ height: '40' }, 900);
 			$('#shotcut_bar').css({height: 20}).animate({ height: '0' }, 900);
 			$('#shortcut_button').css({height:40}).animate({ height: '22' }, 900);	
-		} else {
+		}
+		else {
 			if ($('#shotcut_bar').css('height') == '0px'){
 				$('#shotcut_bar').css('height', '0px');
 				$('#shortcut_button').css('height', '22px');
-			}else{
+			}
+			else{
 				$('#shotcut_bar').css('height', '20px');
 				$('#shortcut_button').css('height', '40px');			
 			}
@@ -252,7 +257,8 @@
 					function (data) {
 					}
 				);		
-			} else {
+			}
+			else {
 				$('#shotcut_bar').css({height: 20}).animate({ height: '0' }, 900);	
 				$('#shortcut_button').css({height: 40}).animate({ height: '22' }, 900);		
 				jQuery.post ("ajax.php",

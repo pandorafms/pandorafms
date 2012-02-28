@@ -51,7 +51,8 @@ if ($news !== false) {
 	echo '<table cellpadding="4" cellspacing="4" class="databox">';
 	if ($config["prominent_time"] == "timestamp") {
 		$comparation_suffix = "";
-	} else {
+	}
+	else {
 		$comparation_suffix = __('ago');
 	}
 	foreach ($news as $article) {
@@ -62,7 +63,8 @@ if ($news !== false) {
 		echo '</td></tr>';
 	}
 	echo '</table>';
-} else {
+}
+else {
 	echo '<div>'.__('No news articles at this moment').'</div>';
 }
 echo '</div>';

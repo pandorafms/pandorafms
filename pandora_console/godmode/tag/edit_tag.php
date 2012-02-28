@@ -106,9 +106,8 @@ if ($action == "update" && $id_tag != 0){
 	$name_tag = $result_tag["name"]; 
 	$description_tag = $result_tag["description"];
 	$url_tag = $result_tag["url"];
-
-// If current action is create (new) or somethig goes wrong fields are filled with void value  
-}else{
+} // If current action is create (new) or somethig goes wrong fields are filled with void value
+else {
 	$name_tag = "";
 	$description_tag = "";
 	$url_tag = "";

@@ -29,7 +29,8 @@ if ($delete_layout) {
 	if ($result) {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 		db_clean_cache();
-	} else {
+	}
+	else {
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	}
 	$id_layout = 0;
@@ -149,7 +150,8 @@ else
 
 if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
-} else {
+}
+else {
 	foreach ($maps as $map) {			
 		if (check_acl ($config['id_user'], $map['id_group'], "IW")) {
 			$data = array ();

@@ -1,3 +1,11 @@
+2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/estado_ultimopaquete.php: Fixed bug in this view
+	When a module is in a unknown status shows "NeverUnknown" instead of 
+	"Unknow".
+	
+	Bugfix merged from trunk.
+
 2012-02-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_events.php: Merged from trunk. Fixed an include

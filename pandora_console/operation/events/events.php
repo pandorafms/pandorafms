@@ -514,13 +514,16 @@ $(document).ready( function() {
 
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;
+									row_id_number_next = parseInt($(row).attr('id').split('-').pop()) + 1;
 									previous_row_id = $(row).attr('id');
 									current_row_id = row_id_name + "-" + row_id_number;
 									selected_row_id = row_id_name + "-" + row_id_number + "-0";
+									next_row_id = row_id_name + '-' + row_id_number_next;
 									
 									$("#"+previous_row_id).css('display', 'none');
 									$("#"+current_row_id).css('display', 'none');
 									$("#"+selected_row_id).css('display', 'none');
+									$("#"+next_row_id).css('display', 'none');
 								}
 							});	
 						}							
@@ -551,8 +554,15 @@ $(document).ready( function() {
 								$("#comment_header_"+id).html(data);								
 							});						
 
-						// Remove delete link
-						$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="/trunk/pandora_console/images/cross.disabled.png">');
+						// Remove delete link (if event is not grouped and there is more than one event)
+						if ($("#group_rep").val() == 1){
+							if (parseInt($("#count_event_group_"+id).text()) <= 1){
+								$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
+							}
+						}
+						else{ // Remove delete link (if event is not grouped)
+							$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
+						}
 						
 						// Change state image
 						$("#status_img_"+id).attr ("src", "images/hourglass.png");
@@ -569,13 +579,16 @@ $(document).ready( function() {
 
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;
+									row_id_number_next = parseInt($(row).attr('id').split('-').pop()) + 1;
 									previous_row_id = $(row).attr('id');
 									current_row_id = row_id_name + "-" + row_id_number;
 									selected_row_id = row_id_name + "-" + row_id_number + "-0";
+									next_row_id = row_id_name + '-' + row_id_number_next;								
 
 									$("#"+previous_row_id).css('display', 'none');
 									$("#"+current_row_id).css('display', 'none');
 									$("#"+selected_row_id).css('display', 'none');
+									$("#"+next_row_id).css('display', 'none');
 								}
 							});		
 

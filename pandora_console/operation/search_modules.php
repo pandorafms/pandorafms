@@ -256,7 +256,8 @@ else {
 		
 		if ($module['estado'] == 3){
 			$option = array ("html_attr" => 'class="redb"');
-		} else {
+		}
+		else {
 			$option = array ();
 		}
 		$timestampCell = ui_print_timestamp ($module["utimestamp"], true, $option);

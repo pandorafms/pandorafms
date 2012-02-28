@@ -73,7 +73,8 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	
 	if($return) {
 		return $data;
-	}else{
+	}
+	else {
 		echo $data;
 	}
 }

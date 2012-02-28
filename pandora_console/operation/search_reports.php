@@ -83,7 +83,8 @@ else {
 	foreach ($reports as $report) {
 		if($linkReport) {
 			$reportstring = "<a href='?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report=" . $report['id_report'] . "' title='" . __("Edit") . "'>" . $report['name'] . "</a>";
-		} else {
+		}
+		else {
 			$reportstring = $report['name'];
 		}
 		$data = array(

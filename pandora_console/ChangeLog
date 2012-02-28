@@ -1,5 +1,12 @@
 2012-02-28  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/events/events.php, operation/agentes/datos_agente.php,
+	operation/agentes/custom_fields.php,
+	operation/agentes/alerts_status.functions.php, operation/search_reports.php,
+	operation/search_modules.php: : cleaned source code style.
+
+2012-02-28  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/alerts/configure_alert_action.php,
 	godmode/alerts/configure_alert_template.php,
 	godmode/modules/manage_network_components_form.php,

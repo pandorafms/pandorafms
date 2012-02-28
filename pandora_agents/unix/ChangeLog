@@ -1,3 +1,8 @@
+2012-02-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf,
+	  pandora_agent: Merged from trunk. Added support for xml_buffer.
+
 2012-02-10  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandora_agent: Merged from trunk. Allow filename wildcards

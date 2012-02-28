@@ -98,6 +98,16 @@ use constant PART_CMDS => {
 	aix => 'df -kP | awk \'NR > 1 {print $2, $4, $6}\'',
 	freebsd => 'df -k | awk \'NR > 1 {print $2, $4, $6}\''
 };
+
+# Commands to call df with POSIX output format
+use constant DF_CMDS => {
+	# total, available, mount point
+	linux => 'df -P',
+	solaris => 'df -k',
+	hpux => 'df -P',
+	aix => 'df -kP',
+	freebsd => 'df -k'
+};
 	
 # OS and OS version
 my $OS = $^O;
@@ -146,6 +156,7 @@ my %Conf = (
 	'secondary_server_ssl' => 'no',
 	'secondary_server_opts' => '',
 	'autotime' => 0,
+	'temporal_min_size' => 1,
 	'timezone_offset' => 0,
 	'pandora_exec' => 'pandora_agent_exec',
 	'agent_threads' => 1,
@@ -155,6 +166,7 @@ my %Conf = (
 	'proxy_mode' => 0,
 	'proxy_max_connection' => 10,
 	'proxy_timeout' => 1,
+	'xml_buffer' => 0,
 );
 
 # Modules
@@ -639,6 +651,22 @@ sub send_file {
 	$rc = send_file ($file);
 	swap_servers ();
 	return $rc;
+}
+
+################################################################################
+# Send buffered XML files.
+################################################################################
+sub send_buffered_xml_files () {
+
+	# Read XML files from the temporal directory
+	opendir(TEMPORAL, $Conf{'temporal'}) or return;
+	while (my $xml_file = readdir(TEMPORAL)) { 
+	
+		# Skip non data files
+		next unless ($xml_file =~ m/\.data$/);
+
+		send_file ($xml_file, 1);
+	}
 }
 
 ################################################################################
@@ -1591,6 +1619,23 @@ sub kill_signal_handler (){
 }
 
 ################################################################################
+# Get the free disk space in the temporal directory (in bytes).
+################################################################################
+sub temporal_freedisk () {
+
+	# Call df
+	return 0 unless defined (DF_CMDS->{$OS});
+	my $cmd = DF_CMDS->{$OS} . ' ' . $Conf{'temporal'} . ' | awk \'NR > 1 {print $4}\'';	
+	my $temporal_freedisk = `$cmd`;
+
+	# Check for errors
+	return 0 unless ($? eq 0);
+
+	# Convert to bytes
+	return 1024 * int ($temporal_freedisk);
+}
+
+################################################################################
 # Main.
 ################################################################################
 
@@ -1846,8 +1891,15 @@ while (1) {
 	}
 
 	# Send the XML data file
-	send_file ($temp_file, 1);
-	unlink ($temp_file);
+	my $rc = send_file ($temp_file, 1);
+	if ($rc == 0 || $Conf{'xml_buffer'} == 0 || temporal_freedisk () < $Conf{'temporal_min_size'}) {
+		unlink ($temp_file);
+	}
+		
+	# Send buffered XML data files
+	if ($Conf{'xml_buffer'} == 1) {
+		send_buffered_xml_files ();
+	}
 	
 	# Cron mode
 	last if ($Conf{'cron_mode'} == 1);

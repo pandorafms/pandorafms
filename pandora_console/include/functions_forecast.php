@@ -44,7 +44,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 		return array();	
 	}
 	// Prevents bad behaviour over image error 
-	else if (!is_array($module_data) and preg_match('/^<img(.)*$/', $module_data)){
+	else if (!is_array($module_data) and preg_match('/^<img(.)*$/', $module_data)) {
 		return;
 	}		
 			
@@ -64,7 +64,10 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 
 	// Creates data for calculation		
 	foreach ($module_data as $utimestamp => $row) {
-		if ($utimestamp == '') { continue; }	
+		if ($utimestamp == '') {
+			continue;
+		}
+		
 		$data[0] = '';
 		$data[1] = $cont;
 		$data[2] = date('d M Y H:i:s', $utimestamp);
@@ -75,7 +78,8 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 		$data[7] = $row['sum'] * $row['sum'];
 		if ($cont == 1){
 			$data[8] = 0;
-		}else{	
+		}
+		else {	
 			$data[8] = $utimestamp - $last_timestamp;
 		}		
 		

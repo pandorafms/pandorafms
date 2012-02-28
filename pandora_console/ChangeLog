@@ -1,4 +1,12 @@
-2012-02-27  Miguel de Dios  <miguel.dedios@artica.es>
+2012-02-28  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/configure_alert_action.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/modules/manage_network_components_form.php,
+	godmode/users/configure_user.php, include/functions_forecast.php,
+	mobile/operation/agents/monitor_status.php: cleaned source code style.
+
+2012-02-28  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/integria_incidents/incident.php: added error message when
 	Pandora have a bad conf for the Integria API. And cleaned source code style.

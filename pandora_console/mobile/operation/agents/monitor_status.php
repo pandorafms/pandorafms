@@ -187,7 +187,7 @@ class MonitorStatus {
 			
 			$data = array();
 			
-			if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
+			if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)) {
 				$statusImg = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 			}
 			elseif ($row["estado"] == 0) {

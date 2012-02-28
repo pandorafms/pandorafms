@@ -1,5 +1,13 @@
 2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/estado_ultimopaquete.php: Fixed bug in this view
+	When a module is in a unknown status shows "NeverUnknown" instead of 
+	"Unknow".
+	
+	Fixes: #3487321
+
+2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php
 	 operation/events/events.php: Changed validation and set in process
 	 to javascript code (pending fixes in this feature).

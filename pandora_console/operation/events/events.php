@@ -429,10 +429,6 @@ $(document).ready( function() {
 	$("a.validate_event").click (function () {
 		$tr = $(this).parents ("tr");
 		
-		
-
-		
-		
 		id = this.id.split ("-").pop ();
 		var comment = $('#textarea_comment_'+id).val();
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment

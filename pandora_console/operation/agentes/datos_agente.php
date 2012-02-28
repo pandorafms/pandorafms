@@ -189,7 +189,7 @@ $table->width = '98%';
 
 //
 $index = 0;
-foreach($columns as $col => $attr){
+foreach($columns as $col => $attr) {
 	$table->head[$index] = $col;
 	
 	if (isset($attr["align"]))
@@ -204,7 +204,7 @@ foreach($columns as $col => $attr){
 foreach ($result as $row) {
 	$data = array ();
 
-	foreach($columns as $col => $attr){
+	foreach($columns as $col => $attr) {
 		$data[] = $attr[1] ($row[$attr[0]]);
 	}
 

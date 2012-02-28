@@ -89,7 +89,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 		// Save node parent information to define edges later
 		if ($agent['id_parent'] != "0") {
 			$parents[$node_count] = $node_ref[$agent['id_parent']];
-		} else {
+		}
+		else {
 			$orphans[$node_count] = 1;
 		}
 		
@@ -100,7 +101,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 		// Add node
 		$nodes[$node_count] = $agent;
 		
-		if($show_snmp_modules) {
+		if ($show_snmp_modules) {
 			// Get agent modules data of snmp_proc type
 			$modules = agents_get_modules ($agent['id_agente'], false, array('disabled' => 0, 'id_tipo_modulo' => 18), true, false);
 			// Parse modules
@@ -142,7 +143,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 				break;
 		}
 	}
-
+	
 	// Define edges
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph
@@ -152,7 +153,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 			$orphans[$node] = 1;
 		}
 	}
-
+	
 	// Create a central node if orphan nodes exist
 	if (count ($orphans) || empty ($nodes)) {
 		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple);
@@ -383,10 +384,11 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 		// Set node icon
 		if (file_exists (html_print_image("images/groups_small/" . $icon . ".png", true, false, true, true))) { 
 			$img_node = html_print_image("images/groups_small/" . $icon . ".png", true, false, false, true);
-		} else {
+		}
+		else {
 			$img_node = '-';
 		}
-
+		
 		if (strlen(groups_get_name($group['id_grupo'])) > 40){
 			$name = substr(groups_get_name($group['id_grupo']), 0, 40) . '...';
 		}
@@ -398,7 +400,8 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
-	} else {
+	}
+	else {
 		$node = $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
 	}
 	return $node;
@@ -438,8 +441,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	if ($simple == 0){
 		// Set node icon
 		$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true);
-		$img_node = str_replace($config['homeurl'] . '/', '', $img_node);
-
+		
 		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . html_print_image($img_node, true, false, false, true) . '</TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
@@ -448,6 +450,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	else {
 		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
+	
 	return $node;
 }
 

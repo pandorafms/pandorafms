@@ -639,7 +639,7 @@ switch ($action) {
 		}
 		break;
 	// Added for report templates
-	default: 
+	default:
 		if ($enterpriseEnable){
 			$buttons = array(
 				'list_reports' => array('active' => false,

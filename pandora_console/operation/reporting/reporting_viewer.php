@@ -207,7 +207,6 @@ foreach ($contents as $content) {
 ?>
 
 <script language="javascript" type="text/javascript">
-
 $(document).ready (function () {	
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
@@ -225,7 +224,8 @@ $(document).ready (function () {
 			$("#table1-1-3").css("display", "");
 			$("#table1-1-4").css("display", "");
 			$("#table1-1-5").css("display", "none");
-		}else{
+		}
+		else {
 			$("#table1-1-3").css("display", "none");
 			$("#table1-1-4").css("display", "none");
 			$("#table1-1-5").css("display", "");

@@ -474,10 +474,7 @@ foreach ($modules as $module) {
 	}
 
 	echo "<td class='".$tdcolor."f9'>";
-	if ($module["utimestamp"] == 0){ 
-		echo __('Never');
-	}
-	else {
+	if ($module["utimestamp"] != 0){ 
 		$seconds = get_system_time () - $module["utimestamp"];
 		if ($module['id_tipo_modulo'] < 21 && $module["module_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["module_interval"] * 2)) {
 			echo '<span class="redb">';

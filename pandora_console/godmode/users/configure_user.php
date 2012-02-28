@@ -354,7 +354,7 @@ $own_info = get_user_info ($config['id_user']);
 if ($config['admin_can_make_admin']) {
 	$table->data[6][0] = __('Global Profile');
 	$table->data[6][1] = '';
-	if ($own_info['is_admin'] || $user_info['is_admin']){
+	if ($own_info['is_admin'] || $user_info['is_admin']) {
 		$table->data[6][1] = html_print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
 		$table->data[6][1] .= __('Administrator');
 		$table->data[6][1] .= ui_print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
@@ -384,10 +384,11 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$display_all_group = false;
 
-if ($new_user){		
+if ($new_user) {		
 	$usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 	$id_usr = $config['id_user'];
-}else{
+}
+else {
 	$usr_groups = (users_get_groups($id, 'AR', $display_all_group));
 	$id_usr = $id;
 }
@@ -420,7 +421,8 @@ if ($new_user) {
 		html_print_input_hidden ('create_user', 1);
 		html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	}
-} else {
+}
+else {
 	if ($config['user_can_update_info']) {
 		html_print_input_hidden ('update_user', 1);
 		html_print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');

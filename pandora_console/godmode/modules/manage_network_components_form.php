@@ -154,7 +154,8 @@ if ($id) {
 	html_print_input_hidden ('update_component', 1);
 	html_print_input_hidden ('id', $id);
 	html_print_submit_button (__('Update'), 'upd', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create_component', 1);
 	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
@@ -436,7 +437,8 @@ $(document).ready (function () {
 			$("input[name=active_snmp_v3]").val(1);
 			$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
 			$("input[name=snmp_community]").attr("disabled",true);	
-		}else{
+		}
+		else {
 			$("input[name=snmp3_auth_user]").val("");				
 			$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});			
 			$("input[name=snmp3_auth_user]").attr("disabled", true);	

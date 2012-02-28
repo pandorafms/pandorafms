@@ -699,7 +699,7 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	# Generate an event
 	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
 
-	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") " . (defined ($module) ? 'assigned to ('. $module->{'nombre'} . ")" : ""),
+	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
 			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
 			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh);
 }

@@ -1,3 +1,7 @@
+2012-02-28  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* bin/PandoraFMS/Core.pm: Fixed bug: double safe_input in event name.
+
 2012-02-20  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* lib/PandoraFMS/SNMPServer.pm: Parse source field to obtain source

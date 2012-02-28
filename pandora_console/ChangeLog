@@ -1,5 +1,12 @@
 2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_reporting.php: Added set_time_limit to 500 secs
+	to avoid php timeouts in projection and prediction reports.
+	
+	Merged bugfix from trunk.
+
+2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_ultimopaquete.php: Fixed bug in this view
 	When a module is in a unknown status shows "NeverUnknown" instead of 
 	"Unknow".

@@ -2207,6 +2207,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
 			
+			set_time_limit(500);
+			
 			// Put description at the end of the module (if exists)
 			$table->colspan[2][0] = 4;
 			if ($content["description"] != ""){
@@ -2255,6 +2257,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[1] = $sizh . ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false).$sizhfin;
 			$data[2] = $sizh.human_time_description_raw ($content['period']).$sizhfin;
 			array_push ($table->data, $data);
+			
+			set_time_limit(500);			
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[2][0] = 4;

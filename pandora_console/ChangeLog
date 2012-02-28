@@ -1,3 +1,8 @@
+2012-02-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_events.php: Merged from trunk. Fixed an include
+	  path.
+
 2012-02-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Added avg_only option to boolean 

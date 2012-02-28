@@ -150,3 +150,10 @@ ALTER TABLE "treport" ADD COLUMN "id_template" INTEGER NOT NULL default 0;
 -- Table `tgraph`
 -- -----------------------------------------------------
 ALTER TABLE "tgraph" ADD COLUMN "id_graph_template" INTEGER NOT NULL default 0;
+
+-- -----------------------------------------------------
+-- Table `ttipo_modulo`
+-- -----------------------------------------------------
+UPDATE "ttipo_modulo" SET "descripcion"='Generic data' WHERE "id_tipo"=1;
+
+UPDATE "ttipo_modulo" SET "descripcion"='Generic data incremental' WHERE "id_tipo"=4;

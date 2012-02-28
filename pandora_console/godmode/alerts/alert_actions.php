@@ -64,11 +64,13 @@ if ($copy_action) {
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
-			}else
+			}
+			else {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-		// If user tries to copy an action of others groups
-		}else{
+			}
+		} // If user tries to copy an action of others groups
+		else {
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
@@ -79,7 +81,7 @@ if ($copy_action) {
 			if ($is_in_group)
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-			else{
+			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");

@@ -1,3 +1,15 @@
+2012-02-27  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/integria_incidents/incident.php: added error message when
+	Pandora have a bad conf for the Integria API. And cleaned source code style.
+	
+	* general/footer.php, general/logon_ok.php, general/noaccess.php,
+	general/shortcut_bar.php, general/ui/agents_list.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/reporting/map_builder.php, godmode/tag/edit_tag.php: cleaned source
+	code style.
+
 2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/estado_ultimopaquete.php: Fixed bug in this view

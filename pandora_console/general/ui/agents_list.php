@@ -140,7 +140,8 @@ if ($agents !== false) {
 		foreach ($table_renders as $name => $values) {
 			if (! is_numeric ($name)) {
 				array_push ($data, renders_agent_field ($agent, $name, $values, true));
-			} else {
+			}
+			else {
 				array_push ($data, renders_agent_field ($agent, $values, false, true));
 			}
 		}

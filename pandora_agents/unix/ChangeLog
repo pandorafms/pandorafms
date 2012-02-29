@@ -1,3 +1,8 @@
+2012-02-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: Merged from from trunk. Added a warning
+	  text.
+
 2012-02-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* Linux/pandora_agent.conf,

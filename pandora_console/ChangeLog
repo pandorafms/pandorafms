@@ -1,3 +1,10 @@
+2012-02-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/pandora_modules.js: "snmpwalk" button is 
+	disabled after click on that button to avoid duplicate requests.
+	
+	Merged bugfix from trunk.
+
 2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_reporting.php: Added set_time_limit to 500 secs

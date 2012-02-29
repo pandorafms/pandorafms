@@ -273,6 +273,7 @@ function configure_modules_form () {
 					$("span#no_snmp").show ();
 					$("#oid_loading").hide ();
 					$("#edit_oid").hide ();
+					$("#button-snmp_walk").enable ();
 					return false;
 				}
 				jQuery.each (data, function (id, value) {
@@ -281,7 +282,6 @@ function configure_modules_form () {
 				});
 				$("#select_snmp_oid").show ();
 				$("#oid_loading").hide ();
-				$("#button-snmp_walk").enable ();
 				$("#edit_oid").show ();
 				$("#button-snmp_walk").enable ();
 			},

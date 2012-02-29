@@ -1,3 +1,11 @@
+2012-02-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Export server
+	select is disabled in module policy editor and in standard module 
+	edition can be modified when a policy module is edited.
+	
+	Fixes: #3495682  
+
 2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/javascript/pandora_modules.js: "snmpwalk" button is 

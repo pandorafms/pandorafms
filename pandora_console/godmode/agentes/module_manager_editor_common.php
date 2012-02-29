@@ -238,9 +238,17 @@ $table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, tru
 $table_advanced->data[3][2] = __('Max. Value');
 $table_advanced->data[3][3] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy);
 
-$table_advanced->data[4][0] = __('Export target');
+$table_advanced->data[4][0] = __('Export target'); 
+// Default text message for export target select and disabled option
+$none_text = __('None');
+$disabled_export = false;
+// If code comes from policies disable export select
+if ($__code_from == 'policies'){
+	$none_text = __('Not needed');
+	$disabled_export = true;
+} 
 $table_advanced->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
-	'id_export', $id_export, '',__('None'),'0', true, false, false, $disabledBecauseInPolicy).ui_print_help_tip (__('In case you use an Export server you can link this module and export data to one these.'), true);
+	'id_export', $id_export, '', $none_text, '0', true, false, false, $disabled_export).ui_print_help_tip (__('In case you use an Export server you can link this module and export data to one these.'), true);
 $table_advanced->colspan[4][1] = 3;
 $table_advanced->data[5][0] = __('Unit');
 $table_advanced->data[5][1] = html_print_input_text ('unit', $unit,

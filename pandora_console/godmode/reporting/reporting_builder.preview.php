@@ -183,6 +183,39 @@ switch ($config["dbtype"]) {
 
 if ($contents === false) {
 	return;
+} else {
+	foreach($contents as $content) {
+		$id_report = $content['id_rc'];
+		switch ($content['type']) {
+			case 'SLA':
+				$sql = "SELECT * FROM treport_content_sla_combined WHERE id_report_content=$id_report";
+				$items_sla = db_get_all_rows_sql($sql);
+				if ($items_sla === false) {
+					$items_sla = array();
+				}
+				foreach($items_sla as $item) {
+					$delete_pending = db_get_value('delete_pending', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
+					if ($delete_pending) {
+						$result = db_process_sql_delete('treport_content_sla_combined', array('id'=>$item['id']));
+					}
+				}
+				break;
+				
+			default:
+				$sql = "SELECT * FROM treport_content_item WHERE id_report_content=$id_report";
+				$items = db_get_all_rows_sql($sql);
+				if ($items === false) {
+					$items = array();
+				}
+				foreach($items as $item) {
+					$delete_pending = db_get_value('delete_pending', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
+					if ($delete_pending) {
+						$result = db_process_sql_delete('treport_content_item', array('id'=>$item['id']));
+					}
+				}
+				break;
+		}
+	}
 }
 
 foreach ($contents as $content) {

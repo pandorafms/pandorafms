@@ -1,3 +1,8 @@
+2012-03-01  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/reporting/reporting_builder.preview.php: Fixed bug: When
+	you delete an agent or module, its reports show errors.
+
 2012-02-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Export server

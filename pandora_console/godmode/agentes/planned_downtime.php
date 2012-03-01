@@ -156,19 +156,14 @@ if ($create_downtime || $update_downtime) {
 		}
 		else if ($update_downtime) {
 			if (trim(io_safe_output($name)) != '') {
-				if (!$check) {
-					$values = array(
-						'name' => $name,
-						'description' => $description,
-						'date_from' => $datetime_from,
-						'date_to' => $datetime_to,
-						'id_group' => $id_group,
-						'only_alerts' => (int)$only_alerts);
-					$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
-				}
-				else {
-					echo "<h3 class='error'>".__('Each planned downtime must have a different name')."</h3>";
-				}
+				$values = array(
+					'name' => $name,
+					'description' => $description,
+					'date_from' => $datetime_from,
+					'date_to' => $datetime_to,
+					'id_group' => $id_group,
+					'only_alerts' => (int)$only_alerts);
+				$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 			}
 			else {
 				echo '<h3 class="error">'.__('Planned downtime must have a name').'</h3>';
@@ -187,7 +182,7 @@ if ($create_downtime || $update_downtime) {
 			if($create_downtime && $name && !$check) {
 				echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 			}
-			else if ($update_downtime && $name && !$check) {
+			else if ($update_downtime && $name) {
 				echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 			}
 		}
@@ -442,9 +437,11 @@ else {
 					$data[8] = html_print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
 					$data[8] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
-					
-				$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-				html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
+				
+				if ($downtime["executed"] != 0) {
+					$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+					html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
+				}
 				
 				array_push ($table->data, $data);
 			}

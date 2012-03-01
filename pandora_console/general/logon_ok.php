@@ -138,7 +138,13 @@ $cells[6]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_stat
 $cells[7][0] = __('Users defined');
 $cells[7][1] = count (get_users ());
 $cells[7]["color"] = "#000";
-$cells[7]["href"] = "index.php?sec=usuarios&amp;sec2=operation/users/user";
+if (check_acl ($config['id_user'], 0, "UM")) {
+	$user_link = 'index.php?sec=gusuarios&amp;sec2=godmode/users/user_list';
+}
+else{
+	$user_link = '#';
+}
+$cells[7]["href"] = $user_link;
 
 foreach ($cells as $key => $row) {
 	//Switch class around

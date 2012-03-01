@@ -162,9 +162,9 @@ function mainAgentsModules() {
 		return;
 	}
 	
-	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE; width:97%;">';
+	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE; width:98%;">';
 
-	echo "<th width='140px' style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";	
+	echo "<th width='140px' height='25px' style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";	
 
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
@@ -178,8 +178,7 @@ function mainAgentsModules() {
 			continue;
 		}
 		
-		$file_name = string2image(ui_print_truncate_text($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#90B165', 'FFF', 4, 0);
-		echo '<th width="22px" style ="background-color:#90B165 !important">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
+		echo '<th width="20px" style ="background-color:#90B165 !important">'. html_print_image('images/information.png', true, array('title' => io_safe_output($module['name']))) ."</th>";
 	}
 	
 	if(($hor_offset + $block) < $nmodules) {
@@ -224,10 +223,9 @@ function mainAgentsModules() {
 				break;
 		}
 		
-		echo "<tr style='height: 35px;'>";
+		echo "<tr style='height: 25px;'>";
 		
-		$file_name = string2image(ui_print_truncate_text($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
-		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</a></td>";
+		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" . ui_print_truncate_text(io_safe_output($agent['nombre']), 35, true, true, true, '...', 'font-size:8.5px; font-weight: bold;') . "</a></td>";
 		$agent_modules = agents_get_modules($agent['id_agente']);
 		
 		$nmodules = 0;
@@ -251,19 +249,19 @@ function mainAgentsModules() {
 					echo '<a href="javascript:'.$link.'">';
 					switch($status){
 						case 0:
-							ui_print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_ok.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 1:
-							ui_print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_critical.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 2:
-							ui_print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_warning.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 3:
-							ui_print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_unknown.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 4:
-							ui_print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_alertsfired.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 					}
 					echo '</a>';

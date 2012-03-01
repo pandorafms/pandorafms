@@ -1,3 +1,9 @@
+2012-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* general/logon_ok.php: Fixed users link in welcome page.
+
+	Fixes: #3477646
+
 2012-03-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

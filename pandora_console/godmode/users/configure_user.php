@@ -158,7 +158,7 @@ if ($create_user) {
 			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 			' Is_admin: ' . $values['is_admin'] .
 			' Language: ' . $values['language'] . 
-			' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
+			' Block size: ' . $values['block_size'] . ' Interactive Charts: ' . $values['flash_chart'];
 		
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			$info .= ' Skin: ' . $values['id_skin'];
@@ -401,7 +401,7 @@ if (count($usr_groups) > 1){
 	}
 }
 
-$table->data[11][0] = __('Flash charts');
+$table->data[11][0] = __('Interactive charts');
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
 $table->data[11][1] = html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false); 
 $table->data[12][0] = __('Block size for pagination');

@@ -60,7 +60,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp', 'event_type'));
+			array ('id_evento', 'evento', 'utimestamp', 'event_type'));
 		if ($events === false) {
 			$events = array ();
 		}
@@ -152,6 +152,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$unit = modules_get_unit($agent_module_id);
 	}
 
+	$chart_extra_data = array();
+	
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
@@ -188,12 +190,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
+		$event_ids = array();
+		$alert_ids = array();
 		while (isset ($events[$k]) && $events[$k]['utimestamp'] >= $timestamp && $events[$k]['utimestamp'] <= ($timestamp + $interval)) {
 			if ($show_events == 1) {
 				$event_value++;
+				$event_ids[] = $events[$k]['id_evento'];
 			}
 			if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
 				$alert_value++;
+				$alert_ids[] = $events[$k]['id_evento'];
 			}
 			$k++;
 		}
@@ -284,17 +290,28 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		/////////
+		$series_type = array();
+		
 		if($show_events) {
 			$chart[$timestamp]['event'] = $event_value;
+			$series_type['event'] = 'points';
 		}
 		if($show_alerts) {
 			$chart[$timestamp]['alert'] = $alert_value;
+			$series_type['alert'] = 'points';
 		}
 		if ($baseline) {
 			$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
 			if ($chart[$timestamp]['baseline'] == NULL) {
 				$chart[$timestamp]['baseline'] = 0;
 			}
+		}
+		
+		if(!empty($event_ids)) {
+			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
+		}
+		if(!empty($alert_ids)) {
+			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
 		}
 	}
 	
@@ -309,10 +326,10 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
 
 	// Fix event and alert scale
-	$event_max = $max_value * 1.25;
+	$event_max = $max_value * 1.15;
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events && $chart_data['event'] > 0) {
-			$chart[$timestamp]['event'] = $event_max;
+			$chart[$timestamp]['event'] = $event_max * 1.15;
 		}
 		if ($show_alerts && $chart_data['alert'] > 0) {
 			$chart[$timestamp]['alert'] = $event_max;
@@ -328,26 +345,28 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	///////
 	// Color commented not to restrict serie colors
-	/*$color = array();
+	$color = array();
 	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	if($show_events) {
-		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+		$color['event'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
 	if($show_alerts) {
-		$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+		$color['alert'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		*/
+	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	$legend = array();
 	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
 	if($show_events) {
 		$legend['event'] = __('Events');
+		$chart_extra_data['legend_events'] = $legend['event'];
 	}
 	if($show_alerts) {
 		$legend['alert'] = __('Alerts');
+		$chart_extra_data['legend_alerts'] = $legend['alert'];
 	}
 	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
 	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
@@ -361,11 +380,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		include_flash_chart_script($homeurl);
 	}
 	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
+
 	// Color commented not to restrict serie colors
-	return area_graph($flash_chart, $chart, $width, $height, '' /*$color*/ ,$legend,
-		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], $unit, $ttl);
+	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
+		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		 $water_mark,
+		 $config['fontpath'], $config['font_size'], $unit, $ttl, $series_type, $chart_extra_data);
 }
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
@@ -750,17 +772,19 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$flash_charts = false;
 	}
 
-			
 	if ($flash_charts){
 		include_flash_chart_script();
 	}	
+
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
 
 	switch ($stacked) {
 		case GRAPH_AREA:
 			$color = null; 
 			return area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
-				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
+				"", "", $homeurl, $water_mark,
 				$config['fontpath'], $config['font_size'], "", $ttl); 
 			break;
 		default:
@@ -768,21 +792,21 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$color = null;
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
-				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
+				"", "", $water_mark,
 				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl);
 			break;
 		case GRAPH_LINE:  
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
-				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
+				"", "", $water_mark,
 				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl); 
 			break;
 		case GRAPH_STACKED_LINE:
 			$color = null;
 			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
 				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
-				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
+				"", "", $water_mark,
 				$config['fontpath'], $config['font_size'], "", $ttl, $homeurl);
 			break;
 	}
@@ -846,12 +870,15 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 		}
 	}
 	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
+	
 	if ($empty_data)
 		echo fs_error_image();
 	else {
 		echo area_graph($config['flash_charts'], $data, $width, $height,
 			null, null, null, "images/image_problem.opaque.png", "", "", "",
-			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $water_mark,
 			 $config['fontpath'], $config['font_size'], "");
 	}
 }
@@ -909,8 +936,11 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	}
 	asort ($data);
 	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
+	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $config['homedir'] .  "/images/logo_vertical_water.png",
+		'', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -923,7 +953,7 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1) {
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
 
-	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
+	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?static_graph=1&homeurl=../../&graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
 }
 
@@ -948,7 +978,6 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
 	
-	include_flash_chart_script();
 
 	if ($id_agent < 1) {
 		$id_agent = -1;
@@ -997,9 +1026,12 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 		$data["1 ".__("Month")] == 0 && $data["3 ".__("Months")] == 0 && $data[__("Older")] == 0) {
 		return html_print_image('images/image_problem.png', true);
 	}
-	
+
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png", 
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
+		
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -1080,9 +1112,12 @@ function graph_db_agentes_modulos2($width, $height) {
 		}
 	}
 	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
+		
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		array(), "", "", true, "",
-		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$water_mark,
 		$config['fontpath'], $config['font_size'], false);
 }
 
@@ -1639,6 +1674,7 @@ function graph_graphic_agentevents_static($id_agent, $width, $height, $period = 
 	$time = array ();
 	$data = array ();
 	$legend = array();
+	$full_legend = array();
 	
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
@@ -1652,6 +1688,8 @@ function graph_graphic_agentevents_static($id_agent, $width, $height, $period = 
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$name] = $name;
+		
+		$full_legend[$name] = $name;;
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
 		$event = db_get_row_filter ('tevento', 
@@ -1680,14 +1718,20 @@ function graph_graphic_agentevents_static($id_agent, $width, $height, $period = 
 	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
 	// Draw slicebar graph
-	echo slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
 
-	// Draw legend
-	echo "<br>";
-	echo "&nbsp;";
-	foreach ($legend as $hour){
-		echo "<span style='font-size: 6pt'>" . $hour . "</span>";
+	if($config['flash_charts']) {
+		echo flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+	}
+	else {
+		echo slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+	
+		// Draw legend
+		echo "<br>";
 		echo "&nbsp;";
+		foreach ($legend as $hour){
+			echo "<span style='font-size: 6pt'>" . $hour . "</span>";
+			echo "&nbsp;";
+		}
 	}
 }
 
@@ -2450,9 +2494,12 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	
 	$legend = null;
 	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
+		
 	return vbar_graph($flash_chart, $chart, $width, $height, $color,
 		$legend, "", $unit, $homeurl,
-		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$water_mark,
 		$config['fontpath'], $config['font_size'], true, true, 1, true);
 }
 
@@ -2836,10 +2883,6 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	global $config;
 	global $graphic_type;
 
-	if ($config['flash_charts']) {
-		include_flash_chart_script($homeurl);
-	}
-
 	$data = array ();
 
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
@@ -2880,46 +2923,32 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 
 		$top = $datelimit + ($periodtime * ($i + 1));
 				
-		if ($config['flash_charts']){
-			$criticity = (int) db_get_value_filter ('criticity',
-			'tevento',
-			array ('id_agentmodule' => $id_module,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top));			
-			
-			switch ($criticity) {
-				case 3: $data[$name] = 'E5DF63';
+
+		$event = db_get_row_filter ('tevento', 
+		array ('id_agentmodule' => $id_module,
+			'utimestamp > '.$bottom,
+			'utimestamp < '.$top), 'criticity, utimestamp');			
+		
+		if (!empty($event['utimestamp'])){
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case 3: $data[$cont]['data'] = 2;
 						break;
-				case 4: $data[$name] = 'FF3C4B';
+				case 4: $data[$cont]['data'] = 3;
 						break;
-				default: $data[$name] = '9ABD18';
+				default:$data[$cont]['data'] = 1;
+						break;
 			}
-		}else{
-			$event = db_get_row_filter ('tevento', 
-			array ('id_agentmodule' => $id_module,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top), 'criticity, utimestamp');			
-			
-			if (!empty($event['utimestamp'])){
-				$data[$cont]['utimestamp'] = $periodtime;
-				switch ($event['criticity']) {
-					case 3: $data[$cont]['data'] = 2;
-							break;
-					case 4: $data[$cont]['data'] = 3;
-							break;
-					default:$data[$cont]['data'] = 1;
-							break;
-				}
-				$current_timestamp = $event['utimestamp'];
-			}
-			else{
-				 $data[$cont]['utimestamp'] = $periodtime;			
-				 $data[$cont]['data'] = 1;
-				 $current_timestamp = $bottom;
-			}
-			$legend[] = date($time_format, $current_timestamp);	
-			$cont++;		
+			$current_timestamp = $event['utimestamp'];
 		}
+		else{
+			 $data[$cont]['utimestamp'] = $periodtime;			
+			 $data[$cont]['data'] = 1;
+			 $current_timestamp = $bottom;
+		}
+		$legend[] = date($time_format, $current_timestamp);	
+		$cont++;		
+
 	}
 	
 	$pixels_between_xdata = 25;
@@ -2934,37 +2963,43 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	
 	$step = round($ndata/$xdata_display);	
 	
-	if ($config['flash_charts']) {
-		return fs_module_event_chart ($data, $width, $height, /*$resolution / 750*/ $step, $homeurl, 1);
-	} else {
-		$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
+	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
 
-		// Draw slicebar graph
+	// Draw slicebar graph
+	if($config['flash_charts']) {
+		echo flot_slicesbar_graph($data, $period, $width, 15, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+	}
+	else {
 		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
 
 		// Draw legend
 		echo "<br>";
 	
-		//echo "<div id='legend' style='overflow:hidden;'";
-		$count = 0;
-		foreach ($legend as $name => $value) {
-			$file_name = string2image(ui_print_truncate_text($value, 15, false, true, false, '...'), 115, 13, 2, 270, '#FFFFFF', '#696969', 4, 0);
-			
-			if (($step >= 1) && ($count++ % $step == 0)) {
-				if ($zoom == 1)
-					echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-				elseif ($zoom == 2)
-					echo "&nbsp;&nbsp;";
-				elseif ($zoom == 3)
-					echo "&nbsp;&nbsp;";
-				elseif ($zoom == 4)
-					echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";	
-					
-				echo html_print_image($file_name, true, array('title' => $value));
+		if(!$config['flash_charts']) {
+			// Draw legend
+			echo "<br>";
+		
+			//echo "<div id='legend' style='overflow:hidden;'";
+			$count = 0;
+			foreach ($legend as $name => $value) {
+				$file_name = string2image(ui_print_truncate_text($value, 15, false, true, false, '...'), 115, 13, 2, 270, '#FFFFFF', '#696969', 4, 0);
+				
+				if (($step >= 1) && ($count++ % $step == 0)) {
+					if ($zoom == 1)
+						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+					elseif ($zoom == 2)
+						echo "&nbsp;&nbsp;";
+					elseif ($zoom == 3)
+							echo "&nbsp;&nbsp;";
+					elseif ($zoom == 4)
+						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";	
+						
+					echo html_print_image($file_name, true, array('title' => $value));
+				}
 			}
 		}
-		//echo "</div>";		
-	}	
+	}
+	//echo "</div>";	
 }
 
 ?>

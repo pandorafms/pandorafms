@@ -131,4 +131,25 @@ function graph_get_max_index($legend_values) {
 	
 	return $max_chars;
 }
+
+function setup_watermark($water_mark, &$water_mark_file, &$water_mark_url) {
+	if(!is_array($water_mark)) {
+		$water_mark['file'] = $water_mark;
+	}
+	
+	if(isset($water_mark['file'])) {
+		$water_mark_file = $water_mark['file'];
+	}
+	else {
+		$water_mark_file = '';
+	}
+	
+	if(isset($water_mark['url'])) {
+		$water_mark_url = $water_mark['url'];
+	}
+	else {
+		$water_mark_url = '';
+	}
+}
+
 ?>

@@ -1,3 +1,33 @@
+2012-03-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_flot.php
+	include/graphs/flot
+	include/graphs/flot/jquery.flot.resize.min.js
+	include/graphs/flot/jquery.flot.min.js
+	include/graphs/flot/pandora.flot.js
+	include/graphs/flot/jquery.flot.symbol.min.js
+	include/graphs/flot/jquery.flot.selection.min.js
+	include/graphs/flot/jquery.flot.stack.min.js
+	include/graphs/flot/jquery.flot.threshold.js
+	include/graphs/flot/jquery.flot.pie.min.js
+	include/graphs/flot/jquery.flot.crosshair.min.js
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php
+	include/javascript/pandora.js
+	include/javascript/jquery.mousewheel.js
+	include/javascript/jquery-1.6.1.min.js
+	include/ajax/events.php
+	include/include_graph_dependencies.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/stat_win.php
+	images/zoom_cross.png
+	images/zoom_cross.disabled.png
+	images/chart_curve_overview.png
+	godmode/setup/setup_visuals.php
+	godmode/users/configure_user.php: Added a new graphs engine (Flot) and
+	replace the old flash charts by it.
+
 2012-03-01  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/agentes/planned_downtime.php: Fixed bug #3474901: Planned

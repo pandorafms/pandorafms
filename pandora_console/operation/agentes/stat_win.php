@@ -14,16 +14,14 @@
 // GNU General Public License for more details.
 
 
-
-// Global & session management
-require_once ('../../include/config.php');
-require_once ('../../include/auth/mysql.php');
-
 if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 	session_write_close();
 }
 
+// Global & session management
+require_once ('../../include/config.php');
+require_once ('../../include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
 require_once ($config['homedir'] . '/include/functions_reporting.php');
@@ -31,6 +29,8 @@ require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 
 check_login ();
+
+echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 
 $id = get_parameter('id');
 $label = base64_decode(get_parameter('label', ''));
@@ -108,7 +108,7 @@ function show_others() {
 //-->
 </script>
 </head>
-<body bgcolor="#ffffff">
+<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
 
 // Get input parameters
@@ -161,6 +161,9 @@ $urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
 // log4x doesnt support flash yet
 //
 echo "<br>";
+
+echo "<div style='margin-left:20px'>";
+
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
@@ -195,6 +198,7 @@ switch ($graph_type) {
 		echo fs_error_image ('../images');
 		break;
 }
+echo "</div>";
 
 //z-index is 1 because 2 made the calendar show under the divmenu.
 echo '<div id="divmenu" class="menu" style="z-index:1; height:280px;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
@@ -273,7 +277,7 @@ html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph);
 
 echo '</td><td>';
 
-html_print_submit_button ('GO', "submit", false, 'class="sub next"');
+html_print_submit_button (__('GO'), "submit", false, 'class="sub next"');
 
 echo '</td></tr></table></form></div></body></html>';
 ?>

@@ -1,3 +1,8 @@
+2012-03-01  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/agentes/planned_downtime.php: Fixed bug #3474901: Planned
+	downtime behavior.
+
 2012-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	 * extensions/agents_modules.php: Changes in this view to do it

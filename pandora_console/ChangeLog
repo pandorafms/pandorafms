@@ -1,3 +1,10 @@
+2012-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	 * extensions/agents_modules.php: Changes in this view to do it
+	 more 'compact'.
+
+	Merged bugfix from trunk.
+
 2012-03-01  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/reporting/reporting_builder.preview.php: Fixed bug: When

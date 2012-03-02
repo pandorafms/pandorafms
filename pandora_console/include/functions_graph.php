@@ -473,7 +473,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//	     more interval, more resolution, and slower.
 	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
-
+	
 	// Init weights
 	for ($i = 0; $i < $module_number; $i++) {
 		if (! isset ($weight_list[$i])) {
@@ -704,7 +704,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 					$graph_values[$i] = $temp_graph_values; 
 			}
 		}
-
+		
 		//Add the max, min and avg in the legend
 		$avg = round($avg / $countAvg, 1);
 		
@@ -915,17 +915,56 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$config['fontpath'], $config['font_size']);
 }
 
-function progress_bar($progress, $width, $height, $title = '', $mode = 1) {
+function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false) {
 	global $config;
 	
 	$out_of_lim_str = __("Out of limits");
 	$title = "";
 	
+	if ($value_text === false) {
+		$value_text = $progress . "%";
+	}
+	
+	if ($color !== false) {
+		$colorRGB = html_html2rgb($color);
+		$colorRGB = implode('|', $colorRGB);
+	}
+	
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
+	
+	return "<img title='" . $title . "' alt='" . $title . "'" .
+		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
+		"&width=".$width."&height=".$height."&progress=".$progress.
+		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
+		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&colorRGB=". $colorRGB . "' />";
+}
 
-	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
-		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
+function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false) {
+	global $config;
+	
+	$out_of_lim_str = __("Out of limits");
+	$title = "";
+	
+	if ($value_text === false) {
+		$value_text = $progress . "%";
+	}
+	
+	if ($color !== false) {
+		$colorRGB = html_html2rgb($color);
+		$colorRGB = implode('|', $colorRGB);
+	}
+	
+	require_once("include_graph_dependencies.php");
+	include_graphs_dependencies($config['homedir'].'/');
+	
+	return "<img title='" . $title . "' alt='" . $title . "'" .
+		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		"&width=".$width."&progress=".$progress.
+		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
+		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&colorRGB=". $colorRGB . "' />";
 }
 
 function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url) {
@@ -1579,7 +1618,7 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	$data = array ();
 
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-
+	
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();
 	$datelimit = $date - $period;

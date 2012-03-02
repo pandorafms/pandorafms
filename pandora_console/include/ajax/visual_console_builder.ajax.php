@@ -58,6 +58,8 @@ $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
 $process_simple_value = get_parameter('process_simple_value', 0);
+$type_percentile = get_parameter('type_percentile', 'percentile');
+$value_show = get_parameter('value_show', 'percent');
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -84,40 +86,120 @@ switch ($action) {
 		echo json_encode($layoutData);
 		break;
 	case 'get_module_value':
+		$unit_text = false;
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
-		switch ($layoutData['type']){
+		switch ($layoutData['type']) {
 			case SIMPLE_VALUE_MAX:
 				$value = reporting_get_agentmodule_data_max ($layoutData['id_agente_modulo'], 86400, 0);
 				if ($value === false) {
 					$returnValue = __('Unknown');
-				} else {
+				}
+				else {
 					$returnValue = format_numeric ($value);
-				}						
+				}
 				break;
 			case SIMPLE_VALUE_MIN:
 				$value = reporting_get_agentmodule_data_min ($layoutData['id_agente_modulo'], 86400, 0);
 				if ($value === false) {
 					$returnValue = __('Unknown');
-				} else {
+				}
+				else {
 					$returnValue = format_numeric ($value);
-				}	
+				}
 				break;
 			case SIMPLE_VALUE_AVG:
 				$value = reporting_get_agentmodule_data_average ($layoutData['id_agente_modulo'], 86400, 0);
 				if ($value === false) {
 					$returnValue = __('Unknown');
-				} else {
+				}
+				else {
 					$returnValue = format_numeric ($value);
-				}	
+				}
 				break;
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
 			default:
+				if (($layoutData['type'] == PERCENTILE_BAR) ||
+					($layoutData['type'] == PERCENTILE_BUBBLE)) {
+					if ($value_show == 'value') {
+						
+						$unit_text_db = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+						$unit_text_db = trim(io_safe_output($unit_text_db));
+						
+						$value_text = $valor;
+						if (!empty($unit_text_db))
+							$unit_text = $unit_text_db;
+					}
+				}
+				
 				$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 				break;
 		}
+		
+		// Linked to other layout ?? - Only if not module defined
+		if ($layoutData['id_layout_linked'] != 0) {
+			$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
+		
+		// Single object
+		}
+		elseif (($layout_data["type"] == 0)
+					|| ($layout_data["type"] == 3)
+					|| ($layout_data["type"] == 4)) {
+			// Status for a simple module
+			if ($layoutData['id_agente_modulo'] != 0) {
+				$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
+				$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layoutData['id_agente_modulo']);
+			
+			// Status for a whole agent, if agente_modulo was == 0
+			}
+			elseif ($layoutData['id_agent'] != 0) {
+				$status = agents_get_status ($layoutData["id_agent"]);
+				if ($status == -1) // agents_get_status return -1 for unknown!
+					$status = 3; 
+				$id_agent = $layoutData["id_agent"];
+			}
+			else {
+				$status = 3;
+				$id_agent = 0;
+			}
+		}
+		else {
+			// If it's a graph, a progress bar or a data tag, ALWAYS report
+			// status OK (=0) to avoid confussions here.
+			$status = 0;
+		}
+		
+		switch ($status) {
+			case 1:
+				//Critical (BAD)
+				$colorStatus = "#ff0000";
+				break;
+			case 4:
+				//Critical (ALERT)
+				$colorStatus = "#ff8800";
+				break;
+			case 0:
+				//Normal (OK)
+				$colorStatus = "#00ff00";
+				break;
+			case 2:
+				//Warning
+				$colorStatus = "#ffff00";
+				break;
+			case 3:
+				//Unknown
+			default:
+				$colorStatus = "#0000ff";
+				// Default is Grey (Other)
+				break;
+		}
+		
 		$return = array();
 		$return['value'] = $returnValue;
 		$return['max_percentile'] = $layoutData['height'];
 		$return['width_percentile'] = $layoutData['width'];
+		$return['unit_text'] = $unit_text;
+		$return['colorRGB'] = implode('|', html_html2rgb($colorStatus));
 		
 		echo json_encode($return);
 		break;
@@ -150,6 +232,7 @@ switch ($action) {
 				break;
 			case 'simple_value':
 			case 'percentile_bar':
+			case 'percentile_item':
 			case 'static_graph':
 			case 'module_graph':
 			case 'label':
@@ -192,12 +275,29 @@ switch ($action) {
 							$values['period'] = $period;
 						}
 						break;
+					case 'percentile_item':
 					case 'percentile_bar':
-						if ($width_percentile !== null) {
-							$values['width'] = $width_percentile;
-						}
-						if ($max_percentile !== null) {
-							$values['height'] = $max_percentile;
+						if ($action == 'update') {
+							if ($width_percentile !== null) {
+								$values['width'] = $width_percentile;
+							}
+							if ($max_percentile !== null) {
+								$values['height'] = $max_percentile;
+							}
+							
+							$values['type'] = PERCENTILE_BAR;
+							if ($type_percentile == 'percentile') {
+								$values['type'] = PERCENTILE_BAR;
+							}
+							elseif ($type_percentile == 'bubble') {
+								$values['type'] = PERCENTILE_BUBBLE;
+							}
+							
+							//Check the field's value for back compatibility
+							$values['image'] = 'percent';
+							if (($value_show == 'percent') ||
+								($value_show == 'value'))
+								$values['image'] = $value_show;
 						}
 						break;
 					case 'icon':
@@ -230,6 +330,7 @@ switch ($action) {
 				echo json_encode($backgroundFields);
 				break;
 			case 'percentile_bar':
+			case 'percentile_item':
 			case 'static_graph':
 			case 'module_graph':
 			case 'simple_value':
@@ -250,9 +351,23 @@ switch ($action) {
 					$elementFields['modules_html'] = '<option value="0">' . __('Any') . '</option>';
 				}
 				switch ($type) {
+					case 'percentile_item':
 					case 'percentile_bar':
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['max_percentile'] = $elementFields['height'];
+						//Check the field's value for back compatibility
+						$elementFields['value_show'] = 'percent';
+						if (($elementFields['image'] == 'percent') ||
+							($elementFields['image'] == 'value'))
+							$elementFields['value_show'] = $elementFields['image'];
+						
+						$elementFields['type_percentile'] = 'percentile';
+						if ($elementFields['type'] == PERCENTILE_BAR) {
+							$elementFields['type_percentile'] = 'percentile';
+						}
+						elseif ($elementFields['type'] == PERCENTILE_BUBBLE) {
+							$elementFields['type_percentile'] = 'bubble';
+						}
 						break;
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
@@ -270,10 +385,10 @@ switch ($action) {
 							break;
 						case SIMPLE_VALUE_MIN:
 							$elementFields['process_value'] = 1;
-							break;							
+							break;
 						case SIMPLE_VALUE_AVG:
 							$elementFields['process_value'] = 3;
-							break;							
+							break;
 					}
 				}
 				$elementFields['label'] = io_safe_output($elementFields['label']);
@@ -304,8 +419,15 @@ switch ($action) {
 				$values['width'] = $width_module_graph;
 				$values['period'] = $period;
 				break;
-			case 'percentile_bar':
-				$values['type'] = PERCENTILE_BAR;
+			case 'percentile_item':
+			case 'percentile_bar': 
+				if ($type_percentile == 'percentile') {
+					$values['type'] = PERCENTILE_BAR;
+				}
+				else {
+					$values['type'] = PERCENTILE_BUBBLE;
+				}
+				$values['image'] = $value_show; //Hack to save it show percent o value.
 				$values['width'] = $width_percentile;
 				$values['height'] = $max_percentile;
 				break;

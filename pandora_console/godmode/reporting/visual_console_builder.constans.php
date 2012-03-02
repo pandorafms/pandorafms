@@ -22,4 +22,5 @@ define('ICON', 5);
 define('SIMPLE_VALUE_MAX', 6);
 define('SIMPLE_VALUE_MIN', 7);
 define('SIMPLE_VALUE_AVG', 8);
+define('PERCENTILE_BUBBLE', 9);
 ?>

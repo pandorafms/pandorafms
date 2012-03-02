@@ -62,7 +62,7 @@ foreach ($all_images as $image_file) {
 echo '<div id="editor" style="margin-top: -10px;">';
 	echo '<div id="toolbox">';
 		visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
-		visual_map_print_button_editor('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile_min', true);
+		visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
 		visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
@@ -108,15 +108,27 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 ?>
 <table class="databox" border="0" cellpadding="4" cellspacing="4" width="300">
 	<caption>
-		<span id="title_panel_span_background" class="title_panel_span" style="display: none; visibility:hidden; font-weight: bolder;"><?php echo  __('Background');?></span>
-		<span id="title_panel_span_static_graph" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Static Graph');?></span>
-		<span id="title_panel_span_percentile_bar" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Percentile Bar');?></span>
-		<span id="title_panel_span_simple_value" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Simple value');?></span>
-		<span id="title_panel_span_label" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Label');?></span>
-		<span id="title_panel_span_icon" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Icon');?></span>
+		<span id="title_panel_span_background"
+			class="title_panel_span"
+			style="display: none; visibility:hidden; font-weight: bolder;"><?php echo  __('Background');?></span>
+		<span id="title_panel_span_static_graph"
+			class="title_panel_span"
+			style="display: none; font-weight: bolder;"><?php echo  __('Static Graph');?></span>
+		<span id="title_panel_span_percentile_item"
+			class="title_panel_span"
+			style="display: none; font-weight: bolder;"><?php echo  __('Percentile Item');?></span>
+		<span id="title_panel_span_simple_value"
+			class="title_panel_span"
+			style="display: none; font-weight: bolder;"><?php echo  __('Simple value');?></span>
+		<span id="title_panel_span_label"
+			class="title_panel_span"
+			style="display: none; font-weight: bolder;"><?php echo  __('Label');?></span>
+		<span id="title_panel_span_icon"
+			class="title_panel_span"
+			style="display: none; font-weight: bolder;"><?php echo  __('Icon');?></span>
 	</caption>
 	<tbody>
-		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value label datos icon">
+		<tr id="label_row" style="" class="static_graph percentile_bar percentile_item module_graph simple_value label datos icon">
 			<td style=""><?php echo __('Label');?></td>
 			<td style=""><?php html_print_input_text ('label', '', '', 20, 200); ?></td>
 		</tr>
@@ -127,20 +139,21 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="preview_row" style="" class="static_graph datos icon">
 			<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>
 		</tr>
-		<tr id="agent_row" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="agent_row" class="static_graph percentile_bar percentile_item module_graph simple_value datos">
 			<td><?php echo __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>';?></td>
 			<td><?php html_print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
 				array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), false);?></td>
 		</tr>
-		<tr id="module_row" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="module_row" class="static_graph percentile_bar percentile_item module_graph simple_value datos">
 			<td><?php echo __('Module');?></td>
 			<td><?php html_print_select (array (), 'module', '', '', __('Any'), 0);?></td>
 		</tr>
 		<tr id="process_value_row" class="simple_value datos">
 			<td><?php echo '<span>' . __('Process') . '</span>';?></td>
-			<td><?php html_print_select (array ('1' => __('Min value'), 
-												'2' => __('Max value'),
-												'3' => __('Avg value')), 'process_value', '', '', __('None'), 0);?></td>
+			<td><?php html_print_select (
+				array ('1' => __('Min value'), 
+				'2' => __('Max value'),
+				'3' => __('Avg value')), 'process_value', '', '', __('None'), 0);?></td>
 		</tr>	
 		<tr id="background_row_1" class="background datos">
 			<td><?php echo __('Background');?></td>
@@ -158,7 +171,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td></td>
 			<td><?php html_print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub"');?></td>
 		</tr>
-		<tr id="percentile_bar_row_1" class="percentile_bar datos">
+		<tr id="percentile_bar_row_1" class="percentile_bar percentile_item datos">
 			<td><?php echo __('Width');?></td>
 			<td>
 				<?php
@@ -166,11 +179,29 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="percentile_bar_row_2" class="percentile_bar datos">
+		<tr id="percentile_bar_row_2" class="percentile_bar percentile_item datos">
 			<td><?php echo __('Max value');?></td>
 			<td>
 				<?php
 				html_print_input_text('max_percentile', 0, '', 3, 5);
+				?>
+			</td>
+		</tr>
+		<tr id="percentile_item_row_3" class="percentile_item datos">
+			<td><?php echo __('Type');?></td>
+			<td>
+				<?php
+				html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', false);
+				html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', false);
+				?>
+			</td>
+		</tr>
+		<tr id="percentile_item_row_4" class="percentile_item datos">
+			<td><?php echo __('Value to show');?></td>
+			<td>
+				<?php
+				html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', 'style="float: left;"', false);
+				html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', 'style="float: left;"', false);
 				?>
 			</td>
 		</tr>
@@ -211,7 +242,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 	</tbody>
 	<tbody id="advance_options" style="display: none;">
-		<tr id="position_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
+		<tr id="position_row" class="static_graph percentile_bar percentile_item module_graph simple_value label icon datos">
 			<td><?php echo __('Position');?></td>
 			<td>
 				<?php
@@ -233,7 +264,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="parent_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
+		<tr id="parent_row" class="static_graph percentile_bar percentile_item module_graph simple_value label icon datos">
 			<td><?php echo __('Parent');?></td>
 			<td>
 				<?php
@@ -242,7 +273,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value icon label datos">
+		<tr id="map_linked_row" class="static_graph percentile_bar percentile_item module_graph simple_value icon label datos">
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
@@ -250,7 +281,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value label datos">
+		<tr id="label_color_row" class="static_graph percentile_bar percentile_item module_graph simple_value label datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php html_print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
 		</tr>				
@@ -267,11 +298,10 @@ echo '<div id="background" class="ui-widget-content" style="
 echo "<img id='background_img' src='images/console/background/" . $background . "' width='100%' height='100%' />";
 
 foreach ($layoutDatas as $layoutData) {
-			
 	// Pending delete and disable modules must be ignored
 	$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 	$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
-
+	
 	if($delete_pending_module == 1 || $disabled_module == 1)
 		continue;
 	

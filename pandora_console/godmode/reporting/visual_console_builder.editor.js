@@ -126,7 +126,7 @@ function updateAction() {
 			$("#background").css('height', values['height']);
 			
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
-
+			
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=images/console/background/" + values['background']);
@@ -142,14 +142,14 @@ function updateAction() {
 					$("#background_img").attr('src', data);
 				}
 			});	
-		
+			
 			var idElement = 0;
 			break;
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
 			
 			$("#" + idItem).css('color', values['label_color']);
-						
+			
 			switch ($('#hidden-status_' + idItem).val()) {
 				case '1':
 					//Critical (BAD)
@@ -173,7 +173,7 @@ function updateAction() {
 					suffix = ".png";
 					// Default is Grey (Other)
 			}
-
+			
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=images/console/icons/" + values['image'] + suffix);
@@ -189,7 +189,7 @@ function updateAction() {
 					$("#image_" + idItem).attr('src', data);
 				}
 			});	
-		
+			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -204,8 +204,15 @@ function updateAction() {
 			}
 			break;
 		case 'percentile_bar':
+		case 'percentile_item':
 			$("#text_" + idItem).html(values['label']);
-			$("#image_" + idItem).attr('src', getPercentileBar(idItem));
+			if (values['type_percentile'] == 'bubble') {
+				$("#image_" + idItem).attr('src', getPercentileBubble(idItem, values));
+			}
+			else {
+				$("#image_" + idItem).attr('src', getPercentileBar(idItem, values));
+			}
+			
 			break;
 		case 'module_graph':
 			$("#text_" + idItem).html(values['label']);
@@ -220,7 +227,6 @@ function updateAction() {
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
-
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=" + getImageElement(idItem));
@@ -236,7 +242,7 @@ function updateAction() {
 					$("#image_" + idItem).attr('src', data);
 				}
 			});	
-
+			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -253,7 +259,7 @@ function updateAction() {
 	}
 	
 	updateDB(selectedItem, idItem , values);
-
+	
 	actionClick();
 }
 
@@ -278,6 +284,9 @@ function readFields() {
 	values['max_percentile'] = $("input[name=max_percentile]").val();
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
+	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
+	values['value_show'] = $("input[name=value_show]:checked").val();
+	
 	
 	return values;
 }
@@ -307,6 +316,7 @@ function createAction() {
 			}
 			break;
 		case 'percentile_bar':
+		case 'percentile_item':
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
@@ -365,11 +375,11 @@ function actionClick() {
 	
 	if (openPropertiesPanel) {
 		activeToolboxButton('static_graph', true);
-		activeToolboxButton('percentile_bar', true);
 		activeToolboxButton('module_graph', true);
 		activeToolboxButton('simple_value', true);
 		activeToolboxButton('label', true);
 		activeToolboxButton('icon', true);
+		activeToolboxButton('percentile_item', true);
 		
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
@@ -388,11 +398,11 @@ function actionClick() {
 	$("#background").resizable('disable');
 	
 	activeToolboxButton('static_graph', false);
-	activeToolboxButton('percentile_bar', false);
 	activeToolboxButton('module_graph', false);
 	activeToolboxButton('simple_value', false);
 	activeToolboxButton('label', false);
 	activeToolboxButton('icon', false);
+	activeToolboxButton('percentile_item', false);
 	
 	activeToolboxButton('edit_item', false);
 	activeToolboxButton('delete_item', false);
@@ -412,6 +422,7 @@ function actionClick() {
 		
 		item = selectedItem;
 		toolbuttonActive = item;
+		activeToolboxButton(toolbuttonActive, true);
 		$("#button_create_row").css('display', 'none');
 		$("#button_update_row").css('display', '');
 		cleanFields();
@@ -478,6 +489,28 @@ function loadFieldsFromDB(item) {
 					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
 					if (key == 'width_module_graph') $("input[name=width_module_graph]").val(val);
 					if (key == 'height_module_graph') $("input[name=height_module_graph]").val(val);
+					
+					if (key == 'type_percentile') {
+						if (val == 'percentile') {
+							$("input[name=type_percentile][value=percentile]")
+								.attr("checked", "checked");
+						}
+						else {
+							$("input[name=type_percentile][value=bubble]")
+								.attr("checked", "checked");
+						}
+					}
+					
+					if (key == 'value_show') {
+						if (val == 'percent') {
+							$("input[name=value_show][value=percent]")
+								.attr("checked", "checked");
+						}
+						else {
+							$("input[name=value_show][value=value]")
+								.attr("checked", "checked");
+						}
+					}
 				});
 			}
 		});	
@@ -590,9 +623,15 @@ function hiddenFields(item) {
 	
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1."  + item).css('display', '');
-
+	
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2."  + item).css('display', '');
+	
+	$("#percentile_item_row_3").css('display', 'none');
+	$("#percentile_item_row_3."  + item).css('display', '');
+	
+	$("#percentile_item_row_4").css('display', 'none');
+	$("#percentile_item_row_4."  + item).css('display', '');
 	
 	$("#period_row").css('display', 'none');
 	$("#period_row."  + item).css('display', '');
@@ -704,12 +743,13 @@ function getModuleValue(id_data) {
 	return module_value;
 }
 
-function getPercentileBar(id_data) {
+function getPercentileBar(id_data, values) {
 	var parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
 		async: false,
 		url: "ajax.php",
@@ -721,6 +761,10 @@ function getPercentileBar(id_data) {
 			module_value = data['value'];
 			max_percentile = data['max_percentile'];
 			width_percentile = data['width_percentile'];
+			unit_text = false
+			if (data['unit_text'] != false)
+				unit_text = data['unit_text'];
+			colorRGB = data['colorRGB'];
 		}
 	});
 	
@@ -742,14 +786,84 @@ function getPercentileBar(id_data) {
 	});
 	
 	
-	
 	if ( max_percentile > 0)
-		var percentile = module_value / max_percentile * 100;
+		var percentile = Math.round(module_value / max_percentile * 100);
 	else
 		var percentile = 100;
 	
+	if (unit_text == false) {
+		value_text = percentile + "%";
+	}
+	else {
+		value_text = module_value + " " + unit_text;
+	}
+	
 	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
-		'width=' + width_percentile + '&mode=1&progress=' + percentile + '&font=' + font;
+		'width=' + width_percentile + '&mode=1&progress=' + percentile +
+		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+	
+	return img;
+}
+
+function getPercentileBubble(id_data, values) {
+	var parameter = Array();
+	
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false
+			if (data['unit_text'] != false)
+				unit_text = data['unit_text'];
+			colorRGB = data['colorRGB'];
+		}
+	});
+	
+	
+	//Get the actual system font.
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_font"});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			font = data['font'];
+		}
+	});
+	
+	
+	if ( max_percentile > 0)
+		var percentile = Math.round(module_value / max_percentile * 100);
+	else
+		var percentile = 100;
+	
+	if (unit_text == false) {
+		value_text = percentile + "%";
+	}
+	else {
+		value_text = module_value + " " + unit_text;
+	}
+	
+	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=15&' + 
+		'width=' + width_percentile + '&mode=1&progress=' + percentile +
+		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+	
 	
 	return img;
 }
@@ -828,14 +942,14 @@ function createItem(type, values, id_data) {
 					element_status = data;
 				}
 			});
-	
+			
 			var img_src= null;
 			var parameter = Array();
 			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
 			parameter.push ({name: "get_image_path", value: "1"});
 			parameter.push ({name: "img_src", value: getImageElement(id_data)});
 			parameter.push ({name: "only_src", value: "1"});
-
+			
 			jQuery.ajax ({
 				type: 'POST',
 				url: action="ajax.php",
@@ -854,14 +968,24 @@ function createItem(type, values, id_data) {
 			);
 			break;
 		case 'percentile_bar':
+		case 'percentile_item':
 			var sizeStyle = '';
 			var imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-					'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data)  + '" />' +
-					'</div>'
-			);
+			if (values['type_percentile'] == 'percentile') {
+				var item = $('<div id="' + id_data + '" class="item percentile_item" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data, values)  + '" />' +
+						'</div>'
+				);
+			}
+			else {
+				var item = $('<div id="' + id_data + '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBubble(id_data, values)  + '" />' +
+						'</div>'
+				);
+			}
 			break;
 		case 'module_graph':
 			var sizeStyle = '';
@@ -1028,6 +1152,7 @@ function updateDB(type, idElement , values, event) {
 					case 'module_graph':
 						$("#image_" + idElement).attr("src", getModuleGraph(idElement));
 					case 'static_graph':
+					case 'percentile_item':
 					case 'percentile_bar':
 					case 'simple_value':
 					case 'label':
@@ -1167,9 +1292,9 @@ function eventsItems() {
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
-			if ($(divParent).hasClass('percentile_bar')) {
+			if ($(divParent).hasClass('percentile_item')) {
 				creationItem = null;
-				selectedItem = 'percentile_bar';
+				selectedItem = 'percentile_item';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
@@ -1371,7 +1496,8 @@ function click2(id) {
 			actionClick();
 			break;
 		case 'percentile_bar':
-			toolbuttonActive = creationItem = 'percentile_bar';
+		case 'percentile_item':
+			toolbuttonActive = creationItem = 'percentile_item';
 			actionClick();
 			break;
 		case 'module_graph':

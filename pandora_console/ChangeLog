@@ -1,3 +1,26 @@
+2012-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+	* images/percentile_item.disabled.png, images/percentile_item.png: added
+	images for button of percentile item (new item in visual map).
+	
+	* include/styles/pandora.css: added the style for the new button percentile
+	item.
+	
+	* include/functions_graph.php: cleaned source code style, and added the
+	params to set text and color in the function "progress_bar" and added
+	function to paint a Bubble Chart (http://en.wikipedia.org/wiki/Bubble_chart)
+	with the name "progress_bubble".
+
+	* include/graphs/functions_gd.php: added new params for the text and color
+	in the function "gd_progress_bar" and added function to paint Bubble Chart
+	with the name "gd_progress_bubble".
+	
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.constans.php: added the item
+	Bubble Chart and put the progress bar into the button "Percentile item".
+
 2012-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/logon_ok.php: Fixed users link in welcome page.

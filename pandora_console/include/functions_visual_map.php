@@ -82,11 +82,74 @@ function visual_map_print_item($layoutData) {
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	
+	// Linked to other layout ?? - Only if not module defined
+	if ($layoutData['id_layout_linked'] != 0) {
+		$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
+	
+	// Single object
+	}
+	elseif (($layout_data["type"] == 0)
+				|| ($layout_data["type"] == 3)
+				|| ($layout_data["type"] == 4)) {
+		// Status for a simple module
+		if ($layoutData['id_agente_modulo'] != 0) {
+			$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
+			$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layoutData['id_agente_modulo']);
+		
+		// Status for a whole agent, if agente_modulo was == 0
+		}
+		elseif ($layoutData['id_agent'] != 0) {
+			$status = agents_get_status ($layoutData["id_agent"]);
+			if ($status == -1) // agents_get_status return -1 for unknown!
+				$status = 3; 
+			$id_agent = $layoutData["id_agent"];
+		}
+		else {
+			$status = 3;
+			$id_agent = 0;
+		}
+	}
+	else {
+		// If it's a graph, a progress bar or a data tag, ALWAYS report
+		// status OK (=0) to avoid confussions here.
+		$status = 0;
+	}
+	
+	switch ($status) {
+		case 1:
+			//Critical (BAD)
+			$imgStatus = "_bad.png";
+			$colorStatus = "#ff0000";
+			break;
+		case 4:
+			//Critical (ALERT)
+			$imgStatus = "4".$img."_bad.png";
+			$colorStatus = "#ff8800";
+			break;
+		case 0:
+			//Normal (OK)
+			$imgStatus .= "_ok.png";
+			$colorStatus = "#00ff00";
+			break;
+		case 2:
+			//Warning
+			$imgStatus .= "_warning.png";
+			$colorStatus = "#ffff00";
+			break;
+		case 3:
+			//Unknown
+		default:
+			$imgStatus .= ".png";
+			$colorStatus = "#0000ff";
+			// Default is Grey (Other)
+			break;
+	}
+	
 	switch ($type) {
 		case STATIC_GRAPH:
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData);
-				if(substr($img,0,1) == '4') {
+				if (substr($img,0,1) == '4') {
 					$borderStyle ='border: 2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
 				}
@@ -108,16 +171,41 @@ function visual_map_print_item($layoutData) {
 			echo "</div>";
 			break;
 		case PERCENTILE_BAR:
+		case PERCENTILE_BUBBLE:
 			$module_value = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
+			$value_text = false;
+			if ($layoutData['image'] == 'percent') {
+				$value_text = false;
+			}
+			elseif ($layoutData['image'] == 'value') {
+				$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = trim(io_safe_output($unit_text));
+				
+				$value_text = $module_value;
+				if (!empty($unit_text))
+					$value_text .= " " . $unit_text;
+			}
 			
 			if ( $max_percentile > 0)
 				$percentile = $module_value / $max_percentile * 100;
 			else
 				$percentile = 100;
 			
-			echo '<div id="' . $id . '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			$percentile = round($percentile);
+			
+			echo '<div id="' . $id . '" class="item percentile_item" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />';
-			echo progress_bar($percentile, $width, 15);
+			
+			ob_start();
+			if ($type == PERCENTILE_BUBBLE) {
+				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
+			}
+			else {
+				echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
+			}
+			$img = ob_get_clean();
+			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+			echo $img;
 			echo '</div>';
 			
 			break;
@@ -437,6 +525,7 @@ function visual_map_get_status_element($layoutData) {
  * @param bool $draw_lines
  */
 function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
+	//TODO: USE THE SAME CODE THAT THE VISUAL MAP EDITOR
 	global $config;
 	
 	$layout = db_get_row ('tlayout', 'id', $id_layout);
@@ -501,48 +590,56 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				elseif ($id_layout_linked != 0) {
 					$status_parent = visual_map_get_layout_status ($id_layout_linked);
 				}
-
+				
 				else { 
 					$status_parent = 3;
 				}
 				
-			} else {
+			}
+			else {
 				$id_agent_module_parent = 0;
 				$status_parent = 3;
 			}
-
-
+			
+			
 			// ****************************************************************	
 			// Get STATUS of current object
 			// ****************************************************************
-
+			
 			// Linked to other layout ?? - Only if not module defined
 			if ($layout_data['id_layout_linked'] != 0) {
 				$status = visual_map_get_layout_status ($layout_data['id_layout_linked']);
-
+			
 			// Single object
-			} elseif ($layout_data["type"] == 0) {
+			}
+			elseif (($layout_data["type"] == 0)
+				|| ($layout_data["type"] == 3)
+				|| ($layout_data["type"] == 9)
+				|| ($layout_data["type"] == 4)) {
 				// Status for a simple module
 				if ($layout_data['id_agente_modulo'] != 0) {
 					$status = modules_get_agentmodule_status ($layout_data['id_agente_modulo']);
 					$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
-
+				
 				// Status for a whole agent, if agente_modulo was == 0
-				} elseif ($layout_data['id_agent'] != 0) {
+				}
+				elseif ($layout_data['id_agent'] != 0) {
 					$status = agents_get_status ($layout_data["id_agent"]);
 					if ($status == -1) // agents_get_status return -1 for unknown!
 						$status = 3; 
 					$id_agent = $layout_data["id_agent"];
-				} else {
+				}
+				else {
 					$status = 3;
 					$id_agent = 0;
 				}
-			} else {
+			}
+			else {
 				// If it's a graph, a progress bar or a data tag, ALWAYS report
 				// status OK (=0) to avoid confussions here.
 				$status = 0;
 			}
-
+			
 			// ****************************************************************
 			// STATIC IMAGE (type = 0)
 			// ****************************************************************
@@ -566,10 +663,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				if (!isset ($id_agent))
 					$id_agent = 0;
-					
+				
 				if ($show_links) {
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-
+						
 						//Extract id service if it is a prediction module.
 						$id_service = db_get_value_filter('custom_integer_1',
 							'tagente_modulo',
@@ -589,12 +686,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							// Link to an agent
 							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
 						}
-					} elseif ($layout_data['id_layout_linked'] > 0) {
-
+					}
+					elseif ($layout_data['id_layout_linked'] > 0) {
+					
 						// Link to a map
 						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-
-					} else {
+					
+					}
+					else {
 						// A void object
 						echo '<a href="#">';
 					}
@@ -633,6 +732,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					default:
 						$img .= ".png";
 						// Default is Grey (Other)
+						break;
 				}
 				$borderStyle = '';
 				if(substr($img,0,1) == '4') {
@@ -662,7 +762,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					$img_style["height"] = (integer)($proportion * $infoImage[1]);
 				
 				html_print_image ($img, false, $img_style);
-		
+				
 				echo "</a>";
 				
 				// Print label if valid label_color (only testing for starting with #) otherwise print nothing
@@ -672,7 +772,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				echo "</div>";
 			}
-
+			
 			switch ($layout_data['type']) {
 				case 4:
 					// ****************************************************************
@@ -734,22 +834,22 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							$endTagA = true;							
 						}
 					}
-				
+					
 					$img_style = array ();
 					$img_style["title"] = $layout_data["label"];
-				
+					
 					if (!empty ($layout_data["width"])) {
 						$img_style["width"] = $layout_data["width"];
 					} 
 					if (!empty ($layout_data["height"])) {
 						$img_style["height"] = $layout_data["height"];
 					}
-				
+					
 					$img = "images/console/icons/".$layout_data["image"] . ".png";
-				
+					
 					if (is_file($img))
 						$infoImage = getimagesize($img);
-				
+					
 					if (!empty ($layout_data["width"])) {
 						if ($resizedMap)
 							$img_style["width"] = (integer)($proportion * $layout_data["width"]);
@@ -758,7 +858,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					else
 						$img_style["width"] = (integer)($proportion * $infoImage[0]);
-				
+					
 					if (!empty ($layout_data["height"])) {
 						if ($resizedMap)
 							$img_style["height"] = (integer)($proportion * $img_style["height"]);
@@ -767,7 +867,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					else
 						$img_style["height"] = (integer)($proportion * $infoImage[1]);
-				
+					
 					html_print_image ($img, false, $img_style);
 					
 					if ($endTagA) echo "</a>";
@@ -794,7 +894,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							'tagente_modulo',
 							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
 								'prediction_module' => 1));
-
+						
 						if ($id_service === false) {
 							$id_service = 0;
 						}
@@ -806,13 +906,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							$endTagA = true;
 						}
 						elseif ($layout_data['id_layout_linked'] > 0) {
-	
+						
 							// Link to a map
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 							$endTagA = true;
 						}
 					}
-
+					
 					echo '<strong>'.$layout_data['label']. ' ';
 					//TODO: change interface to add a period parameter, now is set to 1 day
 					switch ($layout_data['type']){
@@ -852,11 +952,41 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					if ($endTagA) echo '</a>';
 					
 					echo '</div>';
-					break;	
+					break;
 				case 3:
 					// ****************************************************************
 					// Progress bar
 					// ****************************************************************	
+				case 9:
+					// ****************************************************************
+					// Progress bubble
+					// ****************************************************************	
+					
+					switch ($status) {
+						case 1:
+							//Critical (BAD)
+							$colorStatus = "#ff0000";
+							break;
+						case 4:
+							//Critical (ALERT)
+							$colorStatus = "#ff8800";
+							break;
+						case 0:
+							//Normal (OK)
+							$colorStatus = "#00ff00";
+							break;
+						case 2:
+							//Warning
+							$colorStatus = "#ffff00";
+							break;
+						case 3:
+							//Unknown
+						default:
+							$colorStatus = "#0000ff";
+							// Default is Grey (Other)
+							break;
+					}
+					
 					if ($resizedMap)
 						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
@@ -867,41 +997,74 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						$percentile = $valor / $layout_data['height'] * 100;
 					else
 						$percentile = 100;
-				
+					
+					$percentile = round($percentile);
+					
 					$endTagA = false;
 					
-					if ($show_links) {				
-						//Extract id service if it is a prediction module.
-						$id_service = db_get_value_filter('custom_integer_1',
-							'tagente_modulo',
-							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-								'prediction_module' => 1));
-
-						if ($id_service === false) {
-							$id_service = 0;
-						}
-						
-						if ($id_service != 0) { 
-							//Link to an service page
-							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-								$id_service . '&offset=0">';
-							$endTagA = true;
-						}
-						elseif ($layout_data['id_layout_linked'] > 0) {
-	
-							// Link to a map
-							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-							$endTagA = true;
-						}		
-					}
-						
 					echo $layout_data['label'];
 					echo "<br>";
-
-					if ($resizedMap)
-						echo progress_bar($percentile, ((integer)($proportion * $width)), 15);
-					else
-						echo progress_bar($percentile, $width, 15);	
+					
+					if ($show_links) {
+						if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+							
+							//Extract id service if it is a prediction module.
+							$id_service = db_get_value_filter('custom_integer_1',
+								'tagente_modulo',
+								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+									'prediction_module' => 1));
+							
+							if ($id_service === false) {
+								$id_service = 0;
+							}
+							
+							if ($id_service != 0) {
+								//Link to an service page
+								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0">';
+							}
+							else {
+								// Link to an agent
+								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							}
+						}
+						elseif ($layout_data['id_layout_linked'] > 0) {
+						
+							// Link to a map
+							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						
+						}
+						else {
+							// A void object
+							echo '<a href="#">';
+						}
+					}
+					
+					$value_text = false;
+					if ($layout_data['image'] == 'percent') {
+						$value_text = false;
+					}
+					elseif ($layout_data['image'] == 'value') {
+						$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
+						$unit_text = trim(io_safe_output($unit_text));
+						
+						$value_text = $valor;
+						if (!empty($unit_text))
+							$value_text .= " " . $unit_text;
+					}
+					
+					if ($layout_data['type'] == 9) {
+						if ($resizedMap)
+							echo progress_bubble($percentile, ((integer)($proportion * $width)), $width, '', 1, $value_text, $colorStatus);
+						else
+							echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
+					}
+					else {
+						if ($resizedMap)
+							echo progress_bar($percentile, ((integer)($proportion * $width)), 15, '', 1, $value_text, $colorStatus);
+						else
+							echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
+					}
 					
 					if ($endTagA) echo '</a>';	
 						
@@ -919,18 +1082,18 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					
 					echo $layout_data['label'];
 					echo "<br>";
-
+					
 					$endTagA = false;
-										
+					
 					if ($show_links) {
 						if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
-
+							
 							//Extract id service if it is a prediction module.
 							$id_service = db_get_value_filter('custom_integer_1',
 								'tagente_modulo',
 								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
 									'prediction_module' => 1));
-
+							
 							if ($id_service === false) {
 								$id_service = 0;
 							}

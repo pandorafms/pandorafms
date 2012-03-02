@@ -47,26 +47,37 @@ if($id_graph && in_array($graph_type, $types)) {
 	
 	switch($graph_type) {
 		case 'histogram': 
-					gd_histogram ($graph['width'], 
-						$graph['height'], 
-						$graph['mode'], 
-						json_decode($graph['data'], true), 
-						$graph['max'], 
-						$graph['font'], 
-						$graph['title'],
-						$graph['fontsize']);				
-					break;
-		case 'progressbar':	
-					gd_progress_bar ($graph['width'], 
-						$graph['height'], 
-						$graph['progress'], 
-						$graph['title'], 
-						$graph['font'], 
-						$graph['out_of_lim_str'],
-						$graph['out_of_lim_image'], 
-						$graph['mode'],
-						$graph['fontsize']);	
-					break;
+			gd_histogram ($graph['width'], 
+				$graph['height'], 
+				$graph['mode'], 
+				json_decode($graph['data'], true), 
+				$graph['max'], 
+				$graph['font'], 
+				$graph['title'],
+				$graph['fontsize']);
+			break;
+		case 'progressbar':
+			gd_progress_bar ($graph['width'], 
+				$graph['height'], 
+				$graph['progress'], 
+				$graph['title'], 
+				$graph['font'], 
+				$graph['out_of_lim_str'],
+				$graph['out_of_lim_image'], 
+				$graph['mode'],
+				$graph['fontsize']);
+			break;
+		case 'progressbubble':
+			gd_progress_bubble ($graph['width'], 
+				$graph['height'], 
+				$graph['progress'], 
+				$graph['title'], 
+				$graph['font'], 
+				$graph['out_of_lim_str'],
+				$graph['out_of_lim_image'], 
+				$graph['mode'],
+				$graph['fontsize']);
+			break;
 	}
 }
 
@@ -145,10 +156,9 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 }
 
 // ***************************************************************************
-// Draw a dynamic progress bar using GDlib directly
+// Draw a dynamic progress bubble using GDlib directly
 // ***************************************************************************
-
-function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10) {
+function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
 	if($out_of_lim_str === false) {
 		$out_of_lim_str = "Out of limits";
 	}
@@ -157,11 +167,99 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$out_of_lim_image = "images_graphs/outlimits.png";
 	}
 	
+	$color = array();
+	if (!empty($colorRGB)) {
+		$color = explode('|', $colorRGB);
+	}
+	
+	Header("Content-type: image/png");
+	
+	switch ($mode)
+	{
+		//TODO: Understand the difernets between the modes.
+		case 0:
+		case 1:
+		case 2:
+			global $config;
+			global $REMOTE_ADDR;
+			
+			$ratingWidth = ($progress/100)*$width;
+			$ratingHeight = ($progress/100)*$height;
+			
+			$image = imagecreate($width,$height);
+			
+			//colors
+			$back = ImageColorAllocate($image,255,255,255);
+			imagecolortransparent ($image, $back);
+			
+			$black = ImageColorAllocate($image,0,0,0);
+			$red = ImageColorAllocate($image,255,60,75);
+			$green = ImageColorAllocate($image,50,205,50);
+			$blue = ImageColorAllocate($image,44,81,120);
+			$soft_green = ImageColorAllocate($image,176, 255, 84);
+			$soft_yellow = ImageColorAllocate($image,255, 230, 84);
+			$soft_red = ImageColorAllocate($image,255, 154, 84);
+			$other_red = ImageColorAllocate($image,238, 0, 0);
+			if (!empty($color)) {
+				$defined_color = ImageColorAllocate($image, $color[0], $color[1], $color[2]);
+			}
+			
+			if (isset($defined_color)) {
+				imagefilledellipse($image, $width / 2, $height / 2,
+					$ratingWidth, $ratingHeight,  $defined_color);
+			}
+			elseif ($rating > 70) {
+				imagefilledellipse($image, $width / 2, $height / 2,
+					$ratingWidth, $ratingHeight,  $soft_green);
+			}
+			elseif ($rating > 50) {
+				imagefilledellipse($image, $width / 2, $height / 2,
+					$ratingWidth, $ratingHeight,  $soft_yellow);
+			}
+			elseif ($rating > 30) {
+				imagefilledellipse($image, $width / 2, $height / 2,
+					$ratingWidth, $ratingHeight, $soft_red);
+			}
+			else if($rating > 0) {
+				imagefilledellipse($image, $width / 2, $height / 2,
+					$ratingWidth, $ratingHeight, $other_red);
+			}
+			html_debug_print($value_text, true);
+			
+			//Write the value
+			$size = imagettfbbox ($fontsize, 0, $font, $value_text);
+			ImageTTFText($image, $fontsize, 0, 
+				($width/2) - ($size[4] / 2), ($height/2) + ($size[1] / 2), $black, $font, $value_text);
+			
+			imagePNG($image);
+			imagedestroy($image);
+			break;
+	}
+}
+
+// ***************************************************************************
+// Draw a dynamic progress bar using GDlib directly
+// ***************************************************************************
+
+function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
+	if($out_of_lim_str === false) {
+		$out_of_lim_str = "Out of limits";
+	}
+	
+	if($out_of_lim_image === false) {
+		$out_of_lim_image = "images_graphs/outlimits.png";
+	}
+	
+	$color = array();
+	if (!empty($colorRGB)) {
+		$color = explode('|', $colorRGB);
+	}
+	
 	// Copied from the PHP manual:
 	// http://us3.php.net/manual/en/function.imagefilledrectangle.php
 	// With some adds from sdonie at lgc dot com
 	// Get from official documentation PHP.net website. Thanks guys :-)
-	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize) {
+	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize, $value_text, $color) {
 		global $config;
 		global $REMOTE_ADDR;
 				
@@ -179,14 +277,14 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		if ($height == 0) {
 			$height = 20;
 		}
-
+		
 		//$rating = $_GET['rating'];
 		$ratingbar = (($rating/100)*$width)-2;
 		$ratingbar30 = ((30/100)*$width)-2;
 		
 		$image = imagecreate($width,$height);
 		
-
+		
 		//colors
 		$back = ImageColorAllocate($image,255,255,255);
 		imagecolortransparent ($image, $back);
@@ -195,12 +293,15 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$red = ImageColorAllocate($image,255,60,75);
 		$green = ImageColorAllocate($image,50,205,50);
 		$blue = ImageColorAllocate($image,44,81,120);
+		if (!empty($color)) {
+			$defined_color = ImageColorAllocate($image, $color[0], $color[1], $color[2]);
+		}
 		
 		$soft_green = ImageColorAllocate($image,176, 255, 84);
 		$soft_yellow = ImageColorAllocate($image,255, 230, 84);
 		$soft_red = ImageColorAllocate($image,255, 154, 84);
 		$other_red = ImageColorAllocate($image,238, 0, 0);
-
+		
 		ImageRectangleWithRoundedCorners($image,0,0,$width-1,$height-1,$radius,$back,false);
 		
 		$x1 = 1;
@@ -211,7 +312,10 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		switch ($mode)
 		{
 			case 0:
-				if ($rating > 70)
+				if (isset($defined_color)) {
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $defined_color);
+				}
+				elseif ($rating > 70)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_green);
 				elseif ($rating > 50)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_yellow);
@@ -225,7 +329,10 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				}
 				break;
 			case 1:
-				if ($rating > 100)
+				if (isset($defined_color)) {
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$defined_color);
+				}
+				elseif ($rating > 100)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$red);
 				elseif ($rating == 100)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$green);
@@ -240,12 +347,15 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 					if ($rating > 100)
 						ImageTTFText($image, $fontsize, 0, ($width/4), ($height/2)+($height/5), $back, $font, $out_of_lim_str);
 					else
-						ImageTTFText($image, $fontsize, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $font, $rating."%");
+						ImageTTFText($image, $fontsize, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $font, $value_text);
 				else
-					ImageTTFText($image, $fontsize, 0, ($width/2)-($width/10), ($height/2)+($height/5), $text, $font, $rating."%");
+					ImageTTFText($image, $fontsize, 0, ($width/2)-($width/10), ($height/2)+($height/5), $text, $font, $value_text);
 				break;
 			case 2:
-				if ($rating > 70)
+				if (isset($defined_color)) {
+					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $defined_color);
+				}
+				elseif ($rating > 70)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $other_red);
 				elseif ($rating > 50)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_red);
@@ -267,19 +377,19 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 			imageline($image, $x1+$radius, $y2, $x2-$radius, $y2, $bordercolor);
 			imageline($image, $x1, $y1+$radius, $x1, $y2-$radius, $bordercolor);
 			imageline($image, $x2, $y1+$radius, $x2, $y2-$radius, $bordercolor);
-
+			
 			imagearc($image,$x1+$radius, $y1+$radius, $radius*2, $radius*2, 180 , 270, $bordercolor);
 			imagearc($image,$x2-$radius, $y1+$radius, $radius*2, $radius*2, 270 , 360, $bordercolor);
 			imagearc($image,$x1+$radius, $y2-$radius, $radius*2, $radius*2, 90 , 180, $bordercolor);
 			imagearc($image,$x2-$radius, $y2-$radius, $radius*2, $radius*2, 360 , 90, $bordercolor);
 		}
-
+		
 		imagePNG($image);
 		imagedestroy($image);
 		
-
-   	}
-   	
+		
+	}
+	
 	function ImageRectangleWithRoundedCorners(&$im, $x1, $y1, $x2, $y2, $radius, $color)
 	{
 		// Draw rectangle without corners
@@ -292,57 +402,38 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		ImageFilledEllipse($im, $x1+$radius, $y2-$radius, $radius*2, $radius*2, $color);
 		ImageFilledEllipse($im, $x2-$radius, $y2-$radius, $radius*2, $radius*2, $color);
 	}
-   	Header("Content-type: image/png");
-   	
-   	switch ($mode)
-   	{
-   		case 0:
-   			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize);
-   			/*
-if ($mode == 0) {
-		$engine->background_color = '#E6E6D2';
-		$engine->show_title = false;
-		if ($progress > 70) 
-			$color = '#B0FF54';
-		elseif ($progress > 50)
-			$color = '#FFE654';
-		elseif ($progress > 30)
-			$color = '#FF9A54';
-		else
-			$color = '#EE0000';
-	} else {
-		$engine->background_color = '#FFFFFF';
-		$engine->show_title = true;
-		$engine->title = format_numeric ($progress).' %';
-		$color = '#2C5196';
+	Header("Content-type: image/png");
+	
+	switch ($mode)
+	{
+		case 0:
+			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize, $value_text, $color);
+			break;
+		case 1:
+			if ($progress > 100 || $progress < 0) {
+				// HACK: This report a static image... will increase render in about 200% :-) useful for
+				// high number of realtime statusbar images creation (in main all agents view, for example
+				$imgPng = imageCreateFromPng($out_of_lim_image);
+				imageAlphaBlending($imgPng, true);
+				imageSaveAlpha($imgPng, true);
+				imagePng($imgPng); 
+			}
+			else 
+				drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6,  $value_text, $color);
+			break;
+		case 2:
+			if ($progress > 100 || $progress < 0) {
+				// HACK: This report a static image... will increase render in about 200% :-) useful for
+				// high number of realtime statusbar images creation (in main all agents view, for example
+				$imgPng = imageCreateFromPng($out_of_lim_image);
+				imageAlphaBlending($imgPng, true);
+				imageSaveAlpha($imgPng, true);
+				imagePng($imgPng); 
+			}
+			else 
+			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6, $value_text, $color);
+			break;
 	}
-   		*/
-   			break;
-   		case 1:
-			if ($progress > 100 || $progress < 0) {
-				// HACK: This report a static image... will increase render in about 200% :-) useful for
-				// high number of realtime statusbar images creation (in main all agents view, for example
-				$imgPng = imageCreateFromPng($out_of_lim_image);
-				imageAlphaBlending($imgPng, true);
-				imageSaveAlpha($imgPng, true);
-				imagePng($imgPng); 
-		   	}
-		   	else 
-		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6);
-   			break;
-   		case 2:
-			if ($progress > 100 || $progress < 0) {
-				// HACK: This report a static image... will increase render in about 200% :-) useful for
-				// high number of realtime statusbar images creation (in main all agents view, for example
-				$imgPng = imageCreateFromPng($out_of_lim_image);
-				imageAlphaBlending($imgPng, true);
-				imageSaveAlpha($imgPng, true);
-				imagePng($imgPng); 
-		   	}
-		   	else 
-		   		drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6);
-   			break;   			
-   	}
 }
 
 ?>

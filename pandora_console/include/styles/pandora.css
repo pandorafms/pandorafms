@@ -304,7 +304,7 @@ input.copy, input.add, input.graph, input.percentile, input.binary,
 input.camera, input.config, input.cancel {
 	padding-right: 21px;
 }
-input.delete_min, input.graph_min, input.percentile_min, input.binary_min,
+input.delete_min, input.graph_min, input.percentile_min, input.percentile_item_min, input.binary_min,
 input.camera_min, input.config_min, input.label_min, input.icon_min {
 	padding-right: 25px;
 }
@@ -373,6 +373,12 @@ input.percentile_min {
 }
 input.percentile_min[disabled] {
 	background: #e5e5e5 url(../../images/chart_bar.disabled.png) no-repeat center;
+}
+input.percentile_item_min {
+	background: #e5e5e5 url(../../images/percentile_item.png) no-repeat center;
+}
+input.percentile_item_min[disabled] {
+	background: #e5e5e5 url(../../images/percentile_item.disabled.png) no-repeat center;
 }
 input.binary_min {
 	background: #e5e5e5 url(../../images/binary.png) no-repeat center;

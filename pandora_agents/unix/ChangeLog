@@ -1,3 +1,8 @@
+2012-03-02  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* pandora_agent: Merged from trunk. Added symlink checks for temporary
+	 files before writing them to avoid symlink attacks.
+
 2012-02-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* Linux/pandora_agent.conf: Merged from from trunk. Added a warning

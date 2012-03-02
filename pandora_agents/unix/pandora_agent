@@ -662,8 +662,8 @@ sub send_buffered_xml_files () {
 	opendir(TEMPORAL, $Conf{'temporal'}) or return;
 	while (my $xml_file = readdir(TEMPORAL)) { 
 	
-		# Skip non data files
-		next unless ($xml_file =~ m/\.data$/);
+		# Skip symlink and non data files
+		next if (-l $xml_file || $xml_file !~ m/\.data$/);
 
 		send_file ($xml_file, 1);
 	}
@@ -730,6 +730,11 @@ sub check_remote_config () {
 	binmode(CONF_FILE);
 	my $conf_md5 = md5 (join ('', <CONF_FILE>));
 	close (CONF_FILE);
+
+	# Remove temporary files if they exist as symlink to avoid symlink attack
+	for my $file ("$Conf{'temporal'}/$RemoteMD5File", "$Conf{'temporal'}/$RemoteConfFile")  {
+		error ("File '$file' already exists as a symlink and could not be removed: $!") if (-l $file && ! unlink($file));
+	}
 
 	# Get the remote MD5 file
 	if (recv_file ($RemoteMD5File) != 0) {
@@ -830,6 +835,7 @@ sub check_collections () {
 		}
 
 		# Get remote md5
+ 		error ("File '$Conf{'temporal'}/$collection_md5_file' already exists as a symlink and could not be removed: $!.") if (-l "$Conf{'temporal'}/$collection_md5_file" && !unlink("$Conf{'temporal'}/$collection_md5_file"));
 		next unless (recv_file ($collection_md5_file) == 0);
 		open (MD5_FILE, "< $Conf{'temporal'}/$collection_md5_file") || error ("Could not open file '$Conf{'temporal'}/$collection_md5_file' for reading: $!.");
 		my $remote_collection_md5 = <MD5_FILE>;
@@ -1879,6 +1885,7 @@ while (1) {
 
 	# Save XML data file
 	my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
+	error ("File '$temp_file' already exists as a symlink and could not be removed: $!") if (-l $temp_file && !unlink($temp_file));
 	open (TEMP_FILE, "> $temp_file") || error ("Could not write XML data file: $!");
 	print TEMP_FILE $Xml;
 	close (TEMP_FILE);

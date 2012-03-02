@@ -764,7 +764,7 @@ sub check_remote_config () {
 	close (CONF_FILE);
 
 	# Remove temporary files if they exist as symlink to avoid symlink attack
-	for my $file (qw("$Conf{'temporal'}/$RemoteMD5File" "$Conf{'temporal'}/$RemoteConfFile"))  {
+	for my $file ("$Conf{'temporal'}/$RemoteMD5File", "$Conf{'temporal'}/$RemoteConfFile")  {
 		error ("File '$file' already exists as a symlink and could not be removed: $!") if (-l $file && ! unlink($file));
 	}
 

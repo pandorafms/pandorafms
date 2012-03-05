@@ -1,4 +1,11 @@
+2012-03-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* pandora_console/include/functions_graph.php,
+	pandora_console/include/graphs/fgraph.php: fixed the lost font size and
+	colorRGB for progressBar and progressBubble.
+
 2012-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* images/percentile_item.disabled.png, images/percentile_item.png: added
 	images for button of percentile item (new item in visual map).
 	

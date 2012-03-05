@@ -81,7 +81,7 @@ switch($graph_type) {
 		$height = get_parameter('height');
 		$font = get_parameter('font');
 		$data = json_decode(io_safe_output(get_parameter('data')), true);
-
+		
 		$max = get_parameter('max');
 		$title = get_parameter('title');
 		$mode = get_parameter ('mode', 1);
@@ -94,13 +94,40 @@ switch($graph_type) {
 		
 		$out_of_lim_str = get_parameter('out_of_lim_str', false);
 		$out_of_lim_image = get_parameter('out_of_lim_image', false);
-
+		
 		$font = get_parameter('font');
 		$title = get_parameter('title');
 		
 		$mode = get_parameter('mode', 1);
 		
-		gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode);
+		$fontsize = get_parameter('fontsize', 10);
+		
+		$value_text = get_parameter('value_text', 10);
+		$colorRGB = get_parameter('colorRGB', '');
+		
+		gd_progress_bar ($width, $height, $progress, $title, $font,
+			$out_of_lim_str, $out_of_lim_image, $mode, $fontsize, $value_text, $colorRGB);
+		break;
+	case 'progressbubble':
+		$width = get_parameter('width');
+		$height = get_parameter('height');
+		$progress = get_parameter('progress');
+		
+		$out_of_lim_str = get_parameter('out_of_lim_str', false);
+		$out_of_lim_image = get_parameter('out_of_lim_image', false);
+		
+		$font = get_parameter('font');
+		$title = get_parameter('title');
+		
+		$mode = get_parameter('mode', 1);
+		
+		$fontsize = get_parameter('fontsize', 10);
+		
+		$value_text = get_parameter('value_text', 10);
+		$colorRGB = get_parameter('colorRGB', '');
+		
+		gd_progress_bubble ($width, $height, $progress, $title, $font,
+			$out_of_lim_str, $out_of_lim_image, $mode, $fontsize, $value_text, $colorRGB);
 		break;
 }
 

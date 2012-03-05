@@ -234,7 +234,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$time_format = "M d H\h";
 			}		
 		}
-
+		
 		$timestamp_short = date($time_format, $timestamp);
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
@@ -925,6 +925,7 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 		$value_text = $progress . "%";
 	}
 	
+	$colorRGB = '';
 	if ($color !== false) {
 		$colorRGB = html_html2rgb($color);
 		$colorRGB = implode('|', $colorRGB);
@@ -951,6 +952,7 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 		$value_text = $progress . "%";
 	}
 	
+	$colorRGB = '';
 	if ($color !== false) {
 		$colorRGB = html_html2rgb($color);
 		$colorRGB = implode('|', $colorRGB);

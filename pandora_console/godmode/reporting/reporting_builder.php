@@ -236,7 +236,8 @@ switch ($action) {
 							$values['top_n_value'] = get_parameter('quantity');
 							$values['text'] = get_parameter('text');
 							$good_format = true;
-						}else{
+						}
+						else {
 							$values['period'] = get_parameter('period');
 							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
 							$values['top_n_value'] = get_parameter('quantity');
@@ -316,12 +317,13 @@ switch ($action) {
 						$values['description'] = get_parameter('description');
 						// Support for projection graph, prediction date and SLA reports
 						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
-						if ($values['type'] == 'projection_graph'){
+						if ($values['type'] == 'projection_graph') {
 							$values['period'] = get_parameter('period1');
 							$values['top_n_value'] = get_parameter('period2');
 							$values['text'] = get_parameter('text');
 							$good_format = true;
-						}else if ($values['type'] == 'prediction_date'){
+						}
+						else if ($values['type'] == 'prediction_date') {
 							$values['period'] = get_parameter('period1');	
 							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
 							$values['top_n_value'] = get_parameter('quantity');												
@@ -333,13 +335,15 @@ switch ($action) {
 							}
 							$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
 							$values['text'] = $intervals;												
-						}else if ($values['type'] == 'SLA'){
+						}
+						else if ($values['type'] == 'SLA') {
 							$values['period'] = get_parameter('period');
 							$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 							$values['top_n_value'] = get_parameter('quantity');
 							$values['text'] = get_parameter('text');
 							$good_format = true;														
-						}else{
+						}
+						else {
 							$values['period'] = get_parameter('period');
 							$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 							$values['top_n_value'] = get_parameter('quantity');
@@ -349,7 +353,7 @@ switch ($action) {
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
-						switch ($config['dbtype']){
+						switch ($config['dbtype']) {
 							case "mysql":
 							case "postgresql":
 								$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
@@ -371,7 +375,7 @@ switch ($action) {
 						$values['friday'] = get_parameter('friday', 0);
 						$values['saturday'] = get_parameter('saturday', 0);
 						$values['sunday'] = get_parameter('sunday', 0);
-						switch ($config['dbtype']){
+						switch ($config['dbtype']) {
 							case "mysql":
 							case "postgresql":
 								$values['time_from'] = get_parameter('time_from');

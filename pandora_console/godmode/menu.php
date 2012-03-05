@@ -29,8 +29,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu["gagente"]["id"] = "god-agents";
 		
-	$sub = array ();	
-	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
+	$sub = array ();
 	
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');

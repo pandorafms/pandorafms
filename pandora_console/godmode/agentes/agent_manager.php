@@ -18,6 +18,7 @@ if (is_ajax ()) {
 	global $config;
 
 	$search_parents = (bool) get_parameter ('search_parents');
+	$search_parents_2 = (bool) get_parameter ('search_parents_2');
 	
 	if ($search_parents) {
 		require_once ('include/functions_agents.php');
@@ -47,6 +48,41 @@ if (is_ajax ()) {
 		}
 		
 		return;
+ 	}
+ 	
+ 	if ($search_parents_2) {
+ 		require_once ('include/functions_agents.php');
+ 	
+ 		$id_agent = (int) get_parameter ('id_agent');
+ 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+ 	
+ 		$filter = array ();
+ 	
+ 		switch ($config['dbtype']){
+ 			case "mysql":
+ 			case "postgresql":
+ 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+ 				break;
+ 			case "oracle":
+ 				$filter[] = '(upper(nombre) LIKE upper("%'.$string.'%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
+ 				break;
+ 		}
+ 		$filter[] = 'id_agente != '.$id_agent;
+ 	
+ 		$agents = agents_get_agents ($filter, array ('id_agente', 'nombre', 'direccion'));
+ 		if ($agents === false)
+ 			$agents = array();
+ 		
+ 		$data = array();
+ 		foreach ($agents as $agent) {
+ 			$data[] = array('id' => $agent['id_agente'],
+ 				'name' => io_safe_output($agent['nombre']),
+ 				'ip' => io_safe_output($agent['direccion']));
+ 		}
+ 		
+ 		echo json_encode($data);
+ 	
+ 		return;
  	}
  	
 	$get_modules_json_for_multiple_snmp = (bool) get_parameter("get_modules_json_for_multiple_snmp", 0);
@@ -363,7 +399,6 @@ echo '</div></form>';
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -403,28 +438,65 @@ function changeIcons() {
 
 $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
-	$("#text-id_parent").autocomplete ("ajax.php",
-		{
-			scroll: true,
-			minChars: 2,
-			extraParams: {
-				page: "godmode/agentes/agent_manager",
-				search_parents: 1,
-				id_group: function() { return $("#grupo").val(); },
-				id_agent: <?php echo $id_agente ?>
-			},
-			formatItem: function (data, i, total) {
-				if (total == 0)
-					$("#text-id_parent").css ('background-color', '#cc0000');
-				else
-					$("#text-id_parent").css ('background-color', '');
-				if (data == "")
-					return false;
-				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-			},
-			delay: 200
+	
+	$("#text-id_parent").autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term; //Word to search
+			
+			var data_params = {
+				"page": "godmode/agentes/agent_manager",
+				"search_parents_2": 1,
+				"q": term};
+			
+			jQuery.ajax ({
+				data: data_params,
+				async: false,
+				type: "POST",
+				url: action="ajax.php",
+				timeout: 10000,
+				dataType: "json",
+				success: function (data) {
+					response(data);
+					return;
+				}
+			});
+			return;
+		},
+		select: function( event, ui ) {
+			var agent_name = ui.item.name;
+			
+			//Put the name
+			$(this).val(agent_name);
+			
+			return false;
 		}
-	);
+	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if (item.ip == "") {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};
+	
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 });
 /* ]]> */
 </script>

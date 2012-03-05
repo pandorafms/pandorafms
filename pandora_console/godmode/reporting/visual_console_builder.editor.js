@@ -44,7 +44,11 @@ function initJavascript() {
 	eventsItems();
 	eventsTextAgent();
 	
-	draw_lines(lines, 'background');
+	//Fixed to wait the load of images.
+	$(window).load(function() {
+			draw_lines(lines, 'background', true);
+		}
+	);
 	
 	$(".item").css('z-index', '1'); //For paint the icons over lines
 }
@@ -52,61 +56,90 @@ function initJavascript() {
 function eventsTextAgent() {
 	var idText = $("#ip_text").html();
 	
-	$("#text-agent").autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
-					page: "operation/agentes/exportdata",
-					all: "enabled",
-					search_agents: 1,
-					id_group: function() { return $("#group").val(); }
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$("#text-agent").css('background-color', '#cc0000');
-					else
-						$("#text-agent").css('background-color', '');
-					if (data == "")
-						return false;
-					return data[0]+'<br><span class="ac_extra_field">' + idText + ': '+data[1]+'</span>';
-				},
-				delay: 200
-			}
-		);
-	
-	$("#text-agent").result (
-			function () {
-				selectAgent = true;
-				var agent_name = this.value;
-				$('#module').fadeOut ('normal', function () {
-					$('#module').empty ();
-					var inputs = [];
-					inputs.push ("filter=disabled = 0");
-					inputs.push ("agent_name=" + agent_name);
-					inputs.push ("get_agent_modules_json=1");
-					inputs.push ("page=operation/agentes/ver_agente");
-					jQuery.ajax ({
-						data: inputs.join ("&"),
-						type: 'GET',
-						url: action="ajax.php",
-						timeout: 10000,
-						dataType: 'json',
-						success: function (data) {
-							$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
-							jQuery.each (data, function (i, val) {
-								s = js_html_entity_decode (val['nombre']);
-								$('#module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-							});
-							$('#module').fadeIn ('normal');
-						}
-					});
-				});
-		
+	$("#text-agent").autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+				var term = request.term; //Word to search
 				
-			}
-		);
+				var params = [];
+				params.push("all=enabled");
+				params.push("search_agents_2=1");
+				params.push("page=operation/agentes/exportdata");
+				params.push("id_group="+ $("#group").val());
+				params.push("q="+ term);
+				jQuery.ajax ({
+					data: params.join ("&"),
+					async: false,
+					type: 'POST',
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: 'json',
+					success: function (data) {
+						response(data);
+						return;
+					}
+				});
+				return;
+			},
+		select: function( event, ui ) {
+			var agent_name = ui.item.name;
+			
+			//Put the name
+			$(this).val(agent_name);
+			
+			//Fill the modules select box
+			$('#module').fadeOut ('normal', function () {
+				$('#module').empty ();
+				var inputs = [];
+				inputs.push ("filter=disabled = 0");
+				inputs.push ("agent_name=" + agent_name);
+				inputs.push ("get_agent_modules_json=1");
+				inputs.push ("page=operation/agentes/ver_agente");
+				jQuery.ajax ({
+					data: inputs.join ("&"),
+					type: 'GET',
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: 'json',
+					success: function (data) {
+						$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
+						jQuery.each (data, function (i, val) {
+							s = js_html_entity_decode (val['nombre']);
+							$('#module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+						});
+						$('#module').fadeIn ('normal');
+					}
+				});
+			});
+			
+			return false;
+		}
+	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if (item.ip == '') {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style='font-size: 70%; font-style: italic;'>IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};
+	
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 }
 
 function cancelAction() {
@@ -131,7 +164,7 @@ function updateAction() {
 			$("#background").css('height', values['height']);
 			
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
-
+			
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=images/console/background/" + values['background']);
@@ -154,7 +187,7 @@ function updateAction() {
 			$("#text_" + idItem).html(values['label']);
 			
 			$("#" + idItem).css('color', values['label_color']);
-						
+			
 			switch ($('#hidden-status_' + idItem).val()) {
 				case '1':
 					//Critical (BAD)
@@ -178,7 +211,7 @@ function updateAction() {
 					suffix = ".png";
 					// Default is Grey (Other)
 			}
-
+			
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=images/console/icons/" + values['image'] + suffix);
@@ -194,7 +227,7 @@ function updateAction() {
 					$("#image_" + idItem).attr('src', data);
 				}
 			});	
-		
+			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -209,8 +242,15 @@ function updateAction() {
 			}
 			break;
 		case 'percentile_bar':
+		case 'percentile_item':
 			$("#text_" + idItem).html(values['label']);
-			$("#image_" + idItem).attr('src', getPercentileBar(idItem));
+			if (values['type_percentile'] == 'bubble') {
+				$("#image_" + idItem).attr('src', getPercentileBubble(idItem, values));
+			}
+			else {
+				$("#image_" + idItem).attr('src', getPercentileBar(idItem, values));
+			}
+			
 			break;
 		case 'module_graph':
 			$("#text_" + idItem).html(values['label']);
@@ -225,10 +265,9 @@ function updateAction() {
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
-
 			var params = [];
 			params.push("get_image_path=1");
-			params.push("img_src=" + getImageElement(idItem));
+			params.push("img_src=images/console/icons/" + values['image'] + ".png");
 			params.push("page=include/ajax/skins.ajax");
 			params.push("only_src=1");
 			jQuery.ajax ({
@@ -241,7 +280,7 @@ function updateAction() {
 					$("#image_" + idItem).attr('src', data);
 				}
 			});	
-
+			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -258,7 +297,7 @@ function updateAction() {
 	}
 	
 	updateDB(selectedItem, idItem , values);
-
+	
 	actionClick();
 }
 
@@ -283,6 +322,8 @@ function readFields() {
 	values['max_percentile'] = $("input[name=max_percentile]").val();
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
+	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
+	values['value_show'] = $("input[name=value_show]:checked").val();
 	
 	return values;
 }
@@ -312,6 +353,7 @@ function createAction() {
 			}
 			break;
 		case 'percentile_bar':
+		case 'percentile_item':
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
@@ -370,11 +412,11 @@ function actionClick() {
 	
 	if (openPropertiesPanel) {
 		activeToolboxButton('static_graph', true);
-		activeToolboxButton('percentile_bar', true);
 		activeToolboxButton('module_graph', true);
 		activeToolboxButton('simple_value', true);
 		activeToolboxButton('label', true);
 		activeToolboxButton('icon', true);
+		activeToolboxButton('percentile_item', true);
 		
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
@@ -393,11 +435,11 @@ function actionClick() {
 	$("#background").resizable('disable');
 	
 	activeToolboxButton('static_graph', false);
-	activeToolboxButton('percentile_bar', false);
 	activeToolboxButton('module_graph', false);
 	activeToolboxButton('simple_value', false);
 	activeToolboxButton('label', false);
 	activeToolboxButton('icon', false);
+	activeToolboxButton('percentile_item', false);
 	
 	activeToolboxButton('edit_item', false);
 	activeToolboxButton('delete_item', false);
@@ -405,6 +447,7 @@ function actionClick() {
 	
 	if (creationItem != null) {
 		//Create a item
+		
 		activeToolboxButton(creationItem, true);
 		item = creationItem;
 		$("#button_update_row").css('display', 'none');
@@ -414,8 +457,10 @@ function actionClick() {
 	}
 	else if (selectedItem != null) {
 		//Edit a item
+		
 		item = selectedItem;
 		toolbuttonActive = item;
+		activeToolboxButton(toolbuttonActive, true);
 		$("#button_create_row").css('display', 'none');
 		$("#button_update_row").css('display', '');
 		cleanFields();
@@ -482,6 +527,28 @@ function loadFieldsFromDB(item) {
 					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
 					if (key == 'width_module_graph') $("input[name=width_module_graph]").val(val);
 					if (key == 'height_module_graph') $("input[name=height_module_graph]").val(val);
+					
+					if (key == 'type_percentile') {
+						if (val == 'percentile') {
+							$("input[name=type_percentile][value=percentile]")
+								.attr("checked", "checked");
+						}
+						else {
+							$("input[name=type_percentile][value=bubble]")
+								.attr("checked", "checked");
+						}
+					}
+					
+					if (key == 'value_show') {
+						if (val == 'percent') {
+							$("input[name=value_show][value=percent]")
+								.attr("checked", "checked");
+						}
+						else {
+							$("input[name=value_show][value=value]")
+								.attr("checked", "checked");
+						}
+					}
 				});
 			}
 		});	
@@ -583,9 +650,15 @@ function hiddenFields(item) {
 	
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1."  + item).css('display', '');
-
+	
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2."  + item).css('display', '');
+	
+	$("#percentile_item_row_3").css('display', 'none');
+	$("#percentile_item_row_3."  + item).css('display', '');
+	
+	$("#percentile_item_row_4").css('display', 'none');
+	$("#percentile_item_row_4."  + item).css('display', '');
 	
 	$("#period_row").css('display', 'none');
 	$("#period_row."  + item).css('display', '');
@@ -697,13 +770,13 @@ function getModuleValue(id_data) {
 	return module_value;
 }
 
-function getPercentileBar(id_data) {
+function getPercentileBar(id_data, values) {
 	var parameter = Array();
-	var percentile = 0;
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
 		async: false,
 		url: "ajax.php",
@@ -715,6 +788,10 @@ function getPercentileBar(id_data) {
 			module_value = data['value'];
 			max_percentile = data['max_percentile'];
 			width_percentile = data['width_percentile'];
+			unit_text = false
+			if (data['unit_text'] != false)
+				unit_text = data['unit_text'];
+			colorRGB = data['colorRGB'];
 		}
 	});
 	
@@ -736,14 +813,84 @@ function getPercentileBar(id_data) {
 	});
 	
 	
-	
 	if ( max_percentile > 0)
-		percentile = module_value / max_percentile * 100;
+		var percentile = Math.round(module_value / max_percentile * 100);
 	else
-		percentile = 100;
+		var percentile = 100;
+	
+	if (unit_text == false) {
+		value_text = percentile + "%";
+	}
+	else {
+		value_text = module_value + " " + unit_text;
+	}
 	
 	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
-		'width=' + width_percentile + '&mode=1&progress=' + percentile + '&font=' + font;
+		'width=' + width_percentile + '&mode=1&progress=' + percentile +
+		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+	
+	return img;
+}
+
+function getPercentileBubble(id_data, values) {
+	var parameter = Array();
+	
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false
+			if (data['unit_text'] != false)
+				unit_text = data['unit_text'];
+			colorRGB = data['colorRGB'];
+		}
+	});
+	
+	
+	//Get the actual system font.
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_font"});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			font = data['font'];
+		}
+	});
+	
+	
+	if ( max_percentile > 0)
+		var percentile = Math.round(module_value / max_percentile * 100);
+	else
+		var percentile = 100;
+	
+	if (unit_text == false) {
+		value_text = percentile + "%";
+	}
+	else {
+		value_text = module_value + " " + unit_text;
+	}
+	
+	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
+		'width=' + width_percentile + '&mode=1&progress=' + percentile +
+		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+	
 	
 	return img;
 }
@@ -809,13 +956,13 @@ function createItem(type, values, id_data) {
 				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-
+			
 			var element_status= null;
 			var parameter = Array();
 			parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 			parameter.push ({name: "get_element_status", value: "1"});
 			parameter.push ({name: "id_element", value: id_data});
-
+			
 			jQuery.ajax ({
 				type: 'POST',
 				url: action="ajax.php",
@@ -826,14 +973,14 @@ function createItem(type, values, id_data) {
 					element_status = data;
 				}
 			});
-	
+			
 			var img_src= null;
 			var parameter = Array();
 			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
 			parameter.push ({name: "get_image_path", value: "1"});
 			parameter.push ({name: "img_src", value: getImageElement(id_data)});
 			parameter.push ({name: "only_src", value: "1"});
-
+			
 			jQuery.ajax ({
 				type: 'POST',
 				url: action="ajax.php",
@@ -847,27 +994,41 @@ function createItem(type, values, id_data) {
 			
 			item = $('<div id="' + id_data
 				+ '" class="item static_graph" '
-				+ 'style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+				+ 'style="color: ' + values['label_color']
+				+ '; text-align: center; position: absolute; display: inline-block; '
+				+ sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
 			);
 			break;
 		case 'percentile_bar':
-			sizeStyle = '';
-			imageSize = '';
+		case 'percentile_item':
+			var sizeStyle = '';
+			var imageSize = '';
 			
-			item = $('<div id="' + id_data + '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-					'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data)  + '" />' +
-					'</div>'
-			);
+			if (values['type_percentile'] == 'percentile') {
+				item = $('<div id="' + id_data + '" class="item percentile_item" style="color: ' + values['label_color'] + 
+						'; text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data, values)  + '" />' +
+						'</div>'
+				);
+			}
+			else {
+				item = $('<div id="' + id_data + '" class="item percentile_item" style="color: ' + values['label_color'] +
+					'; text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBubble(id_data, values)  + '" />' +
+						'</div>'
+				);
+			}
 			break;
 		case 'module_graph':
 			sizeStyle = '';
 			imageSize = '';
 			
-			item = $('<div id="' + id_data + '" class="item module_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item module_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
 				'</div>'
@@ -877,14 +1038,14 @@ function createItem(type, values, id_data) {
 			sizeStyle = '';
 			imageSize = '';
 			
-			item = $('<div id="' + id_data + '" class="item simple_value" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item simple_value" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span>' +
 					'<strong>' + getModuleValue(id_data) + '</strong>' +
 				'</div>'
 			);
 			break;
 		case 'label':
-			item = $('<div id="' + id_data + '" class="item label" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item label" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 					'</div>'
 				);
@@ -916,8 +1077,8 @@ function createItem(type, values, id_data) {
 					img_src = data;
 				}
 			});
-
-			item = $('<div id="' + id_data + '" class="item icon" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			
+			item = $('<div id="' + id_data + '" class="item icon" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
@@ -934,7 +1095,7 @@ function createItem(type, values, id_data) {
 				"color": visual_map_get_color_line_status(id_data) };
 		lines.push(line);
 		
-		refresh_lines(lines, 'background');
+		refresh_lines(lines, 'background', true);
 	}
 }
 
@@ -980,24 +1141,24 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'module_graph':
 			$("#image_" + idElement).attr("src", getModuleGraph(idElement));
 		case 'static_graph':
-		case 'percentile_bar':
+		case 'percentile_item':
 		case 'simple_value':
 		case 'label':
 		case 'icon':
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
-				$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
-				$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+				$("#" + idElement).css('top', '0px').css('top', top + 'px');
+				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
 			else if ((typeof(values['absolute_left']) != 'undefined') &&
 					(typeof(values['absolute_top']) != 'undefined')) {
-				$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
-				$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+				$("#" + idElement).css('top', '0px').css('top', top + 'px');
+				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
 			$("#" + idElement).css('color', values['label_color']);
 			found = false;
 			jQuery.each(lines, function(i, line) {
-				if (lines[i]['id'] == idElement) {
+				if (lines[i]['node_begin'] == idElement) {
 					found = true;
 					if (values['parent'] == 0) {
 						lines.splice(i);
@@ -1021,7 +1182,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				lines.push(line);
 			}
 			
-			refresh_lines(lines, 'background');
+			refresh_lines(lines, 'background', true);
 			break;
 		case 'background':
 			if(values['width'] == '0' || values['height'] == '0'){
@@ -1067,11 +1228,8 @@ function updateDB(type, idElement , values, event) {
 	
 	if ((typeof(values['mov_left']) != 'undefined') &&
 		(typeof(values['mov_top']) != 'undefined')) {
-		top = parseInt($("#" + idElement).css('margin-top').replace('px', ''));
-		left = parseInt($("#" + idElement).css('margin-left').replace('px', ''));
-		
-		top = top + parseInt(values['mov_top']);
-		left = left + parseInt(values['mov_left']);
+		top = parseInt($("#" + idElement).css('top').replace('px', ''));
+		left = parseInt($("#" + idElement).css('left').replace('px', ''));
 	}
 	else if ((typeof(values['absolute_left']) != 'undefined') &&
 		(typeof(values['absolute_top']) != 'undefined')) {
@@ -1080,8 +1238,15 @@ function updateDB(type, idElement , values, event) {
 	}
 	
 	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
-		parameter.push ({name: 'top', value: top});
-		parameter.push ({name: 'left', value: left});
+		if ((typeof(values['top']) == 'undefined') &&
+			(typeof(values['left']) == 'undefined')) {
+			parameter.push ({name: 'top', value: top});
+			parameter.push ({name: 'left', value: left});
+		}
+		else {
+			values['top'] = top;
+			values['left'] = left;
+		}
 	}
 	
 	success_update = false;
@@ -1127,7 +1292,7 @@ function deleteDB(idElement) {
 							lines.splice(i);
 						}
 					});
-					refresh_lines(lines, 'background');
+					refresh_lines(lines, 'background', true);
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
@@ -1187,13 +1352,13 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
-			if ($(divParent).hasClass('percentile_bar')) {
+			if ($(divParent).hasClass('percentile_item')) {
 				creationItem = null;
-				selectedItem = 'percentile_bar';
+				selectedItem = 'percentile_item';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
-				activeToolboxButton('show_grid', false);			
+				activeToolboxButton('show_grid', false);
 			}
 			if ($(divParent).hasClass('module_graph')) {
 				creationItem = null;
@@ -1238,54 +1403,39 @@ function eventsItems(drag) {
 		}
 	});
 	
-	$(".item").draggable({grid: drag});
+	//Set the limit of draggable in the div with id "background" and set drag
+	//by default is false.
+	$(".item").draggable({containment: "#background", grid: drag});
 	
 	$('.item').bind('dragstart', function(event, ui) {
 		event.stopPropagation();
 		if (!openPropertiesPanel) {
-			divParent = $(event.target).parent();
 			unselectAll();
-			$(divParent).css('border', '2px blue dotted');
+			$(event.target).css('border', '2px blue dotted');
 			
-			if ($(divParent).hasClass('static_graph')) {
-				creationItem = null;
+			selectedItem = null;
+			if ($(event.target).hasClass('static_graph')) {
 				selectedItem = 'static_graph';
-				idItem = $(divParent).attr('id');
-				activeToolboxButton('edit_item', true);
-				activeToolboxButton('delete_item', true);
 			}
-			if ($(divParent).hasClass('percentile_bar')) {
-				creationItem = null;
-				selectedItem = 'percentile_bar';
-				idItem = $(divParent).attr('id');
-				activeToolboxButton('edit_item', true);
-				activeToolboxButton('delete_item', true);
+			if ($(event.target).hasClass('percentile_item')) {
+				selectedItem = 'percentile_item';
 			}
-			if ($(divParent).hasClass('module_graph')) {
-				creationItem = null;
+			if ($(event.target).hasClass('module_graph')) {
 				selectedItem = 'module_graph';
-				idItem = $(divParent).attr('id');
-				activeToolboxButton('edit_item', true);
-				activeToolboxButton('delete_item', true);
 			}
-			if ($(divParent).hasClass('simple_value')) {
-				creationItem = null;
+			if ($(event.target).hasClass('simple_value')) {
 				selectedItem = 'simple_value';
-				idItem = $(divParent).attr('id');
-				activeToolboxButton('edit_item', true);
-				activeToolboxButton('delete_item', true);
 			}
-			if ($(divParent).hasClass('label')) {
-				creationItem = null;
+			if ($(event.target).hasClass('label')) {
 				selectedItem = 'label';
-				idItem = $(divParent).attr('id');
-				activeToolboxButton('edit_item', true);
-				activeToolboxButton('delete_item', true);
 			}
-			if ($(divParent).hasClass('icon')) {
-				creationItem = null;
+			if ($(event.target).hasClass('icon')) {
 				selectedItem = 'icon';
-				idItem = $(divParent).attr('id');
+			}
+			
+			if (selectedItem != null) {
+				creationItem = null;
+				idItem = $(event.target).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
@@ -1296,7 +1446,6 @@ function eventsItems(drag) {
 		event.stopPropagation();
 		
 		var values = {};
-		
 		values['mov_left'] = ui.position.left;
 		values['mov_top'] = ui.position.top; 
 		
@@ -1371,8 +1520,8 @@ function move_elements_resize(original_width, original_height, width, height) {
 			.replace('ui-draggable', '').replace('ui-draggable-disabled', '')
 			.replace(/^\s+/g,'').replace(/\s+$/g,'');
 		
-		old_height = parseInt($(item).css('margin-top').replace('px', ''));
-		old_width = parseInt($(item).css('margin-left').replace('px', ''));
+		old_height = parseInt($(item).css('top').replace('px', ''));
+		old_width = parseInt($(item).css('left').replace('px', ''));
 		
 		ratio_width =  width / original_width;
 		ratio_height =  height / original_height;
@@ -1401,7 +1550,8 @@ function click_button_toolbox(id) {
 			actionClick();
 			break;
 		case 'percentile_bar':
-			toolbuttonActive = creationItem = 'percentile_bar';
+		case 'percentile_item':
+			toolbuttonActive = creationItem = 'percentile_item';
 			actionClick();
 			break;
 		case 'module_graph':
@@ -1441,7 +1591,7 @@ function click_button_toolbox(id) {
 				//And it is necesary to re-code more parts of code to change
 				//this method.
 				activeToolboxButton('static_graph', false);
-				activeToolboxButton('percentile_bar', false);
+				activeToolboxButton('percentile_item', false);
 				activeToolboxButton('module_graph', false);
 				activeToolboxButton('simple_value', false);
 				activeToolboxButton('label', false);
@@ -1468,7 +1618,7 @@ function click_button_toolbox(id) {
 				}
 				
 				activeToolboxButton('static_graph', true);
-				activeToolboxButton('percentile_bar', true);
+				activeToolboxButton('percentile_item', true);
 				activeToolboxButton('module_graph', true);
 				activeToolboxButton('simple_value', true);
 				activeToolboxButton('label', true);
@@ -1584,8 +1734,8 @@ function showGrid() {
 				.replace('ui-draggable', '').replace('ui-draggable-disabled', '')
 				.replace(/^\s+/g,'').replace(/\s+$/g,'');
 			
-			pos_y = parseInt($(item).css('margin-top').replace('px', ''));
-			pos_x = parseInt($(item).css('margin-left').replace('px', ''));
+			pos_y = parseInt($(item).css('top').replace('px', ''));
+			pos_x = parseInt($(item).css('left').replace('px', ''));
 			
 			pos_y = Math.floor(pos_y / SIZE_GRID) * SIZE_GRID;
 			pos_x = Math.floor(pos_x / SIZE_GRID) * SIZE_GRID;

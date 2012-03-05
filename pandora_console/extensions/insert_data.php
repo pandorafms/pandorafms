@@ -177,53 +177,42 @@ function mainInsertData() {
 	echo "</form>";
 	
 	ui_require_css_file ('datepicker');
-	ui_require_jquery_file ('ui.core');
-	ui_require_jquery_file ('ui.datepicker');
 	ui_require_jquery_file ('timeentry');
-	ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 	/* <![CDATA[ */
 	$(document).ready (function () {
-	
-		$("#text_id_agent").autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
+		$("#text_id_agent").autocomplete({
+			minLength: 2,
+			source: function( request, response ) {
+				var term = request.term; //Word to search
+				
+				var data_params = {
 					page: "operation/agentes/exportdata",
-					search_agents: 1,
-					id_group: function() { return $("#id_group").val(); }
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$("#text_id_agent").css ('background-color', '#cc0000');
-					else
-						$("#text_id_agent").css ('background-color', '');
-					if (data == "")
-						return false;
-					
-					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-				},
-				delay: 200
-			}
-		);
-
-		$("#text-time").timeEntry ({
-			spinnerImage: 'images/time-entry.png',
-			spinnerSize: [20, 20, 0]
-		});
-		
-		$("#text-date").datepicker ();
-		
-	});
-
-	$("#text_id_agent").result (
-		function () {
-			selectAgent = true;
-			var agent_name = this.value;
-			$('#id_agent_module').fadeOut ('normal', function () {
+					"search_agents_2": 1,
+					"q": term,
+					id_group: function() { return $("#id_group").val(); }};
+				
+				jQuery.ajax ({
+					data: data_params,
+					async: false,
+					type: "POST",
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: "json",
+					success: function (data) {
+						response(data);
+						return;
+					}
+				});
+				return;
+			},
+			select: function( event, ui ) {
+				var agent_name = ui.item.name;
+				
+				//Put the name
+				$(this).val(agent_name);
+				
 				$('#id_agent_module').empty ();
 				var inputs = [];
 				inputs.push ("agent_name=" + agent_name);
@@ -249,11 +238,44 @@ function mainInsertData() {
 						$('#submit-submit').fadeIn ('normal');
 					}
 				});
-			});
-	
+				
+				return false;
+			}
+		})
+		.data( "autocomplete")._renderItem = function( ul, item ) {
+			if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
+				text = "<a>" + item.name + "</a>";
+			}
+			else {
+				text = "<a>" + item.name
+					+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+			}
 			
-		}
-	);
+			return $("<li></li>")
+				.data("item.autocomplete", item)
+				.append(text)
+				.appendTo(ul);
+		};
+		
+		//Force the size of autocomplete
+		$(".ui-autocomplete").css("max-height", "100px");
+		$(".ui-autocomplete").css("overflow-y", "auto");
+		/* prevent horizontal scrollbar */
+		$(".ui-autocomplete").css("overflow-x", "hidden");
+		/* add padding to account for vertical scrollbar */
+		$(".ui-autocomplete").css("padding-right", "20px");
+		
+		//Force to style of items
+		$(".ui-autocomplete").css("text-align", "left");
+
+		$("#text-time").timeEntry ({
+			spinnerImage: 'images/time-entry.png',
+			spinnerSize: [20, 20, 0]
+		});
+		
+		$("#text-date").datepicker ();
+		
+	});
 	/* ]]> */
 </script>
 <?php

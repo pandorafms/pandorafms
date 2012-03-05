@@ -27,7 +27,7 @@ ui_print_page_header (__('Update manager'), "images/extensions.png", false, "", 
 
 if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';
-	echo html_print_image("images/information.png", true) . '&nbsp;'; 
+	echo html_print_image("images/information.png", true) . '&nbsp;';
 	/* Translators: Do not translade Update Manager, it's the name of the program */
 	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.');
 	echo '<p />';

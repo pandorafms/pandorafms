@@ -398,64 +398,115 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
  * @param id_agent_module_selector id of the selector for the modules of the agent.
  */
 function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, id_server_name, noneValue) {
-		$(id_agent_name).autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
-					page: "include/ajax/agent",
-					search_agents: 1
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$(id_agent_name).css ('background-color', '#cc0000');
-					else
-						$(id_agent_name).css ('background-color', '');
-					if (data == "")
-						return false;
-					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[2]+'</span>';
-				},
-				delay: 200
-			}
-		);
-		// Callback from the autocomplete
-		$(id_agent_name).result (
-			function (e, data, formatted) {
-				$(id_agent_module_selector).attr('disabled', false);
-				agent_id = data[1];
-				server_name = data[2];
-				$(id_server_name).val(server_name);
+	//Check exist the field with id in the var id_agent_name.
+	if ($(id_agent_name).length == 0)
+		return;
+	
+	$(id_agent_name).autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+				var term = request.term; //Word to search
+				
+				var data_params = {"page": "include/ajax/agent",
+					"search_agents_2": 1,
+					"q": term};
+				jQuery.ajax ({
+					data: data_params,
+					async: false,
+					type: 'POST',
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: 'json',
+					success: function (data) {
+						response(data);
+						return;
+					}
+				});
+				return;
+			},
+		select: function( event, ui ) {
+			var agent_name = ui.item.name;
+			var agent_id = ui.item.id;
+			var server_name = ui.item.ip;
+			
+			//Put the name
+			$(this).val(agent_name);
+			
+			//Put the id
+			if (typeof(id_agent_id) != "undefined") {
 				$(id_agent_id).val(agent_id);
-				jQuery.post ('ajax.php', 
-							{"page": "operation/agentes/ver_agente",
-									"get_agent_modules_json": 1,
-									"id_agent": agent_id,
-									"server_name": server_name,
-									"filter" : 'disabled=0 AND delete_pending=0',
-									"fields" : "id_agente_modulo,nombre"
-									},
-									function (data) {
-										$(id_agent_module_selector).empty();
-										if (typeof(noneValue) != "undefined") {
-											if (noneValue == true) {
-												option = $("<option></option>")
-												.attr ("value", 0)
-												.html ("--");
-												$(id_agent_module_selector).append (option);
-											}
-										}
-										jQuery.each (data, function (i, value) {
-											option = $("<option></option>")
-												.attr ("value", value['id_agente_modulo'])
-												.html (js_html_entity_decode (value['nombre']));
-											$(id_agent_module_selector).append (option);
-										});
-									},
-									"json"
-								);
 			}
-		);
+			
+			//Put the server
+			if (typeof(id_server_name) != "undefined") {
+				$(id_server_name).val(server_name);
+			}
+			
+			//Fill the modules select box
+			$(id_agent_module_selector).fadeOut ('normal', function () {
+				$('#module').empty ();
+				
+				var data_params = {"page": "operation/agentes/ver_agente",
+					"get_agent_modules_json": 1,
+					"id_agent": agent_id,
+					"server_name": server_name,
+					"filter" : 'disabled=0 AND delete_pending=0',
+					"fields" : "id_agente_modulo,nombre"};
+				jQuery.ajax ({
+					data: data_params,
+					type: 'POST',
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: 'json',
+					success: function (data) {
+						$(id_agent_module_selector).empty();
+						if (typeof(noneValue) != "undefined") {
+							if (noneValue == true) {
+								option = $("<option></option>")
+								.attr ("value", 0)
+								.html ("--");
+								$(id_agent_module_selector).append (option);
+							}
+						}
+						jQuery.each (data, function (i, value) {
+							option = $("<option></option>")
+								.attr ("value", value['id_agente_modulo'])
+								.html (js_html_entity_decode (value['nombre']));
+							$(id_agent_module_selector).append (option);
+						});
+						$(id_agent_module_selector).fadeIn ('normal');
+					}
+				});
+			});
+			
+			return false;
+		}
+	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if (item.ip == '') {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style='font-size: 70%; font-style: italic;'>IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};
+	
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 }
 
 /**
@@ -470,36 +521,77 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
  * @param id_agent_module_selector id of the selector for the modules of the agent.
  */
 function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
-		$(id_agent_name).autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
-					page: "include/ajax/agent",
-					search_agents: 1
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$(id_agent_name).css ('background-color', '#cc0000');
-					else
-						$(id_agent_name).css ('background-color', '');
-					if (data == "")
-						return false;
-					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[2]+'</span>';
-				},
-				delay: 200
-			}
-		);
-
-		// Callback from the autocomplete
-		$(id_agent_name).result (
-			function (e, data, formatted) {
-				//$(id_agent_module_selector).attr('disabled', false);
-				agent_id = data[1];
-				server_name = data[2];
-				$(id_server_name).val(server_name);
+	//Check exist the field with id in the var id_agent_name.
+	if ($(id_agent_name).length == 0)
+		return;
+	
+	$(id_agent_name).autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term; //Word to search
+			
+			var data_params = {"page": "include/ajax/agent",
+				"search_agents_2": 1,
+				"q": term};
+			
+			jQuery.ajax ({
+				data: data_params,
+				async: false,
+				type: 'POST',
+				url: action="ajax.php",
+				timeout: 10000,
+				dataType: 'json',
+				success: function (data) {
+					response(data);
+					return;
+				}
+			});
+			return;
+		},
+		select: function( event, ui ) {
+			var agent_id = ui.item.id;
+			var server_name = ui.item.ip;
+			var agent_name = ui.item.name;
+			
+			//Put the name
+			$(this).val(agent_name);
+			
+			//Put the id
+			if (typeof(id_agent_id) != "undefined") {
 				$(id_agent_id).val(agent_id);
 			}
-		);	
+			
+			//Put the server
+			if (typeof(id_server_name) != "undefined") {
+				$(id_server_name).val(server_name);
+			}
+			
+			return false;
+		}
+	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if (item.ip == '') {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style='font-size: 70%; font-style: italic;'>IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};
+		
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 }

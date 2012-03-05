@@ -229,12 +229,13 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->xaxis_interval = ($this->xaxis_interval / 7 >= 1) ? ($this->xaxis_interval / 7) : 10;
 		
 		// Remove axis values if graph is small 
-		if ($this->width > MIN_WIDTH && $this->height > MIN_HEIGHT){
+		if ($this->width > MIN_WIDTH && $this->height > MIN_HEIGHT) {
 			$this->graph->drawScale ($this->dataset->GetData (),
 					$this->dataset->GetDataDescription (), SCALE_START0,
 					80, 80, 80, $this->show_axis, 0, 50, false,
 					$this->xaxis_interval);
-		}else{
+		}
+		else {
 			$this->graph->drawScale ($this->dataset->GetData (),
 					$this->dataset->GetDataDescription (), SCALE_START0,
 					80, 80, 80, false, 0, 50, false,

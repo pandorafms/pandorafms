@@ -79,9 +79,9 @@ function hl_bal($t, $do=1, $in='div'){
 	$ok = $q = array(); // $q seq list of open non-empty ele
 	$o = "";
 	
-	for($i=-1, $ci=count($t); ++$i<$ci;){
+	for($i=-1, $ci=count($t); ++$i<$ci;) {
 		// allowed $ok in parent $p
-		if($ql = count($q)){
+		if($ql = count($q)) {
 			$p = array_pop($q);
 			$q[] = $p;
 			if(isset($cS[$p])){$ok = $cS[$p];}
@@ -90,7 +90,10 @@ function hl_bal($t, $do=1, $in='div'){
 			elseif(isset($cB[$p])){$ok = $eB; unset($cI['del'], $cI['ins']);}
 			if(isset($cO[$p])){$ok = $ok + $cO[$p];}
 			if(isset($cN[$p])){$ok = array_diff_assoc($ok, $cN[$p]);}
-		}else{$ok = $inOk; unset($cI['del'], $cI['ins']);}
+		}
+		else {
+			$ok = $inOk; unset($cI['del'], $cI['ins']);
+		}
 		// bad tags, & ele content
 		if(isset($e) && ($do == 1 or (isset($ok['#pcdata']) && ($do == 3 or $do == 5)))){
 			$o .= '&lt;'.$s.$e.$a.'&gt;';
@@ -101,7 +104,10 @@ function hl_bal($t, $do=1, $in='div'){
 				foreach(preg_split('`(\x01\x02[^\x01\x02]+\x02\x01)`', $x, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v){
 					$o .= (substr($v, 0, 2) == "\x01\x02" ? $v : ($do > 4 ? preg_replace('`\S`', '', $v) : ''));
 				}
-			}elseif($do > 4){$o .= preg_replace('`\S`', '', $x);}
+			}
+			elseif ($do > 4) {
+				$o .= preg_replace('`\S`', '', $x);
+			}
 		}
 		// get markup
 		if(!preg_match('`^(/?)([a-zA-Z1-6]+)([^>]*)>(.*)`sm', $t[$i], $r)){$x = $t[$i]; continue;}
@@ -177,7 +183,9 @@ function hl_bal($t, $do=1, $in='div'){
 		elseif(isset($cB[$p])){$ok = $eB; unset($cI['del'], $cI['ins']);}
 		if(isset($cO[$p])){$ok = $ok + $cO[$p];}
 		if(isset($cN[$p])){$ok = array_diff_assoc($ok, $cN[$p]);}
-	}else{$ok = $inOk; unset($cI['del'], $cI['ins']);}
+	}
+	else {
+		$ok = $inOk; unset($cI['del'], $cI['ins']);}
 	if(isset($e) && ($do == 1 or (isset($ok['#pcdata']) && ($do == 3 or $do == 5)))){
 		$o .= '&lt;'.$s.$e.$a.'&gt;';
 	}
@@ -190,7 +198,8 @@ function hl_bal($t, $do=1, $in='div'){
 			foreach(preg_split('`(\x01\x02[^\x01\x02]+\x02\x01)`', $x, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v){
 				$o .= (substr($v, 0, 2) == "\x01\x02" ? $v : ($do > 4 ? preg_replace('`\S`', '', $v) : ''));
 			}
-		}elseif($do > 4){$o .= preg_replace('`\S`', '', $x);}
+		}
+		elseif($do > 4){$o .= preg_replace('`\S`', '', $x);}
 	}
 	while(!empty($q) && ($e = array_pop($q))){$o .= '</'.$e.'>';}
 	
@@ -208,7 +217,8 @@ function hl_cmtcd($t){
 		if(substr(($t = preg_replace('`--+`', '-', substr($t, 4, -3))), -1) != ' '){$t .= ' ';}
 		$t = $C['comment'] == 2 ? str_replace(array('&', '<', '>'), array('&amp;', '&lt;', '&gt;'), $t) : $t;
 		$t = "\x01\x02\x04!--$t--\x05\x02\x01";
-	}else{ // CDATA
+	}
+	else { // CDATA
 		if(!$C['cdata']){return $t;}
 		if($C['cdata'] == 1){return '';}
 		$t = substr($t, 1, -1);
@@ -383,7 +393,8 @@ $t = str_replace(array("\t", "\r", "\n", ' '), '', preg_replace('/"(?>(`.|[^"])*
  break; case 1:
  if($a[0] == '='){ // =
  $w = 1; $mode = 2; $a = ltrim($a, '= ');
- }else{ // No val
+ }
+ else { // No val
  $w = 1; $mode = 0; $a = ltrim($a);
  $aA[$nm] = '';
  }
@@ -432,7 +443,10 @@ $t = str_replace(array("\t", "\r", "\n", ' '), '', preg_replace('/"(?>(`.|[^"])*
  if(!preg_match('`\bnofollow\b`i', $a['rel'])){$a['rel'] .= ' nofollow';}
  }elseif(isset($aA['rel'])){
  if(!preg_match('`\bnofollow\b`i', $aA['rel'])){$nfr = 1;}
- }else{$a['rel'] = 'nofollow';}
+ }
+ else{
+ 	$a['rel'] = 'nofollow';
+ }
  }
  }
  }
@@ -506,7 +520,8 @@ $t = str_replace(array("\t", "\r", "\n", ' '), '', preg_replace('/"(?>(`.|[^"])*
  // unique ID
  if($C['unique_ids'] && isset($a['id'])){
  if(!preg_match('`^[A-Za-z][A-Za-z0-9_\-.:]*$`', ($id = $a['id'])) or (isset($GLOBALS['hl_Ids'][$id]) && $C['unique_ids'] == 1)){unset($a['id']);
- }else{
+ }
+ else {
  while(isset($GLOBALS['hl_Ids'][$id])){$id = $C['unique_ids']. $id;}
  $GLOBALS['hl_Ids'][($a['id'] = $id)] = 1;
  }
@@ -591,7 +606,9 @@ $t = str_replace(array("\t", "\r", "\n", ' '), '', preg_replace('/"(?>(`.|[^"])*
  }elseif(isset($b[$y])){$o .= $f.$e.$r;
  }elseif(isset($a[$y])){$o .= $e.$f.ltrim($r);
  }elseif(!$y){$o .= $f.$e.$f.ltrim($r);
- }else{$o .= $e.$r;}
+ }
+ else {
+ 	$o .= $e.$r;}
  }
  $t = preg_replace('`[\n]\s*?[\n]+`', "\n", $o);
  

@@ -49,7 +49,7 @@ echo '<table border=0 width="98%">';
 echo '<tr><td>';
 echo '<h4>'.__('Modules per agent').'</h4>';
 
-echo graph_db_agentes_modulos2(600, 250);
+echo graph_db_agentes_modulos(600, 250);
 
 echo '</td></tr><tr><td><br /></tr></td>';
 echo '<tr><td>';

@@ -1,3 +1,14 @@
+2012-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_flot.php
+	include/graphs/FusionCharts
+	include/graphs/functions_fsgraph.php
+	include/graphs/fgraph.php
+	operation/agentes/estado_generalagente.php
+	godmode/db/db_info.php: Removed FlashCharts library
+	and clean graphs code
+
 2012-03-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/logon_ok.php: Fixed users link in welcome page.

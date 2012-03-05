@@ -67,7 +67,7 @@ echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
 echo graph_event_module (290, 120, $id_agente);
 echo '<br>';
-graph_graphic_agentevents_static ($id_agente, 290, 15, 86400, '');
+graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
 
 echo '</div>';
 	

@@ -185,7 +185,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 
 function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 	if($flash_chart) {
-		echo fs_area_chart ($chart_data, $width, $height);
+		return flot_area_simple_graph($chart_data, $width, $height);
 	}
 	else {
 		echo "<img src='include/graphs/functions_pchart.php?static_graph=1&graph_type=threshold&ttl=".$ttl."&data=".json_encode($chart_data)."&width=".$width."&height=".$height."'>";
@@ -429,14 +429,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	}
 	
 	if($flash_chart) {
-		switch($graph_type) {
-			case "2d":
-					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
-				break;
-			case "3d":				
-					return flot_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height, $water_mark_url, $font, $font_size);
-				break;
-		}
+		return flot_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height, $water_mark_url, $font, $font_size);
 	}
 	else {
 		$graph = array();
@@ -458,14 +451,6 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 				break;
 		}
 	}
-}
-
-function gantt_graph($project_name, $from, $to, $tasks, $milestones, $width, $height, $ttl = 1) {
-	return fs_gantt_chart ($project_name, $from, $to, $tasks, $milestones, $width, $height, $ttl);
-}
-
-function include_flash_chart_script($homeurl = '') {
-	echo '<script language="JavaScript" src="' . $homeurl . 'include/graphs/FusionCharts/FusionCharts.js"></script>';
 }
 
 ?>

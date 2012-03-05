@@ -70,7 +70,6 @@ if (!empty($graph_type)) {
 	include_once($homeurl . 'include/functions.php');
 	include_once($homeurl . 'include/functions_html.php');
 	
-	include_once($homeurl . 'include/graphs/functions_fsgraph.php');
 	include_once($homeurl . 'include/graphs/functions_gd.php');
 	include_once($homeurl . 'include/graphs/functions_utils.php');
 }

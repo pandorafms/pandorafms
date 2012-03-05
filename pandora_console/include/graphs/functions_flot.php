@@ -17,24 +17,62 @@
 
 global $config;
 
-// NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
 
-echo '
-	<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/javascript/jquery-1.6.1.min.js"></script>
-	<script type="text/javascript">
-		var $jq161 = jQuery.noConflict();
-	</script>
-	<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.pie.min.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.crosshair.min.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.stack.min.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.selection.min.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.resize.min.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.threshold.js"></script>
-    <script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.symbol.min.js"></script>
-	<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/pandora.flot.js"></script>
-
-';
+function include_javascript_dependencies_flot_graph($return = false) {
+	global $config;
+	
+	static $is_include_javascript = false;
+	
+	if (!$is_include_javascript) {
+		$is_include_javascript = true;
+		
+		// NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
+		$output = '
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.pie.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.crosshair.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.stack.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.selection.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.resize.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.threshold.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.symbol.min.js"></script>
+			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/pandora.flot.js"></script>
+		';
+		$output .= "
+		<script type='text/javascript'>
+		function pieHover(event, pos, obj) 
+		{
+			if (!obj)
+				return;
+			percent = parseFloat(obj.series.percent).toFixed(2);
+			$('#hover').html('<span style=\'font-weight: bold; color: '+obj.series.color+'\'>'+obj.series.label+' ('+percent+'%)</span>');
+			$('.legendLabel').each(function() {
+				if($(this).html() == obj.series.label) {
+					$(this).css('font-weight','bold');
+				}
+				else {
+					$(this).css('font-weight','');
+				}
+			});
+		}
+		
+		function pieClick(event, pos, obj) 
+		{
+			if (!obj)
+				return;
+			percent = parseFloat(obj.series.percent).toFixed(2);
+			alert(''+obj.series.label+': '+percent+'%');
+		}
+		</script>
+		"
+		;
+		
+		if (!$return)
+			echo $output;
+		
+		return $output;
+	}
+}
 
 ///////////////////////////////
 ////////// AREA GRAPHS ////////
@@ -42,17 +80,23 @@ echo '
 function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array()) {
 	global $config;
 	
+	include_javascript_dependencies_flot_graph();
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data);
 }
 
 function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array()) {
 	global $config;
-
+	
+	include_javascript_dependencies_flot_graph();
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array()) {
 	global $config;
+	
+	include_javascript_dependencies_flot_graph();
 	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data);
 }
@@ -60,11 +104,15 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, 
 function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array()) {
 	global $config;
 	
+	include_javascript_dependencies_flot_graph();
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data);
 }
 
 function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $type, $water_mark, $serie_types, $chart_extra_data) {
 	global $config;
+	
+	include_javascript_dependencies_flot_graph();
 
 	$menu = true;
 	$font_size = '7';
@@ -216,8 +264,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 
 // Prints a FLOT pie chart
 function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font = '', $font_size = 8) {
+	include_javascript_dependencies_flot_graph();
+	
 	$series = sizeof($values);
-	if (($series != sizeof ($labels)) || ($series == 0) ){
+	if (($series != sizeof ($labels)) || ($series == 0) ) {
 		return;
 	}
 	
@@ -250,6 +300,10 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font =
 // Returns a 3D column chart
 function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	global $config;
+	
+	include_javascript_dependencies_flot_graph();
+	
+	$return = '';
 	
 	$stacked_str = '';
 	$multicolor = true;
@@ -342,7 +396,9 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 // Returns a 3D column chart
 function flot_vcolumn_chart ($graph_data, $width, $height, $water_mark, $homedir, $reduce_data_columns) {
 	global $config;
-
+	
+	include_javascript_dependencies_flot_graph();
+	
 	$stacked_str = '';
 	$multicolor = false;
 	
@@ -432,11 +488,13 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $water_mark, $homedir
 
 function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '') {
 	global $config;
-
+	
+	include_javascript_dependencies_flot_graph();
+	
 	$height+= 20;
-
+	
 	$stacked_str = 'stack: stack,';
-
+	
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 	
@@ -467,7 +525,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 			$leg_max_length = strlen($l);
 		}
 	}
-
+	
 	$fontsize = 7;
 	
 	$maxticks = (int) ($width / ($fontsize * $leg_max_length));
@@ -490,7 +548,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	foreach($graph_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		$i--;
-
+		
 		foreach($values as $key => $value) {
 			$jsvar = "d_".$graph_id."_".$i;
 			if($key == 'data') {
@@ -515,23 +573,23 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$datacolor = implode($separator,$datacolor);
 	$legend = io_safe_output(implode($separator,$legend));
 	$acumulate_data = io_safe_output(implode($separator,$acumulate_data));
-
+	
 	// Store data series in javascript format
 	$jsvars = '';
 	$jsseries = array();
 	
 	$date = get_system_time ();
 	$datelimit = ($date - $period) * 1000;
-
+	
 	$i = 0;
 	
 	$values2 = array();
-
+	
 	foreach($data as $jsvar => $values) {
 		$values2[] = implode($separator,$values);
 		$i ++;
 	}
-
+	
 	$values = implode($separator2, $values2);	
 	
 	// Javascript code
@@ -540,34 +598,8 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
    	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2')";
 	$return .= "\n//]]>";
 	$return .= "</script>";
-
+	
 	return $return;	
 }
 
 ?>
-
-<script type="text/javascript">
-function pieHover(event, pos, obj) 
-{
-	if (!obj)
-		return;
-	percent = parseFloat(obj.series.percent).toFixed(2);
-	$("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
-	$(".legendLabel").each(function() {
-		if($(this).html() == obj.series.label) {
-			$(this).css('font-weight','bold');
-		}
-		else {
-			$(this).css('font-weight','');
-		}
-	});
-}
-
-function pieClick(event, pos, obj) 
-{
-	if (!obj)
-		return;
-	percent = parseFloat(obj.series.percent).toFixed(2);
-	alert(''+obj.series.label+': '+percent+'%');
-}
-</script>

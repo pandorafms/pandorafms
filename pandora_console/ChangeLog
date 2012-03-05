@@ -1,5 +1,25 @@
 2012-03-05 Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* pandora_console/include/graphs/functions_flot.php: added the function
+	"include_javascript_dependencies_flot_graph" for to do more carefuly the
+	include javascripts and javascript hardcore wrote code (once time) and added
+	call into all functions this function. And into the function
+	"flot_hcolumn_chart " fixed the init var $return. And removed hack to use
+	two versions of jquery.
+	
+	* pandora_console/include/graphs/flot/pandora.flot.js: removed the hack to
+	use two versions of jquery.
+	
+	* pandora_console/include/functions_ui.php: into the function
+	"ui_process_page_head" call the "include_javascript_dependencies_flot_graph"
+	it is enabled the flash_chart in $config.
+	
+	* pandora_console/include/graphs/fgraph.php,
+	pandora_console/include/include_graph_dependencies.php: removed old
+	include for old flash chart library.
+
+2012-03-05 Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/update_manager/main.php, general/shortcut_bar.php,
 	godmode/reporting/reporting_builder.item_editor.php,
 	godmode/reporting/reporting_builder.php,

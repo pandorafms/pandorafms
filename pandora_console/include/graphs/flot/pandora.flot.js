@@ -33,7 +33,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		};
 	}
 	
-	var plot = $jq161.plot($('#'+graph_id), data,
+	var plot = $.plot($('#'+graph_id), data,
 	{
 			series: {
 				pie: {
@@ -59,9 +59,9 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	});
 
 	// Events
-	$jq161('#'+graph_id).bind('plothover', pieHover);
-	$jq161('#'+graph_id).bind('plotclick', pieClick);
-	$jq161('#'+graph_id).bind('mouseout',resetInteractivity);
+	$('#'+graph_id).bind('plothover', pieHover);
+	$('#'+graph_id).bind('plotclick', pieClick);
+	$('#'+graph_id).bind('mouseout',resetInteractivity);
 
 	function pieHover(event, pos, obj) 
 	{
@@ -148,7 +148,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 				}
 	   };
 	   
-	var plot = $jq161.plot($('#'+graph_id),datas, options );
+	var plot = $.plot($('#'+graph_id),datas, options );
 	   	
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
@@ -172,7 +172,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 	});
 	
 	// When resize the window, adjust the values
-	$jq161('#'+graph_id).parent().resize(function () {
+	$('#'+graph_id).parent().resize(function () {
 		i = 0;
 		pixelPerValue = parseInt(plot.width()) / maxvalue;
 		
@@ -203,7 +203,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
     }
     
     // Events
-    $jq161('#'+graph_id).bind('plothover',  function (event, pos, item) {
+    $('#'+graph_id).bind('plothover',  function (event, pos, item) {
 		$('.values_'+graph_id).css('font-weight', '');
 		if(item != null) {
 			index = item.dataIndex;
@@ -278,7 +278,7 @@ function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_
 				}
 	   };
 	   
-	var plot = $jq161.plot($('#'+graph_id),datas, options );
+	var plot = $.plot($('#'+graph_id),datas, options );
 	   	
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
@@ -302,7 +302,7 @@ function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_
 	//~ });
 	
 	// When resize the window, adjust the values
-	//~ $jq161('#'+graph_id).parent().resize(function () {
+	//~ $('#'+graph_id).parent().resize(function () {
 		//~ i = 0;
 		//~ pixelPerValue = parseInt(plot.width()) / maxvalue;
 		//~ 
@@ -333,7 +333,7 @@ function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_
     }
     
     // Events
-    //~ $jq161('#'+graph_id).bind('plothover',  function (event, pos, item) {
+    //~ $('#'+graph_id).bind('plothover',  function (event, pos, item) {
 		//~ $('.values_'+graph_id).css('font-weight', '');
 		//~ if(item != null) {
 			//~ index = item.dataIndex;
@@ -405,7 +405,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				}
 	   };
 
-	var plot = $jq161.plot($('#'+graph_id), datas, options );
+	var plot = $.plot($('#'+graph_id), datas, options );
 
 	// Format functions
     function xFormatter(v, axis) {
@@ -603,10 +603,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				labelFormatter: lFormatter
 				}
 	   };
-
 	var stack = 0, bars = true, lines = false, steps = false;
 
-	var plot = $jq161.plot($('#'+graph_id), datas, options );
+	var plot = $.plot($('#'+graph_id), datas, options );
 
 	// Adjust the overview plot to the width and position of the main plot
 	yAxisWidth = $('#'+graph_id+' .yAxis .tickLabel').css('width');
@@ -619,7 +618,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	$('#overview_'+graph_id).css('margin-left',yAxisWidth);
 	
 	// Miniplot
-    var overview = $jq161.plot($('#overview_'+graph_id),datas, {
+    var overview = $.plot($('#overview_'+graph_id),datas, {
         series: {
 			stack: stacked,
             lines: { show: true, lineWidth: 1 },
@@ -640,7 +639,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
     
     // Connection between plot and miniplot
     
-    $jq161('#'+graph_id).bind('plotselected', function (event, ranges) {
+    $('#'+graph_id).bind('plotselected', function (event, ranges) {
         // do the zooming
         dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
         dataInPlot = plot.getData()[0].data.length;
@@ -649,8 +648,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
         
         new_mts = parseInt(factor*mts);
                 
-        plot = $jq161.plot($('#'+graph_id), datas,
-                      $jq161.extend(true, {}, options, {
+        plot = $.plot($('#'+graph_id), datas,
+                      $.extend(true, {}, options, {
                         xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
 						xaxes: [ { 
 								tickFormatter: xFormatter,
@@ -667,7 +666,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
         overview.setSelection(ranges, true);
     });
     
-    $jq161('#overview_'+graph_id).bind('plotselected', function (event, ranges) {
+    $('#overview_'+graph_id).bind('plotselected', function (event, ranges) {
         plot.setSelection(ranges);
     });
     
@@ -712,7 +711,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
             var y = series.data[j][1];
 														
 			if(currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
-				$jq161('#timestamp_'+graph_id).show();
+				$('#timestamp_'+graph_id).show();
 				if(width < 400) {
 					$('#timestamp_'+graph_id).text(labels[j] + ' (' + parseFloat(y).toFixed(2) + ')');
 				}
@@ -740,7 +739,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				}
 			}
 			else {
-				$jq161('#timestamp_'+graph_id).hide();
+				$('#timestamp_'+graph_id).hide();
 			}
 
 			var label_aux = series.label + ' = ';
@@ -757,7 +756,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
     }
     
     // Events
-    $jq161('#'+graph_id).bind('plothover',  function (event, pos, item) {
+    $('#'+graph_id).bind('plothover',  function (event, pos, item) {
         overview.setCrosshair({ x: pos.x, y: 0 });
         currentPlot = plot;
         latestPosition = pos;
@@ -767,7 +766,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
     });
     
-	$jq161('#'+graph_id).bind("plotclick", function (event, pos, item) {
+	$('#'+graph_id).bind("plotclick", function (event, pos, item) {
         plot.unhighlight();
         if (item) {
 			plot.unhighlight();
@@ -811,7 +810,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		}
     });
     
-    $jq161('#overview_'+graph_id).bind('plothover',  function (event, pos, item) {
+    $('#overview_'+graph_id).bind('plothover',  function (event, pos, item) {
 		plot.setCrosshair({ x: pos.x, y: 0 });
 		currentPlot = overview;
         latestPosition = pos;
@@ -820,8 +819,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		}
     });
 	
-	$jq161('#'+graph_id).bind('mouseout',resetInteractivity);
-	$jq161('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+	$('#'+graph_id).bind('mouseout',resetInteractivity);
+	$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
 
 	// Reset interactivity styles
 	function resetInteractivity() {
@@ -857,8 +856,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
 		$('#menu_cancelzoom_'+graph_id).click(function() {
 			// cancel the zooming
-			plot = $jq161.plot($('#'+graph_id), datas,
-			  $jq161.extend(true, {}, options, {
+			plot = $.plot($('#'+graph_id), datas,
+			  $.extend(true, {}, options, {
 				  xaxis: { min: 0, max: max_x },
 				  legend: { show: false }
 			  }));

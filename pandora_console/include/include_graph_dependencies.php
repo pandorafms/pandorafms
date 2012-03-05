@@ -29,7 +29,6 @@
 		if($config['flash_charts'] && !defined('AJAX') && !get_parameter('static_graph',0)) {
 			include_once($homeurl . 'include/graphs/functions_flot.php');
 		}
-		include_once($homeurl . 'include/graphs/functions_fsgraph.php');
 		include_once($homeurl . 'include/graphs/functions_gd.php');
 		include_once($homeurl . 'include/graphs/functions_utils.php');
 	}

@@ -25,7 +25,8 @@ $extra_sql = enterprise_hook('policies_get_agents_sql_condition');
 if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 	$extra_sql = '';
 }else if ($extra_sql != '') {
-	$extra_sql .= ' OR ';
+	//$extra_sql .= ' OR ';
+	$extra_sql = ' OR '.$extra_sql;
 }
 
 $searchAlerts = check_acl($config['id_user'], 0, "AR");
@@ -106,7 +107,7 @@ $alerts = false;
 
 if($searchAlerts) {
 	$agents = array_keys(agents_get_group_agents(array_keys(users_get_groups($config["id_user"], 'AR', false))));
-	
+
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$whereAlerts = 'AND (
@@ -253,7 +254,8 @@ else {
 		
 		array_push($table->data, array(
 		$disabledCell,
-		print_agent_name ($alert["id_agente"], true, "upper"),
+		//print_agent_name ($alert["id_agente"], true, "upper"),
+		agents_get_name($alert["id_agente"]),
 		$alert["module_name"],
 		$alert["template_name"],$actionCell
 		));

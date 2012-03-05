@@ -389,9 +389,10 @@ if  ($draw != '') {
 	
 	$(document).ready( function() {
 		// Hide update filter button
-		if ($("#filter_id").val() == 0){
+		if ($("#filter_id").val() == 0) {
 			$("#submit-update_button").css("visibility", "hidden");		
-		}else{
+		}
+		else {
 			$("#submit-update_button").css("visibility", "");				
 		}
 		
@@ -400,7 +401,8 @@ if  ($draw != '') {
 			if ($("#text-name").val() == ""){
 				$('#filter_name_color').css('color', '#CC0000');
 				$('#filter_group_color').css('color', '#CC0000');			
-			}else{
+			}
+			else {
 				$('#filter_name_color').css('color', '#000000');
 				$('#filter_group_color').css('color', '#000000');				
 			}

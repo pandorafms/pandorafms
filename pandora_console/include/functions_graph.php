@@ -18,7 +18,7 @@ include_once($config["homedir"] . "/include/graphs/fgraph.php");
 include_once($config["homedir"] . "/include/functions_reporting.php");
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
-include_once($config['homedir'] . '/include/functions_users.php');
+include_once($config['homedir'] . "/include/functions_users.php");
 
 define("GRAPH_AREA", 0);
 define("GRAPH_STACKED_AREA", 1);
@@ -399,7 +399,7 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
 		}
 	}
 			
-	return $date;			
+	return $date;
 }
 
 /**
@@ -490,7 +490,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//	     more interval, more resolution, and slower.
 	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
-
+	
 	// Init weights
 	for ($i = 0; $i < $module_number; $i++) {
 		if (! isset ($weight_list[$i])) {
@@ -721,7 +721,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 					$graph_values[$i] = $temp_graph_values; 
 			}
 		}
-
+		
 		//Add the max, min and avg in the legend
 		$avg = round($avg / $countAvg, 1);
 		
@@ -934,17 +934,58 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$config['fontpath'], $config['font_size']);
 }
 
-function progress_bar($progress, $width, $height, $title = '', $mode = 1) {
+function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false) {
 	global $config;
 	
 	$out_of_lim_str = __("Out of limits");
 	$title = "";
 	
+	if ($value_text === false) {
+		$value_text = $progress . "%";
+	}
+	
+	$colorRGB = '';
+	if ($color !== false) {
+		$colorRGB = html_html2rgb($color);
+		$colorRGB = implode('|', $colorRGB);
+	}
+	
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
+	
+	return "<img title='" . $title . "' alt='" . $title . "'" .
+		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
+		"&width=".$width."&height=".$height."&progress=".$progress.
+		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
+		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&colorRGB=". $colorRGB . "' />";
+}
 
-	return "<img title='" . $title . "' alt='" . $title . "' src='include/graphs/fgraph.php?static_graph=1&homeurl=../../&graph_type=progressbar&width=".$width."&height=".$height."&progress=".$progress.
-		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str."&title=".$title."&font=".$config['fontpath']."' />";
+function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false) {
+	global $config;
+	
+	$out_of_lim_str = __("Out of limits");
+	$title = "";
+	
+	if ($value_text === false) {
+		$value_text = $progress . "%";
+	}
+	
+	$colorRGB = '';
+	if ($color !== false) {
+		$colorRGB = html_html2rgb($color);
+		$colorRGB = implode('|', $colorRGB);
+	}
+	
+	require_once("include_graph_dependencies.php");
+	include_graphs_dependencies($config['homedir'].'/');
+	
+	return "<img title='" . $title . "' alt='" . $title . "'" .
+		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		"&width=".$width."&height=".$height."&progress=".$progress.
+		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
+		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&colorRGB=". $colorRGB . "' />";
 }
 
 function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url) {
@@ -1838,7 +1879,8 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	if (empty($unit_name)){
 		$unit = modules_get_unit($agent_module_id);
-	}else
+	}
+	else
 		$unit = $unit_name;
 
 	// Data iterator
@@ -1954,7 +1996,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['count'] = 0;
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
-		if (!$avg_only){		
+		if (!$avg_only) {		
 			$chart[$timestamp]['min'] = 0;
 			$chart[$timestamp]['max'] = 0;
 		}	
@@ -2411,7 +2453,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		}
 	}
 	
-	if (empty($unit_name)){
+	if (empty($unit_name)) {
 		$unit = modules_get_unit($agent_module_id);
 	}
 	else

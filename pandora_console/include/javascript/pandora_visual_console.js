@@ -14,8 +14,17 @@
 	- node_begin Id of the beginning node
 	- node_end Id of the finishing node
  * @param id_div Div to draw the lines in
+ * @param editor Boolean variable to set other css selector in editor (when true).
  */
-function draw_line (line, id_div) {
+function draw_line (line, id_div, editor) {
+	if (typeof(editor) == 'undefined') {
+		editor = false;
+		selector = 'margin-';
+	}
+	if (editor) {
+		selector = '';
+	}
+	
 	div = document.getElementById (id_div);
 	brush = new jsGraphics (div);
 	brush.setStroke (1);
@@ -23,23 +32,27 @@ function draw_line (line, id_div) {
 	
 	if (line['x1']) {
 		x1 = line['x'];
-	} else {
-		x1 = parseInt ($('#'+line['node_begin']).css ('margin-left')) + ($('#'+line['node_begin']).width() / 2);
+	}
+	else {
+		x1 = parseInt ($('#'+line['node_begin']).css (selector + 'left')) + ($('#'+line['node_begin']).width() / 2);
 	}
 	if (line['y1']) {
 		y1 = line['y1'];
-	} else {
-		y1 = parseInt ($('#'+line['node_begin']).css ('margin-top')) + ($('#'+line['node_begin']).height() / 2);
+	}
+	else {
+		y1 = parseInt ($('#'+line['node_begin']).css (selector + 'top')) + ($('#'+line['node_begin']).height() / 2);
 	}
 	if (line['x2']) {
 		x2 = line['x2'];
-	} else {
-		x2 = parseInt ($('#'+line['node_end']).css ('margin-left')) + ($('#'+line['node_end']).width() / 2);
+	}
+	else {
+		x2 = parseInt ($('#'+line['node_end']).css (selector + 'left')) + ($('#'+line['node_end']).width() / 2);
 	}
 	if (line['y2']) {
 		y2 = line['y2'];
-	} else {
-		y2 = parseInt ($('#'+line['node_end']).css ('margin-top')) + ($('#'+line['node_end']).height() / 2);
+	}
+	else {
+		y2 = parseInt ($('#'+line['node_end']).css (selector + 'top')) + ($('#'+line['node_end']).height() / 2);
 	}
 	brush.drawLine (x1, y1, x2, y2);
 	brush.paint ();
@@ -50,10 +63,11 @@ function draw_line (line, id_div) {
  * 
  * @param lines Array with lines objects (see draw_line)
  * @param id_div Div to draw the lines in
+ * @param editor Boolean variable to set other css selector in editor (when true).
  */
-function draw_lines (lines, id_div) {
+function draw_lines (lines, id_div, editor) {
 	jQuery.each (lines, function () {
-		draw_line (this, id_div);
+		draw_line (this, id_div, editor);
 	});
 }
 
@@ -77,8 +91,9 @@ function delete_lines (id_div) {
  * 
  * @param lines Array with lines objects (see draw_line)
  * @param id_div Div to draw the lines in
+ * @param editor Boolean variable to set other css selector in editor (when true).
  */
-function refresh_lines (lines, id_div) {
+function refresh_lines (lines, id_div, editor) {
 	delete_lines (id_div);
-	draw_lines (lines, id_div);
+	draw_lines (lines, id_div, editor);
 }

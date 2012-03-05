@@ -1047,7 +1047,7 @@ function html_print_radio_button ($name, $value, $label = '', $checkedvalue = ''
 	
 	if ($return)
 		return $output;
-
+	
 	echo $output;
 }
 

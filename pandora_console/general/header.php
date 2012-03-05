@@ -32,12 +32,13 @@ config_check();
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
 	<tr>
 		<td rowspan="2">
-
+		
 		<a href="index.php?sec=main">
 <?php
 		if (!defined ('PANDORA_ENTERPRISE')){
 			echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
-		} else {
+		}
+		else {
 			echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
 		}
 ?>
@@ -49,71 +50,69 @@ config_check();
 					html_print_image("images/user_suit.png" , false, array("class" => 'bot', "alt" => 'user'));
 				else
 					html_print_image("images/user_green.png" , false, array("class" => 'bot', "alt" => 'user'));
-			?>			
+			?>
 			<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
-
+			
 			if ($config["metaconsole"] == 0){
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
-
+					
 					echo '<div id="dialog_messages" style="display: none"></div>';
 					ui_require_css_file ('dialog');
-					ui_require_jquery_file ('ui.core');
-					ui_require_jquery_file ('ui.dialog');
+					
 					echo '<a href="ajax.php?page=operation/messages/message" title="' . __("Message overview") . '" id="show_messages_dialog">';
 					html_print_image ("images/email.png", false,
 					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
 					echo '</a>';
-                    echo "&nbsp;";
-                    echo "&nbsp;";
+					echo "&nbsp;";
+					echo "&nbsp;";
 				}
 			}
-
-            if ($config["alert_cnt"] > 0){
-                echo '<div id="alert_messages" style="display: none"></div>';
-                ui_require_css_file ('dialog');
-       			ui_require_jquery_file ('ui.core');
-    			ui_require_jquery_file ('ui.dialog');
-                
-    			echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
-	    		html_print_image ("images/error.png", false,
-    			array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
-	    		echo '</a>';
-                echo "&nbsp;";
-                echo "&nbsp;";
-            }
-
-            echo '<a class="white_bold" href="index.php?bye=bye">';
-            html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
-            echo '</a></td>';
-	    echo '<td width="20%">';
-
-		    if ($config["metaconsole"] == 0){
-			    echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
-
-			    $servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
-			    $servers["up"] = (int) servers_check_status ();
-			    $servers["down"] = $servers["all"] - $servers["up"];
-			    if ($servers["up"] == 0) {
-				    //All Servers down or no servers at all
-				    echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
-			    }
-			    elseif ($servers["down"] != 0) {
-				    //Some servers down
-				    echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
-			    }
-			    else {
-				    //All servers up
-				    echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
-			    }
-			    unset ($servers); // Since this is the header, we don't like to trickle down variables.
-			    echo '</a>';
-		    } else {
-			    // TODO: Put here to remark this is a metaconsole
-			    echo "";
-
-		    }
+			
+			if ($config["alert_cnt"] > 0){
+				echo '<div id="alert_messages" style="display: none"></div>';
+				ui_require_css_file ('dialog');
+				
+				echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
+				html_print_image ("images/error.png", false,
+				array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
+				echo '</a>';
+				echo "&nbsp;";
+				echo "&nbsp;";
+			}
+			
+			echo '<a class="white_bold" href="index.php?bye=bye">';
+			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
+			echo '</a></td>';
+		echo '<td width="20%">';
+		
+			if ($config["metaconsole"] == 0){
+				echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
+				
+				$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
+				$servers["up"] = (int) servers_check_status ();
+				$servers["down"] = $servers["all"] - $servers["up"];
+				if ($servers["up"] == 0) {
+					//All Servers down or no servers at all
+					echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
+				}
+				elseif ($servers["down"] != 0) {
+					//Some servers down
+					echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
+				}
+				else {
+					//All servers up
+					echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
+				}
+				unset ($servers); // Since this is the header, we don't like to trickle down variables.
+				echo '</a>';
+			}
+			else {
+				// TODO: Put here to remark this is a metaconsole
+				echo "";
+				
+			}
 ?>
 		</td>
 		<td width="20%">
@@ -161,7 +160,7 @@ config_check();
 		if ($config["metaconsole"] == 0){
 		?>
 		<form method="get" style="" name="quicksearch" action="">
-			<script type="text/javascript" language="javascript">
+			<script type="text/javascript">
 			var fieldKeyWordEmpty = true;
 			</script>
 			<input type="text" id="keywords" name="keywords"
@@ -174,9 +173,9 @@ config_check();
 				?>
 				onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
 				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
-			<!-- onClick="javascript: document.quicksearch.submit()" -->					
+			<!-- onClick="javascript: document.quicksearch.submit()" -->
 			<input type='hidden' name='head_search_keywords' value='abc' />
-		</form>				
+		</form>
 		<?php
 		}
 		?>
@@ -192,15 +191,17 @@ if ($config["metaconsole"] == 0){
 </table>
 <?php
 	ui_require_jquery_file ('countdown');
+	ui_require_css_file ('jquery-ui-1.8.17.custom');
+	ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
 ?>
-
-
+<!-- 
 <script type="text/javascript" src="include/javascript/jquery.ui.dialog.js "></script>	
 <script type="text/javascript" src="include/javascript/jquery.ui.draggable.js "></script>	
-<script type="text/javascript" src="include/javascript/jquery.ui.droppable.js "></script>		
-<script type="text/javascript" src="include/javascript/jquery.ui.resizable.js "></script>	
+<script type="text/javascript" src="include/javascript/jquery.ui.droppable.js "></script>
+<script type="text/javascript" src="include/javascript/jquery.ui.resizable.js "></script>
+ -->	
 	
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
 /* Temporal fix to hide graphics when ui_dialog are displayed */

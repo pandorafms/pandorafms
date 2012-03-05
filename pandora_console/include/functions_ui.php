@@ -810,7 +810,9 @@ function ui_require_css_file ($name, $path = 'include/styles/') {
 		return true;
 	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
 		return false;
+	
 	$config['css'][$name] = $filename;
+	
 	return true;
 }
 
@@ -1008,7 +1010,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
 			$output .= file_get_contents ($config["homedir"]."/".$filename);
 			$output .= "\n".'/* ]]> */</script>';
-		} else {
+		}
+		else {
 			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
 		}
 	}
@@ -1020,13 +1023,22 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	
 	//Pandora specific jquery should go first
-	$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
-		"pandora" => "include/javascript/jquery.pandora.js"),
+	$black_list_pages_old_jquery = array('operation/gis_maps/index');
+	if (in_array(get_parameter('sec2'), $black_list_pages_old_jquery)) {
+		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
+					"pandora" => "include/javascript/jquery.pandora.js"),
 		$config['jquery']);
+	}
+	else {
+		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery-1.7.1.min.js",
+			"pandora" => "include/javascript/jquery.pandora.js"),
+			$config['jquery']);
+	}
 	
 		
 	//Then add each script as necessary
 	$loaded = array ('');
+	
 	foreach ($config['jquery'] as $name => $filename) {
 		if (in_array ($name, $loaded))
 			continue;
@@ -1036,7 +1048,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
 			$output .= file_get_contents ($config["homedir"]."/".$filename);
 			$output .= "\n".'/* ]]> */</script>';
-		} else {
+		}
+		else {
 			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
 		}
 	}

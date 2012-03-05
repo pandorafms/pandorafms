@@ -17,6 +17,7 @@ global $config;
 
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
+	$search_agents_2 = (bool) get_parameter ('search_agents_2');
 	
 	if ($search_agents) {
 		
@@ -66,6 +67,59 @@ if (is_ajax ()) {
 		}
 		
 		return;
+ 	}
+ 	
+ 	if ($search_agents_2) {
+ 	
+ 		require_once ('include/functions_agents.php');
+ 	
+ 		$id_agent = (int) get_parameter ('id_agent');
+ 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+ 		$id_group = (int) get_parameter('id_group', -1);
+ 		$addedItems = html_entity_decode((string) get_parameter('add'));
+ 		$addedItems = json_decode($addedItems);
+ 		$all = (string)get_parameter('all', 'all');
+ 	
+ 		if ($addedItems != null) {
+ 			foreach ($addedItems as $item) {
+ 				echo $item . "|\n";
+ 			}
+ 		}
+ 	
+ 		$filter = array ();
+ 		switch ($config['dbtype']) {
+ 			case "mysql":
+ 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+ 				break;
+ 			case "postgresql":
+ 				$filter[] = '(nombre LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\' OR comentarios LIKE \'%'.$string.'%\')';
+ 				break;
+ 			case "oracle":
+ 				$filter[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+ 				break;
+ 		}
+ 	
+ 		if ($id_group != -1)
+ 		$filter['id_grupo'] = $id_group;
+ 	
+ 		switch ($all) {
+ 			case 'enabled':
+ 				$filter['disabled'] = 0;
+ 				break;
+ 		}
+ 	
+ 		$agents = agents_get_agents ($filter, array ('id_agente', 'nombre', 'direccion'));
+ 		if ($agents === false)
+ 			$agents = array();
+ 		
+ 		$data = array();
+ 		foreach ($agents as $agent) {
+ 			$data[] = array('id' => $agent['id_agente'], 'name' => io_safe_output($agent['nombre']), 'ip' => io_safe_output($agent['direccion']));
+ 		}
+ 		
+ 		echo json_encode($data);
+ 	
+ 		return;
  	}
  	
  	return;
@@ -226,13 +280,13 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
 						$arr["utimestamp"] = $end;				
 						array_push ($data, $arr);
-					} else {
+					}
+					else {
 						$data_single = modules_get_agentmodule_data ($selected, $work_period, $work_end);
 						if (!empty ($data_single)) {
 							$data = array_merge ($data, $data_single);
 						}
 					}
-
 /*
 					if ($work_end > $end) {
 						$work_period = $work_end - $end;
@@ -250,7 +304,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$output .= date ("Y-m-d G:i:s", $module['utimestamp']);
 						$output .= $rowend;
 					}
-
+					
 					switch ($export_type) {
 						default:
 						case "data":
@@ -268,28 +322,30 @@ if (!empty ($export_btn) && !empty ($module)) {
 					unset($data_single);
 					$work_end = $work_end + $work_period;
 				}
-			unset ($output);
-			$output = "";
+				unset ($output);
+				$output = "";
 			} // main foreach
 			echo $dataend;
 			break;
 		default:
 			ui_print_error_message (__('Invalid method supplied'));
 			return;
-		break;
+			break;
 	}
 
 switch ($export_type) {
-		case "excel":
-		case "csv":
-			exit; // Necesary for CSV export, if not give problems
-			break;
-		default: 
-			return;
+	case "excel":
+	case "csv":
+		exit; // Necesary for CSV export, if not give problems
+		break;
+	default: 
+		return;
+		break;
 }
 
 	
-} elseif (!empty ($export_btn) && empty ($module)) {
+}
+elseif (!empty ($export_btn) && empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
 }
 
@@ -388,13 +444,12 @@ echo '</div></form>';
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
 	var inputActive = true;
-
+	
 	$.ajax({
 		type: "POST",
 		url: "ajax.php",
@@ -411,34 +466,68 @@ $(document).ready (function () {
 	});
 	
 	if (inputActive) {
-		$("#text-agent").autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
+		$("#text-agent").autocomplete({
+			minLength: 2,
+			source: function( request, response ) {
+				var term = request.term; //Word to search
+				
+				var data_params = {
 					page: "operation/agentes/exportdata",
-					search_agents: 1,
-					id_group: function() { return $("#group").val(); }
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$("#text-agent").css ('background-color', '#cc0000');
-					else
-						$("#text-agent").css ('background-color', '');
-					if (data == "")
-						return false;
-					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-				},
-				delay: 200
+					search_agents_2: 1,
+					id_group: function() { return $("#group").val(); },
+					"q": term};
+				
+				jQuery.ajax ({
+					data: data_params,
+					async: false,
+					type: "POST",
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: "json",
+					success: function (data) {
+						response(data);
+						return;
+					}
+				});
+				return;
+			},
+			select: function( event, ui ) {
+				var agent_name = ui.item.name;
+				
+				//Put the name
+				$(this).val(agent_name);
+				
+				this.form.submit();
+				
+				return false;
 			}
-		);
+		})
+		.data( "autocomplete")._renderItem = function( ul, item ) {
+			if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
+				text = "<a>" + item.name + "</a>";
+			}
+			else {
+				text = "<a>" + item.name
+					+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+			}
+			
+			return $("<li></li>")
+				.data("item.autocomplete", item)
+				.append(text)
+				.appendTo(ul);
+		};
+		
+		//Force the size of autocomplete
+		$(".ui-autocomplete").css("max-height", "100px");
+		$(".ui-autocomplete").css("overflow-y", "auto");
+		/* prevent horizontal scrollbar */
+		$(".ui-autocomplete").css("overflow-x", "hidden");
+		/* add padding to account for vertical scrollbar */
+		$(".ui-autocomplete").css("padding-right", "20px");
+		
+		//Force to style of items
+		$(".ui-autocomplete").css("text-align", "left");
 	}
-	
-	$("#text-agent").result(function(event, data, formatted) {
- 		this.form.submit();
-	});
-	
 });
 /* ]]> */
 </script>

@@ -36,14 +36,14 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
-if (is_ajax()){
+if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
 	$save_event_filter = get_parameter('save_event_filter', 0);
 	$update_event_filter = get_parameter('update_event_filter', 0);
 	$get_event_filters = get_parameter('get_event_filters', 0);
 
 	// Get db values of a single filter
-	if ($get_filter_values){
+	if ($get_filter_values) {
 		$id_filter = get_parameter('id');
 		
 		$event_filter = events_get_event_filter($id_filter);
@@ -55,7 +55,7 @@ if (is_ajax()){
 	}
 	
 	// Saves an event filter
-	if ($save_event_filter){
+	if ($save_event_filter) {
 		$values = array();
 		$values['id_name'] = get_parameter('id_name');
 		$values['id_group'] = get_parameter('id_group'); 
@@ -668,22 +668,22 @@ foreach ($result as $event) {
 	}
 	
 	switch ($event["criticity"]) {
-			default:
-			case 0:
-				$img_sev = "images/status_sets/default/severity_maintenance.png";
-				break;
-			case 1:
-				$img_sev = "images/status_sets/default/severity_informational.png";
-				break;
-			case 2:
-				$img_sev = "images/status_sets/default/severity_normal.png";
-				break;
-			case 3:
-				$img_sev = "images/status_sets/default/severity_warning.png";
-				break;
-			case 4:
-				$img_sev = "images/status_sets/default/severity_critical.png";
-				break;
+		default:
+		case 0:
+			$img_sev = "images/status_sets/default/severity_maintenance.png";
+			break;
+		case 1:
+			$img_sev = "images/status_sets/default/severity_informational.png";
+			break;
+		case 2:
+			$img_sev = "images/status_sets/default/severity_normal.png";
+			break;
+		case 3:
+			$img_sev = "images/status_sets/default/severity_warning.png";
+			break;
+		case 4:
+			$img_sev = "images/status_sets/default/severity_critical.png";
+			break;
 	}
 		
 	if (in_array('evento', $show_fields)) {
@@ -760,7 +760,8 @@ foreach ($result as $event) {
 	
 			$templateName = db_get_sql($sql);
 			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">'.$templateName.'</a>';
-		} else {
+		}
+		else {
 			$data[$i] = '';
 		}
 		$i++;
@@ -791,7 +792,8 @@ foreach ($result as $event) {
 				$data[$i] .= ',';
 			}
 			$data[$i] = rtrim($data[$i], ',');
-		} else {
+		}
+		else {
 			$data[$i] = '';
 		}
 			$i++;
@@ -1053,7 +1055,8 @@ foreach ($result as $event) {
 		}
 		$string = rtrim($string, ',');
 		$odd = ($odd == '')? 'rowOdd' : '';
-	} else {
+	}
+	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
@@ -1184,7 +1187,7 @@ $(document).ready( function() {
 				"id" : $('#filter_id').val()
 				},
 				function (data) {
-				  jQuery.each (data, function (i, val) {
+					jQuery.each (data, function (i, val) {
 					  if (i == 'id_name')
 						$("#text-id_name").val(val);
 					  if (i == 'id_group')
@@ -1206,13 +1209,13 @@ $(document).ready( function() {
 					  if (i == 'id_user_ack')
 						$("#id_user_ack").val(val);	
 					  if (i == 'group_rep')
-						$("#group_rep").val(val);		
+						$("#group_rep").val(val);
 					  if (i == 'tag')
 						$("#tag").val(val);	
 					  if (i == 'filter_only_alert')
 						$("#filter_only_alert").val(val);
 					  if (i == 'id_group_filter')
-						$("#id_group").val(val);	
+						$("#id_group").val(val);
 				  });
 				},
 				"json"
@@ -1221,7 +1224,7 @@ $(document).ready( function() {
 	});
 	
 	// This saves an event filter
-	$("#submit-save_filter").click(function () {		
+	$("#submit-save_filter").click(function () {
 		// Checks if the filter has name or not
 		if ($('#row_name').css('visibility') == 'hidden') {
 			$('#row_name').css('visibility', '');
@@ -1229,9 +1232,10 @@ $(document).ready( function() {
 			$('#filter_name_color').css('color', '#CC0000');
 			$('#filter_group_color').css('color', '#CC0000');
 		// If the filter has name insert in database
-		}else{
+		}
+		else {
 			$('#filter_name_color').css('color', '#000000');
-			$('#filter_group_color').css('color', '#000000');			
+			$('#filter_group_color').css('color', '#000000');
 			// If the filter name is blank show error
 			if ($('#text-id_name').val() == '') {
 				$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
@@ -1259,9 +1263,10 @@ $(document).ready( function() {
 				"id_group_filter": $("#id_group").val()
 				},
 				function (data) {
-					if (data == 'error'){
+					if (data == 'error') {
 						$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error creating filter'); ?> </h3>');
-					}else{
+					}
+					else {
 						id_filter_save = data;
 						$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter created'); ?> </h3>');
 					}
@@ -1278,19 +1283,20 @@ $(document).ready( function() {
 						},
 						function (data) {
 							jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode(val);
-
-								  if (i == id_filter_save){
+								s = js_html_entity_decode(val);
+								
+								if (i == id_filter_save){
 									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-								  } else {
+								}
+								else {
 									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
-								  }
+								}
 							});
 						},
 						"json"	
 						);
-		$("#submit-update_filter").css('visibility', '');				
-					}			
+			$("#submit-update_filter").css('visibility', '');
+		}
 		return false;
 	});
 	
@@ -1327,7 +1333,8 @@ $(document).ready( function() {
 			function (data) {
 				if (data == 'ok'){
 					$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter updated'); ?> </h3>');
-				}else{
+				}
+				else {
 					$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error updating filter'); ?> </h3>');
 				}
 			});	
@@ -1346,7 +1353,8 @@ $(document).ready( function() {
 								  s = js_html_entity_decode(val);
 								  if (i == id_filter_update){
 									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-								  } else {
+								  }
+								  else {
 									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
 								  }
 							});
@@ -1375,7 +1383,8 @@ $(document).ready( function() {
 					$("#toggle_arrow").attr('src', data);
 				}
 			});			
-		}else{
+		}
+		else {
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=images/go.png");

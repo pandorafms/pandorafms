@@ -174,7 +174,7 @@
 		if ($config['integria_enabled'] == 0){
 			echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident&estado=0'>";
 			html_print_image("images/book_edit.png", false, array("title" => __("Incidents opened"),  "style" => "margin-bottom: -5px;"));
-			echo "&nbsp;";	
+			echo "&nbsp;";
 			// Select only opened incidents
 			$sql = "SELECT count(*) total_incidents FROM tincidencia WHERE 
 				id_grupo IN (".implode (",",array_keys ($own_groups)).") AND estado IN (0) 

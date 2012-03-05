@@ -138,11 +138,12 @@ $(document).ready (function () {
 	/* Show/hide begin date reports controls */
 	$("#checkbox-enable_init_date").click(function() {
 		flag = $("#checkbox-enable_init_date").is(':checked');
-		if (flag == true){
+		if (flag == true) {
 			$("#table1-1-3").css("display", "");
 			$("#table1-1-4").css("display", "");
 			$("#table1-1-5").css("display", "none");
-		}else{
+		}
+		else {
 			$("#table1-1-3").css("display", "none");
 			$("#table1-1-4").css("display", "none");
 			$("#table1-1-5").css("display", "");
@@ -183,7 +184,8 @@ switch ($config["dbtype"]) {
 
 if ($contents === false) {
 	return;
-} else {
+}
+else {
 	foreach($contents as $content) {
 		$id_report = $content['id_rc'];
 		switch ($content['type']) {

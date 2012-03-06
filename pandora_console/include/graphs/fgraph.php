@@ -187,7 +187,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if($flash_chart) {
-		echo flot_vcolumn_chart ($chart_data, $width, $height, $water_mark_url, $homedir, $reduce_data_columns);
+		return flot_vcolumn_chart ($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $homedir, $reduce_data_columns);
 	}
 	else {
 		$graph = array();
@@ -221,7 +221,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
-	$chart_extra_data = array()) {
+	$chart_extra_data = array(), $yellow_threshold, $red_threshold) {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -235,7 +235,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
-		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data);
+		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold);
 	}
 	else {
 		$graph = array();

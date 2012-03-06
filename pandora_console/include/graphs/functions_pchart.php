@@ -404,7 +404,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 			    $PieChart->draw2DPie($width/4,$height/2,array("DataGapAngle"=>0,"DataGapRadius"=>0, "Border"=>FALSE, "BorderR"=>200, "BorderG"=>200, "BorderB"=>200, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
 				break;
 		 case "pie3d":
-			    $PieChart->draw3DPie($width/4, $height/2,array("DataGapAngle"=>10,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
+			    $PieChart->draw3DPie($width/4, $height/2,array("DataGapAngle"=>5,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
 				break;
 	 }
 
@@ -549,8 +549,8 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 		case "hbar":
 				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
 					"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, 
-					"LabelValuesRotation" => 60);
-				$margin_left = 5 * $max_chars;
+					"LabelValuesRotation" => 30);
+				$margin_left = $font_size * $max_chars;
 				$margin_top = 40;
 				$margin_bottom = 10;
 				break;

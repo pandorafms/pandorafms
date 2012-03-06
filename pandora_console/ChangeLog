@@ -1,3 +1,22 @@
+2012-03-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_pchart.php
+	include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	include/graphs/fgraph.php
+	include/pchart_graph.php
+	include/FusionCharts
+	include/pChart
+	include/functions_ui.php
+	images/chart_curve_threshold.png: Clean graphs code 
+	and add threshold (warning and critical min)
+
+	* operation/reporting/reporting_viewer.php
+	include/functions_reporting.php: Improve the top_n
+	merged from 4.0
+
+
 2012-03-05 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* pandora_console/include/graphs/functions_flot.php: added the function

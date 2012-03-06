@@ -14,7 +14,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	
 	var label_conf;
 	
-	if(width < 300) {
+	if(width < 400) {
 		label_conf = {
 			show: false
 		};
@@ -82,14 +82,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 	
 	if(water_mark) {
-		// Set the watermark position
-		$('#watermark_image_'+graph_id)[0].onload = function() {
-			var canvaslimit_right = parseInt(plot.offset().left + plot.width());
-			var canvaslimit_bottom = parseInt(plot.offset().top + plot.height());
-			$('#watermark_'+graph_id).css('left',canvaslimit_right-parseInt(this.width));
-			$('#watermark_'+graph_id).css('top',canvaslimit_bottom-parseInt(this.height));
-			$('#watermark_'+graph_id).show();
-		}
+		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
 
@@ -212,24 +205,30 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
     });
     
 	if(water_mark) {
-		// Adjust the menu image on top of the plot
-		$('#watermark_image_'+graph_id)[0].onload = function() {
-			var canvaslimit_right = parseInt(plot.offset().left + plot.width());
-			var canvaslimit_bottom = parseInt(plot.offset().top + plot.height());
-			$('#watermark_'+graph_id).css('left',canvaslimit_right);
-			$('#watermark_'+graph_id).css('top',canvaslimit_bottom-parseInt(this.height));
-			$('#watermark_'+graph_id).show();
-		}
+		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
 
-function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_mark, separator, separator2) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2) {
 	
 	values = values.split(separator2);
+	legend = legend.split(separator);
+	labels_long = labels_long.split(separator);
+	colors = colors.split(separator);
+
 	var datas = new Array();
 	
 	for(i=0;i<values.length;i++) {
 		var serie = values[i].split(separator);
+		
+		var serie_color;
+		if(colors[i] != '') {
+			serie_color = colors[i];
+		}
+		else {
+			serie_color = null;
+		}
+	
 		var aux = new Array();
 		$.each(serie,function(i,v) {
 			aux.push([i, v]);
@@ -237,6 +236,7 @@ function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_
 		
 		datas.push({ 
 			data: aux, 
+			color: serie_color,
 			bars: { show: true, horizontal: false, fillColor: { colors: [ { opacity: 0.7 }, { opacity: 1 } ] }, lineWidth:1, steps:false } 
 		});
 	}
@@ -249,9 +249,11 @@ function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_
 			series: { 
 				shadowSize: 0.1 
 			},
-
+			crosshair: { mode: 'xy' },
+			selection: { mode: 'x', color: '#777' },
 			grid: { 
 				hoverable: true, 
+				clickable: true, 
 				borderWidth:1,
 				borderColor: '#666',
 				tickColor: '#eee'
@@ -342,14 +344,7 @@ function pandoraFlotVBars(graph_id, values, labels, water_mark, maxvalue, water_
     //~ });
     
 	if(water_mark) {
-		// Adjust the menu image on top of the plot
-		$('#watermark_image_'+graph_id)[0].onload = function() {
-			var canvaslimit_right = parseInt(plot.offset().left + plot.width());
-			var canvaslimit_bottom = parseInt(plot.offset().top + plot.height());
-			$('#watermark_'+graph_id).css('left',canvaslimit_right);
-			$('#watermark_'+graph_id).css('top',canvaslimit_bottom-parseInt(this.height));
-			$('#watermark_'+graph_id).show();
-		}
+		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
 
@@ -418,10 +413,11 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
     }
 }
 
-function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, separator, separator2) {
-	
-	var threshold = false;
-	
+function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, yellow_threshold, red_threshold, separator, separator2) {
+
+	var threshold = true;
+	var thresholded = false;
+
 	values = values.split(separator2);
 	serie_types = serie_types.split(separator);
 	labels_long = labels_long.split(separator);
@@ -460,14 +456,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			stacked = 'stack';
 			filled = true;
 			break;
-	}
-	
+	}	
 	var datas = new Array();
-
-	vwarning_min = 60;
-	vwarning_max = 70;
-	vcritical_min = 70;
-	vcritical_max = -1;
+	var data_base = new Array();
+	
+    // Prepared to turn series with a checkbox
+	// var showed = new Array();
 	
 	for(i=0;i<values.length;i++) {
 		var serie = values[i].split(separator);
@@ -477,8 +471,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		$.each(serie,function(i,v) {
 			aux.push([i, v]);
 			if(threshold) {
-				critical_min.push([i,vcritical_min]);
-				warning_min.push([i,vwarning_min]);
+				critical_min.push([i,red_threshold]);
+				warning_min.push([i,yellow_threshold]);
 			}
 		});
 		
@@ -510,7 +504,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		var critical = '#f00';
 		
 		// setup background areas
-		vnormal_max = vwarning_min - 1;
+		//vnormal_max = vwarning_min - 1;
 		
 		var markings = null;
 		
@@ -521,44 +515,44 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			//~ { color: criticalw, yaxis: { from: vcritical_min } },
 			//~ { color: criticalw, yaxis: { to: -1 } }
 		//~ ];
-    
-		if(threshold) {
-			// Warning and critical treshold
-			datas.push({ 
-				id: 'critical_min',
-				data: critical_min, 
-				label: null,
-				color: critical,
-				lines: { show: true, fill: false, lineWidth:3},
-			});
-			datas.push({ 
-				id: 'warning_min',
-				data: warning_min, 
-				label: null,
-				color: warning,
-				lines: { show: true, fill: false, lineWidth:3},
-			});
-		}
 		
 		// Data
-		datas.push({ 
+		data_base.push({ 
+			id: 'serie_'+i,
 			data: aux, 
 			label: legend[i],
 			color: serie_color,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
-			lines: { show: line_show, fill: filled, fillColor: { colors: [ { opacity: 1 }, { opacity: 0.7 } ]}, lineWidth:1, steps:false },
+			lines: { show: line_show, fill: filled, fillColor: { colors: [ { opacity: 1 }, { opacity: 1 } ]}, lineWidth:1, steps:false },
 			points: { show: points_show }
 		});
-		
 
-		//~ datas.push({ 
-			//~ id: 'normal_min',
-			//~ data: normal_min, 
-			//~ label: null,
-			//~ color: normal,
-			//~ lines: { show: true, fill: filled, fillColor: { colors: [ { opacity: 0.4 }, { opacity: 0.4 } ]}, lineWidth:0},
-		//~ });
+		// Prepared to turn series with a checkbox
+		// showed[i] = true;
 	}
+	
+	var threshold_data = new Array();
+	
+	if(threshold) {
+		// Warning and critical treshold
+		threshold_data.push({ 
+			id: 'critical_min',
+			data: critical_min, 
+			label: null,
+			color: critical,
+			lines: { show: true, fill: false, lineWidth:3},
+		});
+		threshold_data.push({ 
+			id: 'warning_min',
+			data: warning_min, 
+			label: null,
+			color: warning,
+			lines: { show: true, fill: false, lineWidth:3},
+		});
+	}
+	
+	// The first execution, the graph data is the base data
+	datas = data_base;
 				
 	// minTickSize
 	var mts = 130;
@@ -570,7 +564,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			},
 			crosshair: { mode: 'xy' },
 			selection: { mode: 'x', color: '#777' },
-
 			grid: { 
 				hoverable: true, 
 				clickable: true, 
@@ -603,9 +596,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				labelFormatter: lFormatter
 				}
 	   };
-	var stack = 0, bars = true, lines = false, steps = false;
 
-	var plot = $.plot($('#'+graph_id), datas, options );
+	var stack = 0, bars = true, lines = false, steps = false;
+	
+	var plot = $.plot($('#'+graph_id), datas, options);
 
 	// Adjust the overview plot to the width and position of the main plot
 	yAxisWidth = $('#'+graph_id+' .yAxis .tickLabel').css('width');
@@ -692,7 +686,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
         var j, dataset = currentPlot.getData();
 
 		var i = 0;
-        for (k = 0; k < dataset.length; ++k) {
+        for (k = 0; k < dataset.length; k++) {
 			
 			// k is the real series counter
 			// i is the series counter without thresholds
@@ -799,6 +793,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				break;
 			}
 			
+			extra_info = get_event_details(eventsz[item.dataIndex]);
 			if(extra_show) {
 				$('#extra_'+graph_id).html(extra_info);
 				$('#extra_'+graph_id).css('display','');
@@ -806,6 +801,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
             plot.highlight(item.series, item.datapoint);
         }
         else {
+			$('#extra_'+graph_id).html('');
 			$('#extra_'+graph_id).css('display','none');
 		}
     });
@@ -845,18 +841,51 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
         return '<div style=font-size:'+font_size+'pt>'+v+' '+unit+'</div>';
     }
     
-    function lFormatter(v, axis) {
+    function lFormatter(v, item) {
         return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+        // Prepared to turn series with a checkbox
+        //return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
     }
 
+    // Prepared to turn series with a checkbox
+	//~ $('.check_serie_'+graph_id).click(function() {
+		//~ // Format of the id is graph_3905jf93f03_serie_id
+		//~ id_clicked = this.id.split('_')[3];
+		//~ // Update the serie clicked
+		//~ showed[id_clicked] = this.checked;
+	//~ });
+	
 	if(menu) {
 		$('#menu_overview_'+graph_id).click(function() {
 			$('#overview_'+graph_id).toggle();
 		});
 		
+		$('#menu_threshold_'+graph_id).click(function() {
+			datas = new Array();
+			
+			if(thresholded) {
+				thresholded = false;
+			}
+			else {
+				$.each(threshold_data, function() {
+					datas.push(this);
+				});
+				thresholded = true;
+			}
+			
+			$.each(data_base, function() {
+				// Prepared to turning series
+				//if(showed[this.id.split('_')[1]]) {
+					datas.push(this);
+				//}
+			});
+
+			plot = $.plot($('#'+graph_id), datas, options);
+		});
+		
 		$('#menu_cancelzoom_'+graph_id).click(function() {
 			// cancel the zooming
-			plot = $.plot($('#'+graph_id), datas,
+			plot = $.plot($('#'+graph_id), data_base,
 			  $.extend(true, {}, options, {
 				  xaxis: { min: 0, max: max_x },
 				  legend: { show: false }
@@ -868,25 +897,41 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
 		// Adjust the menu image on top of the plot
 		$('#menu_overview_'+graph_id)[0].onload = function() {
-			var canvaslimit_right = parseInt(plot.offset().left + plot.width() - 20);
+			var menu_width = $('#menu_'+graph_id).css('width').split('px')[0];
+			var canvaslimit_right = parseInt(plot.offset().left + plot.width());
 			var canvaslimit_top = parseInt(plot.offset().top - 8);
 			var n_options = parseInt($('#menu_'+graph_id).children().length);
-			$('#menu_'+graph_id).css('left',canvaslimit_right-parseInt(this.width)*n_options);
+
+			$('#menu_'+graph_id).css('left',canvaslimit_right-menu_width-20);
 			$('#menu_'+graph_id).css('top',canvaslimit_top-parseInt(this.height));
 			$('#menu_'+graph_id).show();
 		}		
 	}
 	
 	if(water_mark) {
-		// Adjust the menu image on top of the plot
-		$('#watermark_image_'+graph_id)[0].onload = function() {
-			var canvaslimit_right = parseInt(plot.offset().left + plot.width());
-			var canvaslimit_bottom = parseInt(plot.offset().top + plot.height());
-			$('#watermark_'+graph_id).css('left',canvaslimit_right);
-			$('#watermark_'+graph_id).css('top',canvaslimit_bottom-parseInt(this.height));
-			$('#watermark_'+graph_id).show();
-		}
+		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
+}
+
+function set_watermark(graph_id, plot, watermark_src) {
+		var img = new Image();
+		img.src = watermark_src;
+		var context = plot.getCanvas().getContext('2d');
+
+		// Once it's loaded draw the image on the canvas.
+		img.addEventListener('load', function () {
+			//~ // Now resize the image: x, y, w, h.
+			
+			var down_ticks_height = 0;
+			if($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
+				down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
+			}
+			var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
+			var top_pos = parseInt(context.canvas.height - down_ticks_height - 20) - $('#watermark_image_'+graph_id)[0].height;
+			
+			context.drawImage(this, left_pos, top_pos);
+
+		}, false);
 }
 
 function get_event_details (event_ids) {

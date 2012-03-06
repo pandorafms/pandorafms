@@ -3504,6 +3504,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$top_n_value = $content['top_n_value'];
 			$show_graph = $content['show_graph'];
 			
+			$table->style[0] = 'padding: 8px 5px 8px 5px;';
 			$table->style[1] = 'text-align: right';
 			$data = array ();
 			$data[0] = $sizh.__('Top').' '.$content['top_n_value'].$sizhfin;
@@ -3522,6 +3523,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			where id_report_content = %d", $content['id_rc']);
 			
 			$tops = db_process_sql ($sql);
+			
 			if ($tops === false) {
 				$data = array ();
 				$table->colspan[2][0] = 3;
@@ -3529,7 +3531,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 				break;
 			}
-			
+
 			if ($show_graph == 0 || $show_graph == 1) {
 				$table1->width = '99%';
 				$table1->data = array ();
@@ -3537,10 +3539,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->head[0] = __('Agent');
 				$table1->head[1] = __('Module');
 				$table1->head[2] = __('Value');
-				$table1->style[0] = 'text-align: center';
-				$table1->style[1] = 'text-align: center';
-				$table1->style[2] = 'text-align: center';
+				$table1->style[0] = 'text-align: left';
+				$table1->style[1] = 'text-align: left';
+				$table1->style[2] = 'text-align: left';
 			}
+			
 			$data_top = array();
 			foreach ($tops as $key => $row) {
 				
@@ -3553,7 +3556,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						continue;
 					}
 				}
-				
+
 				$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
 				$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
 				
@@ -3572,6 +3575,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$value = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
 						break;
 				}
+				
 				//If the returned value from modules_get_agentmodule_data_max/min/avg is false it won't be stored.
 				if ($value !== false) {
 					$data_top[$key] = $value;
@@ -3585,7 +3589,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					metaconsole_restore_db();
 				}
 			}
-
+			if(empty($data_top)) {
+				$data = array ();
+				$table->colspan[2][0] = 3;
+				$data[0] = __('Insuficient data');
+				array_push ($table->data, $data);
+				break;
+			}
 			switch ($top_n) {
 				//Max
 				case 1:
@@ -3629,6 +3639,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					break;
 			}
 			
+			// Define truncate size depends the graph width
+			$truncate_size = $sizgraph_w / (4 * ($config['font_size']))-1;
+
 			if ($order_uptodown == 1 || $order_uptodown == 2) {
 				$i = 0;
 				$data_pie_graph = array();
@@ -3636,18 +3649,19 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				foreach ($data_top as $dt) {
 					$item_name = '';
 					$item_name =
-						ui_print_truncate_text($agent_name[$i], 12, false, true, false, "...") .
+						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
 						' - ' . 
-						ui_print_truncate_text($module_name[$i], 12, false, true, false, "...");
+						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
 					
 					$data_hbar[$item_name]['g'] = $dt; 
 					$data_pie_graph[$item_name] = $dt;
 					
 					if  ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
-						$data[0] = printSmallFont($agent_name[$i]);
-						$data[1] = printSmallFont($module_name[$i]);
-						$data[2] = $dt;
+						$data[0] = $agent_name[$i];
+						$data[1] = $module_name[$i];
+
+						$data[2] = round($dt,2);
 						array_push ($table1->data, $data);
 					}
 					$i++;
@@ -3661,9 +3675,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				foreach ($agent_name as $an) {
 					$item_name = '';
 					$item_name =
-						ui_print_truncate_text($agent_name[$i], 12, false, true, false, "...") .
+						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
 						' - ' . 
-						ui_print_truncate_text($module_name[$i], 12, false, true, false, "...");
+						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
 					
 					$data_pie_graph[$item_name] = $data_top[$i];
 					$data_hbar[$item_name]['g'] = $data_top[$i];
@@ -3679,13 +3693,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 			}
 			
+			unset($data);
 			$table->colspan[2][0] = 3;
+			$table->style[2] = 'text-align:center';
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
 				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
 			}
-			
+
 			$table->colspan[3][0] = 3;
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
@@ -3696,9 +3712,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;
+				$table->style[0] .= 'text-align:center';
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
 
 				array_push ($table->data, $data);
 			}
@@ -3723,13 +3740,23 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				$avg = $avg / $i;
 				
-				$data_resume = array();
-				$data_resume[0] = __('Max Value').': '.$max;
-				array_push ($table->data, $data_resume);
-				$data_resume[0] = __('Min Value').': '.$min;
-				array_push ($table->data, $data_resume);
-				$data_resume[0] = __('Average Value').': '.$avg;
-				array_push ($table->data, $data_resume);
+				unset($table_summary);
+				
+				$table_summary->width = '99%';
+				$table_summary->data = array ();
+				$table_summary->head = array ();
+				$table_summary->head[0] = __('Min Value');
+				$table_summary->head[1] = __('Average Value');
+				$table_summary->head[2] = __('Max Value');
+				
+				$table_summary->data[0][0] = round($min,2);
+				$table_summary->data[0][1] = round($avg,2);
+				$table_summary->data[0][2] = round($max,2);
+							
+				$table->colspan[5][0] = 2;
+				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
+				$table->colspan[6][0] = 2;
+				array_push ($table->data, array(html_print_table($table_summary, true)));
 			}
 			break;
 		case 'exception':
@@ -3971,6 +3998,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[3][0] = 3;
+			$table->style[0] .= 'text-align: center';
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph($config['flash_charts'], $data_pie_graph,

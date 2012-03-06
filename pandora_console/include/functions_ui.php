@@ -106,7 +106,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
  * @param boolean $return Flag to return as string or not.
  */
 function printSmallFont ($string, $return = true) {
-	$str = str_replace ('&#x20;', ' ', $string);
+	$str = io_safe_output($string);
 	$length = strlen($str);
 	if ($length >= 30) {
 		$size = 0.7;

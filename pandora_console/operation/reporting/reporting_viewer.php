@@ -57,7 +57,7 @@ $report["datetime"] = $datetime;
 // Calculations in order to modify init date of the report
 $date_init_less = strtotime(date ('Y-m-j')) - 86400;
 $date_init = get_parameter('date_init', date ('Y-m-j', $date_init_less));
-$time_init = get_parameter('time_init', date ('h:iA'));
+$time_init = get_parameter('time_init', date ('h:iA', $date_init_less));
 $datetime_init = strtotime ($date_init.' '.$time_init);
 $enable_init_date = get_parameter('enable_init_date', 0);
 
@@ -80,23 +80,28 @@ ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " -
 $table->width = '99%';
 $table->class = 'databox';
 $table->style = array ();
+$table->style[0] = 'width: 60px;';
 
 // Set initial conditions for these controls, later will be modified by javascript
 if (!$enable_init_date){
-	$table->style[3] = 'display: none';
-	$table->style[4] = 'display: none';
-	$table->style[5] = 'width: 380.583px';
+	$table->style[0] .= 'font-weight: bold; display: none';
+	$table->style[1] = 'display: none';
+	$table->style[2] = 'display: ""';
+	$table->style[3] .= 'display: none';
+	//~ $table->style[5] = 'width: 380.583px';
 }
 else{
+	$table->style[0] .= 'font-weight: bold; display: ""';
+	$table->style[1] = 'display: ""';
+	$table->style[2] = 'display: none';
 	$table->style[3] = 'display: ""';
-	$table->style[4] = 'display: ""';
 	$table->style[5] = 'display: none';
 }
 
-$table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[0] = '50px';
-$table->colspan[0][1] = 4;
+$table->size[0] = '60px';
+$table->size[2] = '60px';
+$table->colspan[0][1] = 2;
 $table->data = array ();
 $table->data[0][0] = html_print_image("images/reporting.png", true, array("width" => "32", "height" => "32")); 
 if ($report['description'] != '') {
@@ -104,15 +109,18 @@ if ($report['description'] != '') {
 } else {
 	$table->data[0][1] = $report['name'];
 }
-$table->data[1][0] = __('Date');
-$table->data[1][1] = html_print_input_text ('date', $date, '', 12, 10, true). ' ';
-$table->data[1][1] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';
-$table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
-$table->data[1][2] = __('Set initial date of all reports') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
-$table->data[1][3] = '<b>' . __('Date') . '</b>' . ui_print_help_tip(__('This is the begin date for all reports'), true);
-$table->data[1][4] = html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
-$table->data[1][4] .= html_print_input_text ('time_init', $time_init, '', 7, 7, true). ' ';
-$table->data[1][4] .= html_print_submit_button (__('Update'), 'date_submit_init', false, 'class="sub next"', true);	
+
+$table->data[0][3] = '<span style="text-align:right;width:100%">'.__('Set initial date of all reports') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true).'</span>';
+
+$table->data[1][0] = '<b>' . __('From') . ':</b>';
+$table->data[1][1] = html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
+$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 7, 7, true). ' ';
+//~ $table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit_init', false, 'class="sub next"', true);	
+$table->data[1][2] = '<b>' . __('Day before') . ':</b>';
+$table->data[1][3] = '<b>' . __('to') . ':</b>';
+$table->data[1][4] = html_print_input_text ('date', $date, '', 12, 10, true). ' ';
+$table->data[1][4] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';
+$table->data[1][4] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 $table->data[1][5] = '';
 
 echo '<form method="post" action="">';
@@ -214,14 +222,18 @@ $(document).ready (function () {
 	$("#checkbox-enable_init_date").click(function() {
 		flag = $("#checkbox-enable_init_date").is(':checked');
 		if (flag == true){
+			$("#table1-1-0").css("display", "");
+			$("#table1-1-1").css("display", "");
+			$("#table1-1-2").css("display", "none");
 			$("#table1-1-3").css("display", "");
-			$("#table1-1-4").css("display", "");
-			$("#table1-1-5").css("display", "none");
+			$("#table1-1-6").css("display", "none");
 		}else{
+			$("#table1-1-0").css("display", "none");
+			$("#table1-1-1").css("display", "none");
+			$("#table1-1-2").css("display", "");
 			$("#table1-1-3").css("display", "none");
-			$("#table1-1-4").css("display", "none");
-			$("#table1-1-5").css("display", "");
-			$("#table1-1-5").css("width", "380.583px");
+			$("#table1-1-6").css("display", "");
+			$("#table1-1-6").css("width", "380.583px");
 		}
 	});
 });

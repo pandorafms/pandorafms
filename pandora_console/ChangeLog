@@ -1,5 +1,7 @@
 2012-03-06  Sancho Lerena <slerena@artica.es>
 
+	* images/console/icons/nubebola*: New icons for big colored circle.
+
 	* include/functions_groups.php: Fixed problem with "ALL" group in
 	group view. (agents x2)
 

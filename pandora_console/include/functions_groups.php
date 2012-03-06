@@ -680,10 +680,12 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		$data["total_agents"];
 
 		if($id_group != 0) {
-	
-			$data["total_agents"] = db_get_sql ("SELECT COUNT(*) FROM tagente 
+			$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente) FROM tagente 
 							WHERE id_grupo = $id_group AND disabled = 0");
-		}		
+		} else {
+			$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente) FROM tagente 
+							WHERE disabled = 0");
+		}
 
 		echo $data["total_agents"];
 		echo "</a>";

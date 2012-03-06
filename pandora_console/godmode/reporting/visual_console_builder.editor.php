@@ -175,7 +175,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Width');?></td>
 			<td>
 				<?php
-				html_print_input_text('width_percentile', 0, '', 3, 5);
+				html_print_input_text('width_percentile', 0, '', 5, 15);
 				?>
 			</td>
 		</tr>
@@ -183,7 +183,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Max value');?></td>
 			<td>
 				<?php
-				html_print_input_text('max_percentile', 0, '', 3, 5);
+				html_print_input_text('max_percentile', 0, '', 10, 25);
 				?>
 			</td>
 		</tr>

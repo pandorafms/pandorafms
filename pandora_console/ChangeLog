@@ -1,3 +1,11 @@
+2012-03-06  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_groups.php: Fixed problem with "ALL" group in
+	group view. (agents x2)
+
+	* godmode/reporting/visual_console_builder.editor.php: More space 
+	in fields.
+
 2012-03-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php

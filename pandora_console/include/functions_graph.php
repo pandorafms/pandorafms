@@ -73,6 +73,10 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
 		array ('datos', 'utimestamp'), 'AND', true);
+	
+	// Get module warning_min and critical_min
+	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
+	$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$agent_module_id);
 		
 	if ($data === false) {
 		$data = array ();
@@ -174,7 +178,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 			if ($data[$j]['datos'] > $interval_max) {
 				$interval_max = $data[$j]['datos'];
-			} else if ($data[$j]['datos'] < $interval_max) {
+			} else if ($data[$j]['datos'] < $interval_min) {
 				$interval_min = $data[$j]['datos'];
 			}
 			$total += $data[$j]['datos'];
@@ -255,9 +259,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			else {
 				//$chart[$timestamp]['utimestamp'] = $timestamp;
 				//$chart[$timestamp]['datos'] = $total;
+				$chart[$timestamp]['max'] = $interval_max;
 				$chart[$timestamp]['sum'] = $total;
 				$chart[$timestamp]['min'] = $interval_min;
-				$chart[$timestamp]['max'] = $interval_max;
 			}
 			$previous_data = $total;
 		// Compressed data
@@ -268,9 +272,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 					$chart[$timestamp]['sum'] = 0;
 				}
 				else {
+					$chart[$timestamp]['max'] = 0;
 					$chart[$timestamp]['sum'] = 0;
 					$chart[$timestamp]['min'] = 0;
-					$chart[$timestamp]['max'] = 0;
 				}
 			}
 			else {
@@ -278,9 +282,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 					$chart[$timestamp]['sum'] = $previous_data;
 				}
 				else {
+					$chart[$timestamp]['max'] = $previous_data;
 					$chart[$timestamp]['sum'] = $previous_data;
 					$chart[$timestamp]['min'] = $previous_data;
-					$chart[$timestamp]['max'] = $previous_data;
 				}
 			}
 		}
@@ -346,7 +350,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	///////
 	// Color commented not to restrict serie colors
 	$color = array();
-	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	if($show_events) {
 		$color['event'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
@@ -354,12 +357,12 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$color['alert'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	$legend = array();
-	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
 	if($show_events) {
 		$legend['event'] = __('Events');
 		$chart_extra_data['legend_events'] = $legend['event'];
@@ -369,6 +372,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_alerts'] = $legend['alert'];
 	}
 	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
+	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
 	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
 	$legend['baseline'] = __('Baseline');
 	
@@ -383,7 +387,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $water_mark,
-		 $config['fontpath'], $config['font_size'], $unit, $ttl, $series_type, $chart_extra_data);
+		 $config['fontpath'], $config['font_size'], $unit, $ttl, $series_type, 
+		 $chart_extra_data, $warning_min, $critical_min);
 }
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
@@ -1713,80 +1718,6 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		}
 	}
 }
-
-// Clean FLASH string strips non-valid characters for flashchart
-function clean_flash_string ($string) {
-	$string = html_entity_decode ($string, ENT_QUOTES, "UTF-8");
-	$string = str_replace('&', '', $string);
-	$string = str_replace(' ', '', $string);
-	$string = str_replace ('"', '', $string);
-	return substr ($string, 0, 20);
-}
-
-// Returns a Pandora FMS agent event chart
-function fs_agent_event_chart ($data, $width, $height, $step = 1) {
-	global $config;
-
-	if (sizeof ($data) == 0) {
-		return fs_error_image ();
-	}
-
-	// Generate the XML
-	$chart = new FusionCharts('Area2D', $width, $height);
-	
-	$count = 0;
-	$num_vlines = 0;
-	foreach ($data as $name => $value) {
-			
-		if (($step >= 1) && ($count++ % $step == 0)) {
-			$show_name = '1';
-			$num_vlines++;
-		} else {
-			$show_name = '0';
-		}
-		$chart->addChartData(1, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=' . $value);
-	}
-
-	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
-
-	// Return the code
-	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
-}
-
-// Returns a Pandora FMS agent event chart
-function fs_module_event_chart ($data, $width, $height, $step = 1, $homedir = '', $rotate_names = 0) {
-	global $config;
-
-	if (sizeof ($data) == 0) {
-		return fs_error_image ();
-	}
-
-	// Generate the XML
-	$chart = new FusionCharts('Area2D', $width, 160);
-
-	$count = 0;
-	$num_vlines = 0;
-	foreach ($data as $name => $value) {
-			
-		if (($step >= 1) && ($count++ % $step == 0)) {
-			$show_name = '1';
-			$num_vlines++;
-		} else {
-			$show_name = '0';
-		}
-		$chart->addChartData(1, 'name=' . $name . ';showName=' . $show_name . ';color=' . $value);
-	}
-
-	if ($rotate_names == 0){
-		$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
-	}elseif ($rotate_names == 1){
-		$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
-	}
-
-	// Return the code
-	return get_chart_code ($chart, $width, 105, $homedir . 'include/FusionCharts/FCF_Area2D.swf');
-}
-
 
 // Prints an error image
 function fs_error_image () {

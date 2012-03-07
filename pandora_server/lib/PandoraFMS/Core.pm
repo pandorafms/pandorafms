@@ -23,7 +23,7 @@ PandoraFMS::Core - Core functions of Pandora FMS
 
 =head1 VERSION
 
-Version 3.2
+Version 4.0
 
 =head1 SYNOPSIS
 

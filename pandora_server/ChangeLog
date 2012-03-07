@@ -1,3 +1,16 @@
+2012-03-07  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Updated version.
+
+	* lib/PandoraFMS/DataServer.pm: Support for "UNIT" tag in the
+	XML to update module data units from the XML.
+
+	* util/pandora_csvbridge.pl: New tool to create XML data files
+	from CSV files containing data.
+
+	* util/pandora_watchdog.sh: Watchdog for Pandora FMS server,
+	taken from the documentation and updated.
+
 2012-02-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* util/pandora_manage.pl: Modify call to function 

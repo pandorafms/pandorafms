@@ -456,7 +456,7 @@ sub process_module_data ($$$$$$$$$) {
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
 	            'min' => 0, 'descripcion' => 0, 'post_process' => 0, 'module_interval' => 0, 'min_critical' => 0,
 	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0,
-	            'datalist' => 0, 'status' => 0};
+	            'datalist' => 0, 'status' => 0, 'unit' => 0};
 
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -518,6 +518,7 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'disabled'} = 0 unless defined ($module_conf->{'disabled'});
 		$module_conf->{'min_ff_event'} = 0 unless defined ($module_conf->{'min_ff_event'});
 		$module_conf->{'extended_info'} = '' unless defined ($module_conf->{'extended_info'});
+		$module_conf->{'unit'} = '' unless defined ($module_conf->{'unit'});
 
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
@@ -548,6 +549,7 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'disabled'} = $module->{'disabled'} unless defined ($module_conf->{'disabled'});
 		$module_conf->{'min_ff_event'} = $module->{'min_ff_event'} unless defined ($module_conf->{'min_ff_event'});
 		$module_conf->{'extended_info'} = $module->{'extended_info'} unless defined ($module_conf->{'extended_info'});
+		$module_conf->{'unit'} = '' unless defined ($module_conf->{'unit'});
 
 		# The group name has to be translated to a group ID
 		my $conf_group_id = -1;
@@ -638,18 +640,18 @@ sub update_module_configuration ($$$$) {
 	my ($pa_config, $dbh, $module, $module_conf) = @_;
 
 	# Update if at least one of the configuration tokens has changed
-	foreach my $conf_token ('min', 'max', 'descripcion', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info') {
+	foreach my $conf_token ('min', 'max', 'descripcion', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info', 'unit') {
 		if ($module->{$conf_token} ne $module_conf->{$conf_token}) {
 			logger ($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
-			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?, min_critical = ?, max_critical = ?, min_warning = ?, max_warning = ?, disabled = ?, min_ff_event = ?, extended_info = ?
-				WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
+			db_do ($dbh, 'UPDATE tagente_modulo SET unit = ?, min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?, min_critical = ?, max_critical = ?, min_warning = ?, max_warning = ?, disabled = ?, min_ff_event = ?, extended_info = ?
+				WHERE id_agente_modulo = ?', $module_conf->{'unit'}, $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
 				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module_conf->{'min_critical'}, $module_conf->{'max_critical'}, $module_conf->{'min_warning'}, $module_conf->{'max_warning'}, $module_conf->{'disabled'}, $module_conf->{'min_ff_event'}, $module_conf->{'extended_info'}, $module->{'id_agente_modulo'});
 			last;
 		}
 	}
 	
 	# Update module hash
-	foreach my $conf_token ('min', 'max', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info') {
+	foreach my $conf_token ('min', 'max', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info', 'unit') {
 		$module->{$conf_token} = $module_conf->{$conf_token};
 	}
 	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};

@@ -76,10 +76,10 @@ echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="w
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 if ($agent['disabled']) {
-	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "upper", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
+	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
 }
 else {
-	$cellName = ui_print_agent_name ($agent["id_agente"], true, 500, "upper", true);
+	$cellName = ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true);
 }
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';

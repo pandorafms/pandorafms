@@ -262,10 +262,10 @@ else {
 			$modulesCell .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
 		
 		if ($agent['disabled']) {
-			$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, "upper") . ui_print_help_tip(__('Disabled'), true) . "</em>";
+			$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, "text-transform: uppercase;") . ui_print_help_tip(__('Disabled'), true) . "</em>";
 		}
 		else {
-			$cellName = ui_print_agent_name ($agent["id_agente"], true, "upper");
+			$cellName = ui_print_agent_name ($agent["id_agente"], true, "text-transform: uppercase;");
 		}
 		
 		$last_time = strtotime ($agent["ultimo_contacto"]);

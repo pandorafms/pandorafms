@@ -137,4 +137,30 @@ function custom_graphs_get_periods () {
 	return $periods;
 }
 
+/**
+ * Get all the possible periods in a custom graph in seconds.
+ *
+ * @return The possible periods in a custom graph in an associative array.
+ */
+function custom_graphs_get_sec_periods () {
+	$periods = array ();
+	
+	$periods[3600] = __('1 hour');
+	$periods[7200] = '2 '.__('hours');
+	$periods[10800] = '3 '.__('hours');
+	$periods[21600] = '6 '.__('hours');
+	$periods[43200] = '12 '.__('hours');
+	$periods[86400] = __('1 day');
+	$periods[172800] = __('2 days');
+	$periods[345600] = __('4 days');
+	$periods[604800] = __('1 week');
+	$periods[1296000] = __('15 daysk');
+	$periods[2592000] = __('1 month');
+	$periods[5184000] = __('2 months');
+	$periods[15552000] = __('6 months');
+	$periods[31104000] = __('1 year');
+	
+	return $periods;
+}
+
 ?>

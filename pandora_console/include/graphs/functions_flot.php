@@ -120,8 +120,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 
+	// Parent layer
+	$return = "<div>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return = "<p id='legend_$graph_id' style='font-size:".$font_size."pt'></p>";
+	$return .= "<p id='legend_$graph_id' style='font-size:".$font_size."pt'></p>";
 	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
 	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
@@ -220,7 +222,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 		}
 		
 		$menu_width = 18 * $nbuttons + 8;
-		$return .= "<div id='menu_$graph_id' style='display:none; text-align:center; width:".$menu_width."px; position:absolute; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 0px 4px'>
+		$return .= "<div id='menu_$graph_id' style='display:none; text-align:center; width:".$menu_width."px; position:relative; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 4px 4px'>
 				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 		if($threshold) {
 			$return .= "<a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
@@ -286,7 +288,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$return .= "pandoraFlotArea('$graph_id', '$values', '$labels', '$labels_long', '$legend', '$colors', '$type', '$serie_types', $watermark, $width, $max_x, '".$config['homeurl']."', '$unit', $font_size, $menu, '$events', '$event_ids', '$legend_events', '$alerts', '$alert_ids', '$legend_alerts', '$yellow_threshold', '$red_threshold', '$separator', '$separator2');";
 	$return .= "\n//]]>";
 	$return .= "</script>";
-
+	
+	// Parent layer
+	$return .= "</div>";
+	
 	return $return;	
 }
 

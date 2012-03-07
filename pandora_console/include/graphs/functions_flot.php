@@ -81,7 +81,7 @@ function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, 
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
-
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold);
 }
 
@@ -122,11 +122,11 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return = "<p id='legend_$graph_id' style='font-size:".$font_size."pt'></p>";
-	$return .= "<div id='$graph_id' class='graph' style='width: $width; height: $height;'></div>";
-	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px;margin-top:20px;width:$width;height:50px;'></div>";
+	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
 	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 
-	if($water_mark != '') {
+	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
 		$watermark = 'true';
 	}
@@ -146,8 +146,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$serie_types2 = array();
 	
 	$colors = array();
+	
 	$index = array_keys(reset($chart_data));
-
 	foreach($index as $serie_key) {
 		if(isset($color[$serie_key])) {
 			$colors[] = $color[$serie_key]['color'];
@@ -231,7 +231,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$extra_height = $height - 50;
 	$extra_width = (int)($width / 3);
 
-	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; height: $extra_height; width: $extra_width; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
+	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 
 	// Process extra data
 	$events = array();
@@ -268,8 +268,15 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$alerts = implode($separator,$alerts);
 	$alert_ids = implode($separator,$alert_ids);
 	$labels = implode($separator,$labels);
-	$labels_long = implode($separator,$long_index);
-	$legend = io_safe_output(implode($separator,$legend2));
+	if (!empty($long_index)) {
+		$labels_long = implode($separator, $long_index);
+	}
+	else {
+		$labels_long = $labels;
+	}
+	if (!empty($legend)) {
+		$legend = io_safe_output(implode($separator,$legend));
+	}
 	$serie_types  = implode($separator, $serie_types2);
 	$colors  = implode($separator, $colors);
 	
@@ -298,7 +305,7 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font =
 	
 	$graph_id = uniqid('graph_');
 	
-	$return = "<div id='$graph_id' class='graph' style='width: $width; height: $height;'></div>";
+	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	
 	if($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
@@ -314,11 +321,11 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font =
 	$values = implode($separator,$values);
 	
 	$return .= "<script type='text/javascript'>";
-
+	
 	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels', '$series', '$width', $font_size, $water_mark, '$separator')";
 	
 	$return .= "</script>";
-			
+	
 	return $return;
 }
 
@@ -338,7 +345,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	$graph_id2 = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph' style='width: $width; height: $height;'></div>";
+	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	if($water_mark != '') {
@@ -432,7 +439,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$graph_id2 = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph' style='width: $width; height: $height;'></div>";
+	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	if($water_mark != '') {
@@ -513,7 +520,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$values = implode($separator2, $values2);
 
 	$jsseries = implode(',', $jsseries);
-		
+	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	
@@ -537,7 +544,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$graph_id = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph' style='width: $width; height: $height;'></div>";
+	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	// Set a weird separator to serialize and unserialize passing data from php to javascript

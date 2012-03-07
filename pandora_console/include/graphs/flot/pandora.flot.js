@@ -766,7 +766,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
     
 	$('#'+graph_id).bind("plotclick", function (event, pos, item) {
 		plot.unhighlight();
-		if (item && item.series.label != '') {
+		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_alerts)) {
 			plot.unhighlight();
 			var canvaslimit = parseInt(plot.offset().left + plot.width());
 			var dataset  = plot.getData();
@@ -801,7 +801,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 					break;
 			}
 			
-			extra_info = get_event_details(eventsz[item.dataIndex]);
 			if(extra_show) {
 				$('#extra_'+graph_id).html(extra_info);
 				$('#extra_'+graph_id).css('display','');

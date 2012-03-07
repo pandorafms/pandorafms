@@ -183,55 +183,64 @@ function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_
 			global $config;
 			global $REMOTE_ADDR;
 			
-			$ratingWidth = ($progress/100)*$width;
-			$ratingHeight = ($progress/100)*$height;
-			
-			$image = imagecreate($width,$height);
-			
-			//colors
-			$back = ImageColorAllocate($image,255,255,255);
-			imagecolortransparent ($image, $back);
-			
-			$black = ImageColorAllocate($image,0,0,0);
-			$red = ImageColorAllocate($image,255,60,75);
-			$green = ImageColorAllocate($image,50,205,50);
-			$blue = ImageColorAllocate($image,44,81,120);
-			$soft_green = ImageColorAllocate($image,176, 255, 84);
-			$soft_yellow = ImageColorAllocate($image,255, 230, 84);
-			$soft_red = ImageColorAllocate($image,255, 154, 84);
-			$other_red = ImageColorAllocate($image,238, 0, 0);
-			if (!empty($color)) {
-				$defined_color = ImageColorAllocate($image, $color[0], $color[1], $color[2]);
+			if ($progress > 100 || $progress < 0) {
+				// HACK: This report a static image... will increase render in about 200% :-) useful for
+				// high number of realtime statusbar images creation (in main all agents view, for example
+				$imgPng = imageCreateFromPng($out_of_lim_image);
+				imageAlphaBlending($imgPng, true);
+				imageSaveAlpha($imgPng, true);
+				imagePng($imgPng); 
 			}
-			
-			if (isset($defined_color)) {
-				imagefilledellipse($image, $width / 2, $height / 2,
-					$ratingWidth, $ratingHeight,  $defined_color);
+			else {
+				$ratingWidth = ($progress/100)*$width;
+				$ratingHeight = ($progress/100)*$height;
+				
+				$image = imagecreate($width,$height);
+				
+				//colors
+				$back = ImageColorAllocate($image,255,255,255);
+				imagecolortransparent ($image, $back);
+				
+				$black = ImageColorAllocate($image,0,0,0);
+				$red = ImageColorAllocate($image,255,60,75);
+				$green = ImageColorAllocate($image,50,205,50);
+				$blue = ImageColorAllocate($image,44,81,120);
+				$soft_green = ImageColorAllocate($image,176, 255, 84);
+				$soft_yellow = ImageColorAllocate($image,255, 230, 84);
+				$soft_red = ImageColorAllocate($image,255, 154, 84);
+				$other_red = ImageColorAllocate($image,238, 0, 0);
+				if (!empty($color)) {
+					$defined_color = ImageColorAllocate($image, $color[0], $color[1], $color[2]);
+				}
+				
+				if (isset($defined_color)) {
+					imagefilledellipse($image, $width / 2, $height / 2,
+						$ratingWidth, $ratingHeight,  $defined_color);
+				}
+				elseif ($rating > 70) {
+					imagefilledellipse($image, $width / 2, $height / 2,
+						$ratingWidth, $ratingHeight,  $soft_green);
+				}
+				elseif ($rating > 50) {
+					imagefilledellipse($image, $width / 2, $height / 2,
+						$ratingWidth, $ratingHeight,  $soft_yellow);
+				}
+				elseif ($rating > 30) {
+					imagefilledellipse($image, $width / 2, $height / 2,
+						$ratingWidth, $ratingHeight, $soft_red);
+				}
+				else if($rating > 0) {
+					imagefilledellipse($image, $width / 2, $height / 2,
+						$ratingWidth, $ratingHeight, $other_red);
+				}
+				
+				//Write the value
+				$size = imagettfbbox ($fontsize, 0, $font, $value_text);
+				ImageTTFText($image, $fontsize, 0, 
+					($width/2) - ($size[4] / 2), ($height/2) + ($size[1] / 2), $black, $font, $value_text);
+				
+				imagePNG($image);
 			}
-			elseif ($rating > 70) {
-				imagefilledellipse($image, $width / 2, $height / 2,
-					$ratingWidth, $ratingHeight,  $soft_green);
-			}
-			elseif ($rating > 50) {
-				imagefilledellipse($image, $width / 2, $height / 2,
-					$ratingWidth, $ratingHeight,  $soft_yellow);
-			}
-			elseif ($rating > 30) {
-				imagefilledellipse($image, $width / 2, $height / 2,
-					$ratingWidth, $ratingHeight, $soft_red);
-			}
-			else if($rating > 0) {
-				imagefilledellipse($image, $width / 2, $height / 2,
-					$ratingWidth, $ratingHeight, $other_red);
-			}
-			html_debug_print($value_text, true);
-			
-			//Write the value
-			$size = imagettfbbox ($fontsize, 0, $font, $value_text);
-			ImageTTFText($image, $fontsize, 0, 
-				($width/2) - ($size[4] / 2), ($height/2) + ($size[1] / 2), $black, $font, $value_text);
-			
-			imagePNG($image);
 			imagedestroy($image);
 			break;
 	}

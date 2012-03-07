@@ -963,7 +963,7 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
 		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
-		"&width=".$width."&progress=".$progress.
+		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
 		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB . "' />";

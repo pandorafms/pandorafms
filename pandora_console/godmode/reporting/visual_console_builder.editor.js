@@ -860,7 +860,7 @@ function getPercentileBubble(id_data, values) {
 		value_text = module_value + " " + unit_text;
 	}
 	
-	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=15&' + 
+	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
 		'width=' + width_percentile + '&mode=1&progress=' + percentile +
 		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 	

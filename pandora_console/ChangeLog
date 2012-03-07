@@ -1,3 +1,16 @@
+2012-03-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php: fixed into the function "progress_bubble"
+	pass the height to create the image for progress bubble.
+	
+	* include/graphs/functions_gd.php: fixed into the function
+	"gd_progress_bubble" when the $progress is upper to 100% or lower 0% show
+	the image "out of limits".
+	
+	* godmode/reporting/visual_console_builder.editor.js: fixed into the
+	function "getPercentileBubble" set the height equal to width instead to 15
+	pixels.
+
 2012-03-06  Sancho Lerena <slerena@artica.es>
 
 	* images/console/icons/nubebola*: New icons for big colored circle.

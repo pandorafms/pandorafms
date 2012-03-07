@@ -119,6 +119,8 @@ switch ($action) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
 			default:
+				$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				
 				if (($layoutData['type'] == PERCENTILE_BAR) ||
 					($layoutData['type'] == PERCENTILE_BUBBLE)) {
 					if ($value_show == 'value') {
@@ -126,7 +128,7 @@ switch ($action) {
 						$unit_text_db = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 						$unit_text_db = trim(io_safe_output($unit_text_db));
 						
-						$value_text = $valor;
+						$unit_text = false;
 						if (!empty($unit_text_db))
 							$unit_text = $unit_text_db;
 					}
@@ -142,9 +144,9 @@ switch ($action) {
 		
 		// Single object
 		}
-		elseif (($layout_data["type"] == 0)
-					|| ($layout_data["type"] == 3)
-					|| ($layout_data["type"] == 4)) {
+		elseif (($layoutData["type"] == 0)
+					|| ($layoutData["type"] == 3)
+					|| ($layoutData["type"] == 4)) {
 			// Status for a simple module
 			if ($layoutData['id_agente_modulo'] != 0) {
 				$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);

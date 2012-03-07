@@ -1,16 +1,21 @@
-2012-03-07  Sergio Martin <sergio.martin@artica.es>
+2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/ajax/visual_console_builder.ajax.php: fixed the value and
+	undefined var.
+
+2012-03-07 Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/graph_builder.main.php: Added custom seconds
 	to period form merged from trunk
 
-2012-03-06  Miguel de Dios  <miguel.dedios@artica.es>
+2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/graphs/fgraph.php: set by default the font size for bubble to 7.
 	
 	* godmode/reporting/visual_console_builder.editor.js: fixed to select
 	progress bubble and bar.
 
-2012-03-06  Miguel de Dios  <miguel.dedios@artica.es>
+2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php: fixed into the function "progress_bubble"
 	pass the height to create the image for progress bubble.

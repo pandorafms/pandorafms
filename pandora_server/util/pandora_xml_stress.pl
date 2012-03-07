@@ -3,7 +3,7 @@
 # Pandora XML Stress tool.
 ################################################################################
 # Copyright (c) 2009 Ramon Novoa, rnovoa@artica.es
-# Copyright (c) 2009 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2012 Artica Soluciones Tecnologicas S.L.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -147,6 +147,8 @@ sub generate_xml_files ($$$$$$) {
 				# Read module configuration
 				my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
 				my $module_description = get_conf_token ($module, 'module_description', '');
+				my $module_unit = get_conf_token ($module, 'module_unit', '');
+
 				#my $module_min = get_conf_token ($module, 'module_min', '0');
 				#my $module_max = get_conf_token ($module, 'module_max', '255');
 				#my $module_variation = get_conf_token ($module, 'module_variation', '100');
@@ -168,8 +170,7 @@ sub generate_xml_files ($$$$$$) {
 				$xml_data .= "\t\t<name>$module_name</name>\n";
 				$xml_data .= "\t\t<description>$module_description</description>\n";			
 				$xml_data .= "\t\t<type>$module_type</type>\n";
-				
-				
+				$xml_data .= "\t\t<unit><![CDATA[$module_unit]]></unit>\n";
 				
 				# Generate data
 				my $rnd_data = $module->{'module_data'};

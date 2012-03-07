@@ -1,5 +1,10 @@
 2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/agentes/estado_generalagente.php, operation/search_agents.php:
+	fixed the style of name agent, now "text-transform: uppercase;".
+
+2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/graphs/functions_gd.php: fixed into the function
 	"gd_progress_bubble" when the $progress is upper to 100% or lower 0% show
 	the image "out of limits".

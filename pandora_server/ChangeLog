@@ -1,5 +1,10 @@
 2012-03-07  Sancho Lerena <slerena@artica.es>
 
+	* util/pandora_xml_stress.conf
+	util/pandora_xml_stress.pl: Now xml_stress tool can use units
+	in the XML generated files. Default configuration file is useful
+	to generate "real" scenarios.
+
         * lib/PandoraFMS/Core.pm: Updated version.
 
         * lib/PandoraFMS/DataServer.pm: Support for "UNIT" tag in the

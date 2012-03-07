@@ -1,4 +1,19 @@
 2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/jquery-1.6.1.min.js: removed this file because the
+	console use the last jquery library.
+	
+	* operation/search_agents.php: clean source code style.
+	
+	* include/graphs/functions_flot.php, include/graphs/flot/pandora.flot.js:
+	fixed the lost unit in the style of the divs for the graphs, into the
+	function "pandoraFlotArea" check the alerts.lenght for empty strings, into
+	the function "updateLegend" check empty string for to var
+	"item.series.label", into the function "get_event_details" check empty var
+	"event_ids" and into the function "flot_area_graph" check empty var in
+	$long_index.
+
+2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_generalagente.php, operation/search_agents.php:
 	fixed the style of name agent, now "text-transform: uppercase;".

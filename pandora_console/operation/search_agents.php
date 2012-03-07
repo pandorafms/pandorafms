@@ -185,7 +185,7 @@ if ($searchAgents) {
 			";
 			break;
 	}
-
+	
 	$select = 
 		"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
 	$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
@@ -206,7 +206,7 @@ if ($searchAgents) {
 if (!$agents) {
 	echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
-else {		
+else {
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->width = "98%";

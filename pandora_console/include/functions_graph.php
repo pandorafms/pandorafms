@@ -157,7 +157,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 
 	$chart_extra_data = array();
-	
+	$series_type = array();
+
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
@@ -251,14 +252,22 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		if (!$projection){
 			$timestamp = $timestamp_short;
 		}
-		// Data
+		
+		// Data		
+		if($show_events) {
+			$chart[$timestamp]['event'] = $event_value;
+			$series_type['event'] = 'points';
+		}
+		if($show_alerts) {
+			$chart[$timestamp]['alert'] = $alert_value;
+			$series_type['alert'] = 'points';
+		}
+		
 		if ($count > 0) {
 			if ($avg_only) {
 				$chart[$timestamp]['sum'] = $total;
 			}
 			else {
-				//$chart[$timestamp]['utimestamp'] = $timestamp;
-				//$chart[$timestamp]['datos'] = $total;
 				$chart[$timestamp]['max'] = $interval_max;
 				$chart[$timestamp]['sum'] = $total;
 				$chart[$timestamp]['min'] = $interval_min;
@@ -294,16 +303,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		/////////
-		$series_type = array();
-		
-		if($show_events) {
-			$chart[$timestamp]['event'] = $event_value;
-			$series_type['event'] = 'points';
-		}
-		if($show_alerts) {
-			$chart[$timestamp]['alert'] = $alert_value;
-			$series_type['alert'] = 'points';
-		}
+
 		if ($baseline) {
 			$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
 			if ($chart[$timestamp]['baseline'] == NULL) {

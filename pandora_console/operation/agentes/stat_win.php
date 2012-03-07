@@ -54,7 +54,7 @@ if ($refresh > 0) {
 <script type='text/javascript' src='../../include/javascript/x_core.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_event.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_slide.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery.js'></script>
+<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.min.js'></script>
 <script type='text/javascript'><!--
 var defOffset = 2;
 var defSlideTime = 220;

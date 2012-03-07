@@ -121,7 +121,7 @@ switch($graph_type) {
 		
 		$mode = get_parameter('mode', 1);
 		
-		$fontsize = get_parameter('fontsize', 10);
+		$fontsize = get_parameter('fontsize', 7);
 		
 		$value_text = get_parameter('value_text', 10);
 		$colorRGB = get_parameter('colorRGB', '');

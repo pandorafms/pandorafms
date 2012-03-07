@@ -1354,9 +1354,10 @@ function eventsItems() {
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
-			if ($(divParent).hasClass('percentile_bar')) {
+			if ($(divParent).hasClass('percentile_bar') ||
+				$(divParent).hasClass('percentile_item')) {
 				creationItem = null;
-				selectedItem = 'percentile_bar';
+				selectedItem = 'percentile_item';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);

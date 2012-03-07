@@ -425,7 +425,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	legend = legend.split(separator);
 	events = events.split(separator);
 	event_ids = event_ids.split(separator);
-	alerts = alerts.split(separator);
+	if (alerts.length != 0)
+		alerts = alerts.split(separator);
+	else
+		alerts = [];
 	alert_ids = alert_ids.split(separator);
 	colors = colors.split(separator);
 
@@ -456,7 +459,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			stacked = 'stack';
 			filled = true;
 			break;
-	}	
+	}
+	
 	var datas = new Array();
 	var data_base = new Array();
 	
@@ -761,8 +765,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
     });
     
 	$('#'+graph_id).bind("plotclick", function (event, pos, item) {
-        plot.unhighlight();
-        if (item) {
+		plot.unhighlight();
+		if (item && item.series.label != '') {
 			plot.unhighlight();
 			var canvaslimit = parseInt(plot.offset().left + plot.width());
 			var dataset  = plot.getData();
@@ -782,6 +786,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			
 			$('#extra_'+graph_id).css('left',left_pos);
 			$('#extra_'+graph_id).css('top',plot.offset().top + 25);
+			
 			switch(item.series.label) {
 				case legend_alerts:
 					extra_info = '<b>'+legend_alerts+' - '+labels_long[item.dataIndex]+'</b>'+get_event_details(alertsz[item.dataIndex]);
@@ -790,7 +795,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				case legend_events:
 					extra_info = '<b>'+legend_events+' - '+labels_long[item.dataIndex]+'</b>'+get_event_details(eventsz[item.dataIndex]);
 					extra_show = true;
-				break;
+					break;
+				default:
+						return;
+					break;
 			}
 			
 			extra_info = get_event_details(eventsz[item.dataIndex]);
@@ -935,22 +943,25 @@ function set_watermark(graph_id, plot, watermark_src) {
 }
 
 function get_event_details (event_ids) {
-	var inputs = [];
-	var table;
-	inputs.push ("get_events_details=1");
-	inputs.push ("event_ids="+event_ids);
-	inputs.push ("page=include/ajax/events");
-	jQuery.ajax ({
-		data: inputs.join ("&"),
-		type: 'GET',
-		url: action="../../ajax.php",
-		timeout: 10000,
-		dataType: 'html',
-		async: false,
-		success: function (data) {
-			table = data;
-		}
-	});
-
+	table = '';
+	if (typeof(event_ids) != "undefined") {
+		var inputs = [];
+		var table;
+		inputs.push ("get_events_details=1");
+		inputs.push ("event_ids="+event_ids);
+		inputs.push ("page=include/ajax/events");
+		jQuery.ajax ({
+			data: inputs.join ("&"),
+			type: 'GET',
+			url: action="../../ajax.php",
+			timeout: 10000,
+			dataType: 'html',
+			async: false,
+			success: function (data) {
+				table = data;
+			}
+		});
+	}
+	
 	return table;
 }

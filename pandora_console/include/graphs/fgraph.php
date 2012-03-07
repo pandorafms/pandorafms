@@ -221,10 +221,10 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
-	$chart_extra_data = array(), $yellow_threshold, $red_threshold) {
+	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0) {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
-	
+
 	// ATTENTION: The min height is 101
 	if($height <= 100) {
 		$height = 101;

@@ -864,8 +864,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	//~ });
 	
 	if(menu) {
+		var parent_height;
 		$('#menu_overview_'+graph_id).click(function() {
 			$('#overview_'+graph_id).toggle();
+			adjust_menu(graph_id, plot, parent_height);
 		});
 		
 		$('#menu_threshold_'+graph_id).click(function() {
@@ -905,20 +907,41 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
 		// Adjust the menu image on top of the plot
 		$('#menu_overview_'+graph_id)[0].onload = function() {
-			var menu_width = $('#menu_'+graph_id).css('width').split('px')[0];
-			var canvaslimit_right = parseInt(plot.offset().left + plot.width());
-			var canvaslimit_top = parseInt(plot.offset().top - 8);
-			var n_options = parseInt($('#menu_'+graph_id).children().length);
-
-			$('#menu_'+graph_id).css('left',canvaslimit_right-menu_width-20);
-			$('#menu_'+graph_id).css('top',canvaslimit_top-parseInt(this.height));
-			$('#menu_'+graph_id).show();
+			// Add bottom margin in the legend
+			var menu_height = parseInt($('#menu_'+graph_id).css('height').split('px')[0]);
+			var legend_margin_bottom = parseInt($('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
+			$('#legend_'+graph_id).css('margin-bottom', menu_height+legend_margin_bottom+'px');
+			parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
+			adjust_menu(graph_id, plot, parent_height);
 		}		
 	}
 	
 	if(water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
+}
+
+function adjust_menu(graph_id, plot, parent_height) {
+	if($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
+		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
+	}
+	else {
+		left_ticks_width = 0;
+	}
+	
+	var parent_height_new = 0;
+
+	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
+	if($('#overview_'+graph_id).css('display') == 'none') {
+		overview_height = 0;
+	}
+	else {
+		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
+	}
+		
+	$('#menu_'+graph_id).css('top',(-parent_height+legend_height-overview_height-7)+'px');
+	$('#menu_'+graph_id).css('left',plot.width()-(left_ticks_width/2));
+	$('#menu_'+graph_id).show();
 }
 
 function set_watermark(graph_id, plot, watermark_src) {

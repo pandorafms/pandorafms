@@ -1,3 +1,12 @@
+2012-03-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	include/graphs/fgraph.php
+	include/functions_custom_graphs.php
+	godmode/reporting/graph_builder.main.php: Improve the graphs menu adjusting
+	the graph menu relatively to the parent layer
+
 2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/jquery.mousewheel.min.js: removed old version this

@@ -125,11 +125,7 @@ echo "<b>".__('Height')."</b></td>";
 echo "<td class='datos2'>";
 echo "<input type='text' name='height' value='$height' size=6></td></tr>";
 
-$periods = array(3600 => "1 ".__('hour'), 7200 => "2 ".__('hours'), 10800 => "3 ".__('hours'),
-					21600 => "6 ".__('hours'), 43200 => "12 ".__('hours'), 86400 => "1 ".__('day'),
-					172800 => "2 ".__('days'), 345600 => "4 ".__('days'), 604800 => __('Last week'),
-					1296000 => "15 ".__('days'), 2592000 => __('Last month'), 5184000 => "2 ".__('months'),
-					15552000 => "6 ".__('months'), 31104000 => __('1 year'), 31104000 => __('1 year'));
+$periods = custom_graphs_get_sec_periods();
 					
 $period_label = $periods[$period];
 

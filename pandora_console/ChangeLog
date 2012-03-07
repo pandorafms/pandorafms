@@ -1,5 +1,13 @@
 2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/jquery.mousewheel.min.js: removed old version this
+	library incompatible with the last version of jquery.
+	 
+	* include/javascript/jquery.mousewheel.js: added the last version (3.0.6) of
+	this library for jquery.
+
+2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/functions_flot.php: upload lost changes in previous
 	commit.
 

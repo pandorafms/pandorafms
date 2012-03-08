@@ -1,3 +1,8 @@
+2012-03-08  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* util/pandora_db.pl: Merged from trunk. Don't delete alerts if
+	 non-init/unknown module to which these alerts assigned has not
+	 been deleted.
 
 2012-03-07  Sancho Lerena <slerena@artica.es>
 

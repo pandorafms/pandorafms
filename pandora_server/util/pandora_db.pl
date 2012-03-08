@@ -447,7 +447,7 @@ sub pandora_checkdb_consistency {
 		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
 
 		# Delete any alerts associated to the module
-		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
+		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo = ?)', $id_agente_modulo, $id_agente_modulo);
 	}
 
 	print "[CHECKDB] Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days)... \n";
@@ -464,7 +464,7 @@ sub pandora_checkdb_consistency {
 			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
 	
 			# Delete any alerts associated to the module
-			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
+			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo', $id_agente_modulo);
 		}
 	}
 	print "[CHECKDB] Checking database consistency (Missing status)... \n";

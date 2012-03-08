@@ -1,3 +1,12 @@
+2012-03-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager.php
+	 godmode/agentes/configurar_agente.php: Modification in order to 
+	 delete synthetics modules or synth module components when a synth
+	 module is deleted.
+	  
+	 Merged bugfix from trunk.
+
 2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/ajax/visual_console_builder.ajax.php: fixed the value and

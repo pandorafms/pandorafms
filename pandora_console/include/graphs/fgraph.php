@@ -182,12 +182,13 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors, $font,
 
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $homedir="",
-	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false) {
+	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false,
+	$adapt_key) {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if($flash_chart) {
-		return flot_vcolumn_chart ($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $homedir, $reduce_data_columns);
+		return flot_vcolumn_chart ($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $homedir, $reduce_data_columns, $adapt_key);
 	}
 	else {
 		$graph = array();
@@ -209,6 +210,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	}
 }
 
+// NOT USED ACTUALLY
 function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 	if($flash_chart) {
 		return flot_area_simple_graph($chart_data, $width, $height);
@@ -221,7 +223,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
-	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0) {
+	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key = '') {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
@@ -235,7 +237,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
-		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold);
+		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
 	}
 	else {
 		$graph = array();

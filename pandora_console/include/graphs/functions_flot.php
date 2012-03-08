@@ -77,39 +77,31 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ///////////////////////////////
 ////////// AREA GRAPHS ////////
 ///////////////////////////////
-function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = '', $red_threshold = '') {
+function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
 	global $config;
-	
-	include_javascript_dependencies_flot_graph();
-	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold);
+		
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
 }
 
-function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = '', $red_threshold = '') {
+function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
 	global $config;
-	
-	include_javascript_dependencies_flot_graph();
-	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold);
+		
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
 }
 
-function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = '', $red_threshold = '') {
+function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
 	global $config;
-	
-	include_javascript_dependencies_flot_graph();
-	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold);
+		
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
 }
 
-function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = '', $red_threshold = '') {
+function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
 	global $config;
-	
-	include_javascript_dependencies_flot_graph();
-	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold);
+		
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
 }
 
-function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $type, $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold) {
+function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $type, $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -124,7 +116,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$return = "<div>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' style='font-size:".$font_size."pt'></p>";
-	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
 	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 
@@ -211,7 +203,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 		
 	if($menu) {
 		$threshold = false;
-		if($yellow_threshold != '' && $red_threshold != '') {
+		if($yellow_threshold != 0 || $red_threshold != 0) {
 			$threshold = true;
 		}
 
@@ -431,7 +423,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 }
 
 // Returns a 3D column chart
-function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $reduce_data_columns) {
+function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $reduce_data_columns, $adapt_key) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -444,7 +436,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$graph_id2 = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	if($water_mark != '') {
@@ -536,9 +528,9 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	return $return;	
 }
 
-function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '') {
+function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '') {
 	global $config;
-	
+
 	include_javascript_dependencies_flot_graph();
 	
 	$height+= 20;
@@ -549,7 +541,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$graph_id = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
@@ -577,6 +569,10 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	}
 	
 	$fontsize = 7;
+
+	$extra_height = 15;
+		
+	$return .= "<div id='extra_$graph_id' style='font-size: ".$fontsize."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 	
 	$maxticks = (int) ($width / ($fontsize * $leg_max_length));
 	

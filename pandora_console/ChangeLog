@@ -1,3 +1,13 @@
+2012-03-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	include/graphs/fgraph.php
+	operation/agentes/stat_win.php: Adapted events slice graph to
+	the sparse/boolean/string graph. Fix some bugs on menu and legend 
+	graphs
+
 2012-03-07 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_list.builder.php,

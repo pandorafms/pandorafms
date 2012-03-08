@@ -241,7 +241,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		});
 	}
 	
-	labels = labels.split(separator).reverse();
+	labels = labels.split(separator);
 
 	var stack = 0, bars = true, lines = false, steps = false;
 
@@ -356,6 +356,9 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	acumulate_data = acumulate_data.split(separator);
 	datacolor = datacolor.split(separator);
 	
+	// Check possible adapt_keys on classes
+	check_adaptions(graph_id);
+	
 	var datas = new Array();
 	
 	for(i=0;i<values.length;i++) {
@@ -401,7 +404,34 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	   };
 
 	var plot = $.plot($('#'+graph_id), datas, options );
+	
+    // Events
+    $('#'+graph_id).bind('plothover',  function (event, pos, item) {
+		if(item) {
+			var from = legend[item.seriesIndex];
+			var to = legend[item.seriesIndex+1];
+			
+			if(to == undefined) {
+				to = '>';
+			}
+			
+			$('#extra_'+graph_id).text(from+'-'+to);
+			var extra_height = parseInt($('#extra_'+graph_id).css('height').split('px')[0]);
+			var extra_width = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
+			$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/2)+'px');
+			$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
 
+			$('#extra_'+graph_id).show();
+		}
+    });
+    
+	$('#'+graph_id).bind('mouseout',resetInteractivity);
+
+	// Reset interactivity styles
+	function resetInteractivity() {
+		$('#extra_'+graph_id).hide();
+	}
+    
 	// Format functions
     function xFormatter(v, axis) {
 		for(i = 0; i < acumulate_data.length; i++) {
@@ -606,14 +636,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	var plot = $.plot($('#'+graph_id), datas, options);
 
 	// Adjust the overview plot to the width and position of the main plot
-	yAxisWidth = $('#'+graph_id+' .yAxis .tickLabel').css('width');
+	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
 	
-	overview_pix = $('#overview_'+graph_id).css('width').split('px');
-	new_overview_width = parseInt(overview_pix[0])-parseInt(yAxisWidth);
-
-	$('#overview_'+graph_id).css('width',new_overview_width);
-
-	$('#overview_'+graph_id).css('margin-left',yAxisWidth);
+	// Adjust linked graph to the width and position of the main plot
 	
 	// Miniplot
     var overview = $.plot($('#overview_'+graph_id),datas, {
@@ -906,6 +931,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
 		// Adjust the menu image on top of the plot
 		$('#menu_overview_'+graph_id)[0].onload = function() {
+			// If there is no legend we increase top-padding to make space to the menu
+			if(legends.length == 0) {
+				$('#menu_'+graph_id).parent().css('padding-top',$('#menu_'+graph_id).css('height'));	
+			}
 			// Add bottom margin in the legend
 			var menu_height = parseInt($('#menu_'+graph_id).css('height').split('px')[0]);
 			var legend_margin_bottom = parseInt($('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
@@ -986,4 +1015,27 @@ function get_event_details (event_ids) {
 	}
 	
 	return table;
+}
+	
+function adjust_left_width_canvas(adapter_id, adapted_id) {
+	adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').css('width');
+
+	adapted_pix = $('#'+adapted_id).css('width').split('px');
+	new_adapted_width = parseInt(adapted_pix[0])-parseInt(adapter_left_margin);
+
+	$('#'+adapted_id).css('width',new_adapted_width);
+
+	$('#'+adapted_id).css('margin-left',adapter_left_margin);
+}
+
+function check_adaptions(graph_id) {
+	var classes = $('#'+graph_id).attr('class').split(' ');
+	
+	$.each(classes, function(i,v) {
+		// If has a class starting with adapted, we adapt it
+		if(v.split('_')[0] == 'adapted') {
+			var adapter_id = $('.adapter_'+v.split('_')[1]).attr('id');
+			adjust_left_width_canvas(adapter_id, graph_id);
+		}
+	});
 }

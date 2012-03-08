@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 20012 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -13,28 +13,47 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+// Real start
 
-// Login check
+require_once ("../../include/config.php");
+
+// Set root on homedir, as defined in setup
+chdir ($config["homedir"]);
+
+session_start ();
+ob_start ();
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
+echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
+echo '<head>';
+
+// This starts the page head. In the call back function,
+// things from $page['head'] array will be processed into the head
+ob_start ('ui_process_page_head');
+
 require ('include/functions_visual_map.php');
 
-check_login ();
+// Auto Refresh page (can now be disabled anywhere in the script)
+$config["refr"] = (int) get_parameter ("refr");
+$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
-$id_layout = (int) get_parameter ('id');
-$refr = (int) get_parameter ('refr', $config['vc_refr']);
-$vc_refr = false;
+$hash = get_parameter ('hash');
+$id_layout = (int) get_parameter ('id_layout');
+$config["id_user"] = get_parameter ('id_user');
 
-// Get input parameter for layout id
-if (! $id_layout) {
-	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
-	include ("general/noaccess.php");
+$myhash = md5($config["dbpass"].$id_layout. $config["id_user"]);
+
+// Check input hash
+if ( $myhash != $hash){
 	exit;
 }
 
+$refr = (int) get_parameter ('refr', $config['vc_refr']);
+$vc_refr = false;
 $layout = db_get_row ('tlayout', 'id', $id_layout);
 
 if (! $layout) {
 	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
-	include ("general/noaccess.php");
+	include ("../../general/noaccess.php");
 	exit;
 }
 
@@ -47,40 +66,10 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=".$config["pure"];
 
-if (! check_acl ($config["id_user"], $id_group, "AR")) {
-	db_pandora_audit("ACL Violation", "Trying to access visual console without group access");
-	require ("general/noaccess.php");
-	exit;
-}
-
 // Render map
 $options = array();
 
-if (check_acl ($config["id_user"], $id_group, "AW")) {
-
-	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
-
-	$options['public_link']['text'] = '<a href="'.$config["homeurl"].'/operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"].'">'.
-	
-	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
-
-	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
-	$options['setup']['active'] = false;
-}
-
-if ($config["pure"] == 0) {
-	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">' . html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
-		. "</a>";
-}
-else {
-	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
-		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
-		. "</a>";
-}
-$options['pure']['active'] = false;
-
-
-ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/monitor.png", false, '', false, $options);
+echo "<h1>". $layout_name. "</h1>";
 
 visual_map_print_visual_map ($id_layout);
 
@@ -120,7 +109,7 @@ if ($config['pure'] && $config["refr"] != 0) {
 
 echo '<div style="height:30px">&nbsp;</div>';
 
-echo '<form method="post" action="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view">';
+echo '<form method="post">';
 html_print_input_hidden ('pure', $config["pure"]);
 html_print_input_hidden ('id', $id_layout);
 html_print_table ($table);

@@ -543,13 +543,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$proportion = $width / $layout["width"];
 			$mapHeight = $proportion * $layout["height"];
 		}
-		$backgroundImage = 'include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+		$backgroundImage = $config['homeurl'].'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
 			$config['homeurl'] . '/' . 'images/console/background/'.io_safe_input ($layout["background"]);
 	}
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
-		$backgroundImage = 'images/console/background/'.io_safe_input ($layout["background"]);
+		$backgroundImage =  $config['homeurl'].'/images/console/background/'.io_safe_input ($layout["background"]);
 	}
 	
 	echo '<div id="layout_map"
@@ -679,12 +679,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						
 						if ($id_service != 0) {
 							//Link to an service page
-							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+							echo '<a href="'.$config['homeurl'].'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 								$id_service . '&offset=0">';
 						}
 						else {
 							// Link to an agent
-							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
 						}
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {

@@ -1,3 +1,10 @@
+2012-03-08  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_visual_map.php
+	operation/visual_console/public_console.php
+	operation/visual_console/render_view.php: Changes for new feature
+	"Public Visual Console".
+
 2012-03-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager.php

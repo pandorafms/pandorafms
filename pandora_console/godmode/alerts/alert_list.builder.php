@@ -126,69 +126,95 @@ ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-
-	$("#text_id_agent").autocomplete(
-		"ajax.php",
-		{
-			minChars: 2,
-			scroll:true,
-			extraParams: {
+	$("#text_id_agent").autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term; //Word to search
+			
+			var data_params = {
 				page: "operation/agentes/exportdata",
-				search_agents: 1,
-				id_group: function() { return $("#id_group").val(); }
-			},
-			formatItem: function (data, i, total) {
-				if (total == 0)
-					$("#text_id_agent").css ('background-color', '#cc0000');
-				else
-					$("#text_id_agent").css ('background-color', '');
-				if (data == "")
-					return false;
-				
-				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-			},
-			delay: 200
-		}
-	);
-
-
-	$("#text_id_agent").result (
-			function () {
-				selectAgent = true;
-				var agent_name = this.value;
-				$('#id_agent_module').fadeOut ('normal', function () {
-					$('#id_agent_module').empty ();
-					var inputs = [];
-					inputs.push ("agent_name=" + agent_name);
-					inputs.push ('filter=delete_pending = 0 AND id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_estado WHERE utimestamp = 0)');
-					inputs.push ("get_agent_modules_json=1");
-					inputs.push ("page=operation/agentes/ver_agente");
-					jQuery.ajax ({
-						data: inputs.join ("&"),
-						type: 'GET',
-						url: action="ajax.php",
-						timeout: 10000,
-						dataType: 'json',
-						success: function (data) {
-							$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
-							jQuery.each (data, function (i, val) {
-								s = js_html_entity_decode (val['nombre']);
-								$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-							});
-							$('#id_agent_module').enable();
-							$('#id_agent_module').fadeIn ('normal');
-						}
-					});
+				"search_agents_2": 1,
+				id_group: function() { return $("#id_group").val(); },
+				"q": term};
+			
+			jQuery.ajax ({
+				data: data_params,
+				async: false,
+				type: "POST",
+				url: action="ajax.php",
+				timeout: 10000,
+				dataType: "json",
+				success: function (data) {
+					response(data);
+					return;
+				}
+			});
+			return;
+		},
+		select: function( event, ui ) {
+			var agent_name = ui.item.name;
+			
+			//Put the name
+			$(this).val(agent_name);
+			
+			$('#id_agent_module').fadeOut ('normal', function () {
+				$('#id_agent_module').empty ();
+				var inputs = [];
+				inputs.push ("agent_name=" + agent_name);
+				inputs.push ('filter=delete_pending = 0 AND id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_estado WHERE utimestamp = 0)');
+				inputs.push ("get_agent_modules_json=1");
+				inputs.push ("page=operation/agentes/ver_agente");
+				jQuery.ajax ({
+					data: inputs.join ("&"),
+					type: 'GET',
+					url: action="ajax.php",
+					timeout: 10000,
+					dataType: 'json',
+					success: function (data) {
+						$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+						jQuery.each (data, function (i, val) {
+							s = js_html_entity_decode (val['nombre']);
+							$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+						});
+						$('#id_agent_module').enable();
+						$('#id_agent_module').fadeIn ('normal');
+					}
 				});
-		
+			});
 				
-			}
-		);
+			
+			return false;
+		}
+	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};
+	
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 
 <?php if (! $id_agente) : ?>
 	$("#id_group").pandoraSelectGroupAgent ({

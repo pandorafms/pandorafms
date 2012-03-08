@@ -657,7 +657,6 @@ echo '</div>';
 echo '</form>';
 
 ui_require_jquery_file ('timeentry');
-ui_require_jquery_file ('autocomplete');
 ui_require_javascript_file('pandora');
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();

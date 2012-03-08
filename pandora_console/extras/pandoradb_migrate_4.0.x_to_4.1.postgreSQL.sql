@@ -157,3 +157,10 @@ ALTER TABLE "tgraph" ADD COLUMN "id_graph_template" INTEGER NOT NULL default 0;
 UPDATE "ttipo_modulo" SET "descripcion"='Generic data' WHERE "id_tipo"=1;
 
 UPDATE "ttipo_modulo" SET "descripcion"='Generic data incremental' WHERE "id_tipo"=4;
+
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL;
+
+ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL;

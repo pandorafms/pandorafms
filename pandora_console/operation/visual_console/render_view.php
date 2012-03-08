@@ -57,6 +57,13 @@ if (! check_acl ($config["id_user"], $id_group, "AR")) {
 $options = array();
 
 if (check_acl ($config["id_user"], $id_group, "AW")) {
+
+	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
+
+	$options['public_link']['text'] = '<a href="'.$config["homeurl"].'/operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"].'">'.
+	
+	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
+
 	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }

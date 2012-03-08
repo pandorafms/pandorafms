@@ -1,3 +1,9 @@
+2012-03-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/jquery-1.7.1.js,
+	include/javascript/jquery-1.7.1.min.js, include/functions_ui.php: changed
+	the library the version compress to readable version.
+	
 2012-03-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

@@ -1,3 +1,13 @@
+2012-03-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	include/graphs/fgraph.php
+	operation/agentes/stat_win.php: Fixed some graph bugs, change the
+	string graph from bars to area and added formatting to xAxis of
+	area graphs
+
 2012-03-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager.php

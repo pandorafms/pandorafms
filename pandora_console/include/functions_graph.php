@@ -2412,11 +2412,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
-		
-	return vbar_graph($flash_chart, $chart, $width, $height, $color,
-		$legend, "", $unit, $homeurl,
+	
+	return area_graph($flash_chart, $chart, $width, $height, $color,
+		$legend, array(), '', "", $unit, $homeurl,
 		$water_mark,
-		$config['fontpath'], $config['font_size'], true, 1, true, $adapt_key);
+		$config['fontpath'], $config['font_size'], $unit, 1, array(), array(), 0, 0, $adapt_key, true);
 }
 
 function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,

@@ -77,31 +77,31 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ///////////////////////////////
 ////////// AREA GRAPHS ////////
 ///////////////////////////////
-function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
+function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false) {
 	global $config;
 		
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer);
 }
 
-function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
+function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false) {
 	global $config;
 		
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer);
 }
 
-function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
+function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false) {
 	global $config;
 		
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer);
 }
 
-function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '') {
+function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false) {
 	global $config;
 		
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
+	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer);
 }
 
-function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $type, $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key) {
+function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $type, $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -274,10 +274,18 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$serie_types  = implode($separator, $serie_types2);
 	$colors  = implode($separator, $colors);
 	
+	// transform into string to pass to javascript
+	if($force_integer) {
+		$force_integer = 'true';
+	}
+	else {
+		$force_integer = 'false';
+	}
+	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotArea('$graph_id', '$values', '$labels', '$labels_long', '$legend', '$colors', '$type', '$serie_types', $watermark, $width, $max_x, '".$config['homeurl']."', '$unit', $font_size, $menu, '$events', '$event_ids', '$legend_events', '$alerts', '$alert_ids', '$legend_alerts', '$yellow_threshold', '$red_threshold', '$separator', '$separator2');";
+	$return .= "pandoraFlotArea('$graph_id', '$values', '$labels', '$labels_long', '$legend', '$colors', '$type', '$serie_types', $watermark, $width, $max_x, '".$config['homeurl']."', '$unit', $font_size, $menu, '$events', '$event_ids', '$legend_events', '$alerts', '$alert_ids', '$legend_alerts', '$yellow_threshold', '$red_threshold', $force_integer, '$separator', '$separator2');";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

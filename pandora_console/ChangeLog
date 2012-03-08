@@ -1,3 +1,17 @@
+2012-03-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: added the field
+	shortcut_data for to save as serialize the quick links.
+
+	* general/shortcut_bar.php: added code to new feature to save in the
+	sortcut the important links for quick access.
+
+	* include/functions_menu.php, godmode/agentes/modificar_agente.php: added
+	class "item_drag_shortcut" to links for drag to shorcut. For make a example.
+
 2012-03-08  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_visual_map.php

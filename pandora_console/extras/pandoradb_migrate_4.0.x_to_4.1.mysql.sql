@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 
 ALTER TABLE `tusuario` ADD COLUMN `disabled` int(4) NOT NULL DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `shortcut` tinyint(1) DEFAULT 0;
+ALTER TABLE tusuario ADD COLUMN `shortcut_data` text default '';
 
 -- -----------------------------------------------------
 -- Table `tincidencia`

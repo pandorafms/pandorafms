@@ -184,7 +184,7 @@ function menu_print_menu (&$menu) {
 				} else {
 					$title = '';
 				}
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
+				$submenu_output .= '<a class="item_drag_shortcut" href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
 				$submenu_output .= '</li>';			
 			}
 		}

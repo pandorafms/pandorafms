@@ -29,7 +29,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
 				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
-				$only_image = false, $homeurl = '', $ttl = 1, $projection = false) {
+				$only_image = false, $homeurl = '', $ttl = 1, $projection = false, $adapt_key = '') {
 
 	global $config;
 	global $graphic_type;
@@ -388,7 +388,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
 		 $water_mark,
 		 $config['fontpath'], $config['font_size'], $unit, $ttl, $series_type, 
-		 $chart_extra_data, $warning_min, $critical_min);
+		 $chart_extra_data, $warning_min, $critical_min, $adapt_key);
 }
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
@@ -1729,7 +1729,7 @@ function fs_error_image () {
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	 $date = 0, $only_image = false, $homeurl = '') {
+	 $date = 0, $only_image = false, $homeurl = '', $adapt_key) {
 	global $config;
 	global $graphic_type;
 	
@@ -2028,7 +2028,8 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 		 $water_mark,
-		 $config['fontpath'], $config['font_size'], $unit);
+		 $config['fontpath'], $config['font_size'], $unit, 1, array(), 
+		 array(), 0, 0, $adapt_key);
 }
 
 
@@ -2206,7 +2207,7 @@ function graph_netflow_aggregate_pie ($data, $aggregate) {
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	 $date = 0, $only_image = false, $homeurl = '') {
+	 $date = 0, $only_image = false, $homeurl = '', $adapt_key) {
 	global $config;
 	global $graphic_type;
 	
@@ -2415,7 +2416,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	return vbar_graph($flash_chart, $chart, $width, $height, $color,
 		$legend, "", $unit, $homeurl,
 		$water_mark,
-		$config['fontpath'], $config['font_size'], true, true, 1, true);
+		$config['fontpath'], $config['font_size'], true, 1, true, $adapt_key);
 }
 
 function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
@@ -2793,8 +2794,9 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
  * @param integer period time period
  * @param string homeurl Home url if the complete path is needed
  * @param int Zoom factor over the graph
+ * @param string adaptation width and margin left key (could be adapter_[something] or adapted_[something])
  */
-function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0) {
+function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0, $adapt_key = '') {
 	global $config;
 	global $graphic_type;
 
@@ -2882,7 +2884,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 
 	// Draw slicebar graph
 	if($config['flash_charts']) {
-		echo flot_slicesbar_graph($data, $period, $width, 15, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		echo flot_slicesbar_graph($data, $period, $width, 15, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', $adapt_key);
 	}
 	else {
 		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);

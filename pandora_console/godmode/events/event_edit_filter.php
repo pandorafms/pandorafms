@@ -22,6 +22,7 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
+	
 	return;
 }
 
@@ -33,6 +34,7 @@ if ($id){
 	$permission = events_check_event_filter_group ($id);
 	if (!$permission) { // User doesn't have permissions to see this filter
 		require ("general/noaccess.php");
+		
 		return;
 	}
 }
@@ -67,7 +69,8 @@ if ($id) {
 	$group_rep = $filter['group_rep'];
 	$tag = $filter['tag'];
 	$filter_only_alert = $filter['filter_only_alert'];
-} else {
+}
+else {
 	$id_group = '';
 	$id_group_filter = '';
 	$id_name = '';
@@ -101,8 +104,9 @@ if ($update) {
 	$filter_only_alert = get_parameter('filter_only_alert','');				
 	
 	if ($id_name == '') {
-                ui_print_error_message (__('Not updated. Blank name'));
-    } else {
+		ui_print_error_message (__('Not updated. Blank name'));
+	}
+	else {
 		$values = array ('id_filter' => $id,
 			'id_name' => $id_name,			
 			'id_group_filter' => $id_group_filter,
@@ -119,7 +123,7 @@ if ($update) {
 			'tag' => $tag,
 			'filter_only_alert' => $filter_only_alert
 		);
-
+		
 		$result = db_process_sql_update ('tevent_filter', $values, array ('id_filter' => $id));
 			
 		ui_print_result_message ($result,
@@ -160,15 +164,18 @@ if ($create) {
 			'tag' => $tag,
 			'filter_only_alert' => $filter_only_alert
 	);
-
+	
 	$id = db_process_sql_insert('tevent_filter', $values);
 	
 	if ($id === false) {
 		ui_print_error_message ('Error creating filter');
-	} else {
+	}
+	else {
 		ui_print_success_message ('Filter created successfully');
 	}
 }
+
+$own_info = get_user_info ($config['id_user']);
 
 $table->width = '98%';
 $table->border = 0;
@@ -186,7 +193,6 @@ $table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
 		$own_info['is_admin'], 'id_group_filter', $id_group_filter, '', '', -1, true,
 		false, false);
 
-$own_info = get_user_info ($config['id_user']);
 $table->data[2][0] = '<b>'.__('Group').'</b>';
 $table->data[2][1] = html_print_select_groups($config['id_user'], "IW", 
 		$own_info['is_admin'], 'id_group', $id_group, '', '', -1, true,
@@ -259,7 +265,8 @@ if ($id) {
 	html_print_input_hidden ('update', 1);
 	html_print_input_hidden ('id', $id);
 	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create', 1);
 	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
@@ -267,37 +274,70 @@ echo '</div>';
 echo '</form>';
 
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ?>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready( function() {
-
-	$("#text_id_agent").autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
-					page: "operation/agentes/exportdata",
-					search_agents: 1,
-					add: '<?php echo json_encode(array('-1' => "All", '0' => "System"));?>',
-					id_group: function() { return $("#id_group").val(); }
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$("#text_id_agent").css ('background-color', '#cc0000');
-					else
-						$("#text_id_agent").css ('background-color', '');
-					if (data == "")
-						return false;
-					
-					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-				},
-				delay: 200
-			}
-		);
+	$("#text_id_agent").autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+			var term = request.term; //Word to search
+			
+			var data_params = {
+				page: "operation/agentes/exportdata",
+				"search_agents_2": 1,
+				id_group: function() { return $("#id_group").val(); },
+				"q": term};
+			
+			jQuery.ajax ({
+				data: data_params,
+				async: false,
+				type: "POST",
+				url: action="ajax.php",
+				timeout: 10000,
+				dataType: "json",
+				success: function (data) {
+					response(data);
+					return;
+				}
+			});
+			return;
+		},
+		select: function( event, ui ) {
+			var agent_name = ui.item.name;
+			
+			//Put the name
+			$(this).val(agent_name);
+			
+			return false;
+		}
+	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};
+	
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 
 });
 /* ]]> */

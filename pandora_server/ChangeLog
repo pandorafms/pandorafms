@@ -1,3 +1,8 @@
+2012-03-08  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* util/pandora_db.pl: Merged from trunk. Fixed wrong SQL of my
+	 previous commit.
+
 2012-03-08  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Merged from trunk. Don't delete alerts if

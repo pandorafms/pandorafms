@@ -170,3 +170,10 @@ ALTER TABLE tgraph ADD (id_graph_template NUMBER(11, 0) default 0 NOT NULL);
 UPDATE ttipo_modulo SET descripcion='Generic data' WHERE id_tipo=1;
 
 UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
+
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
+
+ALTER TABLE tusuario ADD (data_section VARCHAR2(255) NOT NULL);

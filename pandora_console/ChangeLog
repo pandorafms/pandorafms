@@ -1,3 +1,17 @@
+2012-03-08  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added fields
+	'section' and 'data_section' to tusuario.
+
+	* index.php
+	  include/functions.php
+	  operation/users/user_edit.php: Customize home screen. 
+
 2012-03-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

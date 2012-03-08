@@ -220,7 +220,6 @@ if (isset ($_GET["bye"])) {
  */
 extensions_load_extensions ($config['extensions']);
 
-
 // Header
 if ($config["pure"] == 0) {
 	echo '<div id="container"><div id="head">';
@@ -237,13 +236,10 @@ else {
 // Session locking concurrency speedup!
 session_write_close (); 
 
-
 // Main block of content
 if ($config["pure"] == 0) {
 	echo '<div id="main">';
 }
-
-
 
 // Page loader / selector
 if ($searchPage) {
@@ -268,8 +264,47 @@ else {
 			}
 		} 
 		else echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
+	} 
+	else {
+		//home screen chosen by the user
+		$home_page ='';
+		if (isset($config['id_user'])) {
+			$user_info = users_get_user_by_id($config['id_user']);
+			$home_page = io_safe_output($user_info['section']);
+			$home_url = $user_info['data_section'];
+		}
+		
+		if ($home_page != '') {
+			switch($home_page) {
+				case __('Event list'):		
+					header ('location:' . $config['homeurl'] . '/index.php?sec=eventos&sec2=operation/events/events');
+					break;
+				case __('Group view'):
+					header ('location:' . $config['homeurl'] . '/index.php?sec=estado&sec2=operation/agentes/group_view');
+					break;
+				case __('Alert detail'):
+					header ('location:' . $config['homeurl'] . '/index.php?sec=estado&sec2=operation/agentes/alerts_status');
+					break;
+				case __('Tactical view'):
+					require ("general/logon_ok.php");
+					break;
+				case __('Dashboard'):
+					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
+					header ('location:' . $config['homeurl'] . '/index.php?sec=dashboard&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard);
+					break;
+				case __('Visual console'):
+					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
+					header ('location:' . $config['homeurl'] . '/index.php?sec=visualc&sec2=operation/visual_console/render_view&id='. $id_visualc .'&refr=60');
+					break;
+				case __('Other'):
+					header ('location:' . $config['homeurl'] . '/index.php?'. io_safe_output($home_url));
+					break;
+			}
+
+		} else {
+			require("general/logon_ok.php");
+		}
 	}
-	else require ("general/logon_ok.php");
 	require("general/shortcut_bar.php");
 }
 
@@ -296,3 +331,7 @@ echo '</html>';
 $run_time = format_numeric (microtime (true) - $config['start_time'], 3);
 echo "\n<!-- Page generated in $run_time seconds -->\n";
 ?>
+
+<script language="javascript" type="text/javascript">
+
+</script>

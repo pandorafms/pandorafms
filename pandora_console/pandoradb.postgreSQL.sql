@@ -698,7 +698,9 @@ CREATE TABLE "tusuario" (
 	"flash_chart" INTEGER NOT NULL default 1,
 	"id_skin" INTEGER NOT NULL DEFAULT 0,
 	"disabled" INTEGER NOT NULL default 1,
-	"shortcut" SMALLINT DEFAULT 0
+	"shortcut" SMALLINT DEFAULT 0,
+	"section" varchar(255) NOT NULL,
+	"data_section" varchar(255) NOT NULL
 );
 
 CREATE TABLE "tusuario_perfil" (

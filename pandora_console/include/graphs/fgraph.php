@@ -223,7 +223,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
-	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key = '') {
+	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key = '', $force_integer = false) {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
@@ -237,7 +237,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
-		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key);
+		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer);
 	}
 	else {
 		$graph = array();

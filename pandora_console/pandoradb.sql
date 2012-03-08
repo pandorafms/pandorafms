@@ -774,6 +774,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `id_skin` int(10) unsigned NOT NULL,
   `disabled` int(4) NOT NULL DEFAULT 0,
   `shortcut` tinyint(1) DEFAULT 0,
+  `shortcut_data` text default '',
   `section` TEXT NOT NULL,
   `data_section` TEXT NOT NULL,
   UNIQUE KEY `id_user` (`id_user`)

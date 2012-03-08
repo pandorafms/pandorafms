@@ -401,7 +401,7 @@ if ($agents !== false) {
 			echo "<em>";
 		}
 		echo '<span class="left">';
-		echo "<strong><a href='index.php?sec=gagente&
+		echo "<strong><a class='item_drag_shortcut' href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
 		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 60, true, true, true, '[&hellip;]', 'font-size: 7pt')."</a></strong>";
 		if ($agent["disabled"]) {

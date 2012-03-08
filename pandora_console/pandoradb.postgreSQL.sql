@@ -699,6 +699,7 @@ CREATE TABLE "tusuario" (
 	"id_skin" INTEGER NOT NULL DEFAULT 0,
 	"disabled" INTEGER NOT NULL default 1,
 	"shortcut" SMALLINT DEFAULT 0,
+	"shortcut_data" text default '',
 	"section" varchar(255) NOT NULL,
 	"data_section" varchar(255) NOT NULL
 );

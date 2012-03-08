@@ -869,6 +869,7 @@ CREATE TABLE tusuario (
 	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL,
 	disabled NUMBER(10, 0) default 0 NOT NULL,
 	shortcut NUMBER(5, 0) DEFAULT 0,
+	shortcut_data CLOB default '',
 	section VARCHAR2(255) NOT NULL,
 	data_section VARCHAR2(255) NOT NULL
 );

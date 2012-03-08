@@ -168,8 +168,14 @@ ALTER TABLE tgraph ADD (id_graph_template NUMBER(11, 0) default 0 NOT NULL);
 -- Table `ttipo_modulo`
 -- -----------------------------------------------------
 UPDATE ttipo_modulo SET descripcion='Generic data' WHERE id_tipo=1;
-
 UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
+
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+ALTER TABLE tusuario ADD COLUMN disabled NUMBER(10, 0) NOT NULL DEFAULT 0;
+ALTER TABLE tusuario ADD COLUMN shortcut NUMBER(5, 0) DEFAULT 0;
+ALTER TABLE tusuario ADD COLUMN shortcut_data CLOB default '';
 
 -- -----------------------------------------------------
 -- Table `tusuario`

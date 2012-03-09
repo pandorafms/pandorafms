@@ -108,7 +108,6 @@ echo '</form>';
 			$(".remote").css("display", "");
 		}
 		$("." + auth_method).css('display', '');
-
 	}
 		
 	function enable_profile_options () {
@@ -118,10 +117,11 @@ echo '</form>';
 			$("#default_remote_profile").attr("disabled", true);
 			$("#default_remote_group").attr("disabled", true);
 			$("#text-autocreate_blacklist").attr("disabled", true);
-		} else {
-			$("#default_remote_profile").attr("disabled", false);
-			$("#default_remote_group").attr("disabled", false);
-			$("#text-autocreate_blacklist").attr("disabled", false);
+		}
+		else {
+			$("#default_remote_profile").removeAttr('disabled');
+			$("#default_remote_group").removeAttr('disabled');
+			$("#text-autocreate_blacklist").removeAttr('disabled');
 		}
 	}
 	

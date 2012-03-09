@@ -1,3 +1,14 @@
+2012-03-09 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js, extensions/snmp_explorer.php,
+	operation/users/user_edit.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/setup/setup_auth.php, godmode/gis_maps/configure_gis_map.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/modules/manage_network_components_form.php,
+	godmode/reporting/visual_console_builder.editor.js: fixed enable a widget in
+	javascript (because the new jquery library is more html standar).
+
 2012-03-09  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/flot/pandora.flot.js: Fixed a xAxis bad 

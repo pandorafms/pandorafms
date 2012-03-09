@@ -271,7 +271,6 @@ echo html_print_input_text ('data_section', $user_info["data_section"], '', 60, 
 
 echo '</td></tr></table>';
 
-
 echo '<div style="width:90%; text-align:right;">';
 if (!$config["user_can_update_info"]) {
 	echo '<i>'.__('You can not change your user info from Pandora FMS under the current authentication scheme').'</i>';

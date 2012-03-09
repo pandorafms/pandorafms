@@ -1,3 +1,8 @@
+2012-03-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/flot/pandora.flot.js: Fixed a xAxis bad 
+	tick calculating and added some transparency to graph areas
+
 2012-03-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,

@@ -556,7 +556,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			label: legend[i],
 			color: serie_color,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
-			lines: { show: line_show, fill: filled, fillColor: { colors: [ { opacity: 1 }, { opacity: 1 } ]}, lineWidth:1, steps:false },
+			lines: { show: line_show, fill: filled, fillColor: { colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]}, lineWidth:1, steps:false },
 			points: { show: points_show }
 		});
 
@@ -588,7 +588,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	datas = data_base;
 				
 	// minTickSize
-	var mts = 130;
+	var count_data = datas[0].data.length;
+	var min_tick_pixels = 80;
+	var steps = parseInt( count_data / (width/min_tick_pixels));
 		
 	var options = { 
 			series: { 
@@ -607,7 +609,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				},
 			xaxes: [ { 
 					tickFormatter: xFormatter,
-					minTickSize: mts,
+					minTickSize: steps,
 					color: '#000'
 					} ],
 			yaxes: [ { 
@@ -650,7 +652,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
         xaxis: { },
 			xaxes: [ { 
 					tickFormatter: xFormatter,
-					minTickSize: mts,
+					minTickSize: steps,
 					color: '#000'
 					} ],
         yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
@@ -668,14 +670,14 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
         
         factor = dataInSelection / dataInPlot;
         
-        new_mts = parseInt(factor*mts);
+        new_steps = parseInt(factor*steps);
                 
         plot = $.plot($('#'+graph_id), datas,
                       $.extend(true, {}, options, {
                         xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
 						xaxes: [ { 
 								tickFormatter: xFormatter,
-								minTickSize: new_mts,
+								minTickSize: new_steps,
 								color: '#000'
 								} ],                          
 						legend: { show: false },

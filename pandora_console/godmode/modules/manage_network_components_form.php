@@ -313,23 +313,23 @@ function type_change () {
 
 $(document).ready (function () {
 	if ($("#snmp_version").value == "3"){
-		$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
-		$("input[name=snmp3_auth_user]").attr("disabled", false);		
+		$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
+		$("input[name=snmp3_auth_user]").removeAttr('disabled');
 		
 		$("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});			
-		$("input[name=snmp3_auth_pass]").attr("disabled", false);				
+		$("input[name=snmp3_auth_pass]").removeAttr('disabled');
 		
 		$("#snmp3_privacy_method").css({backgroundColor: '#fff'});	
-		$("#snmp3_privacy_method").attr("disabled", false);	
+		$("#snmp3_privacy_method").removeAttr('disabled');
 	
 		$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});			
-		$("input[name=snmp3_privacy_pass]").attr("disabled", false);	
+		$("input[name=snmp3_privacy_pass]").removeAttr('disabled');
 		
 		$("#snmp3_auth_method").css({backgroundColor: '#fff'});	
-		$("#snmp3_auth_method").attr("disabled", false);			
+		$("#snmp3_auth_method").removeAttr('disabled');
 		
 		$("#snmp3_security_level").css({backgroundColor: '#fff'});	
-		$("#snmp3_security_level").attr("disabled", false);
+		$("#snmp3_security_level").removeAttr('disabled');
 		
 		$("input[name=active_snmp_v3]").val(1);
 		$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
@@ -359,80 +359,28 @@ $(document).ready (function () {
 
 		$("input[name=active_snmp_v3]").val(0);
 		$("input[name=snmp_community]").css({backgroundColor: '#fff'});			
-		$("input[name=snmp_community]").attr("disabled", false);			
+		$("input[name=snmp_community]").removeAttr('disabled');
 	}
 	
 	$("#snmp_version").change(function () {
 		if (this.value == "3") {
 			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp3_auth_user]").attr("disabled", false);		
+			$("input[name=snmp3_auth_user]").removeAttr('disabled');
 			
 			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp3_auth_pass]").attr("disabled", false);				
+			$("input[name=snmp3_auth_pass]").removeAttr('disabled');
 			
 			$("#snmp3_privacy_method").css({backgroundColor: '#fff'});	
-			$("#snmp3_privacy_method").attr("disabled", false);	
+			$("#snmp3_privacy_method").removeAttr('disabled');
 		
 			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp3_privacy_pass]").attr("disabled", false);	
+			$("input[name=snmp3_privacy_pass]").removeAttr('disabled');
 			
 			$("#snmp3_auth_method").css({backgroundColor: '#fff'});	
-			$("#snmp3_auth_method").attr("disabled", false);			
+			$("#snmp3_auth_method").removeAttr('disabled');
 			
 			$("#snmp3_security_level").css({backgroundColor: '#fff'});	
-			$("#snmp3_security_level").attr("disabled", false);
-			
-			$("input[name=active_snmp_v3]").val(1);
-			$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
-			$("input[name=snmp_community]").attr("disabled",true);	
-		}
-		else {			
-			$("input[name=snmp3_auth_user]").val("");				
-			$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});			
-			$("input[name=snmp3_auth_user]").attr("disabled", true);	
-			
-			$("input[name=snmp3_auth_pass]").val("");
-			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});			
-			$("input[name=snmp3_auth_pass]").attr("disabled", true);				
-						
-			$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});	
-			$("#snmp3_privacy_method").attr("disabled", true);
-		
-			$("input[name=snmp3_privacy_pass]").val("");
-			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});			
-			$("input[name=snmp3_privacy_pass]").attr("disabled", true);			
-
-			$("#snmp3_auth_method").css({backgroundColor: '#ddd'});	
-			$("#snmp3_auth_method").attr("disabled", true);
-
-			$("#snmp3_security_level").css({backgroundColor: '#ddd'});	
-			$("#snmp3_security_level").attr("disabled", true);
-
-			$("input[name=active_snmp_v3]").val(0);
-			$("input[name=snmp_community]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp_community]").attr("disabled", false);			
-		}
-	});	
-
-	$("#type"). change(function () {
-		if ($("#snmp_version").value == "3") {
-			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp3_auth_user]").attr("disabled", false);		
-			
-			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp3_auth_pass]").attr("disabled", false);				
-			
-			$("#snmp3_privacy_method").css({backgroundColor: '#fff'});	
-			$("#snmp3_privacy_method").attr("disabled", false);	
-		
-			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp3_privacy_pass]").attr("disabled", false);	
-			
-			$("#snmp3_auth_method").css({backgroundColor: '#fff'});	
-			$("#snmp3_auth_method").attr("disabled", false);			
-			
-			$("#snmp3_security_level").css({backgroundColor: '#fff'});	
-			$("#snmp3_security_level").attr("disabled", false);
+			$("#snmp3_security_level").removeAttr('disabled');
 			
 			$("input[name=active_snmp_v3]").val(1);
 			$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
@@ -446,23 +394,75 @@ $(document).ready (function () {
 			$("input[name=snmp3_auth_pass]").val("");
 			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});			
 			$("input[name=snmp3_auth_pass]").attr("disabled", true);				
-						
+			
 			$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});	
 			$("#snmp3_privacy_method").attr("disabled", true);
-		
+			
 			$("input[name=snmp3_privacy_pass]").val("");
 			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});			
 			$("input[name=snmp3_privacy_pass]").attr("disabled", true);			
-
+			
 			$("#snmp3_auth_method").css({backgroundColor: '#ddd'});	
 			$("#snmp3_auth_method").attr("disabled", true);
-
+			
 			$("#snmp3_security_level").css({backgroundColor: '#ddd'});	
 			$("#snmp3_security_level").attr("disabled", true);
-
+			
 			$("input[name=active_snmp_v3]").val(0);
 			$("input[name=snmp_community]").css({backgroundColor: '#fff'});			
-			$("input[name=snmp_community]").attr("disabled", false);	
+			$("input[name=snmp_community]").removeAttr('disabled');
+		}
+	});	
+
+	$("#type"). change(function () {
+		if ($("#snmp_version").value == "3") {
+			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_auth_user]").removeAttr('disabled');
+			
+			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_auth_pass]").removeAttr('disabled');
+			
+			$("#snmp3_privacy_method").css({backgroundColor: '#fff'});	
+			$("#snmp3_privacy_method").removeAttr('disabled');
+			
+			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp3_privacy_pass]").removeAttr('disabled');
+			
+			$("#snmp3_auth_method").css({backgroundColor: '#fff'});	
+			$("#snmp3_auth_method").removeAttr('disabled');
+			
+			$("#snmp3_security_level").css({backgroundColor: '#fff'});	
+			$("#snmp3_security_level").removeAttr('disabled');
+			
+			$("input[name=active_snmp_v3]").val(1);
+			$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
+			$("input[name=snmp_community]").attr("disabled",true);	
+		}
+		else {
+			$("input[name=snmp3_auth_user]").val("");				
+			$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_auth_user]").attr("disabled", true);	
+			
+			$("input[name=snmp3_auth_pass]").val("");
+			$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_auth_pass]").attr("disabled", true);				
+			
+			$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});	
+			$("#snmp3_privacy_method").attr("disabled", true);
+			
+			$("input[name=snmp3_privacy_pass]").val("");
+			$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});			
+			$("input[name=snmp3_privacy_pass]").attr("disabled", true);			
+			
+			$("#snmp3_auth_method").css({backgroundColor: '#ddd'});	
+			$("#snmp3_auth_method").attr("disabled", true);
+			
+			$("#snmp3_security_level").css({backgroundColor: '#ddd'});	
+			$("#snmp3_security_level").attr("disabled", true);
+			
+			$("input[name=active_snmp_v3]").val(0);
+			$("input[name=snmp_community]").css({backgroundColor: '#fff'});			
+			$("input[name=snmp_community]").removeAttr('disabled');
 		}
 	});
 });

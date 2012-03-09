@@ -1309,7 +1309,7 @@ function activeToolboxButton(id, active) {
 		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
 	}
 	else {
-		$("input." + id + "[name=button_toolbox2]").attr('disabled', 'disabled');
+		$("input." + id + "[name=button_toolbox2]").attr('disabled', true);
 	}
 }
 

@@ -474,7 +474,7 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 					 }
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
-					 $('#module').attr ('disabled', 0);
+					 $('#module').removeAttr('disabled');
 				 },
 				 "json"
 				 );

@@ -102,7 +102,7 @@ function agent_changed (event, id_agent, selected) {
 								  });
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
-					 $('#module').attr ('disabled', 0);
+					 $('#module').removeAttr('disabled');
 				 },
 				 "json"
 				 );
@@ -205,7 +205,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 								  });
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
-					 $('#module').attr ('disabled', 0);
+					 $('#module').removeAttr('disabled');
 				 },
 				 "json"
 				 );
@@ -263,7 +263,7 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 								  });
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
-					 $('#module').attr ('disabled', 0);
+					 $('#module').removeAttr('disabled');
 				 },
 				 "json"
 				 );
@@ -321,7 +321,7 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 								  });
 					 if (selected != undefined)
 					 $('#agents').attr ('value', selected);
-					 $('#agents').attr ('disabled', 0);
+					 $('#agents').removeAttr('disabled');
 				 },
 				 "json"
 				 );
@@ -379,7 +379,7 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
 								  });
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
-					 $('#module').attr ('disabled', 0);
+					 $('#module').removeAttr('disabled');
 				 },
 				 "json"
 				 );

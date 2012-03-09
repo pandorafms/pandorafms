@@ -530,9 +530,9 @@ function refreshMapView() {
 				
 				arrayControls = null;
 				arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
-
-
-				//TODO read too from field forms user.
+				
+				
+				/*TODO read too from field forms user.*/
 				inital_zoom = mapConnection['default_zoom_level'];
 				num_levels_zoom = mapConnection['num_zoom_levels'];
 				center_latitude = mapConnection['initial_latitude'];
@@ -580,7 +580,7 @@ $("#text_id_agent").autocomplete(
 
 $("#text_id_agent").result (
 	function () {
-		$("#button-add_agent").attr('disabled', false);
+		$("#button-add_agent").removeAttr('disabled');
 	}
 );
 
@@ -780,7 +780,7 @@ function deleteConnectionMap(idConnectionMap) {
 		}
 	}
 
-	checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked')
+	checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked');
 	$("#map_connection_" + idConnectionMap).remove();
 
 	if (checked) {
@@ -868,7 +868,7 @@ function fillOrderField() {
 }
 
 function upLayer(idLayer) {
-	var toUpIndex = null
+	var toUpIndex = null;
 	var toDownIndex = null;
 	
 	for (var index in layerList) {
@@ -896,12 +896,11 @@ function upLayer(idLayer) {
 }
 
 function downLayer(idLayer) {
-	var toUpIndex = null
+	var toUpIndex = null;
 	var toDownIndex = null;
-	var found = false
-
+	var found = false;
+	
 	for (var index in layerList) {
-
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (layerList[index] == idLayer) {
@@ -916,7 +915,7 @@ function downLayer(idLayer) {
 			}
 		}
 	}
-
+	
 	if (toUpIndex != null) {
 		layerToUp = "#layer_item_" + layerList[toUpIndex];
 		layerToDown = "#layer_item_" + layerList[toDownIndex];

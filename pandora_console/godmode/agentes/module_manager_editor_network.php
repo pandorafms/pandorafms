@@ -203,7 +203,7 @@ $(document).ready (function () {
 			$("#simple-field_snmpv3_row2").css("display", "none");
 			$("#simple-field_snmpv3_row3").css("display", "none");
 			$("input[name=active_snmp_v3]").val(0);
-			$("input[name=snmp_community]").attr("disabled", false);
+			$("input[name=snmp_community]").removeAttr('disabled');
 		}
 	});
 	

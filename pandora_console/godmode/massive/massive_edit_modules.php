@@ -411,7 +411,7 @@ $(document).ready (function () {
 		else {
 			$("#module").html('<?php echo __('None'); ?>');
 			$("#module_name").html('');
-			$('input[type=checkbox]').attr('disabled', false);
+			$('input[type=checkbox]').removeAttr('disabled');
 			$(".select_modules_row_2").css('display', '');
 		}
 		
@@ -491,7 +491,7 @@ $(document).ready (function () {
 					$(".select_agents_row_2").css('display', '');
 					if($('#id_agents option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
-					}				
+					}
 				}
 			}
 		}
@@ -524,12 +524,12 @@ $(document).ready (function () {
 			else {
 				$("#module").html('<?php echo __('None'); ?>');
 				$("#id_agents").html('');
-				$('input[type=checkbox]').attr('disabled', false);
+				$('input[type=checkbox]').removeAttr('disabled');
 				$(".select_agents_row_2").css('display', '');
 			}
 			
 			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
-
+			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
@@ -548,8 +548,6 @@ $(document).ready (function () {
 			);
 		}
 	);
-	
-	
 });
 /* ]]> */
 </script>

@@ -160,55 +160,59 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
-				 {"page": "operation/agentes/ver_agente",
-				 "get_agent_modules_json_for_multiple_agents": 1,
-				 "id_agent[]": idAgents,
-				 "all": find_modules,
-				 "custom_condition": custom_condition
-				 },
-				 function (data) {
-					 $('#module').empty ();
+		 {"page": "operation/agentes/ver_agente",
+		 "get_agent_modules_json_for_multiple_agents": 1,
+		 "id_agent[]": idAgents,
+		 "all": find_modules,
+		 "custom_condition": custom_condition
+		 },
+		 function (data) {
+			 $('#module').empty ();
+			 
+			 if (isEmptyObject(data)) {
+				 var noneText = $("#none_text").html(); //Trick for catch the translate text.
+				 
+				 if (noneText == null) {
+					 noneText = 'None';
+				 }
+				 
+				 $('#module').append ($('<option></option>').html (noneText).attr ("None", "").attr('selected', true));
+				 
+				 return;
+			 }
+			 
+			 if (typeof($(document).data('text_for_module')) != 'undefined') {
+				 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+			 }
+			 else {
+				 if (typeof(data['any_text']) != 'undefined') {
+					 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+				 }
+				 else {
+					 var anyText = $("#any_text").html(); //Trick for catch the translate text.
 					 
-					 if (isEmptyObject(data)) {
-						 var noneText = $("#none_text").html(); //Trick for catch the translate text.
-						 
-						 if (anyText == null) {
-							 anyText = 'None';
-						 }
-						 
-						 $('#module').append ($('<option></option>').html (anyText).attr ("None", "").attr('selected', true));
-						 
-						 return;
+					 if (anyText == null) {
+						 anyText = 'Any';
 					 }
 					 
-					 if (typeof($(document).data('text_for_module')) != 'undefined') {
-						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
-					 }
-					 else {
-						 if (typeof(data['any_text']) != 'undefined') {
-							 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-						 }
-						 else {
-							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-							 
-							 if (anyText == null) {
-								 anyText = 'Any';
-							 }
-							 
-							 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-						 }
-					 }
-					 jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode(val);
-								  $('#module').append ($('<option></option>').html (s).attr ("value", val));
-								  $('#module').fadeIn ('normal');
-								  });
-					 if (selected != undefined)
-					 $('#module').attr ('value', selected);
-					 $('#module').removeAttr('disabled');
-				 },
-				 "json"
-				 );
+					 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+				 }
+			 }
+			 jQuery.each (data, function (i, val) {
+						  s = js_html_entity_decode(val);
+						  $('#module').append ($('<option></option>').html (s).attr ("value", val));
+						  $('#module').fadeIn ('normal');
+						  });
+			 if (selected != undefined)
+			 $('#module').attr ('value', selected);
+			 $('#module').css ("width", "auto");
+			 $('#module').css ("max-width", "");
+			 
+			 
+			 $('#module').removeAttr('disabled');
+		 },
+		 "json"
+		 );
 }
 
 /**

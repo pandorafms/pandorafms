@@ -1,3 +1,24 @@
+2012-03-12 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/ajax/agent.php: added the query "get_agents_group" for getting the
+	list of agents from a group pass as ajax parameter.
+	
+	* godmode/reporting/visual_console_builder.editor.php: fixed lost title for
+	simple graph toolbox.
+	
+	* godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php,
+	include/functions_visual_map.php: added into the wizzard a field group to
+	filter agents, and the feature to choose the item to create with the massive
+	wizzard.
+
+	* include/functions_graph.php, include/functions_ui.php,
+	operation/reporting/reporting_viewer.php: cleaned source code style. 
+
+	* include/javascript/pandora.js: into the function
+	"agent_changed_by_multiple_agents" fixed the none text and any text, and
+	the width of module form field.
+
 2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* index.php: Fixed problem to display "sec2" in menu.

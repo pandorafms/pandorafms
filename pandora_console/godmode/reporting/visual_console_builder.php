@@ -25,6 +25,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 }
 
 require_once ('include/functions_visual_map.php');
+require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 
 $action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
@@ -165,10 +166,17 @@ switch ($activeTab) {
 				$id_agents = get_parameter ('id_agents', array ());
 				$name_modules = get_parameter ('module', array ());
 				
+				$type = (int)get_parameter('type', STATIC_GRAPH);
 				$image = get_parameter ('image');
 				$range = (int) get_parameter ("range", 50);
 				$width = (int) get_parameter ("width", 0);
 				$height = (int) get_parameter ("height", 0);
+				$period = (int) get_parameter ("period", 0);
+				$process_value = (int) get_parameter ("process_value", 0);
+				$percentileitem_width = (int) get_parameter ("percentileitem_width", 0);
+				$max_value = (int) get_parameter ("max_value", 0);
+				$type_percentile = get_parameter ("type_percentile", 'percentile');
+				$value_show = get_parameter ("value_show", 'percent');
 				
 				$message = '';
 				
@@ -176,26 +184,38 @@ switch ($activeTab) {
 					$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
 				}
 				else {
-					if ($name_modules[0] == '0')
-						$message .= visual_map_process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);
-					else{
+					//Any module
+					if ($name_modules[0] == '0') {
 						$id_modules = array();
-						$cont_dest = 1;
-						$cont_mod = 1;
+						foreach ($id_agents as $id_agent) {
+							$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
+							if (empty($id_modulo)) $id_modulo = array();
+							
+							foreach ($id_modulo as $id) {
+								$id_modules[] = $id['id_agente_modulo'];
+							}
+						}
+						
+						$message .= visual_map_process_wizard_add_modules($id_modules,
+							$image, $idVisualConsole, $range, $width, $height,
+							$period, $process_value, $percentileitem_width,
+							$max_value, $type_percentile, $value_show, $type);
+					}
+					else {
+						$id_modules = array();
 						foreach($name_modules as $mod){
-							$cont_ag = 1;
 							foreach($id_agents as $ag){
 								$sql = "SELECT id_agente_modulo
 									FROM tagente_modulo
 									WHERE delete_pending = 0 AND id_agente = ".$ag." AND nombre = '".$mod."'";
 								$result = db_get_row_sql ($sql);
-								$id_modules[$cont_dest] = $result['id_agente_modulo'];
-								$cont_ag = $cont_ag + 1;
-								$cont_dest = $cont_dest + 1;
+								$id_modules[] = $result['id_agente_modulo'];
 							}
-							$cont_mod = $cont_mod + 1;
 						}
-						$message .= visual_map_process_wizard_add_modules ($id_modules, $image, $idVisualConsole, $range, $width, $height);
+						$message .= visual_map_process_wizard_add_modules($id_modules,
+							$image, $idVisualConsole, $range, $width, $height,
+							$period, $process_value, $percentileitem_width,
+							$max_value, $type_percentile, $value_show, $type);
 					}
 					$statusProcessInDB = array('flag' => true, 'message' => $message);
 				}

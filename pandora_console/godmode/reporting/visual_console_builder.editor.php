@@ -106,6 +106,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<span id="title_panel_span_percentile_item"
 			class="title_panel_span"
 			style="display: none; font-weight: bolder;"><?php echo  __('Percentile Item');?></span>
+		<span id="title_panel_span_module_graph"
+			class="title_panel_span"
+			style="display: none; font-weight: bolder;"><?php echo  __('Module Graph');?></span>
 		<span id="title_panel_span_simple_value"
 			class="title_panel_span"
 			style="display: none; font-weight: bolder;"><?php echo  __('Simple value');?></span>

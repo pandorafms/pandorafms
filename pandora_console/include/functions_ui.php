@@ -50,7 +50,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			echo $text;
 		}
 	} 
-
+	
 	$text = io_safe_output($text);
 	if ((strlen($text)) > ($numChars)) {
 		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
@@ -68,7 +68,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 				$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
 			}
 		}
-		if ($showTextInAToopTip) {			
+		if ($showTextInAToopTip) {
 			if ($style !== false){
 				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span></a>';
 			}	
@@ -666,21 +666,21 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	if (empty ($string)) {
 		return "";
 	}
-
+	
 	$string2 = io_safe_output ($string);
 	if (mb_strlen($string2, "UTF-8") >  $cutoff){
 		$string3 = "...";
 	} else {
 		$string3 = "";
 	}
-
+	
 	$font_size_mod = "";
-
-    if ($fontsize > 0){
-        $font_size_mod = "style='font-size: ".$fontsize."px'";
-    }
+	
+	if ($fontsize > 0){
+		$font_size_mod = "style='font-size: ".$fontsize."px'";
+	}
 	$string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
-
+	
 	if ($return === false) {
 		echo $string;
 	} 

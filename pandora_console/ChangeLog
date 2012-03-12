@@ -1,5 +1,9 @@
 2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/menu.php: revert changes. I am sorry.
+
+2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php: set to blue more light the
 	color for unknow status for percentile item, and set the size of items

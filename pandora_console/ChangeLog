@@ -1,3 +1,16 @@
+2012-03-12 Miguel de Dios  <miguel.dedios@artica.es>
+
+	*include/ajax/agent.php: added the query "get_agents_group" for getting the
+	list of agents from a group pass as ajax parameter.
+	
+	* include/functions_visual_map.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php: added into the wizzard a field
+	group to filter agents, and the feature to choose the item to create with
+	the massive wizzard.
+	
+	Meged feature from trunk.
+
 2012-03-12  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* godmode/agentes/planned_downtime.php: Merged from

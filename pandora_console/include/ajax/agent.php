@@ -26,6 +26,25 @@ enterprise_include_once ('include/functions_metaconsole.php');
 // * q
 // * id_group
 $search_agents = (bool) get_parameter ('search_agents');
+$get_agents_group = (bool) get_parameter('get_agents_group', false);
+
+if ($get_agents_group) {
+	$id_group = (int)get_parameter('id_group', -1);
+	$mode = (string)get_parameter('mode', 'json');
+	
+	$return = array();
+	if ($id_group != -1) {
+		$return = agents_get_group_agents($id_group);
+	}
+	
+	switch ($mode) {
+		case 'json':
+			echo json_encode($return);
+			break;
+	}
+	
+	return;
+}
 
 if ($search_agents && ($config['metaconsole'] == 0)) {
 

@@ -312,7 +312,9 @@ function visual_map_print_item($layoutData) {
  * 
  * @return string Return the message status to insert DB.
  */
-function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
+function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
+	$width = 0, $height = 0, $period, $process_value, $percentileitem_width,
+	$max_value, $type_percentile, $value_show, $type) {
 	if (empty ($id_agents)) {
 		print_error_message (__('No agents selected'));
 		return false;
@@ -329,17 +331,39 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, 
 			$pos_y = $pos_y + $range;
 		}
 		
-		db_process_sql_insert ('tlayout_data',
-			array ('id_layout' => $id_layout,
-			   'pos_x' => $pos_x,
-			   'pos_y' => $pos_y,
-			   'label' => agents_get_name ($id_agent),
-			   'image' => $image,
-			   'id_agent' => $id_agent,
-			   'width' => $width,
-			   'height' => $height,
-			   'label_color' => '#000000')
-			);
+		$value_height = $height;
+		$value_image = $image;
+		$value_type = $type;
+		switch ($type) {
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
+				$value_height = $max_value;
+				$value_image = $value_show;
+				if ($type_percentile == 'percentile') {
+					$value_type = PERCENTILE_BAR;
+				}
+				else {
+					$value_type = PERCENTILE_BUBBLE;
+				}
+				break;
+			case SIMPLE_VALUE:
+				$value_type = $process_value;
+				break;
+		}
+		
+		$values = array ('type' => $value_type,
+			'id_layout' => $id_layout,
+			'pos_x' => $pos_x,
+			'pos_y' => $pos_y,
+			'label' => agents_get_name ($id_agent),
+			'image' => $value_image,
+			'id_agent' => $id_agent,
+			'width' => $width,
+			'period' => $period,
+			'height' => $value_height,
+			'label_color' => '#000000');
+		
+		db_process_sql_insert ('tlayout_data', $values);
 		
 		$pos_x = $pos_x + $range;
 	}
@@ -361,7 +385,9 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range, 
  * 
  * @return string Return the message status to insert DB.
  */
-function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
+function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
+	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
+	$max_value, $type_percentile, $value_show, $type) {
 	if (empty ($id_modules)) {
 		$return = ui_print_error_message (__('No modules selected'), '', true);
 		return $return;
@@ -381,18 +407,47 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		
 		$id_agent = modules_get_agentmodule_agent ($id_module);
 		
-		db_process_sql_insert ('tlayout_data',
-			array ('id_layout' => $id_layout,
-			   'pos_x' => $pos_x,
-			   'pos_y' => $pos_y,
-			   'label' => modules_get_agentmodule_name ($id_module),
-			   'image' => $image,
-			   'id_agent' => $id_agent,
-			   'id_agente_modulo' => $id_module,
-			   'width' => $width,
-			   'height' => $height,
-			   'label_color' => '#000000')
-			);
+		
+		$value_height = $height;
+		$value_image = $image;
+		$value_type = $type;
+		$value_width = $width;
+		switch ($type) {
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
+				$value_height = $max_value;
+				$value_width = $percentileitem_width;
+				$value_image = $value_show;
+				if ($type_percentile == 'percentile') {
+					$value_type = PERCENTILE_BAR;
+				}
+				else {
+					$value_type = PERCENTILE_BUBBLE;
+				}
+				break;
+			case SIMPLE_VALUE:
+				$value_type = $process_value;
+				break;
+		}
+		
+		$label = ui_print_truncate_text(agents_get_name ($id_agent), 8, false, true, false, '…', false);
+		$label .= " - " . ui_print_truncate_text(modules_get_agentmodule_name($id_module), 8, false, true, false, '…', false);
+		$label = io_safe_input($label);
+		
+		$values = array ('type' => $value_type,
+			'id_layout' => $id_layout,
+			'pos_x' => $pos_x,
+			'pos_y' => $pos_y,
+			'label' => $label,
+			'image' => $value_image,
+			'id_agent' => $id_agent,
+			'id_agente_modulo' => $id_module,
+			'width' => $value_width,
+			'period' => $period,
+			'height' => $value_height,
+			'label_color' => '#000000');
+		
+		db_process_sql_insert ('tlayout_data', $values);
 		
 		$pos_x = $pos_x + $range;
 	}

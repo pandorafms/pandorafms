@@ -140,8 +140,8 @@ function visual_map_print_item($layoutData) {
 			//Unknown
 		default:
 			$imgStatus .= ".png";
-			$colorStatus = "#0000ff";
-			// Default is Grey (Other)
+			$colorStatus = "#5A5AFF";
+			// Default is Blue (Other)
 			break;
 	}
 	
@@ -433,16 +433,16 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		switch ($label_type) {
 			case 'agent_module':
 			default:
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 8, false, true, false, '…', false);
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 8, false, true, false, '…', false);
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 10, false, true, false, '…', false);
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 10, false, true, false, '…', false);
 				$label = $agent_label . " - " . $module_label;
 				break;
 			case 'module':
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 8, false, true, false, '…', false);
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 20, false, true, false, '…', false);
 				$label = $module_label;
 				break;
 			case 'agent':
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 8, false, true, false, '…', false);
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 20, false, true, false, '…', false);
 				$label = $agent_label;
 				break;
 			case 'none':
@@ -1054,7 +1054,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						case 3:
 							//Unknown
 						default:
-							$colorStatus = "#0000ff";
+							$colorStatus = "#5A5AFF";
 							// Default is Grey (Other)
 							break;
 					}

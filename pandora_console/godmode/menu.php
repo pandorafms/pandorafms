@@ -259,14 +259,12 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			if (array_key_exists('fatherId',$extmenu)) {
 				if (strlen($extmenu['fatherId']) > 0) {
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-					if ($extmenu["name"] != 'DB interface'){
-						if (!empty($config['refr'])){
-							$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
-						}
-						else{
-							$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
-						}
-					}	
+					if (!empty($config['refr'])){
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
+					}
+					else{
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
+					}
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;

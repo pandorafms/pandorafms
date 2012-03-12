@@ -1,5 +1,14 @@
 2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: set to blue more light the
+	color for unknow status for percentile item, and set the size of items
+	create from the wizzard to 20 characteres.
+
+	Merged bugfix from trunk.
+
+2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_html.php: into the function "html_print_select" removed
 	the hardcode style for the selectbox.
 	

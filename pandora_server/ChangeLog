@@ -1,3 +1,10 @@
+2012-03-12  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_xml_stress.agents
+	util/pandora_xml_stress.conf: Added default file for agent
+	dictionary. Better defaults on modules. Ready to be used for
+	testing Pandora FMS servers.
+
 2012-03-08  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Fixed wrong SQL of my previous commit.

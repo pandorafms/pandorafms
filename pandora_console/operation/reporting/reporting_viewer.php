@@ -229,13 +229,14 @@ $(document).ready (function () {
 	/* Show/hide begin date reports controls */
 	$("#checkbox-enable_init_date").click(function() {
 		flag = $("#checkbox-enable_init_date").is(':checked');
-		if (flag == true){
+		if (flag == true) {
 			$("#table1-1-0").css("display", "");
 			$("#table1-1-1").css("display", "");
 			$("#table1-1-2").css("display", "none");
 			$("#table1-1-3").css("display", "");
 			$("#table1-1-6").css("display", "none");
-		}else{
+		}
+		else {
 			$("#table1-1-0").css("display", "none");
 			$("#table1-1-1").css("display", "none");
 			$("#table1-1-2").css("display", "");

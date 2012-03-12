@@ -486,12 +486,13 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}	
 
 	// Added support for projection graphs (normal_module + 1(prediction data))
-	if ($projection !== false){ 
+	if ($projection !== false) { 
 		$module_number = count ($module_list) + 1;
-	}else{
+	}
+	else {
 		$module_number = count ($module_list);		
 	}
-
+	
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//	     more interval, more resolution, and slower.
 	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
@@ -500,7 +501,8 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	for ($i = 0; $i < $module_number; $i++) {
 		if (! isset ($weight_list[$i])) {
 			$weight_list[$i] = 1;
-		} else if ($weight_list[$i] == 0) {
+		}
+		else if ($weight_list[$i] == 0) {
 				$weight_list[$i] = 1;
 		}
 	}
@@ -530,7 +532,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
 		// If its a projection graph, first module will be data and second will be the projection
-		if ($projection != false and $i != 0){
+		if ($projection != false and $i != 0) {
 			$agent_module_id = $module_list[0];
 			$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 			$agent_id = agents_get_agent_id ($agent_name);
@@ -539,7 +541,8 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
 			$uncompressed_module = is_module_uncompressed ($module_type);			
-		}else{
+		}
+		else {
 			$agent_module_id = $module_list[$i];
 			$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 			$agent_id = agents_get_agent_id ($agent_name);
@@ -718,11 +721,12 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$avg += $temp_graph_values[$timestamp_short];
 			
 			// Added to support projection graphs
-			if ($projection != false and $i != 0){
+			if ($projection != false and $i != 0) {
 					$projection_data = array();
 					$projection_data = array_merge($before_projection, $projection); 
 					$graph_values[$i] = $projection_data;
-			}else{
+			}
+			else {
 					$graph_values[$i] = $temp_graph_values; 
 			}
 		}

@@ -181,7 +181,7 @@ function visual_map_print_item($layoutData) {
 				$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
 				$unit_text = trim(io_safe_output($unit_text));
 				
-				$value_text = $module_value;
+				$value_text = format_for_graph($module_value, 2);
 				if (!empty($unit_text))
 					$value_text .= " " . $unit_text;
 			}
@@ -1120,7 +1120,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
 						$unit_text = trim(io_safe_output($unit_text));
 						
-						$value_text = $valor;
+						$value_text = format_for_graph($valor, 2);
 						if (!empty($unit_text))
 							$value_text .= " " . $unit_text;
 					}

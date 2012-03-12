@@ -1,3 +1,11 @@
+2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: apply format to graph in the
+	data when show value in percentile item.
+
+	Merged bugfix from trunk.
+
 2012-03-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
  
     * include/functions_ui.php: Skin is not used on logon error.

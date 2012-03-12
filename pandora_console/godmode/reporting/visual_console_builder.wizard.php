@@ -132,6 +132,14 @@ $table->rowstyle["all_4"] = 'display: none;';
 $table->data["all_4"][0] = __('Modules');
 $table->data["all_4"][1] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
 
+$table->rowstyle["all_5"] = 'display: none;';
+$table->data["all_5"][0] = __('Label');
+$label_type = array ('agent_module' => __('Agent - Module'),
+	'module' => __('Module'),
+	'agent' => __('Agent'),
+	'none' => __('None'));
+$table->data["all_5"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
+
 echo '<form method="post"
 	action="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
 	onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
@@ -204,7 +212,6 @@ $(document).ready (function () {
 });
 
 function check_fields() {
-	console.log(999);
 	switch ($("#type").val()) {
 		case "<?php echo PERCENTILE_BAR;?>":
 		case "<?php echo MODULE_GRAPH;?>":

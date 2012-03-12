@@ -283,10 +283,10 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 	}
 	
 	if ($style === false) {
-		$styleText = 'style="max-width: 180px"';
+		$styleText = 'style=""';
 	}
 	else {
-		$styleText = 'style="max-width: 180px; ' .$style . '"';
+		$styleText = 'style="' .$style . '"';
 	}
 
 	$output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' ' . $styleText . '>';

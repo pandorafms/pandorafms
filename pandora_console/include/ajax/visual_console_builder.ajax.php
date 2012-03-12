@@ -124,6 +124,7 @@ switch ($action) {
 				if (($layoutData['type'] == PERCENTILE_BAR) ||
 					($layoutData['type'] == PERCENTILE_BUBBLE)) {
 					if ($value_show == 'value') {
+						$returnValue = format_for_graph($returnValue, 2);
 						
 						$unit_text_db = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 						$unit_text_db = trim(io_safe_output($unit_text_db));

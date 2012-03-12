@@ -1,5 +1,9 @@
 2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* index.php: Fixed problem to display "sec2" in menu.
+
+2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* index.php: Fixed problem to display "sec" in menu.
  
 2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>

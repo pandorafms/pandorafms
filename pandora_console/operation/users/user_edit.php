@@ -258,8 +258,9 @@ if ($dashboards === false) {
 echo html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 
 $layouts = visual_map_get_user_layouts ($user_info['id_user'], true);
+$layouts_aux = array();
 if ($layouts === false) {
-	$layouts = array('None'=>'None');
+	$layouts_aux = array('None'=>'None');
 } else {
 	foreach ($layouts as $layout) {
 		$layouts_aux[$layout] = $layout;

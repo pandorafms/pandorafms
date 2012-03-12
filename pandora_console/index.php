@@ -276,28 +276,55 @@ else {
 		
 		if ($home_page != '') {
 			switch($home_page) {
-				case __('Event list'):		
-					header ('location:' . $config['homeurl'] . '/index.php?sec=eventos&sec2=operation/events/events');
+				case __('Event list'):
+					require ('operation/events/events.php');
 					break;
 				case __('Group view'):
-					header ('location:' . $config['homeurl'] . '/index.php?sec=estado&sec2=operation/agentes/group_view');
+					require ('operation/agentes/group_view.php');
 					break;
 				case __('Alert detail'):
-					header ('location:' . $config['homeurl'] . '/index.php?sec=estado&sec2=operation/agentes/alerts_status');
+					require ('operation/agentes/alerts_status.php');
 					break;
 				case __('Tactical view'):
-					require ("general/logon_ok.php");
+					require ('operation/agentes/tactical.php');
+					break;
+				case __('Default'):
+					require ('general/logon_ok.php');
 					break;
 				case __('Dashboard'):
 					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
-					header ('location:' . $config['homeurl'] . '/index.php?sec=dashboard&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard);
+					$str = 'sec=visualc&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
+					parse_str($str, $res);
+					foreach ($res as $key => $param) {
+						$_GET[$key] = $param;
+					}
+					require(ENTERPRISE_DIR.'/dashboard/main_dashboard.php');
 					break;
 				case __('Visual console'):
 					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
-					header ('location:' . $config['homeurl'] . '/index.php?sec=visualc&sec2=operation/visual_console/render_view&id='. $id_visualc .'&refr=60');
+					$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
+					parse_str($str, $res);
+					foreach ($res as $key => $param) {
+						$_GET[$key] = $param;
+					}
+					require('operation/visual_console/render_view.php');
 					break;
 				case __('Other'):
-					header ('location:' . $config['homeurl'] . '/index.php?'. io_safe_output($home_url));
+					$home_url = io_safe_output($home_url);
+					parse_str ($home_url, $res);
+					foreach ($res as $key => $param) {
+						$_GET[$key] = $param;
+					}
+					if (isset($_GET['sec2'])) {
+						$file = $_GET['sec2'].'.php';
+						
+						if (!file_exists ($file)) {
+							unset($_GET['sec2']);
+							require('general/logon_ok.php');
+						} else {
+							require($file);
+						}
+					}
 					break;
 			}
 
@@ -331,7 +358,3 @@ echo '</html>';
 $run_time = format_numeric (microtime (true) - $config['start_time'], 3);
 echo "\n<!-- Page generated in $run_time seconds -->\n";
 ?>
-
-<script language="javascript" type="text/javascript">
-
-</script>

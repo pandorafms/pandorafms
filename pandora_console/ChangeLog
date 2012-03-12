@@ -1,3 +1,7 @@
+2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>
+	* index.php
+	  operation/users/user_edit.php: Customize home screen. 
+
 2012-03-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js, extensions/snmp_explorer.php,

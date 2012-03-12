@@ -1,4 +1,13 @@
 2012-03-12 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_visual_map.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php: added lost feature to set into
+	the wizard the kind of label ("agent", "module", "agent-module" or empty).
+	
+	Meged feature from trunk.
+
+2012-03-12 Miguel de Dios  <miguel.dedios@artica.es>
 
 	*include/ajax/agent.php: added the query "get_agents_group" for getting the
 	list of agents from a group pass as ajax parameter.

@@ -387,7 +387,7 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
  */
 function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $type) {
+	$max_value, $type_percentile, $value_show, $label_type, $type) {
 	if (empty ($id_modules)) {
 		$return = ui_print_error_message (__('No modules selected'), '', true);
 		return $return;
@@ -430,8 +430,25 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 				break;
 		}
 		
-		$label = ui_print_truncate_text(agents_get_name ($id_agent), 8, false, true, false, '…', false);
-		$label .= " - " . ui_print_truncate_text(modules_get_agentmodule_name($id_module), 8, false, true, false, '…', false);
+		switch ($label_type) {
+			case 'agent_module':
+			default:
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 8, false, true, false, '…', false);
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 8, false, true, false, '…', false);
+				$label = $agent_label . " - " . $module_label;
+				break;
+			case 'module':
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 8, false, true, false, '…', false);
+				$label = $module_label;
+				break;
+			case 'agent':
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 8, false, true, false, '…', false);
+				$label = $agent_label;
+				break;
+			case 'none':
+				$label = '';
+				break;
+		}
 		$label = io_safe_input($label);
 		
 		$values = array ('type' => $value_type,

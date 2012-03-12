@@ -177,6 +177,7 @@ switch ($activeTab) {
 				$max_value = (int) get_parameter ("max_value", 0);
 				$type_percentile = get_parameter ("type_percentile", 'percentile');
 				$value_show = get_parameter ("value_show", 'percent');
+				$label_type = get_parameter ("label_type", 'agent_module');
 				
 				$message = '';
 				
@@ -199,7 +200,7 @@ switch ($activeTab) {
 						$message .= visual_map_process_wizard_add_modules($id_modules,
 							$image, $idVisualConsole, $range, $width, $height,
 							$period, $process_value, $percentileitem_width,
-							$max_value, $type_percentile, $value_show, $type);
+							$max_value, $type_percentile, $value_show, $label_type, $type);
 					}
 					else {
 						$id_modules = array();
@@ -215,7 +216,7 @@ switch ($activeTab) {
 						$message .= visual_map_process_wizard_add_modules($id_modules,
 							$image, $idVisualConsole, $range, $width, $height,
 							$period, $process_value, $percentileitem_width,
-							$max_value, $type_percentile, $value_show, $type);
+							$max_value, $type_percentile, $value_show, $label_type, $type);
 					}
 					$statusProcessInDB = array('flag' => true, 'message' => $message);
 				}

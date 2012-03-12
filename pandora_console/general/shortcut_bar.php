@@ -43,15 +43,6 @@ if (is_ajax()){
 		}
 	}
 	
-	return;
-}
-$shortcut_state = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $config['id_user']));
-
-// If shortcut bar is disabled return to index.php
-if ($shortcut_state == 0)
-	return;
-
-if (is_ajax()) {
 	require_once("include/functions_events.php");
 	
 	
@@ -67,6 +58,7 @@ if (is_ajax()) {
 	
 	// Get critical events (realtime update)
 	if ($get_critical_events){
+
 		$own_info = get_user_info ($config['id_user']);
 		
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
@@ -116,10 +108,15 @@ if (is_ajax()) {
 			$shortcut_incidents = $result_incidents_update[0]['total_incidents'];
 		
 		echo $shortcut_incidents;
-	}
+	}	
 	
 	return;
 }
+$shortcut_state = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $config['id_user']));
+
+// If shortcut bar is disabled return to index.php
+if ($shortcut_state == 0)
+	return;
 
 if ($shortcut_state == 2) {
 	echo "<div id='shortcut_button' style='position: fixed; overflow: hidden; bottom: 0px; left: 0px; width: 185px; height: 40px; background-color: #FFFFFF; border: 1px solid #808080;  border-top-left-radius: 10px; border-top-right-radius: 10px;'>";

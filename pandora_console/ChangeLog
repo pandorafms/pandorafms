@@ -1,5 +1,9 @@
 2012-03-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* general/shortcut_bar.php: Fixed Ajax callbacks in this view.
+
+2012-03-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_ui.php: Skin is not used on logon error.
 	
 	Fixes: #3464062

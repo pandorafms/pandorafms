@@ -171,6 +171,46 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	if ($nick_in_db !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
+		$home_page ='';
+		if (isset($nick)) {
+			$user_info = users_get_user_by_id($nick);
+			$home_page = io_safe_output($user_info['section']);
+			$home_url = $user_info['data_section'];
+			if ($home_page != '') {
+				switch($home_page) {
+					case __('Event list'):
+						$_GET["sec"] = "eventos";
+						$_GET["sec2"] = "operation/events/events";
+						break;
+					case __('Group view'):
+						$_GET["sec"] = "estado";
+						break;
+					case __('Alert detail'):
+						$_GET["sec"] = "estado";
+						break;
+					case __('Tactical view'):
+						$_GET["sec"] = "estado";
+						break;
+					case __('Default'):
+						$_GET["sec"] = "general/logon_ok";
+						break;
+					case __('Dashboard'):
+						$_GET["sec"] = "dashboard";
+						break;
+					case __('Visual console'):
+						$_GET["sec"] = "visualc";
+						break;
+					case __('Other'):
+						$home_url = io_safe_output($home_url);
+						parse_str ($home_url, $res);
+						$_GET["sec"] = $res["sec"];
+						break;
+				}
+
+			} else {
+				$_GET["sec"] = "general/logon_ok";
+			}
+		}
 		db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $nick_in_db;
 		$config['id_user'] = $nick_in_db;

@@ -1,4 +1,8 @@
 2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* index.php: Fixed problem to display "sec" in menu.
+ 
+2012-03-12  Vanessa Gil  <vanessa.gil@artica.es>
 	* index.php
 	  operation/users/user_edit.php: Customize home screen. 
 

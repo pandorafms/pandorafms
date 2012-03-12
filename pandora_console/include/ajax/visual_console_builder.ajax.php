@@ -190,7 +190,7 @@ switch ($action) {
 			case 3:
 				//Unknown
 			default:
-				$colorStatus = "#0000ff";
+				$colorStatus = "#5A5AFF";
 				// Default is Grey (Other)
 				break;
 		}

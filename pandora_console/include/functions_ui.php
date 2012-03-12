@@ -937,10 +937,36 @@ function ui_process_page_head ($string, $bitfield) {
 		$config['css'] = array ();
 	}
 
-	$exists_css = false;
+	$login_ok = true;
+	if (! isset ($config['id_user']) && isset ($_GET["login"])) {
+		if (isset($_POST['nick']) and isset($_POST['pass'])) {
+			$nick = get_parameter_post ("nick"); //This is the variable with the login
+			$pass = get_parameter_post ("pass"); //This is the variable with the password
+			$nick = db_escape_string_sql($nick);
+			$pass = db_escape_string_sql($pass);
+
+			// process_user_login is a virtual function which should be defined in each auth file.
+			// It accepts username and password. The rest should be internal to the auth file.
+			// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
+			// process_user_login should return false in case of errors or invalid login, the nickname if correct
+			$nick_in_db = process_user_login ($nick, $pass);	
+			
+			if ($nick_in_db === false) {
+				$login_ok = false;
+			}
+		}
+	}
+
 	//First, if user has assigned a skin then try to use css files of skin subdirectory
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
-	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+	if (!$login_ok) {
+		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+			enterprise_hook('skins_cleanup');
+		}
+	}
+
+	$exists_css = false;
+	if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		//Checks if user's skin is available 
 		$exists_skin = enterprise_hook('skins_is_path_set');
 		if ($exists_skin){
@@ -1007,7 +1033,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
 			$output .= file_get_contents ($config["homedir"]."/".$filename);
 			$output .= "\n".'/* ]]> */</script>';
-		} else {
+		}
+		else {
 			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
 		}
 	}

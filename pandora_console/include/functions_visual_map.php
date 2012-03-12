@@ -204,7 +204,7 @@ function visual_map_print_item($layoutData) {
 			
 			$percentile = round($percentile);
 			
-			echo '<div id="' . $id . '" class="item percentile_item" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item percentile_item" style="color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo $text . '<br />';
 			
 			ob_start();
@@ -225,7 +225,7 @@ function visual_map_print_item($layoutData) {
 				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
-			echo '<div id="' . $id . '" class="item module_graph" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo $text . '<br />'; 
 			echo $img;
 			echo '</div>';

@@ -1,3 +1,9 @@
+2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: apply format to graph in the
+	data when show value in percentile item.
+
 2012-03-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/shortcut_bar.php: Fixed Ajax callbacks in this view.

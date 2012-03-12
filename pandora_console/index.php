@@ -184,26 +184,32 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 						break;
 					case __('Group view'):
 						$_GET["sec"] = "estado";
+						$_GET["sec2"] = "operation/agentes/group_view";
 						break;
 					case __('Alert detail'):
 						$_GET["sec"] = "estado";
+						$_GET["sec2"] = "operation/agentes/alerts_status";
 						break;
 					case __('Tactical view'):
 						$_GET["sec"] = "estado";
+						$_GET["sec2"] = "operation/agentes/tactical";
 						break;
 					case __('Default'):
 						$_GET["sec"] = "general/logon_ok";
 						break;
 					case __('Dashboard'):
 						$_GET["sec"] = "dashboard";
+						$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
 						break;
 					case __('Visual console'):
 						$_GET["sec"] = "visualc";
+						$_GET["sec2"] = "operation/visual_console/index";
 						break;
 					case __('Other'):
 						$home_url = io_safe_output($home_url);
 						parse_str ($home_url, $res);
 						$_GET["sec"] = $res["sec"];
+						$_GET["sec2"] = $res["sec2"];
 						break;
 				}
 
@@ -342,12 +348,15 @@ else {
 					break;
 				case __('Visual console'):
 					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
+					if (($home_url == '') || ($id_visualc == false)) {
+						$str = 'sec=visualc&sec2=operation/visual_console/index&refr=60';
+					} else 
 					$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
 					parse_str($str, $res);
 					foreach ($res as $key => $param) {
 						$_GET[$key] = $param;
 					}
-					require('operation/visual_console/render_view.php');
+					require($_GET["sec2"].'.php');
 					break;
 				case __('Other'):
 					$home_url = io_safe_output($home_url);

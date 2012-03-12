@@ -1,3 +1,9 @@
+2012-03-12  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* godmode/agentes/planned_downtime.php: Merged from
+	trunk. allow cancelling scheduled downtime once it has
+	started. Fixed bug #3474901: Planned downtime behavior.
+
 2012-03-08  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_visual_map.php

@@ -42,6 +42,7 @@ $first_update = (int) get_parameter ('first_update', 0);
 
 $create_downtime = (int) get_parameter ('create_downtime');
 $delete_downtime = (int) get_parameter ('delete_downtime');
+$stop_downtime = (int) get_parameter ('stop_downtime');
 $edit_downtime = (int) get_parameter ('edit_downtime');
 $update_downtime = (int) get_parameter ('update_downtime');
 $id_downtime = (int) get_parameter ('id_downtime',0);
@@ -55,6 +56,33 @@ $only_alerts = (bool) get_parameter ('only_alerts', 0);
 
 // Header
 ui_print_page_header (__("Planned Downtime") . ui_print_help_icon ('planned_downtime', true), "images/god1.png", false, "", true, "");
+
+// STOP DOWNTIME
+if ($stop_downtime == 1){
+	$sql = "SELECT * FROM tplanned_downtime where id=$id_downtime";
+	$result = db_get_row_sql($sql);
+	$name = $result['name'];
+	$description = $result['description'];
+	$date_from = $result['date_from'];
+	$executed = $result['executed'];
+	$id_group = $result['id_group'];
+	$only_alerts = $result['only_alerts'];
+	$date_stop = date ("Y-m-j",get_system_time ());
+	$time_stop = date ("h:iA",get_system_time ());
+	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
+
+	$values = array(
+		'name' => $name,
+		'description' => $description,
+		'date_from' => $date_from,
+		'date_to' => $date_time_stop,
+		'executed' => $executed,
+		'id_group' => $id_group,
+		'only_alerts' => $only_alerts
+		);
+
+	$result = db_process_sql_update('tplanned_downtime', $values, array ('id' => $id_downtime));
+}
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent == 1){
@@ -128,19 +156,14 @@ if ($create_downtime || $update_downtime) {
 		}
 		else if ($update_downtime) {
 			if (trim(io_safe_output($name)) != '') {
-				if (!$check) {
-					$values = array(
-						'name' => $name,
-						'description' => $description,
-						'date_from' => $datetime_from,
-						'date_to' => $datetime_to,
-						'id_group' => $id_group,
-						'only_alerts' => (int)$only_alerts);
-					$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
-				}
-				else {
-					echo "<h3 class='error'>".__('Each planned downtime must have a different name')."</h3>";
-				}
+				$values = array(
+					'name' => $name,
+					'description' => $description,
+					'date_from' => $datetime_from,
+					'date_to' => $datetime_to,
+					'id_group' => $id_group,
+					'only_alerts' => (int)$only_alerts);
+				$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 			}
 			else {
 				echo '<h3 class="error">'.__('Planned downtime must have a name').'</h3>';
@@ -159,7 +182,7 @@ if ($create_downtime || $update_downtime) {
 			if($create_downtime && $name && !$check) {
 				echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 			}
-			else if ($update_downtime && $name && !$check) {
+			else if ($update_downtime && $name) {
 				echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 			}
 		}
@@ -363,11 +386,13 @@ else {
 		$table->head[6] = __('Delete');
 		$table->head[7] = __('Update');
 		$table->head[8] = __('Running');
+		$table->head[9] = __('Stop downtime');
 		$table->align[2] = "center";		
 		$table->align[5] = "center";
 		$table->align[6] = "center";
 		$table->align[7] = "center";
 		$table->align[8] = "center";
+		$table->align[9] = "center";
 		
 		if(!empty($groups)) {
 			$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
@@ -412,7 +437,12 @@ else {
 					$data[8] = html_print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
 					$data[8] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
-
+				
+				if ($downtime["executed"] != 0) {
+					$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+					html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
+				}
+				
 				array_push ($table->data, $data);
 			}
 			html_print_table ($table);

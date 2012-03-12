@@ -97,7 +97,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$visual_console = get_parameter('visual_console', '');
 	
 	$section = io_safe_output($upd_info["section"]);
-	if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view')) {
+	if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view') || ($section == 'Default')) {
 		$upd_info["data_section"] = '';
 	} else if ($section == 'Dashboard') {
 		$upd_info["data_section"] = $dashboard;
@@ -242,7 +242,7 @@ echo html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 
 echo '</td></tr><tr><td class="datos">'.__('Home screen'). ui_print_help_tip(__('
 User can customize the home page. By default, will display \'Tactical view\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
-$values = array ('Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
+$values = array ('Default' => 'Default', 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
 	'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
 echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 echo "&nbsp;&nbsp;";
@@ -366,6 +366,11 @@ function show_data_section () {
 			break;
 		case <?php echo "'".__('Other')."'"; ?>:
 			$("#text-data_section").css("display", "");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'".__('Default')."'"; ?>:
+			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;

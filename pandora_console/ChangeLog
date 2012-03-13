@@ -1,5 +1,10 @@
 2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.item_editor.php: added button near to
+	the list custom graph to create or edit the custom grap selected.
+
+2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/reporting/graph_builder.main.php: fixed lost require PHP functions
 	file, that before the php crashed because it tryed to call to unknow
 	function.

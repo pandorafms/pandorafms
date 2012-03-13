@@ -511,7 +511,6 @@ html_print_input_hidden('id_item', $idItem);
 				if ($config['metaconsole'] == 1) {
 					$graphs = array();
 					$graphs = metaconsole_get_custom_graphs();
-					html_print_select ($graphs, 'id_custom_graph', $idCustomGraph, '', '--', 0);
 				}
 				else {
 					switch ($config["dbtype"]) {
@@ -523,8 +522,21 @@ html_print_input_hidden('id_item', $idItem);
 							$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
 							break;
 					}
-					html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, '', '--', 0);
 				}
+				html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, 'change_custom_graph();', '--', 0);
+					
+				$style_button_create_custom_graph = 'style="display: none;"';
+				$style_button_edit_custom_graph = '';
+				if (empty($idCustomGraph)) {
+					$style_button_create_custom_graph = '';
+					$style_button_edit_custom_graph = 'style="display: none;"';
+				}
+				echo "&nbsp;";
+				html_print_button(__("Create"), 'create_graph', false,
+					'create_custom_graph();', 'class="sub add" ' . $style_button_create_custom_graph);
+					
+				html_print_button(__("Edit"), 'edit_graph', false,
+					'edit_custom_graph();', 'class="sub config" ' . $style_button_edit_custom_graph);
 				?>
 			</td>
 		</tr>
@@ -847,7 +859,7 @@ function print_General_list($width, $action, $idItem = null) {
 }
 
 ?>
-<script>
+<script type="text/javascript">
 $(document).ready (function () {
 	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name');
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name');
@@ -862,6 +874,27 @@ $(document).ready (function () {
 		}
 	);
 });
+
+function create_custom_graph() {
+	window.location.href = "index.php?sec=greporting&sec2=godmode/reporting/graph_builder&create=Create graph";
+}
+
+function edit_custom_graph() {
+	var id_graph = $("#id_custom_graph").val();
+	window.location.href = "index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+}
+
+function change_custom_graph() {
+	//Hidden the button create or edit custom graph
+	if ($("#id_custom_graph").val() != "0") {
+		$("#button-create_graph").css("display", "none");
+		$("#button-edit_graph").css("display", "");
+	}
+	else {
+		$("#button-create_graph").css("display", "");
+		$("#button-edit_graph").css("display", "none");
+	}
+}
 
 function chooseSQLquery() {
 	var idCustom = $("#id_custom").val();

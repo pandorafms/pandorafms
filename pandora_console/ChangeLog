@@ -1,5 +1,11 @@
 2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/reporting/graph_builder.main.php: fixed lost require PHP functions
+	file, that before the php crashed because it tryed to call to unknow
+	function.
+
+2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.preview.php: fixed when the Pandora
 	have not enterprise part and show "-1" instead empty string.
 

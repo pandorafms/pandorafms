@@ -15,6 +15,8 @@
 
 global $config;
 
+require_once('include/functions_custom_graphs.php');
+
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
 	
@@ -63,7 +65,8 @@ if ($edit_graph) {
 	$id_group = $graphInTgraph['id_group'];
 	$width = $graphInTgraph['width'];
 	$height = $graphInTgraph['height'];
-}else {
+}
+else {
 	$id_agent = 0;
 	$id_module = 0;
 	$id_group = 0;

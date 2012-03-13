@@ -90,30 +90,45 @@ switch ($action) {
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		switch ($layoutData['type']) {
 			case SIMPLE_VALUE_MAX:
+				$unit = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				$unit = trim(io_safe_output($unit));
+				
 				$value = reporting_get_agentmodule_data_max ($layoutData['id_agente_modulo'], 86400, 0);
 				if ($value === false) {
 					$returnValue = __('Unknown');
 				}
 				else {
-					$returnValue = format_numeric ($value);
+					$returnValue = format_for_graph($returnValue, 2);
+					if (!empty($unit_text))
+						$returnValue .= " " . $unit_text;
 				}
 				break;
 			case SIMPLE_VALUE_MIN:
+				$unit = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				$unit = trim(io_safe_output($unit));
+				
 				$value = reporting_get_agentmodule_data_min ($layoutData['id_agente_modulo'], 86400, 0);
 				if ($value === false) {
 					$returnValue = __('Unknown');
 				}
 				else {
-					$returnValue = format_numeric ($value);
+					$returnValue = format_for_graph($returnValue, 2);
+					if (!empty($unit_text))
+						$returnValue .= " " . $unit_text;
 				}
 				break;
 			case SIMPLE_VALUE_AVG:
+				$unit = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				$unit = trim(io_safe_output($unit));
+				
 				$value = reporting_get_agentmodule_data_average ($layoutData['id_agente_modulo'], 86400, 0);
 				if ($value === false) {
 					$returnValue = __('Unknown');
 				}
 				else {
-					$returnValue = format_numeric ($value);
+					$returnValue = format_for_graph($returnValue, 2);
+					if (!empty($unit_text))
+						$returnValue .= " " . $unit_text;
 				}
 				break;
 			case PERCENTILE_BAR:

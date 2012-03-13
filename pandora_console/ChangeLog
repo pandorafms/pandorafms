@@ -1,3 +1,10 @@
+2012-03-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php: Removed legend in 
+	graphic_module_events function due to attachment overload.
+	* include/functions_agents.php: Non-init count was bad because 
+	normal modules are counted too.
+
 2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: refixed again, removed the old method

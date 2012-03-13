@@ -100,7 +100,10 @@ $table->data[1][0] = __('Date');
 $table->data[1][1] = html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 $table->data[1][1] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 $table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
-$table->data[1][1] .= enterprise_hook('reporting_print_button_PDF', array($id_report));
+$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
+if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
+	$table->data[1][1] .= $html_enterprise;
+}
 $table->data[1][2] = __('Set initial date of all reports') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 $table->data[1][3] = '<b>' . __('Date') . '</b>' . ui_print_help_tip(__('This is the begin date for all reports'), true);
 $table->data[1][4] = html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';

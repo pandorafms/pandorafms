@@ -1,5 +1,17 @@
 2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.preview.php: fixed the calendar js
+	show, fixed the double update button and added the enterprise posibility to
+	generate PDF from this report.
+	
+	* include/javascript/pandora.js: fixed the re-enable the module list widget
+	when sometimes start as disabled.
+
+	* include/functions_reporting.php, operation/reporting/reporting_viewer.php:
+	cleaned source code style.
+
+2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php: fixed the show value in the
 	item simple value, now show formated and with units.

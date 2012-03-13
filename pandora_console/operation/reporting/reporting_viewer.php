@@ -69,7 +69,8 @@ if ($config["pure"] == 0) {
 	$options['screen'] = "<a href='$url&pure=1'>"
 		. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
-} else {
+}
+else {
 	$options['screen'] = "<a href='$url&pure=0'>"
 		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";
@@ -89,14 +90,14 @@ $table->style = array ();
 $table->style[0] = 'width: 60px;';
 
 // Set initial conditions for these controls, later will be modified by javascript
-if (!$enable_init_date){
+if (!$enable_init_date) {
 	$table->style[0] .= 'font-weight: bold; display: none';
 	$table->style[1] = 'display: none';
 	$table->style[2] = 'display: ""';
-	$table->style[3] .= 'display: none';
+	$table->style[3] = 'display: none';
 	//~ $table->style[5] = 'width: 380.583px';
 }
-else{
+else {
 	$table->style[0] .= 'font-weight: bold; display: ""';
 	$table->style[1] = 'display: ""';
 	$table->style[2] = 'display: none';
@@ -112,7 +113,8 @@ $table->data = array ();
 $table->data[0][0] = html_print_image("images/reporting.png", true, array("width" => "32", "height" => "32")); 
 if ($report['description'] != '') {
 	$table->data[0][1] = $report['description'];
-} else {
+}
+else {
 	$table->data[0][1] = $report['name'];
 }
 

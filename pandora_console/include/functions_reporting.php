@@ -2391,7 +2391,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
-
+			
 			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
 				$data_desc = array();

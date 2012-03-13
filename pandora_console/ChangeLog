@@ -1,3 +1,10 @@
+2012-03-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php: Non-init modules count was bad 
+	because normal module are counted also.
+	
+	Merged bugfix from trunk.
+
 2012-03-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/menu.php: revert changes. I am sorry.

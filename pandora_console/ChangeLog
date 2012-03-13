@@ -1,3 +1,11 @@
+2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: fixed the show value in the
+	item simple value, now show formated and with units.
+
+	Merged from the trunk.
+
 2012-03-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Non-init modules count was bad 

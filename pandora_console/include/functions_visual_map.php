@@ -223,27 +223,41 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
+			$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+			$unit_text = trim(io_safe_output($unit_text));
+			
 			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text;
 			switch ($type){
 				case SIMPLE_VALUE:
-					echo ' <strong>' . db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
+					$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module);
+					$value = format_for_graph($value, 2);
+					if (!empty($unit_text))
+						$value .= " " . $unit_text;
+					echo ' <strong>' . $value . '</strong>';
 					break;
 				case SIMPLE_VALUE_MAX:	
 					$value = reporting_get_agentmodule_data_max ($id_module, 86400, 0);
 					if ($value === false) {
 						$value = __('Unknown');
-					} else {
-						$value = format_numeric ($value);
-					}				
+					}
+					else {
+						$value = format_for_graph($value, 2);
+						if (!empty($unit_text))
+							$value .= " " . $unit_text;
+					}
+					
 					echo ' <strong> ' . $value . '</strong>';
 					break;
 				case SIMPLE_VALUE_MIN:
 					$value = reporting_get_agentmodule_data_min ($id_module, 86400, 0);
 					if ($value === false) {
 						$value = __('Unknown');
-					} else {
-						$value = format_numeric ($value);
+					}
+					else {
+						$value = format_for_graph($value, 2);
+						if (!empty($unit_text))
+							$value .= " " . $unit_text;
 					}					
 					echo ' <strong> ' . $value . '</strong>';
 					break;
@@ -251,8 +265,11 @@ function visual_map_print_item($layoutData) {
 					$value = reporting_get_agentmodule_data_average ($id_module, 86400, 0);
 					if ($value === false) {
 						$value = __('Unknown');
-					} else {
-						$value = format_numeric ($value);
+					}
+					else {
+						$value = format_for_graph($value, 2);
+						if (!empty($unit_text))
+							$value .= " " . $unit_text;
 					}				
 					echo ' <strong> ' . $value . '</strong>';
 					break;
@@ -953,6 +970,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// ****************************************************************
 					// SIMPLE DATA VALUE (type = 2)
 					// ****************************************************************
+					$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+					$unit_text = trim(io_safe_output($unit_text));
+					
 					if ($resizedMap)
 						echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
@@ -989,14 +1009,21 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					//TODO: change interface to add a period parameter, now is set to 1 day
 					switch ($layout_data['type']){
 						case 2:
-							echo db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+							$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+							$value = format_for_graph($value, 2);
+							if (!empty($unit_text))
+								$value .= " " . $unit_text;
+							echo $value;
 							break;
 						case 6:
 							$value = reporting_get_agentmodule_data_max ($layout_data['id_agente_modulo'], 86400, 0);
 							if ($value === false) {
 								$value = __('Unknown');
-							} else {
-								$value = format_numeric ($value);
+							}
+							else {
+								$value = format_for_graph($value, 2);
+								if (!empty($unit_text))
+									$value .= " " . $unit_text;
 							}
 							echo $value;
 							break;
@@ -1004,18 +1031,24 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							$value = reporting_get_agentmodule_data_min ($layout_data['id_agente_modulo'], 86400, 0);
 							if ($value === false) {
 								$value = __('Unknown');
-							} else {
-								$value = format_numeric ($value);
-							}						
+							}
+							else {
+								$value = format_for_graph($value, 2);
+								if (!empty($unit_text))
+									$value .= " " . $unit_text;
+							}
 							echo $value;
 							break;
 						case 8:
 							$value = reporting_get_agentmodule_data_average($layout_data['id_agente_modulo'], 86400, 0);
 							if ($value === false) {
 								$value = __('Unknown');
-							} else {
-								$value = format_numeric ($value);
-							}						
+							}
+							else {
+								$value = format_for_graph($value, 2);
+								if (!empty($unit_text))
+									$value .= " " . $unit_text;
+							}
 							echo $value;
 							break;
 					}	

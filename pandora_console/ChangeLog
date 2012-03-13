@@ -1,4 +1,18 @@
 2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.preview.php: fixed when the Pandora
+	have not enterprise part and show "-1" instead empty string.
+
+	* operation/reporting/reporting_viewer.php: added the enterprise posibility
+	to generate PDF from this report. And added the posibility to go to edit the
+	report from this page. Finally fixed the hidden first row of form, now show
+	again the check to select method to calculate and the title and other
+	things.
+
+	* include/functions_ui.php: fixed into the function "ui_print_page_header"
+	when the header have not any active tab.
+
+2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.preview.php: fixed the calendar js
 	show, fixed the double update button and added the enterprise posibility to

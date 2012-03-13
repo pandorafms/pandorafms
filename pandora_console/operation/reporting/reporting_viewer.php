@@ -41,6 +41,8 @@ if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 require_once ('include/functions_reporting.php');
 require_once ('include/functions_groups.php');
 
+enterprise_include("include/functions_reporting.php");
+
 // Check if the report is a private report.
 if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin ($config['id_user']))) {
 	include ("general/noaccess.php");
@@ -65,6 +67,10 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
 
+$options['setup'] = "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report=$id_report'>"
+. html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
+. "</a>";
+
 if ($config["pure"] == 0) {
 	$options['screen'] = "<a href='$url&pure=1'>"
 		. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
@@ -76,7 +82,8 @@ else {
 		. "</a>";
 }
 
-ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"], "images/reporting.png", false, "", false, $options);
+ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"],
+	"images/reporting.png", false, "", false, $options);
 
 if ($enable_init_date) {
 	if ($datetime_init > $datetime) {
@@ -119,6 +126,10 @@ else {
 }
 
 $table->data[0][3] = '<span style="text-align:right;width:100%">'.__('Set initial date of all reports') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true).'</span>';
+$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
+if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
+	$table->data[0][3] .= $html_enterprise;
+}
 
 $table->data[1][0] = '<b>' . __('From') . ':</b>';
 $table->data[1][1] = html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
@@ -144,9 +155,6 @@ echo '</div>';
 /* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
 
-ui_require_css_file ('datepicker');
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('ui.datepicker');
 ui_require_jquery_file ('timeentry');
 ?>
 <script language="javascript" type="text/javascript">
@@ -216,9 +224,11 @@ foreach ($contents as $content) {
 }
 ?>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 
-$(document).ready (function () {	
+$(document).ready (function () {
+	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
+	
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
 	$("#text-date").datepicker ();

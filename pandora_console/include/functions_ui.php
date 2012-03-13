@@ -1821,8 +1821,10 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 			else {
 				if (is_array($option)) {
 					$class = 'nomn';
-					if ($option['active']) {
-						$class = 'nomn_high';
+					if (isset($option['active'])) {
+						if ($option['active']) {
+							$class = 'nomn_high';
+						}
 					}
 					
 					$buffer .= '<li class="' . $class . '">';

@@ -2892,35 +2892,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	}
 	else {
 		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-
-		// Draw legend
-		echo "<br>";
-	
-		if(!$config['flash_charts']) {
-			// Draw legend
-			echo "<br>";
-		
-			//echo "<div id='legend' style='overflow:hidden;'";
-			$count = 0;
-			foreach ($legend as $name => $value) {
-				$file_name = string2image(ui_print_truncate_text($value, 15, false, true, false, '...'), 115, 13, 2, 270, '#FFFFFF', '#696969', 4, 0);
-				
-				if (($step >= 1) && ($count++ % $step == 0)) {
-					if ($zoom == 1)
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-					elseif ($zoom == 2)
-						echo "&nbsp;&nbsp;";
-					elseif ($zoom == 3)
-							echo "&nbsp;&nbsp;";
-					elseif ($zoom == 4)
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";	
-						
-					echo html_print_image($file_name, true, array('title' => $value));
-				}
-			}
-		}
 	}
-	//echo "</div>";	
 }
 
 ?>

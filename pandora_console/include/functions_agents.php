@@ -400,7 +400,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			// Not init
 			case 5:	
 				$status_sql = "id_agente NOT IN ($warning_modules) &&
-				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules)";
+				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules) && id_agente NOT IN ($normal_modules)";
 				break;
 
 		}

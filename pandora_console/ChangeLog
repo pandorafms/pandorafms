@@ -1,5 +1,19 @@
 2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/reporting/reporting_viewer.php,
+	godmode/reporting/reporting_builder.preview.php: added the enterprise
+	posibility to generate PDF from this report. And added the posibility to go
+	to edit the report from this page. Finally fixed the hidden first row of
+	form, now show again the check to select method to calculate and the title
+	and other things.
+
+	* godmode/reporting/reporting_builder.item_editor.php: added button near to
+	the list custom graph to create or edit the custom grap selected.
+	
+	Merged from the trunk.
+
+2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php: fixed the show value in the
 	item simple value, now show formated and with units.

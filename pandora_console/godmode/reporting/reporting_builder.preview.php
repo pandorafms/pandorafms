@@ -47,7 +47,7 @@ $datetime = strtotime ($date.' '.$time);
 $report["datetime"] = $datetime;
 
 // Calculations in order to modify init date of the report
-$date_init_less = strtotime(date ('Y-m-j')) - 86400;
+$date_init_less = strtotime(date ('Y-m-j')) - 86400; //TODO: Ohh! a magic number like as pink unicorn.
 $date_init = get_parameter('date_init', date ('Y-m-j', $date_init_less));
 $time_init = get_parameter('time_init', date ('h:iA'));
 $datetime_init = strtotime ($date_init.' '.$time_init);
@@ -61,7 +61,8 @@ if ($config["pure"] == 0) {
 	$options[] = "<a href='$url&pure=1'>"
 		. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
-} else {
+}
+else {
 	$options[] = "<a href='$url&pure=0'>"
 		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";
@@ -90,7 +91,8 @@ $table->data = array ();
 $table->data[0][0] = html_print_image("images/reporting.png", true, array("width" => '32', "height" => '32'));
 if ($report['description'] != '') {
 	$table->data[0][1] = $report['description'];
-} else {
+}
+else {
 	$table->data[0][1] = $report['name'];
 }
 
@@ -98,6 +100,10 @@ $table->data[1][0] = __('Date');
 $table->data[1][1] = html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 $table->data[1][1] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 $table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
+$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
+if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
+	$table->data[1][1] .= $html_enterprise;
+}
 $table->data[1][2] = __('Set initial date of all reports') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 $table->data[1][3] = '<b>' . __('Date') . '</b>' . ui_print_help_tip(__('This is the begin date for all reports'), true);
 $table->data[1][4] = html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
@@ -138,14 +144,17 @@ $(document).ready (function () {
 	/* Show/hide begin date reports controls */
 	$("#checkbox-enable_init_date").click(function() {
 		flag = $("#checkbox-enable_init_date").is(':checked');
-		if (flag == true){
+		if (flag == true) {
 			$("#table1-1-3").css("display", "");
 			$("#table1-1-4").css("display", "");
 			$("#table1-1-5").css("display", "none");
-		}else{
+			$("#submit-date_submit").css("display", "none");
+		}
+		else {
 			$("#table1-1-3").css("display", "none");
 			$("#table1-1-4").css("display", "none");
 			$("#table1-1-5").css("display", "");
+			$("#submit-date_submit").css("display", "");
 			$("#table1-1-5").css("width", "380.583px");
 		}
 	});
@@ -156,10 +165,14 @@ $(document).ready (function () {
 
 if ($datetime === false || $datetime == -1) {
 	echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
+	
 	return;
 }
 
-// TODO: Evaluate if it's better to render blocks when are calculated (enabling realtime flush) or if it's better to wait report to be finished before showing anything (this could break the execution by overflowing the running PHP memory on HUGE reports).
+// TODO: Evaluate if it's better to render blocks when are calculated
+// (enabling realtime flush) or if it's better to wait report to be finished
+// before showing anything (this could break the execution by overflowing the
+// running PHP memory on HUGE reports).
 
 
 $table->size = array ();
@@ -183,7 +196,8 @@ switch ($config["dbtype"]) {
 
 if ($contents === false) {
 	return;
-} else {
+}
+else {
 	foreach($contents as $content) {
 		$id_report = $content['id_rc'];
 		switch ($content['type']) {
@@ -226,13 +240,13 @@ foreach ($contents as $content) {
 	$table->rowstyle = array ();
 	
 	// Calculate new inteval for all reports
-	if ($enable_init_date){
+	if ($enable_init_date) {
 		$datetime_init = strtotime ($date_init.' '.$time_init);
 		$new_interval = $report['datetime'] - $datetime_init; 		
 		$content['period'] = $new_interval;
-	}	
+	}
 	
-    reporting_render_report_html_item ($content, $table, $report);
+	reporting_render_report_html_item ($content, $table, $report);
 	echo '<div style = "overflow:auto;">';
 	html_print_table ($table);
 	echo "</div>";

@@ -1263,6 +1263,27 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 }
 
 /**
+ * Copy from:
+ * http://stackoverflow.com/questions/1605844/imagettfbbox-returns-wrong-dimensions-when-using-space-characters-inside-text
+ */
+function calculateTextBox($font_size, $font_angle, $font_file, $text) {
+	$box = imagettfbbox($font_size, $font_angle, $font_file, $text);
+	
+	$min_x = min(array($box[0], $box[2], $box[4], $box[6]));
+	$max_x = max(array($box[0], $box[2], $box[4], $box[6]));
+	$min_y = min(array($box[1], $box[3], $box[5], $box[7]));
+	$max_y = max(array($box[1], $box[3], $box[5], $box[7]));
+	
+	return array(
+		'left' => ($min_x >= -1) ? -abs($min_x + 1) : abs($min_x + 2),
+		'top' => abs($min_y),
+		'width' => $max_x - $min_x,
+		'height' => $max_y - $min_y,
+		'box' => $box
+	);
+}
+
+/**
  * Convert a string to an image
  * 
  * @param string $ip_target The target address.
@@ -1270,17 +1291,32 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
  * @return array SNMP result.
  */
 function string2image($string, $width, $height, $fontsize = 3, 
-			$degrees = '0', $bgcolor = '#FFFFFF', $textcolor = '#000000', 
-			$padding_left = 4, $padding_top = 1, $home_url = '') {
-				
+	$degrees = '0', $bgcolor = '#FFFFFF', $textcolor = '#000000', 
+	$padding_left = 4, $padding_top = 1, $home_url = '') {
+	
 	global $config;
-				
+	
+	//Set the size of image from the size of text
+	if ($width === false) {
+		$size = calculateTextBox($fontsize, 0, $config['fontpath'], $string);
+		
+		$fix_value = 1 * $fontsize; //Fix the imagettfbbox cut the tail of "p" character.
+		
+		$width = $size['width'] + $padding_left + $fix_value;
+		$height = $size['height'] + $padding_top + $fix_value;
+		
+		$padding_top = $padding_top + $fix_value;
+	}
+	
 	$im = ImageCreate($width,$height);
 	$bgrgb = html_html2rgb($bgcolor);
 	$bgc = ImageColorAllocate($im,$bgrgb[0],$bgrgb[1],$bgrgb[2]);
 	// Set the string
 	$textrgb = html_html2rgb($textcolor);
-	imagestring($im, $fontsize, $padding_left, $padding_top, $string, ImageColorAllocate($im,$textrgb[0],$textrgb[1],$textrgb[2]));
+	imagettftext ($im, $fontsize, 0, $padding_left, $height - $padding_top,
+		ImageColorAllocate($im,$textrgb[0],$textrgb[1],$textrgb[2]),
+		$config['fontpath'], $string);
+	//imagestring($im, $fontsize, $padding_left, $padding_top, $string, ImageColorAllocate($im,$textrgb[0],$textrgb[1],$textrgb[2]));
 	// Rotates the image
 	$rotated = imagerotate($im, $degrees, 0) ; 
 	

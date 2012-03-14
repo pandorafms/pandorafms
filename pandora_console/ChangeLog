@@ -1,5 +1,15 @@
 2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: fixes and changes for to show better the
+	html reports.
+
+	* include/functions_groups.php: cleaned source code. 
+
+	* include/functions.php: fixed and changed the function "string2image" to
+	create the text with any size and use ttf font.
+
+2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/graphs/functions_pchart.php: fixed into function
 	"pch_slicebar_graph" unset var $antialias.
 

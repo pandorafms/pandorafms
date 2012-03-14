@@ -1,5 +1,9 @@
 2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* ChangeLog: added lost lines.
+
+2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fixes and changes for to show better the
 	html reports.
 

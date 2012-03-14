@@ -81,6 +81,10 @@ if ($add_graph) {
 
 	if (trim($name) != "") {
 		$id_graph = db_process_sql_insert('tgraph', $values);
+		if ($id_graph !== false)
+			db_pandora_audit("Report management", "Create graph #$id_graph");
+		else
+			db_pandora_audit("Report management", "Fail try to create graph");
 	} else {
 		$id_graph = false;
 	}
@@ -103,9 +107,14 @@ if ($update_graph) {
 
 	if (trim($name) != "") {
 
-	$success = db_process_sql_update('tgraph', 
-		array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
-		array('id_graph' => $id_graph));
+		$success = db_process_sql_update('tgraph', 
+			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
+			array('id_graph' => $id_graph));
+		if ($success !== false)
+			db_pandora_audit("Report management", "Update graph #$id_graph");
+		else
+			db_pandora_audit("Report management", "Fail try to update graph #$id_graph");
+			
 	} else {
 		$success = false;
 	}

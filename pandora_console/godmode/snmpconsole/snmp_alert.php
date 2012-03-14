@@ -85,9 +85,11 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 			$result = db_process_sql_insert('talert_snmp', $values);
 		
 		if (!$result) {
+			db_pandora_audit("SNMP management", "Fail try to create snmp alert");
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
 		}
 		else {
+			db_pandora_audit("SNMP management", "Create snmp alert #$result");
 			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		}
 		
@@ -104,8 +106,10 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 		$result = db_process_sql ($sql);
 
 		if (!$result) {
+			db_pandora_audit("SNMP management", "Fail try to update snmp alert #$id_as");
 			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
 		} else {
+			db_pandora_audit("SNMP management", "Update snmp alert #$id_as");
 			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 		}
 	}
@@ -174,9 +178,11 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 	
 	$result = db_process_sql_delete('talert_snmp', array('id_as' => $alert_delete));
 	if ($result === false) {
+		db_pandora_audit("SNMP management", "Fail try to delete snmp alert #$alert_delete");
 		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
 	}
 	else {
+		db_pandora_audit("SNMP management", "Delete snmp alert #$alert_delete");
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	}
 }

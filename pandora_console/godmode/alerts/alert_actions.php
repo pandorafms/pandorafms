@@ -134,7 +134,7 @@ if ($create_action) {
 	}
 		
 	if ($result) {
-		db_pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
+		db_pandora_audit("Command management", "Create alert action #" . $result, false, false, $info);
 	}
 	else {
 		db_pandora_audit("Command management", "Fail try to create alert action", false, false);
@@ -195,10 +195,10 @@ if ($update_action) {
 	}
 
 	if ($result) {
-		db_pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));
+		db_pandora_audit("Command management", "Update alert action #" . $id, false, false, json_encode($values));
 	}
 	else {
-		db_pandora_audit("Command management", "Fail try to update alert action " . $id, false, false, json_encode($values));
+		db_pandora_audit("Command management", "Fail try to update alert action #" . $id, false, false, json_encode($values));
 	}
 	
 	ui_print_result_message ($result,

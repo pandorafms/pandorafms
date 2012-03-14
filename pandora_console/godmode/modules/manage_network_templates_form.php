@@ -82,7 +82,13 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 				'name' => $name,
 				'description' => $description);
 			$result = db_process_sql_update('tnetwork_profile', $values, array('id_np' => $id_np));
-		
+			
+			if ($result) {
+				db_pandora_audit("Module management", "Update module template #$id_np");
+			} else {
+				db_pandora_audit("Module management", "Fail try to update module template #$id_np");
+			}
+	
 			ui_print_result_message ($result !== false,
 				__('Successfully updated network profile'),
 				__('Error updating network profile'));
@@ -91,6 +97,12 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 			//Profile doesn't exist
 			$values = array('name' => $name, 'description' => $description);
 			$result = db_process_sql_insert('tnetwork_profile', $values);
+			
+			if ($result) {
+				db_pandora_audit("Module management", "Create module template #$result");
+			} else {
+				db_pandora_audit("Module management", "Fail try to create module template");
+			}
 			
 			ui_print_result_message ($result,
 				__('Successfully added network profile'),

@@ -81,8 +81,12 @@ function config_update_config () {
 		return false;
 	
 	$update_config = (bool) get_parameter ('update_config');
-	if (! $update_config)
+	
+	if ($update_config) {
+		db_pandora_audit("Setup", "Setup has changed");
+	} else {
 		return false;
+	}
 	
 	$style = (string) get_parameter ('style', $config["style"]);
 	if ($style != $config['style'])

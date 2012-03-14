@@ -552,9 +552,9 @@ function groups_get_status ($id_group = 0) {
  */
 function groups_get_name ($id_group, $returnAllGroup = false) {
 	if($id_group > 0)
-	return (string) db_get_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
+		return (string) db_get_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 	elseif($returnAllGroup)
-	return "All";
+		return "All";
 }
 
 /**

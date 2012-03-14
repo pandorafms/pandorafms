@@ -134,8 +134,7 @@ if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 $table->data[1][0] = '<b>' . __('From') . ':</b>';
 $table->data[1][1] = html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
 $table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 7, 7, true). ' ';
-//~ $table->data[1][1] .= html_print_submit_button (__('Update'), 'date_submit_init', false, 'class="sub next"', true);	
-$table->data[1][2] = '<b>' . __('Day before') . ':</b>';
+$table->data[1][2] = '<b>' . __('Interval before') . ':</b>';
 $table->data[1][3] = '<b>' . __('to') . ':</b>';
 $table->data[1][4] = html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 $table->data[1][4] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';

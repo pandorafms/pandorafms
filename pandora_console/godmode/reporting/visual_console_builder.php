@@ -65,10 +65,12 @@ switch ($activeTab) {
 						if($values['name'] != "" && $values['background'])
 							$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
 						if ($result !== false && $values['background']) {
+							db_pandora_audit( "Visual console builder", "Update visual console #$idVisualConsole");
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully update.').'</h3>');
 						}
 						else {
+							db_pandora_audit( "Visual console builder", "Fail update visual console #$idVisualConsole");
 							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be update.').'</h3>');
 						}
 						break;
@@ -80,10 +82,12 @@ switch ($activeTab) {
 							$idVisualConsole = false;
 							
 						if ($idVisualConsole !== false) {
+							db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
 						}
 						else {
+							db_pandora_audit( "Visual console builder", "Fail try to create visual console");
 							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be created.').'</h3>');
 						}
 						break;

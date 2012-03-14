@@ -40,6 +40,13 @@ if ($delete_profile) { // if delete
 	$id = (int) get_parameter ('delete_profile');
 	
 	$result = network_profiles_delete_network_profile ($id);
+	
+	if ($result) {
+		db_pandora_audit("Module management", "Delete module template #$id");
+	} else {
+		db_pandora_audit("Module management", "Fail try to delete module template #$id");
+	}
+	
 	ui_print_result_message ($result,
 		__('Template successfully deleted'),
 		__('Error deleting template'));
@@ -61,6 +68,13 @@ if ($multiple_delete) {
 	
 	if ($result !== false) {
 		db_process_sql_commit();
+	}
+	
+	$str_ids = implode (',', $ids);
+	if ($result) {
+		db_pandora_audit("Module management", "Multiple delete module template: $str_ids");
+	} else {
+		db_pandora_audit("Module management", "Fail try to delete module template: $str_ids");
 	}
 		
 	ui_print_result_message ($result,

@@ -1,3 +1,24 @@
+2012-03-14  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/alerts/alert_actions.php
+	  godmode/alerts/alert_commands.php
+  	  godmode/alerts/alert_templates.php
+	  godmode/alerts/configure_alert_template.php
+	  godmode/modules/manage_nc_groups.php
+	  godmode/modules/manage_netwok_components.php
+	  godmode/modules/manage_network_templates.php
+	  godmode/modules/manage_network_templates_form.php
+	  godmode/reporting/graph_builder.php
+	  godmode/reporting/graphs.php
+	  godmode/reporting/map_builder.php
+	  godmode/reporting/reporting_builder.php
+	  godmode/reporting/visual_console_builder.php
+	  godmode/snmpconsole/snmp_alert.php
+	  godmode/tag/edit_tag.php
+	  godmode/tag/tag.php
+	  include/functions_config.php
+	  include/functions_events.php: Extended system audit log.
+
 2012-03-14  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/reporting/reporting_viewer.php: Changed a bad

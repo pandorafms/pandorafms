@@ -62,7 +62,7 @@ if ($create_command) {
 	}
 
 	if ($result) {
-		db_pandora_audit("Command management", "Create alert command " . $result, false, false, $info);
+		db_pandora_audit("Command management", "Create alert command #" . $result, false, false, $info);
 	}
 	else {
 		db_pandora_audit("Command management", "Fail try to create alert command", false, false);
@@ -100,10 +100,10 @@ if ($update_command) {
 	}
 
 	if ($result) {
-		db_pandora_audit("Command management", "Create alert command " . $id, false, false, $info);
+		db_pandora_audit("Command management", "Update alert command #" . $id, false, false, $info);
 	}
 	else {
-		db_pandora_audit("Command management", "Fail to create alert command " . $id, false, false);
+		db_pandora_audit("Command management", "Fail to update alert command #" . $id, false, false);
 	}
 	
 	ui_print_result_message ($result,
@@ -125,10 +125,10 @@ if ($delete_command) {
 	$result = alerts_delete_alert_command ($id);
 	
 	if ($result) {
-		db_pandora_audit("Command management", "Delete alert command " . $id);
+		db_pandora_audit("Command management", "Delete alert command #" . $id);
 	}
 	else {
-		db_pandora_audit("Command management", "Fail to delete alert command " . $id);
+		db_pandora_audit("Command management", "Fail try to delete alert command #" . $id);
 	}
 	
 	ui_print_result_message ($result,

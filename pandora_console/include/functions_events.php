@@ -216,9 +216,11 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		}	
 	}
 	
+/*
 	foreach ($id_event as $event) {
 		db_pandora_audit("Event validated", "Validated event #".$event);
 	}
+*/
 	db_process_sql_commit ();
 	return true;
 }

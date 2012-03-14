@@ -27,10 +27,12 @@ if ($delete_layout) {
 	db_process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));
 	$result = db_process_sql_delete ('tlayout', array ('id' => $id_layout));
 	if ($result) {
+		db_pandora_audit( "Visual console builder", "Delete visual console #$id_layout");
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 		db_clean_cache();
 	}
 	else {
+		db_pandora_audit( "Visual console builder", "Fail try to delete visual console #$id_layout");
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	}
 	$id_layout = 0;

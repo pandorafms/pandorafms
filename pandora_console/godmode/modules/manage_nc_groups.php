@@ -50,6 +50,11 @@ if ($create) {
 		$result = db_process_sql_insert ('tnetwork_component_group',
 			array ('name' => $name,
 				'parent' => $parent));
+		if ($result) {
+			db_pandora_audit( "Module management", "Create component group #$result");
+		} else {
+			db_pandora_audit( "Module management", "Fail try to create component group");
+		}
 		ui_print_result_message ($result,
 			__('Successfully created'),
 			__('Could not be created'));
@@ -67,6 +72,12 @@ if ($update) {
 			array ('name' => $name,
 				'parent' => $parent),
 			array ('id_sg' => $id));
+		if ($result) {
+			db_pandora_audit( "Module management", "Update component group #$id");
+		} else {
+			db_pandora_audit( "Module management", "Fail try to update component group #$id");
+		}
+		
 		ui_print_result_message ($result,
 			__('Successfully updated'),
 			__('Not updated. Error updating data'));
@@ -82,6 +93,12 @@ if ($delete) {
 		
 	if (($result !== false) and ($result1 !== false)) $result = true;
 	else $result = false;
+	
+	if ($result) {
+			db_pandora_audit( "Module management", "Delete component group #$id");
+		} else {
+			db_pandora_audit( "Module management", "Fail try to delete component group #$id");
+		}
 		
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -111,7 +128,13 @@ if ($multiple_delete) {
 	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
+	$str_ids = implode (',', $ids);
+	if ($result) {
+		db_pandora_audit( "Module management", "Multiple delete component group: $str_ids");
+	} else {
+		db_pandora_audit( "Module management", "Fail try to delete component group: $str_ids");
+	}	
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
 		__('Not deleted. Error deleting multiple data'));

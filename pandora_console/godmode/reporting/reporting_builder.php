@@ -67,6 +67,11 @@ switch ($action) {
 		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
+			if ($result !== false)
+				db_pandora_audit("Report management", "Delete report #$idReport");
+			else
+				db_pandora_audit("Report management", "Fail try to delete report #$idReport");
+				
 			ui_print_result_message ($result,
 				__('Successfully deleted'),
 				__('Could not be deleted'));
@@ -174,6 +179,10 @@ switch ($action) {
 				if ($action == 'update') {
 					if ($reportName != "" && $idGroupReport != ""){
 						$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
+						if ($resultOperationDB !== false)
+							db_pandora_audit( "Report management", "Update report #$idReport");
+						else
+							db_pandora_audit( "Report management", "Fail try to update report #$idReport");
 					}
 					else {
 						$resultOperationDB = false;
@@ -182,6 +191,10 @@ switch ($action) {
 				else if ($action == 'save') {
 					if($reportName != "" && $idGroupReport != "") {
 						$idOrResult = db_process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
+						if ($idOrResult !== false)
+							db_pandora_audit( "Report management", "Create report #$idOrResult");
+						else
+							db_pandora_audit( "Report management", "Fail try to create report");
 					}
 					else {
 						$idOrResult = false;

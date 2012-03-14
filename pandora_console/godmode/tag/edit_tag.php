@@ -64,8 +64,10 @@ if ($update_tag && $id_tag != 0) {
 		$result = tags_update_tag($values, 'id_tag = ' . $id_tag);
 	
 	if ($result === false) {
+		db_pandora_audit("Tag management", "Fail try to update tag #$id_tag");
 		echo '<h3 class="error">'.__('Error updating tag').'</h3>';
 	} else {
+		db_pandora_audit("Tag management", "Update tag #$id_tag");
 		echo '<h3 class="suc">'.__('Successfully updated tag').'</h3>';
 	}
 }
@@ -89,10 +91,12 @@ if ($create_tag) {
 		$return_create = tags_create_tag ($data);
 
 	if ($return_create === false) {
+		db_pandora_audit("Tag management", "Fail try to create tag");
 		echo '<h3 class="error">'.__('Error creating tag').'</h3>';
 		$action = "new";
 	// If create action ends successfully then current action is update
 	} else {
+		db_pandora_audit("Tag management", "Create tag #$return_create");
 		echo '<h3 class="suc">'.__('Successfully created tag').'</h3>';
 		$id_tag = $return_create;
 		$action = "update";

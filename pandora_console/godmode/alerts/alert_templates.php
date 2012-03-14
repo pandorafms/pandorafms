@@ -177,10 +177,10 @@ if ($delete_template) {
 	$result = alerts_delete_alert_template ($id);
 	
 	if ($result) {
-		db_pandora_audit("Template alert management", "Delete alert template " . $id);
+		db_pandora_audit("Template alert management", "Delete alert template #" . $id);
 	}
 	else {
-		db_pandora_audit("Template alert management", "Fail try to delete alert template " . $id);
+		db_pandora_audit("Template alert management", "Fail try to delete alert template #" . $id);
 	}
 	
 	ui_print_result_message ($result,

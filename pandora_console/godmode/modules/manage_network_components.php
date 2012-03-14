@@ -144,10 +144,12 @@ if ($create_component) {
 	$id = '';
 	}
 	if ($id === false || !$id) {
+		db_pandora_audit("Module management", "Fail try to create network component");
 		ui_print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
+	db_pandora_audit("Module management", "Create network component group #$id");
 	ui_print_success_message (__('Created successfully'));
 	$id = 0;
 }
@@ -208,11 +210,13 @@ if ($update_component) {
 		$result = '';
 	}
 	if ($result === false || !$result) {
+		db_pandora_audit("Module management", "Fail try to update network component #$id");
 		ui_print_error_message (__('Could not be updated'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
 
+	db_pandora_audit("Module management", "Update network component #$id");
 	ui_print_success_message (__('Updated successfully'));
 	
 	$id = 0;
@@ -222,6 +226,12 @@ if ($delete_component) {
 	$id = (int) get_parameter ('id');
 	
 	$result = network_components_delete_network_component ($id);
+	
+	if ($result) {
+		db_pandora_audit( "Module management", "Delete network component #$id");
+	} else {
+		db_pandora_audit( "Module management", "Fail try to delete network component #$id");
+	}	
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -242,6 +252,13 @@ if ($multiple_delete) {
 			break;
 		}
 	}
+	
+	$str_ids = implode (',', $ids);
+	if ($result) {
+		db_pandora_audit( "Module management", "Multiple delete network component: $str_ids");
+	} else {
+		db_pandora_audit( "Module management", "Fail try to delete network component: $str_ids");
+	}	
 	
 	if ($result !== false) {
 		db_process_sql_commit();

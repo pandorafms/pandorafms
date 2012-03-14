@@ -74,8 +74,10 @@ if ($delete != 0) {
 	$return_delete = tags_delete_tag ($delete);
 
 	if ($return_delete === false) {
+		db_pandora_audit("Tag management", "Fail try to delete tag #$delete");
 		echo '<h3 class="error">'.__('Error deleting tag').'</h3>';
 	} else {
+		db_pandora_audit("Tag management", "Delete tag #$delete");
 		echo '<h3 class="suc">'.__('Successfully deleted tag').'</h3>';
 	}
 }

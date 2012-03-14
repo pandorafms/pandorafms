@@ -1,3 +1,8 @@
+2012-03-14  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/incidents/incident.php: Merged from trunk. Replaced
+	substr() with ui_print_truncate_text().
+
 2012-03-13 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/reporting/reporting_viewer.php,

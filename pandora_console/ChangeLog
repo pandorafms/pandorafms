@@ -1,3 +1,15 @@
+2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: fixes and changes for to show better the
+	html reports.
+	
+	* include/functions_groups.php: cleaned source code.
+	
+	* include/functions.php: fixed and changed the function "string2image" to
+	create the text with any size and use ttf font.
+	
+	Merged from the branch pandora_4.0
+
 2012-03-14  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/alerts/alert_actions.php

@@ -311,7 +311,7 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 	$myPicture = new pImage($width,$height);
 	
 	/* Turn of Antialiasing */
-	$myPicture->Antialias = $antialiasing;
+	$myPicture->Antialias = 0;
 	 
 	$myPicture->setFontProperties(array("FontName"=> $font, "FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 

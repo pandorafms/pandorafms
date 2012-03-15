@@ -1,3 +1,8 @@
+2012-03-15  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Fixed the function "set_new_agent"
+	to refer to the proper $config.
+
 2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: added lost lines.

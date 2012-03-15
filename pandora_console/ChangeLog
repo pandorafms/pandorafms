@@ -1,3 +1,10 @@
+2012-03-15  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/alerts/alert_actions.php
+	  godmode/agentes/modificar_agente.php
+	  godmode/alerts/configure_alert_template: Removed
+	duplicated log entries.
+
 2012-03-15  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Fixed the function "set_new_agent"

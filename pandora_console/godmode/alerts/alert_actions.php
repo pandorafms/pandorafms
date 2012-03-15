@@ -252,10 +252,10 @@ if ($delete_action) {
 	$result = alerts_delete_alert_action ($id);
 	
 	if ($result) {
-		db_pandora_audit("Command management", "Delete alert action " . $id);
+		db_pandora_audit("Command management", "Delete alert action #" . $id);
 	}
 	else {
-		db_pandora_audit("Command management", "Fail try to delete alert action " . $id);
+		db_pandora_audit("Command management", "Fail try to delete alert action #" . $id);
 	}
 	
 	ui_print_result_message ($result,

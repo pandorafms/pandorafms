@@ -610,10 +610,12 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
  * @param name string with the name of the select for time
  */
 function period_select_events(name) {
-	// If the text input is empty, we put on it 5 minutes by defaults
+	// If the text input is empty, we put on it 5 minutes by default
 	if($('#text-'+name+'_text').val() == '') {
 		$('#text-'+name+'_text').val(300);
+		$('#'+name+'_select option:eq(1)').attr('selected', true);
 	}
+	
 	function adjustTextUnits() {
 		var restPrev;
 		var unitsSelected = false;

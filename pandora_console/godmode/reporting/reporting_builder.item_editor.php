@@ -384,8 +384,8 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 			<td style="">
 				<?php
-				html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
-				echo __(" seconds."); ?></td>
+				html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
+				?></td>
 		</tr>
 		<tr id="row_period1" style="" class="datos">
 			<td style="vertical-align: top;">
@@ -401,8 +401,7 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 			<td style="">
 				<?php
-				html_print_extended_select_for_time ($intervals_1, 'period1', $period_pg, '', '', '0', 10);
-				echo __(" seconds.");
+				html_print_extended_select_for_time ('period1', $period_pg, '', '', '0', 10);
 				?>
 			</td>
 		</tr>	
@@ -414,8 +413,7 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 			<td style="">
 				<?php
-				html_print_extended_select_for_time ($intervals_1, 'period2', $projection_period, '', '', '0', 10);
-				echo __(" seconds.");
+				html_print_extended_select_for_time ('period2', $projection_period, '', '', '0', 10);
 				?>
 			</td>
 		</tr>	

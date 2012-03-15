@@ -150,18 +150,12 @@ $header_title = __('Received data from')." ".modules_get_agentmodule_agent_name 
 
 echo "<h4>".$header_title. "</h4>";
 
-$intervals = array ();
-$intervals[3600] = human_time_description_raw (3600); // 1 hour
-$intervals[86400] = human_time_description_raw (86400); // 1 day 
-$intervals[604800] = human_time_description_raw (604800); // 1 week
-$intervals[2592000] = human_time_description_raw (2592000); // 1 month
-
 $formtable->data = array ();
 
 echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
 
 $formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Choose a time from now");
-$formtable->data[0][1] = html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10, true) . __(" seconds.");
+$formtable->data[0][1] = html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);
 
 $formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
 $formtable->data[1][1] = __('Timestamp from');

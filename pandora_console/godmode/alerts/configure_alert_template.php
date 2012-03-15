@@ -281,10 +281,10 @@ function update_template ($step) {
 	}
 	
 	if ($result) {
-		db_pandora_audit("Template alert management", "Update alert template " . $id, false, false, json_encode($values));
+		db_pandora_audit("Template alert management", "Update alert template #" . $id, false, false, json_encode($values));
 	}
 	else {
-		db_pandora_audit("Template alert management", "Fail try to update alert template " . $id, false, false, json_encode($values));
+		db_pandora_audit("Template alert management", "Fail try to update alert template #" . $id, false, false, json_encode($values));
 	}
 	
 	return $result;
@@ -371,7 +371,7 @@ if ($create_template) {
 	}	
 	if ($result) {
 		//db_pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
-		db_pandora_audit("Template alert management", "Create alert template " . $result, false, false, json_encode($values));
+		db_pandora_audit("Template alert management", "Create alert template #" . $result, false, false, json_encode($values));
 	}
 	else {
 		//db_pandora_audit("Command management", "Fail try to create alert command", false, false, json_encode($values));

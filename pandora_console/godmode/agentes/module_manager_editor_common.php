@@ -213,34 +213,41 @@ $table_advanced->class = 'databox_color';
 $table_advanced->data = array ();
 $table_advanced->style = array ();
 $table_advanced->style[0] = 'font-weight: bold; vertical-align: top';
-$table_advanced->style[2] = 'font-weight: bold; vertical-align: top';
+$table_advanced->style[3] = 'font-weight: bold; vertical-align: top';
 $table_advanced->colspan = array ();
 
 $table_advanced->data[0][0] = __('Description');
-$table_advanced->colspan[0][1] = 3;
+$table_advanced->colspan[0][1] = 4;
 $table_advanced->data[0][1] = html_print_textarea ('description', 2, 65,
 	$description, $disabledTextBecauseInPolicy, true);
 
 $table_advanced->data[1][0] = __('Custom ID');
+$table_advanced->colspan[1][1] = 2;
 $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 	'', 20, 65, true);
 
-$table_advanced->data[1][2] = __('FF interval');
-$table_advanced->data[1][3] = html_print_input_text ('module_ff_interval', $ff_interval,
+$table_advanced->data[1][3] = __('FF interval');
+$table_advanced->data[1][4] = html_print_input_text ('module_ff_interval', $ff_interval,
 	'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
 
-$table_advanced->data[2][0] = __('Interval');
-$table_advanced->data[2][1] = html_print_input_text ('module_interval', $interval,
-	'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution time interval (in secs).'), true);
+$table_advanced->data[2][0] = __('Interval').ui_print_help_tip (__('Module execution time interval.'), true);
+
+$table_advanced->colspan[2][1] = 2;
+//~ $table_advanced->data[2][1] = html_print_input_text ('module_interval', $interval,
+	//~ '', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution time interval (in secs).'), true);
+	//~ 
+$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true);
 	
-$table_advanced->data[2][2] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
-$table_advanced->data[2][3] = html_print_input_text ('post_process',
+$table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
+$table_advanced->data[2][4] = html_print_input_text ('post_process',
 	$post_process, '', 15, 25, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[3][0] = __('Min. Value');
+$table_advanced->colspan[3][1] = 2;
+
 $table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy);
-$table_advanced->data[3][2] = __('Max. Value');
-$table_advanced->data[3][3] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_advanced->data[3][3] = __('Max. Value');
+$table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[4][0] = __('Export target'); 
 // Default text message for export target select and disabled option

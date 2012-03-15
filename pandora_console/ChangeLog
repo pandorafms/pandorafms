@@ -1,5 +1,13 @@
 2012-03-15  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora.js
+	godmode/agentes/module_manager_editor_common.php: Added 
+	advanced select for time to modules create/update form,
+	improve layout of this form and add default value of 
+	5 minutes to select
+
+2012-03-15  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/javascript/pandora.js
 	include/functions_custom_graphs.php

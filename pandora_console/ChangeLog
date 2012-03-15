@@ -1,3 +1,8 @@
+2012-03-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: fixes and changes for to show better the
+	html reports. 
+
 2012-03-15  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Merged from trunk. Fixed the

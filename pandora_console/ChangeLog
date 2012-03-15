@@ -1,3 +1,9 @@
+2012-03-15  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk. Fixed the
+	function "set_new_agent" to refer to the proper $config.
+	Cleaned source code style.
+
 2012-03-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: added lost lines.

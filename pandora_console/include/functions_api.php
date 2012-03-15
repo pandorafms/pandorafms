@@ -679,6 +679,8 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
  * @param $thrash3 Don't use.
  */
 function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	$name = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
@@ -904,7 +906,7 @@ function get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 	if (count($all_modules) > 0 and $all_modules !== false){
 		$data = array('type' => 'array', 'data' => $all_modules);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, ';');
 	}
 	else {
 		returnError('error_agent_modules', 'No modules retrieved.');			
@@ -935,7 +937,7 @@ function get_group_agent($thrash1, $thrash2, $other, $thrash3) {
 	if (count($group_names) > 0 and $group_names !== false){
 		$data = array('type' => 'array', 'data' => $group_names);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, ';');
 	}
 	else {
 		returnError('error_group_agent', 'No groups retrieved.');			
@@ -973,7 +975,7 @@ function get_policies($thrash1, $thrash2, $other, $thrash3) {
 	if (count($policies) > 0 and $policies !== false){
 		$data = array('type' => 'array', 'data' => $policies);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, ';');
 	}
 	else {
 		returnError('error_get_policies', 'No policies retrieved.');			
@@ -1012,7 +1014,7 @@ function get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
 	if (count($policies) > 0 and $policies !== false){
 		$data = array('type' => 'array', 'data' => $policies);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, ';');
 	}
 	else {
 		returnError('error_policy_modules', 'No policy modules retrieved.');			
@@ -2019,7 +2021,7 @@ function get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
 	else{
 		$data = array('type' => 'array', 'data' => $module_values);
 		
-		returnData('csv', $data, ';');	
+		returnData('csv', $data, ';');
 	}
 }
 
@@ -3312,9 +3314,10 @@ function set_apply_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($duplicated === ENTERPRISE_NOT_HOOK) {
 		// We want to return a value
-		if ($other == "return"){
+		if ($other == "return") {
 			return -1;
-		}else{
+		}
+		else {
 			returnError('error_apply_policy', __('Error applying policy.'));
 			return;
 		}	
@@ -3322,9 +3325,10 @@ function set_apply_policy($id, $thrash1, $other, $thrash3) {
 
 	if ($duplicated == STATUS_IN_QUEUE_APPLYING or $duplicated == STATUS_IN_QUEUE_IN){
 		// We want to return a value
-		if ($other == "return"){
+		if ($other == "return") {
 			return -1;
-		}else{		
+		}
+		else {		
 			returnError('error_apply_policy', __('Error applying policy. This policy is already pending to apply.'));
 			return;	
 		}		
@@ -3334,21 +3338,23 @@ function set_apply_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($id === ENTERPRISE_NOT_HOOK) {
 		// We want to return a value
-		if ($other == "return"){
+		if ($other == "return") {
 			return -1;
-		}else{			
+		}
+		else {			
 			returnError('error_apply_policy', __('Error applying policy.'));
 			return;	
 		}
 	}	
 	
 	// We want to return a value
-	if ($other == "return"){
+	if ($other == "return") {
 		if ($id)
 			return $id;
 		else
 			return -1;		
-	} else {
+	}
+	else {
 		if ($id)
 			returnData('string', array('type' => 'string', 'data' => $id));
 		else

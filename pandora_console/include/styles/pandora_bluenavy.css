@@ -1,0 +1,201 @@
+/* 
+
+Author: The Pandora FMS team
+Name: Blue Navy theme
+Description: A blue/grey theme with a variable width layout
+
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2012 Sancho Lerena <slerena@artica.es>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+*/
+
+@import url(pandora.css);
+
+
+
+div#pandora_logo_header {
+/*  Put here your company logo */
+	background: url(../../images/xxx.jpg);
+	width: 83px;
+	height: 31px;
+}
+
+h1, h2, h3, h4 {
+	color: #000;
+}
+
+div#page {
+	border-bottom: solid 5px #000;
+	border-top: solid 5px #000;
+}
+
+div#head {
+	background: none;
+	font-size: 8pt;
+	background-color: #27408B;
+	background-repeat: repeat-x;
+	background-position: 0% 0%;
+	border-bottom: solid 2px #000;
+}
+
+th, .bg {
+	background-color: #555;
+}
+
+#menu_tab_frame, #menu_tab_frame_view {
+	border-bottom:1px solid #000;
+}
+
+#menu_tab li a, #menu_tab a {
+	border-left: 2px solid #000;
+}
+
+.databox_color {
+	border-left: 0px;
+}
+
+#head_r {
+	padding-top: 5px;
+}
+
+span#logo_text1, span#logo_text2 {
+	font: bolder 2.5em Arial, Sans-serif;
+	text-align: right;
+}
+ol.steps li.current {
+	border-left: 5px solid #000;
+}
+
+tr.rowPair {
+	background-color: #fff;
+}
+
+tr.rowOdd {
+	background-color: #CCCCCC;
+}
+
+tr.rowPair:hover {
+	background-color: #FCFCFC;
+}
+
+tr.rowOdd:hover {
+	background-color: #DDDDDD;
+}
+
+
+/* MENUS */
+
+
+.menu {
+	border-width: 1px 0 0 1px;
+	border-style: solid;
+	border-color: #dadbdc;
+}
+.menu ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+.menu li.selected, .menu li.not_selected {
+	border: 1px solid #fff;
+	border-bottom: 1px solid #d4d4d4;
+	margin: 0;
+}
+.menu li.selected {
+	 background-color: #808080 !important; 
+}
+	/*d9fb86 !important; */
+
+.menu li a {
+	background-color: inherit;
+	color: #000000;
+	display:block; /* This makes it so that the whole li is clickable */
+	text-decoration:none;
+	padding: 6px;
+	margin-left: 23px;
+}
+
+.menu a:hover {
+	text-decoration:none;
+	color: #D54E21;
+}
+.submenu {
+	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	margin: 0px 10px 0px 0;
+	width: 164px;
+}
+.submenu li a {
+	background-color: #fff;
+	margin-left: 0px;
+	padding-left: 29px;
+	display:block;
+	border-width: 1px 1px 0 1px;
+	border-style: solid;
+	border-color: #dadbdc;
+}
+.menu li img.toggle {
+	visibility: hidden;
+	float:right;
+	margin: -20px 2px 0 0; /* Positions it back where it should be */
+	border-left: 1px;
+}
+.menu li.has_submenu.selected > img.toggle,
+.menu li:hover.has_submenu > img.toggle {
+	visibility: visible;
+	z-index: 1; /* Positions it on top of the rest */
+}
+.menu li.submenu_selected a {
+	font-weight: bold;
+}
+
+.menu .menu_icon, .menu li.links {
+	background-color: #9FB6CD; /* Color fondo menus*/
+	background-position: 4px 4px;
+	background-repeat: no-repeat;
+}
+
+.menu li.links {
+	background-image: url(../../images/link.png);
+	background-position: 4px 8px;
+}
+
+/* Others */
+
+#menu_tab_frame_view {
+	background: #000040;
+}
+
+th {
+	color: #fff;
+	background-color: #2F2F4F;
+	text-align:center;
+	font-size: 7pt;
+}
+
+#menu_tab_frame, #menu_tab_frame_view {
+	display: block ;
+	background:#7D7D7D none repeat scroll 0 0;
+	border-bottom:1px solid #778866;
+/*	float:left; */
+	margin-left:-8px;
+	min-height:25px;
+	padding-right:8px;
+	width:100%;
+}
+
+
+.bg3 { /* godmode */
+	background-color: #2F2F4F;
+}

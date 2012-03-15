@@ -1,5 +1,8 @@
 2012-03-15  Sancho Lerena <slerena@artica.es>
 
+	* include/styles/pandora_bluenavy.css: New style, based on blue
+	colors.
+	
 	* images/console: Several new maps and removed some ugly
 	old ones.
 

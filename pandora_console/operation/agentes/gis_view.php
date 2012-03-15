@@ -69,19 +69,6 @@ if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
 }
 
-$intervals = array ();
-$intervals[30] = human_time_description_raw (30);
-$intervals[60] = human_time_description_raw (60);
-$intervals[300] = human_time_description_raw (300);
-$intervals[600] = human_time_description_raw (600);
-$intervals[1200] = human_time_description_raw (1200);
-$intervals[1800] = human_time_description_raw (1800);
-$intervals[3600] = human_time_description_raw (3600);
-$intervals[7200] = human_time_description_raw (7200);
-$intervals[86400] = human_time_description_raw (86400);
-$intervals[172800] = human_time_description_raw (172800);
-$intervals[604800] = human_time_description_raw (604800);
-
 echo "<br />";
 $dataLastPosition = gis_get_data_last_position_agent($agentId);
 if ($dataLastPosition !== false) {
@@ -91,8 +78,7 @@ if ($dataLastPosition !== false) {
 echo "<br />";
 echo "<form action='index.php?" . $url . "' method='POST'>";
 echo __("Period to show data as path") . ": ";
-html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
-echo __(" seconds.") . "&nbsp;";
+html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
 echo "</form>";
 

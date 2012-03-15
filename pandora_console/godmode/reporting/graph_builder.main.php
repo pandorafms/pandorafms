@@ -127,8 +127,6 @@ echo "<td class='datos2'>";
 echo "<b>".__('Height')."</b></td>";
 echo "<td class='datos2'>";
 echo "<input type='text' name='height' value='$height' size=6></td></tr>";
-
-$periods = custom_graphs_get_sec_periods();
 					
 $period_label = $periods[$period];
 
@@ -136,8 +134,7 @@ echo "<tr>";
 echo "<td class='datos'>";
 echo "<b>".__('Period')."</b></td>";
 echo "<td class='datos'>";
-html_print_extended_select_for_time ($periods, 'period', $period, '', '', '0', 10);
-echo __(" seconds.");
+html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 echo "</td><td class='datos2'>";
 echo "<b>".__('Stacked')."</b></td>";
 echo "<td class='datos2'>";

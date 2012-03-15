@@ -417,12 +417,7 @@ class viewGraph {
 		
 		echo "<form method='post' action='index.php?page=agent&action=view_module_graph&id=" . $this->idAgentModule . "'>";
 		echo __("Choose period:");
-		$intervals = array ();
-		$intervals[3600] = human_time_description_raw (3600); // 1 hour
-		$intervals[86400] = human_time_description_raw (86400); // 1 day 
-		$intervals[604800] = human_time_description_raw (604800); // 1 week
-		$intervals[2592000] = human_time_description_raw (2592000); // 1 month
-		echo html_print_extended_select_for_time ($intervals, 'period', $this->period, 'this.form.submit();', '', '0', 5) . __(" secs");
+		echo html_print_extended_select_for_time ('period', $this->period, 'this.form.submit();', '', '0', 5);
 		echo "</form><br />";
 		
 		$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($this->idAgentModule));

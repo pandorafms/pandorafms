@@ -85,20 +85,8 @@ $options[4] = 'x4';
 $table->data[2][1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
 
 $table->data[3][0] = __('Time range');
-$options = array ();
-$options[3600] = human_time_description_raw (3600);
-$options[7200] = human_time_description_raw (7200);
-$options[21600] = human_time_description_raw (21600);
-$options[43200] = human_time_description_raw (43200);
-$options[86400] = human_time_description_raw (86400);
-$options[172800] = human_time_description_raw (172800);
-$options[432000] = human_time_description_raw (432000);
-$options[604800] = human_time_description_raw (604800);
-$options[1296000] = human_time_description_raw (1296000);
-$options[2592000] = human_time_description_raw (2592000);
-$options[5184000] = human_time_description_raw (5184000);
-$options[15552000] = human_time_description_raw (15552000);
-$table->data[3][1] = html_print_extended_select_for_time($options, 'period', $period, '', '', 0, 7, true) . ' ' . __('secs');
+
+$table->data[3][1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 
 $table->data[4][0] = __('Show events');
 $table->data[4][1] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);

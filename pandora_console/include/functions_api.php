@@ -679,6 +679,8 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
  * @param $thrash3 Don't use.
  */
 function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	$name = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];

@@ -1,5 +1,16 @@
 2012-03-15  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora.js: Fix a little bug
+	of default value in time advance control
+
+	* operation/reporting/graph_viewer.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/graph_builder.preview.php: Remove 
+	the preview graphs and replace it by link of the
+	operation mode
+
+2012-03-15  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/pandora.js
 	godmode/agentes/module_manager_editor_common.php: Added 
 	advanced select for time to modules create/update form,

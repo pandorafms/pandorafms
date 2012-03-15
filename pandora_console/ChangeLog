@@ -1,3 +1,8 @@
+2012-03-15  Sancho Lerena <slerena@artica.es>
+
+	* images/console/background: Replaced old imagemaps
+	with new ones, much better.
+
 2012-03-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js: Fix a little bug

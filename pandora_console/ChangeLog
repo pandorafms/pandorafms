@@ -1,5 +1,10 @@
 2012-03-16  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora.js: Fix a typo bug
+	of last commit
+
+2012-03-16  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/javascript/pandora.js
 	include/functions_custom_graphs.php

@@ -592,4 +592,3 @@ function period_select_events(name) {
 	}
 	
 }
-}

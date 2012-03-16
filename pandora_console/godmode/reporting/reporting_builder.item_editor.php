@@ -327,26 +327,6 @@ switch ($action) {
 		break;
 }
 
-$intervals = array ();
-$intervals[300] = human_time_description_raw (300);
-$intervals[600] = human_time_description_raw (600);
-$intervals[86400] = human_time_description_raw (86400);
-$intervals[432000] = human_time_description_raw (432000);
-$intervals[604800] = human_time_description_raw (604800);
-$intervals[1296000] = human_time_description_raw (1296000);
-$intervals[2592000] = human_time_description_raw (2592000);
-
-// Intervals for projection graph 
-$intervals_1 = array ();
-$intervals_1[432000] = human_time_description_raw (432000);
-$intervals_1[604800] = human_time_description_raw (604800);
-$intervals_1[1296000] = human_time_description_raw (1296000);
-$intervals_1[2592000] = human_time_description_raw (2592000);
-$intervals_1[5184000] = human_time_description_raw (5184000);
-$intervals_1[7776000] = human_time_description_raw (7776000);
-$intervals_1[10368000] = human_time_description_raw (10368000);
-$intervals_1[12960000] = human_time_description_raw (12960000);
-
 $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';

@@ -434,26 +434,29 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		2592000 => __('months'),
 		31104000 => __('years'));
 	
+	$uniq_name = uniqid($name);
+	
 	ob_start();
 	
-	echo '<div id="'.$name.'_default" style="width:100%">';
-		html_print_select ($fields, $name . '_select', $selected,"" . $script,
+	echo '<div id="'.$uniq_name.'_default" style="width:100%">';
+		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $name . '_toggler', 'alt' => __('Manual'), 'title' => __('Manual'))).'</a>';
+		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
 	echo '</div>';
 	
-	echo '<div id="'.$name.'_manual" style="width:100%">';
-		html_print_input_text ($name . '_text', $selected, '', $size);
-		html_print_input_hidden ($name, $selected);
-		html_print_select ($units, $name . '_units', 1, "" . $script,
+	echo '<div id="'.$uniq_name.'_manual" style="width:100%">';
+		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
+	
+		html_print_input_hidden ($name, $selected, false, $uniq_name);
+		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
+		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
 	echo '</div>';
 	
 	echo "
 	<script type='text/javascript'>
 		$(document).ready (function () {
-			period_select_events('$name');
+			period_select_events('$uniq_name');
 		});
 	</script>
 	";

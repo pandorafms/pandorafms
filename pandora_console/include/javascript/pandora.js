@@ -656,7 +656,7 @@ function period_select_events(name) {
 			value = 300;
 		}
 		
-		$('#hidden-'+name).val(value); 
+		$('.'.name).val(value); 
 		$('#text-'+name+'_text').val(value);
 		adjustTextUnits();
 	});
@@ -685,7 +685,7 @@ function period_select_events(name) {
 	// Function to calculate the custom time in seconds into hidden input
 	function calculateSeconds() {
 		var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
-		$('#hidden-'+name).val(calculated);
+		$('.'+name).val(calculated);
 	}
 	
 }

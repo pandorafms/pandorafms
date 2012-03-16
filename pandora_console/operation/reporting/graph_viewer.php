@@ -105,9 +105,11 @@ if ($view_graph) {
 
 	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
 
-	$options['setup'] = "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
-			. html_print_image ("images/setup.png", true, array ("title" => __('Back to normal mode')))
-			. "</a>";
+	if (check_acl ($config['id_user'], 0, "IW")) {
+		$options['setup'] = "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
+				. html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
+				. "</a>";
+	}
 			
 	if ($config["pure"] == 0) {
 		$options['screen'] = "<a href='$url&pure=1'>"

@@ -1,6 +1,17 @@
 2012-03-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php
+	include/javascript/pandora.js: Fixed problem with two 
+	or more time controls at the same time adding uniq id
+	to selects
+
+	* godmode/agentes/module_manager_editor_common.php
+	godmode/reporting/reporting_builder.item_editor.php: Clean
+	code
+
+2012-03-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
 	include/javascript/pandora.js
 	images/pencil.png
 	images/default_list.png: Improved the usability

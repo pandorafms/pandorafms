@@ -656,7 +656,7 @@ function period_select_events(name) {
 			value = 300;
 		}
 		
-		$('.'.name).val(value); 
+		$('.'+name).val(value); 
 		$('#text-'+name+'_text').val(value);
 		adjustTextUnits();
 	});

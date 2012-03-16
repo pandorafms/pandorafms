@@ -1,5 +1,10 @@
 2012-03-16  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora.js: Fixed typo bug from last
+	commit
+
+2012-03-16  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/javascript/pandora.js: Fixed problem with two 
 	or more time controls at the same time adding uniq id

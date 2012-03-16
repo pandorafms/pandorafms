@@ -1,3 +1,24 @@
+2012-03-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/javascript/pandora.js
+	include/functions_custom_graphs.php
+	include/functions.php
+	operation/agentes/datos_agente.php
+	operation/agentes/gis_view.php
+	operation/agentes/graphs.php
+	operation/agentes/stat_win.php
+	operation/reporting/graph_viewer.php
+	images/pencil.png
+	images/default_list.png
+	mobile/operation/agents/view_agents.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/agent_manager.php
+	godmode/massive/massive_edit_agents.php
+	godmode/reporting/graph_builder.main.php
+	godmode/reporting/reporting_builder.item_editor.php: Improved 
+	the control select for time merged from trunk
+
 2012-03-15  Sancho Lerena <slerena@artica.es>
 
 	* include/styles/pandora_bluenavy.css: New style, based on blue

@@ -218,24 +218,8 @@ html_print_select ($options, "zoom", $zoom);
 
 echo '</td></tr><tr><td>'.__('Time range').'</td><td>';
 
-$options = array ();
-$options[3600] = human_time_description_raw (3600);
-$options[7200] = human_time_description_raw (7200);
-$options[21600] = human_time_description_raw (21600);
-$options[43200] = human_time_description_raw (43200);
-$options[86400] = human_time_description_raw (86400);
-$options[172800] = human_time_description_raw (172800);
-$options[432000] = human_time_description_raw (432000);
-$options[604800] = human_time_description_raw (604800);
-$options[1296000] = human_time_description_raw (1296000);
-$options[2592000] = human_time_description_raw (2592000);
-$options[5184000] = human_time_description_raw (5184000);
-$options[15552000] = human_time_description_raw (15552000);
+html_print_extended_select_for_time('period', $period, '', '', 0, 7);
 
-html_print_extended_select_for_time($options, 'period', $period, '', '', 0, 7);
-//html_print_select ($options, "period_select", $period,"javascript: $('#text-period').val($('#period_select').val());");
-//html_print_input_text ("period", $period, '', 10);
-echo ' '.__('secs.');
 echo '</td></tr><tr><td>'.__('Show events').'</td><td>';
 
 html_print_checkbox ("draw_events", 1, (bool) $draw_events);

@@ -1539,4 +1539,31 @@ function get_os_name ($id_os) {
 	return (string) db_get_value ('name', 'tconfig_os', 'id_os', (int) $id_os);
 }
 
+/**
+ * Get all the possible periods in seconds.
+ *
+ * @return The possible periods in an associative array.
+ */
+function get_periods () {
+	$periods = array ();
+	
+	$periods[0] = __('custom');
+	$periods[300] = '5 '.__('minutes');
+	$periods[1800] = '30 '.__('minutes');
+	$periods[3600] = __('1 hour');
+	$periods[21600] = '6 '.__('hours');
+	$periods[43200] = '12 '.__('hours');
+	$periods[86400] = __('1 day');
+	$periods[604800] = __('1 week');
+	$periods[1296000] = __('15 days');
+	$periods[2592000] = '1 '.__('month');
+	$periods[7776000] = '3 '.__('months');
+	$periods[15552000] = '6 '.__('months');
+	$periods[31104000] = '1 '.__('year');
+	$periods[62208000] = '2 '.__('years');
+	$periods[93312000] = '3 '.__('years');
+	
+	return $periods;
+}
+
 ?>

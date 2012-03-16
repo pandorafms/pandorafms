@@ -327,26 +327,6 @@ switch ($action) {
 		break;
 }
 
-$intervals = array ();
-$intervals[300] = human_time_description_raw (300);
-$intervals[600] = human_time_description_raw (600);
-$intervals[86400] = human_time_description_raw (86400);
-$intervals[432000] = human_time_description_raw (432000);
-$intervals[604800] = human_time_description_raw (604800);
-$intervals[1296000] = human_time_description_raw (1296000);
-$intervals[2592000] = human_time_description_raw (2592000);
-
-// Intervals for projection graph 
-$intervals_1 = array ();
-$intervals_1[432000] = human_time_description_raw (432000);
-$intervals_1[604800] = human_time_description_raw (604800);
-$intervals_1[1296000] = human_time_description_raw (1296000);
-$intervals_1[2592000] = human_time_description_raw (2592000);
-$intervals_1[5184000] = human_time_description_raw (5184000);
-$intervals_1[7776000] = human_time_description_raw (7776000);
-$intervals_1[10368000] = human_time_description_raw (10368000);
-$intervals_1[12960000] = human_time_description_raw (12960000);
-
 $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
@@ -377,16 +357,45 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 		</tr>
 		<tr id="row_period" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
-			<td style=""><?php html_print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
+			<td style="vertical-align: top;">
+				<?php
+				echo __('Period');
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
+				?></td>
 		</tr>
 		<tr id="row_period1" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Period'); if ($type == 'projection_graph'){ echo ui_print_help_icon('projection_graph', true); }else{ echo ui_print_help_icon('prediction_date', true); } ?></td>
-			<td style=""><?php html_print_extended_select_for_time ($intervals_1, 'period1', $period_pg, '', '', '0', 10); echo __(" seconds."); ?></td>
+			<td style="vertical-align: top;">
+				<?php
+				echo __('Period');
+				if ($type == 'projection_graph') {
+					echo ui_print_help_icon('projection_graph', true);
+				}
+				else {
+					echo ui_print_help_icon('prediction_date', true);
+				}
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_extended_select_for_time ('period1', $period_pg, '', '', '0', 10);
+				?>
+			</td>
 		</tr>	
 		<tr id="row_estimate" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Projection period') . ui_print_help_icon('projection_graph', true); ?></td>
-			<td style=""><?php html_print_extended_select_for_time ($intervals_1, 'period2', $projection_period, '', '', '0', 10); echo __(" seconds."); ?></td>
+			<td style="vertical-align: top;">
+				<?php
+				echo __('Projection period') . ui_print_help_icon('projection_graph', true);
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_extended_select_for_time ('period2', $projection_period, '', '', '0', 10);
+				?>
+			</td>
 		</tr>	
 		<tr id="row_interval" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>

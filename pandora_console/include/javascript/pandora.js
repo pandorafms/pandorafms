@@ -503,3 +503,93 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 			}
 		);	
 }
+
+/**
+ * Manage events into html_extended_select_for_time
+ * 
+ * This function has all the events to manage the extended select
+ * for time
+ * 
+ * @param name string with the name of the select for time
+ */
+function period_select_events(name) {
+	// Manual mode is hidden by default
+	$('#'+name+'_manual').hide();
+	
+	// If the text input is empty, we put on it 5 minutes by default
+	if($('#text-'+name+'_text').val() == '') {
+		$('#text-'+name+'_text').val(300);
+		$('#'+name+'_select option:eq(1)').attr('selected', true);
+	}
+	
+	$('.'+name+'_toggler').click(function() {
+		$('#'+name+'_default').toggle();
+		$('#'+name+'_manual').toggle();
+		$('#text-'+name+'_text').focus();
+	});
+	
+	function adjustTextUnits() {
+		var restPrev;
+		var unitsSelected = false;
+		$('#'+name+'_units option').each(function() {
+			var rest = $('#text-'+name+'_text').val()/$(this).val();
+			var restInt = parseInt(rest).toString();
+			if(rest != restInt && unitsSelected == false) {
+				$('#'+name+'_units option:eq('+($(this).index()-1)+')').attr('selected', true);
+				$('#text-'+name+'_text').val(restPrev);
+				unitsSelected = true;
+			}
+					
+			restPrev = rest;
+		});
+		
+		if(unitsSelected == false) {
+			$('#'+name+'_units option:last').attr('selected', true);
+			$('#text-'+name+'_text').val(restPrev);
+		}
+	}
+	
+	adjustTextUnits();
+	
+	// When select a default period, is setted in seconds
+	$('#'+name+'_select').change(function() {
+		var value = $('#'+name+'_select').val();
+		
+		if(value == 0) {
+			value = 300;
+		}
+		
+		$('.'+name).val(value); 
+		$('#text-'+name+'_text').val(value);
+		adjustTextUnits();
+	});
+	
+	// When select a custom units, the default period changes to 'custom' and
+	// the time in seconds is calculated into hidden input
+	$('#'+name+'_units').change(function() {
+		$('#'+name+'_select option:eq(0)').attr('selected', 'selected');
+		calculateSeconds();
+	});
+	
+	// When write any character into custom input, it check to convert it to 
+	// integer and calculate in seconds into hidden input
+	$('#text-'+name+'_text').keyup (function () {
+		var cleanValue = parseInt($('#text-'+name+'_text').val());
+		if(isNaN(cleanValue)) {
+			cleanValue = '';
+		}
+		
+		$('#text-'+name+'_text').val(cleanValue);
+		
+		$('#'+name+'_select option:eq(0)').attr('selected', 'selected');
+		calculateSeconds();
+	});
+	
+	// Function to calculate the custom time in seconds into hidden input
+	function calculateSeconds() {
+		var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
+		$('.'+name).val(calculated);
+	}
+	
+}
+}

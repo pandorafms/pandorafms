@@ -213,30 +213,34 @@ $table_advanced->class = 'databox_color';
 $table_advanced->data = array ();
 $table_advanced->style = array ();
 $table_advanced->style[0] = 'font-weight: bold; vertical-align: top';
-$table_advanced->style[2] = 'font-weight: bold; vertical-align: top';
+$table_advanced->style[3] = 'font-weight: bold; vertical-align: top';
 $table_advanced->colspan = array ();
 
 $table_advanced->data[0][0] = __('Description');
-$table_advanced->colspan[0][1] = 3;
+$table_advanced->colspan[0][1] = 4;
 $table_advanced->data[0][1] = html_print_textarea ('description', 2, 65,
 	$description, $disabledTextBecauseInPolicy, true);
 
 $table_advanced->data[1][0] = __('Custom ID');
+$table_advanced->colspan[1][1] = 2;
 $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 	'', 20, 65, true);
 
 $table_advanced->data[2][0] = __('Interval');
-$table_advanced->data[2][1] = html_print_input_text ('module_interval', $interval,
-	'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution time interval (in secs).'), true);
+
+$table_advanced->colspan[2][1] = 2;
+$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true);
 	
-$table_advanced->data[2][2] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
-$table_advanced->data[2][3] = html_print_input_text ('post_process',
+$table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
+$table_advanced->data[2][4] = html_print_input_text ('post_process',
 	$post_process, '', 15, 25, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[3][0] = __('Min. Value');
+$table_advanced->colspan[3][1] = 2;
+
 $table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy);
-$table_advanced->data[3][2] = __('Max. Value');
-$table_advanced->data[3][3] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_advanced->data[3][3] = __('Max. Value');
+$table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[4][0] = __('Export target'); 
 // Default text message for export target select and disabled option
@@ -269,6 +273,7 @@ if ($__code_from == 'modules') {
 	$__id_where = 'b.id_policy_module';
 	$__id = $__id_pol_mod;
 }
+
 $table_advanced->data[6][1] = html_print_select_from_sql ("SELECT id_tag, name
 										FROM ttag 
 										WHERE id_tag NOT IN (
@@ -276,7 +281,7 @@ $table_advanced->data[6][1] = html_print_select_from_sql ("SELECT id_tag, name
 											FROM ttag a, $__table_modules b 
 											WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
 											ORDER BY name",
-	'id_tag_available[]', $id_tag, '',__('None'),'0', true, true, false, false, 'width: 200px', '5');
+	'id_tag_available[]', $id_tag, '','','', true, true, false, false, 'width: 200px', '5');
 $table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 	
@@ -285,7 +290,7 @@ $table_advanced->data[6][4] =  html_print_select_from_sql ("SELECT a.id_tag, nam
 										FROM ttag a, $__table_modules b
 										WHERE a.id_tag = b.id_tag AND $__id_where = $__id
 										ORDER BY name",
-	'id_tag_selected[]', $id_tag, '',__('None'),'0', true, true, false, false, 'width: 200px', '5');
+	'id_tag_selected[]', $id_tag, '','','', true, true, false, false, 'width: 200px', '5');
 //$table_advanced->data[6][4] .= html_print_input_hidden('id_tag_serialize', '');
 
 ?>
@@ -296,9 +301,9 @@ $(document).ready (function () {
 	$("#right").click (function () {
 		jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
 			tag_name = $(value).html();
-			if (tag_name != 'None'){
+			if (tag_name != <?php echo "'".__('None')."'"; ?>) {
 				id_tag = $(value).attr('value');
-				$("select[name='id_tag_selected[]']").append($("<option selected='selected'>").val(id_tag).html('<i>' + tag_name + '</i>'));
+				$("select[name='id_tag_selected[]']").append($("<option></option>").val(id_tag).html('<i>' + tag_name + '</i>'));
 				$("#id_tag_available").find("option[value='" + id_tag + "']").remove();
 			}
 		});			
@@ -306,7 +311,7 @@ $(document).ready (function () {
 	$("#left").click (function () {
 		jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
 				tag_name = $(value).html();
-				if (tag_name != 'None'){
+				if (tag_name != <?php echo "'".__('None')."'"; ?>) {
 					id_tag = $(value).attr('value');
 					$("select[name='id_tag_available[]']").append($("<option>").val(id_tag).html('<i>' + tag_name + '</i>'));
 					$("#id_tag_selected").find("option[value='" + id_tag + "']").remove();

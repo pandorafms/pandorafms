@@ -247,16 +247,7 @@ $table->data[1][1] = html_print_select_groups(false, "AR", false, 'group', $grou
 
 $table->data[2][0] = __('Interval');
 
-$intervals = array ();
-$intervals[30] = human_time_description_raw (30);
-$intervals[60] = human_time_description_raw (60);
-$intervals[300] = human_time_description_raw (300);
-$intervals[600] = human_time_description_raw (600);
-$intervals[1200] = human_time_description_raw (1200);
-$intervals[1800] = human_time_description_raw (1800);
-$intervals[3600] = human_time_description_raw (3600);
-$intervals[7200] = human_time_description_raw (7200);
-$table->data[2][1] = html_print_extended_select_for_time ($intervals, 'interval', $interval, '', '', '0', 10, true, 'width: 150px') . __(" seconds.");
+$table->data[2][1] = html_print_extended_select_for_time ('interval', $interval, '', '', '0', 10, true, 'width: 150px');
 
 $table->data[3][0] = __('OS');
 $table->data[3][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os',

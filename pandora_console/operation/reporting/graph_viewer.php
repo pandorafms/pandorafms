@@ -89,7 +89,7 @@ if ($view_graph) {
 	if (! $period)
 		$period = $graph["period"];
 	else 
-		$period = 3600 * $period;
+		$period = $period;
 	$events = $graph["events"];
 	$description = $graph["description"];
 	$stacked = (int) get_parameter ('stacked', -1);
@@ -139,9 +139,8 @@ if ($view_graph) {
 	echo "<b>".__('Period')."</b>";
 	echo "</td>";
 	echo "<td class='datos'>";
-	
-	html_print_select (custom_graphs_get_periods (), 'period', intval ($period / 3600),
-		'', '', 0, false, false, false);
+		
+	echo html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);
 
 	echo "</td>";
 	echo "<td class='datos'>";

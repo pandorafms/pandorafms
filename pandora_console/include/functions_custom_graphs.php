@@ -115,26 +115,4 @@ function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $re
 	echo $output;
 }
 
-/**
- * Get all the possible periods in a custom graph.
- *
- * @return The possible periods in a custom graph in an associative array.
- */
-function custom_graphs_get_periods () {
-	$periods = array ();
-	
-	$periods[1] = __('1 hour');
-	$periods[2] = '2 '.__('hours');
-	$periods[3] = '3 '.__('hours');
-	$periods[6] = '6 '.__('hours');
-	$periods[12] = '12 '.__('hours');
-	$periods[24] = __('1 day');
-	$periods[48] = __('2 days');
-	$periods[168] = __('1 week');
-	$periods[720] = __('1 month');
-	$periods[4320] = __('6 months');
-	
-	return $periods;
-}
-
 ?>

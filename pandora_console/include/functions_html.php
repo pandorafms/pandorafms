@@ -405,7 +405,6 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
 /**
  * Render a pair of select for times and text box for set the time more fine.
  * 
- * @param array Array with dropdown values. Example: $fields["value"] = "label"
  * @param string Select form name
  * @param variant Current selected value. Can be a single value or an
  * array of selected values (in combination with multiple)
@@ -418,21 +417,52 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
  * @return string HTML code if return parameter is true.
  */
 
-function html_print_extended_select_for_time ($fields, $name, $selected = '', $script = '', $nothing = '',
+function html_print_extended_select_for_time ($name, $selected = '', $script = '', $nothing = '',
 	$nothing_value = '0', $size = false, $return = false, $select_style = false) {
+
+	$fields = get_periods();
 	
 	if (($selected !== false) && (!isset($fields[$selected]))) {
 		$fields[$selected] = human_time_description_raw($selected,true);
 	}
 	
+	$units = array(
+		1 => __('seconds'),
+		60 => __('minutes'),
+		3600 => __('hours'),
+		86400 => __('days'),
+		2592000 => __('months'),
+		31104000 => __('years'));
+	
+	$uniq_name = uniqid($name);
+	
 	ob_start();
 	
-	html_print_select ($fields, $name . '_select', $selected,"javascript: $('#text-" . $name . "').val($('#" . $name . "_select').val());" . $script,
-		$nothing, $nothing_value, false, false, false, '', false, $select_style);
-	html_print_input_text ($name, $selected, '', $size);
+	echo '<div id="'.$uniq_name.'_default" style="width:100%">';
+		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
+			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
+	echo '</div>';
 	
+	echo '<div id="'.$uniq_name.'_manual" style="width:100%">';
+		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
+	
+		html_print_input_hidden ($name, $selected, false, $uniq_name);
+		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
+			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
+	echo '</div>';
+	
+	echo "
+	<script type='text/javascript'>
+		$(document).ready (function () {
+			period_select_events('$uniq_name');
+		});
+	</script>
+	";
+		
 	$returnString = ob_get_clean();
-	
+
 	if ($return)
 		return $returnString;
 	else
@@ -1047,7 +1077,7 @@ function html_print_radio_button ($name, $value, $label = '', $checkedvalue = ''
 	
 	if ($return)
 		return $output;
-
+	
 	echo $output;
 }
 

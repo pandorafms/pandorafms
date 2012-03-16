@@ -1,3 +1,12 @@
+2012-03-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/javascript/pandora.js
+	images/pencil.png
+	images/default_list.png: Improved the usability
+	of the periods advanced control toggling between
+	manual and default mode
+
 2012-03-15  Sancho Lerena <slerena@artica.es>
 
 	* images/console/background: Replaced old imagemaps

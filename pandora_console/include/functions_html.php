@@ -436,16 +436,25 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	
 	ob_start();
 	
-	html_print_select ($fields, $name . '_select', $selected,"" . $script,
-		$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-	html_print_input_text ($name . '_text', $selected, '', $size);
-	html_print_input_hidden ($name, $selected);
-	html_print_select ($units, $name . '_units', 1, "" . $script,
-		$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+	echo '<div id="'.$name.'_default" style="width:100%">';
+		html_print_select ($fields, $name . '_select', $selected,"" . $script,
+			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $name . '_toggler', 'alt' => __('Manual'), 'title' => __('Manual'))).'</a>';
+	echo '</div>';
+	
+	echo '<div id="'.$name.'_manual" style="width:100%">';
+		html_print_input_text ($name . '_text', $selected, '', $size);
+		html_print_input_hidden ($name, $selected);
+		html_print_select ($units, $name . '_units', 1, "" . $script,
+			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
+	echo '</div>';
 	
 	echo "
 	<script type='text/javascript'>
-		period_select_events('$name');
+		$(document).ready (function () {
+			period_select_events('$name');
+		});
 	</script>
 	";
 		

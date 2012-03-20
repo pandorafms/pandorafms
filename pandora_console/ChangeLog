@@ -1,3 +1,10 @@
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js
+	godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.editor.php: add
+	new period control to the visual console graph item editor
+
 2012-03-16  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/reporting/graph_viewer.php: Added ACL control

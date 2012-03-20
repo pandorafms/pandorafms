@@ -1,3 +1,8 @@
+2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* util/pandora_db.pl: added lines to purge the contents in the report that
+	have not a modules or agents. 
+	
 2012-03-08  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Merged from trunk. Fixed wrong SQL of my

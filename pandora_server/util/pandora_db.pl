@@ -232,6 +232,19 @@ sub pandora_purgedb ($$) {
 	} else {
 		print "[PURGE] No data in tagente_access\n";
 	}
+	
+	#Purge the reports
+	print "[PURGE] Delete contents in report that have some deleted modules...\n";
+	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+	db_do ($dbh, "DELETE FROM treport_content_item WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+	db_do ($dbh, "DELETE FROM treport_content_sla_combined WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+	
+	print "[PURGE] Delete contents in report that have some deleted agents...\n";
+	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
+	
+	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n"
+	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
+	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
 }
 
 ###############################################################################

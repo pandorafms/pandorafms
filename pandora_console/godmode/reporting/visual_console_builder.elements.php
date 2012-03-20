@@ -47,20 +47,6 @@ foreach ($all_images as $image_file) {
 
 $layoutDataTypes = visual_map_get_layout_data_types();
 
-/* Layout_data editor form */
-$intervals = array ();
-$intervals[3600] = "1 ".__('hour');
-$intervals[7200] = "2 ".__('hours');
-$intervals[10800] = "3 ".__('hours');
-$intervals[21600] = "6 ".__('hours');
-$intervals[43200] = "12 ".__('hours');
-$intervals[86400] = __('Last day');
-$intervals[172800] = "2 ". __('days');
-$intervals[604800] = __('Last week');
-$intervals[1209600] = "14 ".__('days');
-$intervals[2592000] = __('Last month');
-$intervals[5184000] = "2 ".__('months');
-$intervals[15552000] = "6 ".__('months');
 
 $table->width = '100%';
 $table->head = array ();
@@ -197,7 +183,7 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Period
 	if ($layoutData['type'] == MODULE_GRAPH) {
-		$table->data[$i + 2][3] = html_print_select ($intervals, 'period_' . $idLayoutData, $layoutData['period'], '', '--', 0, true);
+		$table->data[$i + 2][3] = html_print_extended_select_for_time ('period_' . $idLayoutData, $layoutData['period'], '', '--', '0', 10, true);
 	}
 	else {
 		$table->data[$i + 2][3] = '';

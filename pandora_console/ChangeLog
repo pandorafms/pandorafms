@@ -1,3 +1,19 @@
+2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: now the function
+	"html_print_input_text_extended" accept a script code as string for event
+	"keyup" or as array where the index is string for each event where you want
+	add javascript code. And make more pretty the page of report and cleaned
+	source code style. 
+
+	* include/functions_reporting.php,
+	godmode/reporting/reporting_builder.list_items.php,
+	godmode/reporting/reporting_builder.php: changed the old method to order
+	items in a report for the method with checks and move the block of items.
+
+	* godmode/reporting/reporting_builder.preview.php: removed this file, now
+	it use the html view in operation. 
+
 2012-03-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js

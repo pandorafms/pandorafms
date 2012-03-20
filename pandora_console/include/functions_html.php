@@ -462,7 +462,7 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	";
 		
 	$returnString = ob_get_clean();
-
+	
 	if ($return)
 		return $returnString;
 	else
@@ -479,7 +479,7 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
  * @param int $size Size of the input.
  * @param int $maxlength Maximum length allowed.
  * @param bool $disabled Disable the button (optional, button enabled by default).
- * @param string $script JavaScript to attach to this . (TODO This parameter don't use...and I don't know reason)
+ * @param mixed $script JavaScript to attach to this. It is array the index is event to set a script, it is only string for "onkeyup" event.
  * @param mixed $attributes Attributes to add to this tag. Should be an array for correction.
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
  * @param bool $password Whether it is a password input or not. Not password by default.
@@ -547,7 +547,19 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 			$output .= $attribute.'="'.$default.'" ';
 		}
 	}
-
+	
+	if (!empty($script)) {
+		if (is_string($script)) {
+			$code = $script;
+			$script = array();
+			$script["onkeyup"] = $code;
+		}
+		
+		foreach ($script as $event => $code) {
+			$output .= ' ' . $event . '="'.$code.'" ';
+		}
+	}
+	
 	$output .= '/>';
 	
 	if (!$return)

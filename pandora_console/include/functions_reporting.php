@@ -4059,7 +4059,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[3][0] = 3;
-			$table->style[0] .= 'text-align: center';
+			
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,

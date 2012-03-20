@@ -1,3 +1,13 @@
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	godmode/reporting/reporting_builder.php
+	operation/reporting/reporting_viewer.php: Improve the intervals
+	form into the html report view, fix the order of the from-to
+	dates in the report items header and improve navegavility
+	deleting preview section in godmode and replacing 
+	it by a link to operation
+
 2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_html.php: now the function

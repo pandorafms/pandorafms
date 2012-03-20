@@ -2155,8 +2155,8 @@ function header_content($mini, $content, $report, &$table, $title = false, $name
 	else {
 		$data[] = "<div style='text-align: right;'>" . $sizh .
 			"(" . human_time_description_raw ($content['period']) . ") " .
-			__("From:") . " " . date("Y-m-d H:i", $report["datetime"]) . "<br />" .
-			__("To:") . " " . date("Y-m-d H:i", $report["datetime"] - $content['period']) . "<br />" .
+			__("From:") . " " . date("Y-m-d H:i", $report["datetime"] - $content['period']) . "<br />" .
+			__("To:") . " " . date("Y-m-d H:i", $report["datetime"]) . "<br />" .
 			$sizhfin . "</div>";
 	}
 	

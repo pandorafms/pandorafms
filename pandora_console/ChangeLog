@@ -1,5 +1,13 @@
 2012-03-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions.php: Fixed the human time 
+	description function merged from trunk
+
+	* godmode/reporting/graph_builder.preview.php: Deleted
+	unless preview file in graphics
+
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php
 	godmode/reporting/reporting_builder.php
 	operation/reporting/reporting_viewer.php: Improve the intervals

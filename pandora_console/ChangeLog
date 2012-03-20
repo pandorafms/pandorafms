@@ -1,5 +1,17 @@
 2012-03-20  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/visual_console/render_view.php
+	godmode/reporting/visual_console_builder.wizard.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/visual_console_builder.preview.php: Removed
+	preview section from visual map in godmode. Now is a link
+	to operation mode.
+	Change the link from op to godmode, now is to edition view,
+	not to main setup.
+	Added advanced period control to visual map setup
+
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/pandora.js
 	godmode/reporting/visual_console_builder.editor.js
 	godmode/reporting/visual_console_builder.editor.php: add

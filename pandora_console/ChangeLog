@@ -1,5 +1,9 @@
 2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* ChangeLog: added lost lines.
+
+2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: now the function
 	"html_print_input_text_extended" accept a script code as string for event
 	"keyup" or as array where the index is string for each event where you want

@@ -1,3 +1,10 @@
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	operation/reporting/reporting_viewer.php
+	godmode/reporting/reporting_builder.php: Improved period form in the
+	report view and navegability merged from 4.0
+
 2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: added lost lines.

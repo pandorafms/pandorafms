@@ -1,5 +1,10 @@
 2012-03-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions.php: Recoded the human_time_description_raw
+	function fixing bugs and improving exactly mode even years accuracy
+
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php
 	operation/reporting/reporting_viewer.php
 	godmode/reporting/reporting_builder.php: Improved period form in the

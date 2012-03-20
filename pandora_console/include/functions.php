@@ -425,6 +425,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			$secondsString = __('seconds');
 			$daysString = __('days');
 			$monthsString = __('months');
+			$yearsString = __('years');
 			$minutesString = __('minutes');
 			$hoursString = __('hours');
 			$nowString = __('Now');
@@ -433,6 +434,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			$secondsString = __('s');
 			$daysString = __('d');
 			$monthsString = __('M');
+			$yearsString = __('Y');
 			$minutesString = __('m');
 			$hoursString = __('h');
 			$nowString = __('N');
@@ -447,22 +449,81 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 	}
 	
 	if ($exactly) {
-		$secs = $seconds % 60;
-		$mins = ($seconds /60) % 60;
-		$hours = ($seconds / 3600) % 24;
-		$days = ($seconds / 86400) % 30;
-		$months = format_numeric ($seconds / 2592000, 0);
+		$returnDate = '';
 		
-		if (($mins == 0) && ($hours == 0) && ($days == 0) && ($months == 0))
-			return format_numeric ($secs, 0).' '. $secondsString;
-		else if (($hours == 0) && ($days == 0) && ($months == 0))
-			return sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
-		else if (($days == 0) && ($months == 0))
-			return sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
-		else if (($months == 0))
-			return $days.' ' . $daysString . ' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
-		else
-			return $months.' '. $monthsString .' '.$days.' ' . $daysString . ' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);	
+		$years = floor($seconds / 31104000);
+		
+		if($years != 0) {
+			$seconds = $seconds - ($years * 31104000);
+			
+			$returnDate .= "$years $yearsString ";
+		}
+		
+		$months = floor($seconds / 2592000);
+		
+		if($months != 0) {
+			$seconds = $seconds - ($months * 2592000);
+			
+			$returnDate .= "$months $monthsString ";
+		}
+
+		$days = floor($seconds / 86400);
+		
+		if($days != 0) {
+			$seconds = $seconds - ($days * 86400);
+			
+			$returnDate .= "$days $daysString ";
+		}
+		
+		$returnTime = '';
+
+		$hours = floor($seconds / 3600);
+		
+		if($hours != 0) {
+			$seconds = $seconds - ($hours * 3600);
+			
+			$returnTime .= "$hours $hoursString ";
+		}
+		
+		$mins = floor($seconds / 60);
+		
+		if($mins != 0) {
+			$seconds = $seconds - ($mins * 60);
+			
+			if($hours == 0) {
+				$returnTime .= "$mins $minutesString ";
+			}
+			else {
+				$returnTime = sprintf("%02d",$hours).':'.sprintf("%02d",$mins);
+			}
+		}
+		
+		if($seconds != 0) {
+			if($hours == 0) {
+				$returnTime .= "$seconds $secondsString ";
+			}
+			else {
+				$returnTime = sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$seconds);
+			}
+		}
+		
+		$return = ' ';
+		
+		if($returnDate != '') {
+			$return = $returnDate;
+		}
+		
+		if($returnTime != '') {
+			$return .= $returnTime;
+		}
+		
+		if($return == ' ') {
+			return $nowString; 
+		}
+		else {
+			return $return;
+		}
+		
 	}
 	
 	if ($seconds < 60)

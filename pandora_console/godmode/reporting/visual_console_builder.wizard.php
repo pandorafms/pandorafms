@@ -57,21 +57,6 @@ $type_list = array(
 	SIMPLE_VALUE => __('Simple value')
 );
 
-/* Layout_data editor form */
-$intervals = array ();
-$intervals[3600] = "1 ".__('hour');
-$intervals[7200] = "2 ".__('hours');
-$intervals[10800] = "3 ".__('hours');
-$intervals[21600] = "6 ".__('hours');
-$intervals[43200] = "12 ".__('hours');
-$intervals[86400] = __('Last day');
-$intervals[172800] = "2 ". __('days');
-$intervals[604800] = __('Last week');
-$intervals[1209600] = "14 ".__('days');
-$intervals[2592000] = __('Last month');
-$intervals[5184000] = "2 ".__('months');
-$intervals[15552000] = "6 ".__('months');
-
 $table->rowstyle["all_0"] = 'display: none;';
 $table->data["all_0"][0] = __('Type');
 $table->data["all_0"][1] = html_print_select ($type_list, 'type', '', 'hidden_rows()', '', '', true);
@@ -91,7 +76,7 @@ $table->data["staticgraph_modulegraph"][1] .= '<br />'.__('Height').': '.html_pr
 
 $table->rowstyle["modulegraph"] = 'display: none;';
 $table->data["modulegraph"][0] = __('Period');
-$table->data["modulegraph"][1] = html_print_select ($intervals, 'period', '', '', '--', 0, true);
+$table->data["modulegraph"][1] = html_print_extended_select_for_time ('period', '', '', '', '', false, true);
 
 $table->rowstyle["simplevalue"] = 'display: none;';
 $table->data["simplevalue"][0] = __('Process');

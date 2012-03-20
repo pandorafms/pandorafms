@@ -624,7 +624,7 @@ function visual_map_get_status_element($layoutData) {
  * @param bool $show_links
  * @param bool $draw_lines
  */
-function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
+function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null, $home_url = '') {
 	//TODO: USE THE SAME CODE THAT THE VISUAL MAP EDITOR
 	global $config;
 	
@@ -1233,12 +1233,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 
 						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 							false, ((integer)($proportion * $layout_data['width'])), ((integer)($proportion * $layout_data['height'])),
-							'', null, false, 1, false, 0, '', 0, 0, true, true);
+							'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url);
 					}
 					else {
 						echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 							false, $layout_data['width'], $layout_data['height'],
-							'', null, false, 1, false, 0, '', 0, 0, true, true);
+							'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url);
 					}
 					echo "</a>";
 					echo "</div>";

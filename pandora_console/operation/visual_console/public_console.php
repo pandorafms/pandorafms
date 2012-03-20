@@ -71,7 +71,7 @@ $options = array();
 
 echo "<h1>". $layout_name. "</h1>";
 
-visual_map_print_visual_map ($id_layout);
+visual_map_print_visual_map ($id_layout, true, true, null, null, '../../');
 
 $values = array ();
 $values[5] = human_time_description_raw (5);

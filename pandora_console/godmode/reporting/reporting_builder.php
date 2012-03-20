@@ -43,7 +43,6 @@ switch ($action) {
 	case 'sort_items':
 		switch ($activeTab) {
 			case 'list_items':
-				//NO FUNCIONA
 			
 				$resultOperationDB = null;
 				$position_to_sort = (int)get_parameter('position_to_sort', 1);
@@ -803,9 +802,9 @@ if ($enterpriseEnable) {
 	$buttons = reporting_enterprise_add_Tabs($buttons, $idReport);
 }
 
-$buttons['preview'] = array('active' => false,
+$buttons['view'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
-			html_print_image("images/reporting.png", true, array ("title" => __('Preview'))) .'</a>');
+			html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
 	
 $buttons[$activeTab]['active'] = true;
 

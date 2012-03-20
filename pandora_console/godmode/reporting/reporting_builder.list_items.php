@@ -67,16 +67,16 @@ else {
 				WHERE t4.id_report = ' . $idReport);
 			break;
 	}
-
+	
 	if ($rows === false) {
 		$rows = array();
 	}
-
+	
 	$agents = array();
 	foreach ($rows as $row) {
 		$agents[$row['id_agente']] = $row['nombre'];
 	}
-
+	
 	switch ($config['dbtype']){
 		case "mysql":
 		case "postgresql":
@@ -99,12 +99,12 @@ else {
 	if ($rows === false) {
 		$rows = array();
 	}
-
+	
 	$modules = array();
 	foreach ($rows as $row) {
 		$modules[$row['id_agent_module']] = $row['nombre'];
 	}
-
+	
 	$rows = db_get_all_rows_sql('
 		SELECT DISTINCT(type)
 		FROM treport_content
@@ -112,7 +112,7 @@ else {
 	if ($rows === false) {
 		$rows = array();
 	}
-
+	
 	$types = array();
 	foreach ($rows as $row) {
 		$types[$row['type']] = get_report_name($row['type']);
@@ -134,7 +134,7 @@ $urlFilter = '&agent_filter=' . $agentFilter . '&module_filter=' . $moduleFilter
 echo '<a href="javascript: toggleFormFilter();"><b>'.__('Items filter').'</b> ' . html_print_image("images/down.png", true, array("title" => __('Toggle filter(s)'), "id" => 'image_form_filter')) . '</a>';
 
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
 $table->data[0][0] = __('Agents');
 $table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
 $table->data[0][2] = __('Modules');
@@ -143,7 +143,7 @@ $table->data[1][0] = __('Type');
 $table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
 
 echo '<div id="form_filter" style="display: none;">';
-echo '<form method="post" action ="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&&id_report=' . $idReport . '">';
+echo '<form method="post" action ="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
 
 html_print_table ($table);
 
@@ -196,23 +196,32 @@ switch ($config["dbtype"]) {
 $countItems = db_get_sql('SELECT COUNT(id_rc) FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport);
 $table = null;
 
-if ($items){
+$table->style[0] = 'text-align: right;';
+
+if ($items) {
 	$table->width = '100%';
-	$table->head[0] = '<span title="' . __('Sort') . '">' . __('S.') . '</span>';
+	
+	$table->size = array();
+	$table->size[0] = '5px';
+	$table->size[1] = '15%';
+	$table->size[4] = '8%';
+	$table->size[6] = '65px';
+	
+	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
 	$table->head[1] = __('Type');
 	if (!$filterEnable) {
-		$table->head[1] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[1] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a onclick="return message_check_sort_items();" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[2] = __('Agent');
 	if (!$filterEnable) {
-		$table->head[2] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[2] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a onclick="return message_check_sort_items();" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[3] = __('Module');
 	if (!$filterEnable) {
-		$table->head[3] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[3] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a onclick="return message_check_sort_items();" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
@@ -236,6 +245,7 @@ if ($items === false) {
 	$items = array();
 }
 
+$count = 0;
 foreach ($items as $item) {
 	if ($rowPair)
 		$table->rowclass[$count] = 'rowPair';
@@ -245,19 +255,7 @@ foreach ($items as $item) {
 	
 	$row = array();
 	
-	if ((reset($items) == $item) && ($offset == 0)) {
-		$row[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
-	}
-	else {
-		$row[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
-	}
-	
-	if ((end($items) == $item) && $lastPage) {
-		$row[0] .= '<span style="width: 16px;">&nbsp;</span>';
-	}
-	else {
-		$row[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
-	}
+	$row[0] = $count + $offset + 1; //The 1 is for do not start in 0.
 	
 	if ($filterEnable) {
 		$row[0] = '';
@@ -282,18 +280,18 @@ foreach ($items as $item) {
 			$row[3] = '-';
 		}
 		else {
-			$row[2] = ui_print_truncate_text(agents_get_name(agents_get_module_id($item['id_agent_module'])), 20);
-			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 20);
+			$row[2] = ui_print_truncate_text(agents_get_name(agents_get_module_id($item['id_agent_module'])), 35);
+			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])), 35);
 		}
 	}
 	else {
-		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 20);
+		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 35);
 		
 		if ($item['id_agent_module'] == '') {
 			$row [3] = '-';
 		}
 		else {
-			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),20);
+			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),35);
 		}
 	}
 	
@@ -303,10 +301,15 @@ foreach ($items as $item) {
 		$row[5] = '-';
 	}
 	else {
-		$row[5] = ui_print_truncate_text($item['description'], 25, true, true);
+		$row[5] = ui_print_truncate_text($item['description'], 40, true, true);
 	}
 	
-	$row[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
+	$row[6] = '';
+	//You can sort the items if the filter is not enable.
+	if (!$filterEnable) {
+		$row[6] .= html_print_checkbox_extended('sorted_items[]', $item['id_rc'], false, false, '', 'class="selected_check"', true);
+	}
+	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;&nbsp;';
 	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	
@@ -320,6 +323,24 @@ foreach ($items as $item) {
 ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 html_print_table($table);
 ui_pagination ($countItems, 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+
+$table = null;
+$table->width = '60%';
+$table->colspan[0][0] = 3;
+$table->data[0][0] = "<b>". __("Sort items") . "</b>";
+$table->data[1][0] = __('Sort selected items from position: ');
+$table->data[1][1] = html_print_select_style(
+	array('before' => __('Move before to'), 'after' => __('Move after to')), 'move_to',
+	'', '', '', '', 0, true);
+$table->data[1][2] = html_print_input_text_extended('position_to_sort', 1,
+	'text-position_to_sort', '', 3, 10, false, "only_numbers('position_to_sort');", '', true);
+$table->data[1][2] .= html_print_input_hidden('ids_items_to_sort', '', true);
+$table->data[1][3] = html_print_submit_button(__('Sort'), 'sort_submit', false, 'class="sub upd"', true);
+
+echo "<form action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=sort_items&id_report=" . $idReport . "'
+	method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
+html_print_table($table);
+echo "</form>";
 ?>
 <script type="text/javascript">
 function toggleFormFilter() {
@@ -331,5 +352,53 @@ function toggleFormFilter() {
 		$("#image_form_filter").attr('src', <?php echo "'" . html_print_image('images/down.png', true, false, true) . "'"; ?> );
 		$("#form_filter").css('display','none');
 	}
+}
+
+function message_check_sort_items() {
+	var return_value = false;
+	
+	return_value = confirm("<?php echo __("Are you sure to sort the items into the report?\\n" .
+		"This action change the sorting of items into data base."); ?>");
+	
+	return return_value;
+}
+
+function added_ids_sorted_items_to_hidden_input() {
+	var ids = '';
+	var first = true;
+	
+	$("input.selected_check:checked").each(function(i, val) {
+		if (!first)
+			ids = ids + '|';
+		first = false;
+		
+		ids = ids + $(val).val();
+	});
+	
+	$("input[name='ids_items_to_sort']").val(ids);
+	
+	console.log(ids);
+	
+	if (ids == '') {
+		alert("<?php echo __("Please select any item to order");?>");
+		
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+function only_numbers(name) {
+	var value = $("input[name='" + name + "']").val();
+	
+	value = parseInt(value);
+	
+	if (isNaN(value)) {
+		value = 1;
+	}
+	
+	$("input[name='" + name + "']").val(value);
+	
 }
 </script>

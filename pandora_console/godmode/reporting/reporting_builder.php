@@ -40,6 +40,99 @@ $offset = get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
 
 switch ($action) {
+	case 'sort_items':
+		switch ($activeTab) {
+			case 'list_items':
+				//NO FUNCIONA
+			
+				$resultOperationDB = null;
+				$position_to_sort = (int)get_parameter('position_to_sort', 1);
+				$ids_serialize = (string)get_parameter('ids_items_to_sort', '');
+				$move_to = (string)get_parameter('move_to', 'after');
+				
+				$countItems = db_get_sql('SELECT COUNT(id_rc)
+					FROM treport_content WHERE id_report = ' . $idReport);
+				
+				if (($countItems < $position_to_sort) || ($position_to_sort < 1)) {
+					$resultOperationDB = false;
+				}
+				else if (!empty($ids_serialize)) {
+					$ids = explode('|', $ids_serialize);
+					
+					switch ($config["dbtype"]) {
+						case "mysql":
+							$items = db_get_all_rows_sql('SELECT id_rc, `order`
+								FROM treport_content
+								WHERE id_report = ' . $idReport . '
+								ORDER BY `order`');
+							break;
+						case "oracle":
+						case "postgresql":
+							$items = db_get_all_rows_sql('SELECT id_rc, "order"
+								FROM treport_content
+								WHERE id_report = ' . $idReport . '
+								ORDER BY "order"');
+							break;
+					}
+					
+					if ($items === false) $items = array();
+					
+					
+					$temp = array();
+					
+					$temp = array();
+					foreach ($items as $item) {
+						//Remove the contents from the block to sort
+						if (array_search($item['id_rc'], $ids) === false) {
+							$temp[$item['order']] = $item['id_rc'];
+						}
+					}
+					$items = $temp;
+					
+					$sorted_items = array();
+					foreach ($items as $pos => $id_unsort) {
+						if ($pos == $position_to_sort) {
+							if ($move_to == 'after') {
+								$sorted_items[] = $id_unsort;
+							}
+							
+							foreach ($ids as $id) {
+								$sorted_items[] = $id;
+							}
+							
+							if ($move_to != 'after') {
+								$sorted_items[] = $id_unsort;
+							}
+						}
+						else {
+							$sorted_items[] = $id_unsort;
+						}
+					}
+					
+					$items = $sorted_items;
+					
+					foreach ($items as $order => $id) {
+						switch ($config["dbtype"]) {
+							case "mysql":
+								db_process_sql_update('treport_content',
+									array('`order`' => ($order + 1)), array('id_rc' => $id));
+								break;
+							case "postgresql":
+							case "oracle":
+								db_process_sql_update('treport_content',
+									array('"order"' => ($order + 1)), array('id_rc' => $id));
+								break;
+						}
+					}
+					
+					$resultOperationDB = true;
+				}
+				else {
+					$resultOperationDB = false;
+				}
+				break;
+			}
+		break;
 	case 'delete_report':
 	case 'list':
 		$buttons = array(
@@ -104,7 +197,7 @@ switch ($action) {
 			$table->size[4] = '60px';
 			
 			foreach ($reports as $report) {
-			
+				
 				if (!is_user_admin ($config["id_user"])){
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
 						if (!check_acl ($config["id_user"], $report["id_group"], "AW"))
@@ -112,7 +205,7 @@ switch ($action) {
 					if (!check_acl ($config["id_user"], $report["id_group"], "AW"))
 						continue;
 				}
-	
+				
 				$data = array ();
 				$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
 						$report['id_report'].'">'.$report['name'].'</a>';
@@ -315,7 +408,7 @@ switch ($action) {
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
-		
+						
 						if ($good_format){
 							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						}
@@ -422,8 +515,9 @@ switch ($action) {
 							$values['server_name'] = substr ($server_name, 1, strlen($server_name));
 						}
 						
-						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
- 
+						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')
+							OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
+							
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
@@ -444,7 +538,7 @@ switch ($action) {
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
-					
+						
 						if ($good_format){
 							$result = db_process_sql_insert('treport_content', $values);
 							
@@ -710,7 +804,7 @@ if ($enterpriseEnable) {
 }
 
 $buttons['preview'] = array('active' => false,
-	'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=preview&action=edit&id_report=' . $idReport . '">' . 
+	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
 			html_print_image("images/reporting.png", true, array ("title" => __('Preview'))) .'</a>');
 	
 $buttons[$activeTab]['active'] = true;
@@ -741,9 +835,6 @@ switch ($activeTab) {
 		break;
 	case 'item_editor':
 		require_once('godmode/reporting/reporting_builder.item_editor.php');
-		break;
-	case 'preview':
-		require_once('godmode/reporting/reporting_builder.preview.php');
 		break;
 	default:
 		reporting_enterprise_select_tab($activeTab);

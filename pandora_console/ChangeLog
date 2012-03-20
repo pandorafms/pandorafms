@@ -1,3 +1,19 @@
+2012-03-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js
+	include/functions_visual_map.php
+	operation/visual_console/render_view.php
+	operation/visual_console/public_console.php
+	godmode/reporting/visual_console_builder.wizard.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.elements.php
+	godmode/reporting/visual_console_builder.preview.php
+	godmode/reporting/visual_console_builder.editor.php: Change the
+	period control to advanced control in all the visual map sections.
+	Improve the navegavility in visual map sections.
+	Merged from trunk
+
 2012-03-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js: Fix a typo bug

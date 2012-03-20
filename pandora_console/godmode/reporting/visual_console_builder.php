@@ -29,7 +29,7 @@ require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 
 $action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
-$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor', 'preview'), 'data');
+$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor'), 'data');
 $idVisualConsole = get_parameter('id_visual_console', 0);
 
 //Save/Update data in DB
@@ -234,10 +234,6 @@ switch ($activeTab) {
 				break;
 		}
 		break;
-	case 'preview':
-		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
-		$visualConsoleName = $visualConsole['name'];
-		break;
 }
 
 $buttons = array(
@@ -253,9 +249,9 @@ $buttons = array(
 	'editor' => array('active' => false,
 		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),
-	'preview' => array('active' => false,
-		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=preview&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
-			html_print_image ("images/eye.png", true, array ("title" => __('Preview'))) .'</a>'),);
+	'view' => array('active' => false,
+		'text' => '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=60">' .
+			html_print_image ("images/eye.png", true, array ("title" => __('View'))) .'</a>'),);
 
 if ($action == 'new' || $idVisualConsole === false){
 	$buttons = array('data' => $buttons['data']); //Show only the data tab
@@ -285,9 +281,6 @@ switch ($activeTab) {
 		break;
 	case 'editor':
 		require_once('godmode/reporting/visual_console_builder.editor.php');
-		break;
-	case 'preview':
-		require_once('godmode/reporting/visual_console_builder.preview.php');
 		break;
 }
 ?>

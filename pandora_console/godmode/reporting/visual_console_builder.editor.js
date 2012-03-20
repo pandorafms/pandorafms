@@ -274,7 +274,7 @@ function readFields() {
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
-	values['period'] = $("select[name=period]").val();
+	values['period'] = $("#hidden-period").val();
 	values['width'] = $("input[name=width]").val();
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
@@ -479,7 +479,26 @@ function loadFieldsFromDB(item) {
 						$("select[name=module]").val(val);
 					}
 					if (key == 'process_value') $("select[name=process_value]").val(val);
-					if (key == 'period') $("select[name=period]").val(val);
+					if (key == 'period') {
+						var anySelected = false;
+						var periodId = $('#hidden-period').attr('class');
+						$('#'+periodId+'_select option').each(function() {
+							if($(this).val() == val) {
+								$(this).attr('selected',true);
+								$(this).trigger('change');
+								anySelected = true;
+							}
+						});
+						if(anySelected == false) {
+							$('#'+periodId+'_select option').eq(0).attr('selected',true);
+							$('#'+periodId+'_units option').eq(0).attr('selected',true);
+							$('#hidden-period').val(val);
+							$('#text-'+periodId+'_text').val(val);
+							adjustTextUnits(periodId);
+							$('#'+periodId+'_default').hide();
+							$('#'+periodId+'_manual').show();
+						}
+					}
 					if (key == 'width') $("input[name=width]").val(val);
 					if (key == 'height') $("input[name=height]").val(val);
 					if (key == 'parent_item') $("select[name=parent]").val(val);

@@ -528,28 +528,7 @@ function period_select_events(name) {
 		$('#text-'+name+'_text').focus();
 	});
 	
-	function adjustTextUnits() {
-		var restPrev;
-		var unitsSelected = false;
-		$('#'+name+'_units option').each(function() {
-			var rest = $('#text-'+name+'_text').val()/$(this).val();
-			var restInt = parseInt(rest).toString();
-			if(rest != restInt && unitsSelected == false) {
-				$('#'+name+'_units option:eq('+($(this).index()-1)+')').attr('selected', true);
-				$('#text-'+name+'_text').val(restPrev);
-				unitsSelected = true;
-			}
-					
-			restPrev = rest;
-		});
-		
-		if(unitsSelected == false) {
-			$('#'+name+'_units option:last').attr('selected', true);
-			$('#text-'+name+'_text').val(restPrev);
-		}
-	}
-	
-	adjustTextUnits();
+	adjustTextUnits(name);
 	
 	// When select a default period, is setted in seconds
 	$('#'+name+'_select').change(function() {
@@ -561,7 +540,7 @@ function period_select_events(name) {
 		
 		$('.'+name).val(value); 
 		$('#text-'+name+'_text').val(value);
-		adjustTextUnits();
+		adjustTextUnits(name);
 	});
 	
 	// When select a custom units, the default period changes to 'custom' and
@@ -585,10 +564,35 @@ function period_select_events(name) {
 		calculateSeconds();
 	});
 	
-	// Function to calculate the custom time in seconds into hidden input
+	// Calculate the custom time in seconds into hidden input
 	function calculateSeconds() {
 		var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
 		$('.'+name).val(calculated);
 	}
+}
+
+/**
+ * 
+ * Adjust units in the advanced select for time
+ * 
+ */
+function adjustTextUnits(name) {
+	var restPrev;
+	var unitsSelected = false;
+	$('#'+name+'_units option').each(function() {
+		var rest = $('#text-'+name+'_text').val()/$(this).val();
+		var restInt = parseInt(rest).toString();
+		if(rest != restInt && unitsSelected == false) {
+			$('#'+name+'_units option:eq('+($(this).index()-1)+')').attr('selected', true);
+			$('#text-'+name+'_text').val(restPrev);
+			unitsSelected = true;
+		}
+				
+		restPrev = rest;
+	});
 	
+	if(unitsSelected == false) {
+		$('#'+name+'_units option:last').attr('selected', true);
+		$('#text-'+name+'_text').val(restPrev);
+	}
 }

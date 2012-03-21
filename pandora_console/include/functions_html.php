@@ -422,35 +422,35 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 
 	$fields = get_periods();
 	
-	if (($selected !== false) && (!isset($fields[$selected]))) {
+	if (($selected !== false) && (!isset($fields[$selected]) && $selected != 0)) {
 		$fields[$selected] = human_time_description_raw($selected,true);
 	}
 	
 	$units = array(
 		1 => __('seconds'),
-		60 => __('minutes'),
-		3600 => __('hours'),
-		86400 => __('days'),
-		2592000 => __('months'),
-		31104000 => __('years'));
+		SECONDS_1MINUTE => __('minutes'),
+		SECONDS_1HOUR => __('hours'),
+		SECONDS_1DAY => __('days'),
+		SECONDS_1MONTH => __('months'),
+		SECONDS_1YEAR => __('years'));
 	
 	$uniq_name = uniqid($name);
 	
 	ob_start();
 	
-	echo '<div id="'.$uniq_name.'_default" style="width:100%">';
+	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
 	echo '</div>';
 	
-	echo '<div id="'.$uniq_name.'_manual" style="width:100%">';
+	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
 		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
 	
 		html_print_input_hidden ($name, $selected, false, $uniq_name);
 		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
 	echo '</div>';
 	
 	echo "

@@ -1366,7 +1366,7 @@ $(document).ready( function() {
 	});	
 	
 	// Change toggle arrow when it's clicked
-	$("#toggle_arrow").click(function() {
+	$("#tgl_event_control").click(function() {
 		if ($("#toggle_arrow").attr("src").match(/[^\.]+down\.png/) == null){
 			var params = [];
 			params.push("get_image_path=1");

@@ -1,3 +1,13 @@
+2012-03-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/javascript/pandora.js
+	include/functions_alerts.php
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_list.builder.php: Improved the period
+	control and add it in the alert actions and alert templates
+	forms
+
 2012-03-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions.php: Fixed the human time 

@@ -772,34 +772,6 @@ function alerts_get_alert_template_field3_recovery ($id_alert_template) {
 }
 
 /**
- * Get threshold values of alert template.
- * 
- * @param int Id of an alert template.
- *
- * @return mixed Threshold values or false if something goes wrong.
- */
-function alerts_get_alert_template_threshold_values () {
-	$times = array ();
-	
-	$times['300'] = '5 '.__('minutes');
-	$times['600'] = '10 '.__('minutes');
-	$times['900'] = '15 '.__('minutes');
-	$times['1800'] = '30 '.__('minutes');
-	$times['3600'] = '1 '.__('hour');
-	$times['7200'] = '2 '.__('hours');
-	$times['18000'] = '5 '.__('hours');
-	$times['43200'] = '12 '.__('hours');
-	$times['86400'] = '1 '.__('day');
-	$times['604800'] = '1 '.__('week');
-	$times['1209600'] = '2 '.__('weeks');
-	$times['18144000'] = '1 '.__('month');
-	$times['108864000'] = '6 '.__('months');
-	$times['-1'] = __('Other value');
-	
-	return $times;
-}
-
-/**
  * Duplicates an alert template.
  * 
  * @param int Id of an alert template.
@@ -1243,7 +1215,8 @@ function alerts_copy_alert_module_to_module ($id_agent_alert, $id_destiny_module
  */
 function alerts_compound_threshold_values () {
 	/* At this moment we don't need different threshold values */
-	return alerts_get_alert_template_threshold_values ();
+	// TODO: Delete when compound alerts will be deleted
+	return get_periods ();
 }
 
 /**

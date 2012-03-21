@@ -207,8 +207,6 @@ function update_template ($step) {
 		$threshold = (int) get_parameter ('threshold');
 		$max_alerts = (int) get_parameter ('max_alerts');
 		$min_alerts = (int) get_parameter ('min_alerts');
-		if ($threshold == -1)
-			$threshold = (int) get_parameter ('other_threshold');
 		$field1 = (string) get_parameter ('field1');
 		$field2 = (string) get_parameter ('field2');
 		$field3 = (string) get_parameter ('field3');
@@ -436,16 +434,6 @@ $table->size[2] = '20%';
 
 if ($step == 2) {
 	/* Firing conditions and events */
-	$threshold_values = alerts_get_alert_template_threshold_values ();
-	if (in_array ($threshold, array_keys ($threshold_values))) {
-		$table->style['other_label'] = 'display:none; font-weight: bold';
-		$table->style['other_input'] = 'display:none';
-		$threshold_selected = $threshold;
-	} else {
-		$table->style['other_label'] = 'font-weight: bold';
-		$threshold_selected = -1;
-	}
-	
 	$table->colspan = array ();
 	$table->colspan[0][1] = 3;
 	$table->colspan[4][1] = 3;
@@ -476,13 +464,10 @@ if ($step == 2) {
 	$table->data[1][3] = html_print_input_text ('time_to', $time_to, '', 7, 7,
 		true);
 	
+	$table->colspan['threshold'][1] = 3;
 	$table->data['threshold'][0] = __('Time threshold');
-	$table->data['threshold'][1] = html_print_select ($threshold_values,
-		'threshold', $threshold_selected, '', '', '', true, false, false);
-	$table->data['threshold']['other_label'] = __('Other value');
-	$table->data['threshold']['other_input'] = html_print_input_text ('other_threshold',
-		$threshold, '', 5, 7, true);
-	$table->data['threshold']['other_input'] .= ' '.__('seconds');
+	$table->data['threshold'][1] = html_print_extended_select_for_time ('threshold', $threshold, '', '',
+	'', false, true);
 	
 	$table->data[3][0] = __('Min. number of alerts');
 	$table->data[3][1] = html_print_input_text ('min_alerts', $min_alerts, '',

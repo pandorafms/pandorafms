@@ -111,7 +111,8 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[2][1] .= '</a>';
 }
 $table->data[3][0] = __('Threshold');
-$table->data[3][1] = html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
+$table->data[3][1] = html_print_extended_select_for_time ('module_action_threshold', 0, '', 0,
+	__('None'), false, true) . ui_print_help_icon ('action_threshold', true);
 
 echo '<form class="add_alert_form" method="post">';
 

@@ -521,6 +521,11 @@ function period_select_events(name) {
 		$('#text-'+name+'_text').val(300);
 		$('#'+name+'_select option:eq(1)').attr('selected', true);
 	}
+	else if($('#text-'+name+'_text').val() == 0) {
+		$('#'+name+'_default').toggle();
+		$('#'+name+'_manual').toggle();
+		$('#'+name+'_units option:last').removeAttr('selected');
+	}
 	
 	$('.'+name+'_toggler').click(function() {
 		$('#'+name+'_default').toggle();
@@ -534,7 +539,7 @@ function period_select_events(name) {
 	$('#'+name+'_select').change(function() {
 		var value = $('#'+name+'_select').val();
 		
-		if(value == 0) {
+		if(value == -1) {
 			value = 300;
 		}
 		
@@ -594,5 +599,9 @@ function adjustTextUnits(name) {
 	if(unitsSelected == false) {
 		$('#'+name+'_units option:last').attr('selected', true);
 		$('#text-'+name+'_text').val(restPrev);
+	}
+	
+	if($('#text-'+name+'_text').val() == 0) {
+		$('#'+name+'_units option:eq(0)').attr('selected', true);
 	}
 }

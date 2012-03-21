@@ -247,6 +247,7 @@ $table_advanced->data[4][0] = __('Export target');
 $none_text = __('None');
 $disabled_export = false;
 // If code comes from policies disable export select
+global $__code_from;
 if ($__code_from == 'policies'){
 	$none_text = __('Not needed');
 	$disabled_export = true;

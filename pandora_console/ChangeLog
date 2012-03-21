@@ -1,3 +1,8 @@
+2012-03-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Added global var
+	to avoid php warning.
+
 2012-03-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php

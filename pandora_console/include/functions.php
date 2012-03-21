@@ -1591,7 +1591,7 @@ function get_user_dashboards ($id_user) {
 function get_periods () {
 	$periods = array ();
 	
-	$periods[0] = __('custom');
+	$periods[-1] = __('custom');
 	$periods[SECONDS_5MINUTES] = '5 '.__('minutes');
 	$periods[SECONDS_30MINUTES] = '30 '.__('minutes');
 	$periods[SECONDS_1HOUR] = __('1 hour');

@@ -1,5 +1,16 @@
 2012-03-21  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_html.php
+	include/javascript/pandora.js
+	include/functions.php
+	include/functions_alerts.php
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_list.builder.php: Improved the
+	periods control and added it to the alerts action threshold 
+	and alert template threshold
+
+2012-03-21  Sergio Martin <sergio.martin@artica.es>
+
 	* include/config_process.php
 	include/functions.php
 	include/constants.php: Add a new include file

@@ -1,5 +1,10 @@
 2012-03-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php: Added global var
+	to avoid php warning.
+
+2012-03-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php: Toggle arrow control changes
 	orientation onclick event. Aesthetic fix.
 

@@ -1,3 +1,8 @@
+2012-03-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php: Added calculation
+	of the left side of the graph space. Merged from 4.0
+
 2012-03-22  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb.sql

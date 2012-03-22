@@ -156,9 +156,9 @@ if($edit_graph) {
 		'graph_editor' => array('active' => false,
 			'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=' . $id_graph . '">' . 
 				html_print_image("images/config.png", true, array ("title" => __('Graph editor'))) .'</a>'),
-		'preview' => array('active' => false,
-			'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=preview&edit_graph=1&id=' . $id_graph . '">' . 
-				html_print_image("images/chart_curve.png", true, array ("title" => __('Preview'))) .'</a>')
+		'view' => array('active' => false,
+			'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=' . $id_graph . '">' . 
+				html_print_image("images/chart_curve.png", true, array ("title" => __('View graph'))) .'</a>')
 		);
 		
 	$buttons[$active_tab]['active'] = true;
@@ -184,12 +184,9 @@ switch ($tab){
 	case "graph_editor":
 		ui_print_page_header ($head, "", false, "graph_editor", true, $buttons);
                 break;
-	case "preview":
-		ui_print_page_header ($head, "", false, "graph_view", true, $buttons);
-                break;
 	default:
-                ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
-                break;
+		ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
+		break;
 }
 
 if($add_graph)
@@ -243,9 +240,6 @@ switch ($active_tab) {
 		break;
 	case 'graph_editor':
 		require_once('godmode/reporting/graph_builder.graph_editor.php');
-		break;
-	case 'preview':
-		require_once('godmode/reporting/graph_builder.preview.php');
 		break;
 }
 ?>

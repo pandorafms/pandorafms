@@ -1,5 +1,10 @@
 2012-03-22  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/reporting/graph_builder.php: Changed the preview
+	tab target to the operation section merged from trunk
+
+2012-03-22  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/javascript/pandora.js
 	operation/agentes/stat_win.php: Fixed the period select

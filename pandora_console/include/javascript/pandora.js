@@ -602,14 +602,13 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 }
 
 /**
- * Manage events into html_extended_select_for_time
+ * Init values for html_extended_select_for_time
  * 
- * This function has all the events to manage the extended select
- * for time
+ * This function initialize the values of the control
  * 
  * @param name string with the name of the select for time
  */
-function period_select_events(name) {
+function period_select_init(name) {
 	// Manual mode is hidden by default
 	$('#'+name+'_manual').hide();
 	
@@ -623,7 +622,18 @@ function period_select_events(name) {
 		$('#'+name+'_manual').toggle();
 		$('#'+name+'_units option:last').removeAttr('selected');
 	}
-	
+
+}
+
+/**
+ * Manage events into html_extended_select_for_time
+ * 
+ * This function has all the events to manage the extended select
+ * for time
+ * 
+ * @param name string with the name of the select for time
+ */
+function period_select_events(name) {
 	$('.'+name+'_toggler').click(function() {
 		$('#'+name+'_default').toggle();
 		$('#'+name+'_manual').toggle();
@@ -649,7 +659,7 @@ function period_select_events(name) {
 	// the time in seconds is calculated into hidden input
 	$('#'+name+'_units').change(function() {
 		$('#'+name+'_select option:eq(0)').attr('selected', 'selected');
-		calculateSeconds();
+		calculateSeconds(name);
 	});
 	
 	// When write any character into custom input, it check to convert it to 
@@ -663,14 +673,18 @@ function period_select_events(name) {
 		$('#text-'+name+'_text').val(cleanValue);
 		
 		$('#'+name+'_select option:eq(0)').attr('selected', 'selected');
-		calculateSeconds();
+		calculateSeconds(name);
 	});
-	
-	// Calculate the custom time in seconds into hidden input
-	function calculateSeconds() {
-		var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
-		$('.'+name).val(calculated);
-	}
+}
+
+/**
+ * 
+ * Calculate the custom time in seconds into hidden input
+ * 
+ */
+function calculateSeconds(name) {
+	var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
+	$('.'+name).val(calculated);
 }
 
 /**

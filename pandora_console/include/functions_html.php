@@ -456,6 +456,7 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	echo "
 	<script type='text/javascript'>
 		$(document).ready (function () {
+			period_select_init('$uniq_name');
 			period_select_events('$uniq_name');
 		});
 	</script>

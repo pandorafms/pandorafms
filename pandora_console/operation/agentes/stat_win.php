@@ -55,6 +55,7 @@ if ($refresh > 0) {
 <script type='text/javascript' src='../../include/javascript/x_core.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_event.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_slide.js'></script>
+<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
 <script type='text/javascript' src='../../include/javascript/jquery.js'></script>
 <script type='text/javascript'><!--
 var defOffset = 2;
@@ -70,6 +71,12 @@ window.onload = function() {
 	xMoveTo(d, visibleMargin - menuW, 0);
 	xShow(d);
 	xAddEventListener(document, 'mousemove', docOnMousemove, false);
+
+	// Hack to repeat the init process to period select
+	var periodSelectId = $('[name="period"]').attr('class');
+
+	period_select_init(periodSelectId);
+
 };
 
 function docOnMousemove(evt) {

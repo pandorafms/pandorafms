@@ -1,5 +1,11 @@
 2012-03-22  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/reporting/graph_viewer.php: Add tab to link
+	the operation graph viewer with the administration side
+	merge from trunk
+
+2012-03-22  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/graph_builder.php: Changed the preview
 	tab target to the operation section merged from trunk
 

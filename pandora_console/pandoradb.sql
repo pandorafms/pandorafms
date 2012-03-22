@@ -904,6 +904,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_item` (
   `id_report_content` INTEGER UNSIGNED NOT NULL, 
   `id_agent_module` int(10) unsigned NOT NULL, 
   `server_name` text default '',
+  `operation` text default '',
   PRIMARY KEY(`id`),
   FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
      ON UPDATE CASCADE ON DELETE CASCADE 

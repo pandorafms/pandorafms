@@ -480,6 +480,8 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 						});
 						$(id_agent_module_selector).fadeIn ('normal');
 						$(id_agent_module_selector).removeAttr('disabled');
+						//enable operation select box
+						$(noneValue).removeAttr('disabled');
 					}
 				});
 			});

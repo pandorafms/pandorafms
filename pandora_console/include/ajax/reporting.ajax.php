@@ -88,11 +88,13 @@ if ($add_sla) {
 if ($add_general) {
 	$id_module = get_parameter('id_module', 0);
 	$server_name = get_parameter('server_name_general', '');
+	$operation = get_parameter('operation', '');
 	
 	$result = db_process_sql_insert('treport_content_item', array(
 		'id_report_content' => $id,
 		'id_agent_module' => $id_module,
-		'server_name' => $server_name));
+		'server_name' => $server_name,
+		'operation' => $operation));
 	
 	if ($result === false) {
 		$data['correct'] = 0;

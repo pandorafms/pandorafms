@@ -754,12 +754,14 @@ function print_SLA_list($width, $action, $idItem = null) {
 
 function print_General_list($width, $action, $idItem = null) {
 	global $config;
+	include_once('include/functions_html.php');
 	?>
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
 			<tr>
 				<th class="header" scope="col"><?php echo __('Agent');?></th>
 				<th class="header" scope="col"><?php echo __('Module');?></th>
+				<th class="header" scope="col"><?php echo __('Operation');?></th>
 				<th class="header" scope="col"><?php echo __('Action');?></th>
 			</tr>
 		</thead>
@@ -797,6 +799,7 @@ function print_General_list($width, $action, $idItem = null) {
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
+								<td>' . printSmallFont($item['operation']) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
@@ -812,6 +815,7 @@ function print_General_list($width, $action, $idItem = null) {
 						<tr id="row" style="display: none;" class="datos">
 							<td class="agent_name"></td>
 							<td class="module_name"></td>
+							<td class="operation_name"></td>
 							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -822,6 +826,8 @@ function print_General_list($width, $action, $idItem = null) {
 								<input id="hidden-server_name_general" name="server_name_general" value="" type="hidden">
 								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_general" id="text-agent_general" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
 							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
+							<?php $operation = array ('avg'=>'avg','max'=>'max','min'=>'min','sum'=>'sum'); ?>
+							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', true); ?></td>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -841,7 +847,8 @@ function print_General_list($width, $action, $idItem = null) {
 $(document).ready (function () {
 	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name');
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name');
-	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general');
+	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general');
+
 	chooseType();
 	chooseSQLquery();
 
@@ -1050,7 +1057,9 @@ function addGeneralRow() {
 	var idAgent = $("input[name=id_agent_general]").val();
 	var serverName = $("input[name=server_name_general]").val();
 	var idModule = $("#id_agent_module_general").val();
+	var operation = $("#id_operation_module_general").val();
 	var nameModule = $("#id_agent_module_general :selected").text();
+	var nameOperation = $("#id_operation_module_general :selected").text();
 
 	if (idAgent != '') {
 		//Truncate nameAgent
@@ -1083,11 +1092,27 @@ function addGeneralRow() {
 				nameModule = data;
 			}
 		});
+		//Truncate nameOperation
+		var params = [];
+		params.push("truncate_text=1");
+		params.push("text=" + nameOperation);
+		params.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				nameOperation = data;
+			}
+		});
 		var params = [];
 		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
 		params.push("id_module=" + idModule);
 		params.push("server_name_general=" + serverName);
+		params.push("operation=" + operation);
 		
 		params.push("page=include/ajax/reporting.ajax");
 		jQuery.ajax ({
@@ -1104,6 +1129,7 @@ function addGeneralRow() {
 					$("#row", row).attr('id', 'general_' + data['id']);
 					$(".agent_name", row).html(nameAgent);
 					$(".module_name", row).html(nameModule);
+					$(".operation_name", row).html(nameOperation);
 					$(".delete_button", row).attr('href', 'javascript: deleteGeneralRow(' + data['id'] + ');');
 					
 					$("#list_general").append($(row).html());
@@ -1117,6 +1143,14 @@ function addGeneralRow() {
 						$("<option></option>")
 						.attr ("value", 0)
 						.html ($("#module_general_text").html()));
+						
+					$("#id_operation_module_general").empty();
+					$("#id_operation_module_general").attr('disabled', 'true');
+					$("#id_operation_module_general").append(
+					$("<option></option>")
+						.attr ("value", 0)
+						//.html ($("#id_operation_general_text").html()));
+						.html ($("#operation_general_text").html()));
 				}
 			}
 		});

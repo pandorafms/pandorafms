@@ -187,3 +187,8 @@ UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
 ALTER TABLE `tusuario` ADD COLUMN `section` TEXT NOT NULL;
 
 ALTER TABLE `tusuario` ADD COLUMN `data_section` TEXT NOT NULL;
+
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+ALTER TABLE `treport_content_item` ADD COLUMN `operation` TEXT DEFAULT '';

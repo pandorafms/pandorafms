@@ -183,3 +183,8 @@ ALTER TABLE tusuario ADD COLUMN shortcut_data CLOB default '';
 ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
 
 ALTER TABLE tusuario ADD (data_section VARCHAR2(255) NOT NULL);
+
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+ALTER TABLE `treport_content_item` ADD (operation` CLOB default '');

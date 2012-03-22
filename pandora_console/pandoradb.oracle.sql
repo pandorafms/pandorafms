@@ -1022,7 +1022,8 @@ CREATE TABLE treport_content_item (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_report_content NUMBER(10, 0) NOT NULL REFERENCES treport_content(id_rc) ON DELETE CASCADE,
 	id_agent_module NUMBER(10, 0) NOT NULL,
-	server_name CLOB default ''
+	server_name CLOB default '',
+	operation CLOB default ''
 );
 
 CREATE SEQUENCE treport_content_item_s INCREMENT BY 1 START WITH 1;

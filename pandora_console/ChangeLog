@@ -1,3 +1,24 @@
+2012-03-22  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: added 'operation'
+	to treport_content_item table.
+
+	* godmode/reporting/reporting_builder.item_editor.php
+	  include/functions_reporting.php
+	  include/ajax/reporting.ajax.php
+	  include/javascript/pandora.js: Added operation: sum,max,min or avg to
+	global reports.
+
+	* images/sum.png
+	  images/avg.png
+	  images/min.png
+	  images/max.png: Added icons.
+
 2012-03-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php

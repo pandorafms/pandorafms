@@ -1744,6 +1744,7 @@
      $BackgroundAlpha2	= isset($Format["BackgroundAlpha2"]) ? $Format["BackgroundAlpha2"] : 20;
      $LabelingMethod	= isset($Format["LabelingMethod"]) ? $Format["LabelingMethod"] : LABELING_ALL;
      $LabelSkip		= isset($Format["LabelSkip"]) ? $Format["LabelSkip"] : 1;
+     $TicksFontSize	= isset($Format["TicksFontSize"]) ? $Format["TicksFontSize"] : $this->FontSize;
      $LabelRotation	= isset($Format["LabelRotation"]) ? $Format["LabelRotation"] : 0;
      $LabelValuesRotation	= isset($Format["LabelValuesRotation"]) ? $Format["LabelValuesRotation"] : 0;
      $SkippedAxisTicks	= isset($Format["SkippedAxisTicks"]) ? $Format["SkippedAxisTicks"] : $GridTicks+2;
@@ -1967,7 +1968,7 @@
                $ID++; $Skipped = TRUE;
                if ( $this->isValidLabel($Value,$LastValue,$LabelingMethod,$ID,$LabelSkip) )
                 {
-                 $Bounds    = $this->drawText($XPos,$YPos+$OuterTickWidth+$YLabelOffset,$Value,array("Angle"=>$LabelRotation,"Align"=>$LabelAlign));
+                 $Bounds    = $this->drawText($XPos,$YPos+$OuterTickWidth+$YLabelOffset,$Value,array("FontSize"=>$TicksFontSize,"Angle"=>$LabelRotation,"Align"=>$LabelAlign));
                  $TxtBottom = $YPos+$OuterTickWidth+2+($Bounds[0]["Y"]-$Bounds[2]["Y"]);
                  $MaxBottom = max($MaxBottom,$TxtBottom);
                  $LastValue = $Value;

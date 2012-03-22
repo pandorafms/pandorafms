@@ -1,3 +1,10 @@
+2012-03-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php
+	include/graphs/pChart/pDraw.class.php: Added to pchart library the
+	parameter to set an independent font size to graph ticks and set it
+	on the graph charts one point less
+
 2012-03-22 Miguel de Dios  <miguel.dedios@artica.es>
 	& Sergio Martin <sergio.martin@artica.es> using Gobby collaborative
 	real-time editor http://obby.0x539.de

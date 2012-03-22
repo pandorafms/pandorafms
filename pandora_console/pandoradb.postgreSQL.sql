@@ -815,7 +815,8 @@ CREATE TABLE "treport_content_item" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_report_content" INTEGER NOT NULL REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE,
 	"id_agent_module" INTEGER NOT NULL,
-	"server_name" TEXT DEFAULT ''
+	"server_name" TEXT DEFAULT '',
+	"operation" TEXT DEFAULT ''
 );
 
 CREATE TABLE "treport_custom_sql" (

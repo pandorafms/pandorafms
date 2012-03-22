@@ -297,7 +297,7 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
  * @return float The sumatory of the module values in the interval.
  */
 function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
-
+	global $config;
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -3265,7 +3265,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			switch ($group_by_agent) {
 				//0 means not group by agent
 				case 0:
-					$sql = sprintf("select id_agent_module, server_name from treport_content_item
+					$sql = sprintf("select id_agent_module, server_name, operation from treport_content_item
 						where id_report_content = %d", $content['id_rc']);
 					
 					$generals = db_process_sql ($sql);
@@ -3282,12 +3282,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table1->head = array ();
 					$table1->head[0] = __('Agent');
 					$table1->head[1] = __('Module');
-					$table1->head[2] = __('Value');
+					$table1->head[2] = __('Operation');
+					$table1->head[3] = __('Value');
 					$table1->style[0] = 'text-align: left';
 					$table1->style[1] = 'text-align: left';
-					$table1->style[2] = 'text-align: right';
+					$table1->style[2] = 'text-align: left';
+					$table1->style[3] = 'text-align: center';
 					
-					$data_avg = array();
+					$data_res = array();
+
 					foreach ($generals as $key => $row) {
 						//Metaconsole connection
 						$server_name = $row ['server_name'];
@@ -3301,13 +3304,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						
 						$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
 						$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
+
+						switch ($row['operation']) {
+							case 'sum':
+									$data_res[$key] = reporting_get_agentmodule_data_sum ($row['id_agent_module'], $content['period'], $report["datetime"]);
+									break;
+							case 'max':
+									$data_res[$key] = reporting_get_agentmodule_data_max ($row['id_agent_module'], $content['period']);
+									break;
+							case 'min':
+									$data_res[$key] = reporting_get_agentmodule_data_min ($row['id_agent_module'], $content['period']);
+									break;
+							case 'avg':
+							default:
+								$data_res[$key] = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
+								break;
+						}
+
 						$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $row ['id_agent_module']);
-						
-						$data_avg[$key] = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
 						$id_agent_module[$key] = $row['id_agent_module'];
 						$agent_name[$key] = $ag_name;
 						$module_name[$key] = $mod_name;
 						$units[$key] = $unit;
+						$operations[$key] = $row['operation'];
 						
 						//Restore dbconnection
 						if (($config ['metaconsole'] == 1) && $server_name != '') {
@@ -3319,24 +3338,43 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						switch ($order_uptodown) {
 							//Descending
 							case 1:
-								array_multisort($data_avg, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+								array_multisort($data_res, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 								break;
 							//Ascending
 							case 2:
-								array_multisort($data_avg, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+								array_multisort($data_res, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 								break;
 						}
 						$i=0;
-						foreach ($data_avg as $d) {
+						foreach ($data_res as $d) {
 							$data = array();
 							$data[0] = $agent_name[$i];
 							$data[1] = $module_name[$i];
+							
+							switch ($operations[$i]) {
+								case 'sum':
+									$op = __('Summatory');
+									break;
+								case 'min':
+									$op = __('Minimal');
+									break;
+								case 'max':
+									$op = __('Maximun');
+									break;
+								case 'avg':
+								default:
+									$op = __('Average');
+									break;
+							}
+							$data[2] = $op;
+
 							if ($d === false) {
-								$data[2] = '--';
+								$data[3] = '--';
 							}
 							else {
-							$data[2] = format_for_graph($d, 2) . " " . $units[$i];
+							$data[3] = format_for_graph($d, 2) . " " . $units[$i];
 							}
+
 							array_push ($table1->data, $data);
 							$i++;
 						}
@@ -3349,11 +3387,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$data = array();
 							$data[0] = $agent_name[$i];
 							$data[1] = $module_name[$i];
-							if ($data_avg[$i] === false) {
+							if ($data_res[$i] === false) {
 								$data[2] = '--';
 							}
 							else {
-								$data[2] = format_for_graph($data_avg[$i], 2) . " " . $units[$i];
+								$data[2] = format_for_graph($data_res[$i], 2) . " " . $units[$i];
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -3368,7 +3406,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				//1 means group by agent
 				case 1:
 					//Get the data
-					$sql_data = sprintf("select id_agent_module, server_name from treport_content_item
+					$sql_data = sprintf("select id_agent_module, server_name, operation from treport_content_item
 						where id_report_content = %d", $content['id_rc']);
 					$generals = db_process_sql ($sql_data);
 					
@@ -3382,8 +3420,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$agent_list = array();
 					$modules_list = array();
-					foreach ($generals as $general) {
-						
+					$operation_list = array();
+					foreach ($generals as $general) {					
 						//Metaconsole connection
 						$server_name = $general ['server_name'];
 						if (($config ['metaconsole'] == 1) && $server_name != '') {
@@ -3393,7 +3431,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								continue;
 							}
 						}
-						
 						$ag_name = modules_get_agentmodule_agent_name ($general ['id_agent_module']);
 						if (!in_array ($ag_name, $agent_list)) {
 							array_push ($agent_list, $ag_name);
@@ -3402,7 +3439,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						if (!in_array ($mod_name, $modules_list)) {
 							array_push ($modules_list, $mod_name);
 						}
-						
+						if (!in_array ($general['operation'], $operation_list)) {
+							array_push ($operation_list, $general['operation']);
+						}
 						//Restore dbconnection
 						if (($config ['metaconsole'] == 1) && $server_name != '') {
 							metaconsole_restore_db();
@@ -3413,21 +3452,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table2->data = array ();
 					$table2->head = array ();
 					$table2->head[0] = __('Agent');
-					$table2->style[0] = 'text-align: center';
+					$table2->style[0] = 'text-align: left';
 					$i = 1;
+					$x = 0;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = ui_print_truncate_text($m, 20, false);
+						$table2->head[$i] = ui_print_truncate_text($m, 20, false).' ('.$operation_list[$x].')';
 						$table2->style[$i] = 'text-align: center';
 						$i++;
+						$x++;
 					}
-
 					foreach ($agent_list as $a) {
 						$data = array();
 						$data[0] = $a;
 						$i = 1;
 						foreach ($modules_list as $m) {
 							foreach ($generals as $g) {
-								
 								//Metaconsole connection
 								$server_name = $g ['server_name'];
 								if (($config ['metaconsole'] == 1) && $server_name != '') {
@@ -3437,18 +3476,31 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 										continue;
 									}
 								}
-								
 								$agent_name = modules_get_agentmodule_agent_name ($g['id_agent_module']);
 								$module_name = modules_get_agentmodule_name ($g['id_agent_module']);
 								$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
 								$found = false;
 								if (strcmp($a, $agent_name) == 0 && strcmp($m, $module_name) == 0) {
-									$value_avg = reporting_get_agentmodule_data_average($g['id_agent_module'], $content['period']);
+									switch ($g['operation']) {
+										case 'sum':
+											$value_res = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
+											break;
+										case 'max':
+											$value_res = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
+											break;
+										case 'min':
+											$value_res = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
+											break;
+										case 'avg':
+										default:
+											$value_res = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+											break;
+									}
 									
-									if ($value_avg === false) {
+									if ($value_res === false) {
 										$data[$i] = '--';
 									} else {
-										$data[$i] = format_for_graph($value_avg, 2) . " " . $unit;
+										$data[$i] = format_for_graph($value_res, 2) . " " . $unit;
 									}
 									$found = true;
 								}
@@ -3488,8 +3540,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							continue;
 						}
 					}
-					
-					$min = reporting_get_agentmodule_data_average($generals[$i]['id_agent_module'], $content['period']);
+					switch ($generals[$i]['operation']) {
+						case 'sum':
+								$min = reporting_get_agentmodule_data_sum ($generals[$i]['id_agent_module'], $content['period'], $report["datetime"]);
+								break;
+						case 'max':
+								$min = reporting_get_agentmodule_data_max ($generals[$i]['id_agent_module'], $content['period']);
+								break;
+						case 'min':
+								$min = reporting_get_agentmodule_data_min ($generals[$i]['id_agent_module'], $content['period']);
+								break;
+						case 'avg':
+						default:
+							$min = reporting_get_agentmodule_data_average ($generals[$i]['id_agent_module'], $content['period']);
+							break;
+					}
 					$i++;
 					
 					//Restore dbconnection
@@ -3515,8 +3580,22 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							continue;
 						}
 					}
-					
-					$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+					switch ($g['operation']) {
+						case 'sum':
+							$value = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
+							break;
+						case 'max':
+							$value = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
+							break;
+						case 'min':
+							$value = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
+							break;
+						case 'avg':
+						default:
+							$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+							break;
+					}
+	
 					if ($value !== false) {
 						if ($value > $max) {
 							$max = $value;
@@ -3539,7 +3618,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				else {
 					$avg = $avg / $length;
 				}
-				
 				
 				unset($table_summary);
 				

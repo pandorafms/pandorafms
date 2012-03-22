@@ -170,3 +170,9 @@ ALTER TABLE "tusuario" ADD COLUMN "shortcut_data" text default '';
 ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL;
 
 ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL;
+
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
+ALTER TABLE "treport_content_item" ADD COLUMN "operation" text default '';
+

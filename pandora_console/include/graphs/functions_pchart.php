@@ -705,9 +705,35 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 		($height - $water_mark_height) - $margin_bottom, $water_mark);
 	 }
 
+	 // Get the max number of scale
+	 $max_all = 0;
+	 foreach($data as $serie) {
+		 $max_this_serie = max($serie);
+		 if($max_this_serie > $max_all) {
+			$max_all = $max_this_serie; 
+		 }
+	 }
+	 
+	 // Get the number of digits of the scale
+	 $digits_left = 0;
+	 while($max_all > 1) {
+		$digits_left ++;
+		$max_all /= 10;
+	 }
+
+	 // If the number is less than 1 we count the decimals
+	 if($digits_left == 0){ 
+		while($max_all < 1) {
+			$digits_left ++;
+			$max_all *= 10;
+		}
+	 }
+
+	 $chart_size = ($digits_left * $font_size) + 20;
+
 	/* Area depends on yaxisname */
 	if ($yaxisname != ''){
-		$chart_size = 80;	
+		$chart_size += 40;	
 	}
 	else{
 		$chart_size = 40;

@@ -67,7 +67,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 		if ($utimestamp == '') { continue; }	
 		$data[0] = '';
 		$data[1] = $cont;
-		$data[2] = date('d M Y H:i:s', $utimestamp);
+		$data[2] = date($config["date_format"], $utimestamp);
 		$data[3] = $utimestamp;
 		$data[4] = $row['sum'];
 		$data[5] = $utimestamp * $row['sum'];
@@ -137,6 +137,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	
 	$b_num = (($cont * $sum_xi_yi) - ($sum_xi * $sum_yi));
 	$b_den = (($cont * $sum_xi2) - ($sum_xi * $sum_xi));
+	if ($b_den == 0) return;
 	$b = $b_num / $b_den;
 
 	$a_num = ($sum_yi) - ($b * $sum_xi);

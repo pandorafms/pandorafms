@@ -2126,7 +2126,9 @@ function sla_value_asc_cmp($a, $b)
 /**
  * Make the header for each content.
  */
-function header_content($mini, $content, $report, &$table, $title = false, $name = false, $period = false) {
+function reporting_header_content($mini, $content, $report, &$table, $title = false, $name = false, $period = false) {
+	global $config;
+	
 	if ($mini) {
 		$sizh = '';
 		$sizhfin = '';
@@ -2155,8 +2157,8 @@ function header_content($mini, $content, $report, &$table, $title = false, $name
 	else {
 		$data[] = "<div style='text-align: right;'>" . $sizh .
 			"(" . human_time_description_raw ($content['period']) . ") " .
-			__("From:") . " " . date("Y-m-d H:i", $report["datetime"] - $content['period']) . "<br />" .
-			__("To:") . " " . date("Y-m-d H:i", $report["datetime"]) . "<br />" .
+			__("From:") . " " . date($config["date_format"], $report["datetime"]) . "<br />" .
+			__("To:") . " " . date($config["date_format"], $report["datetime"] - $content['period']) . "<br />" .
 			$sizhfin . "</div>";
 	}
 	
@@ -2212,7 +2214,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':
-			header_content($mini, $content, $report, $table, __('Simple graph'),
+			reporting_header_content($mini, $content, $report, $table, __('Simple graph'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2236,7 +2238,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			break;		
 		case 'projection_graph':
-			header_content($mini, $content, $report, $table, __('Projection graph'),
+			reporting_header_content($mini, $content, $report, $table, __('Projection graph'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2285,7 +2287,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);			
 			break;
 		case 'prediction_date':
-			header_content($mini, $content, $report, $table, __('Prediction date'),
+			reporting_header_content($mini, $content, $report, $table, __('Prediction date'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2318,7 +2320,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'simple_baseline_graph':
-			header_content($mini, $content, $report, $table, __('Simple baseline graph'),
+			reporting_header_content($mini, $content, $report, $table, __('Simple baseline graph'),
 				ui_print_truncate_text($agent_name, 65, false).' <br> ' . ui_print_truncate_text($module_name, 65, false));
 			
 			//RUNNING
@@ -2358,7 +2360,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'custom_graph':
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			
-			header_content($mini, $content, $report, $table, __('Custom graph'),
+			reporting_header_content($mini, $content, $report, $table, __('Custom graph'),
 				ui_print_truncate_text($graph['name'], 25, false));
 			
 			//RUNNING
@@ -2410,7 +2412,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 3:
 		case 'SLA':
-			header_content($mini, $content, $report, $table, __('S.L.A.'));
+			reporting_header_content($mini, $content, $report, $table, __('S.L.A.'));
 			
 			$show_graph = $content['show_graph'];
 			//RUNNING
@@ -2638,7 +2640,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 6:
 		case 'monitor_report':
-			header_content($mini, $content, $report, $table, __('Monitor report'),
+			reporting_header_content($mini, $content, $report, $table, __('Monitor report'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
 			
 			//RUNNING
@@ -2671,7 +2673,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 7:
 		case 'avg_value':
-			header_content($mini, $content, $report, $table, __('Avg. Value'),
+			reporting_header_content($mini, $content, $report, $table, __('Avg. Value'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2700,7 +2702,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 8:
 		case 'max_value':
-			header_content($mini, $content, $report, $table, __('Max. Value'),
+			reporting_header_content($mini, $content, $report, $table, __('Max. Value'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2724,7 +2726,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 9:
 		case 'min_value':
-			header_content($mini, $content, $report, $table, __('Min. Value'),
+			reporting_header_content($mini, $content, $report, $table, __('Min. Value'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2753,7 +2755,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 10:
 		case 'sumatory':
-			header_content($mini, $content, $report, $table, __('Summatory'),
+			reporting_header_content($mini, $content, $report, $table, __('Summatory'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
@@ -2784,7 +2786,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'agent_detailed_event':
 		case 'event_report_agent':
-			header_content($mini, $content, $report, $table, __('Agent detailed event'),
+			reporting_header_content($mini, $content, $report, $table, __('Agent detailed event'),
 				ui_print_truncate_text(agents_get_name($content['id_agent']), 75, false));
 			
 			//RUNNING
@@ -2803,7 +2805,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'text':
-			header_content($mini, $content, $report, $table, __('Text'),
+			reporting_header_content($mini, $content, $report, $table, __('Text'),
 				"", "");
 			
 			if ($content["description"] != ""){
@@ -2816,7 +2818,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[2][0] = 2;
 			break;
 		case 'sql':
-			header_content($mini, $content, $report, $table, __('SQL'),
+			reporting_header_content($mini, $content, $report, $table, __('SQL'),
 				"", "");
 			
 			// Put description at the end of the module (if exists)
@@ -2886,7 +2888,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'sql_graph_pie':
 		case 'sql_graph_vbar':
 		case 'sql_graph_hbar':
-			header_content($mini, $content, $report, $table, __('User defined graph') . " (".__($content["type"])  .")",
+			reporting_header_content($mini, $content, $report, $table, __('User defined graph') . " (".__($content["type"])  .")",
 				"", "");
 			
 			// Put description at the end of the module (if exists)
@@ -2914,7 +2916,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 
 		case 'event_report_group':
-			header_content($mini, $content, $report, $table, __('Group detailed event'),
+			reporting_header_content($mini, $content, $report, $table, __('Group detailed event'),
 				ui_print_truncate_text(groups_get_name($content['id_group'], true), 60, false));
 			
 			// Put description at the end of the module (if exists)
@@ -2932,7 +2934,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 
 		case 'event_report_module':
-			header_content($mini, $content, $report, $table, __('Module detailed event'),
+			reporting_header_content($mini, $content, $report, $table, __('Module detailed event'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> ' . ui_print_truncate_text($module_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -2949,7 +2951,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'alert_report_module':
-			header_content($mini, $content, $report, $table, __('Alert report module'),
+			reporting_header_content($mini, $content, $report, $table, __('Alert report module'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -2966,7 +2968,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break; 
 		case 'alert_report_agent':
-			header_content($mini, $content, $report, $table, __('Alert report agent'),
+			reporting_header_content($mini, $content, $report, $table, __('Alert report agent'),
 				ui_print_truncate_text($agent_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -2983,7 +2985,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'url':
-			header_content($mini, $content, $report, $table, __('Import text from URL'),
+			reporting_header_content($mini, $content, $report, $table, __('Import text from URL'),
 				ui_print_truncate_text($content["external_source"], 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -3005,7 +3007,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'database_serialized':
-			header_content($mini, $content, $report, $table, __('Serialize data'),
+			reporting_header_content($mini, $content, $report, $table, __('Serialize data'),
 				ui_print_truncate_text($module_name, 75, false));
 			
 			// Put description at the end of the module (if exists)
@@ -3063,7 +3065,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[1][0] = 2;
 			break;
 		case 'TTRT':
-			header_content($mini, $content, $report, $table, __('TTRT'),
+			reporting_header_content($mini, $content, $report, $table, __('TTRT'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -3089,7 +3091,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'TTO':
-			header_content($mini, $content, $report, $table, __('TTO'),
+			reporting_header_content($mini, $content, $report, $table, __('TTO'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -3115,7 +3117,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'MTBF':
-			header_content($mini, $content, $report, $table, __('MTBF'),
+			reporting_header_content($mini, $content, $report, $table, __('MTBF'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -3141,7 +3143,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'MTTR':
-			header_content($mini, $content, $report, $table, __('MTTR'),
+			reporting_header_content($mini, $content, $report, $table, __('MTTR'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
 			
 			// Put description at the end of the module (if exists)
@@ -3172,7 +3174,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Get events of the last 8 hours
 			$events = events_get_group_events ($content['id_group'], 28800, $report['datetime']);
 			
-			header_content($mini, $content, $report, $table, __('Group report').': "'.$group_name.'"');
+			reporting_header_content($mini, $content, $report, $table, __('Group report').': "'.$group_name.'"');
 			
 			$data = array ();
 			$table->colspan[0][0] = 7;
@@ -3243,7 +3245,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			break;
 		case 'general':
-			header_content($mini, $content, $report, $table, __('General'));
+			reporting_header_content($mini, $content, $report, $table, __('General'));
 			
 			$group_by_agent = $content['group_by_agent'];
 			$order_uptodown = $content['order_uptodown'];
@@ -3558,7 +3560,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		case 'top_n':
-			header_content($mini, $content, $report, $table, __('Top').' '.$content['top_n_value']);
+			reporting_header_content($mini, $content, $report, $table, __('Top').' '.$content['top_n_value']);
 			
 			$order_uptodown = $content['order_uptodown'];
 			$top_n = $content['top_n'];
@@ -3660,16 +3662,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			switch ($top_n) {
 				//Max
 				case 1:
-					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 				//Min
 				case 2:
-					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 				//By agent name or without selection
 				case 0:
 				case 3:
-					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 			}
 			
@@ -3687,16 +3689,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			switch ($order_uptodown) {
 				//Descending
 				case 1:
-					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 				//Ascending
 				case 2:
-					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 				//By agent name or without selection
 				case 0:
 				case 3:
-					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 			}
 			
@@ -3846,7 +3848,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$title_exeption .= ' - '.__('Modules at critical or warning status');
 					break;
 			}
-			header_content($mini, $content, $report, $table, $title_exeption);
+			reporting_header_content($mini, $content, $report, $table, $title_exeption);
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
@@ -4097,7 +4099,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		case 'agent_module':
-			header_content($mini, $content, $report, $table, __('Agents/Modules'));
+			reporting_header_content($mini, $content, $report, $table, __('Agents/Modules'));
 		
 			$id_group = $content['id_group'];
 			$id_module_group = $content['id_module_group'];
@@ -4176,7 +4178,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					continue;
 				}
 				
-				$file_name = string2image(ui_print_truncate_text($module['name'], 30, false, true, false, '...'), false, false, 6, 270, '#9EAC8B', 'FFF', 4, 0);
+				$file_name = string2image(ui_print_truncate_text($module['name'], 30, false, true, false, '...'), false, false, 6, 270, '#90B165', 'FFF', 4, 0);
 				$table_data .= '<th width="22px">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 			}
 			

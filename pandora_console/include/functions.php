@@ -558,9 +558,10 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
  * @return int The current time minus the seconds given.
  */
 function human_date_relative ($seconds) {
-	$ahora=date("Y/m/d H:i:s");
+	$ahora = date("Y/m/d H:i:s");
 	$ahora_s = date("U");
 	$ayer = date ("Y/m/d H:i:s", $ahora_s - $seconds);
+	
 	return $ayer;
 }
 
@@ -579,6 +580,7 @@ function render_time ($lapse) {
 		$output .= "00";
 	else
 		$output .= $mymin;
+	
 	return $output;
 }
 
@@ -599,7 +601,7 @@ function get_parameterBetweenListValues ($name, $values, $default) {
 	// POST has precedence
 	if (isset($_POST[$name]))
 		$parameter = get_parameter_post ($name, $default);
-
+	
 	if (isset($_GET[$name]))
 		$parameter = get_parameter_get ($name, $default);
 		
@@ -767,58 +769,105 @@ function get_report_types () {
 	global $config;
 	
 	$types = array ();
-	$types['simple_graph'] = __('Simple graph');
-	if($config['enterprise_installed']) {
-		$types['simple_baseline_graph'] = __('Simple baseline graph');
-	}
-	$types['custom_graph'] = __('Custom graph');
-	$types['SLA'] = __('S.L.A.');
-	$types['monitor_report'] = __('Monitor report');
-	$types['avg_value'] = __('Avg. Value');
-	$types['max_value'] = __('Max. Value');
-	$types['min_value'] = __('Min. Value');
-	$types['sumatory'] = __('Summatory');
-	//$types['agent_detailed'] = __('Agent detailed view');
-	$types['text'] = __ ('Text');
 	
+	$types['simple_graph'] = array('optgroup' => __('Graphs'), 
+		'name' => __('Simple graph'));
+	if($config['enterprise_installed']) {
+		$types['simple_baseline_graph'] = array('optgroup' => __('Graphs'),
+			'name' => __('Simple baseline graph'));
+	}
+	$types['custom_graph'] = array('optgroup' => __('Graphs'),
+			'name' => __('Custom graph'));
 	# Only pandora managers have access to the whole database
 	if (check_acl ($config['id_user'], 0, "PM")) {
-		$types['sql'] = __('SQL query');
-		$types['sql_graph_vbar'] = __('SQL vertical bar graph');
-		$types['sql_graph_pie'] = __('SQL pie graph');
-		$types['sql_graph_hbar'] = __('SQL horizonal bar graph');
+		$types['sql_graph_vbar'] = array('optgroup' => __('Graphs'),
+			'name' => __('SQL vertical bar graph'));
+		$types['sql_graph_pie'] = array('optgroup' => __('Graphs'),
+			'name' => __('SQL pie graph'));
+		$types['sql_graph_hbar'] = array('optgroup' => __('Graphs'),
+			'name' => __('SQL horizonal bar graph'));
 	}
-
-	$types['url'] = __('Import text from URL');
-	$types['database_serialized'] = __('Serialize data');
-	$types['TTRT'] = __('TTRT');
-	$types['TTO'] = __('TTO');
-	$types['MTBF'] = __('MTBF');
-	$types['MTTR'] = __('MTTR');
-	$types['alert_report_module'] = __('Alert report module'); 
-	$types['alert_report_agent'] = __('Alert report agent');
-	$types['event_report_agent'] = __('Event report agent'); 
-	$types['event_report_module'] = __('Event report module'); 
-	$types['event_report_group'] = __('Event report group');
-	$types['general'] = __('General');
-	$types['group_report'] = __('Group report');
-	$types['top_n'] = __('Top n');
-	$types['exception'] = __('Exception');
+	
+	
+	
+	$types['TTRT'] = array('optgroup' => __('ITIL'),
+			'name' => __('TTRT'));
+	$types['TTO'] = array('optgroup' => __('ITIL'),
+			'name' => __('TTO'));
+	$types['MTBF'] = array('optgroup' => __('ITIL'),
+			'name' => __('MTBF'));
+	$types['MTTR'] = array('optgroup' => __('ITIL'),
+			'name' => __('MTTR'));
+	
+	
+	
+	$types['SLA'] = array('optgroup' => __('SLA'),
+			'name' => __('S.L.A.'));
+	
+	
+	
+	$types['prediction_date'] = array('optgroup' => __('Forecating'),
+			'name' => __('Prediction date'));
+	$types['projection_graph'] = array('optgroup' => __('Forecating'),
+			'name' => __('Projection graph'));
+	
+	
+	
+	$types['avg_value'] = array('optgroup' => __('Modules'),
+			'name' => __('Avg. Value'));
+	$types['max_value'] = array('optgroup' => __('Modules'),
+			'name' => __('Max. Value'));
+	$types['min_value'] = array('optgroup' => __('Modules'),
+			'name' => __('Min. Value'));
+	$types['monitor_report'] = array('optgroup' => __('Modules'),
+			'name' => __('Monitor report'));
+	$types['database_serialized'] = array('optgroup' => __('Modules'),
+			'name' => __('Serialize data'));
+	$types['sumatory'] = array('optgroup' => __('Modules'),
+			'name' => __('Summatory'));
+	
+	
+	
+	$types['general'] = array('optgroup' => __('Grouped'),
+			'name' => __('General'));
+	$types['group_report'] = array('optgroup' => __('Grouped'),
+			'name' => __('Group report'));
+	$types['exception'] = array('optgroup' => __('Grouped'),
+			'name' => __('Exception'));
 	if ($config['metaconsole'] != 1)
-		$types['agent_module'] = __('Agents/Modules');
-	$types['projection_graph'] = __('Projection graph');
-	$types['prediction_date'] = __('Prediction date');
-//	$types['agent_detailed_event'] = __('Agent detailed event');
-//	$types['list_events_module'] = __('List events of module');
-//	$types['list_events_agent'] = __('List events of agent');
-//	$types['list_alerts_agent'] = __('List alerts of agent');
-//	$types['list_alerts_module'] = __('List alerts of module');
-//	$types['agent_detailed_event_pie_char'] = __('Agent detailed pie chart events');
-//	$types['agent_detailed_event_last_hours'] = __('Agent detailed event in last hours');
-//	$types['agent_detailed_alert_last_hours'] = __('Agent detailed alerts in last hours');
-//	$types['agent_detailed_num_modules'] = __('Agent detailed num modules');
-//	$types['agent_detailed_num_alerts'] = __('Agent detailed num alerts');
-
+		$types['agent_module'] = array('optgroup' => __('Grouped'),
+			'name' => __('Agents/Modules'));
+	# Only pandora managers have access to the whole database
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		$types['sql'] = array('optgroup' => __('Grouped'),
+			'name' => __('SQL query'));
+	}
+	$types['top_n'] = array('optgroup' => __('Grouped'),
+			'name' => __('Top n'));
+	
+	
+	
+	$types['text'] = array('optgroup' => __('Text/HTML '),
+			'name' => __ ('Text'));
+	$types['url'] = array('optgroup' => __('Text/HTML '),
+			'name' => __('Import text from URL'));
+	
+	
+	
+	$types['alert_report_module'] = array('optgroup' => __('Alerts'),
+			'name' => __('Alert report module')); 
+	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
+			'name' => __('Alert report agent'));
+	
+	
+	
+	$types['event_report_agent'] = array('optgroup' => __('Events'),
+			'name' => __('Event report agent')); 
+	$types['event_report_module'] = array('optgroup' => __('Events'),
+			'name' => __('Event report module')); 
+	$types['event_report_group'] = array('optgroup' => __('Events'),
+			'name' => __('Event report group'));
+	
 	return $types;
 }
 
@@ -833,7 +882,8 @@ function get_report_name ($type) {
 	$types = get_report_types ();
 	if (! isset ($types[$type]))
 		return __('Unknown');
-	return $types[$type];
+	
+	return $types[$type]['name'];
 }
 
 /**
@@ -847,37 +897,41 @@ function get_report_name ($type) {
  */
 function get_report_type_data_source ($type) {
 	switch ($type) {
-	case 1:
-	case 'simple_graph':
-	case 6: 
-	case 'monitor_report':
-	case 7:
-	case 'avg_value':
-	case 8:
-	case 'max_value':
-	case 9:
-	case 'min_value':
-	case 10:
-	case 'sumatory':
-	case 'agent_detailed_event':
-		return 'module';
-	case 2:
-	case 'custom_graph':
-		return 'custom-graph';
-	case 3:
-	case 'SLA':
-	case 4:
-	case 'event_report':
-	case 5:
-	case 'alert_report':
-	case 11:
-	case 'general_group_report':
-	case 12:
-	case 'monitor_health':
-	case 13:
-	case 'agents_detailed':
-		return 'agent-group';
+		case 1:
+		case 'simple_graph':
+		case 6: 
+		case 'monitor_report':
+		case 7:
+		case 'avg_value':
+		case 8:
+		case 'max_value':
+		case 9:
+		case 'min_value':
+		case 10:
+		case 'sumatory':
+		case 'agent_detailed_event':
+			return 'module';
+			break;
+		case 2:
+		case 'custom_graph':
+			return 'custom-graph';
+			break;
+		case 3:
+		case 'SLA':
+		case 4:
+		case 'event_report':
+		case 5:
+		case 'alert_report':
+		case 11:
+		case 'general_group_report':
+		case 12:
+		case 'monitor_health':
+		case 13:
+		case 'agents_detailed':
+			return 'agent-group';
+			break;
 	}
+	
 	return 'unknown';
 }
 

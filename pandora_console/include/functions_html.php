@@ -45,7 +45,21 @@ function html_debug_print ($var, $file = '') {
 	if (strlen($file) > 0) {
 		$f = fopen($file, "a");
 		ob_start();
-		echo date("Y/m/d H:i:s") . "\n";
+		$more_info = '';
+		if (is_string($var)) {
+			$more_info = 'size: ' . strlen($var);
+		}
+		elseif (is_bool($var)) {
+			$more_info = 'val: ' . 
+				($var ? 'true' : 'false');
+		}
+		elseif (is_null($var)) {
+			$more_info = 'is null';
+		}
+		elseif (is_array($var)) {
+			$more_info = count($var);
+		}
+		echo date("Y/m/d H:i:s") . " (" . gettype($var) . ") " . $more_info . "\n";
 		print_r($var);
 		echo "\n\n";
 		$output = ob_get_clean();

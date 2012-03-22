@@ -1,3 +1,24 @@
+2012-03-22 Miguel de Dios  <miguel.dedios@artica.es>
+	& Sergio Martin <sergio.martin@artica.es> using Gobby collaborative
+	real-time editor http://obby.0x539.de
+	
+	* include/functions.php: changed into the function "get_report_types" the
+	array types to tree for show better the select box, and changed into the
+	function "get_report_name".
+	
+	* include/functions_forecast.php: fixed into the function
+	"forecast_projection_graph" when zero data and change to user the user conf
+	style for the dates.
+
+	* include/functions_html.php: the function "html_debug_print" was improved
+	to show type and sizes.
+
+	* include/functions_reporting.php: renamed the function "header_content" to
+	"reporting_header_content" and in this function change to use the user conf
+	style for the dates.
+	
+	* include/functions_networkmap.php: cleaned source code style.
+	
 2012-03-22  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/reporting/graph_viewer.php: Add tab to link

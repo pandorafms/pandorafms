@@ -705,8 +705,9 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 	$networkmaps = array();
 	foreach($networkmaps_raw as $key => $networkmapitem) {
 		if($optgrouped) {
-			$networkmaps[$networkmapitem['id_networkmap']] = array('name' => $networkmapitem['name'], 
-			'optgroup' => $networkmapitem['type']);
+			$networkmaps[$networkmapitem['id_networkmap']] = 
+				array('name' => $networkmapitem['name'], 
+					'optgroup' => $networkmapitem['type']);
 		}
 		else {
 			$networkmaps[$networkmapitem['id_networkmap']] = $networkmapitem['name'];

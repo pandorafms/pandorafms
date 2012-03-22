@@ -737,7 +737,12 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		 "GridG"=>200,
 		 "GridB"=>200,
 		 "DrawSubTicks"=>TRUE,
-		 "CycleBackground"=>TRUE, "Mode" => $mode, "LabelRotation" => 60, "XMargin" => 0, "MinDivHeight" => 20);
+		 "CycleBackground"=>TRUE, 
+		 "Mode" => $mode, 
+		 "LabelRotation" => 40, 
+		 "XMargin" => 0, 
+		 "MinDivHeight" => 20,
+		 "TicksFontSize" => $font_size - 1);
 	 $myPicture->drawScale($scaleSettings);
 	 
 	 /* Turn on shadow computing */ 

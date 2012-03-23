@@ -29,7 +29,7 @@ echo '<div class="databox_login" id="login">';
 //echo '<br /><br /><br />';
 echo '
 	<div id="login_in">
-		<form method="post" action="index.php'.$url.'">
+		<form method="post" autocomplete="off" action="index.php'.$url.'">
 		<table cellpadding="4" cellspacing="1" width="420">';
 
 if (isset ($login_failed)) {

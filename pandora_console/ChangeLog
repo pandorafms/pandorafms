@@ -1,3 +1,10 @@
+2012-03-22  Sancho Lerena <sleerna@artica.es>
+
+	* include/functions_html.php
+	general/login_page.php: Small changes to use "autocomplete=off" in all
+	password fields, and used also in login form to avoid autocompletion of
+	user password. Please, port to TRUNK.
+
 2012-03-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php: Added calculation

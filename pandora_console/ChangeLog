@@ -1,3 +1,8 @@
+2012-03-23  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/help/en/help_wmifield.php
+	  include/help/es/help_wmifield.php: Fixed wmi field help.
+
 2012-03-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php: Added calculation

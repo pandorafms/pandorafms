@@ -1642,7 +1642,7 @@ sub pandora_module_keep_alive_nd {
 					AND tagente.disabled = 0 
 					AND tagente_modulo.id_tipo_modulo = 100 
 					AND tagente_modulo.disabled = 0 
-					AND (' . db_text ('tagente_estado.datos') . ' = 1 OR ' . db_text ('tagente_estado.datos') . '= \'\')
+					AND (' . db_text ('tagente_estado.datos') . ' = \'1.00\' OR ' . db_text ('tagente_estado.datos') . '= \'\')
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 					AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 

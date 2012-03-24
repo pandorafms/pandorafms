@@ -1,5 +1,9 @@
 2012-03-24  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/db/postgresql.php: Fixed SQL error with PostgreSQL.
+
+2012-03-24  Junichi Satoh  <junichi@rworks.jp>
+
 	* operation/agentes/status_monitor.php: Fixed SQL error with PostgreSQL.
 	
 2012-03-24  Junichi Satoh  <junichi@rworks.jp>

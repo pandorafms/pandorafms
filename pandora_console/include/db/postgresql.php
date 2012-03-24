@@ -57,6 +57,9 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
  * @return mixed Value of first column of the first row. False if there were no row.
  */
 function postgresql_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
+	if ($field_search[0] == '`')
+		$field_search = str_replace ('`', '', $field_search);
+
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);

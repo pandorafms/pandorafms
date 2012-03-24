@@ -278,7 +278,7 @@ function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnecti
  */
 function postgresql_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY "'.$order_field . '" ' . $order);
+		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY '.$order_field . ' ' . $order);
 	}
 	else {	
 		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'"');
@@ -789,7 +789,7 @@ function postgresql_db_get_all_fields_in_table ($table, $field = '', $condition 
 	}
 
 	if ($order_field != "")
-		$sql .= sprintf (" ORDER BY \"%s\"", $order_field);
+		$sql .= sprintf (" ORDER BY %s", $order_field);
 
 	return db_get_all_rows_sql ($sql);
 }

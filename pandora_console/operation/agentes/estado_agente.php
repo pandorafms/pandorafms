@@ -301,12 +301,11 @@ $total_agents = 0;
 $agents = false;
 
 $total_agents = agents_get_agents(array (
-	'order' => 'nombre ASC',
 	'disabled' => 0,
 	'id_grupo' => $groups,
 	'search' => $search_sql,
 	'status' => $status),
-	array ('COUNT(*) as total'));
+	array ('COUNT(*) as total'), 'AR', false);
 $total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
 
 $agents = agents_get_agents(array (

@@ -108,6 +108,11 @@ ALTER TABLE "talert_snmp" ADD COLUMN "trap_type" INTEGER NOT NULL DEFAULT '-1';
 ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
 
 -- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
+ALTER TABLE "tagente_modulo" ADD COLUMN "module_ff_interval" INTEGER NOT NULL default 0;
+
+-- -----------------------------------------------------
 -- Table `tevent_filter`
 -- -----------------------------------------------------
 CREATE TABLE "tevent_filter" (

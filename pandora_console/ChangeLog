@@ -1,5 +1,10 @@
 2012-03-25  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/functions_graph.php, operation/events/events_list.php: Fixed
+	SQL error with PostgreSQL.
+
+2012-03-25  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/db/postgresql.sql: Removed unnecessary quotes for making
 	query in postgresql_db_get_all_rows_filter().
 

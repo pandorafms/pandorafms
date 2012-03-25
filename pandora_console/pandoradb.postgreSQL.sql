@@ -355,7 +355,7 @@ CREATE TABLE "talert_compound_actions" (
 CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 CREATE TABLE "talert_special_days" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
-	"date" DATE NOT NULL default '0000-00-00',
+	"date" DATE NOT NULL default '0001-01-01',
 	"same_day" type_talert_special_days_same_day NOT NULL default 'sunday',
 	"description" TEXT
 );
@@ -442,7 +442,7 @@ CREATE TABLE "tincidencia" (
 	"id_lastupdate" varchar(60) default NULL,
 	"id_agente_modulo" BIGINT NOT NULL,
 	"notify_email" INTEGER NOT NULL default 0,
-	"id_agent" INTEGER(10) NULL default 0
+	"id_agent" INTEGER NULL default 0
 );
 CREATE INDEX "tincidencia_id_1_idx" ON "tincidencia"("id_usuario","id_incidencia");
 CREATE INDEX "tincidencia_id_agente_modulo_idx" ON "tincidencia"("id_agente_modulo");
@@ -700,8 +700,8 @@ CREATE TABLE "tusuario" (
 	"disabled" INTEGER NOT NULL default 1,
 	"shortcut" SMALLINT DEFAULT 0,
 	"shortcut_data" text default '',
-	"section" varchar(255) NOT NULL,
-	"data_section" varchar(255) NOT NULL
+	"section" varchar(255) NOT NULL DEFAULT '',
+	"data_section" varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE "tusuario_perfil" (

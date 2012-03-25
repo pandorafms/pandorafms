@@ -1419,11 +1419,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	switch ($config["dbtype"]) {
 		case "mysql":
-		case "postgresql":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
 				FROM tevento WHERE 1=1 %s
 				GROUP BY id_agente ORDER BY count DESC', $url); 
 			break;
+		case "postgresql":
 		case "oracle":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
 				FROM tevento WHERE 1=1 %s

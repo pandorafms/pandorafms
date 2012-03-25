@@ -466,7 +466,7 @@ else {
 			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
-				GROUP BY evento, id_agentmodule
+				GROUP BY evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
 				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
 			break;
 		case "oracle":

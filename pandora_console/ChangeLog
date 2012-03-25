@@ -1,5 +1,10 @@
 2012-03-25  Junichi Satoh  <junichi@rworks.jp>
 
+	* extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql,
+	pandoradb.postgreSQL.sql: Fixed bad sql	syntaxes.
+
+2012-03-25  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/db/postgresql.php: Fixed bad syntax for WHERE clause in
 	postgresql_db_format_array_where_clause_sql().
 

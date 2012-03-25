@@ -50,7 +50,7 @@ CREATE TABLE "tnetflow_report_content" (
 -- Table `tincidencia`
 -- -----------------------------------------------------
 
-ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER(10) NULL DEFAULT 0;
+ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER NULL DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tagente`
@@ -65,7 +65,7 @@ ALTER TABLE "tagente" ADD COLUMN "url_address" text NULL default '';
 CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 CREATE TABLE "talert_special_days" (
         "id" SERIAL NOT NULL PRIMARY KEY,
-        "date" DATE NOT NULL default '0000-00-00',
+        "date" DATE NOT NULL default '0001-01-01',
         "same_day" type_talert_special_days_same_day NOT NULL default 'sunday',
         "description" TEXT
 );
@@ -167,9 +167,9 @@ ALTER TABLE "tusuario" ADD COLUMN "shortcut_data" text default '';
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
-ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL;
+ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL DEFAULT '';
 
-ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL;
+ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL DEFAULT '';
 
 -- -----------------------------------------------------
 -- Table `treport_content_item`

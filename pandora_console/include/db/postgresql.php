@@ -540,7 +540,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 	foreach ($values as $field => $value) {
 		if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
-			$query .= $value;
+			$query .= sprintf ("%s = %d", $field, $value);
 				
 			if ($i < $max) {
 				$query .= ' '.$join.' ';

@@ -712,7 +712,7 @@ function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields =
 		$fields = '*';
 	}
 	elseif (is_array($fields)) {
-		$fields = '"' . implode('" , "', $fields) . '"';
+		$fields = implode(',', $fields);
 	}
 	elseif (!is_string($fields)) {
 		return false;

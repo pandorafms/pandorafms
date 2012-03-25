@@ -1,5 +1,10 @@
 2012-03-25  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/db/postgresql.sql: Removed unnecessary quotes for making
+	query in postgresql_db_get_all_rows_filter().
+
+2012-03-25  Junichi Satoh  <junichi@rworks.jp>
+
 	* extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added a missing
 	query.
 

@@ -1,3 +1,9 @@
+2012-03-26  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk: Fixed
+	set_create_plugin_module to look proper data in checking
+	input parameters.
+
 2012-03-22  Sancho Lerena <sleerna@artica.es>
 
 	* include/functions_html.php

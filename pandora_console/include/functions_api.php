@@ -1179,7 +1179,7 @@ function set_update_network_module($id_module, $thrash1, $other, $thrash3){
 function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
 	
-	if ($other['data'][23] == ""){
+	if ($other['data'][22] == ""){
 		returnError('error_create_plugin_module', __('Error in creation plugin module. Id_plugin cannot be left blank.'));
 		return;		
 	}

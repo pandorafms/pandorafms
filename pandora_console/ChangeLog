@@ -1,3 +1,8 @@
+2012-03-26  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Fixed set_create_plugin_module
+	to look proper data in checking input parameters.
+
 2012-03-25  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_graph.php, operation/events/events_list.php: Fixed

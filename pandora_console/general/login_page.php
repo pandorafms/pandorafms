@@ -21,6 +21,7 @@ if (!empty ($page) && !empty ($sec)) {
 		$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 	}
 }
+echo '<img src="images/login_background.png" id="login_body">';
 
 echo '<div class="databox_login" id="login">';
 
@@ -29,24 +30,7 @@ echo '<div class="databox_login" id="login">';
 //echo '<br /><br /><br />';
 echo '
 	<div id="login_in">
-		<form method="post" autocomplete="off" action="index.php'.$url.'">
-		<table cellpadding="4" cellspacing="1" width="420">';
-
-if (isset ($login_failed)) {
-//	echo '<tr><td colspan="3">';
-	echo '<div id="error_login">';
-	echo '<h3 class="error">'.__('Login failed').': '.$config["auth_error"].'</h3>';
-	echo '</div>';
-//	echo '</td></tr>';
-}
-
-echo '<tr><td rowspan="3" align="left">';
-
-if (!empty ($page) && !empty ($sec)) {
-	foreach ($_POST as $key => $value) {
-		html_print_input_hidden ($key, $value);
-	}
-}
+		<form method="post" action="index.php'.$url.'">';
 
 //TODO: Put branding in variables (external file) or database
 /* CUSTOM BRANDING STARTS HERE */
@@ -54,34 +38,100 @@ if (!empty ($page) && !empty ($sec)) {
 // Replace the following with your own URL and logo.
 // A mashup of the Pandora FMS logo and your companies highly preferred
 echo '&nbsp;&nbsp;<a href="http://pandorafms.org" title="Go to pandorafms.org...">';
-html_print_image ("images/pandora_logo.png", false, array ("alt" => "logo", "border" => 0));
-echo '</a><br />';
+if (defined ('PANDORA_ENTERPRISE')){
+	html_print_image ("images/pandora_login_enterprise.png", false, array ("alt" => "logo", "border" => 0));
+}
+else {
+	html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));	
+}
+echo '</a>';
 
+/* CUSTOM BRANDING ENDS HERE */
+		
 // This prints the current pandora console version.
 // For stable/live function it might be wise to comment it out
-echo '&nbsp;&nbsp;&nbsp;' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : ''); 
-	
-/* CUSTOM BRANDING ENDS HERE */
 
-echo '</td><td class="f9b">
-		'.__('Login').':<br />'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).'
-	</td></tr>
-	<tr><td class="f9b">
-	<br>
-		'.__('Password').':<br />'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).'
-	</td></tr>
-	<tr><td align="center">
-	<br>
-		'.html_print_submit_button ("Login",'',false,'class="sub next"',true).'
-	</td></tr>
-	</table>
-	</form>
+echo '<div style="text-align: center; height: 5px !important;">&nbsp;</div>'; 
+
+if (!empty ($page) && !empty ($sec)) {
+	foreach ($_POST as $key => $value) {
+		html_print_input_hidden ($key, $value);
+	}
+}
+
+echo '<br />'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).
+   '<br>
+		<br />'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).
+   '<br>';
+	echo '<div style="float: right; margin-top: -70px; margin-right: 25px">';
+	html_print_input_image ("Login", "images/login_botton.png", 'Login');
+	echo '</div>';
+
+echo '</form>
 	</div>
-	<div id="ip">'.__('Your IP').': <b class="f10">'.$config["remote_addr"].'</b></div>
 </div>';
+
+echo '<div id="bottom_logo">';
+if (defined('PANDORA_ENTERPRISE')) 
+	echo html_print_image('images/bottom_logo_enterprise.png', true, array ("alt" => "logo", "border" => 0));
+else
+	echo html_print_image('images/bottom_logo.png', true, array ("alt" => "logo", "border" => 0));
+echo '</div>';
+echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
+
+
+if (isset ($login_failed)) {
+	
+	echo '<div id="login_failed" title="Login Failed" style="">';
+
+		echo '<div style="position:absolute; top:20%; text-align: center; left:0%; right:0%; width:600px;">';
+		
+			echo '<div id="error_login">';
+			echo '<h3 class="error">'.__('Login failed').': '.$config["auth_error"].'</h3>';
+			echo '</div>';
+
+			echo '<div style="position: absolute; top:60px; right:40%;">';	  
+				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');  
+			echo '</div>';
+			
+		echo '</div>';
+			
+	echo '</div>';	
+}
+
+ui_require_css_file ('dialog');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.dialog');
+ui_require_jquery_file ('ui.draggable');
+
 ?>
+
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
+
+$(document).ready (function () {			
+	$(function() {
+		$( "#login_failed" ).dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 180,
+				width: 600,
+				overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+				bgiframe: jQuery.browser.msie
+			});
+	});	
+	
+	$("#submit-hide-login-error").click (function () {
+		$("#login_failed" ).dialog('close')
+	});	
+	
+});
+
 document.getElementById('nick').focus();
+
 /* ]]> */
 </script>

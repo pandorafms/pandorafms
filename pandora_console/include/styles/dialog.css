@@ -1,73 +1,80 @@
 
-
 /* This file skins dialog */
 
 .ui-dialog {
-	background-color: #ffffff;
-		
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
+    background: #EEEEEE !important; 
+    border: 1px solid #DDDDDD !important;
+    color: #333333 !important;
+    padding: 0.2em !important;
+    overflow: hidden !important;
+        		
+	-moz-border-radius: 4px !important;
+	-webkit-border-radius: 4px !important;
+	border-radius: 4px !important;
 	
-	-moz-box-shadow: 0px 7px 7px #010E1B;
-	-webkit-box-shadow: 0px 7px 7px #010E1B;
-	box-shadow: 0px 7px 7px #010E1B;
+	-moz-box-shadow: 0px 5px 5px #010E1B !important;
+	-webkit-box-shadow: 0px 5px 5px #010E1B !important;
+	box-shadow: 0px 5px 5px #010E1B !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {
-	background: #9BC969 url(images/dialog-title.gif) repeat-x; 
-	height: 28px;
-	_height: 29px;
-	width: 97%;
-	margin: 7px auto 0 auto;
+	background: url(../../images/ui_title.png) repeat-x scroll !important;
+	height: 28px !important;
+	_height: 29px !important;
+	margin: 5px auto 0 auto !important;
+	font-weight: bold !important;
+	border: 1px solid #3d6630 !important;
+	color: #FFFFFF !important;
+	width: 98% !important;
 
-	-moz-border-radius: 14px;
-	-webkit-border-radius: 14px;
-	border-radius: 14px;	
-}
-
-.ui-dialog.ui-draggable .ui-dialog-titlebar {
-	cursor: move;
-}
-
-.ui-dialog .ui-dialog-titlebar-close {
-	width: 16px;
-	height: 16px;
-	background: url(images/dialog-titlebar-close.png) no-repeat;
-	position:absolute;
-	top: 6px;
-	#top: 10px;
-	right: 17px;
-	cursor: default;
-}
-
-.ui-dialog .ui-dialog-titlebar-close span {
-	display: none;
-}
-
-.ui-dialog .ui-dialog-titlebar-close-hover {
-	background: url(images/dialog-titlebar-close-hover.png) no-repeat;
-}
-
-.ui-dialog .ui-dialog-titlebar-close-hover {
-	color: #000000;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
 }
 
 .ui-dialog .ui-dialog-title {
-	margin-left: 5px;
-	color: white;
-	font-weight: bold;
-	position: relative;
-	top: 7px;
-	left: 4px;
+	margin-left: 5px !important;
+	color: white !important;
+	font-weight: bold !important;
+	position: relative !important;
+	top: 7px !important;
+	left: 4px !important;
 }
 
+.ui-dialog.ui-draggable .ui-dialog-titlebar {
+	cursor: move !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+	width: 16px !important;
+	height: 16px !important;
+	background: url(images/dialog-titlebar-close.png) no-repeat !important;
+	position: absolute !important;
+	top: 6px;
+	right: 17px !important;
+	cursor: default !important;
+}
+
+	.ui-dialog .ui-dialog-titlebar-close span {
+		display: none !important;
+	}
+
+	.ui-dialog .ui-dialog-titlebar-close-hover {
+		background: url(images/dialog-titlebar-close-hover.png) no-repeat !important;
+	}
+
+	.ui-dialog .ui-dialog-titlebar-close-hover {
+		color: #000000 !important;
+	}
+
 .ui-dialog .ui-dialog-content {
-	margin: 1.2em;
+	margin: 1.2em !important;
+	padding: 0.5em 1em !important;
+	overflow: auto !important;
 }
 
 .ui-dialog-content {
-	overflow: auto;
+	overflow: auto !important;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
@@ -93,74 +100,99 @@
 }
 
 /* Dialog handle styles */
-.ui-dialog .ui-resizable-n, {
-	cursor: n-resize;
-	height: 6px;
-	width: 100%;
-	top: 0px;
-	left: 0px;
-	background: transparent url(images/dialog-n.gif) repeat scroll center top;
+#.ui-dialog .ui-resizable-n {
+#	cursor: n-resize;
+#	height: 6px;
+#	width: 100%;
+#	top: 0px;
+#	left: 0px;
+#	background: transparent url(images/dialog-n.gif) repeat scroll center top;
+#}
+
+#.ui-dialog .ui-resizable-s {
+#	cursor: s-resize;
+#	height: 8px;
+#	width: 100%;
+#	bottom: 0px;
+#	left: 0px;
+#	background: transparent url(images/dialog-s.gif) repeat scroll center top;
+#}
+
+#.ui-dialog .ui-resizable-e {
+#	cursor: e-resize;
+#	width: 7px;
+#	right: 0px;
+#	top: 0px;
+#	height: 100%;
+#	background: transparent url(images/dialog-e.gif) repeat scroll right center;
+#}
+
+#.ui-dialog .ui-resizable-w {
+#	cursor: w-resize;
+#	width: 7px;
+#	left: 0px;
+#	top: 0px;
+#	height: 100%;
+#	background: transparent url(images/dialog-w.gif) repeat scroll right center;
+#}
+
+#.ui-dialog .ui-resizable-se {
+#	cursor: se-resize;
+#	width: 9px;
+#	height: 9px;
+#	right: 0px;
+#	bottom: 0px;
+#	background: transparent url(images/dialog-se.gif);
+#}
+
+#.ui-dialog .ui-resizable-sw {
+#	cursor: sw-resize;
+#	width: 9px;
+#	height: 9px;
+#	left: 0px;
+#	bottom: 0px;
+#	background: transparent url(images/dialog-sw.gif);
+#}
+
+#.ui-dialog .ui-resizable-nw {
+#	cursor: nw-resize;
+#	width: 9px;
+#	height: 29px;
+#	left: 0px;
+#	top: 0px;
+#	background: transparent url(images/dialog-nw.gif);
+#}
+
+#.ui-dialog .ui-resizable-ne {
+#	cursor: ne-resize;
+#	width: 9px;
+#	height: 29px;
+#	right: 0px;
+#	top: 0px;
+#	background: transparent url(images/dialog-ne.gif);
+#}
+
+.ui-dialog .ui-button-dialog {
+    cursor: pointer;
+    margin: 0.5em 0.4em 0.5em 0;
 }
 
-.ui-dialog .ui-resizable-s {
-	cursor: s-resize;
-	height: 8px;
-	width: 100%;
-	bottom: 0px;
-	left: 0px;
-	background: transparent url(images/dialog-s.gif) repeat scroll center top;
+.ui-dialog .ui-button-dialog {
+    background: #F6F6F6;
+    border: 1px solid #CCCCCC;
+    color: #1C94C4;
+    font-weight: bold;
+    outline: medium none;
+    cursor: pointer;    
+    margin: 0.5em 0.4em 0.5em 0;
+    border-radius: 4px 4px 4px 4px;
 }
 
-.ui-dialog .ui-resizable-e {
-	cursor: e-resize;
-	width: 7px;
-	right: 0px;
-	top: 0px;
-	height: 100%;
-	background: transparent url(images/dialog-e.gif) repeat scroll right center;
+.ui-dialog .ui-button-dialog:hover {
+    background: #FDF5CE;
+    border: 1px solid #FBCB09;
+    color: #C77405;
+    font-weight: bold;
+    outline: medium none;
 }
 
-.ui-dialog .ui-resizable-w {
-	cursor: w-resize;
-	width: 7px;
-	left: 0px;
-	top: 0px;
-	height: 100%;
-	background: transparent url(images/dialog-w.gif) repeat scroll right center;
-}
-
-.ui-dialog .ui-resizable-se {
-	cursor: se-resize;
-	width: 9px;
-	height: 9px;
-	right: 0px;
-	bottom: 0px;
-	background: transparent url(images/dialog-se.gif);
-}
-
-.ui-dialog .ui-resizable-sw {
-	cursor: sw-resize;
-	width: 9px;
-	height: 9px;
-	left: 0px;
-	bottom: 0px;
-	background: transparent url(images/dialog-sw.gif);
-}
-
-.ui-dialog .ui-resizable-nw {
-	cursor: nw-resize;
-	width: 9px;
-	height: 29px;
-	left: 0px;
-	top: 0px;
-	background: transparent url(images/dialog-nw.gif);
-}
-
-.ui-dialog .ui-resizable-ne {
-	cursor: ne-resize;
-	width: 9px;
-	height: 29px;
-	right: 0px;
-	top: 0px;
-	background: transparent url(images/dialog-ne.gif);
-}

@@ -208,7 +208,6 @@ $("#yougotalert").click(function () {
 	$("#agent_access").css("display", "none");	
 });
 $("#ui_close_dialog_titlebar").click(function () {
-	alert("LOLOLO");
 	$("#agent_access").css("display","");
 });	
 	

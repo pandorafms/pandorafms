@@ -15,7 +15,8 @@
 // GNU General Public License for more details.
 
 ?>
-<div class="databox_login" id="login">
+<img src="images/login_background.png" id="login_body">
+<div class="databox_logout" id="login">
 	<br>
 	<h1 id="log"><?php echo __('Logged out'); ?></h1>
 	<br>
@@ -24,8 +25,15 @@
 		<tr><td align="left">
 			<?php
 				echo '<a href="index.php">';
-				html_print_image ("images/pandora_logo.png", false, array ("alt" => "logo", "border" => 0));
-				echo '</a> '.$pandora_version;
+				if (defined ('PANDORA_ENTERPRISE')){
+					html_print_image ("images/pandora_login_enterprise.png", false, array ("alt" => "logo", "border" => 0));
+				}
+				else {
+					html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));	
+				}
+				
+				//html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));
+				//echo '</a> '.$pandora_version;
 			?>
 		</td><td valign="bottom">
 			<?php echo __('Your session is over. Please close your browser window to close this Pandora session.').'<br /><br />'; ?>
@@ -33,5 +41,6 @@
 		</table>
 	</div>
 	<br>
-	<div id="ip"><?php echo 'IP: <b class="f10">'.$_SERVER['REMOTE_ADDR'].'</b>'; ?></div>
+
 </div>
+<div id="ver_num"><?php echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') ?></div>

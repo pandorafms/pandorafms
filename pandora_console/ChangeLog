@@ -1,3 +1,27 @@
+2012-03-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/bottom_logo_enterprise.png
+	 images/bottom_logo.png
+	 images/login_bottom.png
+	 images/login_background.png
+	 images/pandora_login.png
+	 images/login_botton.png
+	 images/ui_title.png
+	 images/ui_dialog_background.png
+	 images/pandora_login_enterprise.png
+	 images/splash_logout.png: Added images for new login screen.
+	 
+	* images/splash_pandora.png
+	 include/styles/images/dialog-titlebar-close.png
+	 include/styles/images/dialog-titlebar-close-hover.png: Modified 
+	 images for login screen.
+
+	* include/styles/dialog.css
+	 include/styles/pandora.css: Modified css files for login screen.
+	 
+	* general/login_page.php
+	 general/logoff.php: Login and logout screens modified.
+
 2012-03-27  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Fixed duplicy agents in the

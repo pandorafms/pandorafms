@@ -1,5 +1,10 @@
 2012-03-27  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php: Fixed duplicy agents in the
+	main screen summary
+
+2012-03-27  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/images/ui-bg_highlight-soft_100_eeeeee_1x100.png
 	include/functions_reporting.php
 	include/functions.php

@@ -32,6 +32,7 @@ include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 enterprise_include_once ('include/functions_metaconsole.php');
+enterprise_include_once ('include/functions_inventory.php');
 include_once($config['homedir'] . "/include/functions_forecast.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 
@@ -3760,11 +3761,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_top_values['agent_name'] = $agent_name;
 			$data_top_values['module_name'] = $module_name; 
 			$data_top_values['id_agent_module'] = $id_agent_module;
+			$data_top_values['units'] = $units;
 			
 			array_splice ($data_top, $top_n_value);
 			array_splice ($agent_name, $top_n_value);
 			array_splice ($module_name, $top_n_value);
 			array_splice ($id_agent_module, $top_n_value);
+			array_splice ($units, $top_n_value);
 			
 			switch ($order_uptodown) {
 				//Descending
@@ -4385,6 +4388,34 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$data[0] = $table_data;
+			array_push ($table->data, $data);
+			break;
+		case 'inventory':
+			reporting_header_content($mini, $content, $report, $table, __('Inventory'));
+			
+			$es = json_decode($content['external_source'], true);
+			
+			$id_agent = $es['id_agents'];
+			$module_name = $es['inventory_modules'];
+			$date = $es['date'];
+			$description = $content['description'];
+						
+			$data = array ();
+			$table->colspan[1][0] = 2;
+			$table->colspan[2][0] = 2;
+			if($description != '') {
+				$data[0] = $description;
+				array_push ($table->data, $data);
+			}
+
+			$inventory_data = inventory_get_data((array)$id_agent,0,$date,'',false,(array)$module_name);
+
+			if ($inventory_data == ERR_NODATA) {
+				$inventory_data = "<div class='nf'>".__('No data found.')."</div>";
+				$inventory_data .= "&nbsp;</td></tr><tr><td>";				
+			}
+			
+			$data[0] = $inventory_data;
 			array_push ($table->data, $data);
 			break;
 	}

@@ -295,7 +295,12 @@ foreach ($items as $item) {
 		}
 	}
 	
-	$row[4] = human_time_description_raw($item['period']);
+	if($item['period'] > 0) {
+		$row[4] = human_time_description_raw($item['period']);
+	}
+	else {
+		$row[4] = '-';
+	}
 	
 	if ($item['description'] == '') {
 		$row[5] = '-';

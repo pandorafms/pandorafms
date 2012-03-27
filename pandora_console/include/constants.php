@@ -37,6 +37,7 @@ define ('ERR_INCOMPLETE', -30000);
 define ('ERR_DB', -40000);
 define ('ERR_FILE', -50000);
 define ('ERR_NOCHANGES', -60000);
+define ('ERR_NODATA', -70000);
 
 /* Visual console constants */
 define('MIN_WIDTH',300);
@@ -59,5 +60,11 @@ define('SECONDS_6MONTHS',15552000);
 define('SECONDS_1YEAR',31104000);
 define('SECONDS_2YEARS',62208000);
 define('SECONDS_3YEARS',93312000);
+
+/* Separator constats */
+define('SEPARATOR_COLUMN', ';');
+define('SEPARATOR_ROW', chr(10)); //chr(10) = '\n'
+define('SEPARATOR_COLUMN_CSV', "#");
+define('SEPARATOR_ROW_CSV', "@\n");
 
 ?>

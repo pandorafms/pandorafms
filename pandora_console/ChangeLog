@@ -1,3 +1,16 @@
+2012-03-27  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/images/ui-bg_highlight-soft_100_eeeeee_1x100.png
+	include/functions_reporting.php
+	include/functions.php
+	include/constants.php
+	include/functions_reports.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Clean code, 
+	fix a baseline graph report, and add a new tipe of report item:
+	inventory
+
 2012-03-26  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Fixed set_create_plugin_module

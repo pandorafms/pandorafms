@@ -43,7 +43,6 @@ switch ($action) {
 	case 'sort_items':
 		switch ($activeTab) {
 			case 'list_items':
-				//NO FUNCIONA
 			
 				$resultOperationDB = null;
 				$position_to_sort = (int)get_parameter('position_to_sort', 1);
@@ -286,37 +285,58 @@ switch ($action) {
 						$values['type'] = get_parameter('type', null);
 						// Added support for projection graphs, prediction date and SLA reports
 						// 'top_n_value','top_n' and 'text' fields will be reused for these types of report
-						if ($values['type'] == 'projection_graph'){
-							$values['period'] =  get_parameter('period1');
-							$values['top_n_value'] = get_parameter('period2');
-							$values['text'] = get_parameter('text');
-							$good_format = true;
-						}else if ($values['type'] == 'prediction_date'){
-							$values['period'] = get_parameter('period1');
-							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-							$values['top_n_value'] = get_parameter('quantity');
-							$interval_max = get_parameter('max_interval');
-							$interval_min = get_parameter('min_interval');
-							// Checks intervals fields
-							if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+						switch ($values['type']) {
+							case 'projection_graph':
+								$values['period'] = get_parameter('period1');
+								$values['top_n_value'] = get_parameter('period2');
+								$values['text'] = get_parameter('text');
 								$good_format = true;
-							}
-							$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
-							$values['text'] = $intervals;						
-						}else if ($values['type'] == 'SLA'){
-							$values['period'] = get_parameter('period');
-							$values['top_n'] = get_parameter('combo_sla_sort_options', 0);
-							$values['top_n_value'] = get_parameter('quantity');
-							$values['text'] = get_parameter('text');
-							$good_format = true;
+								break;
+							case 'prediction_date':
+								$values['period'] = get_parameter('period1');	
+								$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+								$values['top_n_value'] = get_parameter('quantity');												
+								$interval_max = get_parameter('max_interval');
+								$interval_min = get_parameter('min_interval');
+								// Checks intervals fields
+								if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+									$good_format = true;
+								}
+								$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
+								$values['text'] = $intervals;
+								break;
+							case 'SLA':
+								$values['period'] = get_parameter('period');
+								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
+								$values['top_n_value'] = get_parameter('quantity');
+								$values['text'] = get_parameter('text');
+								$good_format = true;
+								break;
+							case 'inventory':
+								$values['period'] = 0;
+								$es['date'] = get_parameter('date');
+								$es['id_agents'] = get_parameter('id_agents');
+								$es['inventory_modules'] = get_parameter('inventory_modules');
+								$description = get_parameter('description');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							case 'inventory_changes':
+								$values['period'] = get_parameter('period');
+								$es['id_agents'] = get_parameter('id_agents');
+								$es['inventory_modules'] = get_parameter('inventory_modules');
+								$description = get_parameter('description');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							default: 
+								$values['period'] = get_parameter('period');
+								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
+								$values['top_n_value'] = get_parameter('quantity');
+								$values['text'] = get_parameter('text');
+								$good_format = true;
 						}
-						else {
-							$values['period'] = get_parameter('period');
-							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-							$values['top_n_value'] = get_parameter('quantity');
-							$values['text'] = get_parameter('text');
-							$good_format = true;
-						}
+
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
@@ -390,39 +410,56 @@ switch ($action) {
 						$values['description'] = get_parameter('description');
 						// Support for projection graph, prediction date and SLA reports
 						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
-						if ($values['type'] == 'projection_graph') {
-							$values['period'] = get_parameter('period1');
-							$values['top_n_value'] = get_parameter('period2');
-							$values['text'] = get_parameter('text');
-							$good_format = true;
-						}
-						else if ($values['type'] == 'prediction_date') {
-							$values['period'] = get_parameter('period1');	
-							$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-							$values['top_n_value'] = get_parameter('quantity');												
-							$interval_max = get_parameter('max_interval');
-							$interval_min = get_parameter('min_interval');
-							// Checks intervals fields
-							if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+						switch ($values['type']) {
+							case 'projection_graph':
+								$values['period'] = get_parameter('period1');
+								$values['top_n_value'] = get_parameter('period2');
+								$values['text'] = get_parameter('text');
 								$good_format = true;
-							}
-							$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
-							$values['text'] = $intervals;												
+								break;
+							case 'prediction_date':
+								$values['period'] = get_parameter('period1');	
+								$values['top_n'] = get_parameter('radiobutton_max_min_avg');
+								$values['top_n_value'] = get_parameter('quantity');												
+								$interval_max = get_parameter('max_interval');
+								$interval_min = get_parameter('min_interval');
+								// Checks intervals fields
+								if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+									$good_format = true;
+								}
+								$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
+								$values['text'] = $intervals;
+								break;
+							case 'SLA':
+								$values['period'] = get_parameter('period');
+								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
+								$values['top_n_value'] = get_parameter('quantity');
+								$values['text'] = get_parameter('text');
+								$good_format = true;
+								break;
+							case 'inventory':
+								$values['period'] = 0;
+								$es['date'] = get_parameter('date');
+								$es['id_agents'] = get_parameter('id_agents');
+								$es['inventory_modules'] = get_parameter('inventory_modules');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							case 'inventory_changes':
+								$values['period'] = get_parameter('period');
+								$es['id_agents'] = get_parameter('id_agents');
+								$es['inventory_modules'] = get_parameter('inventory_modules');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							default: 
+								$values['period'] = get_parameter('period');
+								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
+								$values['top_n_value'] = get_parameter('quantity');
+								$values['text'] = get_parameter('text');
+								$good_format = true;
 						}
-						else if ($values['type'] == 'SLA') {
-							$values['period'] = get_parameter('period');
-							$values['top_n'] = get_parameter('combo_sla_sort_options',0);
-							$values['top_n_value'] = get_parameter('quantity');
-							$values['text'] = get_parameter('text');
-							$good_format = true;														
-						}
-						else {
-							$values['period'] = get_parameter('period');
-							$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
-							$values['top_n_value'] = get_parameter('quantity');
-							$values['text'] = get_parameter('text');
-							$good_format = true;							
-						}
+
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['id_agent_module'] = get_parameter('id_agent_module');

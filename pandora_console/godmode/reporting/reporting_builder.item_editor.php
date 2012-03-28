@@ -317,6 +317,20 @@ switch ($action) {
 				$group = $item['id_group'];
 				$modulegroup = $item ['id_module_group'];
 				break;
+			case 'inventory':
+				$description = $item['description'];
+				$es = json_decode($item['external_source'], true);
+				$date = $es['date'];
+				$inventory_modules = $es['inventory_modules'];
+				$id_agents = $es['id_agents'];
+				break;
+			case 'inventory_changes':
+				$period = $item['period'];
+				$description = $item['description'];
+				$es = json_decode($item['external_source'], true);
+				$inventory_modules = $es['inventory_modules'];
+				$id_agents = $es['id_agents'];
+				break;
 		}
 		
 		//Restore db connection
@@ -408,7 +422,11 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>		
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
-			<td><?php html_print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);?></td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);
+				?>
+			</td>
 		</tr>
 		<tr id="row_working_time">
 			<td style="vertical-align: top;"><?php echo __('Working time');?></td>
@@ -437,7 +455,7 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
-				<?php html_print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, 'extract_group_agents()');?>
+				<?php html_print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, '');?>
 			</td>
 		</tr>
 		<tr id="row_module_group" style="" class="datos">
@@ -474,6 +492,42 @@ html_print_input_hidden('id_item', $idItem);
 					</select>
 					<?php
 				}
+				?>
+			</td>
+		</tr>
+		<tr id="row_agent_multi" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Agents'); ?></td>
+			<td>
+				<?php 
+					$agents = inventory_get_agents();
+					$agents_select = array();
+					foreach($agents as $a) {
+						$agents_select[$a['id_agente']] = $a['nombre'];
+					}
+					html_print_select($agents_select, 'id_agents[]', $id_agents, $script = '', __('All'), -1, false, true, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+		<tr id="row_module_multi" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Modules'); ?></td>
+			<td>
+				<?php 
+					html_print_select(array(), 'inventory_modules[]', '', $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
+					html_print_input_hidden('inventory_modules_selected',implode(',',$inventory_modules));
+				?>
+			</td>
+		</tr>
+		<tr id="row_date" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Date'); ?></td>
+			<td style="max-width: 180px">
+				<?php
+				$dates = enterprise_hook('inventory_get_dates',array($idAgentModule, $idAgent, $id_group));
+				if($dates === ENTERPRISE_NOT_HOOK) {
+					$dates = array();
+				}
+
+				html_print_select($dates, 'date', '', '', __('Last'), 0, false, false, false, '', false, "min-width: 180px");
+				html_print_input_hidden('date_selected',$date);
 				?>
 			</td>
 		</tr>
@@ -831,13 +885,16 @@ function print_General_list($width, $action, $idItem = null) {
 	<span style="display: none" id="module_general_text"><?php echo __('Select an Agent first'); ?></span>
 	<?php
 }
+			
+ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javascript/');
 
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
 	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name');
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name');
-	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general');
+	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general');
+
 	chooseType();
 	chooseSQLquery();
 
@@ -1014,7 +1071,7 @@ function addSLARow() {
 					if (data['correct']) {
 						row = $("#sla_template").clone();
 					
-						$("#row", row).css('display', '');
+						$("#row", row).show();
 						$("#row", row).attr('id', 'sla_' + data['id']);
 						$(".agent_name", row).html(nameAgent);
 						$(".module_name", row).html(nameModule);
@@ -1096,7 +1153,7 @@ function addGeneralRow() {
 				if (data['correct']) {
 					row = $("#general_template").clone();
 					
-					$("#row", row).css('display', '');
+					$("#row", row).show();
 					$("#row", row).attr('id', 'general_' + data['id']);
 					$(".agent_name", row).html(nameAgent);
 					$(".module_name", row).html(nameModule);
@@ -1122,283 +1179,332 @@ function addGeneralRow() {
 function chooseType() {
 	type = $("#type").val();
 	
-	$("#row_description").css('display', 'none');
-	$("#row_period").css('display', 'none');
-	$("#row_agent").css('display', 'none');
-	$("#row_module").css('display', 'none');
-	$("#row_period").css('display', 'none');
-	$("#row_period1").css('display', 'none');
-	$("#row_estimate").css('display', 'none');
-	$("#row_interval").css('display', 'none');
-	$("#row_custom_graph").css('display', 'none');
-	$("#row_text").css('display', 'none');
-	$("#row_query").css('display', 'none');
-	$("#row_header").css('display', 'none');
-	$("#row_custom").css('display', 'none');
-	$("#row_url").css('display', 'none');
-	$("#row_field_separator").css('display', 'none');
-	$("#row_line_separator").css('display', 'none');
-	$("#sla_list").css('display', 'none');
-	$("#row_custom_example").css('display', 'none');
-	$("#row_group").css('display', 'none');
-	$("#row_working_time").css('display', 'none');
-	$("#row_only_display_wrong").css('display', 'none');
-	$("#row_combo_module").css('display', 'none');
-	$("#row_only_display_wrong").css('display', 'none');
-	$("#row_group_by_agent").css('display', 'none');
-	$("#general_list").css('display', 'none');
-	$("#row_order_uptodown").css('display', 'none');
-	$("#row_show_resume").css('display', 'none');
-	$("#row_show_graph").css('display', 'none');
-	$("#row_max_min_avg").css('display', 'none');
-	$("#row_quantity").css('display', 'none');
-	$("#row_exception_condition_value").css('display', 'none');
-	$("#row_exception_condition").css('display', 'none');
-	$("#row_show_in_two_columns").css('display', 'none');
-	$("#row_show_in_landscape").css('display', 'none');
-	$("#row_module_group").css('display', 'none');
-	$("#row_servers").css('display', 'none');
-	$("#row_sort").css('display', 'none');
-		
+	$("#row_description").hide();
+	$("#row_period").hide();
+	$("#row_agent").hide();
+	$("#row_module").hide();
+	$("#row_period").hide();
+	$("#row_period1").hide();
+	$("#row_estimate").hide();
+	$("#row_interval").hide();
+	$("#row_custom_graph").hide();
+	$("#row_text").hide();
+	$("#row_query").hide();
+	$("#row_header").hide();
+	$("#row_custom").hide();
+	$("#row_url").hide();
+	$("#row_field_separator").hide();
+	$("#row_line_separator").hide();
+	$("#sla_list").hide();
+	$("#row_custom_example").hide();
+	$("#row_group").hide();
+	$("#row_working_time").hide();
+	$("#row_only_display_wrong").hide();
+	$("#row_combo_module").hide();
+	$("#row_only_display_wrong").hide();
+	$("#row_group_by_agent").hide();
+	$("#general_list").hide();
+	$("#row_order_uptodown").hide();
+	$("#row_show_resume").hide();
+	$("#row_show_graph").hide();
+	$("#row_max_min_avg").hide();
+	$("#row_quantity").hide();
+	$("#row_exception_condition_value").hide();
+	$("#row_exception_condition").hide();
+	$("#row_show_in_two_columns").hide();
+	$("#row_show_in_landscape").hide();
+	$("#row_module_group").hide();
+	$("#row_servers").hide();
+	$("#row_sort").hide();
+	$("#row_date").hide();
+	$("#row_agent_multi").hide();
+	$("#row_module_multi").hide();
+
 	switch (type) {
 		case 'event_report_group':
-			$("#row_description").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_group").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_group").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'simple_graph':
 		case 'simple_baseline_graph':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_show_in_landscape").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_in_landscape").show();
 			break;
 		case 'projection_graph':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period1").css('display', '');
-			$("#row_estimate").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_show_in_landscape").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period1").show();
+			$("#row_estimate").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_in_landscape").show();
 			break;
 		case 'prediction_date':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_period1").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_interval").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_period1").show();
+			$("#row_module").show();
+			$("#row_interval").show();
+			$("#row_show_in_two_columns").show();
 			break;			
 		case 'custom_graph':
-			$("#row_description").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_custom_graph").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_show_in_landscape").css('display', '');
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_custom_graph").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_in_landscape").show();
 			break;
 		case 'SLA':
-			$("#row_description").css('display', '');
-			$("#row_period").css('display', '');
-			$("#sla_list").css('display', '');
-			$("#row_working_time").css('display', '');
-			$("#row_only_display_wrong").css('display', '');
-			$("#row_show_graph").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_sort").css('display', '');
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#sla_list").show();
+			$("#row_working_time").show();
+			$("#row_only_display_wrong").show();
+			$("#row_show_graph").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_sort").show();
 			break;
 		case 'monitor_report':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'avg_value':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'max_value':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'min_value':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'sumatory':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'agent_detailed':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'text':
-			$("#row_description").css('display', '');
-			$("#row_text").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_text").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'sql':
-			$("#row_description").css('display', '');
-			$("#row_query").css('display', '');
-			$("#row_header").css('display', '');
-			$("#row_custom").css('display', '');
-			$("#row_custom_example").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_servers").css('display', '');
+			$("#row_description").show();
+			$("#row_query").show();
+			$("#row_header").show();
+			$("#row_custom").show();
+			$("#row_custom_example").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_servers").show();
 			break;
 		case 'sql_graph_pie':
-			$("#row_description").css('display', '');
-			$("#row_query").css('display', '');
-			$("#row_custom").css('display', '');
-			$("#row_custom_example").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_show_in_landscape").css('display', '');
-			$("#row_servers").css('display', '');
+			$("#row_description").show();
+			$("#row_query").show();
+			$("#row_custom").show();
+			$("#row_custom_example").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_in_landscape").show();
+			$("#row_servers").show();
 			
 			break;
 		case 'sql_graph_hbar':
-			$("#row_description").css('display', '');
-			$("#row_query").css('display', '');
-			$("#row_custom").css('display', '');
-			$("#row_custom_example").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_show_in_landscape").css('display', '');
-			$("#row_servers").css('display', '');
+			$("#row_description").show();
+			$("#row_query").show();
+			$("#row_custom").show();
+			$("#row_custom_example").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_in_landscape").show();
+			$("#row_servers").show();
 			break;
         case 'sql_graph_vbar':
-			$("#row_description").css('display', '');
-			$("#row_query").css('display', '');
-			$("#row_custom").css('display', '');
-			$("#row_custom_example").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
-			$("#row_show_in_landscape").css('display', '');
-			$("#row_servers").css('display', '');
+			$("#row_description").show();
+			$("#row_query").show();
+			$("#row_custom").show();
+			$("#row_custom_example").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_in_landscape").show();
+			$("#row_servers").show();
 			break;
 		case 'url':
-			$("#row_description").css('display', '');
-			$("#row_url").css('display', '');
+			$("#row_description").show();
+			$("#row_url").show();
 			break;
 		case 'database_serialized':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_header").css('display', '');
-			$("#row_field_separator").css('display', '');
-			$("#row_line_separator").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_header").show();
+			$("#row_field_separator").show();
+			$("#row_line_separator").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'TTRT':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'TTO':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'MTBF':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'MTTR':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'alert_report_module':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'alert_report_agent':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'event_report_agent':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'event_report_module':
-			$("#row_description").css('display', '');
-			$("#row_agent").css('display', '');
-			$("#row_module").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'general':
-			$("#row_description").css('display', '');
-			$("#row_group_by_agent").css('display', '');
-			$("#row_period").css('display', '');
-			$("#general_list").css('display', '');
-			$("#row_order_uptodown").css('display', '');
-			$("#row_show_resume").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_group_by_agent").show();
+			$("#row_period").show();
+			$("#general_list").show();
+			$("#row_order_uptodown").show();
+			$("#row_show_resume").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'group_report':
-			$("#row_group").css('display', '');
+			$("#row_group").show();
 			break;
 		case 'top_n':
-			$("#row_description").css('display', '');
-			$("#row_period").css('display', '');
-			$("#row_max_min_avg").css('display', '');
-			$("#row_quantity").css('display', '');
-			$("#general_list").css('display', '');
-			$("#row_order_uptodown").css('display', '');
-			$("#row_show_resume").css('display', '');
-			$("#row_show_graph").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_max_min_avg").show();
+			$("#row_quantity").show();
+			$("#general_list").show();
+			$("#row_order_uptodown").show();
+			$("#row_show_resume").show();
+			$("#row_show_graph").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'exception':
-			$("#row_description").css('display', '');
-			$("#row_period").css('display', '');
-			$("#general_list").css('display', '');
-			$("#row_exception_condition_value").css('display', '');
-			$("#row_exception_condition").css('display', '');
-			$("#row_order_uptodown").css('display', '');
-			$("#row_show_resume").css('display', '');
-			$("#row_show_graph").css('display', '');
-			$("#row_show_in_two_columns").css('display', '');
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#general_list").show();
+			$("#row_exception_condition_value").show();
+			$("#row_exception_condition").show();
+			$("#row_order_uptodown").show();
+			$("#row_show_resume").show();
+			$("#row_show_graph").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'agent_module':
-			$("#row_description").css('display', '');
-			$("#row_group").css('display', '');
-			$("#row_module_group").css('display', '');
+			$("#row_description").show();
+			$("#row_group").show();
+			$("#row_module_group").show();
+			break;
+		case 'inventory_changes':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_group").show();
+			$("#row_agent_multi").show();
+			$("#row_module_multi").show();
+			$("#row_show_in_two_columns").show();
+			
+			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
+			$("#id_agents").trigger('change');
+			
+			$("#combo_group").change(function() {
+				updateAgents($(this).val());
+			});
+			
+			break;
+		case 'inventory':
+			$("#row_description").show();
+			$("#row_group").show();
+			$("#row_agent_multi").show();
+			$("#row_module_multi").show();
+			$("#row_date").show();
+			$("#row_show_in_two_columns").show();
+
+			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
+			$("#id_agents").trigger('change');
+			
+			$("#combo_group").change(function() {
+				$('#hidden-date_selected').val('');
+				updateInventoryDates();
+				updateAgents($(this).val());
+			});
+			$("#id_agents").change(function() {
+				$('#hidden-date_selected').val('');
+				updateInventoryDates();
+			});
+			$("#inventory_modules").change(function() {
+				$('#hidden-date_selected').val('');
+				updateInventoryDates();
+			});
+			
+			updateInventoryDates();
+			break;
+		case 'inventory_changes':
+			break;
 	}
 }
 </script>

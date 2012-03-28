@@ -18,42 +18,12 @@
  * @subpackage Generic_Functions
  */
 
-/* Enterprise hook constant */
-define ('ENTERPRISE_NOT_HOOK', -1);
-
 /**
  * Include the html and ui functions. 
  */
 require_once ('functions_html.php');
 require_once ('functions_ui.php');
 require_once('functions_io.php');
-
-/* Events state constants */
-define ('EVENT_NEW', 0);
-define ('EVENT_VALIDATE', 1);
-define ('EVENT_PROCESS', 2);
-
-/* Agents disabled status */
-define ('AGENT_ENABLED',0);
-define ('AGENT_DISABLED',1);
-
-/* Error report codes */
-define ('ERR_GENERIC',-10000);
-
-define ('ERR_EXIST',-20000);
-
-define ('ERR_INCOMPLETE', -30000);
-
-define ('ERR_DB', -40000);
-
-define ('ERR_FILE', -50000);
-
-define ('ERR_NOCHANGES', -60000);
-
-/* Visual console constants */
-define("MIN_WIDTH",300);
-define("MIN_HEIGHT",120);
-define("MIN_WIDTH_CAPTION",420);
 
 function check_refererer() {
 	global $config;
@@ -761,181 +731,6 @@ function get_alert_times ($row2) {
 }
 
 /**
- * Get report types in an array.
- * 
- * @return array An array with all the possible reports in Pandora where the array index is the report id.
- */
-function get_report_types () {
-	global $config;
-	
-	$types = array ();
-	
-	$types['simple_graph'] = array('optgroup' => __('Graphs'), 
-		'name' => __('Simple graph'));
-	if($config['enterprise_installed']) {
-		$types['simple_baseline_graph'] = array('optgroup' => __('Graphs'),
-			'name' => __('Simple baseline graph'));
-	}
-	$types['custom_graph'] = array('optgroup' => __('Graphs'),
-			'name' => __('Custom graph'));
-	# Only pandora managers have access to the whole database
-	if (check_acl ($config['id_user'], 0, "PM")) {
-		$types['sql_graph_vbar'] = array('optgroup' => __('Graphs'),
-			'name' => __('SQL vertical bar graph'));
-		$types['sql_graph_pie'] = array('optgroup' => __('Graphs'),
-			'name' => __('SQL pie graph'));
-		$types['sql_graph_hbar'] = array('optgroup' => __('Graphs'),
-			'name' => __('SQL horizonal bar graph'));
-	}
-	
-	
-	
-	$types['TTRT'] = array('optgroup' => __('ITIL'),
-			'name' => __('TTRT'));
-	$types['TTO'] = array('optgroup' => __('ITIL'),
-			'name' => __('TTO'));
-	$types['MTBF'] = array('optgroup' => __('ITIL'),
-			'name' => __('MTBF'));
-	$types['MTTR'] = array('optgroup' => __('ITIL'),
-			'name' => __('MTTR'));
-	
-	
-	
-	$types['SLA'] = array('optgroup' => __('SLA'),
-			'name' => __('S.L.A.'));
-	
-	
-	
-	$types['prediction_date'] = array('optgroup' => __('Forecating'),
-			'name' => __('Prediction date'));
-	$types['projection_graph'] = array('optgroup' => __('Forecating'),
-			'name' => __('Projection graph'));
-	
-	
-	
-	$types['avg_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Avg. Value'));
-	$types['max_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Max. Value'));
-	$types['min_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Min. Value'));
-	$types['monitor_report'] = array('optgroup' => __('Modules'),
-			'name' => __('Monitor report'));
-	$types['database_serialized'] = array('optgroup' => __('Modules'),
-			'name' => __('Serialize data'));
-	$types['sumatory'] = array('optgroup' => __('Modules'),
-			'name' => __('Summatory'));
-	
-	
-	
-	$types['general'] = array('optgroup' => __('Grouped'),
-			'name' => __('General'));
-	$types['group_report'] = array('optgroup' => __('Grouped'),
-			'name' => __('Group report'));
-	$types['exception'] = array('optgroup' => __('Grouped'),
-			'name' => __('Exception'));
-	if ($config['metaconsole'] != 1)
-		$types['agent_module'] = array('optgroup' => __('Grouped'),
-			'name' => __('Agents/Modules'));
-	# Only pandora managers have access to the whole database
-	if (check_acl ($config['id_user'], 0, "PM")) {
-		$types['sql'] = array('optgroup' => __('Grouped'),
-			'name' => __('SQL query'));
-	}
-	$types['top_n'] = array('optgroup' => __('Grouped'),
-			'name' => __('Top n'));
-	
-	
-	
-	$types['text'] = array('optgroup' => __('Text/HTML '),
-			'name' => __ ('Text'));
-	$types['url'] = array('optgroup' => __('Text/HTML '),
-			'name' => __('Import text from URL'));
-	
-	
-	
-	$types['alert_report_module'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report module')); 
-	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report agent'));
-	
-	
-	
-	$types['event_report_agent'] = array('optgroup' => __('Events'),
-			'name' => __('Event report agent')); 
-	$types['event_report_module'] = array('optgroup' => __('Events'),
-			'name' => __('Event report module')); 
-	$types['event_report_group'] = array('optgroup' => __('Events'),
-			'name' => __('Event report group'));
-	
-	return $types;
-}
-
-/**
- * Get report type name from type id.
- *
- * @param int $type Type id of the report.
- *
- * @return string Report type name.
- */
-function get_report_name ($type) {
-	$types = get_report_types ();
-	if (! isset ($types[$type]))
-		return __('Unknown');
-	
-	return $types[$type]['name'];
-}
-
-/**
- * Get report type data source from type id.
- *
- * TODO: Better documentation as to what this function does
- *
- * @param mixed $type Type id or type name of the report.
- *
- * @return string Report type name.
- */
-function get_report_type_data_source ($type) {
-	switch ($type) {
-		case 1:
-		case 'simple_graph':
-		case 6: 
-		case 'monitor_report':
-		case 7:
-		case 'avg_value':
-		case 8:
-		case 'max_value':
-		case 9:
-		case 'min_value':
-		case 10:
-		case 'sumatory':
-		case 'agent_detailed_event':
-			return 'module';
-			break;
-		case 2:
-		case 'custom_graph':
-			return 'custom-graph';
-			break;
-		case 3:
-		case 'SLA':
-		case 4:
-		case 'event_report':
-		case 5:
-		case 'alert_report':
-		case 11:
-		case 'general_group_report':
-		case 12:
-		case 'monitor_health':
-		case 13:
-		case 'agents_detailed':
-			return 'agent-group';
-			break;
-	}
-	
-	return 'unknown';
-}
-
-/**
  * Checks if a module is of type "data"
  *
  * @param string $module_name Module name to check.
@@ -1017,6 +812,7 @@ function get_event_types () {
 	$types['recon_host_detected'] = __('Recon host detected');
 	$types['system'] = __('System');
 	$types['error'] = __('Error');
+	$types['configuration_change'] = __('Configuration change ');
 	
 	if (isset($config['text_char_long'])) {
 		foreach ($types as $key => $type) {
@@ -1662,21 +1458,21 @@ function get_os_name ($id_os) {
 function get_periods () {
 	$periods = array ();
 	
-	$periods[0] = __('custom');
-	$periods[300] = '5 '.__('minutes');
-	$periods[1800] = '30 '.__('minutes');
-	$periods[3600] = __('1 hour');
-	$periods[21600] = '6 '.__('hours');
-	$periods[43200] = '12 '.__('hours');
-	$periods[86400] = __('1 day');
-	$periods[604800] = __('1 week');
-	$periods[1296000] = __('15 days');
-	$periods[2592000] = '1 '.__('month');
-	$periods[7776000] = '3 '.__('months');
-	$periods[15552000] = '6 '.__('months');
-	$periods[31104000] = '1 '.__('year');
-	$periods[62208000] = '2 '.__('years');
-	$periods[93312000] = '3 '.__('years');
+	$periods[-1] = __('custom');
+	$periods[SECONDS_5MINUTES] = '5 '.__('minutes');
+	$periods[SECONDS_30MINUTES] = '30 '.__('minutes');
+	$periods[SECONDS_1HOUR] = __('1 hour');
+	$periods[SECONDS_6HOURS] = '6 '.__('hours');
+	$periods[SECONDS_12HOURS] = '12 '.__('hours');
+	$periods[SECONDS_1DAY] = __('1 day');
+	$periods[SECONDS_1WEEK] = __('1 week');
+	$periods[SECONDS_15DAYS] = __('15 days');
+	$periods[SECONDS_1MONTH] = '1 '.__('month');
+	$periods[SECONDS_3MONTHS] = '3 '.__('months');
+	$periods[SECONDS_6MONTHS] = '6 '.__('months');
+	$periods[SECONDS_1YEAR] = '1 '.__('year');
+	$periods[SECONDS_2YEARS] = '2 '.__('years');
+	$periods[SECONDS_3YEARS] = '3 '.__('years');
 	
 	return $periods;
 }

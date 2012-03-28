@@ -69,6 +69,7 @@ if (!isset($config['dbtype'])) {
 	$config['dbtype'] = 'mysql';
 }
 
+require_once ($ownDir . 'constants.php');
 require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir . 'functions.php');
 

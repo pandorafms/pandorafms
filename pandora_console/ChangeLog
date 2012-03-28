@@ -1,3 +1,16 @@
+2012-03-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	include/config_process.php
+	include/functions.php
+	include/functions_reports.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php:  Added the two new
+	report item types inventory and inventory_changes merged from trunk
+
+	* include/constants.php: Added constants file merged from trunk
+
 2012-03-28  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/estado_agente.php: Fixed several usability problems.

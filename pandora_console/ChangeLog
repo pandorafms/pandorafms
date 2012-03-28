@@ -1,3 +1,9 @@
+2012-03-28  Sancho Lerena <slerena@artica.es>
+
+        * operation/agentes/estado_agente.php: Fixed several usability problems.
+        Fixed search problem with html entities (blank spaces, etc).
+
+
 2012-03-28  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb.sql

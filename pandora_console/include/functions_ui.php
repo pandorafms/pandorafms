@@ -1062,7 +1062,11 @@ function ui_process_page_head ($string, $bitfield) {
 			$config['jquery']);
 	}
 	
-		
+	// Include the datapicker language if exists
+	if(file_exists('include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js')) {
+		$config['jquery']['datepicker_language'] = 'include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js';
+	}
+	
 	//Then add each script as necessary
 	$loaded = array ('');
 	

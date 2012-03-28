@@ -61,7 +61,7 @@ config_check();
 					echo '<div id="dialog_messages" style="display: none"></div>';
 					ui_require_css_file ('dialog');
 					
-					echo '<a href="ajax.php?page=operation/messages/message" title="' . __("Message overview") . '" id="show_messages_dialog">';
+					echo '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
 					html_print_image ("images/email.png", false,
 					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
 					echo '</a>';

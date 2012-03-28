@@ -286,11 +286,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	// Messages
 	$menu["messages"]["text"] = __('Messages');
 	$menu["messages"]["refr"] = 0;
-	$menu["messages"]["sec2"] = "operation/messages/message";
+	$menu["messages"]["sec2"] = "operation/messages/message_list";
 	$menu["messages"]["id"] = "oper-messages";
 	
 	$sub = array ();
-	$sub["operation/messages/message&amp;new_msg=1"]["text"] = __('New message');
+	$sub["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
 	
 	$menu["messages"]["sub"] = $sub;
 	

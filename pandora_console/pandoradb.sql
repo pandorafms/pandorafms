@@ -516,7 +516,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
   `id_mensaje` int(10) unsigned NOT NULL auto_increment,
   `id_usuario_origen` varchar(60) NOT NULL default '',
   `id_usuario_destino` varchar(60) NOT NULL default '',
-  `mensaje` tinytext NOT NULL,
+  `mensaje` text NOT NULL DEFAULT '',
   `timestamp` bigint (20) unsigned NOT NULL default '0',
   `subject` varchar(255) NOT NULL default '',
   `estado` int(4) unsigned NOT NULL default '0',
@@ -777,6 +777,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `shortcut_data` text default '',
   `section` TEXT NOT NULL,
   `data_section` TEXT NOT NULL,
+  `created_by` TEXT NOT NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -214,7 +214,7 @@ class MonitorStatus {
 				}
 			}
 			
-			$data[] = str_replace('<img src="' , '<img width="15" height="15" src="../../', $statusImg);
+			$data[] = str_replace('<img src="' , '<img width="15" height="15" src="', $statusImg);
 			
 			$data[] = '<a href="index.php?page=agent&id=' . $row['id_agent'] . '">' . ui_print_truncate_text($row['agent_name'], 25, true, true) . '</a>';
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $row['id_agente_modulo'] . '">' . 

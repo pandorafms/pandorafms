@@ -1,3 +1,7 @@
+2012-03-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* mobile/operation/agents/monitor_status.php: Fixed the 'img' path.
+
 2012-03-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* images/bottom_logo_enterprise.png

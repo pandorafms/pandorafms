@@ -2169,8 +2169,20 @@ function reporting_header_content($mini, $content, $report, &$table, $title = fa
 	}
 	else $count_empty++;
 	
-	if ($period !== false)
+	if ($period !== false && $content['period'] > 0) {
 		$data[] = $sizh . $period . $sizhfin;
+	}
+	else if($content['period'] == 0) {
+		$es = json_decode($content['external_source'], true);
+		if($es['date'] == 0) {
+			$date = __('Last data');
+		}
+		else {
+			$date = date($config["date_format"], $es['date']);
+		}
+		
+		$data[] = "<div style='text-align: right;'>" . $sizh . $date . $sizhfin . "</div>";
+	}
 	else {
 		$data[] = "<div style='text-align: right;'>" . $sizh .
 			"(" . human_time_description_raw ($content['period']) . ") " .
@@ -4430,6 +4442,36 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data[0] = $inventory_data;
+			array_push ($table->data, $data);
+			break;
+		case 'inventory_changes':
+			reporting_header_content($mini, $content, $report, $table, __('Inventory changes'));
+			
+			$es = json_decode($content['external_source'], true);
+			
+			$id_agent = $es['id_agents'];
+			$module_name = $es['inventory_modules'];
+			$description = $content['description'];
+			
+			$inventory_changes = inventory_get_changes($id_agent, $module_name, $report["datetime"] - $content['period'], $report["datetime"]);
+			
+			if ($inventory_changes == ERR_NODATA) {
+				$inventory_changes = "<div class='nf'>".__('No changes found.')."</div>";
+				$inventory_changes .= "&nbsp;</td></tr><tr><td>";				
+			}
+			
+			$data = array ();
+
+			$table->colspan[1][0] = 2;
+
+			if($description != '') {
+				$data[0] = $description;
+				array_push ($table->data, $data);
+			}
+
+			$data[0] = $inventory_changes;
+			$table->colspan[2][0] = 2;
+
 			array_push ($table->data, $data);
 			break;
 	}

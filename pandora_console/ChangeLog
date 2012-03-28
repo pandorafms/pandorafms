@@ -1,3 +1,84 @@
+2012-03-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/images/ui-bg_gloss-wave_35_f6a828_500x100.png
+	include/styles/images/ui-bg_flat_10_000000_40x100.png
+	include/styles/images/ui-bg_diagonals-thick_20_666666_40x40.png
+	include/styles/images/ui-icons_228ef1_256x240.png
+	include/styles/images/ui-icons_ffd27a_256x240.png
+	include/styles/images/ui-bg_diagonals-thick_18_b81900_40x40.png
+	include/styles/images/ui-icons_ffffff_256x240.png
+	include/styles/images/ui-bg_highlight-soft_75_ffe45c_1x100.png
+	include/styles/images/ui-bg_glass_65_ffffff_1x400.png
+	include/styles/images/ui-icons_222222_256x240.png
+	include/styles/images/ui-icons_ef8c08_256x240.png
+	include/styles/images/ui-bg_glass_100_fdf5ce_1x400.png
+	include/styles/images/ui-bg_glass_100_f6f6f6_1x400.png
+	include/functions_ui.php
+	include/languages/datepicker
+	include/languages/datepicker/jquery.ui.datepicker-eo.js
+	include/languages/datepicker/jquery.ui.datepicker-bs.js
+	include/languages/datepicker/jquery.ui.datepicker-fo.js
+	include/languages/datepicker/jquery.ui.datepicker-ta.js
+	include/languages/datepicker/jquery.ui.datepicker-cs.js
+	include/languages/datepicker/jquery.ui.datepicker-es.js
+	include/languages/datepicker/jquery.ui.datepicker-eu.js
+	include/languages/datepicker/jquery.ui.datepicker-ko.js
+	include/languages/datepicker/jquery.ui.datepicker-is.js
+	include/languages/datepicker/jquery.ui.datepicker-no.js
+	include/languages/datepicker/jquery.ui.datepicker-hu.js
+	include/languages/datepicker/jquery.ui.datepicker-sk.js
+	include/languages/datepicker/jquery.ui.datepicker-vi.js
+	include/languages/datepicker/jquery.ui.datepicker-uk.js
+	include/languages/datepicker/jquery.ui.datepicker-ms.js
+	include/languages/datepicker/jquery.ui.datepicker-hy.js
+	include/languages/datepicker/jquery.ui.datepicker-ro.js
+	include/languages/datepicker/jquery.ui.datepicker-de-CH.js
+	include/languages/datepicker/jquery.ui.datepicker-zh-HK.js
+	include/languages/datepicker/jquery.ui.datepicker-sq.js
+	include/languages/datepicker/jquery.ui.datepicker-ru.js
+	include/languages/datepicker/jquery.ui.datepicker-af.js
+	include/languages/datepicker/jquery.ui.datepicker-id.js
+	include/languages/datepicker/jquery.ui.datepicker-fr-CH.js
+	include/languages/datepicker/jquery.ui.datepicker-el.js
+	include/languages/datepicker/jquery.ui.datepicker-ar.js
+	include/languages/datepicker/jquery.ui.datepicker-sr-SR.js
+	include/languages/datepicker/jquery.ui.datepicker-fr.js
+	include/languages/datepicker/jquery.ui.datepicker-et.js
+	include/languages/datepicker/jquery.ui.datepicker-nl.js
+	include/languages/datepicker/jquery.ui.datepicker-zh-TW.js
+	include/languages/datepicker/jquery.ui.datepicker-hr.js
+	include/languages/datepicker/jquery.ui.datepicker-az.js
+	include/languages/datepicker/jquery.ui.datepicker-pl.js
+	include/languages/datepicker/jquery.ui.datepicker-th.js
+	include/languages/datepicker/jquery.ui.datepicker-it.js
+	include/languages/datepicker/jquery.ui.datepicker-sl.js
+	include/languages/datepicker/jquery.ui.datepicker-zh-CN.js
+	include/languages/datepicker/jquery.ui.datepicker-lt.js
+	include/languages/datepicker/jquery.ui.datepicker-lv.js
+	include/languages/datepicker/jquery.ui.datepicker-ca.js
+	include/languages/datepicker/jquery.ui.datepicker-pt-BR.js
+	include/languages/datepicker/jquery.ui.datepicker-da.js
+	include/languages/datepicker/jquery.ui.datepicker-sr.js
+	include/languages/datepicker/jquery.ui.datepicker-tr.js
+	include/languages/datepicker/jquery.ui.datepicker-fa.js
+	include/languages/datepicker/jquery.ui.datepicker-en-GB.js
+	include/languages/datepicker/jquery.ui.datepicker-sv.js
+	include/languages/datepicker/jquery.ui.datepicker-de.js
+	include/languages/datepicker/jquery.ui.datepicker-bg.js
+	include/languages/datepicker/jquery.ui.datepicker-ja.js
+	include/languages/datepicker/jquery.ui.datepicker-he.js
+	include/languages/datepicker/jquery.ui.datepicker-nl-BE.js
+	include/languages/datepicker/jquery.ui.datepicker-fi.js: Added
+	some missed images in the datapicker with the new jquery
+	and added translations and set it with config var to datepicker
+	dialog
+
+	* godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php
+	include/functions_reporting.php
+	operation/reporting/reporting_viewer.php: Added the inventory changes
+	report and fix some bugs of the inventory item
+
 2012-03-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* images/bottom_logo_enterprise.png

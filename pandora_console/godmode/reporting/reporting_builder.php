@@ -347,9 +347,17 @@ switch ($action) {
 								break;
 							case 'inventory':
 								$values['period'] = 0;
+								$es['date'] = get_parameter('date');
 								$es['id_agents'] = get_parameter('id_agents');
 								$es['inventory_modules'] = get_parameter('inventory_modules');
-								$es['date'] = get_parameter('date');
+								$description = get_parameter('description');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							case 'inventory_changes':
+								$values['period'] = get_parameter('period');
+								$es['id_agents'] = get_parameter('id_agents');
+								$es['inventory_modules'] = get_parameter('inventory_modules');
 								$description = get_parameter('description');
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
@@ -464,9 +472,16 @@ switch ($action) {
 								break;
 							case 'inventory':
 								$values['period'] = 0;
+								$es['date'] = get_parameter('date');
 								$es['id_agents'] = get_parameter('id_agents');
 								$es['inventory_modules'] = get_parameter('inventory_modules');
-								$es['date'] = get_parameter('date');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							case 'inventory_changes':
+								$values['period'] = get_parameter('period');
+								$es['id_agents'] = get_parameter('id_agents');
+								$es['inventory_modules'] = get_parameter('inventory_modules');
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;

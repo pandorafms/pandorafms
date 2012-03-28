@@ -324,6 +324,13 @@ switch ($action) {
 				$inventory_modules = $es['inventory_modules'];
 				$id_agents = $es['id_agents'];
 				break;
+			case 'inventory_changes':
+				$period = $item['period'];
+				$description = $item['description'];
+				$es = json_decode($item['external_source'], true);
+				$inventory_modules = $es['inventory_modules'];
+				$id_agents = $es['id_agents'];
+				break;
 		}
 		
 		//Restore db connection
@@ -520,7 +527,7 @@ html_print_input_hidden('id_item', $idItem);
 					$dates = array();
 				}
 
-				html_print_select($dates, 'date', '', '', __('Now'), 0, false, false, false, '', false, "min-width: 180px");
+				html_print_select($dates, 'date', '', '', __('Last'), 0, false, false, false, '', false, "min-width: 180px");
 				html_print_input_hidden('date_selected',$date);
 				?>
 			</td>
@@ -1485,6 +1492,22 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
+			break;
+		case 'inventory_changes':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_group").show();
+			$("#row_agent_multi").show();
+			$("#row_module_multi").show();
+			$("#row_show_in_two_columns").show();
+			
+			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
+			$("#id_agents").trigger('change');
+			
+			$("#combo_group").change(function() {
+				updateAgents($(this).val());
+			});
+			
 			break;
 		case 'inventory':
 			$("#row_description").show();

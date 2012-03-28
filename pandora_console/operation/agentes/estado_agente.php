@@ -116,7 +116,7 @@ while ($row = db_get_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo
 
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
-$search = trim(io_safe_output_html(get_parameter ("search", "")));
+$search = trim(get_parameter ("search", ""));
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
@@ -149,16 +149,19 @@ echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
 
 $groups = users_get_groups ();
-html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:180px');
+html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
 
-echo '</td><td style="white-space:nowrap;">'.__('Group recursion').': ';
+echo '</td><td style="white-space:nowrap;">';
+
+echo ui_print_help_tip (__("Group recursion"), true);
+
 html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
 echo '</td><td style="white-space:nowrap;">';
 
 echo __('Free text for search').' (*): ';
 
-html_print_input_text ("search", $search, '', 15);
+html_print_input_text ("search", $search, '', 8);
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -371,15 +374,7 @@ $table->align[7] = "center";
 $table->align[8] = "right";
 
 $table->style = array();
-$table->style[0] = 'width: 9%';
-$table->style[1] = 'width: 11%';
-$table->style[2] = 'width: 7%';
-$table->style[3] = 'width: 10%';
-$table->style[4] = 'width: 9%';
-$table->style[5] = 'width: 10%';
-$table->style[6] = 'width: 6%';
-$table->style[7] = 'width: 6%';
-$table->style[8] = 'width: 15%';
+$table->style[0] = 'width: 15%';
 
 $table->data = array ();
 
@@ -417,7 +412,7 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}*/
 	
-	$data[1] = ui_print_truncate_text($agent["description"], 30, false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+	$data[1] = ui_print_truncate_text($agent["description"], 50, false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 

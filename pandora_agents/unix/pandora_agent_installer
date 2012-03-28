@@ -188,6 +188,17 @@ install () {
 		echo "Checking Pandora FMS Agent on $PANDORA_BASE$PANDORA_BIN...."
 	fi
 
+	# Set the user the agent will run as
+	if [ "$PANDORA_USER" != "" ]
+	then
+		sed -e "s/.*pandora_user .*/pandora_user $PANDORA_USER/" $AGENT_CFG > $AGENT_CFG_TEMP 2> /dev/null && \
+		mv $AGENT_CFG_TEMP $AGENT_CFG
+		chmod 755 pandora_agent_daemon
+		chown -R $PANDORA_USER $PANDORA_BASE
+	else
+		PANDORA_USER="root"
+	fi
+
 	# Alter dynamically the daemon launcher and setup the new path 
 	# if PANDORA_BASE is customized.
 
@@ -269,17 +280,6 @@ install () {
 	mkdir -p $PANDORA_BASE$PANDORA_TEMP/data_out 2> /dev/null
 	mkdir -p $PANDORA_BASE$PANDORA_CFG 2> /dev/null
 	mkdir -p $PANDORA_BASE$PANDORA_LOG_DIR 2> /dev/null
-
-	# Set the user the agent will run as
-	if [ "$PANDORA_USER" != "" ]
-	then
-		sed -e "s/.*pandora_user .*/pandora_user $PANDORA_USER/" $AGENT_CFG > $AGENT_CFG_TEMP 2> /dev/null && \
-		mv $AGENT_CFG_TEMP $AGENT_CFG
-		chmod 755 pandora_agent_daemon
-		chown -R $PANDORA_USER $PANDORA_BASE
-	else
-		PANDORA_USER="root"
-	fi
 
 	# Create logfile
 	if [ ! -z "`touch $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG`" ]

@@ -1,3 +1,8 @@
+2012-03-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Moved the code that sets PANDORA_USER to
+	  the right place.
+
 2012-03-02  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* pandora_agent: Fixed bug of my previous commit (removed "qw").

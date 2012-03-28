@@ -108,7 +108,7 @@ function messages_delete_message ($id_message) {
 	global $config;
 	
 	$where = array(
-		'id_usuario_destino' => $config["id_user"],
+		//'id_usuario_destino' => $config["id_user"],
 		'id_mensaje' => $id_message);
 	return (bool)db_process_sql_delete('tmensajes', $where);
 }
@@ -144,7 +144,7 @@ function messages_process_read ($message_id, $read = true) {
 function messages_get_message ($message_id) {
 	global $config;
 
-	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje, timestamp
+	$sql = sprintf("SELECT id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp
 		FROM tmensajes
 		WHERE id_usuario_destino='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
     $row = db_get_row_sql ($sql);
@@ -153,13 +153,33 @@ function messages_get_message ($message_id) {
 		return false;
 	}
 	
-	$return["sender"] = $row["id_usuario_origen"];
-	$return["subject"] = $row["subject"];
-	$return["message"] = $row["mensaje"];
-	$return["timestamp"] = $row["timestamp"];
-	
-	return $return;
+	return $row;
 }
+
+/** 
+ * Gets a sent message
+ *
+ * This function abstracts the database backend so it can simply be replaced with another system
+ * 
+ * @param int $message_id
+ *
+ * @return mixed False if it doesn't exist or a filled array otherwise
+ */
+function messages_get_message_sent ($message_id) {
+	global $config;
+
+	$sql = sprintf("SELECT id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp
+		FROM tmensajes
+		WHERE id_usuario_origen='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
+    $row = db_get_row_sql ($sql);
+	
+	if (empty ($row)) {
+		return false;
+	}
+	
+	return $row;
+}
+
 
 /** 
  * Counts private messages
@@ -184,6 +204,25 @@ function messages_get_count ($user = false, $incl_read = false) {
     
 	return (int) db_get_sql ($sql);
 }
+
+/** 
+ * Counts sended messages
+ *
+ * @param string $user
+ *
+ * @return int The number of messages this user has sent
+ */
+function messages_get_count_sent ($user = false) {
+	if (empty ($user)) {
+		global $config;
+		$user = $config["id_user"];
+	}
+	$sql = sprintf("SELECT COUNT(*)
+		FROM tmensajes WHERE id_usuario_origen='%s'", $user);
+    
+	return (int) db_get_sql ($sql);
+}
+
 
 /** 
  * Get message overview in array
@@ -221,6 +260,50 @@ function messages_get_overview ($order = "status", $order_dir = "ASC") {
 	
 	foreach ($return as $message) {
 		$result[$message["id_mensaje"]]["sender"] = $message["id_usuario_origen"];
+		$result[$message["id_mensaje"]]["subject"] = $message["subject"];
+		$result[$message["id_mensaje"]]["timestamp"] = $message["timestamp"];
+		$result[$message["id_mensaje"]]["status"] = $message["estado"];
+	}
+	
+	return $result;
+}
+
+/** 
+ * Get sent message overview in array
+ *
+ * @param string $order How to order them valid: 
+ * (status (default), subject, timestamp, sender)
+ * @param string $order_dir Direction of order (ASC = Ascending, DESC = Descending)
+ *
+ * @return int The number of messages this user has
+ */
+function messages_get_overview_sent ($order = "timestamp", $order_dir = "ASC") {
+	global $config;
+	
+	switch ($order) {
+		case "timestamp":
+		case "sender":
+		case "subject":
+		break;
+		case "status":
+		default:
+			$order = "estado, timestamp";
+			break;
+	}
+	
+	if ($order_dir != "ASC") {
+		$order .= " DESC";
+	}
+	
+	$result = array ();
+	$return = db_get_all_rows_field_filter ('tmensajes', 'id_usuario_origen', $config["id_user"], $order);
+	
+	if ($return === false) {
+		return $result;
+	}
+	
+	foreach ($return as $message) {
+		$result[$message["id_mensaje"]]["dest"] = $message["id_usuario_destino"];
 		$result[$message["id_mensaje"]]["subject"] = $message["subject"];
 		$result[$message["id_mensaje"]]["timestamp"] = $message["timestamp"];
 		$result[$message["id_mensaje"]]["status"] = $message["estado"];

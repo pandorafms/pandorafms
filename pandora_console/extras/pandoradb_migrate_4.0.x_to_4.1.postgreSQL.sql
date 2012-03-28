@@ -181,3 +181,12 @@ ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL DEFAULT '
 -- -----------------------------------------------------
 ALTER TABLE "treport_content_item" ADD COLUMN "operation" text default '';
 
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+ALTER TABLE "tusuario" ADD COLUMN "created_by" varchar(255) NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `tmensajes`
+-- -----------------------------------------------------
+ALTER TABLE "tmensajes" ALTER COLUMN "mensaje" TYPE TEXT;

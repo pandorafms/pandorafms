@@ -565,8 +565,15 @@ function groups_get_name ($id_group, $returnAllGroup = false) {
  * @return array An array with all the users or an empty array
  */
 function groups_get_users ($id_group, $filter = false) {
+	global $config;
+	
 	if (! is_array ($filter))
 		$filter = array ();
+	
+	//Users created by user
+	$filter['created_by'] = $config['id_user']; 
+	$users_created = db_get_all_rows_filter ("tusuario", $filter);
+	unset($filter['created_by']);
 	
 	$filter['id_grupo'] = $id_group;
 	
@@ -588,7 +595,12 @@ function groups_get_users ($id_group, $filter = false) {
 		$result = array_merge($resulta,$resultb);
 
 	if ($result === false)
-	return array ();
+		return array ();
+	else {
+		if ($users_created !== false) {
+			$result = array_merge($result, $users_created);
+		}
+	}
 	
 	//This removes stale users from the list. This can happen if switched to another auth scheme
 	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)

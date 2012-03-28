@@ -34,7 +34,7 @@
 $(document).ready (function () {
 	$("a#show_messages_dialog").click (function () {
 		jQuery.get ("ajax.php",
-			{"page": "operation/messages/message"},
+			{"page": "operation/messages/message_list"},
 			function (data, status) {
 				$("#dialog_messages").hide ()
 					.empty ()

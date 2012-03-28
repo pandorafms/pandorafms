@@ -187,4 +187,14 @@ ALTER TABLE tusuario ADD (data_section VARCHAR2(255) NOT NULL);
 -- -----------------------------------------------------
 -- Table `treport_content_item`
 -- -----------------------------------------------------
-ALTER TABLE `treport_content_item` ADD (operation` CLOB default '');
+ALTER TABLE treport_content_item ADD (operation CLOB default '');
+
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+ALTER TABLE tusuario ADD (created_by VARCHAR2(255) NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `tmensajes`
+-- -----------------------------------------------------
+ALTER TABLE tmensajes MODIFY mensaje VARCHAR2(255) NOT NULL DEFAULT '';

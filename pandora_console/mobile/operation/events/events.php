@@ -203,12 +203,7 @@ class EventsView {
 			ui_get_url_refresh(array("offset" => $offset, "ev_group" => $ev_group,
 			"event_type" => $event_type, "severity" => $severity,
 			"search" => $search)), 0, 0, true);
-			
-		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
-		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
-		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);
-		$pagination = str_replace('images/go_last.png', '../images/go_last.png', $pagination);
-		
+
 		echo $pagination;
 	}
 }

@@ -230,16 +230,11 @@ class MonitorStatus {
 		}
 		
 		html_print_table($table);
-		
-		$pagination = pagination ($total,
+
+		$pagination = ui_pagination ($total,
 			ui_get_url_refresh (array ()),
 			0, 0, true);
-			
-		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
-		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
-		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);
-		$pagination = str_replace('images/go_last.png', '../images/go_last.png', $pagination);
-			
+
 		echo $pagination;
 	}
 }

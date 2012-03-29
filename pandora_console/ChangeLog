@@ -1,3 +1,10 @@
+2012-03-29  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* mobile/operation/agents/monitor_status.php
+	mobile/operation/agents/view_agents.php
+	mobile/operation/events/events.php: Fixed reference paths to
+	image files for page navigation ('go next' or so).
+
 2012-03-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php

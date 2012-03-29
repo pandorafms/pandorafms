@@ -137,15 +137,10 @@ class ViewAgents {
 		
 		html_print_table($table);
 		
-		$pagination = pagination ($total_agents,
+		$pagination = ui_pagination ($total_agents,
 			ui_get_url_refresh (array ('filter_group' => $this->filterGroup, 'filter_group' => $this->filterGroup)),
 			0, 0, true);
-			
-		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
-		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
-		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);
-		$pagination = str_replace('images/go_last.png', '../images/go_last.png', $pagination);
-			
+
 		echo $pagination;
 	}
 }
@@ -518,18 +513,13 @@ class viewGraph {
 		
 			array_push ($table->data, $data);
 		}
-		
+
 		html_print_table($table);
-		
+
 		$pagination = ui_pagination ($count,
 			ui_get_url_refresh (array ('period' => $this->period)),
 			0, 0, true);
-			
-		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
-		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
-		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);
-		$pagination = str_replace('images/go_last.png', '../images/go_last.png', $pagination);
-		
+
 		echo $pagination;
 	}
 }

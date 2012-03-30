@@ -185,7 +185,7 @@ UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
 -- Table `tusuario`
 -- -----------------------------------------------------
 ALTER TABLE `tusuario` ADD COLUMN `section` TEXT NOT NULL;
-
+INSERT INTO `tusuario` (`section`) VALUES ('Default');
 ALTER TABLE `tusuario` ADD COLUMN `data_section` TEXT NOT NULL;
 
 -- -----------------------------------------------------

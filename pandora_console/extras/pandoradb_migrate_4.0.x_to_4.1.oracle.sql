@@ -181,7 +181,7 @@ ALTER TABLE tusuario ADD COLUMN shortcut_data CLOB default '';
 -- Table `tusuario`
 -- -----------------------------------------------------
 ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
-
+INSERT INTO tusuario (section) VALUES ('Default');
 ALTER TABLE tusuario ADD (data_section VARCHAR2(255) NOT NULL);
 
 -- -----------------------------------------------------

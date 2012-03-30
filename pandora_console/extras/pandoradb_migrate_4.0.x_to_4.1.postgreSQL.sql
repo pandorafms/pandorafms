@@ -173,7 +173,7 @@ ALTER TABLE "tusuario" ADD COLUMN "shortcut_data" text default '';
 -- Table `tusuario`
 -- -----------------------------------------------------
 ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL DEFAULT '';
-
+INSERT INTO "tusuario" ("section") VALUES ("Default");
 ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL DEFAULT '';
 
 -- -----------------------------------------------------

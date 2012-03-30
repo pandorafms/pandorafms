@@ -1,3 +1,13 @@
+2012-03-30  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb_data.sql
+	  pandoradb.data.postgreSQL.sql
+	  pandoradb.data.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: added default value
+	to 'section' field.
+
 2012-03-28  Sancho Lerena <slerena@artica.es>
 
         * operation/agentes/estado_agente.php: Fixed several usability problems.

@@ -32,22 +32,31 @@
 </head>
 <body>
 
-<div id="main" style='float:left; margin-left: 100px'>
-	<div align='center'>
-		<div id='login_f'>
-			<h1 id="log_f" class="error">Problem with Pandora FMS database</h1>
-			<div>
-				<img src="images/pandora_logo.png" border="0">
-			</div>
-			<div class="msg">
+
+<img src="images/login_background.png" id="login_body">
+<div class="databox_logout" id="login">
+	<br>
+	<h1 id="log">Problem with Pandora FMS database</h1>
+	<br>
+	<div style="width: 440px; margin: 0 auto auto;">
+		<table cellpadding="4" cellspacing="1" width="440">
+		<tr><td align="left">
+			<a href="index.php"><img src="images/pandora_login.png" border="0" height="100px" alt="Pandora FMS"></a>
+		</td><td valign="bottom">
 			Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br><br>
 			Probably one or more of your user, database or hostname values are incorrect or 
 			the database server is not running.</i><br /><br /><span class="error">
 			<b>DB ERROR:</b><?php echo db_get_last_error(); ?></span>
 			<br>&nbsp;
-			</div>
-		</div>
+		</td></tr>
+		</table>
 	</div>
+	<br>
+
+</div>
+
+<div id="bottom_logo">
+	<img src='images/bottom_logo.png' "alt" = "logo"  "border" = "0">
 </div>
 
 </body>

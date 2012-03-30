@@ -836,6 +836,15 @@ span.rmess, span.nrmess {
 	background-color: #fafafa;
 	background: url(../../images/splash_logout.png) no-repeat; 
 }
+
+.databox_error {
+	width: 657x !important;
+	height: 400px;
+	border: none !important; 
+	background-color: #fafafa;
+	background: url(../../images/splash_error.png) no-repeat; 
+}
+
 .databox_color {
 	background-color: #fafafa;
 }

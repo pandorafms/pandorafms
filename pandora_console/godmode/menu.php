@@ -60,9 +60,11 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu["gmassive"]["sub"] = $sub;
 }
 
+/*
 if (check_acl ($config['id_user'], 0, "AW")) {
 	enterprise_hook ('services_godmenu');
 }
+*/
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["gmodules"]["text"] = __('Manage modules');
@@ -146,9 +148,11 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 }
 if (check_acl ($config['id_user'], 0, "IW")) {
 	// Custom map builder
+/*
 	$menu["gmap"]["text"] = __('Visual console builder');
 	$menu["gmap"]["sec2"] = "godmode/reporting/map_builder";
 	$menu["gmap"]["id"] = "god-map";
+*/
 	
 	if ($config['activate_gis']) {
 		$menu["godgismaps"]["text"] = __('GIS Maps builder');

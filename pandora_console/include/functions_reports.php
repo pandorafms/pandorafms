@@ -87,13 +87,16 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 		$all_reports = array();
 	
 	//Recheck in all reports if the user have permissions to see each report.
-	$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
+	$groups = users_get_groups ($config['id_user'], $privileges, true);
+	
 	foreach ($all_reports as $report) {
 		if (!in_array($report['id_group'], array_keys($groups)))
 			continue;
+		
 		if ($config['id_user'] != $report['id_user']
 			&& ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
 			continue;
+		
 		array_push ($reports, $report);
 	}
 	

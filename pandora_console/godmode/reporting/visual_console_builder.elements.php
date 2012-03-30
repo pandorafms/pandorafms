@@ -150,7 +150,7 @@ foreach ($layoutDatas as $layoutData) {
 		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
 	
 	//Delete row button
-	$table->data[$i + 1][5] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' .
+	$table->data[$i + 1][5] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' .
 		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
 		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
 	
@@ -208,7 +208,7 @@ foreach ($layoutDatas as $layoutData) {
 }
 
 
-echo '<form method="post" action="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
+echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden ('action', 'update');
 html_print_input_hidden ('id_visual_console', $visualConsole["id"]);

@@ -17,7 +17,7 @@ global $config;
 
 require_once ('include/functions_visual_map.php');
 
-ui_print_page_header (__('Visual console builder'), "", false, "map_builder", true);
+ui_print_page_header (__('Reporting').' &raquo; '.__('Visual Console'), "images/reporting.png", false, "map_builder");
 
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
@@ -132,8 +132,13 @@ $table->head = array ();
 $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Items');
-$table->head[3] = __('Copy');
-$table->head[4] = __('Delete');
+
+//Only for IW flag
+if(check_acl ($config['id_user'], 0, "IW")) {
+	$table->head[3] = __('Copy');
+	$table->head[4] = __('Delete');
+}
+
 $table->align = array ();
 $table->align[1] = 'center';
 $table->align[2] = 'center';
@@ -151,17 +156,22 @@ if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
 } else {
 	foreach ($maps as $map) {			
-		if (check_acl ($config['id_user'], $map['id_group'], "IW")) {
-			$data = array ();
-			$data[0] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&amp;action=edit&amp;id_visual_console='.$map['id'].'">'.$map['name'].'</a>';
 		
-			$data[1] = ui_print_group_icon ($map['id_group'], true);
-			$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
+		$data = array ();
+				
+		$data[0] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.
+					$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
 		
-			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
-			$data[4] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
-			array_push ($table->data, $data);
+		$data[1] = ui_print_group_icon ($map['id_group'], true);
+		$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
+			
+		if (check_acl ($config['id_user'], 0, "IW")) {
+		
+			$data[3] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+			$data[4] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 		}
+		array_push ($table->data, $data);
+		
 	}
 	html_print_table ($table);
 }
@@ -171,9 +181,13 @@ if (!$maps) {
 else {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 }
-echo '<form action="index.php?sec=gmap&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
-html_print_input_hidden ('edit_layout', 1);
-html_print_submit_button (__('Create'), '', false, 'class="sub next"');
-echo '</form>';
+
+//Only for IW flag
+if (check_acl ($config['id_user'], 0, "IW")) {
+	echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
+	html_print_input_hidden ('edit_layout', 1);
+	html_print_submit_button (__('Create'), '', false, 'class="sub next"');
+	echo '</form>';
+}
 echo '</div>';
 ?>

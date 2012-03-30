@@ -238,19 +238,19 @@ switch ($activeTab) {
 
 $buttons = array(
 	'data' => array('active' => false,
-		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=data&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' . 
 			html_print_image ("images/god9.png", true, array ("title" => __('Data'))) .'</a>'),
 	'list_elements' => array('active' => false,
-		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=list_elements&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=list_elements&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/god6.png", true, array ("title" => __('List elements'))) .'</a>'),
 	'wizard' => array('active' => false,
-		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=wizard&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=wizard&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>'),
 	'editor' => array('active' => false,
-		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),
 	'view' => array('active' => false,
-		'text' => '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=60">' .
+		'text' => '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=60">' .
 			html_print_image ("images/eye.png", true, array ("title" => __('View'))) .'</a>'),);
 
 if ($action == 'new' || $idVisualConsole === false){
@@ -261,8 +261,8 @@ if ($action == 'new' || $idVisualConsole === false){
 }
 	
 $buttons[$activeTab]['active'] = true;
-
-ui_print_page_header(__('Visual console builder') . "&nbsp;" . $visualConsoleName, "", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
+ 
+ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
 
 //The source code for PAINT THE PAGE
 if ($statusProcessInDB !== null) {

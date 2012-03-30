@@ -86,9 +86,9 @@ if ($edit_graph) {
 echo "<table width='98%' cellpadding=4 cellspacing=4 class='databox_color'>";
 
 if ($edit_graph)
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&update_graph=1&id=" . $id_graph . "'>";
+	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&update_graph=1&id=" . $id_graph . "'>";
 else
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&add_graph=1'>";
+	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&add_graph=1'>";
 
 echo "<tr>";
 echo "<td class='datos'><b>".__('Name')."</b></td>";

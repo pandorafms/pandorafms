@@ -16,14 +16,10 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access report builder");
-	require ("general/noaccess.php");
-	exit;
-}
-
 require_once ("include/functions_reports.php");
+
+// Load enterprise extensions
+enterprise_include ('operation/reporting/custom_reporting.php');
 
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NOT_HOOK) {
@@ -135,7 +131,7 @@ switch ($action) {
 	case 'delete_report':
 	case 'list':
 		// Report LIST
-		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting_edit.png", false, "", true);
+		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "");
 		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
@@ -151,7 +147,8 @@ switch ($action) {
 			$return_all_group = false;
 		
 		$reports = reports_get_reports (array ('order' => 'name'),
-			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IW');
+			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IR');
+		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
@@ -164,43 +161,91 @@ switch ($action) {
 			$table->data = array ();
 			$table->head[0] = __('Report name');
 			$table->head[1] = __('Description');
-			$table->head[2] = __('Private');
-			$table->head[3] = __('Group');
-			$table->head[4] = '<span title="Operations">' . __('Op.') . '</span>';
-			$table->size = array ();
-			$table->size[4] = '60px';
+			$table->head[2] = __('HTML');
+			$table->head[3] = __('XML');
+			
+			$next = 4;
+			//Calculate dinamically the number of the column
+			if (enterprise_hook ('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
+				$next = 6;
+			}
+			
+			//Admin options only for IW flag
+			if (check_acl ($config['id_user'], 0, "IW")) {
+			
+				$table->head[$next] = __('Private');
+				$table->size[$next] = '40px';
+				$table->align[$next] = 'center';
+				$next++;
+				$table->head[$next] = __('Group');
+				$table->align[$next] = 'center';
+				$next++;
+				$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
+				$table->size = array ();
+				$table->size[$next] = '60px';
+			
+			}
 			
 			foreach ($reports as $report) {
 				
 				if (!is_user_admin ($config["id_user"])){
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
-						if (!check_acl ($config["id_user"], $report["id_group"], "AW"))
+						if (!check_acl ($config["id_user"], $report["id_group"], "AR"))
 							continue;
-					if (!check_acl ($config["id_user"], $report["id_group"], "AW"))
+					if (!check_acl ($config["id_user"], $report["id_group"], "AR"))
 						continue;
 				}
 				
 				$data = array ();
-				$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
-						$report['id_report'].'">'.$report['name'].'</a>';
-				$data[1] = $report['description'];
-				if ($report["private"] == 1)
-					$data[2] = __('Yes');
-				else
-					$data[2] = __('No');
 					
-				$data[3] = ui_print_group_icon($report['id_group'], true);
-				$data[4] = '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
-				$data[4] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-				$data[4] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
-				$data[4] .= '</form>';
+				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
+			
+					$data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
+							$report['id_report'].'">'.$report['name'].'</a>';
 						
-				$data[4] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-				$data[4] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-				$data[4] .= html_print_input_hidden ('action','delete_report', true);
-				$data[4] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
-					true, array ('title' => __('Delete')));
-				$data[4] .= '</form>';
+				} else {
+					$data[0] = $report['name'];
+				}
+						
+						
+				$data[1] = $report['description'];
+				
+				$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
+						html_print_image("images/reporting.png", true) . '</a>';
+				$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+
+
+				//Calculate dinamically the number of the column	
+				$next = 4;
+				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
+					$next = 6;
+				}
+				
+				//Admin options only for IW flag
+				if (check_acl ($config['id_user'], 0, "IW")) {
+					if ($report["private"] == 1)
+						$data[$next] = __('Yes');
+					else
+						$data[$next] = __('No');
+						
+					$next++;
+					
+						
+					$data[$next] = ui_print_group_icon($report['id_group'], true);
+					$next++;
+					
+					$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
+					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
+					$data[$next] .= '</form>';
+							
+					$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
+					$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
+						true, array ('title' => __('Delete')));
+					$data[$next] .= '</form>';
+				}
 				
 				array_push ($table->data, $data);
 							
@@ -210,11 +255,14 @@ switch ($action) {
 			echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 		}
 		
-		echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
-		echo '<div class="action-buttons" style="width: 98%;">';
-		html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
-		echo "</div>";
-		echo "</form>";
+		
+		if (check_acl ($config['id_user'], 0, "IW")) {
+			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
+			echo '<div class="action-buttons" style="width: 98%;">';
+			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
+			echo "</div>";
+			echo "</form>";
+		}
 		return;
 		break;
 	case 'new':
@@ -764,13 +812,13 @@ if ($enterpriseEnable) {
 
 $buttons = array(
 	'main' => array('active' => false,
-		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '">' . 
 			html_print_image("images/reporting_edit.png", true, array ("title" => __('Main'))) .'</a>'),
 	'list_items' => array('active' => false,
-		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '">' . 
 			html_print_image("images/god6.png", true, array ("title" => __('List items'))) .'</a>'),
 	'item_editor' => array('active' => false,
-		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
 			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
 	

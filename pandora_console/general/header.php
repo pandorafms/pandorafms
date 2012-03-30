@@ -90,7 +90,7 @@ config_check();
 	    echo '<td width="20%">';
 
 		    if ($config["metaconsole"] == 0){
-			    echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
+			    echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 
 			    $servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
 			    $servers["up"] = (int) servers_check_status ();

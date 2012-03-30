@@ -1,3 +1,33 @@
+2012-03-30 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	*include/functions_menu.php,
+	include/styles/menu.css,
+	include/functions_visual_map.php,
+	include/functions_reports.php,
+	operation/visual_console/render_view.php,
+	operation/visual_console/index.php,
+	operation/agentes/networkmap.php,
+	operation/servers/view_server.php,
+	operation/servers/recon_view.php,
+	operation/servers/view_server_detail.php,
+	operation/menu.php,
+	operation/reporting/reporting_viewer.php,
+	operation/reporting/graph_viewer.php,
+	general/header.php,
+	godmode/servers/modificar_server.php,
+	godmode/menu.php,
+	godmode/reporting/graph_builder.main.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.elements.php,
+	godmode/reporting/graph_builder.php,
+	godmode/reporting/graph_builder.graph_editor.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/map_builder.php,
+	godmode/reporting/graphs.php: Changing menu structure (Agent Detail, 
+	Network Maps and Reporting).
+
 2012-03-29  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* mobile/operation/agents/monitor_status.php

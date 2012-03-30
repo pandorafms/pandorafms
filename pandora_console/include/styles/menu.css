@@ -61,6 +61,17 @@
 	border-style: solid;
 	border-color: #dadbdc;
 }
+
+.submenu2 li a {
+background-color: #fff;
+	margin-left: 0px;
+	padding-left: 40px;
+	display:block;
+	border-width: 1px 1px 0 1px;
+	border-style: solid;
+	border-color: #dadbdc;
+}
+
 .menu li img.toggle {
 	visibility: hidden;
 	float:right;
@@ -72,6 +83,11 @@
 	visibility: visible;
 	z-index: 1; /* Positions it on top of the rest */
 }
+
+.submenu2_not_selected a {
+	font-weight: normal;
+}
+
 .menu li.submenu_selected a {
 	font-weight: bold;
 }

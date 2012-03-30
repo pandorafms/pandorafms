@@ -99,14 +99,14 @@ if(count($module_array) > 0){
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<table><tr>";
 		$new_weight = $weight_array[$a]-0.125;
-		echo "<td align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/down.png', true, array ('title' => __('Decrease Weight')))."</a></td>";
+		echo "<td align='center'><a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/down.png', true, array ('title' => __('Decrease Weight')))."</a></td>";
 		echo "<td align='center'>$weight_array[$a]</td>";
 		$new_weight = $weight_array[$a]+0.125;
-		echo "<td align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a></td>";
+		echo "<td align='center'><a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a></td>";
 		echo "</tr></table>";
 		echo "</td>";
 		echo "<td class='$tdcolor' align='center'>";
-		echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
+		echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
 
 		echo "</td></tr>";
 	}
@@ -116,7 +116,7 @@ if(count($module_array) > 0){
 //Configuration form
 
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
-echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id . "'>";
+echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id . "'>";
 
 echo "<table width='98%' cellpadding='4' cellpadding='4' class='databox_color'>";
 echo "<tr>";

@@ -95,17 +95,65 @@ function menu_print_menu (&$menu) {
 			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false){
 				continue;
 			}
+			
+			$class = '';
+			
+			$selected_submenu2 = false;
+			
+			//Look for submenus in level2!
+			if(isset($sub['sub2'])) {
+				$class .= 'has_submenu ';
+				
+				//This hacks avoid empty delimiter error when sec2 is not provided.
+				if (!$sec2) {
+					$sec2=" ";
+				}
+				
+				//Check if some submenu was selected to mark this (the parent) as selected
+				foreach (array_keys($sub['sub2']) as $key) {
+					
+					if (strpos($key, $sec2) !== false) {
+						$selected_submenu2 = true;
+						break;
+					}
+				}
+			}
+			
+			
+			//Create godmode option if submenu has godmode on
+			if (isset($sub['subsecs'])) {
+				
+				//Sometimes you need to add all paths because in the 
+				//same dir are code from visual console and reports
+				//for example
+				if (is_array($sub['subsecs'])) {
+				
+					//Compare each string
+					foreach ($sub['subsecs'] as $god_path) {
+						
+						if (strpos($sec2, $god_path) !== false) {
+							$selected_submenu2=true;	
+							break;
+						}
+					} 
+				} else {
+					//If there is only a string just compare
+					if (strpos($sec2, $sub['subsecs']) !== false) {
+							$selected_submenu2=true;	
+					}
+				}
+			}
 
 			//Set class
-			if (($sec2 == $subsec2 || $allsec2 == $subsec2) && isset ($sub[$subsec2]["options"])
+			if (($sec2 == $subsec2 || $allsec2 == $subsec2 || $selected_submenu2) && isset ($sub[$subsec2]["options"])
 				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
 				//If the subclass is selected and there are options and that options value is true
-				$class = 'submenu_selected';
+				$class .= 'submenu_selected selected';
 				$selected = true;
 				$visible = true;
 			}
-			elseif (($sec2 == $subsec2 || $allsec2 == $subsec2) && !isset ($sub[$subsec2]["options"])) {
-				$class = 'submenu_selected';
+			elseif (($sec2 == $subsec2 || $allsec2 == $subsec2|| $selected_submenu2) && !isset ($sub[$subsec2]["options"])) {
+				$class .= 'submenu_selected selected';
 				$selected = true;
 
 				$hasExtensions = (array_key_exists('hasExtensions',$main)) ? $main['hasExtensions'] : false;
@@ -116,7 +164,7 @@ function menu_print_menu (&$menu) {
 			}
 			else {
 				//Else it's not selected
-				$class = 'submenu_not_selected';
+				$class .= 'submenu_not_selected';
 			}
 			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
@@ -124,7 +172,11 @@ function menu_print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>";
+				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a>";
+				
+				if(isset($sub['sub2']) || $selected) {
+					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+				}
 			}
 			else {
 				//This is an internal link
@@ -179,14 +231,53 @@ function menu_print_menu (&$menu) {
 					$extensionInMenu = '';
 				}
 				
-				if (isset ($sub["title"])) {
+				if (isset ($sub["title"]) || $selected) {
 					$title = ' title="' . $sub["title"] . ' "';
 				} else {
 					$title = '';
 				}
 				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
-				$submenu_output .= '</li>';			
+				
+				if(isset($sub['sub2'])) {
+					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+				}
+			
 			}
+		
+			//Print second level submenu
+			if(isset($sub['sub2'])) {
+				
+				//Display if father is selected
+				$display = "style='display:none'";
+				
+				if ($selected) {
+					$display = "";
+				}
+				
+				$submenu2_list = '';
+				
+				foreach ($sub['sub2'] as $key => $sub2) {
+					$link = "index.php?sec=".$sec."&sec2=".$key;
+					
+					//Display if one submenu2 was selected!
+					if (strpos($key, $sec2) !== false) {
+						$display = "";	
+					}
+					
+					$class = "submenu2";
+					
+					$submenu2_list .= '<li class="'.$class.'" style="font-weight: normal;">';
+					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'">'.$sub2["text"].'</a></li>';
+				}
+				
+				//Add submenu2 to submenu string
+				$submenu_output .= "<ul class=submenu2 $display>";
+				$submenu_output .= $submenu2_list;
+				$submenu_output .= "</ul>";
+			}
+	
+			//Submenu close list!
+			$submenu_output .= '</li>';		
 		}
 		
 		// Choose valid section (sec)

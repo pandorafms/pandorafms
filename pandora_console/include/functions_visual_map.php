@@ -1311,8 +1311,8 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if ($returnAllGroup)
 		$groups = users_get_groups ($id_user);
 	else
-		$groups = users_get_groups ($id_user, 'IR', false);
-		
+		$groups = users_get_groups ($id_user, 'IR', true);
+
 	if(!empty($groups)) {
 		if ($where != '') {
 			$where .= ' AND ';
@@ -1328,7 +1328,7 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	
 	if ($layouts == false)
 		return array ();
-	
+
 	$retval = array ();
 	foreach ($layouts as $layout) {
 		if ($only_names)

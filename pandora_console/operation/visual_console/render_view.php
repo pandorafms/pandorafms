@@ -64,23 +64,23 @@ if (check_acl ($config["id_user"], $id_group, "AW")) {
 	
 	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 
-	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=editor&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	$options['setup']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }
 
 if ($config["pure"] == 0) {
-	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">' . html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+	$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">' . html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
 }
 else {
-	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
+	$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
 		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";
 }
 $options['pure']['active'] = false;
 
 
-ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/monitor.png", false, '', false, $options);
+ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/reporting.png", false, '', false, $options);
 
 visual_map_print_visual_map ($id_layout);
 

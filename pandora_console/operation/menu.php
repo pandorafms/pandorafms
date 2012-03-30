@@ -30,11 +30,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 	enterprise_hook ('metaconsole_menu');
 	enterprise_hook ('dashboard_menu');
-	enterprise_hook ('services_menu');
-	enterprise_hook ('networkmap_console');
 
 	//View agents
-	$menu["estado"]["text"] = __('View agents');
+	$menu["estado"]["text"] = __('Monitoring');
 	$menu["estado"]["sec2"] = "operation/agentes/tactical";
 	$menu["estado"]["refr"] = 0;
 	$menu["estado"]["id"] = "oper-agents";
@@ -46,8 +44,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/group_view"]["text"] = __('Group view');
 	$sub["operation/agentes/group_view"]["refr"] = 0;
 	
-	$sub["operation/agentes/networkmap"]["text"] = __('Network map');
-	
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 0;
 				
@@ -57,11 +53,109 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/status_monitor"]["text"] = __('Monitor detail');
 	$sub["operation/agentes/status_monitor"]["refr"] = 0;
 	
-	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
-	$sub["operation/agentes/exportdata"]["refr"] = 0;
-
+	enterprise_hook ('services_menu');
+	
+	enterprise_hook ('inventory_menu');
+	
+	$sub["operation/servers/recon_view"]["text"] = __('Recon View');
+	$sub["operation/servers/recon_view"]["refr"] = 0;
+	
 	$menu["estado"]["sub"] = $sub;
 	//End of view agents
+	
+	//Start network view
+	
+	$menu["network"]["text"] = __('Network View');
+	$menu["network"]["sec2"] = "operation/agentes/networkmap";
+	$menu["network"]["refr"] = 0;
+	$menu["network"]["id"] = "oper-networkconsole";
+	
+	$sub = array();
+	
+	$sub["operation/agentes/networkmap"]["text"] = __('Network map');
+	$sub["operation/agentes/networkmap"]["refr"] = 0;
+	
+	enterprise_hook ('networkmap_console');
+	
+	$menu["network"]["sub"] = $sub;
+	//End networkview
+	
+	// Reporting
+	$menu["reporting"]["text"] = __('Reporting');
+	$menu["reporting"]["sec2"] = "godmode/reporting/map_builder";
+	$menu["reporting"]["id"] = "oper-reporting";
+	
+	$sub = array ();
+
+	//Visual console
+	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
+	//Set godomode path
+	$sub["godmode/reporting/map_builder"]["subsecs"] = array("godmode/reporting/map_builder",
+														"godmode/reporting/visual_console_builder");
+														
+	if (!empty($config['vc_refr'])){
+		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
+	}
+	else if (!empty($config['refr'])){
+		$sub["godmode/reporting/map_builder"]["refr"] = $config['refr'];
+	}	
+	else{
+		$sub["godmode/reporting/map_builder"]["refr"] = 60;
+	}
+	
+	$sub2 = array ();
+	
+	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
+	if ($layouts === false) {
+		$layouts = array ();
+	}
+	$id = (int) get_parameter ('id', -1);
+	
+	$firstLetterNameVisualToShow = array('_', ',', '[', '(');
+	
+	$sub2 = array();
+	
+	foreach ($layouts as $layout) {
+		if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
+			continue;
+		}
+		$name = io_safe_output($layout['name']);
+		if (empty($name)) {
+			$firstLetter = '';
+		}
+		else {
+			$firstLetter = $name[0];
+		}
+		if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
+			continue;
+		}
+		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
+		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
+		if (!empty($config['vc_refr'])){
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
+		}			
+		elseif (!empty($config['refr'])){
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['refr'];
+		}
+		else{
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
+		}	
+	}
+	
+	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
+	
+	$sub["godmode/reporting/reporting_builder"]["text"] = __('Custom reporting');
+	//Set godomode path
+	$sub["godmode/reporting/reporting_builder"]["subsecs"] = array("godmode/reporting/reporting_builder",
+																"operation/reporting/reporting_viewer");
+	
+	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
+	//Set godomode path
+	$sub["godmode/reporting/graphs"]["subsecs"] = array("operation/reporting/graph_viewer",
+														"godmode/reporting/graph_builder");	
+		
+	$menu["reporting"]["sub"] = $sub;
+	//End reporting
 	
 	//INI GIS Maps
 	if ($config['activate_gis']) {
@@ -100,89 +194,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$menu["gismaps"]["sub"] = $sub;
 	}
 	//END GIS Maps
-	
-	//Visual console
-	$menu["visualc"]["text"] = __('Visual console');
-	$menu["visualc"]["sec2"] = "operation/visual_console/index";
-	if (!empty($config['vc_refr'])){
-		$menu["visualc"]["refr"] = $config['vc_refr'];
-	}
-	else if (!empty($config['refr'])){
-		$menu["visualc"]["refr"] = $config['refr'];
-	}	
-	else{
-		$menu["visualc"]["refr"] = 60;
-	}
-	$menu["visualc"]["id"] = "oper-visualc";
-	
-	$sub = array ();
-	
-	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
-	if ($layouts === false) {
-		$layouts = array ();
-	}
-	$id = (int) get_parameter ('id', -1);
-	
-	$firstLetterNameVisualToShow = array('_', ',', '[', '(');
-	
-	foreach ($layouts as $layout) {
-		if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
-			continue;
-		}
-		$name = io_safe_output($layout['name']);
-		if (empty($name)) {
-			$firstLetter = '';
-		}
-		else {
-			$firstLetter = $name[0];
-		}
-		if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
-			continue;
-		}
-		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
-		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
-		if (!empty($config['vc_refr'])){
-			$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
-		}			
-		elseif (!empty($config['refr'])){
-			$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['refr'];
-		}
-		else{
-			$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
-		}	
-	}
-	
-	$menu["visualc"]["sub"] = $sub;
-	//End of visual console
 }
-
-// Agent read, Server read
-if (check_acl ($config['id_user'], 0, "AR")) {
-
-	// Server view
-	$menu["estado_server"]["text"] = __('Pandora servers');
-	$menu["estado_server"]["sec2"] = "operation/servers/view_server";
-	$menu["estado_server"]["id"] = "oper-servers";
-
-	$sub = array ();		
-	// Show all recon servers, and generate menu for details
-
-	$servers = db_get_all_rows_sql('SELECT * FROM tserver WHERE server_type = 3');
-	if ($servers === false) {
-		$servers = array ();
-	}
-	if (check_acl ($config['id_user'], 0, "PM")) {
-
-		foreach ($servers as $serverItem) {
-			$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = ui_print_string_substr($serverItem["name"], 16, true);
-		}
-
-		$menu["estado_server"]["sub"] = $sub;
-	}
-	//End of server view
-}
-
-enterprise_hook ('inventory_menu');
 
 //Incidents
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
@@ -282,18 +294,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/messages/message&amp;new_msg=1"]["text"] = __('New message');
 	
 	$menu["messages"]["sub"] = $sub;
-	
-	// Reporting
-	$menu["reporting"]["text"] = __('Reporting');
-	$menu["reporting"]["sec2"] = "operation/reporting/custom_reporting";
-	$menu["reporting"]["id"] = "oper-reporting";
-	
-	$sub = array ();
-	$sub["operation/reporting/custom_reporting"]["text"] = __('Custom reporting');
-	$sub["operation/reporting/graph_viewer"]["text"] = __('Custom graphs');	
-	
-	$menu["reporting"]["sub"] = $sub;
-	
+		
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu["extensions"]["text"] = __('Extensions');
@@ -301,6 +302,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$menu["extensions"]["id"] = "oper-extensions";
 		
 		$sub = array ();
+		
+		$sub["operation/agentes/exportdata"]["text"] = __('Export data');
+		$sub["operation/agentes/exportdata"]["refr"] = 0;
+		
 		foreach ($config["extensions"] as $extension) {
 			if ($extension["operation_menu"] == '') {
 				continue;

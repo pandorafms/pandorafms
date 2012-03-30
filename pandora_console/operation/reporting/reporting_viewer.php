@@ -67,7 +67,7 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
 
-$options['setup'] = "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
+$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
 . html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 . "</a>";
 

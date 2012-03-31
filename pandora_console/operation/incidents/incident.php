@@ -122,8 +122,8 @@ elseif ($action == "insert") {
 	$id_creator = $config['id_user'];
 	$estado = get_parameter ("estado_form");
 	$id_agent = get_parameter ("id_agent"); 
-	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent) VALUES 
-					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d)", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
+	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent, id_agente_modulo) VALUES 
+					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d, 0)", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
 	$id_inc = db_process_sql ($sql, "insert_id");
 
 	if ($id_inc === false) {
@@ -173,16 +173,26 @@ $groups = users_get_groups ($config["id_user"], "IR");
 
 //Select incidencts where the user has access to ($groups from
 //get_user_groups), array_keys for the id, implode to pass to SQL
-$sql = "SELECT * FROM tincidencia WHERE 
-	id_grupo IN (".implode (",",array_keys ($groups)).")".$filter." 
-	ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = "SELECT * FROM tincidencia WHERE 
+			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter." 
+			ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
+		$count_sql = "SELECT count(*) FROM tincidencia WHERE
+			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter."
+			ORDER BY actualizacion DESC";
+		break;
+	case "postgresql":
+	case "oracle":
+		$sql = "SELECT * FROM tincidencia WHERE 
+			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter."
+			ORDER BY actualizacion DESC OFFSET ".$offset." LIMIT ".$config["block_size"];
+		$count_sql = "SELECT count(*) FROM tincidencia WHERE
+			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter;
+		breka;
+}
 
 $result = db_get_all_rows_sql ($sql);
-
-$count_sql = "SELECT count(*) FROM tincidencia WHERE 
-	id_grupo IN (".implode (",",array_keys ($groups)).")".$filter." 
-	ORDER BY actualizacion DESC";
-
 $count = db_get_value_sql ($count_sql);
 
 if (empty ($result)) {

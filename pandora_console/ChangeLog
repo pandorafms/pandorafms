@@ -1,5 +1,9 @@
 2012-03-31  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/functions_graph.php: Fixed SQL error with PostgreSQL.
+
+2012-03-31  Junichi Satoh  <junichi@rworks.jp>
+
 	* operation/incidents/incident.php: Fixed SQL error with PostgreSQL.
 
 2012-03-31  Junichi Satoh  <junichi@rworks.jp>

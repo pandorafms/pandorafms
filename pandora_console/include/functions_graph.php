@@ -1285,7 +1285,7 @@ function graphic_incident_group () {
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
 		FROM tincidencia,tgrupo
 		WHERE tgrupo.id_grupo = tincidencia.id_grupo
-		GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
+		GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC LIMIT %d',
 		$max_items);
 	$incidents = db_get_all_rows_sql ($sql);
 	

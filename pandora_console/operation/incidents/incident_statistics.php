@@ -26,7 +26,6 @@ if (! check_acl ($config['id_user'], 0, "IR") == 1) {
 	require ("general/noaccess.php");
 	exit;
 }
-include_flash_chart_script();
 
 ui_print_page_header (__('Statistics'), "images/book_edit.png", false, "", false, "");
 

@@ -39,7 +39,7 @@ function users_extension_main_god ($god = true) {
 		case "postgresql":
 			$sql = "SELECT id_usuario, ip_origen, fecha, accion
 				FROM tsesion
-				WHERE descripcion = '" . io_safe_input('Logged in') . "' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, accion";
+				WHERE descripcion = '" . io_safe_input('Logged in') . "' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, fecha, accion";
 		break;
 		case "oracle":
 			$sql = "SELECT id_usuario, ip_origen, fecha, accion

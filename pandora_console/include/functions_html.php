@@ -40,25 +40,27 @@ require_once ($config['homedir'].'/include/functions_ui.php');
  * Prints the print_r with < pre > tags
  */
 function html_debug_print ($var, $file = '') {
+	$more_info = '';
+	if (is_string($var)) {
+		$more_info = 'size: ' . strlen($var);
+	}
+	elseif (is_bool($var)) {
+		$more_info = 'val: ' . 
+			($var ? 'true' : 'false');
+	}
+	elseif (is_null($var)) {
+		$more_info = 'is null';
+	}
+	elseif (is_array($var)) {
+		$more_info = count($var);
+	}
+	
 	if ($file === true)
 		$file = '/tmp/logDebug';
+	
 	if (strlen($file) > 0) {
 		$f = fopen($file, "a");
 		ob_start();
-		$more_info = '';
-		if (is_string($var)) {
-			$more_info = 'size: ' . strlen($var);
-		}
-		elseif (is_bool($var)) {
-			$more_info = 'val: ' . 
-				($var ? 'true' : 'false');
-		}
-		elseif (is_null($var)) {
-			$more_info = 'is null';
-		}
-		elseif (is_array($var)) {
-			$more_info = count($var);
-		}
 		echo date("Y/m/d H:i:s") . " (" . gettype($var) . ") " . $more_info . "\n";
 		print_r($var);
 		echo "\n\n";
@@ -67,6 +69,9 @@ function html_debug_print ($var, $file = '') {
 		fclose($f);
 	}
 	else {
+		echo "<pre>" .
+			date("Y/m/d H:i:s") . " (" . gettype($var) . ") " . $more_info .
+			"</pre>";
 		echo "<pre>";print_r($var);echo "</pre>";
 	}
 }
@@ -1006,7 +1011,10 @@ function html_print_table (&$table, $return = false) {
 				$output .= '<td colspan="'. $countcols .'"><div class="tabledivider"></div></td>';
 				continue;
 			}
-			
+
+			if (!is_array($row))
+				$row = (array)$row;
+	
 			/* It's a normal row */
 			foreach ($row as $key => $item) {
 				if (!isset ($size[$key])) {

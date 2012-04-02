@@ -25,7 +25,7 @@ function um_db_load_settings () {
 		echo '<strong>Error reading settings</strong><br />';
 		return NULL;
 	}
-
+	
 	$settings = new stdClass ();
 	$settings->proxy = '';
 	$settings->proxy_port = '';
@@ -34,13 +34,13 @@ function um_db_load_settings () {
 	foreach($result as $field) {
 		$settings->$field['key'] = $field['value'];
 	}
-
+	
 	return $settings;
 }
 
 function um_db_update_setting ($key, $value = '') {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$result = db_get_value('COUNT(*)', DB_PREFIX.'tupdate_settings', '`key`', $key);
@@ -52,7 +52,7 @@ function um_db_update_setting ($key, $value = '') {
 			$result = db_get_value('COUNT(*)', DB_PREFIX.'tupdate_settings', 'key', $key);
 			break;
 	}
-
+	
 	if ($result === false) {
 		echo '<strong>Error reading settings</strong> <br />';
 		return NULL;
@@ -70,7 +70,7 @@ function um_db_update_setting ($key, $value = '') {
 				$result = db_process_sql_update(DB_PREFIX.'tupdate_settings', array('value' => $value), array('key' => $key));
 				break;
 		}
-	
+		
 		if ($result === false) {
 			echo '<strong>Error updating settings</strong> <br />';
 			return false;
@@ -88,36 +88,36 @@ function um_db_update_setting ($key, $value = '') {
 				$result = db_process_sql_insert(DB_PREFIX.'tupdate_settings', array('key' => $key, 'value' => $value));
 				break;
 		}
-	
+		
 		if ($result === false) {
 			echo '<strong>Error creating settings</strong> <br />';
 			return false;
 		}
 	}
-
+	
 	return true;
 }
 
 function um_db_get_latest_package_by_status ($id_package = '0', $status = 'public') {
 	$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_package WHERE status = "'.$status.'" AND id > ' . $id_package . ' ORDER BY id DESC LIMIT 1');
-
+	
 	if($result === false) {
 		echo '<strong>Error reading latest package with status ' . $status . '</strong><br />';
 		return false;
 	}
 	
 	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_package WHERE status = "'.$status.'" AND id > ' . $id_package . ' ORDER BY id DESC LIMIT 1');
-
+	
 	$package = um_std_from_result($result);
-
+	
 	return $package;
 }
 
 function um_db_get_next_package ($id_package = '0', $development = false) {
 	$package = um_db_get_latest_package_by_status ($id_package, $status = 'public');
-			
+	
 	if (! $package && $development) {
-			$package = um_db_get_latest_package_by_status ($id_package, $status = 'development');
+		$package = um_db_get_latest_package_by_status ($id_package, $status = 'development');
 	}
 	
 	return $package;
@@ -125,26 +125,26 @@ function um_db_get_next_package ($id_package = '0', $development = false) {
 
 function um_db_create_package ($description = '') {
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate_package', array('description' => $description));
-
+	
 	if($result === false) {
 		echo '<strong>Error creating package</strong><br />';
 		return false;
 	}
-
+	
 	return true;
 }
 
 function um_db_update_package ($id_package, $description = '', $status = 'disabled') {
 	$values = array ('description' => $description, 'status' => $status);
 	$where = array ('id' => $id_package);
-
+	
 	$result = db_process_sql_update(DB_PREFIX.'tupdate_package', $values, $where);
-
+	
 	if($result === false) {
 		echo '<strong>Error updating package</strong><br />';
 		return false;
 	}
-
+	
 	return true;
 }
 
@@ -157,7 +157,7 @@ function um_db_delete_package ($id_package) {
 	}
 	
 	$result = db_process_sql_delete(DB_PREFIX.'tupdate_package', array('id' => $id_package));
-
+	
 	if($result === false) {
 		echo '<strong>Error deleting package</strong><br />';
 		return false;
@@ -182,14 +182,14 @@ function um_std_from_result($array, $i = 0) {
 	if(!isset($array[$i])) {
 		return false;
 	}
-
+	
 	$object = new stdClass ();
 	foreach($array[$i] as $key => $value) {
 		if(!is_int($key)) {
 			$object->$key = $value;
 		}
 	}
-
+	
 	return $object;
 }
 
@@ -210,7 +210,7 @@ function um_db_get_all_packages () {
 		$packages[$package->id] = $package;
 		$cont++;
 	}
-
+	
 	return $packages;
 }
 
@@ -222,7 +222,7 @@ function um_db_get_package_updates ($id_package) {
 	}
 	
 	$result = db_process_sql ('SELECT * FROM '.DB_PREFIX.'tupdate WHERE id_update_package = ' . $id_package);
-
+	
 	$cont = 0;
 	$updates = array();
 	while(true) {
@@ -237,7 +237,7 @@ function um_db_get_package_updates ($id_package) {
 		$updates[$update->id] = $update;
 		$cont++;
 	}
-
+	
 	return $updates;
 }
 
@@ -245,46 +245,52 @@ function um_db_create_package_log ($id_package, $client_key, $user_package, $res
 	global $db;
 	
 	$values = array ('id_update_package' => $id_package, 
-					'client_key' => $client_key, 
-					'ip_address' => $_SERVER['REMOTE_ADDR'], 
-					'user_package' => $user_package, 
-					'user_subscription' => $user_subscription, 
-					'result' => $result, 
-					'description' => $description);
+		'client_key' => $client_key, 
+		'ip_address' => $_SERVER['REMOTE_ADDR'], 
+		'user_package' => $user_package, 
+		'user_subscription' => $user_subscription, 
+		'result' => $result, 
+		'description' => $description);
 	
 	$result = db_process_sql_insert (DB_PREFIX.'tupdate_package_log', $values);
 	
 	if ($result === false) {
 		return false;
 	}
-		
+	
 	return true;
 }
 
 function um_db_get_total_package_logs ($ip = '') {
-	$result = db_process_sql('SELECT COUNT(*) total FROM '.DB_PREFIX.'tupdate_package_log WHERE ip_address LIKE "%'.$ip.'%"');
-
+	$result = db_process_sql('SELECT COUNT(*) total
+		FROM '.DB_PREFIX.'tupdate_package_log
+		WHERE ip_address LIKE "%'.$ip.'%"');
+	
 	if ($result === false) {
 		echo '<strong>Error reading package log</strong> <br />';
 		return 0;
 	}
 	
 	$logs = um_std_from_result($result);
-
+	
 	return $logs->total;
 }
 
 function um_db_get_all_package_logs ($ip = '', $order_by = 'timestamp', $limit = 30, $offset = 0) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_package_log WHERE ip_address LIKE "%'.$ip.'%" ORDER BY '.$order_by.' DESC LIMIT '.$limit.' OFFSET '.$offset);
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_package_log
+				WHERE ip_address LIKE "%'.$ip.'%"
+				ORDER BY '.$order_by.' DESC LIMIT '.$limit.' OFFSET '.$offset);
 			break;
 		case "postgresql":
 			$result = db_process_sql('SELECT COUNT(*)
 				FROM '.DB_PREFIX.'tupdate_package_log
-				WHERE ip_address LIKE \'%'.$ip.'%\' ORDER BY '.$order_by.' DESC LIMIT '.$limit.' OFFSET '.$offset);
+				WHERE ip_address LIKE \'%'.$ip.'%\'
+				ORDER BY '.$order_by.' DESC LIMIT '.$limit.' OFFSET '.$offset);
 			break;
 		case "oracle":
 			$set = array ();
@@ -296,7 +302,7 @@ function um_db_get_all_package_logs ($ip = '', $order_by = 'timestamp', $limit =
 			break;
 	}
 	
-
+	
 	if ($result === false) {
 		echo '<strong>Error reading all package logs</strong> <br />';
 		return array();
@@ -319,7 +325,7 @@ function um_db_get_all_package_logs ($ip = '', $order_by = 'timestamp', $limit =
 			}
 			break;
 	}
-		
+	
 	$cont = 0;
 	$logs = array();
 	while (true) {
@@ -330,13 +336,14 @@ function um_db_get_all_package_logs ($ip = '', $order_by = 'timestamp', $limit =
 		$logs[$log->id] = $log;
 		$cont++;
 	}
-
+	
 	return $logs;
 }
 
 function um_db_delete_package_logs ($ip) {
-	$result = db_process_sql_delete(DB_PREFIX.'tupdate_package_log', array('ip_address' => $ip));
-
+	$result = db_process_sql_delete(DB_PREFIX.'tupdate_package_log',
+		array('ip_address' => $ip));
+	
 	if($result === false) {
 		echo '<strong>Error deleting logs</strong><br />';
 		return false;
@@ -347,13 +354,13 @@ function um_db_delete_package_logs ($ip) {
 
 function um_db_create_component ($type, $name, $path = '', $binary = false, $relative_path = '') {
 	$values = array('type' => $type, 
-					'name' => $name, 
-					'path' => $path, 
-					'`binary`' => $binary, 
-					'relative_path' => $relative_path);
-					
+		'name' => $name, 
+		'path' => $path, 
+		'`binary`' => $binary, 
+		'relative_path' => $relative_path);
+	
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate_component', $values);
-
+	
 	if($result === false) {
 		echo '<strong>Error creating component</strong><br />';
 		return false;
@@ -365,9 +372,9 @@ function um_db_create_component ($type, $name, $path = '', $binary = false, $rel
 function um_db_update_component ($name, $path = '', $binary = false, $relative_path = '') {
 	$values = array ('path' => $path, 'binary' => $binary, 'relative_path' => $relative_path);
 	$where = array ('name' => $name);
-
+	
 	$result = db_process_sql_update(DB_PREFIX.'tupdate_component', $values, $where);
-
+	
 	if($result === false) {
 		echo '<strong>Error updating component</strong><br />';
 		return false;
@@ -392,33 +399,45 @@ function um_db_get_component ($name) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component WHERE name = "'.$name.'" LIMIT 1');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component
+				WHERE name = "'.$name.'" LIMIT 1');
 			break;
 		case "postgresql":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component WHERE name = \''.$name.'\' LIMIT 1');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component
+				WHERE name = \''.$name.'\' LIMIT 1');
 			break;
 		case "oracle":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component WHERE name = \''.$name.'\' AND rownum < 2');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component
+				WHERE name = \''.$name.'\' AND rownum < 2');
 			break;
 	}
-
+	
 	if ($result === false) {
 		echo '<strong>Error getting component</strong> <br />';
 		return array();
-	}	
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component WHERE name = "'.$name.'" LIMIT 1');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component
+				WHERE name = "'.$name.'" LIMIT 1');
 			break;
 		case "postgresql":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component WHERE name = \''.$name.'\' LIMIT 1');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component
+				WHERE name = \''.$name.'\' LIMIT 1');
 			break;
 		case "oracle":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component WHERE name = \''.$name.'\' AND rownum < 2');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component
+				WHERE name = \''.$name.'\' AND rownum < 2');
 			break;
 	}
-
+	
 	$component = um_std_from_result($result);
 	
 	if ($component->relative_path != '') {
@@ -426,13 +445,14 @@ function um_db_get_component ($name) {
 		if ($last != '/')
 			$component->relative_path .= '/';
 	}
-		
+	
 	return $component;
 }
 
 function um_db_get_all_components ($type = '') {
 	if ($type != '') {
-		$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component WHERE type = '.$type);
+		$result = db_process_sql('SELECT *
+			FROM '.DB_PREFIX.'tupdate_component WHERE type = '.$type);
 	}
 	else {
 		$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component');
@@ -458,9 +478,12 @@ function um_db_get_all_components ($type = '') {
 }
 
 function um_db_create_component_db ($table_name, $field_name, $order, $component_name) {
-	$values = array('table_name' => $table_name, 'field_name' => $field_name, '`order`' => $order, 'component' => $component_name);
+	$values = array('table_name' => $table_name,
+		'field_name' => $field_name,
+		'`order`' => $order,
+		'component' => $component_name);
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate_component_db', $values);
-
+	
 	if ($result === false) {
 		echo '<strong>Error creating database component</strong> <br />';
 		
@@ -471,11 +494,13 @@ function um_db_create_component_db ($table_name, $field_name, $order, $component
 }
 
 function um_db_update_component_db ($id, $table_name = '', $field_name = '', $order = '') {
-	$values = array ('table_name' => $table_name, 'field_name' => $field_name, '`order`' => $order);
+	$values = array ('table_name' => $table_name,
+		'field_name' => $field_name,
+		'`order`' => $order);
 	$where = array ('id' => $id);
-
+	
 	$result = db_process_sql_update(DB_PREFIX.'tupdate_component_db', $values, $where);
-
+	
 	if($result === false) {
 		echo '<strong>Error updating database component</strong><br />';
 		
@@ -486,28 +511,29 @@ function um_db_update_component_db ($id, $table_name = '', $field_name = '', $or
 }
 
 function um_delete_directory($dirname) {
-    if (is_dir($dirname))
-       $dir_handle = opendir($dirname);
-    if (!$dir_handle)
-       return false;
+	if (is_dir($dirname))
+		$dir_handle = opendir($dirname);
+	if (!$dir_handle)
+		return false;
 	
-    while($file = readdir($dir_handle)) {
-       if ($file != "." && $file != "..") {
-          if (!is_dir($dirname."/".$file))
-             unlink($dirname."/".$file);
-          else
-             um_delete_directory($dirname.'/'.$file);    
-       }
-    }
-    closedir($dir_handle);
-    rmdir($dirname);
-    
-    return true;
+	while ($file = readdir($dir_handle)) {
+		if ($file != "." && $file != "..") {
+			if (!is_dir($dirname."/".$file))
+				unlink($dirname."/".$file);
+			else
+				um_delete_directory($dirname.'/'.$file);    
+		}
+	}
+	closedir($dir_handle);
+	rmdir($dirname);
+	
+	return true;
 }
 
 function um_db_delete_component_db ($id) {
-	$result = db_process_sql_delete(DB_PREFIX.'tupdate_component_db', array('id' => $id));
-
+	$result = db_process_sql_delete(DB_PREFIX.'tupdate_component_db',
+		array('id' => $id));
+	
 	if($result === false) {
 		echo '<strong>Error deleting database component</strong><br />';
 		return false;
@@ -521,33 +547,45 @@ function um_db_get_component_db ($id_component_db) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component_db WHERE id = "'.$id_component_db.'" LIMIT 1');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE id = "'.$id_component_db.'" LIMIT 1');
 			break;
 		case "postgresql":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component_db WHERE id = \''.$id_component_db.'\' LIMIT 1');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE id = \''.$id_component_db.'\' LIMIT 1');
 			break;
 		case "oracle":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component_db WHERE id = \''.$id_component_db.'\' AND rownum < 2');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE id = \''.$id_component_db.'\' AND rownum < 2');
 			break;
 	}
-
+	
 	if ($result === false) {
 		echo '<strong>Error getting database component</strong> <br />';
 		return NULL;
-	}	
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component_db WHERE id = "'.$id_component_db.'" LIMIT 1');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE id = "'.$id_component_db.'" LIMIT 1');
 			break;
 		case "postgresql":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component_db WHERE id = \''.$id_component_db.'\' LIMIT 1');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE id = \''.$id_component_db.'\' LIMIT 1');
 			break;
 		case "oracle":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component_db WHERE id = \''.$id_component_db.'\' AND rownum < 2');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE id = \''.$id_component_db.'\' AND rownum < 2');
 			break;
 	}
-
+	
 	$component = um_std_from_result($result);
 	
 	return $component;
@@ -558,14 +596,18 @@ function um_db_get_database_components ($component_name) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component_db WHERE component = "'. $component_name.'" ORDER BY `order` ASC');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE component = "'. $component_name.'" ORDER BY `order` ASC');
 			break;
 		case "postgresql":
 		case "oracle":
-			$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_component_db WHERE component = \''. $component_name.'\' ORDER BY "order" ASC');
+			$result = db_process_sql('SELECT COUNT(*)
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE component = \''. $component_name.'\' ORDER BY "order" ASC');
 			break;
 	}
-
+	
 	if ($result === false) {
 		echo '<strong>Error getting database components </strong> <br />';
 		return array();
@@ -573,17 +615,21 @@ function um_db_get_database_components ($component_name) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component_db WHERE component = "'. $component_name.'" ORDER BY `order` ASC');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE component = "'. $component_name.'" ORDER BY `order` ASC');
 			break;
 		case "postgresql":
 		case "oracle":
-			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_component_db WHERE component = \''. $component_name.'\' ORDER BY "order" ASC');
+			$result = db_process_sql('SELECT *
+				FROM '.DB_PREFIX.'tupdate_component_db
+				WHERE component = \''. $component_name.'\' ORDER BY "order" ASC');
 			break;
 	}
-
+	
 	$cont = 0;
 	$components = array();
-	while(true) {
+	while (true) {
 		$component = um_std_from_result($result, $cont);
 		if($component === false) {
 			break;
@@ -602,10 +648,13 @@ function um_db_create_auth ($client_key, $subscription_limit, $description = '',
 		echo '<strong>Error</strong>: Subscription must be numeric<br />';
 		return false;
 	}
-		
-	$values = array ('client_key' => $client_key, 'subscription_limit' => $subscription_limit, 'description' => $description, 'developer' => $developer);
+	
+	$values = array ('client_key' => $client_key,
+		'subscription_limit' => $subscription_limit,
+		'description' => $description,
+		'developer' => $developer);
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate_auth', $values);
-
+	
 	if ($result === false) {
 		echo '<strong>Error creating authorization</strong> <br />';
 		return false;
@@ -621,14 +670,14 @@ function um_db_update_auth ($id_auth, $client_key, $subscription_limit, $descrip
 	}
 	
 	$values = array ('client_key' => $client_key, 
-					'subscription_limit' => $subscription_limit, 
-					'description' => $description, 
-					'developer' => $developer);	
+		'subscription_limit' => $subscription_limit, 
+		'description' => $description, 
+		'developer' => $developer);	
 	$where = array ('id' => $id_auth);
-
+	
 	$result = db_process_sql_update(DB_PREFIX.'tupdate_auth', $values, $where);
-
-	if($result === false) {
+	
+	if ($result === false) {
 		echo '<strong>Error updating authorization</strong><br />';
 		return false;
 	}
@@ -637,8 +686,9 @@ function um_db_update_auth ($id_auth, $client_key, $subscription_limit, $descrip
 }
 
 function um_db_delete_auth ($id_auth) {
-	$result = db_process_sql_delete(DB_PREFIX.'tupdate_auth', array('id' => $id_auth));
-
+	$result = db_process_sql_delete(DB_PREFIX.'tupdate_auth',
+		array('id' => $id_auth));
+	
 	if($result === false) {
 		echo '<strong>Error deleting authorization</strong><br />';
 		return false;
@@ -661,11 +711,11 @@ function um_db_get_auth ($id_auth) {
 			$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_auth WHERE id = \''.$id_auth.'\' AND rownum < 2');
 			break;
 	}
-
+	
 	if ($result === false) {
 		echo '<strong>Error getting authorization</strong> <br />';
 		return array();
-	}	
+	}
 
 	$auth = um_std_from_result($result);
 

@@ -28,7 +28,7 @@ include_once($config['homedir'] . '/include/functions_users.php');
 
 function db_select_engine() {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			require_once ($config['homedir'] . '/include/db/mysql.php');

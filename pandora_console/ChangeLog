@@ -1,3 +1,16 @@
+2012-04-02 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: added into function "html_debug_print" the
+	equal output to log file, this is with more data.
+	
+	* include/functions_db.php: cleaned source code style.
+	
+	* extensions/update_pandora/functions.ajax.php,
+	extensions/update_pandora/functions.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_pandora.php: added extension to update pandora from the
+	targz of Sourceforge.
+
 2012-04-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php

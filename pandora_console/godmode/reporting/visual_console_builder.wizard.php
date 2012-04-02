@@ -126,7 +126,7 @@ $label_type = array ('agent_module' => __('Agent - Module'),
 $table->data["all_5"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
 
 echo '<form method="post"
-	action="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
+	action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
 	onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
 $table->size[0] = "20%";
 $table->size[1] = "80%";

@@ -42,7 +42,7 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
 
-$url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type;
+$url = "index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type;
 
 
 if ($config["pure"]) {

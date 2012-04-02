@@ -1,3 +1,18 @@
+2012-04-02 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: added into function "html_debug_print" the
+	equal output to log file, this is with more data.
+	
+	* include/functions_db.php: cleaned source code style.
+	
+	* extensions/update_pandora/functions.ajax.php,
+	extensions/update_pandora/functions.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_pandora.php: added extension to update pandora from the
+	targz of Sourceforge.
+	
+	Merged from the branch pandora_4.0
+
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/menu.php: Fixed an error selecting the correct menu option

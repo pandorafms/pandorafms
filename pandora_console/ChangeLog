@@ -1,3 +1,12 @@
+2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/menu.php
+	godmode/menu.php
+	godmode/snmpconsole/snmp_trap_generator.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/snmpconsole/snmp_filters.php: Created new SNMP Console submenu
+	inside monitoring item.
+
 2012-04-02 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_html.php: added into function "html_debug_print" the

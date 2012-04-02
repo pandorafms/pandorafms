@@ -149,7 +149,7 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 // Alert form
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
-	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
+	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
 	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color">';
 	
 	// Alert type (e-mail, event etc.)
@@ -308,7 +308,7 @@ if (isset ($_GET["update_alert"])) {
 
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
+		$data[0] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
 
 		$data[1] = __('SNMP Agent');
 		$data[1] = $row["agent"];					
@@ -326,9 +326,9 @@ if (isset ($_GET["update_alert"])) {
 			$data[6] = __('Never');
 		}
 		
-		$data[7] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
+		$data[7] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
 				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-				'&nbsp;&nbsp;<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
+				'&nbsp;&nbsp;<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
 				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
 		array_push ($table->data, $data);
@@ -343,7 +343,7 @@ if (isset ($_GET["update_alert"])) {
 	unset ($table);	
 	
 	echo '<div style="text-align:right; width:98%">';
-	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
+	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
 	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";
 

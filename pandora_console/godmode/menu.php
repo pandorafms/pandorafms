@@ -130,28 +130,8 @@ if (check_acl($config['id_user'], 0, "LW")) {
 	$menu["gsnmpconsole"]["sub"] = $sub;
 }
 
-// Reporting
+// GIS
 if (check_acl ($config['id_user'], 0, "IW")) {
-	$menu["greporting"]["text"] = __('Manage reports');
-	$menu["greporting"]["sec2"] = "godmode/reporting/reporting_builder";
-	$menu["greporting"]["id"] = "god-reporting";
-
-	// Custom report builder
-	$sub = array ();
-	$sub["godmode/reporting/reporting_builder"]["text"] = __('Report builder');
-
-	// Custom graph builder
-	$sub["godmode/reporting/graphs"]["text"] = __('Graph builder');
-	
-	$menu["greporting"]["sub"] = $sub;
-}
-if (check_acl ($config['id_user'], 0, "IW")) {
-	// Custom map builder
-/*
-	$menu["gmap"]["text"] = __('Visual console builder');
-	$menu["gmap"]["sec2"] = "godmode/reporting/map_builder";
-	$menu["gmap"]["id"] = "god-map";
-*/
 	
 	if ($config['activate_gis']) {
 		$menu["godgismaps"]["text"] = __('GIS Maps builder');
@@ -165,7 +145,6 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 		$menu["godgismaps"]["id"] = "god-gismaps";
 	}
 }
-
 if (check_acl ($config['id_user'], 0, "AW")) {
 
 	// Servers

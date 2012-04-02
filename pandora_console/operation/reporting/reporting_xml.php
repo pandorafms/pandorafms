@@ -620,6 +620,30 @@ foreach ($contents as $content) {
 			$data["title"] = __('MTTR');
 			$data["objdata"] = $mttr;
 			break;
+		case 'inventory':
+			$data["title"] = __('Inventory');
+			$data["objdata"]["inventory"] = array();
+			
+			$es = json_decode($content['external_source'], true);
+			
+			$id_agent = $es['id_agents'];
+			$module_name = $es['inventory_modules'];
+			$date = $es['date'];
+
+			$data["objdata"]["inventory"] = inventory_get_data((array)$id_agent,(array)$module_name,$date,'',false, 'array');
+			break;
+		case 'inventory_changes':
+			$data["title"] = __('Inventory changes');
+			$data["objdata"]["inventory_changes"] = array();
+			
+			$es = json_decode($content['external_source'], true);
+			
+			$id_agent = $es['id_agents'];
+			$module_name = $es['inventory_modules'];
+
+			$data["objdata"]["inventory_changes"] = inventory_get_changes($id_agent, $module_name, $report["datetime"] - $content['period'], $report["datetime"], 'array');
+
+			break;
 	}
 	xml_array ($data);
 	echo '</object>';

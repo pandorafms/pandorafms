@@ -1,3 +1,11 @@
+2012-04-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	operation/reporting/reporting_xml.php: Fixed a missed 
+	modification of previous commit and added xml export
+	to the new report items of inventory and inventory changes
+	merged from trunk
+
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_menu.php,

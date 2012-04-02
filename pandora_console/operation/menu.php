@@ -285,10 +285,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 	// Messages
 	$sub["operation/messages/message_list"]["text"] = __('Messages');
-	$sub["operation/messages/message"]["refr"] = 0;	
-	$sub["operation/messages/message"]["subsecs"] = array("operation/messages/message_edit",
-															"operation/messages/message_list");	
-	
+	$sub["operation/messages/message_list"]["refr"] = 0;	
+	$sub["operation/messages/message_list"]["subsecs"] = array("operation/messages/message_edit");	
 }
 
 $menu["workspace"]["sub"] = $sub;

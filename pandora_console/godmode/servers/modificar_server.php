@@ -53,8 +53,9 @@ if (isset($_GET["server"])) {
 
 }
 else {
-	ui_print_page_header (__('Manage servers'), "", false, "servers", true);
-
+	// Header
+	ui_print_page_header (__('Pandora servers'), "", false, "servers", true);
+	
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
 		
@@ -82,89 +83,104 @@ else {
 		}
 	}
 	
+
+
 	$servers = servers_get_info ();
-	if ($servers !== false) {
-		$table->width = "98%";
-		$table->class = "databox";
-		$table->data = array ();
+	if ($servers === false) {
+		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+		return;
+	}
+
+	$table->width = '98%';
+	$table->size = array ();
+
+	$table->style = array ();
+	$table->style[0] = 'font-weight: bold';
+
+	$table->align = array ();
+	$table->align[1] = 'center';
+	$table->align[8] = 'center';
+
+	$table->head = array ();
+	$table->head[0] = __('Name');
+	$table->head[1] = __('Status');
+	$table->head[2] = __('Type');
+	$table->head[3] = __('Load') . ui_print_help_tip (__("Modules running on this server / Total modules of this type"), true);
+	$table->head[4] = __('Modules');
+	$table->head[5] = __('Lag') . ui_print_help_tip (__("Modules delayed / Max. Delay (sec)"), true);
+	$table->head[6] = __('T/Q') . ui_print_help_tip (__("Threads / Queued modules currently"), true);
+	// This will have a column of data such as "6 hours"
+	$table->head[7] = __('Updated');
+
+	//Only Pandora Administrator can delete servers
+	if (check_acl ($config["id_user"], 0, "PM")) {
+		$table->head[8] = '<span title="Operations">' . __('Op.') . '</span>';
+	}
+
+	$table->data = array ();
+
+
+	foreach ($servers as $server) {
+		$data = array ();
 		
-		$table->align = array ();
-		$table->align[1] = "center";
-		$table->align[2] = "center";
-		$table->align[3] = "center";
-		$table->align[4] = "center";
-		$table->align[5] = "center";
-		$table->align[6] = "left";
-		$table->style = array ();
-		$table->style[0] = 'font-weight: bold';
-		$table->head = array ();
-		$table->head[0] = __('Name');
-		$table->head[1] = __('Status');
-		$table->head[2] = __('Description');
-		$table->head[3] = __('Type');
-		$table->head[4] = __('Started');
-		$table->head[5] = __('Updated');
+		$data[0] = '<span title="'.$server['version'].'">'.$server['name'].'</span>';
+		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">'.$server["name"].'</a>';
 		
-		$table->size = array();
-		$table->size[6] = '50px';
+		if ($server['status'] == 0) {
+			$data[1] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
+		}
+		else {
+			$data[1] = ui_print_status_image (STATUS_SERVER_OK, '', true);
+		}
 		
+		// Type
+		$data[2] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
+		if ($server["master"] == 1)
+			$data[2] .= ui_print_help_tip (__("This is a master server"), true);
+
+		// Load
+		$data[3] =
+			progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
+		$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
+		$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
+		$data[6] = $server['threads'].' : '.$server['queued_modules'];
+		$data[7] = ui_print_timestamp ($server['keepalive'], true);
+
 		//Only Pandora Administrator can delete servers
 		if (check_acl ($config["id_user"], 0, "PM")) {
-			$table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
-		}
+			$data[8] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
+			$data[8] .= html_print_image ('images/config.png', true, array ('title' => __('Edit')));
+			$data[8] .= '</a>';
 		
-		foreach ($servers as $server) {
-			if ($server['status'] == 0) {
-				$server_status = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
-			} else {
-				$server_status = ui_print_status_image (STATUS_SERVER_OK, '', true);
-			}
-			
-			$data = array ();
-			
-			$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">'.$server["name"].'</a>';
-			$data[1] = $server_status;
-			$data[2] = ui_print_string_substr ($server["description"], 25, true);
-			$data[3] = $server['img'];
-			$data[4] = human_time_comparation ($server["laststart"]);
-			$data[5] = human_time_comparation ($server["keepalive"]);
-
-			$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
-			$data[6] .= html_print_image ('images/config.png', true, array ('title' => __('Edit')));
-			$data[6] .= '</a>';
-
-			//Only Pandora Administrator can delete servers
-			if (check_acl ($config["id_user"], 0, "PM")) {
-				$data[6] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
-				$data[6] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
-				$data[6] .= '</a>';
-			}
-			
-			array_push ($table->data, $data);
-		}
-		html_print_table ($table);
+			$data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
+			$data[8] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
+			$data[8] .= '</a>';
+		}	
 		
-		//Legend
-		echo "<table>";
-		echo "<tr><td colspan='5'>" . __('Legend') . "</td></tr>";
-		echo "<tr>";
-		echo '<td><span class="net">'.__('Network server').'</span></td>';
-		echo '<td><span class="master">'.__('Master').'</span></td>';
-		echo '<td><span class="data">'.__('Data server').'</span></td>';
-		echo '<td><span class="binary">'.__('MD5 check').'</span></td>';
-		echo '<td><span class="snmp">'.__('SNMP console').'</span></td>';
-                echo '<td><span class="plugin">'.__('Plugin server').'</span></td>';
-		echo "</tr><tr>";
-		echo '<td><span class="recon_server">'.__('Recon server').'</span></td>';
-		echo '<td><span class="wmi_server">'.__('WMI server').'</span></td>';
-		echo '<td><span class="export_server">'.__('Export server').'</span></td>';
-		echo '<td><span class="inventory_server">'.__('Inventory server').'</span></td>';
-		echo '<td><span class="web_server">'.__('Web server').'</span></td>';
-                echo '<td><span class="prediction">'.__('Prediction server').'</span></td>';
-		echo "</tr></table>";
-	} else {
-		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+		array_push ($table->data, $data);
 	}
+
+	html_print_table ($table);
+
+	//Legend
+
+	echo "<table>";
+	echo "<tr><td colspan='5'>" . __('Legend') . "</td></tr>";
+	echo "<tr>";
+	echo '<td><span class="net">'.__('Network server').'</span></td>';
+	echo '<td><span class="master">'.__('Master').'</span></td>';
+	echo '<td><span class="data">'.__('Data server').'</span></td>';
+	echo '<td><span class="binary">'.__('MD5 check').'</span></td>';
+	echo '<td><span class="snmp">'.__('SNMP console').'</span></td>';
+	echo '<td><span class="plugin">'.__('Plugin server').'</span></td>';
+	echo "</tr><tr>";
+	echo '<td><span class="recon_server">'.__('Recon server').'</span></td>';
+	echo '<td><span class="wmi_server">'.__('WMI server').'</span></td>';
+	echo '<td><span class="export_server">'.__('Export server').'</span></td>';
+	echo '<td><span class="inventory_server">'.__('Inventory server').'</span></td>';
+	echo '<td><span class="web_server">'.__('Web server').'</span></td>';
+	echo '<td><span class="prediction">'.__('Prediction server').'</span></td>';
+	echo "</tr></table>";
 }
 
 ?>

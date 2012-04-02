@@ -106,7 +106,7 @@ if ($view_graph) {
 	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
 
 	if (check_acl ($config['id_user'], 0, "IW")) {
-		$options['setup'] = "<a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
+		$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
 				. html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 				. "</a>";
 	}
@@ -122,7 +122,7 @@ if ($view_graph) {
 	}
 
 	// Header
-	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, $options);
+	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom graphs')." - ".$graph['name'], "images/reporting.png", false, "", false, $options);
 
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0' width='98%'>";
 	echo "<tr><td>";

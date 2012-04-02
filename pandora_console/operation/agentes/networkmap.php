@@ -171,31 +171,31 @@ if($recenter_networkmap) {
 /* Main code */
 if ($pure == 1) {
 	$buttons['screen'] = array('active' => false,
-		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab='.$activeTab.'">' . 
+		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab='.$activeTab.'">' . 
 				html_print_image("images/normalscreen.png", true, array ('title' => __('Normal screen'))) .'</a>');
 			
 } else {
 	$buttons['screen'] = array('active' => false,
-		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1&amp;tab='.$activeTab.'">' . 
+		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;pure=1&amp;tab='.$activeTab.'">' . 
 				html_print_image("images/fullscreen.png", true, array ('title' => __('Full screen'))) .'</a>');
 }
 if($config['enterprise_installed']) {
 	$buttons['policies'] = array('active' => $activeTab == 'policies',
-		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
+		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
 				html_print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
 }
 			
 $buttons['groups'] = array('active' => $activeTab == 'groups',
-	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=groups&amp;pure='.$pure.'">' . 
+	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=groups&amp;pure='.$pure.'">' . 
 			html_print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');
 			
 $buttons['topology'] = array('active' => $activeTab == 'topology',
-	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
+	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 			html_print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
 			
 $buttons['separator'] = array('separator' => '');
 
-$combolist = '<form name="query_sel" method="post" action="index.php?sec=estado&sec2=operation/agentes/networkmap">';
+$combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 
 $combolist .= html_print_select($networkmaps, 'id_networkmap', $id_networkmap, 'onchange:this.form.submit()', __('No selected'), 0, true, false, false, '', false, 'margin-top:4px; margin-left:3px; width:150px;');
 
@@ -206,16 +206,16 @@ $combolist .= '</form>';
 $buttons['combolist'] = $combolist;
 
 $buttons['addmap'] = array('active' => $activeTab == false,
-	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
+	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 			html_print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
 
 if(!$nomaps && $id_networkmap != 0) {			
 	$buttons['deletemap'] = array('active' => $activeTab == false,
-		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
+		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 				html_print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
 
 	$buttons['savemap'] = array('active' => $activeTab == false,
-		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
+		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
 					&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'
 					&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
 					&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
@@ -264,7 +264,7 @@ $layout_array = array (
 			'spring2' => 'spring 2',
 			'flat' => 'flat');
 
-$options_form = '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;tab='.$activeTab.'&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
+$options_form = '<form action="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;tab='.$activeTab.'&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
 $options_form .= '<table cellpadding="4" cellspacing="4" class="databox" width="99%">';
 $options_form .= '<tr><td>';
 $options_form .= '<table cellpadding="0" cellspacing="0" border="0" width="100%">';

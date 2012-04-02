@@ -90,8 +90,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
 	//Set godomode path
-
-	$sub["godmode/reporting/map_builder"]["refr"] = 0;
+	$sub["godmode/reporting/map_builder"]["subsecs"] = array("godmode/reporting/map_builder",
+														"godmode/reporting/visual_console_builder");
 														
 	if (!empty($config['vc_refr'])){
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
@@ -305,6 +305,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu["snmpconsole"]["refr"] = 0;
 	$menu["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
 	$menu["snmpconsole"]["id"] = "oper-snmpc";
+	
+	
+}
+	
+if (check_acl ($config['id_user'], 0, "AR")) {	
 			
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {

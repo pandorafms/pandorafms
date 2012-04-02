@@ -8,6 +8,11 @@
 
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/menu.php: Fixed a problem with new visual console menu and
+	selected style when navigation through visual console editor.
+
+2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* include/functions_menu.php,
 	extensions/users_connected.php,
 	operation/incidents/incident.php,

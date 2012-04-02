@@ -89,10 +89,10 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 
 	// Reload page to update skin
         if ($return){
-                header ('location:' . $config['homeurl'] . '/index.php?sec=usuarios&sec2=operation/users/user_edit&status=1');
+                header ('location:' . $config['homeurl'] . '/index.php?sec=workspace&sec2=operation/users/user_edit&status=1');
         }
         else{
-                header ('location:' . $config['homeurl'] . '/index.php?sec=usuarios&sec2=operation/users/user_edit&status=0');
+                header ('location:' . $config['homeurl'] . '/index.php?sec=workspace&sec2=operation/users/user_edit&status=0');
         }
 
 	$user_info = $upd_info;
@@ -106,7 +106,7 @@ if ($status != -1){
 }
 
 
-echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
+echo '<form name="user_mod" method="post" action="index.php?sec=workspace&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 

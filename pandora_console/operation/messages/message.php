@@ -96,7 +96,7 @@ if (isset ($_GET["new_msg"]) || ($send_message && !$message_sended)) { //create 
 // Header
 //	ui_print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
 
-	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
+	echo '<form method="POST" action="index.php?sec=workspace&amp;sec2=operation/messages/message&amp;send_message=1">
 	<table width="98%" class="databox_color" cellpadding="4" cellspacing="4">
 	<tr>
 		<td class="datos">'.__('Message from').':</td>
@@ -145,7 +145,7 @@ if (isset ($_GET["new_msg"]) || ($send_message && !$message_sended)) { //create 
 	
 	messages_process_read ($message_id);
 	
-	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">
+	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message&amp;new_msg=1">
 			<table class="databox_color" width="98%" cellpadding="4" cellspacing="4">
 			<tr><td class="datos">'.__('Message from').':</td>
 			<td class="datos"><b>' . ui_print_username ($message["sender"], true).' '.__('at').' ' . ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp")).'</b></td></tr>';
@@ -234,18 +234,18 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"]) && !($send_messag
 			$data = array ();
 			$data[0] = '';
 			if ($message["status"] == 1) {
-				$data[0] .= '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&amp;mark_unread='.$message_id.'">';
+				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message&amp;mark_unread='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Mark as unread')));
 				$data[0] .= '</a>';
 			} else {
-				$data[0] .= '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&amp;read_message='.$message_id.'">';
+				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message&amp;read_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
 				$data[0] .= '</a>';
 			}
 			
 			$data[1] = ui_print_username ($message["sender"], true);
 			
-			$data[2] = '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&amp;read_message='.$message_id.'">';
+			$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message&amp;read_message='.$message_id.'">';
 			if ($message["subject"] == "") {
 				$data[2] .= __('No Subject');
 			} else {
@@ -255,18 +255,18 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"]) && !($send_messag
 			
 			$data[3] = ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
 			
-			$data[4] = '<a href="index.php?sec=messages&amp;sec2=operation/messages/message&delete_message=1&id='.$message_id.'"
+			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message&delete_message=1&id='.$message_id.'"
 		onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 			html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'; //"delete_message", "images/cross.png", $message_id, 'border:0px;', true);
 			array_push ($table->data, $data);
 		}
 
-		echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message">';
+		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message">';
 		html_print_table ($table);
 		echo '</form>';
 	}
 	echo '<div class="action-buttons" style="width:98%">';
-	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">';
+	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message&amp;new_msg=1">';
 	html_print_submit_button (__('New message'), "send_mes", false, 'class="sub next"');
 	echo '</form></div>';
 }

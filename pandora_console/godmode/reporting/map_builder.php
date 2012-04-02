@@ -22,6 +22,7 @@ ui_print_page_header (__('Reporting').' &raquo; '.__('Visual Console'), "images/
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
 $delete_layout = (bool) get_parameter ('delete_layout');
+$refr = (int) get_parameter('refr');
 
 if ($delete_layout) {
 	db_process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));

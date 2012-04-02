@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "IR") == 1) {
 }
 include_flash_chart_script();
 
-ui_print_page_header (__('Statistics'), "images/book_edit.png", false, "", false, "");
+ui_print_page_header (__('Incidents')." &raquo; ".__('Statistics'), "images/book_edit.png", false, "", false, "");
 
 echo '<table width="90%">
 	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';

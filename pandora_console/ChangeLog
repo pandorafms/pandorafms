@@ -1,5 +1,23 @@
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_menu.php,
+	extensions/users_connected.php,
+	operation/incidents/incident.php,
+	operation/incidents/incident_detail.php,
+	operation/incidents/incident_statistics.php,
+	operation/menu.php,
+	operation/users/user_edit.php,
+	operation/integria_incidents/incident.php,
+	operation/integria_incidents/incident.files.php,
+	operation/integria_incidents/incident.list.php,
+	operation/messages/message.php: Created new menu item call workspace.
+
+	* godmode/reporting/map_builder.php,
+	operation/visual_console/render_view.php: Fixed some problems passing
+	parameters related with new menu implementation.
+
+2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* godmode/menu.php: Delete reporting menu in godmode section.
 
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>

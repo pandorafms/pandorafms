@@ -180,7 +180,7 @@ else {
 }
 
 
-echo '<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">';
+echo '<form name="visualizacion" method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident">';
 
 echo '<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
 <td valign="middle"><h3>'.__('Filter').'</h3>';
@@ -231,7 +231,7 @@ if ($count < 1) {
 	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
 } else {
 	// TOTAL incidents
-	$url = "index.php?sec=incidencias&amp;sec2=operation/incidents/incident";
+	$url = "index.php?sec=workspace&amp;sec2=operation/incidents/incident";
 
 	$estado = -1;
 
@@ -291,14 +291,14 @@ if ($count < 1) {
 		
 		$data = array();
 
-		$data[0] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
+		$data[0] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
 		$attach = incidents_get_attach ($row["id_incidencia"]);
 		
 		if (!empty ($attach))
 			$data[0] .= '&nbsp;&nbsp;'.html_print_image ("images/attachment.png", true, array ("style" => "align:middle;"));
 		
 		$data[1] = incidents_print_status_img ($row["estado"], true);
-		$data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.ui_print_truncate_text(io_safe_output($row["titulo"]),45).'</a>';
+		$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.ui_print_truncate_text(io_safe_output($row["titulo"]),45).'</a>';
 		$data[3] = incidents_print_priority_img ($row["prioridad"], true);
 		$data[4] = ui_print_group_icon ($row["id_grupo"], true);
 		$data[5] = ui_print_timestamp ($row["actualizacion"], true);
@@ -332,7 +332,7 @@ if ($count < 1) {
 	echo '<br><br>';
 if (check_acl ($config["id_user"], 0, "IW")) {
 	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
-	echo '<form method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
+	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
 	html_print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
 	echo '</form>';
 	echo '</div>';

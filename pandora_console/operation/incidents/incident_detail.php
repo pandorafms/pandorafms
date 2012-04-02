@@ -222,11 +222,11 @@ echo "<script type=\"text/javascript\">
 
 if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["insert_form"]
 	ui_print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
-	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=update">';
+	echo '<form name="accion_form" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident&action=update">';
 	echo '<input type="hidden" name="id_inc" value="'.$id_inc.'">';
 } else {
 	ui_print_page_header (__('Create incident'), "images/book_edit.png", false, "", false, "");
-	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=insert">';
+	echo '<form name="accion_form" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident&action=insert">';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
@@ -333,7 +333,7 @@ if (isset ($id_inc)) {
 	echo __('Add note');
 	echo '</a>';
 	echo '</div><div>';
-	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'"><h4>'.__('Add note').'</h4>';
+	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'"><h4>'.__('Add note').'</h4>';
 	echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">
 		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
@@ -365,7 +365,7 @@ if (isset ($id_inc)) {
 	
 	if (!empty ($table->data)) {
 		echo "<h4>".__('Notes attached to incident').'</h4>';
-		echo '<form method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
+		echo '<form method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
 		html_print_table ($table);
 		echo '</form>';
 	}
@@ -414,7 +414,7 @@ if (isset ($id_inc)) {
 
 	if (!empty ($table->data)) {
 		echo "<h4>".__('Attached files')."</h4>";
-		echo '<form method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
+		echo '<form method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
 		html_print_table ($table);
 		echo '</form>';
 	}
@@ -435,7 +435,7 @@ if (isset ($id_inc)) {
 		echo '</a>';
 		echo '</div>';
 
-		echo '<div><form method="post" id="file_control" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data"><h4>'.__('Add attachment').'</h4>';
+		echo '<div><form method="post" id="file_control" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data"><h4>'.__('Add attachment').'</h4>';
 		echo '<table cellpadding="4" cellspacing="3" class="databox" width="98%">
 			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
 			<tr><td class="datos2">'.__('Description').'</td><td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td></tr>

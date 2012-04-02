@@ -63,7 +63,7 @@ foreach($files as $value) {
 	}
 	$table->data[$row][2] = $value['description'];
 	$table->data[$row][3] = $value['size'];
-	$table->data[$row][4] = "<a href='index.php?sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident=".$value['id_incidencia']."&delete_file=".$value['id_attachment']."'>".html_print_image("images/cross.png", true, array('title' => __('Delete file')))."</a>";
+	$table->data[$row][4] = "<a href='index.php?sec=workspace&sec2=operation/integria_incidents/incident&tab=files&id_incident=".$value['id_incidencia']."&delete_file=".$value['id_attachment']."'>".html_print_image("images/cross.png", true, array('title' => __('Delete file')))."</a>";
 	$row++;
 }
 

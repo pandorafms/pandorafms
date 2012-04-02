@@ -35,34 +35,34 @@ if($tab == 'list' || $tab == 'editor') {
 	$buttons = array(
 			'list' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=list">' . 
 					html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
 			'editor' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=editor">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=editor">' . 
 					html_print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
 }
 else {
 	$buttons = array(
 			'list' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=list">' . 
 					html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
 			'incident' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
 					html_print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
 			'workunits' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
 					html_print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
 			'files' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
 					html_print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
 			'tracking' => array(
 				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
+				'text' => '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
 					html_print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
 }
 	

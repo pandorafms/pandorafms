@@ -83,6 +83,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu["reporting"]["text"] = __('Reporting');
 	$menu["reporting"]["sec2"] = "godmode/reporting/map_builder";
 	$menu["reporting"]["id"] = "oper-reporting";
+	$menu["reporting"]["refr"] = 60;
 	
 	$sub = array ();
 
@@ -198,28 +199,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//END GIS Maps
 }
 
-//Incidents
-if (check_acl ($config['id_user'], 0, "IR") == 1) {
-	$temp_sec2 = $sec2; 
-	if($config['integria_enabled']) {
-		$sec2 = "operation/integria_incidents/incident";
-	}
-	else {
-		$sec2 = "operation/incidents/incident";
-	}
-
-	$menu["incidencias"]["text"] = __('Manage incidents');
-	$menu["incidencias"]["sec2"] = $sec2;
-	$menu["incidencias"]["refr"] = 0;
-	$menu["incidencias"]["id"] = "oper-incidents";
-	
-	$sub = array ();	
-	$sub["operation/incidents/incident_statistics"]["text"] = __('Statistics');
-	
-	$menu["incidencias"]["sub"] = $sub;
-	$sec2 = $temp_sec2;
-}
-
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR")) {
 	// Events
@@ -269,13 +248,52 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu["eventos"]["sub"] = $sub;
 }
 
+//Workspace
+$menu["workspace"]["text"] = __('Workspace');
+$menu["workspace"]["sec2"] = "operation/users/user_edit";
+$menu["workspace"]["id"] = "oper-users";
+
 // ANY user can view him/herself !
 // Users
-$menu["usuarios"]["text"] = __('Edit my user');
-$menu["usuarios"]["sec2"] = "operation/users/user_edit";
-$menu["usuarios"]["id"] = "oper-users";
+$sub = array();
+$sub["operation/users/user_edit"]["text"] = __('Edit my user');
+$sub["operation/users/user_edit"]["refr"] = 0;
 
-//End of Users
+//Incidents
+if (check_acl ($config['id_user'], 0, "IR") == 1) {
+	$temp_sec2 = $sec2; 
+	if($config['integria_enabled']) {
+		$sec2 = "operation/integria_incidents/incident";
+	}
+	else {
+		$sec2 = "operation/incidents/incident";
+	}
+
+	$sub[$sec2]["text"] = __('Incidents');
+	$sub[$sec2]["refr"] = 0;
+	$sub[$sec2]["subsecs"] = array("operation/incidents/incident_detail",
+									"operation/integria_incidents");
+	
+	$sub2 = array ();	
+	$sub2["operation/incidents/incident_statistics"]["text"] = __('Statistics');
+	
+	$sub[$sec2]["sub2"] = $sub2;
+	$sec2 = $temp_sec2;
+}
+
+if (check_acl ($config['id_user'], 0, "AR")) {
+
+	// Messages
+	$sub["operation/messages/message_list"]["text"] = __('Messages');
+	$sub["operation/messages/message"]["refr"] = 0;	
+	$sub["operation/messages/message"]["subsecs"] = array("operation/messages/message_edit",
+															"operation/messages/message_list");	
+	
+}
+
+$menu["workspace"]["sub"] = $sub;
+
+//End Workspace
 
 if (check_acl ($config['id_user'], 0, "IR")) {
 	if ($config['activate_netflow']) {
@@ -286,8 +304,7 @@ if (check_acl ($config['id_user'], 0, "IR")) {
 		$sub["operation/netflow/nf_live_view"]["text"] = __('Live view');
 		$menu["netf"]["sub"] = $sub;
 	}
-}
-		
+}		
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR")) {
 
@@ -296,18 +313,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu["snmpconsole"]["refr"] = 0;
 	$menu["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
 	$menu["snmpconsole"]["id"] = "oper-snmpc";
-	
-	// Messages
-	$menu["messages"]["text"] = __('Messages');
-	$menu["messages"]["refr"] = 0;
-	$menu["messages"]["sec2"] = "operation/messages/message_list";
-	$menu["messages"]["id"] = "oper-messages";
-	
-	$sub = array ();
-	$sub["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
-	
-	$menu["messages"]["sub"] = $sub;
-		
+			
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu["extensions"]["text"] = __('Extensions');

@@ -31,15 +31,15 @@ $reply = get_parameter('reply', 0);
 $show_sent = get_parameter('show_sent', 0);
 
 $buttons['message_list'] = array('active' => false,
-		'text' => '<a href="index.php?sec=message&sec2=operation/messages/message_list">' .
+		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list">' .
 		html_print_image("images/email.png", true, array ("title" => __('Message list'))) .'</a>');
 
 $buttons['sent_messages'] = array('active' => false,
-		'text' => '<a href="index.php?sec=message&sec2=operation/messages/message_list&amp;show_sent=1">' .
+		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list&amp;show_sent=1">' .
 		html_print_image("images/email_go.png", true, array ("title" => __('Sent messages'))) .'</a>');
 			
 $buttons['create_message'] = array('active' => true,
-		'text' => '<a href="index.php?sec=message&sec2=operation/messages/message_edit">' .
+		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_edit">' .
 		html_print_image("images/email_edit.png", true, array ("title" => __('Create message'))) .'</a>');
 		
 // Header
@@ -94,14 +94,14 @@ if ($read_message) {
 	//Start the message much like an e-mail reply 
 	$new_msg = "\n\n\nOn ".date ($config["date_format"], $message["timestamp"]).' '.$user_name.' '.__('wrote').":\n\n".$message["mensaje"];
 	
-	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
+	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
 		html_print_table($table);	
 		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 		echo "</div>";
 	echo "</form>";	
 	
-	echo '<form method="post" action="index.php?sec=messages&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
+	echo '<form method="post" action="index.php?sec=workspace&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
 		html_print_input_hidden ("dst_user", $message["id_usuario_origen"]);
 		html_print_input_hidden ("subject", $new_subj);
 		html_print_input_hidden ("message", $new_msg);
@@ -178,7 +178,7 @@ $table->data[2][1] = html_print_input_text ("subject", $subject, '', 50, 70, tru
 $table->data[3][0] = __('Message');
 $table->data[3][1] = html_print_textarea ("message", 15, 255, $message, '', true);
 
-echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message_edit&amp;new_msg=1">';
+echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;new_msg=1">';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

@@ -124,9 +124,9 @@ foreach ($incidents as $row) {
 	
 	$data = array();
 
-	$data[0] = '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
+	$data[0] = '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
 	//$data[1] = "";
-	$data[2] = '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.substr(io_safe_output($row["titulo"]),0,45).'</a>';
+	$data[2] = '<a href="index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$row["id_incidencia"].'">'.substr(io_safe_output($row["titulo"]),0,45).'</a>';
 	$data[3] = $groups[$row["id_grupo"]];
 	$data[4] = $status[$row["estado"]]."<br/><i>".$resolutions[$row["resolution"]]."</i>";
 	$data[5] = incidents_print_priority_img ($row["prioridad"], true);
@@ -134,7 +134,7 @@ foreach ($incidents as $row) {
 	$data[7] = $row["workunits_hours"]." ".__('Hours')."<br/>".$row["workunits_count"]." ".__('Workunits');
 	$data[8] = $row["id_creator"];
 	$data[9] = $row["id_usuario"];
-	$data[10] = "<a href='index.php?sec=incidencias&sec2=operation/integria_incidents/incident&delete_incident=".$row['id_incidencia']."'>".html_print_image("images/cross.png", true, array('title' => __('Delete incident')))."</a><a href='index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident=".$row["id_incidencia"]."'>".html_print_image("images/config.png", true, array('title' => __('View incident details')))."</a>";
+	$data[10] = "<a href='index.php?sec=workspace&sec2=operation/integria_incidents/incident&delete_incident=".$row['id_incidencia']."'>".html_print_image("images/cross.png", true, array('title' => __('Delete incident')))."</a><a href='index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=incident&id_incident=".$row["id_incidencia"]."'>".html_print_image("images/config.png", true, array('title' => __('View incident details')))."</a>";
 
 	array_push ($table->data, $data);
 }

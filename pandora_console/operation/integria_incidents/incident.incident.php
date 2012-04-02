@@ -128,7 +128,7 @@ if(isset($result['id_incidencia'])) {
 	echo "</form>";
 }
 else {
-	echo "<form method='post' action='index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident'>";
+	echo "<form method='post' action='index.php?login=1&sec=workspace&sec2=operation/integria_incidents/incident&tab=incident'>";
 	html_print_table($table);
 	html_print_submit_button(__('Create'), 'submit_button');
 	html_print_input_hidden('tab', 'incident');

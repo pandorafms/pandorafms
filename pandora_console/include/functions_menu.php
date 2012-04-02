@@ -234,8 +234,8 @@ function menu_print_menu (&$menu) {
 					$extensionInMenu = '';
 				}
 				
-				if (isset ($sub["title"]) || $selected) {
-					$title = ' title="' . $sub["title"] . ' "';
+				if (isset ($sub["text"]) || $selected) {
+					$title = ' title="' . $sub["text"] . ' "';
 				} else {
 					$title = '';
 				}

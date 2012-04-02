@@ -2244,7 +2244,7 @@ function get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
 		returnError('error_get_all_alert_templates', __('Error getting all alert templates.'));
 	}
 	else {
-		returnData('csv', $data, ';');
+		returnData('csv', $data, $separator);
 	}
 }
 
@@ -2289,6 +2289,78 @@ function get_alert_template($id_template, $thrash1, $other, $thrash3) {
 	else {
 		returnData('csv', $data, ';');
 	}
+}
+
+/**
+ * Get module groups, and print all the result like a csv.
+ *
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, but only <csv_separator> is available.
+ *  example:
+ *
+ *  api.php?op=get&op2=module_groups&return_type=csv&other=;
+ *
+ * @param $thrash3 Don't use.
+ */
+function get_module_groups($thrash1, $thrash2, $other, $thrash3) {
+
+        if (!isset($other['data'][0]))
+                $separator = ';'; // by default
+        else   
+                $separator = $other['data'][0];
+
+        $filter = false;
+
+	$module_groups = @db_get_all_rows_filter ('tmodule_group', $filter);
+
+        if ($module_groups !== false) {
+                $data['type'] = 'array';
+                $data['data'] = $module_groups;
+        }
+
+        if (!$module_groups) {
+                returnError('error_get_module_groups', __('Error getting module groups.'));
+        }
+        else { 
+                returnData('csv', $data, $separator);
+        }
+}
+
+/**
+ * Get plugins, and print all the result like a csv.
+ *
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, but only <csv_separator> is available.
+ *  example:
+ *
+ *  api.php?op=get&op2=plugins&return_type=csv&other=;
+ *
+ * @param $thrash3 Don't use.
+ */
+function get_plugins($thrash1, $thrash2, $other, $thrash3) {
+
+        if (!isset($other['data'][0]))
+                $separator = ';'; // by default
+        else   
+                $separator = $other['data'][0];
+
+        $filter = false;
+
+        $plugins = @db_get_all_rows_filter ('tplugin', $filter);
+
+        if ($plugins !== false) {
+                $data['type'] = 'array';
+                $data['data'] = $plugins;
+        }
+
+        if (!$plugins) {
+                returnError('error_get_plugins', __('Error getting plugins.'));
+        }
+        else { 
+                returnData('csv', $data, $separator);
+        }
 }
 
 /**

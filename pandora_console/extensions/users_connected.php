@@ -28,7 +28,7 @@ function users_extension_main_god ($god = true) {
 	}
 	
 	// Header
-	ui_print_page_header (__("Users connected"), "images/extensions.png", false, "", $god);
+	ui_print_page_header (__("Users connected"), "images/group.png", false, "", $god);
 
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -92,7 +92,7 @@ extensions_add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"use
 
 if (isset($config["id_user"])) {
 	if (check_acl ($config["id_user"], 0, "UM")) {
-		extensions_add_operation_menu_option(__('Users connected'), 'usuarios',"users/icon.png");
+		extensions_add_operation_menu_option(__('Users connected'), 'workspace',"users/icon.png");
 	}
 }
 

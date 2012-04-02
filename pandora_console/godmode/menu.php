@@ -114,22 +114,6 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 	$menu["gusuarios"]["sub"] = $sub;
 }
 
-// SNMP console
-if (check_acl($config['id_user'], 0, "LW")) {
-	$menu["gsnmpconsole"]["text"] = __('Manage SNMP console');
-	$menu["gsnmpconsole"]["sec2"] = "godmode/snmpconsole/snmp_alert";
-	$menu["gsnmpconsole"]["id"] = "god-snmpc";
-	
-	$sub = array ();
-	
-	$sub['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-	//$sub["godmode/snmpconsole/snmp_alert"]["text"] = __('Component groups');
-	$sub['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
-	enterprise_hook ('snmpconsole_submenu');
-
-	$menu["gsnmpconsole"]["sub"] = $sub;
-}
-
 // GIS
 if (check_acl ($config['id_user'], 0, "IW")) {
 	

@@ -50,7 +50,7 @@ if($generate_trap) {
 	__('Could not be generated'));
 }
 
-$traps_generator = '<form method="POST" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
+$traps_generator = '<form method="POST" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_trap_generator">';
 $table->width = '90%';
 $table->size = array ();
 $table->data = array ();

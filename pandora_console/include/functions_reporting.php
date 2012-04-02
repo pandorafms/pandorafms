@@ -3646,6 +3646,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$avg = $avg / $length;
 				}
 				
+				
 				unset($table_summary);
 				
 				$table_summary->width = '99%';
@@ -4434,7 +4435,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 			}
 
-			$inventory_data = inventory_get_data((array)$id_agent,0,$date,'',false,(array)$module_name);
+			$inventory_data = inventory_get_data((array)$id_agent,(array)$module_name,$date,'',false);
 
 			if ($inventory_data == ERR_NODATA) {
 				$inventory_data = "<div class='nf'>".__('No data found.')."</div>";

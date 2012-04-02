@@ -159,6 +159,7 @@ ui_require_jquery_file ('timeentry');
 $(document).ready (function () {
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
+	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo $config['language']; ?>"]);
 	$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 });
 </script>

@@ -165,7 +165,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["gtag"]["text"] = __('Manage tags');
 	$menu["gtag"]["sec2"] = "godmode/tag/tag";
 	$menu["gtag"]["id"] = "god-tag";
-
+	
 	// Setup
 	$menu["gsetup"]["text"] = __('Setup');
 	$menu["gsetup"]["sec2"] = "godmode/setup/setup";
@@ -232,7 +232,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 						else{
 							$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
 						}
-					}
+					}	
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;

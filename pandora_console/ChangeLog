@@ -1,5 +1,10 @@
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	*operation/snmpconsole/snmp_view.php,
+	godmode/menu.php: Fixed some errors with links to new snmp menus.
+
+2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/menu.php
 	godmode/menu.php
 	godmode/snmpconsole/snmp_trap_generator.php

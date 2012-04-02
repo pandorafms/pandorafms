@@ -87,9 +87,12 @@ function menu_print_menu (&$menu) {
 		}
 		
 		$submenu_output = '';
-		$selected = false;
-		$visible = false;
+		
 		foreach ($main["sub"] as $subsec2 => $sub) {
+			//Init some variables
+			$visible = false;
+			$selected = false;
+			
 			$subsec2 = io_safe_output($subsec2);
 			// Choose valid suboptions (sec2)
 			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false){

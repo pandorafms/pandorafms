@@ -29,7 +29,6 @@ $menu['class'] = 'operation';
 if (check_acl ($config['id_user'], 0, "AR")) {
 
 	enterprise_hook ('metaconsole_menu');
-	enterprise_hook ('dashboard_menu');
 
 	//View agents
 	$menu["estado"]["text"] = __('Monitoring');
@@ -153,6 +152,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//Set godomode path
 	$sub["godmode/reporting/graphs"]["subsecs"] = array("operation/reporting/graph_viewer",
 														"godmode/reporting/graph_builder");	
+														
+	enterprise_hook ('dashboard_menu');
+	enterprise_hook ('reporting_godmenu');	
 		
 	$menu["reporting"]["sub"] = $sub;
 	//End reporting

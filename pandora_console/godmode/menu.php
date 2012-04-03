@@ -214,11 +214,20 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	
 		$sub = array ();
 		foreach ($config['extensions'] as $extension) {
-			$extmenu = $extension['godmode_menu'];
-			if ($extension['godmode_menu'] == '' || ! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
+			//If no godmode_menu is a operation extension
+			if ($extension['godmode_menu'] == '') {
 				continue;
 			}
-
+			
+			//Check if was displayed inside other menu
+			//Check the ACL for this user
+			$extmenu = $extension['godmode_menu'];
+			if ($extension['godmode_menu']["fatherId"] != '' 
+				|| ! check_acl ($config['id_user'], 0, $extmenu['acl']) 
+				|| $extension["godmode_menu"]["sec2"] == "") {
+				continue;
+			}
+			
 			$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
 			$sub[$extmenu["sec2"]]["refr"] = 0;
 			

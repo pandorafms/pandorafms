@@ -331,16 +331,23 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub["operation/agentes/exportdata"]["refr"] = 0;
 		
 		foreach ($config["extensions"] as $extension) {
+			//If no operation_menu is a godmode extension
 			if ($extension["operation_menu"] == '') {
 				continue;
 			}
+			
+			//Check if was displayed inside other menu
+			if ($extension["operation_menu"]["fatherId"] != '' || $extension["operation_menu"]["sec2"] == "") {
+				continue;
+			}
+
 			$extension_menu = $extension["operation_menu"];
 			$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
 			$sub[$extension_menu["sec2"]]["refr"] = 0;
 		}
 		
 		$menu["extensions"]["sub"] = $sub;
-
+		
 		/**
 		 * Add the extensions
 		 */

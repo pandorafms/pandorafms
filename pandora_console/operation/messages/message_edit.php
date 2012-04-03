@@ -65,6 +65,11 @@ if ($read_message) {
 		$user_name = $message["id_usuario_origen"];
 	}
 	
+	$dst_name = get_user_fullname ($message["id_usuario_destino"]);
+	if (!$dst_name) {
+		$dst_name = $message["id_usuario_destino"];
+	}
+	
 	$table->width = '98%';
 	$table->data = array();
 	
@@ -72,7 +77,7 @@ if ($read_message) {
 	$table->data[0][1] = $user_name.' '.__('at').' ' . ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
 	
 	$table->data[1][0] = __('To:');
-	$table->data[1][1] = $message["id_usuario_destino"];
+	$table->data[1][1] = $dst_name;
 	
 	$table->data[2][0] = __('Subject');
 	$table->data[2][1] = html_print_input_text_extended ("subject", $message["subject"], 'text-subject', '', 50, 70, true, false, '', 'readonly');
@@ -128,7 +133,7 @@ if (($new_msg) && (!empty ($dst_user)) && (!$reply)) {
 }
 
 // Create message (destination group)
-if (($new_msg) && (!empty ($dst_group)) && (!$reply)) {
+if (($new_msg) && ($dst_group!='') && (!$reply)) {
 	$return = messages_create_group ($config["id_user"], $dst_group, $subject, $message);
 
 	ui_print_result_message ($return,

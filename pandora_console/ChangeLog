@@ -1,5 +1,10 @@
 2012-04-03  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* operation/messages/message_edit.php: Show user name
+	instead id and send messages for all group.
+
+2012-04-03  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* include/functions_groups.php:
 	  godmode/users/configure_user.php: Fixed bug creating users.
 

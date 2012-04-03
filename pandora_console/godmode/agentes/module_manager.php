@@ -15,7 +15,7 @@
 
 /* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
 if (isset ($id_agente)) {
-	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
+	$url = 'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
 
 }
 
@@ -186,7 +186,7 @@ if ($multiple_delete) {
 // MODULE VISUALIZATION TABLE
 // ==========================
 
-$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=' . $id_agente;
+$url = 'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=' . $id_agente;
 $selectNameUp = '';
 $selectNameDown = '';
 $selectServerUp = '';
@@ -439,7 +439,7 @@ foreach ($modules as $module) {
 		$data = array ();
 	}
 
-	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+	$data[0] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
 		$data[0] .= '<em class="disabled_module">' . ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
 	else
@@ -522,12 +522,12 @@ foreach ($modules as $module) {
 
 	// Delete module
 	$data[8] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+	$data[8] .= '&nbsp;<a href="index.php?sec=estado&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[8] .= html_print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
 	$data[8] .= '</a> ';
-	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+	$data[8] .= '&nbsp;<a href="index.php?sec=estado&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[8] .= html_print_image ('images/copy.png', true,
 		array ('title' => __('Duplicate')));
@@ -537,7 +537,7 @@ foreach ($modules as $module) {
 
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
-			$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			$data[8] .= '&nbsp;<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[8] .= html_print_image ('images/chart_curve.png', true,
 				array ('title' => __('Normalize')));
 			$data[8] .= '</a>';
@@ -547,7 +547,7 @@ foreach ($modules as $module) {
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
+echo '<form method="post" action="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
 	onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

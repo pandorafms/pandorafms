@@ -119,7 +119,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		// title
 		// Header
 		ui_print_page_header (__("Remote configuration management"), "images/god1.png", false, "", true, "");
-		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
+		echo '<form method="post" action="index.php?sec=estado&sec2=godmode/agentes/manage_config_remote&operacion=1">';
 		echo "<table width='98%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
 		// Source group

@@ -1,3 +1,17 @@
+2012-04-03 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/agentes/estado_agente.php,
+	operation/menu.php,
+	godmode/agentes/agent_template.php,
+	godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/agent_conf_gis.php,
+	godmode/agentes/module_manager.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/manage_config_remote.php,
+	godmode/menu.php: Moved manage agent view to Agent detail inside 
+	Monitoring menu.
+
 2012-04-03  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/messages/message_edit.php: Show user name

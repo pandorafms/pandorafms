@@ -109,6 +109,25 @@ if (is_ajax ()) {
 }
 ob_end_clean();
 
+$agent_to_delete = get_parameter("borrar_agente");
+if (!empty($agent_to_delete)) {
+	$id_agente = $agent_to_delete;
+	$agent_name = agents_get_name ($id_agente);
+	$id_grupo = agents_get_agent_group($id_agente);
+	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
+		$id_agentes[0] = $id_agente;
+		$result = agents_delete_agent($id_agentes);
+		db_pandora_audit("Agent management", "Delete Agent " . $agent_name);
+	}
+	else {
+		// NO permissions.
+		db_pandora_audit("ACL Violation",
+			"Trying to delete agent \'$agent_name\'");
+		require ("general/noaccess.php");
+		exit;
+	}
+}
+
 $first = true;
 while ($row = db_get_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")) {
 	$first = false;
@@ -129,7 +148,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$tab = 'setup';
 
 	/* Setup tab */
-	$setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">' 
+	$setuptab['text'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente">' 
 			. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
 			. '</a>';
 			
@@ -181,7 +200,16 @@ echo '</td><td style="white-space:nowrap;">';
 
 html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub search")); 
 
-echo '</td><td style="width:5%;">&nbsp;</td></tr></table></form>';
+echo '</td><td style="width:5%;">&nbsp;</form></td>';
+
+echo '<td>';
+echo '<form method="post" action="index.php?sec=estado&sec2=godmode/agentes/configurar_agente">';
+	html_print_input_hidden ('new_agent', 1);
+	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+echo "</form>";
+echo '</td>';
+
+echo '</tr></table>';
 
 if ($search != ""){
 	$filter = array ("string" => '%' . $search . '%');
@@ -365,6 +393,15 @@ $table->head[8] = __('Last contact'). ' ' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
+		
+//Only for AW flag
+if (check_acl ($config["id_user"], $group_id, "AW")) {		
+	$table->head[9] = __('R');
+	$table->align[9] = "center";
+	$table->head[10] = __('Delete');
+	$table->align[10] = "center";
+}
+
 $table->align[2] = "center";
 $table->align[3] = "center";
 $table->align[4] = "center";
@@ -399,15 +436,15 @@ foreach ($agents as $agent) {
 	$data[0] .= '<div class="left actions" style="visibility: hidden; clear: left">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 	$data[0] .= ' | ';
-	$data[0] .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';		
-		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
 	$data[0] .= '</div>';
 				
 	/*if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
-		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
+		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
 		$data[0] .= html_print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
 		$data[0] .= '</a>&nbsp;';
 	}*/
@@ -460,6 +497,22 @@ foreach ($agents as $agent) {
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!
 	// $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
+	
+	//Only for AW flag
+	if (check_acl ($config["id_user"], $group_id, "AW")) {
+		// Has remote configuration ?
+		$data[9]="";
+		$agent_name = db_get_value("nombre", "tagente", "id_agente", $agent["id_agente"]);
+		$agent_md5 = md5 ($agent_name, false);
+		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
+			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
+		}
+	
+		$data[10] = 	"<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&
+			borrar_agente=".$agent["id_agente"]."&group_id=$group_id&recursion=$recursion&search=$search&offset=$offset&sort_field=$sortField&sort=$sort'".
+			' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, array("border" => '0')) ."</a></td>";
+	}
 
 	array_push ($table->data, $data);
 }
@@ -478,7 +531,7 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 		|| check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")
 		|| check_acl ($config['id_user'], 0, "UM")) {
 	
-	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
 		html_print_input_hidden ('new_agent', 1);
 		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 	echo '</form>';

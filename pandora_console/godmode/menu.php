@@ -25,8 +25,8 @@ $menu = array ();
 $menu['class'] = 'godmode';
 
 if (check_acl ($config['id_user'], 0, "AW")) {
-	$menu["gagente"]["text"] = __('Manage agents');
-	$menu["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
+	$menu["gagente"]["text"] = __('Manage monitoring');
+	$menu["gagente"]["sec2"] = "godmode/agentes/manage_config_remote";
 	$menu["gagente"]["id"] = "god-agents";
 		
 	$sub = array ();	

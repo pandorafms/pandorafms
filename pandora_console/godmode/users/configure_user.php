@@ -125,7 +125,6 @@ if ($create_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', 'default');
-	$values['created by'] = $config['id_user'];
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = (int) get_parameter ('skin', 0);
 	}

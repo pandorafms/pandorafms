@@ -1,3 +1,8 @@
+2012-04-03  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* include/functions_groups.php:
+	  godmode/users/configure_user.php: Fixed bug creating users.
+
 2012-04-03 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* godmode/menu.php,

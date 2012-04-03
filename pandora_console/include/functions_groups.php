@@ -588,7 +588,10 @@ function groups_get_users ($id_group, $filter = false) {
 		$result = $resulta;
 	else
 		$result = array_merge($resulta,$resultb);
-
+	
+	if ($result === false)
+	return array ();
+	
 	//This removes stale users from the list. This can happen if switched to another auth scheme
 	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)
 	$retval = array ();

@@ -1,3 +1,8 @@
+2012-04-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Fixed the
+	  return value of pandora_query_snmp when an OID cannot be translated.
+
 2012-03-20 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* util/pandora_db.pl: added lines to purge the contents in the report that

@@ -315,7 +315,7 @@ sub pandora_query_snmp ($$$) {
 	return (undef, 0) unless ($snmp_oid ne '');
 	if ($snmp_oid =~ m/[a-zA-Z]/) {
 		$snmp_oid = translate_obj ($dbh, $snmp_oid, $module->{"id_agente_modulo"});
-		return (undef, 0) unless ($snmp_oid ne '');
+		return (undef, 1) unless ($snmp_oid ne '');
 	}
 
 	my $snmp_timeout = $pa_config->{"snmp_timeout"};

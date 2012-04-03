@@ -218,8 +218,8 @@ function menu_print_menu (&$menu) {
 					else {
 						$imageIcon = $imageIconDefault;
 					}
-					
-					$submenu_output .= '<div style="background: url('.$imageIcon.') no-repeat; width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
+					//Delete extension Icon before the was a style with background: url('.$imageIcon.') no-repeat; 
+					$submenu_output .= '<div style="width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
 				}
 				
 				

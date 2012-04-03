@@ -1,3 +1,8 @@
+2012-04-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Fixed the return value of
+	  pandora_query_snmp when an OID cannot be translated.
+
 2012-03-24  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed pandora_server process down with

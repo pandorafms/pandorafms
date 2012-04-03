@@ -64,7 +64,7 @@ $table->data[4][0] = __('Ignore new GIS data:');
 $table->data[4][1] = __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
 $table->data[4][1] .= __('Enabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
 
-$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
+$url = 'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
 echo "<form method='post' action='" . $url . "' onsubmit ='return validateFormFields();'>";
 html_print_input_hidden('update_gis', 1);
 html_print_table($table);

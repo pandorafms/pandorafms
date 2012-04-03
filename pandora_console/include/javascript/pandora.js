@@ -156,6 +156,11 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		}
 	}
 	
+	var selection_mode = $('#modules_selection_mode').val();
+	if(selection_mode == undefined) {
+		selection_mode = 'common';
+	}
+	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
@@ -164,7 +169,8 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 				 "get_agent_modules_json_for_multiple_agents": 1,
 				 "id_agent[]": idAgents,
 				 "all": find_modules,
-				 "custom_condition": custom_condition
+				 "custom_condition": custom_condition,
+		 		 "selection_mode": selection_mode
 				 },
 				 function (data) {
 					 $('#module').empty ();
@@ -287,15 +293,34 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 	$('#agents').attr ('disabled', 1);
 	$('#agents').empty ();
 	$('#agents').append ($('<option></option>').html ("Loading...").attr ("value", 0));
+	
+	var selection_mode = $('#agents_selection_mode').val();
+	if(selection_mode == undefined) {
+		selection_mode = 'common';
+	}
+	
 	jQuery.post ('ajax.php', 
 				 {"page": "operation/agentes/ver_agente",
 				 "get_agents_json_for_multiple_modules": 1,
-				 "module_name[]": idModules
+				 "module_name[]": idModules,
+				 "selection_mode": selection_mode
 				 },
 				 function (data) {
 					 $('#agents').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 
 					 $('#agents').empty ();
+					 
+					 if (isEmptyObject(data)) {
+						 var noneText = $("#none_text").html(); //Trick for catch the translate text.
+						 
+						 if (noneText == null) {
+							 noneText = 'None';
+						 }
+						 
+						 $('#agents').append ($('<option></option>').html (noneText).attr ("None", "").attr('selected', true));
+						 
+						 return;
+					 }
 					 
 					 if (typeof($(document).data('text_for_module')) != 'undefined') {
 						 $('#agents').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));

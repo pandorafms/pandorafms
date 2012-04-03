@@ -76,7 +76,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('components_submenu');
 	$sub["godmode/modules/manage_network_templates"]["text"] = __('Module templates');
 	enterprise_hook ('inventory_submenu');
-
+	
+	// Tag
+	$sub["godmode/tag/tag"]["text"] = __('Manage tags');
+	$sub["godmode/tag/tag"]["subsecs"] = "godmode/tag/edit_tag";
+	
 	$menu["gmodules"]["sub"] = $sub;
 }
 
@@ -175,11 +179,6 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["glog"]["sec2"] = "godmode/admin_access_logs";
 	$menu["glog"]["id"] = "god-audit";
 		
-	// Tag
-	$menu["gtag"]["text"] = __('Manage tags');
-	$menu["gtag"]["sec2"] = "godmode/tag/tag";
-	$menu["gtag"]["id"] = "god-tag";
-	
 	// Setup
 	$menu["gsetup"]["text"] = __('Setup');
 	$menu["gsetup"]["sec2"] = "godmode/setup/setup";

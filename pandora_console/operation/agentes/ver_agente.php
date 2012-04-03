@@ -87,16 +87,24 @@ if (is_ajax ()) {
 	
 	if ($get_agents_json_for_multiple_modules) {
 		$nameModules = get_parameter('module_name');
+		$selection_mode = get_parameter('selection_mode','common');
 		
-		$nameAgents = db_get_all_rows_sql('SELECT DISTINCT(t1.nombre) as name
+		$sql = 'SELECT DISTINCT(t1.nombre) as name
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
-				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')
-				AND (
+				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
+			
+		if($selection_mode == 'common') {
+			$sql .= 'AND (
 					SELECT count(t3.nombre)
 					FROM tagente t3, tagente_modulo t4
 					WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre
-						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules));
+						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules);
+		}
+		
+		$sql .= ' ORDER BY t1.nombre';
+			
+		$nameAgents = db_get_all_rows_sql($sql);
 		
 		foreach($nameAgents as $nameAgent) {
 			$names[] = $nameAgent['name'];
@@ -139,6 +147,8 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
 		$custom_condition = get_parameter('custom_condition', '');
+		$selection_mode = get_parameter('selection_mode', 'common');
+		
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
 			default:
@@ -194,18 +204,24 @@ if (is_ajax ()) {
 			}
 		}
 		else {
-		
-			$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
+			$sql = 'SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
 				WHERE ' . $enabled .
 					io_safe_output($custom_condition) . '
 					AND delete_pending = 0
-					AND id_agente IN (' . implode(',', $idAgents) . ') AND (
-						SELECT count(nombre)
-						FROM tagente_modulo t2
-						WHERE delete_pending = 0 AND t1.nombre = t2.nombre
-							AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')
-				ORDER BY nombre');
+					AND id_agente IN (' . implode(',', $idAgents) . ')';
+				
+			if($selection_mode == 'common') {
+				$sql .= ' AND (
+							SELECT count(nombre)
+							FROM tagente_modulo t2
+							WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+								AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+			}
+			
+			$sql .= ' ORDER BY nombre';
+				
+			$nameModules = db_get_all_rows_sql($sql);
 		
 			if ($nameModules == false) {
 				$nameModules = array();

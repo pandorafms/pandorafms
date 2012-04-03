@@ -565,6 +565,8 @@ function groups_get_name ($id_group, $returnAllGroup = false) {
  * @return array An array with all the users or an empty array
  */
 function groups_get_users ($id_group, $filter = false) {
+	global $config;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	

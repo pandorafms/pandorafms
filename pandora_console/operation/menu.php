@@ -304,13 +304,13 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 if (check_acl ($config['id_user'], 0, "AR")) {
 
 	// Messages
-	$sub["operation/messages/message"]["text"] = __('Messages');
-	$sub["operation/messages/message"]["refr"] = 0;	
+	$sub["operation/messages/message_list"]["text"] = __('Messages');
+	$sub["operation/messages/message_list"]["refr"] = 0;	
 	
 	$sub2 = array ();
-	$sub2["operation/messages/message&amp;new_msg=1"]["text"] = __('New message');
+	$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
 	
-	$sub["operation/messages/message"]["sub2"] = $sub2;
+	$sub["operation/messages/message_list"]["sub2"] = $sub2;
 }
 
 $menu["workspace"]["sub"] = $sub;

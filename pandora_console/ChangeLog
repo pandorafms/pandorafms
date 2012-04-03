@@ -1,3 +1,17 @@
+2012-04-03  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* general/header.php
+	  include/functions_groups.php
+	  include/functions_messages.php
+	  include/javascript/jquery.pandora.js
+	  operation/menu.php: Added operation: Modify sending and receiving
+	messages.
+
+	* images/email_go.png
+	  images/email_edit.png
+	  operation/messages/message_list.php
+	  operation/messages/message_edit.php: Added files.
+
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	*operation/snmpconsole/snmp_view.php,

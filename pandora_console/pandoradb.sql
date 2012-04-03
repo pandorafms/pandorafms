@@ -777,7 +777,6 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `shortcut_data` text default '',
   `section` TEXT NOT NULL,
   `data_section` TEXT NOT NULL,
-  `created_by` TEXT NOT NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

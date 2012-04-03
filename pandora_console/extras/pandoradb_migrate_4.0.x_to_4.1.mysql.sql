@@ -194,11 +194,6 @@ ALTER TABLE `tusuario` ADD COLUMN `data_section` TEXT NOT NULL;
 ALTER TABLE `treport_content_item` ADD COLUMN `operation` TEXT DEFAULT '';
 
 -- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-ALTER TABLE `tusuario` ADD COLUMN `created_by` TEXT NOT NULL DEFAULT '';
-
--- -----------------------------------------------------
 -- Table `tmensajes`
 -- -----------------------------------------------------
 ALTER TABLE `tmensajes` MODIFY COLUMN `mensaje` TEXT NOT NULL DEFAULT '';

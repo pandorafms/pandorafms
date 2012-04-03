@@ -1,3 +1,12 @@
+2012-04-03  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql,
+	  include/functions_groups.php: : removed 'created_by'
+	to tusuario table and modify select users.
+
 2012-04-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/menu.php,

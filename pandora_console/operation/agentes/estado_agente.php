@@ -129,7 +129,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$tab = 'setup';
 
 	/* Setup tab */
-	$setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">' 
+	$setuptab['text'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente">' 
 			. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
 			. '</a>';
 			
@@ -181,7 +181,16 @@ echo '</td><td style="white-space:nowrap;">';
 
 html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub search")); 
 
-echo '</td><td style="width:5%;">&nbsp;</td></tr></table></form>';
+echo '</td><td style="width:5%;">&nbsp;</form></td>';
+
+echo '<td>';
+echo '<form method="post" action="index.php?sec=estado&sec2=godmode/agentes/configurar_agente">';
+	html_print_input_hidden ('new_agent', 1);
+	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+echo "</form>";
+echo '</td>';
+
+echo '</tr></table>';
 
 if ($search != ""){
 	$filter = array ("string" => '%' . $search . '%');
@@ -398,15 +407,15 @@ foreach ($agents as $agent) {
 	$data[0] .= '<div class="left actions" style="visibility: hidden; clear: left">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 	$data[0] .= ' | ';
-	$data[0] .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';		
-		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
 	$data[0] .= '</div>';
 				
 	/*if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
-		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
+		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
 		$data[0] .= html_print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
 		$data[0] .= '</a>&nbsp;';
 	}*/
@@ -477,7 +486,7 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 		|| check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")
 		|| check_acl ($config['id_user'], 0, "UM")) {
 	
-	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
 		html_print_input_hidden ('new_agent', 1);
 		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 	echo '</form>';

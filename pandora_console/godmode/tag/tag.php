@@ -65,7 +65,7 @@ $buttons = array(
 $buttons[$tab]['active'] = true;
 
 // Header
-ui_print_page_header (__('Tags configuration'), "images/tag_red.png", false, "", true, $buttons);
+ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", true, $buttons);
 
 // Two actions can performed in this page: search and delete tags
 
@@ -102,14 +102,14 @@ echo "<tr>";
 echo "<td>";
 	echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
 echo "<td align=center>";
-	echo '<form method=post action="index.php?sec=gtag&sec2=godmode/tag/tag&delete_tag=0">';
+	echo '<form method=post action="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag=0">';
 	html_print_input_hidden ("search_tag", "1");
 	html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
 	echo "&nbsp;&nbsp;&nbsp;";
 	html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
 	echo "</form>";
 echo "<td align=right>";
-	echo '<form method="post" action="index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=new">';
+	echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=new">';
 	html_print_input_hidden ("create_tag", "1", true);
 	html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
 	echo "</form>";
@@ -150,7 +150,7 @@ if (!empty($result)){
 
 		$data = array ();
 
-		$data[0] = "<a href='index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
+		$data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
 		$data[1] = ui_print_truncate_text($tag["description"], 25, false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
 		$data[3] = ' <a class="tag_details"
@@ -160,8 +160,8 @@ if (!empty($result)){
 	
 		
 		$data[3] .= tags_get_modules_count($tag["id_tag"]);				
-		$data[4] = "<a href='index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
-		$data[4] .= '<a  href="index.php?sec=gtag&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
+		$data[4] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
+		$data[4] .= '<a  href="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
 	}
 

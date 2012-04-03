@@ -39,13 +39,13 @@ $tab = (string) get_parameter ("tab", "list");
 $buttons = array(
 	'list' => array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=gtag&sec2=godmode/tag/tag&tab=list">' . 
+		'text' => '<a href="index.php?sec=gmodules&sec2=godmode/tag/tag&tab=list">' . 
 			html_print_image ("images/god6.png", true, array ("title" => __('List tags'))) .'</a>'));
 
 $buttons[$tab]['active'] = true;
 
 // Header
-ui_print_page_header (__('Tags configuration'), "images/tag_red.png", false, "", true, $buttons);
+ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", true, $buttons);
 
 // Two actions can performed in this page: update and create tags
 // Update tag: update an existing tag
@@ -115,7 +115,7 @@ if ($action == "update" && $id_tag != 0){
 }
 	
 // Create/Update tag form 
-echo '<form method="post" action="index.php?sec=gtag&sec2=godmode/tag/edit_tag&action=' . $action . '&id_tag=' . $id_tag . '" enctype="multipart/form-data">';
+echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=' . $action . '&id_tag=' . $id_tag . '" enctype="multipart/form-data">';
 
 echo '<div align=left style="width: 98%" class="pandora_form">';
 

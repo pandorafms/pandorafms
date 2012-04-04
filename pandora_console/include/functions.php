@@ -1150,9 +1150,14 @@ function array_key_to_offset($array, $key) {
  */
 function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
 				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
-				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "") {
+				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
 					
 	snmp_set_quick_print ($quick_print);
+	
+	// Fix for snmp port
+	if (!empty($snmp_port)){
+		$ip_target = $ip_target.':'.$snmp_port;
+	}
 	
 	switch ($snmp_version) {
 		case '3':

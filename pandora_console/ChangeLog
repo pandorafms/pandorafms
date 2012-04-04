@@ -1,3 +1,13 @@
+2012-04-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/pandora_modules.js
+	 include/functions.php
+	 extensions/snmp_explorer.php
+	 godmode/agentes/module_manager_editor.php: Fixed several errors in
+	 snmp walk and snmp explorer functionality.
+	 
+	 Fixes: #3514508
+
 2012-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* extensions/update_pandora.php: Moved from gsetup

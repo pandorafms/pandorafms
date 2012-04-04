@@ -82,8 +82,16 @@ if (is_ajax ()) {
 	}
 	
 	if ($snmp_walk) {
-		$ip_target = (string) get_parameter ('ip_target');
-		$snmp_community = (string) get_parameter ('snmp_community');
+		$test_ip_type = get_parameter ('ip_target');
+		if (is_array($test_ip_type))
+			$ip_target = (string)array_shift($test_ip_type);
+		else
+			$ip_target = (string) get_parameter ('ip_target');
+		$test_snmp_community = get_parameter ('snmp_community');		
+		if (is_array($test_snmp_community))
+			$snmp_community = (string)array_shift($test_snmp_community);
+		else
+			$snmp_community = (string) get_parameter ('snmp_community');
 		$snmp_version = get_parameter('snmp_version');
 		$snmp3_auth_user = get_parameter('snmp3_auth_user');
 		$snmp3_security_level = get_parameter('snmp3_security_level');
@@ -91,10 +99,11 @@ if (is_ajax ()) {
 		$snmp3_auth_pass = get_parameter('snmp3_auth_pass');
 		$snmp3_privacy_method = get_parameter('snmp3_privacy_method');
 		$snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
-		
+		$snmp_port = get_parameter('snmp_port');
+
 		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 					$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-					$snmp3_privacy_method, $snmp3_privacy_pass, 1);
+					$snmp3_privacy_method, $snmp3_privacy_pass, 1, "", $snmp_port);
 
 		if ($snmpwalk === false) {
 			echo json_encode ($snmpwalk);

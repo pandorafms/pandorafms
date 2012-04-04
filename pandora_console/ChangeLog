@@ -1,3 +1,11 @@
+2012-04-04  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_edit_modules.php: Fixed several bugs 
+	like fields without "no change" value, change a nosense radio 
+	button by a checkbox, add the snmp v3 fields to the edit modules 
+	form, etc.
+
 2012-04-03  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js

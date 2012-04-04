@@ -10,6 +10,11 @@
 
 2012-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
 
+        * extensions/update_manager.php: Moved from gsetup
+        to extensions menu
+
+2012-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* extensions/update_pandora.php: Moved from gsetup
 	to extensions menu	
 

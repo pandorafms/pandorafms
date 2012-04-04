@@ -1,7 +1,4 @@
 #!/usr/bin/perl
-
-eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
-    if 0; # not running under some shell
 ################################################################################
 #
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
@@ -23,6 +20,38 @@ eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
 
 package tentacle::client;
 
+=head1 NAME
+
+tentacle_client - Tentacle Client
+
+=head1 VERSION
+
+Version 0.3.0
+
+=head1 USAGE
+
+tentacle_client [options] [file] [file] ...
+
+=head1 DESCRIPTION
+
+B<tentacle_client(1)> is a client for B<tentacle>, a B<client/server> file transfer protocol that aims to be:
+
+=over
+
+=item    * Secure by design.
+
+=item    * Easy to use.
+
+=item    * Versatile and cross-platform. 
+
+=back 
+
+Tentacle was created to replace more complex tools like SCP and FTP for simple file transfer/retrieval, and switch from authentication mechanisms like .netrc, interactive logins and SSH keys to X.509 certificates. Simple password authentication over a SSL secured connection is supported too.
+
+The client and server (B<TCP port 41121>) are designed to be run from the command line or called from a shell script, and B<no configuration files are needed>. 
+
+=cut
+
 use strict;
 use File::Basename;
 use Getopt::Std;
@@ -30,7 +59,7 @@ use IO::Select;
 use IO::Socket::INET;
 
 # Program version
-our $VERSION = '0.2.0';
+our $VERSION = '0.3.0';
 
 # Server address
 my $t_address = '127.0.0.1';
@@ -46,6 +75,18 @@ my $t_port = 41121;
 
 # Do not output error messages, 1 enabled, 0 disabled
 my $t_quiet = 0;
+
+# Proxy address
+my $t_proxy_address = '';
+
+# Proxy user
+my $t_proxy_user = '';
+
+# Proxy password
+my $t_proxy_pass = '';
+
+# Proxy port
+my $t_proxy_port = 0;
 
 # Server password
 my $t_pwd = '';
@@ -102,7 +143,8 @@ sub print_help {
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
 	print ("\t-v\t\tBe verbose.\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
-        print ("\t-x pwd\t\tServer password.\n\n");
+	print ("\t-x pwd\t\tServer password.\n");
+	print ("\t-y proxy\tProxy server string (user:password\@address:port).\n\n");
 }
 
 ################################################################################
@@ -114,7 +156,7 @@ sub parse_options {
 	my $tmp;
 
 	# Get options
-	if (getopts ('a:ce:f:ghk:p:qr:t:vwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:ce:f:ghk:p:qr:t:vwx:y:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -122,7 +164,7 @@ sub parse_options {
 	# Address
 	if (defined ($opts{'a'})) {
 		$t_address = $opts{'a'};
-		if ($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+		if ($t_address !~ /^[a-zA-Z\.][a-zA-Z0-9\.\-]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
 			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
 			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
 			error ("Address $t_address is not valid.");
@@ -228,9 +270,23 @@ sub parse_options {
 		$t_ssl_pwd = ask_passwd ("Enter private key file password: ", "Enter private key file password again for confirmation: ");
 	}
 
-        # Server password
+	# Server password
 	if (defined ($opts{'x'})) {
 		$t_pwd = $opts{'x'};
+	}
+
+	# Proxy server
+	if (defined ($opts{'y'})) {
+		if ($opts{'y'} !~ /^((.*):(.*)@){0,1}(\S+):(\d+)$/) {
+			error ("Invalid proxy string: " . $opts{'y'});
+		}
+
+		($t_proxy_user, $t_proxy_pass, $t_proxy_address, $t_proxy_port) = ($2, $3, $4, $5);
+		$t_proxy_user = '' unless defined ($t_proxy_user);
+		$t_proxy_pass = '' unless defined ($t_proxy_pass);
+		if ($t_proxy_port < 1 || $t_proxy_port > 65535) {
+			error ("Proxy port $t_proxy_port is not valid.");
+		}
 	}
 }
 
@@ -242,9 +298,9 @@ sub start_client {
 
 	# Connect to server
 	$t_socket = IO::Socket::INET->new (
-	        	PeerAddr => $t_address,
+	       	PeerAddr => $t_address,
 			PeerPort => $t_port,
-		);
+	);
 
 	if (! defined ($t_socket)) {
 		error ("Cannot connect to $t_address on port $t_port: $!.");
@@ -253,6 +309,48 @@ sub start_client {
 	# Add server socket to select queue
 	$t_select = IO::Select->new ();
 	$t_select->add ($t_socket);
+
+	print_log ("Connected to $t_address port $t_port");
+}
+
+################################################################################
+## SUB start_client_proxy
+## Open the server socket. Connects to the Tentacle server through an HTTP proxy.
+################################################################################
+sub start_client_proxy {
+
+	# Connect to proxy
+	$t_socket = IO::Socket::INET->new (
+		PeerAddr => $t_proxy_address,
+		PeerPort => $t_proxy_port,
+	);
+
+	if (! defined ($t_socket)) {
+		error ("Cannot connect to proxy server $t_proxy_address on port $t_proxy_port: $!.");
+	}
+
+	# Add server socket to select queue
+	$t_select = IO::Select->new ();
+	$t_select->add ($t_socket);
+
+	print_log ("Connected to proxy server $t_proxy_address port $t_proxy_port");	
+	
+	# Try to CONNECT to the Tentacle server
+	send_data ("CONNECT " . $t_address . ":" . $t_port . " HTTP/1.0\r\n");
+	
+	# Authenticate to the proxy
+	if ($t_proxy_user ne '') {
+		send_data ("Proxy-Authorization: Basic " . base64 ($t_proxy_user . ":" . $t_proxy_pass) . "\r\n");
+	}
+
+	send_data ("\r\n");
+
+	# Check for an HTTP 200 response
+	my $response = recv_data ($t_block_size);
+	if ($response !~ m/HTTP.* 200 /) {
+		my $error = (split (/\r\n/, $response))[0];
+		error ("CONNECT error: $error");
+	}
 
 	print_log ("Connected to $t_address port $t_port");
 }
@@ -328,6 +426,36 @@ sub auth_pwd {
 		error ("Authentication failed.");
 	}
 }
+
+################################################################################
+## SUB base64
+## Returns the base 64 encoding of a string.
+################################################################################
+my @alphabet = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/');
+sub base64 {
+	my $str = shift;
+	my $str64;
+
+	# Pre-processing
+	my $msg = unpack ("B*", pack ("A*", $str));
+	my $bit_len = length ($msg);
+
+	# Process the message in successive 24-bit chunks
+	for (my $i = 0; $i < $bit_len; $i += 24) {
+		my $chunk_len = length (substr ($msg, $i, 24));
+		$str64 .= $alphabet[ord (pack ("B8", "00" . substr ($msg, $i, 6)))];
+		$str64 .= $alphabet[ord (pack ("B8", "00" . substr ($msg, $i+6, 6)))];
+		$str64 .= ($chunk_len <= 12) ? "=" : $alphabet[ord (pack ("B8", "00" . substr ($msg, $i+12, 6)))];
+		$str64 .= ($chunk_len <= 18) ? "=" : $alphabet[ord (pack ("B8", "00" . substr ($msg, $i+18, 6)))];
+	}
+	
+	return $str64;
+}
+
 
 ################################################################################
 ## SUB recv_file
@@ -514,22 +642,19 @@ sub send_data {
 			if ($written == 0) {
 				error ("Connection from " . $t_socket->sockhost () . " unexpectedly closed.");
 			}
-	
-		}
 
-		$total += $written;
+			$total += $written;
 
-		# All data was written
-		if ($total == $size) {
-			return;
-		}
-
+			# All data was written
+			if ($total == $size) {
+				return;
+			}
 		# Retry
-		$retries++;
-
-		# But check for error conditions first
-		if ($retries > $t_retries) {
-			error ("Connection from " . $t_socket->sockhost () . " timed out.");
+		} else {
+			$retries++;
+			if ($retries > $t_retries) {
+				error ("Connection from " . $t_socket->sockhost () . " timed out.");
+			}
 		}
 	}
 }
@@ -642,7 +767,11 @@ if ($t_recv == 0 && $#ARGV == -1) {
 }
 
 # Connect to the server
-start_client ();
+if ($t_proxy_address eq '') {
+	start_client ();
+} else {
+	start_client_proxy ();
+}
 
 # Start SSL
 if ($t_ssl == 1) {
@@ -680,3 +809,75 @@ send_data ("QUIT\n");
 stop_client ();
 
 exit 0;
+
+
+__END__
+
+=head1 OPTIONS
+
+=over
+
+=item	I<-a address>	B<Server address> (default 127.0.0.1).
+
+=item	I<-c>			Enable B<SSL> without a client certificate.
+
+=item	I<-e cert>		B<OpenSSL certificate> file. Enables SSL.
+
+=item	I<-f ca>		Verify that the peer certificate is signed by a B<CA> (Certificate Authority).
+
+=item	I<-g>			B<Get> files from the server.
+
+=item	I<-h>			Show B<help>.
+
+=item	I<-k key>		B<OpenSSL private key> file.
+
+=item	I<-p port>		B<Server port> (default I<41121>).
+
+=item	I<-q>			B<Quiet>. Do now print error messages.
+
+=item	I<-r number>		B<Number of retries> for network operations (default I<3>).
+
+=item	I<-t time>		B<Time-out> for network operations in seconds (default I<1s>).
+
+=item	I<-v>			Be B<verbose>.
+
+=item	I<-w>			Prompt for B<OpenSSL private key password>.
+
+=item	I<-x pwd>		B<Server password>.
+
+=back
+
+=head1 EXIT STATUS
+
+=over 
+
+=item 0 on Success
+
+=item 1 on Error
+
+=back 
+
+=head1 CONFIGURATION
+
+Tentacle doesn't use any configurationf files, all the configuration is done by the options passed when it's started.
+
+=head1 DEPENDENCIES
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<File::Basename>
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<File::Basename>
+
+Protocol description and more info at: L<< http://openideas.info/wiki/index.php?title=Tentacle >>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+=cut
+

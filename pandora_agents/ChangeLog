@@ -1,3 +1,10 @@
+2012-04-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/tentacle_client,
+	  shellscript/linux/tentacle_client,
+	  shellscript/mac_osx/tentacle_client: Updated the Tentacle client to
+	  the latest version.
+
 2012-01-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_regexp.cc: Merged from trunk. Do not open

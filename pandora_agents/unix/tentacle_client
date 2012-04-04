@@ -2,7 +2,7 @@
 ################################################################################
 #
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2007-2010  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2007-2008  Artica Soluciones Tecnologicas S.L.
 #
 # tentacle_client.pl	Tentacle Client. See http://www.openideas.info/wiki for
 # 			protocol description.
@@ -164,7 +164,7 @@ sub parse_options {
 	# Address
 	if (defined ($opts{'a'})) {
 		$t_address = $opts{'a'};
-		if ($t_address !~ /^[a-zA-Z\.][a-zA-Z0-9\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+		if ($t_address !~ /^[a-zA-Z\.][a-zA-Z0-9\.\-]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
 			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
 			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
 			error ("Address $t_address is not valid.");
@@ -298,8 +298,8 @@ sub start_client {
 
 	# Connect to server
 	$t_socket = IO::Socket::INET->new (
-		PeerAddr => $t_address,
-		PeerPort => $t_port,
+	       	PeerAddr => $t_address,
+			PeerPort => $t_port,
 	);
 
 	if (! defined ($t_socket)) {
@@ -642,22 +642,19 @@ sub send_data {
 			if ($written == 0) {
 				error ("Connection from " . $t_socket->sockhost () . " unexpectedly closed.");
 			}
-	
-		}
 
-		$total += $written;
+			$total += $written;
 
-		# All data was written
-		if ($total == $size) {
-			return;
-		}
-
+			# All data was written
+			if ($total == $size) {
+				return;
+			}
 		# Retry
-		$retries++;
-
-		# But check for error conditions first
-		if ($retries > $t_retries) {
-			error ("Connection from " . $t_socket->sockhost () . " timed out.");
+		} else {
+			$retries++;
+			if ($retries > $t_retries) {
+				error ("Connection from " . $t_socket->sockhost () . " timed out.");
+			}
 		}
 	}
 }

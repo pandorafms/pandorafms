@@ -1,3 +1,10 @@
+2012-04-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/tentacle_client,
+	  shellscript/linux/tentacle_client,
+	  shellscript/mac_osx/tentacle_client: Updated the Tentacle client to
+	  the latest version.
+
 2012-02-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/pandora_windows_service.cc: Added a timeout to the tentacle

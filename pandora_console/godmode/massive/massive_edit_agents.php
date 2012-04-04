@@ -33,7 +33,6 @@ require_once ('include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_n_conf_files = (bool) get_parameter ('get_n_conf_files');
-	
 	if ($get_n_conf_files) {
 		$id_agents = get_parameter('id_agents');
 		$cont = 0;
@@ -43,7 +42,7 @@ if (is_ajax ()) {
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5"))
 				$cont ++;
 		}
-		
+		echo $cont;
 		return;
 	}
 }
@@ -55,7 +54,7 @@ if ($update_agents) {
 	$values = array();
 	if (get_parameter ('group', '') != -1)
 		$values['id_grupo'] = get_parameter ('group');
-	if (get_parameter ('interval', '') != '')
+	if (get_parameter ('interval', 0) != 0)
 		$values['intervalo'] = get_parameter ('interval');
 	if (get_parameter ('id_os', '') != -1)
 		$values['id_os'] = get_parameter ('id_os');
@@ -247,7 +246,7 @@ $table->data[1][1] = html_print_select_groups(false, "AR", false, 'group', $grou
 
 $table->data[2][0] = __('Interval');
 
-$table->data[2][1] = html_print_extended_select_for_time ('interval', $interval, '', '', '0', 10, true, 'width: 150px');
+$table->data[2][1] = html_print_extended_select_for_time ('interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
 
 $table->data[3][0] = __('OS');
 $table->data[3][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
@@ -309,7 +308,7 @@ $table->data[3][0] = __('Remote configuration');
 // Delete remote configuration
 $table->data[3][1] = '<div id="delete_configurations" style="display: none">'. __('Delete available remote configurations').' (';
 $table->data[3][1] .= '<span id="n_configurations"></span>';
-$table->data[3][1] .= ') '.html_print_radio_button_extended ("delete_conf", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true).'</div>';
+$table->data[3][1] .= ') '.html_print_checkbox_extended ("delete_conf", 1, 0, false, '', 'style="margin-right: 40px;"', true).'</div>';
 
 $table->data[3][1] .= '<div id="not_available_configurations" style="display: none"><em>'.__('Not available').'</em></div>';		
 	
@@ -338,7 +337,7 @@ else {
 }
 
 $table->data[4][0] = __('Agent icon');
-$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
+$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('No change'), '', true) .
 	'&nbsp;' . __('Without status') . ': ' . html_print_image($path_without, true, array("id" => 'icon_without_status',"style" => 'display:'.$display_icons.';')) .
 	'&nbsp;' . __('Default') . ': ' . html_print_image($path_default, true, array("id" => 'icon_default',"style" => 'display:'.$display_icons.';')) .
 	'&nbsp;' . __('Ok') . ': ' .  html_print_image($path_ok, true, array("id" => 'icon_ok',"style" => 'display:'.$display_icons.';')) .
@@ -413,38 +412,6 @@ ui_require_jquery_file ('autocomplete');
 	
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
-	function changeIcons() {
-		icon = $("#icon_path :selected").val();
-
-		$("#icon_without_status").attr("src", "images/spinner.png");
-		$("#icon_default").attr("src", "images/spinner.png");
-		$("#icon_ok").attr("src", "images/spinner.png");
-		$("#icon_bad").attr("src", "images/spinner.png");
-		$("#icon_warning").attr("src", "images/spinner.png");
-		
-		if (icon.length == 0) {
-			$("#icon_without_status").attr("style", "display:none;");
-			$("#icon_default").attr("style", "display:none;");
-			$("#icon_ok").attr("style", "display:none;");
-			$("#icon_bad").attr("style", "display:none;");
-			$("#icon_warning").attr("style", "display:none;");
-		}
-		else {
-			$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-			$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-			$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
-			$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
-			$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
-			$("#icon_without_status").attr("style", "");
-			$("#icon_default").attr("style", "");
-			$("#icon_ok").attr("style", "");
-			$("#icon_bad").attr("style", "");
-			$("#icon_warning").attr("style", "");
-		}
-		
-		//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
-	}
-	
 	function get_n_conf_files(idAgents) {
 
 	}
@@ -454,7 +421,6 @@ $(document).ready (function () {
 		jQuery.each ($("#id_agents option:selected"), function (i, val) {
 			idAgents.push($(val).val());
 		});
-				
 		jQuery.post ("ajax.php",
 				{"page" : "godmode/massive/massive_edit_agents",
 				"get_n_conf_files" : 1,
@@ -522,4 +488,36 @@ $(document).ready (function () {
 		recursion: function() {return recursion}
 	});
 });
+
+function changeIcons() {
+	icon = $("#icon_path :selected").val();
+
+	$("#icon_without_status").attr("src", "images/spinner.png");
+	$("#icon_default").attr("src", "images/spinner.png");
+	$("#icon_ok").attr("src", "images/spinner.png");
+	$("#icon_bad").attr("src", "images/spinner.png");
+	$("#icon_warning").attr("src", "images/spinner.png");
+	
+	if (icon.length == 0) {
+		$("#icon_without_status").attr("style", "display:none;");
+		$("#icon_default").attr("style", "display:none;");
+		$("#icon_ok").attr("style", "display:none;");
+		$("#icon_bad").attr("style", "display:none;");
+		$("#icon_warning").attr("style", "display:none;");
+	}
+	else {
+		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
+		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
+		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
+		$("#icon_without_status").attr("style", "");
+		$("#icon_default").attr("style", "");
+		$("#icon_ok").attr("style", "");
+		$("#icon_bad").attr("style", "");
+		$("#icon_warning").attr("style", "");
+	}
+	
+	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
+}
 </script>

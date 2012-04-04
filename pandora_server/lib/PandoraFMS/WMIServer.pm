@@ -189,7 +189,10 @@ sub data_consumer ($$) {
 	# Regexp
 	if ($module->{'snmp_community'} ne ''){
 		my $filter = $module->{'snmp_community'};
-		$module_data = ($module_data =~ /$filter/) ? 1 : 0;
+		eval {
+			no warnings;
+			$module_data = ($module_data =~ /$filter/) ? 1 : 0;
+		};
 	}
 
 	my $utimestamp = time ();

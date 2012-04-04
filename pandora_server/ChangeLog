@@ -1,3 +1,8 @@
+2012-04-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/WMIServer.pm: Merged from trunk. Put a regexp that
+	  could crash the server inside an eval. Fixes bug #3509354.
+
 2012-04-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Fixed the

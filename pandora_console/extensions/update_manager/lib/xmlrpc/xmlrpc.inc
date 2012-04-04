@@ -1048,7 +1048,7 @@
 			$this->proxy_pass = $proxypassword;
 			$this->proxy_authtype = $proxyauthtype;
 		}
-
+		
 		/**
 		* Enables/disables reception of compressed xmlrpc responses.
 		* Note that enabling reception of compressed responses merely adds some standard
@@ -1064,7 +1064,7 @@
 			else
 				$this->accepted_compression = array($compmethod);
 		}
-
+		
 		/**
 		* Enables/disables http compression of xmlrpc request.
 		* Take care when sending compressed requests: servers might not support them
@@ -1076,7 +1076,7 @@
 		{
 			$this->request_compression = $compmethod;
 		}
-
+		
 		/**
 		* Adds a cookie to list of cookies that will be sent to server.
 		* NB: setting any param but name and value will turn the cookie into a 'version 1' cookie:
@@ -1105,7 +1105,7 @@
 				$this->cookies[$name]['version'] = 0;
 			}
 		}
-
+		
 		/**
 		* Directly set cURL options, for extra flexibility
 		* It allows eg. to bind client to a specific IP interface / address
@@ -1115,7 +1115,7 @@
 		{
 			$this->extracurlopts = $options;
 		}
-
+		
 		/**
 		* Set user-agent string that will be used by this client instance
 		* in http headers sent to the server
@@ -1124,7 +1124,7 @@
 		{
 			$this->user_agent = $agentstring;
 		}
-
+		
 		/**
 		* Send an xmlrpc request
 		* @param mixed $msg The message object, or an array of messages for using multicall, or the complete xml representation of a request
@@ -1134,7 +1134,7 @@
 		* @access public
 		*/
 		function& send($msg, $timeout=0, $method='')
-		{				
+		{
 			// if user deos not specify http protocol, use native method of this client
 			// (i.e. method set during call to constructor)
 			if($method == '')
@@ -1155,10 +1155,10 @@
 				$n->payload = $msg;
 				$msg = $n;
 			}
-
+			
 			// where msg is an xmlrpcmsg
 			$msg->debug=$this->debug;
-
+			
 			if($method == 'https')
 			{
 				$r =& $this->sendPayloadHTTPS(
@@ -1226,7 +1226,7 @@
 			
 			return $r;
 		}
-
+		
 		/**
 		* @access private
 		*/
@@ -1238,13 +1238,13 @@
 			{
 				$port=80;
 			}
-
+			
 			// Only create the payload if it was not created previously
 			if(empty($msg->payload))
 			{
 				$msg->createPayload($this->request_charset_encoding);
 			}
-
+			
 			$payload = $msg->payload;
 			// Deflate request body and set appropriate request headers
 			if(function_exists('gzdeflate') && ($this->request_compression == 'gzip' || $this->request_compression == 'deflate'))
@@ -1410,9 +1410,9 @@
 				
 			$r =& $msg->parseResponse($ipd, false, $this->return_type);
 			return $r;
-
+		
 		}
-
+		
 		/**
 		* @access private
 		*/
@@ -1426,7 +1426,7 @@
 				$proxyusername, $proxypassword, $proxyauthtype, 'https', $keepalive, $key, $keypass);
 			return $r;
 		}
-
+		
 		/**
 		* Contributed by Justin Miller <justin@voxel.net>
 		* Requires curl to be built into PHP
@@ -1454,7 +1454,7 @@
 					return $r;
 				}
 			}
-
+			
 			if($port == 0)
 			{
 				if($method == 'http')
@@ -1466,7 +1466,7 @@
 					$port = 443;
 				}
 			}
-
+			
 			// Only create the payload if it was not created previously
 			if(empty($msg->payload))
 			{

@@ -30,14 +30,14 @@ function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $prox
 	$msg = new xmlrpcmsg ($function, $parameters);
 	
 	$client = new xmlrpc_client($server_path, $server_host, $server_port);
-
+	
 	$client->setProxy($proxy, $proxy_port, $proxy_user, $proxy_pass);
 	
 	if (defined ('XMLRPC_DEBUG'))
 		$client->setDebug (XMLRPC_DEBUG);
 	
 	$result = $client->send ($msg, XMLRPC_TIMEOUT, '');
-
+	
 	if (! $result) {
 		trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$client->errstr);
 		return 0;
@@ -52,7 +52,7 @@ function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $prox
 			trigger_error ('<strong>Open Update Manager</strong> XML-RPC error. '.$result->faultString ());
 			return 0;
 	}
-
+	
 	return $result;
 }
 
@@ -75,17 +75,17 @@ function um_xml_rpc_unpack_package ($package_xml_rpc) {
 	if ($package_xml_rpc->kindOf () != 'struct') {
 		return false;
 	}
-
+	
 	$package = new stdClass ();
 	$value = $package_xml_rpc->structeach ();
 	while ($value) {
 		$package->$value['key'] = $value[1]->scalarval ();
 		$value = $package_xml_rpc->structeach ();
 	}
-
+	
 	if (! isset ($package->updates))
 		return $package;
-
+	
 	$package->updates = array ();
 	$updates = $package_xml_rpc->structmem ('updates');
 	$size = $updates->arraysize ();
@@ -94,44 +94,44 @@ function um_xml_rpc_unpack_package ($package_xml_rpc) {
 		$update->id_update_package = $package->id;
 		array_push ($package->updates, $update);
 	}
-
+	
 	return $package;
 }
 
 function um_client_check_latest_update ($settings, $user_key) {
 	$params = array (new xmlrpcval ($settings->customer_key, 'string'),
-				new xmlrpcval ($user_key, 'string'),
-				new xmlrpcval ($settings->current_update, 'int'));
-
+		new xmlrpcval ($user_key, 'string'),
+		new xmlrpcval ($settings->current_update, 'int'));
+	
 	$result = um_xml_rpc_client_call ($settings->update_server_host,
-			$settings->update_server_path,
-			$settings->update_server_port,
-			$settings->proxy,
-			$settings->proxy_port,
-			$settings->proxy_user,
-			$settings->proxy_pass,
-			'get_latest_package', $params);
-				
+		$settings->update_server_path,
+		$settings->update_server_port,
+		$settings->proxy,
+		$settings->proxy_port,
+		$settings->proxy_user,
+		$settings->proxy_pass,
+		'get_latest_package', $params);
+	
 	if ($result == false) {
 		return $result;
 	}
 
 	$value = $result->value ();
-
+	
 	if ($value->kindOf () == 'scalar') {
 		/* No new updates */
 		return $value->scalarval ();
 	}
 	$package = um_xml_rpc_unpack_package ($value);
-
+	
 	return $package;
 }
 
 function um_client_get_package ($settings, $user_key) {
 	$params = array (new xmlrpcval ($settings->customer_key, 'string'),
-				new xmlrpcval ($user_key, 'string'),
-				new xmlrpcval ($settings->current_update, 'int'));
-
+		new xmlrpcval ($user_key, 'string'),
+		new xmlrpcval ($settings->current_update, 'int'));
+	
 	$result = um_xml_rpc_client_call ($settings->update_server_host,
 			$settings->update_server_path,
 			$settings->update_server_port,
@@ -157,23 +157,23 @@ function um_client_get_package ($settings, $user_key) {
 
 function um_client_db_save_package ($package, $settings) {
 	$fields = array ('id' => $package->id,
-			'description' => $package->description,
-			'timestamp' => $package->timestamp);
-
+		'description' => $package->description,
+		'timestamp' => $package->timestamp);
+	
 	um_client_db_connect($settings);
-
+	
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate_package', $fields);
 	
 	if($result === false) {
 		return false;
 	}
-
+	
 	return true;
 }
 
 function um_client_db_save_update ($update) {	
 	$fields = get_object_vars ($update);
-
+	
 	$fields['data'] = base64_encode($fields['data']);
 	
 	if(isset($fields['data_rollback'])) {
@@ -189,7 +189,7 @@ function um_client_db_save_update ($update) {
 	}
 	
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate', $fields);
-
+	
 	if($result === false) {
 		return false;
 	}
@@ -232,7 +232,7 @@ function um_client_create_update_file ($data, $md5path_name) {
 function um_client_apply_update_database (&$update) {
 	if ($update->type == 'db_data') {
 		$exists = db_get_value('COUNT(*)', $update->db_table, $update->db_field, $update->db_field_value);
-
+		
 		/* If it exists, it failed. */
 		if ($exists != 0) {
 			return false;
@@ -241,7 +241,7 @@ function um_client_apply_update_database (&$update) {
 	
 	$query_array = explode(';',um_data_decode($update->data));
 	$result = db_process_sql($query_array[0]);
-
+	
 	if ($result === false) {
 		//echo $result->getMessage ();
 		return false;
@@ -254,15 +254,18 @@ function um_client_apply_update (&$update, $settings, $force = true) {
 		// We use the Pandora Home dir of config to code files
 		$filename = HOME_DIR.'/'.$update->filename;
 		$success = um_client_apply_update_file ($update, $filename, $force);
-	} else if ($update->type == 'binary') {
+	}
+	else if ($update->type == 'binary') {
 		$filename = $settings->updating_binary_path.'/'.$update->filename;
 		$success = um_client_apply_update_file ($update, $filename);
-	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
+	}
+	else if ($update->type == 'db_data' || $update->type == 'db_schema') {
 		//mysql_select_db ($settings->dbname);
 		//mysql_connect ($settings->dbhost, $settings->dbuser, $settings->dbpass);
 		um_component_db_connect ();
 		$success = um_client_apply_update_database ($update);
-	} else {
+	}
+	else {
 		return false;
 	}
 	
@@ -277,10 +280,12 @@ function um_client_rollback_update_file (&$update, $destiny_filename) {
 	if (! isset ($update->data_rollback))
 		return true;
 	
-	$result = file_put_contents ($destiny_filename, um_data_decode ($update->data_rollback));
+	$result = file_put_contents ($destiny_filename,
+		um_data_decode ($update->data_rollback));
 	
 	if ($result === false)
 		return false;
+	
 	return true;
 }
 
@@ -288,13 +293,16 @@ function um_client_rollback_update (&$update, $settings) {
 	if ($update->type == 'code') {
 		$filename = $settings->updating_code_path.'/'.$update->filename;
 		$success = um_client_rollback_update_file ($update, $filename);
-	} else if ($update->type == 'binary') {
+	}
+	else if ($update->type == 'binary') {
 		$filename = $settings->updating_binary_path.'/'.$update->filename;
 		$success = um_client_rollback_update_file ($update, $filename);
-	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
+	}
+	else if ($update->type == 'db_data' || $update->type == 'db_schema') {
 		db_process_sql_rollback();
 		$success = true;
-	} else {
+	}
+	else {
 		return false;
 	}
 	
@@ -335,11 +343,11 @@ function um_client_get_files ($dir_path) {
 		else {
 			$files[$element][] = $dir_path;
 		}
-			
+		
 		$cont++;
 	}
 	closedir($dir);
-
+	
 	return $files;
 }
 
@@ -347,20 +355,22 @@ function um_client_print_update ($update, $settings) {
 	if(isset($update->id)) {
 		echo 'Update #'.$update->id;
 	}
-
+	
 	echo '<ul>';
 	echo '<li><em>Type</em>: '.$update->type.'</li>';
 	if ($update->type == 'code' || $update->type == 'binary') {
 		if ($update->type == 'code') {
 			$realpath = HOME_DIR.'/'.$update->filename;
-		} else {
+		}
+		else {
 			$realpath = $settings->updating_binary_path.'/'.$update->filename;
 		}
 		echo '<li><em>Filename</em>: '.$update->filename.'</li>';
 		echo '<li><em>Realpath</em>: '.$realpath.'</li>';
 		echo '<li><em>Checksum</em>: '.$update->checksum.'</li>';
 		echo '<li><em>Writable</em>: '.(is_writable ($realpath) ? 'yes' : '<strong>no</strong>').'</li>';
-	} else {
+	}
+	else {
 		if(isset($update->db_table))
 			echo '<li><em>Table</em>: '.$update->db_table.'</li>';
 		if(isset($update->db_field))
@@ -374,12 +384,12 @@ function um_client_print_update ($update, $settings) {
 
 function um_package_info_from_paths ($tmpDir) {
 	$f = @fopen($tmpDir.'info_package', "r");
-
+	
 	if ($f !== false) {
 		$f_content = fread($f, filesize($tmpDir.'info_package'));
 		fclose($f);
 		$f_array = array();
-	
+		
 		unset($f_content->status);
 		
 		return json_decode($f_content);
@@ -410,7 +420,7 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 			$sql_data_file = '02_package_'.$num_package.'_data.oracle.sql';
 			break;
 	}
-
+	
 	foreach($file_paths as $file_name => $paths) {
 		if($file_name == $sql_data_file && $type == 'sql') {
 			$filesize = filesize($tmpDir.$sql_data_file);
@@ -423,9 +433,9 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 			$f_content = fread($f, $filesize);
 			fclose($f);
 			$f_array = array();
-	
+			
 			$settings = um_db_load_settings ();
-
+			
 			$f_array = explode(chr(10).chr(10),$f_content);
 			foreach($f_array as $f_line) {
 				if($f_line != '') {
@@ -438,14 +448,14 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 					$update[$i]->id_update_package = $num_package;
 					$i++;
 				}
-			}		
+			}
 		}
 		elseif($file_name == $sql_schema_file && $type == 'sql') {
 			$f = fopen($tmpDir.$sql_schema_file, "r");
 			$f_content = fread($f, filesize($tmpDir.$sql_schema_file));
 			fclose($f);
 			$f_array = array();
-
+			
 			$f_array = explode(chr(10).chr(10),$f_content);
 			foreach($f_array as $f_line) {
 				if($f_line != '') {
@@ -456,7 +466,7 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 					$update[$i]->id_update_package = $num_package;
 					$i++;
 				}
-			}		
+			}
 		}
 		else {
 			foreach($paths as $path) {
@@ -465,11 +475,11 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 				fclose($f);
 				// Delete the first character "/"
 				$path = substr($path,2);
-
+				
 				$update[$i]->filename = preg_replace('/\s/','',$path).$file_name;
 				//$f_content = file_get_contents($tmpDir.$type.preg_replace('/\s/','',$path).$file_name);
 				$data = um_data_encode($f_content);
-
+				
 				$update[$i]->data = $data;
 				$update[$i]->type = $type;
 				$update[$i]->previous_checksum = '';
@@ -486,11 +496,11 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 	$applied_updates = array ();
 	$rollback = false;
 	
-		
-	if(!is_object($package)) {
+	
+	if (!is_object($package)) {
 		return false;
 	}
-
+	
 	if(!$update_offline) {
 		um_client_db_connect ($settings);
 		um_component_db_connect ();
@@ -502,10 +512,10 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 				$rollback = true;
 				break;
 			}
-
+			
 			array_push ($applied_updates, $update);
 		}
-
+		
 		if ($rollback) {
 			foreach ($applied_updates as $update) {
 				$success = um_client_rollback_update ($update, $settings);
@@ -514,11 +524,11 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 		}
 		
 		um_client_db_save_package ($package, $settings);
-
+		
 		foreach ($package->updates as $update) {
 			um_client_db_save_update ($update);
 		}
-
+		
 		um_db_update_setting ('current_update', $package->id);
 		
 		db_process_sql_commit();
@@ -529,7 +539,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 		$zip = new ZipArchive;
 		$temp_files = array();
 		$md5_dir = md5("update_".$package->id);
-
+		
 		// Get the temp path on the server
 		$path_script = explode('/',$_SERVER['SCRIPT_FILENAME']);
 		$path_server = explode('/',$_SERVER['DOCUMENT_ROOT']);
@@ -545,15 +555,15 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 		$tempDirServer = '/'.implode('/',$path_script).'/temp/';
 				
 		$package_name = 'package_'.$package->id.'.oum';
-        $zipArchive = $tempDir . $package_name;
-        $zipArchiveServer = $tempDirServer . $package_name;
-    	
+		$zipArchive = $tempDir . $package_name;
+		$zipArchiveServer = $tempDirServer . $package_name;
+		
 		@unlink($zipArchive);
-
-    	if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
+		
+		if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
 			foreach ($package->updates as $update) {
 				$filename = '';
-
+				
 				switch($update->type) {
 					case 'code':
 					case 'binary':
@@ -581,7 +591,6 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 						}
 						break;
 				}
-				
 			}
 			// Creating the schema sql script
 			$success = um_client_create_update_file (um_data_encode($schema_queries), $tempDir."schema_db");
@@ -596,11 +605,11 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 			// Creating the package info file
 			$package_info = $package;
 			unset($package_info->updates);
-
+			
 			$success = um_client_create_update_file (um_data_encode(json_encode($package_info)), $tempDir."info_package");
 			$zip->addFile($tempDir."info_package", 'info_package');
 			$temp_files[] = $tempDir."info_package";
-		
+			
 			$zip->close();
 			
 			// Clean temp files
@@ -609,18 +618,18 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 			}
 			
 			chdir($tempDir);
-       
+			
 			header("Content-type: application/zip");
-            header("Content-Disposition: attachment; filename=".$package_name);
-            header("Pragma: no-cache");
-            header("Expires: 0");
-            readfile($package_name);
-
+			header("Content-Disposition: attachment; filename=" 
+				. $package_name);
+			header("Pragma: no-cache");
+			header("Expires: 0");
+			readfile($package_name);
+			
 			return true;
 		}
-
 	}
-
+	
 	return true;
 }
 
@@ -629,20 +638,21 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 	db_process_sql_begin();
 	do {
 		$package = um_client_get_package ($settings, $user_key);
-
+		
 		if ($package === false || $package === true) {
 			break;
 		}
 		
 		$success = um_client_upgrade_to_package ($package, $settings, $force);
-
+		
 		if (! $success)
 			break;
-
+		
 		$settings->current_update = $package->id;
 		
-	} while (1);
-
+	}
+	while (1);
+	
 	/* Break on error, when there are no more packages on the server (server return true)
 		or on auth failure (server return false) */
 }
@@ -650,8 +660,9 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 function um_client_db_connect (&$settings = NULL) {
 	if (! $settings)
 		$settings = um_db_load_settings ();
-		
+	
 	//mysql_select_db (DB_NAME);
-	mysql_connect ($settings->dbhost, $settings->dbuser, $settings->dbpass);
+	mysql_connect ($settings->dbhost, $settings->dbuser,
+		$settings->dbpass);
 }
 ?>

@@ -23,7 +23,7 @@ function update_settings_database_connection () {
 	global $config;
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-			$config['dbpass'], $config['dbname']);
+		$config['dbpass'], $config['dbname']);
 	um_db_update_setting ('dbname', $config['dbname']);
 	um_db_update_setting ('dbuser', $config['dbuser']);
 	um_db_update_setting ('dbpass', $config['dbpass']);
@@ -36,6 +36,16 @@ function pandora_update_manager_install () {
 	if (isset ($config['update_manager_installed'])) {
 		$update_server_path = db_get_value('value', 'tupdate_settings', '`key`', 'update_server_path');
 		
+		
+		////OVERWRITE EVER THE UPDATE SERVER PATH.//////////////////////
+		/*
+		The server path is ever the value from PHP. And you wonder
+		"Why?". Yes, I wonder too. And it is for when the user update
+		the Pandora Console PHP files to new version, this conf param
+		"automagic" change to new path for the new updates in the new
+		version.
+		*/
+		
 		if ($update_server_path != '/pandoraupdate4/server.php') {
 			$result = db_process_sql_update('tupdate_settings',
 				array('value' => '/pandoraupdate4/server.php'),
@@ -45,6 +55,7 @@ function pandora_update_manager_install () {
 				db_pandora_audit("ERROR update extension", "Error in the update the extension 'update manager' when update the 'update_server_path' field.");
 			}
 		}
+		////////////////////////////////////////////////////////////////
 		
 		/* Already installed */
 		return;
@@ -70,19 +81,20 @@ function pandora_update_manager_install () {
 			return;
 	}
 	
-	$values = array("token" => "update_manager_installed", "value" => 1);
+	$values = array("token" => "update_manager_installed",
+		"value" => 1);
 	db_process_sql_insert('tconfig', $values);
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-			$config['dbpass'], $config['dbname']);
+		$config['dbpass'], $config['dbname']);
 	um_db_update_setting ('updating_code_path',
-			dirname ($_SERVER['SCRIPT_FILENAME']));
+		dirname ($_SERVER['SCRIPT_FILENAME']));
 	update_settings_database_connection ();
 }
 
 function pandora_update_manager_uninstall () {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
@@ -115,7 +127,7 @@ function pandora_update_manager_main () {
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	load_update_manager_lib ();
 	update_settings_database_connection ();
 	
@@ -131,10 +143,10 @@ function pandora_update_manager_login () {
 		
 		db_process_sql_insert('tconfig', array('token' => 'autoupdate', 'value' => 0));
 	}
-
+	
 	if ($config["autoupdate"] == 0)
 		return;
-
+	
 	load_update_manager_lib ();
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
@@ -142,7 +154,7 @@ function pandora_update_manager_login () {
 	$settings = um_db_load_settings ();
 	
 	$user_key = get_user_key ($settings);
-
+	
 	$package = um_client_check_latest_update ($settings, $user_key);
 	
 	if (is_object ($package)) {

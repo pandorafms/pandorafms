@@ -1,3 +1,15 @@
+2012-04-04 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* extensions/update_manager.php,
+	extensions/update_manager/load_updatemanager.php,
+	extensions/update_manager/lib/xmlrpc/xmlrpc.inc,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_manager/main.php: cleaned source code style.
+	
+	* extensions/update_manager/settings.php: disabled the path because this
+	conf it is burned with each update of PHP files.
+
 2012-04-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/javascript/pandora_modules.js

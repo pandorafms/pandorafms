@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-			$config['dbpass'], $config['dbname']);
+	$config['dbpass'], $config['dbname']);
 
 $settings = um_db_load_settings ();
 $error = '';
@@ -48,8 +48,9 @@ if ($update_package) {
 		
 		um_client_upgrade_to_latest ($user_key, $force);
 		/* TODO: Add a new in tnews */
-
-	} else {
+	
+	}
+	else {
 		echo '<h5 class="error">' . __('This is an Enterprise feature. Visit %s for more information.', '<a href="http://pandorafms.com">http://pandorafms.com</a>') . '</h5>';
 	}
 }
@@ -59,9 +60,9 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 	if($extension != '.oum') {
 		$error = '<h5 class="error">'.__('Incorrect file extension').'</h5>';
 	}
-	else {	
+	else {
 		$tempDir = sys_get_temp_dir()."/tmp_oum/";
-				
+		
 		$zip = new ZipArchive;
 		if ($zip->open($_FILES["fileloaded"]['tmp_name']) === TRUE) {
 			$zip->extractTo($tempDir);
@@ -74,9 +75,9 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 		if ($package === false) {
 			$error = '<h5 class="error">'.__('Error, the file package is empty or corrupted.').'</h5>';
 		}
-		else {	
+		else {
 			$settings = um_db_load_settings ();
-	
+			
 			if($settings->current_update >= $package->id) {
 				$error = '<h5 class="error">'.__('Your system version is higher or equal than the loaded package').'</h5>';
 			}
@@ -89,7 +90,7 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 						$binary_paths[$key][$index] = preg_replace('/^'.$tempDir_scaped.'/', ' ', $path);
 					}
 				}
-	
+				
 				$code_paths = um_client_get_files ($tempDir."code/");
 				
 				foreach($code_paths as $key => $paths) {
@@ -107,7 +108,7 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 						}
 					}
 				}
-	
+				
 				$updates_binary = array();
 				$updates_code = array();
 				$updates_sql = array();
@@ -121,21 +122,21 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 				if(!empty($sql_paths)) {
 					$updates_sql = um_client_update_from_paths ($sql_paths, $tempDir, $package->id, 'sql');
 				}
-	
+				
 				um_delete_directory($tempDir);
-	
+				
 				$updates= array_merge((array) $updates_binary, (array) $updates_code, (array) $updates_sql);
-	
+				
 				$package->updates = $updates;
-	
+				
 				$settings = um_db_load_settings ();
-	
+				
 				if(um_client_upgrade_to_package ($package, $settings, true)) {
-						echo '<h5 class="suc">'.__('Successfully upgraded').'.</h5>';
-						$settings = um_db_load_settings ();
+					echo '<h5 class="suc">'.__('Successfully upgraded').'.</h5>';
+					$settings = um_db_load_settings ();
 				}
 				else {
-						echo '<h5 class="error">'.__('Cannot be upgraded').'</h5>';
+					echo '<h5 class="error">'.__('Cannot be upgraded').'</h5>';
 				}
 			}
 		}
@@ -154,16 +155,19 @@ $package = um_client_check_latest_update ($settings, $user_key);
 if (check_acl ($config['id_user'], 0, 'PM')) {
 	if ($package === true) {
 		echo '<h5 class="suc">'.__('Your system is up-to-date').'.</h5>';
-	} elseif ($package === false) {
+	}
+	elseif ($package === false) {
 		echo '<h5 class="error">'.__('Server authorization rejected').'</h5>';
-	} elseif ($package === 0) {
+	}
+	elseif ($package === 0) {
 		echo '<h5 class="error">'.__('Server connection failed').'</h5>';
-	} else {
+	}
+	else {
 		echo '<h5 class="suc">'.__('There\'s a new update for Pandora FMS').'</h5>';
-	
+		
 		$table->width = '98%';
 		$table->data = array ();
-
+		
 		$table->data[0][0] = '<strong>'.__('Id').'</strong>';
 		$table->data[0][1] = $package->id;
 	

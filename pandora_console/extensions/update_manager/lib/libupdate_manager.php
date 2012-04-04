@@ -58,7 +58,7 @@ function um_db_update_setting ($key, $value = '') {
 		return NULL;
 	}
 	
-	if($result > 0) {
+	if ($result > 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$result = db_process_sql_update(DB_PREFIX.'tupdate_settings', array('value' => $value), array('`key`' => $key));
@@ -99,7 +99,10 @@ function um_db_update_setting ($key, $value = '') {
 }
 
 function um_db_get_latest_package_by_status ($id_package = '0', $status = 'public') {
-	$result = db_process_sql('SELECT COUNT(*) FROM '.DB_PREFIX.'tupdate_package WHERE status = "'.$status.'" AND id > ' . $id_package . ' ORDER BY id DESC LIMIT 1');
+	$result = db_process_sql('SELECT COUNT(*)
+		FROM '.DB_PREFIX.'tupdate_package
+		WHERE status = "'.$status.'" AND id > ' . $id_package . '
+		ORDER BY id DESC LIMIT 1');
 	
 	if($result === false) {
 		echo '<strong>Error reading latest package with status ' . $status . '</strong><br />';
@@ -148,7 +151,7 @@ function um_db_update_package ($id_package, $description = '', $status = 'disabl
 	return true;
 }
 
-function um_db_delete_package ($id_package) {	
+function um_db_delete_package ($id_package) {
 	$package = um_db_get_package ($id_package);
 	
 	if ($package->status != 'development') {

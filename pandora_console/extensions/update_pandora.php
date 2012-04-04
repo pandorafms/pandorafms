@@ -177,7 +177,7 @@ function update_pandora_administration() {
 }
 
 extensions_add_godmode_function('update_pandora_administration');
-extensions_add_godmode_menu_option (__('Pandora Update'), 'PM','gsetup');
+extensions_add_godmode_menu_option (__('Pandora Update'), 'PM');
 
 extensions_add_main_function('update_pandora_operation');
 extensions_add_operation_menu_option(__('Pandora Update'));

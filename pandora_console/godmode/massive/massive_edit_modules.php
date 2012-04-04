@@ -36,12 +36,27 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	/* List of fields which can be updated */
 	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
-		'disabled', 'post_process', 'snmp_community', 'tcp_send', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
+		'disabled', 'post_process', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
+		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
 	$values = array ();
+
+	// Specific snmp reused fields
+	if(get_parameter ('tcp_send', '') == 3) {
+		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
+		if($plugin_user_snmp != '') {
+			$values['plugin_user'] = $plugin_user_snmp;
+		}
+		$plugin_pass_snmp = get_parameter ('plugin_pass_snmp', '');
+		if($plugin_pass_snmp != '') {
+			$values['plugin_pass'] = $plugin_pass_snmp;
+		}
+	}
+	
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
-		if ($value != '')
+		if ($value != '') {
 			$values[$field] = $value;
+		}
 	}
 	
 	if (strlen(get_parameter('history_data')) > 0) {
@@ -339,6 +354,19 @@ $table->data['edit35'][0] = '';
 $table->data['edit35'][1] = '';
 $table->data['edit35'][2] = __('SNMP version');
 $table->data['edit35'][3] = html_print_select ($snmp_versions, 'tcp_send', '', '', __('No change'), '', true, false, false, '');
+$table->data['edit36'][0] = __('Auth user');
+$table->data['edit36'][1] = html_print_input_text ('plugin_user_snmp', '', '', 15, 60, true);
+$table->data['edit36'][2] = __('Auth password') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
+$table->data['edit36'][3] = html_print_input_text ('plugin_pass_snmp', '', '', 15, 60, true);
+$table->data['edit37'][0] = __('Privacy method');
+$table->data['edit37'][1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'custom_string_1', '', '', __('No change'), '', true);
+$table->data['edit37'][2] = __('Privacy pass') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
+$table->data['edit37'][3] = html_print_input_text ('custom_string_2', '', '', 15, 60, true);
+$table->data['edit38'][0] = __('Auth method');
+$table->data['edit38'][1] = html_print_select(array('MD5' => __('MD5'), 'SHA' => __('SHA')), 'plugin_parameter', '', '', __('No change'), '', true);
+$table->data['edit38'][2] = __('Security level');
+$table->data['edit38'][3] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privacy method'),
+	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'custom_string_3', '', '', __('No change'), '', true);
 
 $table->data['edit4'][0] = __('Value');
 $table->data['edit4'][1] = '<em>'.__('Min.').'</em>';
@@ -463,7 +491,7 @@ $(document).ready (function () {
 		);
 	});
 	function show_form() {
-		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "100%");
+		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "300px");
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").not ("#checkbox-recursion").removeAttr ("checked");
 		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
@@ -474,7 +502,7 @@ $(document).ready (function () {
 		$("#module_name").html('<?php echo __('None'); ?>');
 		$("#agents").html('<?php echo __('None'); ?>');
 		$("#module").html('<?php echo __('None'); ?>');
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit36, tr#delete_table-edit37, tr#delete_table-edit38, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
 		$('#module_type').val(-1);
@@ -527,6 +555,15 @@ $(document).ready (function () {
 		else if(selector == 'modules') {
 			$(".select_agents_row").css('display', 'none');
 			$(".select_modules_row").css('display', '');
+		}
+	});
+	
+	$('#tcp_send').change(function() {
+		if($(this).val() == 3) {
+			$("tr#delete_table-edit36, tr#delete_table-edit37, tr#delete_table-edit38").show();
+		}
+		else {
+			$("tr#delete_table-edit36, tr#delete_table-edit37, tr#delete_table-edit38").hide();
 		}
 	});
 	

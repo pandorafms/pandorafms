@@ -1,3 +1,13 @@
+2012-04-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/pandora_modules.js
+	 include/functions.php
+	 extensions/snmp_explorer.php
+	 godmode/agentes/module_manager_editor.php: Fixed several errors in
+	 snmp walk and snmp explorer functionality.
+	 
+	 Merged bugfix from trunk.
+
 2012-04-04  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_edit_agents.php

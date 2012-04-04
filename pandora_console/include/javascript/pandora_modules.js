@@ -260,6 +260,7 @@ function configure_modules_form () {
 			"snmp_walk" : 1,
 			"ip_target" : $("#text-ip_target").fieldValue (),
 			"snmp_community" : $("#text-snmp_community").fieldValue (),
+			"snmp_port" : $("#text-tcp_port").val(),
 			"snmp_version": $('#snmp_version').val(),
 			"snmp3_auth_user": $('input[name=snmp3_auth_user]').val(),
 			"snmp3_security_level": $('#snmp3_security_level').val(),

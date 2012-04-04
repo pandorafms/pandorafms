@@ -47,17 +47,17 @@ function get_user_key ($settings) {
 		global $config;
 		
 		$user_key = exec (escapeshellcmd ($settings->keygen_path.
-				' '.$settings->customer_key.' '.$config['dbhost'].
-				' '.$config['dbuser'].' '.$config['dbpass'].
-				' '.$config['dbname']));
+			' '.$settings->customer_key.' '.$config['dbhost'].
+			' '.$config['dbuser'].' '.$config['dbpass'].
+			' '.$config['dbname']));
 		
 		return $user_key;
 	}
 	
 	/* Free users.
-	   We only want to know this for statistics records.
-	   Feel free to disable this extension if you want.
-	 */
+	We only want to know this for statistics records.
+	Feel free to disable this extension if you want.
+	*/
 	global $build_version;
 	global $pandora_version; 
 

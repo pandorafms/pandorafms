@@ -150,6 +150,7 @@ function update_pandora_administration() {
 			html_print_image('images/spinner.gif');
 			echo '</h2>';
 			echo '<h2 style="display: none;" id="title_installed_update_pandora">' . __('Installed <span class="package_name">package</span> in progress') . '</h2>';
+			echo '<h2 style="display: none;" id="title_error_update_pandora">' . __('Fail download <span class="package_name">package</span>') . '</h2>';
 			echo '<br /><br />';
 			echo "<div id='progress_bar_img'>";
 				echo progress_bar(0, 300, 20, 0 . '%', 1, false, "#00ff00");

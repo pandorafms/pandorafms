@@ -1,5 +1,11 @@
 2012-04-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/update_pandora/functions.ajax.php,
+	extensions/update_pandora/functions.php, extensions/update_pandora.php:
+	started to join to the openupdatemanager and some fixeds.
+
+2012-04-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* extensions/update_manager.php,
 	extensions/update_manager/load_updatemanager.php,
 	extensions/update_manager/lib/xmlrpc/xmlrpc.inc,

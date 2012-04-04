@@ -16,83 +16,146 @@
 
 function update_pandora_get_packages_online_ajax() {
 	global $config;
+	global $conf_update_pandora;
+	if (empty($conf_update_pandora))
+		$conf_update_pandora = update_pandora_get_conf();
+	
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager_client.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/load_updatemanager.php");
 	
 	$last = get_parameter('last', 0);
 	
-	//TODO Make all code, at the moment I uknown the method to get list.
-		global $conf_update_pandora;
-		if (empty($conf_update_pandora))
-			$conf_update_pandora = update_pandora_get_conf();
-		$conf_update_pandora['last_contact'] = time();
-		update_pandora_update_conf();
+	db_clean_cache();
+	$settings = um_db_load_settings ();
+	$user_key = get_user_key ($settings);
 	
-		$last++;
-		
-		sleep(1);
-		
-		$return = array('correct' => 0);
+	$params = array(
+		new xmlrpcval((int)$conf_update_pandora['last_contact'], 'int'),
+		new xmlrpcval($user_key, 'string'),
+		new xmlrpcval($settings->customer_key, 'string'));
+	
+	$result = um_xml_rpc_client_call ('192.168.70.202',
+		'upd/server/pandora-server.php',
+		'80',
+		'',
+		'',
+		'',
+		'',
+		'get_lastest_package_update_open',
+		$params);
+	
+	if ($result == false) {
 		$return['last'] = $last;
+		$return['correct'] = 0;
+		$return['package'] = __('Error download packages.');
+		$return['end'] = 1;
+	}
+	else {
+		$value = $result->value();
+		$package = $value->scalarval();
+		
 		$return['correct'] = 1;
-		$return['package'] = uniqid();
-		$return['end'] = 0;
-		if ($last == 1) {
-			$return['end'] = 1;
+		if (empty($package)) {
+			$return['correct'] = 0;
 		}
 		
-		echo json_encode($return);
-	////////////////////////////////////////////////////////////////////
+		$return['last'] = $last;
+		$return['package'] = $package;
+		$return['end'] = 1;
+	}
+	
+	echo json_encode($return);
 }
 
 function update_pandora_download_package() {
 	global $config;
+	global $conf_update_pandora;
+	if (empty($conf_update_pandora))
+		$conf_update_pandora = update_pandora_get_conf();
+	
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager_client.php");
 	
 	$dir = $config['attachment_store'] .  '/update_pandora/';
 	
 	$package = get_parameter('package', '');
 	
-	//TODO Make all code, at the moment.
-	$url = 'http://sourceforge.net/projects/pandora/files/Pandora%20FMS%204.0.1/Pandora_FMS_4.0.1_OpenSource.i686-0.0.3.vmx.tar.gz/download';
-	$url = 'http://sourceforge.net/projects/pandora/files/Nightly/Tarball/pandorafms_console-4.1dev-120330.tar.gz/download';
-	$url = 'http://sourceforge.net/projects/pandora/files/Nightly/Tarball/pandorafms_server-4.1dev-120330.tar.gz/download';
-	preg_match_all('/Tarball\/(.*.tar.gz)/i', $url, $targz);
-	$targz = $targz[1][0];
+	$params = array(new xmlrpcval($package, 'string'));
 	
-	$url = 'http://127.0.0.1/test000.tar.gz';
-	$url = 'http://127.0.0.1/test001.tar.gz';
-	$targz = 'test001.tar.gz';
-	////////////////////////////////////////////////////////////////////
-	$file = fopen($dir . $targz, "w");
+	$result = um_xml_rpc_client_call ('192.168.70.166',
+		'upd/server/example-server.php',
+		'80',
+		'',
+		'',
+		'',
+		'',
+		'get_lastest_package_url_update_open',
+		$params);
 	
-	$mch = curl_multi_init();
-	$c = curl_init();
-	
-	curl_setopt($c, CURLOPT_URL, $url);
-	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
-	curl_setopt($c, CURLOPT_FILE, $file);
-	
-	curl_multi_add_handle($mch ,$c);
-	$running = null;
-	do {
-		curl_multi_exec($mch ,$running);
-		$info = curl_getinfo ($c);
-		
-		$data = array();
-		$data['filename'] = $targz;
-		$data['size'] = $info['download_content_length'];
-		$data['size_download'] = $info['size_download'];
-		$data['speed_download'] = $info['speed_download'];
-		
-		$info_json = json_encode($data);
+	if ($result == false) {
+		$info_json = json_encode(array('correct' => 0));
 		
 		file_put_contents('/tmp/' . $package . '.info.txt', $info_json, LOCK_EX);
 		
-		sleep(1);
+		$return = array('correct' => 0);
 	}
-	while($running > 0);
+	else {
+		$conf_update_pandora['last_contact'] = time();
+		update_pandora_update_conf();
+		
+		$value = $result->value();
+		$package_url = $value->scalarval();
+		
+		if (empty($package_url)) {
+			$info_json = json_encode(array('correct' => 0));
+			
+			file_put_contents('/tmp/' . $package . '.info.txt', $info_json, LOCK_EX);
+			
+			$return = array('correct' => 0);
+		}
+		else {
+			$targz = $package;
+			$url = $package_url;
+			
+			$file = fopen($dir . $targz, "w");
+			
+			$mch = curl_multi_init();
+			$c = curl_init();
+			
+			curl_setopt($c, CURLOPT_URL, $url);
+			curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($c, CURLOPT_FILE, $file);
+			
+			curl_multi_add_handle($mch ,$c);
+			$running = null;
+			do {
+				curl_multi_exec($mch ,$running);
+				$info = curl_getinfo ($c);
+				
+				$data = array();
+				$data['correct'] = 1;
+				$data['filename'] = $targz;
+				$data['size'] = $info['download_content_length'];
+				$data['size_download'] = $info['size_download'];
+				$data['speed_download'] = $info['speed_download'];
+				
+				$info_json = json_encode($data);
+				
+				file_put_contents('/tmp/' . $package . '.info.txt', $info_json, LOCK_EX);
+				
+				sleep(1);
+			}
+			while($running > 0);
+			
+			$return = array('correct' => 1);
+		}
+	}
 	
-	
-	$return = array('correct' => 1);
 	echo json_encode($return);
 }
 
@@ -114,35 +177,41 @@ function update_pandora_check_download_package() {
 	
 	$info = json_decode($info_json, true);
 	
-	$percent = 0;
-	$size_download = 0;
-	$size = 0;
-	$speed_download = 0;
-	if ($info['size_download'] > 0) {
-		$percent = format_numeric(
-			($info['size_download'] / $info['size']) * 100, 2);
-		$return['percent'] = $percent;
-		$size_download = $info['size_download'];
-		$size = $info['size'];
-		$speed_download = $info['speed_download'];
-		
-		$return['info_download'] = sprintf($return['info_download'],
-			format_for_graph($size_download, 2), format_for_graph($size, 2),
-			format_for_graph($speed_download, 2));
+	if ($info['correct'] == 0) {
+		$return['correct'] = 0;
+		unlink('/tmp/' . $package . '.info.txt');
 	}
 	else {
-		$return['info_download'] = __('<b>Starting: </b> connect to server');
+		$percent = 0;
+		$size_download = 0;
+		$size = 0;
+		$speed_download = 0;
+		if ($info['size_download'] > 0) {
+			$percent = format_numeric(
+				($info['size_download'] / $info['size']) * 100, 2);
+			$return['percent'] = $percent;
+			$size_download = $info['size_download'];
+			$size = $info['size'];
+			$speed_download = $info['speed_download'];
+			
+			$return['info_download'] = sprintf($return['info_download'],
+				format_for_graph($size_download, 2), format_for_graph($size, 2),
+				format_for_graph($speed_download, 2));
+		}
+		else {
+			$return['info_download'] = __('<b>Starting: </b> connect to server');
+		}
+		
+		$img = progress_bar($percent, 300, 20, $percent . '%', 1, false, "#00ff00");
+		$return['progres_bar'] = $img;
+		preg_match_all('/src=[\'\"]([^\"^\']*)[\'\"]/i', $img, $attr);
+		$return['progres_bar_src'] = $attr[1];
+		preg_match_all('/alt=[\'\"]([^\"^\']*)[\'\"]/i', $img, $attr);
+		$return['progres_bar_alt'] = $attr[1];
+		preg_match_all('/title=[\'\"]([^\"^\']*)[\'\"]/i', $img, $attr);
+		$return['progres_bar_title'] = $attr[1];
+		$return['filename'] = $info['filename'];
 	}
-	
-	$img = progress_bar($percent, 300, 20, $percent . '%', 1, false, "#00ff00");
-	$return['progres_bar'] = $img;
-	preg_match_all('/src=[\'\"]([^\"^\']*)[\'\"]/i', $img, $attr);
-	$return['progres_bar_src'] = $attr[1];
-	preg_match_all('/alt=[\'\"]([^\"^\']*)[\'\"]/i', $img, $attr);
-	$return['progres_bar_alt'] = $attr[1];
-	preg_match_all('/title=[\'\"]([^\"^\']*)[\'\"]/i', $img, $attr);
-	$return['progres_bar_title'] = $attr[1];
-	$return['filename'] = $info['filename'];
 	
 	echo json_encode($return);
 }

@@ -91,7 +91,7 @@ function update_pandora_update_conf() {
 	$return = db_process_sql_update('tconfig', $values,
 		array('token' => 'update_pandora_conf_last_installed'));
 	$values = array('value' => $conf_update_pandora['last_contact']);
-	$return = db_process_sql_insert('tconfig', $values,
+	$return = db_process_sql_update('tconfig', $values,
 		array('token' => 'update_pandora_conf_last_contact'));
 	
 	return $return;
@@ -177,6 +177,9 @@ function update_pandora_print_javascript() {
 						else {
 							ajax_get_online_package_list();
 						}
+					}
+					else {
+						$(".spinner_row", "#online_packages").remove();
 					}
 				}
 			});
@@ -287,6 +290,15 @@ function update_pandora_print_javascript_admin() {
 							install_package(package, data['filename']);
 						}
 					}
+					else {
+						$("#title_downloading_update_pandora").hide();
+						$("#title_error_update_pandora").show();
+						$("#progress_bar_img").hide();
+						
+						$("#info_text").html('');
+						
+						$("#button_close_download").show();
+					}
 				}
 			});
 		}
@@ -383,6 +395,9 @@ function update_pandora_print_javascript_admin() {
 						else {
 							ajax_get_online_package_list_admin();
 						}
+					}
+					else {
+						$(".spinner_row", "#online_packages").remove();
 					}
 				}
 			});

@@ -1,5 +1,12 @@
 2012-04-08  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/db/postgresql.php, include/functions_config.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_edit_modules.php: Fixed SQL error with
+	PostgreSQL.
+
+2012-04-08  Junichi Satoh  <junichi@rworks.jp>
+
 	* godmode/admin_access_logs.php: Fixed SQL error with PostgreSQL.
 
 2012-04-04 Miguel de Dios  <miguel.dedios@artica.es>

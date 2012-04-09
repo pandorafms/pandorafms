@@ -492,9 +492,9 @@ function get_report_types () {
 	
 	
 	
-	$types['prediction_date'] = array('optgroup' => __('Forecating'),
+	$types['prediction_date'] = array('optgroup' => __('Forecasting'),
 			'name' => __('Prediction date'));
-	$types['projection_graph'] = array('optgroup' => __('Forecating'),
+	$types['projection_graph'] = array('optgroup' => __('Forecasting'),
 			'name' => __('Projection graph'));
 	
 	

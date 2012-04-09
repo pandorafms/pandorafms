@@ -1,3 +1,8 @@
+2012-04-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reports.php: Fixed "forecating"
+	typo error merged from trunk
+
 2012-04-04 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/update_pandora/functions.ajax.php,

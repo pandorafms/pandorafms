@@ -457,6 +457,11 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 			var agent_name = ui.item.name;
 			var agent_id = ui.item.id;
 			var server_name = ui.item.ip;
+			if (agent_name.indexOf("(") != -1){
+				var server_name_temp = agent_name.split('(');
+				server_name_temp1 = server_name_temp[1].split(')');
+				server_name = server_name_temp1[0];
+			}
 			
 			//Put the name
 			$(this).val(agent_name);

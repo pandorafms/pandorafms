@@ -1,5 +1,13 @@
 2012-04-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/javascript/pandora.js
+	 include/ajax/agent.php: Fixed autocomplete agent functionality when
+	 metaconsole is activated.
+	 
+	 Fixes: #3514539
+
+2012-04-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/menu.php: Fixed first entry in godmode menu.
 
 2012-04-09  Sergio Martin <sergio.martin@artica.es>

@@ -264,7 +264,7 @@ switch ($action) {
 				break;
 			case 'alert_report_agent':
 				$description = $item['description'];
-				$idAgent = $item['id_agent'];
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente' => $item['id_agent']));
 				$period = $item['period'];
 				break;
 			case 'event_report_agent':
@@ -469,8 +469,21 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
 			<td style="">
 				<?php
+				if ($config['metaconsole'] == 1) {
+					$connection = metaconsole_get_connection($server_name);
+					$agent_name = '';
+
+					if (metaconsole_load_external_db($connection))
+						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));				
+						
+					//Restore db connection
+					metaconsole_restore_db();
+				}
+				else {
+					$agent_name = agents_get_name ($idAgent);
+				}
 				html_print_input_hidden('id_agent', $idAgent) .
-				html_print_input_text_extended ('agent', agents_get_name ($idAgent),
+				html_print_input_text_extended ('agent', $agent_name,
 					'text-agent', '', 30, 100, false, '',
 					array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 					. ui_print_help_tip(__("Type at least two characters to search"), false);

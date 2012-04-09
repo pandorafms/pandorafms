@@ -15,6 +15,8 @@
 // Load global vars
 global $config;
 
+require_once("update_pandora.php");
+
 check_login ();
 
 um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
@@ -23,7 +25,41 @@ um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 $settings = um_db_load_settings ();
 $error = '';
 
-ui_print_page_header (__('Update manager'), "images/extensions.png", false, "", false, "" );
+$url = 'index.php?sec=extensions&sec2=extensions/update_manager';
+
+$update_free = (bool)get_parameter('update_free', false);
+
+$buttons_active = array();
+if ($update_free) {
+	$buttons_active['updatemanager'] = false;
+	$buttons_active['updatefree'] = true;
+}
+else {
+	$buttons_active['updatemanager'] = true;
+	$buttons_active['updatefree'] = false;
+}
+
+$buttons = array(
+	'updatefree' => array('active' => $buttons_active['updatefree'],
+			'text' => '<a href="'.$url.'&amp;update_free=1">' . 
+				html_print_image("images/upd.png", true, array ("title" => __('Update free'))) .'</a>'),
+	'updatemanager' => array('active' => $buttons_active['updatemanager'],
+			'text' => '<a href="'.$url.'&amp;update_manager=1">' . 
+				html_print_image("images/package.png", true, array ("title" => __('Update manager'))) .'</a>'));
+
+
+ui_print_page_header (__('Update manager'), "images/extensions.png",
+	false, "", false, $buttons);
+
+if ($update_free) {
+	//Call to update pandora free.
+	
+	update_pandora_administration();
+	
+	//Don't call the code of update manager.
+	return;
+}
+
 
 if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';

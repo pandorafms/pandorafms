@@ -14,10 +14,21 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-require_once('update_pandora/functions.php');
+require_once('lib/functions.php');
 
 if (is_ajax ()) {
-	require_once('update_pandora/functions.ajax.php');
+	global $config;
+	
+	check_login ();
+	
+	if (! check_acl ($config["id_user"], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access event viewer");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	require_once('lib/functions.ajax.php');
 	
 	$get_packages_online = (bool) get_parameter('get_packages_online');
 	$download_package = (bool) get_parameter('download_package');
@@ -39,51 +50,18 @@ if (is_ajax ()) {
 	return;
 }
 
-function update_pandora_operation() {
-	global $conf_update_pandora;
-	
-	ui_print_page_header(__('Update Pandora'), "images/extensions.png");
-	
-	if (!update_pandora_check_installation()) {
-		ui_print_error_message(__('First execution of Update Pandora or lost configuration.'));
-		update_pandora_installation();
-	}
-	
-	$conf_update_pandora = update_pandora_get_conf();
-	
-	if (empty($conf_update_pandora['last_installed'])) {
-		ui_print_error_message(__('Your Pandora FMS Console never have been update.'));
-	}
-	else {
-		$text = sprintf(__('The last package for Pandora FMS Console is %s'),
-			$conf_update_pandora['last_installed']);
-		ui_print_success_message($text);
-	}
-	
-	echo "<h3>" . __('Downloaded Packages') . "</h3>";
-	$list_downloaded_packages = update_pandora_get_list_downloaded_packages('operation');
-	$table = null;
-	$table->width = '80%';
-	$table->head = array(__('Packages'));
-	$table->data = $list_downloaded_packages;
-	html_print_table($table);
-	
-	echo "<h3>" . __('Online Packages') . "</h3>";
-	$table = null;
-	$table->id = 'online_packages';
-	$table->width = '80%';
-	$table->head = array(__('Packages'));
-	$table->rowclass[0] = 'spinner_row';
-	$table->data[0][0] = __('Get list online Packages') . html_print_image('images/spinner.gif', true);
-	html_print_table($table);
-	
-	update_pandora_print_javascript();
-}
-
 function update_pandora_administration() {
+	global $config;
 	global $conf_update_pandora;
 	
-	ui_print_page_header(__('Update Pandora'), "images/extensions.png", false, "", true);
+	check_login ();
+	
+	if (! check_acl ($config["id_user"], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access event viewer");
+		require ("general/noaccess.php");
+		return;
+	}
 	
 	if (!update_pandora_check_installation()) {
 		ui_print_error_message(__('First execution of Update Pandora'));
@@ -176,10 +154,4 @@ function update_pandora_administration() {
 	
 	update_pandora_print_javascript_admin();
 }
-
-extensions_add_godmode_function('update_pandora_administration');
-extensions_add_godmode_menu_option (__('Pandora Update'), 'PM','gsetup');
-
-extensions_add_main_function('update_pandora_operation');
-extensions_add_operation_menu_option(__('Pandora Update'));
 ?>

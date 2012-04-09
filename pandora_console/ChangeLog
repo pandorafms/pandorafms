@@ -1,3 +1,17 @@
+2012-04-09 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_ui.php: cleaned source code style.
+	
+	* extensions/update_pandora,
+	extensions/update_pandora/functions.ajax.php,
+	extensions/update_pandora/functions.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/functions.php: moved this files into the
+	extension update_manager.
+
+	* extensions/update_manager/main.php: added hook (as a tab) the 
+	"update_pandora".
+
 2012-04-09  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reports.php: Fixed "forecating"

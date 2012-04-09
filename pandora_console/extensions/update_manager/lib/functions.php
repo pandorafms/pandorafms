@@ -189,7 +189,7 @@ function update_pandora_print_javascript() {
 }
 
 function update_pandora_print_javascript_admin() {
-	$extension_php_file = 'extensions/update_pandora';
+	$extension_php_file = 'extensions/update_manager/update_pandora';
 	
 	?>
 	<script type="text/javascript">

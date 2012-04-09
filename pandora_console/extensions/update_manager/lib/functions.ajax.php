@@ -38,13 +38,13 @@ function update_pandora_get_packages_online_ajax() {
 		new xmlrpcval($user_key, 'string'),
 		new xmlrpcval($settings->customer_key, 'string'));
 	
-	$result = um_xml_rpc_client_call ('192.168.70.202',
-		'upd/server/pandora-server.php',
-		'80',
-		'',
-		'',
-		'',
-		'',
+	$result = @um_xml_rpc_client_call($settings->update_server_host,
+		$settings->update_server_path,
+		$settings->update_server_port,
+		$settings->proxy,
+		$settings->proxy_port,
+		$settings->proxy_user,
+		$settings->proxy_pass,
 		'get_lastest_package_update_open',
 		$params);
 	
@@ -86,13 +86,15 @@ function update_pandora_download_package() {
 	
 	$params = array(new xmlrpcval($package, 'string'));
 	
-	$result = um_xml_rpc_client_call ('192.168.70.166',
-		'upd/server/example-server.php',
-		'80',
-		'',
-		'',
-		'',
-		'',
+	$settings = um_db_load_settings ();
+	
+	$result = @um_xml_rpc_client_call ($settings->update_server_host,
+		$settings->update_server_path,
+		$settings->update_server_port,
+		$settings->proxy,
+		$settings->proxy_port,
+		$settings->proxy_user,
+		$settings->proxy_pass,
 		'get_lastest_package_url_update_open',
 		$params);
 	
@@ -257,8 +259,6 @@ function update_pandora_check_install_package() {
 	
 	$package = get_parameter('package', '');
 	$filename = get_parameter('filename', '');
-	
-	//TODO MAYBE THE FILE OF FILES DON'T EXIST AT THE MOMENT
 	
 	$files = @file('/tmp/' . $package . '.files.info.txt');
 	if (empty($files))

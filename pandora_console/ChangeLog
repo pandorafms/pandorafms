@@ -1,5 +1,15 @@
 2012-04-09  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/jquery.pandora.controls.js
+	godmode/groups/group_list.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_add_action_alerts.php: Improved the 
+	template actions sections into massive operations 
+	deleting compound deprecated alerts and showing only the
+	agents with templates in the combos
+
+2012-04-09  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reports.php: Fixed "forecating"
 	typo error
 

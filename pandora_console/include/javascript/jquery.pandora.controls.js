@@ -9,6 +9,7 @@
 		this.defaults = {
 			agentSelect: "select#id_agent",
 			recursion: 0,
+			filter_agents_json: "",
 			loading: "#agent_loading",
 			callbackBefore: dummyFunc,
 			callbackPre: dummyFunc,
@@ -38,6 +39,7 @@
 						"get_group_agents" : 1,
 						"id_group" : this.value,
 						"recursion" : config.recursion,
+						"filter_agents_json" : config.filter_agents_json,
 						"disabled" : config.disabled ? 1 : 0,
 					};
 

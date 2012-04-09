@@ -19,12 +19,12 @@
  * @subpackage UI
  */
 
-require_once ($config['homedir'].'/include/functions_agents.php');
-require_once($config['homedir'] . "/include/functions_modules.php");
-require_once($config['homedir'] . "/include/functions.php");
-require_once ($config['homedir'] . '/include/functions_groups.php');
-require_once ($config['homedir'] . '/include/functions_users.php');
-require_once ($config['homedir'] . '/include/functions_html.php');
+require_once($config['homedir'].'/include/functions_agents.php');
+require_once($config['homedir'] . '/include/functions_modules.php');
+require_once($config['homedir'] . '/include/functions.php');
+require_once($config['homedir'] . '/include/functions_groups.php');
+require_once($config['homedir'] . '/include/functions_users.php');
+require_once($config['homedir'] . '/include/functions_html.php');
 
 
 /**
@@ -110,11 +110,14 @@ function printSmallFont ($string, $return = true) {
 	$length = strlen($str);
 	if ($length >= 30) {
 		$size = 0.7;
-	} elseif ($length >= 20) {
+	}
+	elseif ($length >= 20) {
 		$size = 0.8;
-	} elseif ($length >= 10) {
+	}
+	elseif ($length >= 10) {
 		$size = 0.9;
-	} elseif ($length < 10) {
+	}
+	elseif ($length < 10) {
 		$size = 1;
 	}
 	
@@ -123,7 +126,8 @@ function printSmallFont ($string, $return = true) {
 	$s .= '</span>';
 	if ($return) {
 		return $s;
-	} else {
+	}
+	else {
 		echo $s;
 	}
 }
@@ -227,32 +231,36 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 	
 	if (isset ($option["html_attr"])) {
 		$attributes = $option["html_attr"];
-	} else {
+	}
+	else {
 		$attributes = "";
 	}
 	
 	if (isset ($option["tag"])) {
 		$tag = $option["tag"];
-	} else {
+	}
+	else {
 		$tag = "span";
 	}
 	
 	if (empty ($option["style"])) {
 		$style = 'style="white-space:nowrap;"';
-	} else {
+	}
+	else {
 		$style = 'style="'.$option["style"].'"';
 	}
 	
 	if (!empty ($option["prominent"])) {
 		$prominent = $option["prominent"];
-	} else {
+	}
+	else {
 		$prominent = $config["prominent_time"];
 	}
-				
+	
 	if (!is_numeric ($unixtime)) {
 		$unixtime = strtotime ($unixtime);
 	}
-
+	
 	//prominent_time is either timestamp or comparation
 	if ($unixtime <= 0) {
 		$title = __('Unknown').'/'.__('Never');
@@ -273,16 +281,19 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 	
 	$output = '<'.$tag;
 	switch ($tag) {
-	default:
-		//Usually tags have title attributes, so by default we add, then fall through to add attributes and data
-		$output .= ' title="'.$title.'"';
-	case "h1":
-	case "h2":
-	case "h3":
-		//Above tags don't have title attributes
-		$output .= ' '.$attributes.' '.$style.'>'.$data.'</'.$tag.'>';
+		default:
+			//Usually tags have title attributes, so by default we add,
+			//then fall through to add attributes and data
+			$output .= ' title="'.$title.'"';
+			break;
+		case "h1":
+		case "h2":
+		case "h3":
+			//Above tags don't have title attributes
+			$output .= ' '.$attributes.' '.$style.'>'.$data.'</'.$tag.'>';
+			break;
 	}
-
+	
 	if ($return)
 		return $output;
 	
@@ -393,7 +404,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false) {
 	$subfolter = 'os_icons';
 	if ($networkmap) {
-		$subfolter = 'networkmap';		
+		$subfolter = 'networkmap';
 	}
 	
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
@@ -467,14 +478,14 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = 
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
 function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '', $agent_style = false) {
-
+	
 	global $config;
-
+	
 	$actionText = "";
 	require_once ("include/functions_alerts.php");
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 	$id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
-
+	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if ($agent) {
 			$index = array('policy' => 0, 'standby' => 1, 'force_execution' => 2, 'agent_name' => 3, 'module_name' => 4,
@@ -537,7 +548,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 			$data[$index['policy']] = '';
 		else {
 			$img = 'images/policies.png';
-				
+			
 			$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
 				html_print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
@@ -602,7 +613,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	$data[$index['description']] .= $disabledHtmlStart . ui_print_truncate_text (io_safe_input ($description), 35, false, true, true, '[&hellip;]', 'font-size: 7.1pt') . $disabledHtmlEnd;
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $compound);
-
+	
 	if (!empty($actions)) {
 		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
 		foreach ($actions as $action) {
@@ -618,12 +629,12 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		if ($actionDefault != "")
 		$actionText = db_get_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
 	}
-
+	
 	$data[$index['action']] = $actionText;
 	
 	$data[$index['last_fired']] = $disabledHtmlStart . ui_print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;
 	
-
+	
 	$status = STATUS_ALERT_NOT_FIRED;
 	$title = "";
 	
@@ -648,7 +659,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 			$data[$index['validate']] = html_print_checkbox ("validate[]", $alert["id"], false, true);
 		}
 	}
-
+	
 	return $data;
 }
 
@@ -676,14 +687,15 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	
 	$font_size_mod = "";
 	
-	if ($fontsize > 0){
+	if ($fontsize > 0) {
 		$font_size_mod = "style='font-size: ".$fontsize."px'";
 	}
 	$string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
 	
 	if ($return === false) {
 		echo $string;
-	} 
+	}
+	
 	return $string;
 }
 
@@ -705,50 +717,50 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
 	$template = alerts_get_alert_template ($id_alert_template);
 	
 	switch ($template['type']) {
-	case 'equal':
-		/* Do not translate the HTML attributes */
-		$output .= __('The alert would fire when the value is <span id="value"></span>');
-		break;
-	case 'not_equal':
-		/* Do not translate the HTML attributes */
-		$output .= __('The alert would fire when the value is not <span id="value"></span>');
-		break;
-	case 'regex':
-		if ($template['matches_value'])
+		case 'equal':
 			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value matches <span id="value"></span>');
-		else
+			$output .= __('The alert would fire when the value is <span id="value"></span>');
+			break;
+		case 'not_equal':
 			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
-		$value = $template['value'];
-		break;
-	case 'max_min':
-		if ($template['matches_value'])
+			$output .= __('The alert would fire when the value is not <span id="value"></span>');
+			break;
+		case 'regex':
+			if ($template['matches_value'])
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value matches <span id="value"></span>');
+			else
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
+			$value = $template['value'];
+			break;
+		case 'max_min':
+			if ($template['matches_value'])
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
+			else
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
+			break;
+		case 'max':
 			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
-		else
+			$output .= __('The alert would fire when the value is over <span id="max"></span>');
+			
+			break;
+		case 'min':
 			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
-		break;
-	case 'max':
-		/* Do not translate the HTML attributes */
-		$output .= __('The alert would fire when the value is over <span id="max"></span>');
-		
-		break;
-	case 'min':
-		/* Do not translate the HTML attributes */
-		$output .= __('The alert would fire when the value is under <span id="min"></span>');
-		
-		break;
-	case 'warning':
-		/* Do not translate the HTML attributes */
-		$output .= __('The alert would fire when the module is in warning status');
-		
-		break;
-	case 'critical':
-		/* Do not translate the HTML attributes */
-		$output .= __('The alert would fire when the module is in critical status');
-		break;
+			$output .= __('The alert would fire when the value is under <span id="min"></span>');
+			
+			break;
+		case 'warning':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the module is in warning status');
+			
+			break;
+		case 'critical':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the module is in critical status');
+			break;
 	}
 	
 	if ($print_values) {
@@ -1069,7 +1081,6 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	//Then add each script as necessary
 	$loaded = array ('');
-	
 	foreach ($config['jquery'] as $name => $filename) {
 		if (in_array ($name, $loaded))
 			continue;
@@ -1786,17 +1797,17 @@ function ui_get_full_url ($url = '') {
 
 function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
 	$title = io_safe_input_html($title);
-	if (($icon == "") && ($godmode == true)){
+	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/setup.png";
 	}
-
-	if (($icon == "") && ($godmode == false)){
+	
+	if (($icon == "") && ($godmode == false)) {
 		$icon = "images/comments.png";
 	}
-
-	if ($godmode == true){
+	
+	if ($godmode == true) {
 		$type = "nomn";
-		$type2 = "menu_tab_frame";		
+		$type2 = "menu_tab_frame";
 		$separator_class = "separator";
 	} 
 	else {
@@ -1804,17 +1815,17 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		$type2 = "menu_tab_frame_view";
 		$separator_class = "separator_view";
 	}
-
+	
 	
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
-
-
+	
+	
 	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= $title;
 	if ($help != "")
 		$buffer .= "&nbsp;&nbsp;" . ui_print_help_icon ($help, true);
 	$buffer .= '</li></ul></div>';
-
+	
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
 		foreach ($options as $key => $option) {

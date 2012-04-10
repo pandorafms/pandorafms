@@ -350,38 +350,29 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 				continue;
 			}
 			
-			//Check if was displayed inside other menu
-			if ($extension["operation_menu"]["fatherId"] != '' || $extension["operation_menu"]["sec2"] == "") {
-				continue;
-			}
-
 			$extension_menu = $extension["operation_menu"];
-			$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
-			$sub[$extension_menu["sec2"]]["refr"] = 0;
+			
+			//Check if was displayed inside other menu
+			if ($extension["operation_menu"]["fatherId"] == '') {
+
+				$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
+				$sub[$extension_menu["sec2"]]["refr"] = 0;
+			} else {
+				if (array_key_exists('fatherId',$extension_menu)) {
+					if (strlen($extension_menu['fatherId']) > 0) {
+						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
+						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
+						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
+						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["sec"] = 'extensions';
+						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["extension"] = true;
+						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["enterprise"] = $extension['enterprise'];
+						$menu[$extension_menu['fatherId']]['hasExtensions'] = true;
+					}
+			}
+			}
 		}
 		
 		$menu["extensions"]["sub"] = $sub;
-		
-		/**
-		 * Add the extensions
-		 */
-		 foreach($config['extensions'] as $extension) {
-			$operationModeMenu = $extension['operation_menu'];
-			if ($operationModeMenu == null)
-				continue;
-			
-			if (array_key_exists('fatherId',$operationModeMenu)) {
-				if (strlen($operationModeMenu['fatherId']) > 0) {
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["text"] = __($operationModeMenu['name']);
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["refr"] = 0;
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["icon"] = $operationModeMenu['icon'];
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["sec"] = 'extensions';
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["extension"] = true;
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["enterprise"] = $extension['enterprise'];
-					$menu[$operationModeMenu['fatherId']]['hasExtensions'] = true;
-				}
-			}
-		}
 	}
 }
 

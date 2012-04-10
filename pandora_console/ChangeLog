@@ -1,3 +1,8 @@
+2012-04-10 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/menu.php,
+	godmode/menu.php: Fixed an error printing extensions in new menus.
+
 2012-04-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/jquery.pandora.controls.js

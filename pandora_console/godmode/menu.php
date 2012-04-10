@@ -218,35 +218,37 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 				continue;
 			}
 			
-			//Check if was displayed inside other menu
-			//Check the ACL for this user
 			$extmenu = $extension['godmode_menu'];
-			if ($extension['godmode_menu']["fatherId"] != '' 
-				|| ! check_acl ($config['id_user'], 0, $extmenu['acl']) 
-				|| $extension["godmode_menu"]["sec2"] == "") {
+			
+			//Check the ACL for this user
+			if (! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
 				continue;
 			}
 			
-			$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
-			$sub[$extmenu["sec2"]]["refr"] = 0;
-			
-			if (array_key_exists('fatherId',$extmenu)) {
-				if (strlen($extmenu['fatherId']) > 0) {
-					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-					if ($extmenu["name"] != 'DB interface'){
-						if (!empty($config['refr'])){
-							$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
-						}
-						else{
-							$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
-						}
-					}	
-					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
-					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
-					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
-					$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
-					
-					$menu[$extmenu['fatherId']]['hasExtensions'] = true;
+			//Check if was displayed inside other menu
+			if ($extension['godmode_menu']["fatherId"] == '') {	
+				$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
+				$sub[$extmenu["sec2"]]["refr"] = 0;
+			} else {
+						
+				if (array_key_exists('fatherId',$extmenu)) {
+					if (strlen($extmenu['fatherId']) > 0) {
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
+						if ($extmenu["name"] != 'DB interface'){
+							if (!empty($config['refr'])){
+								$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
+							}
+							else{
+								$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
+							}
+						}	
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
+						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
+						
+						$menu[$extmenu['fatherId']]['hasExtensions'] = true;
+					}
 				}
 			}
 		}

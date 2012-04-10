@@ -192,7 +192,13 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 
-	$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.', false));
+	if(is_array($id_agent)) {
+		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.', false));
+	}
+	else {
+		$extra_sql = '';
+	}
+	
 	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
 		$extra_sql = '';
 	}else if ($extra_sql != '') {

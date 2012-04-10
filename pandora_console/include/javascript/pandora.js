@@ -539,15 +539,19 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 function period_select_init(name) {
 	// Manual mode is hidden by default
 	$('#'+name+'_manual').hide();
+	$('#'+name+'_default').show();
 	
 	// If the text input is empty, we put on it 5 minutes by default
 	if($('#text-'+name+'_text').val() == '') {
 		$('#text-'+name+'_text').val(300);
-		$('#'+name+'_select option:eq(1)').attr('selected', true);
+		if($('#'+name+'_select option:eq(0)').val() == 0) {
+			$('#'+name+'_select option:eq(2)').attr('selected', 'selected');
+		}
+		else {
+			$('#'+name+'_select option:eq(1)').attr('selected', 'selected');
+		}
 	}
 	else if($('#text-'+name+'_text').val() == 0) {
-		$('#'+name+'_default').toggle();
-		$('#'+name+'_manual').toggle();
 		$('#'+name+'_units option:last').removeAttr('selected');
 	}
 
@@ -563,8 +567,7 @@ function period_select_init(name) {
  */
 function period_select_events(name) {
 	$('.'+name+'_toggler').click(function() {
-		$('#'+name+'_default').toggle();
-		$('#'+name+'_manual').toggle();
+		toggleBoth(name);
 		$('#text-'+name+'_text').focus();
 	});
 	
@@ -576,6 +579,8 @@ function period_select_events(name) {
 		
 		if(value == -1) {
 			value = 300;
+			toggleBoth(name);
+			$('#text-'+name+'_text').focus();
 		}
 		
 		$('.'+name).val(value); 
@@ -600,9 +605,48 @@ function period_select_events(name) {
 		
 		$('#text-'+name+'_text').val(cleanValue);
 		
-		$('#'+name+'_select option:eq(0)').attr('selected', 'selected');
+		selectFirst(name+'_select');
 		calculateSeconds(name);
 	});
+}
+
+/**
+ * 
+ * Select first option of a select if is not value=0
+ * 
+ */
+
+function selectFirst(name) {
+	if($('#'+name+' option:eq(0)').val() == 0) {
+		$('#'+name+' option:eq(1)').attr('selected', 'selected');
+	}
+	else {
+		$('#'+name+' option:eq(0)').attr('selected', 'selected');
+	}
+}
+
+/**
+ * 
+ * Toggle default and manual controls of period control
+ * It is done with css function because hide and show do not
+ * work properly when the divs are into a hiden div
+ * 
+ */
+	
+function toggleBoth(name) {
+	if($('#'+name+'_default').css('display') == 'none') {
+		$('#'+name+'_default').css('display','inline');
+	}
+	else {
+		$('#'+name+'_default').css('display','none');
+	}
+	
+	if($('#'+name+'_manual').css('display') == 'none') {
+		$('#'+name+'_manual').css('display','inline');
+	}
+	else {
+		$('#'+name+'_manual').css('display','none');
+	}	
 }
 
 /**
@@ -624,6 +668,9 @@ function adjustTextUnits(name) {
 	var restPrev;
 	var unitsSelected = false;
 	$('#'+name+'_units option').each(function() {
+		if($(this).val() < 0) {
+			return;
+		}
 		var rest = $('#text-'+name+'_text').val()/$(this).val();
 		var restInt = parseInt(rest).toString();
 		if(rest != restInt && unitsSelected == false) {
@@ -641,6 +688,6 @@ function adjustTextUnits(name) {
 	}
 	
 	if($('#text-'+name+'_text').val() == 0) {
-		$('#'+name+'_units option:eq(0)').attr('selected', true);
+		selectFirst(name+'_units');
 	}
 }

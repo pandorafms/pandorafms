@@ -66,14 +66,20 @@ if (is_ajax ()) {
 		$disabled = (int) get_parameter ('disabled', 0);
 		$search = (string) get_parameter ('search', '');
 		$recursion = (int) get_parameter ('recursion', 0);
-		
+		// Ids of agents to be include in the SQL clause as id_agent IN ()
+		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
+				
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
 		}
-		
+
+		if($filter_agents_json != '') {
+			$filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
+		}
+
 		$filter['disabled'] = $disabled;
 		
 		if($search != '') {

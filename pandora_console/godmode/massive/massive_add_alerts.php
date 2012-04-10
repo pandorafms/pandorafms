@@ -133,7 +133,10 @@ $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_
 $agents = agents_get_agents();
 $table->data[1][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', false, 'width:180px;');
-$table->data[1][2] = __('Modules');
+$table->data[1][2] = __('When select agents');
+$table->data[1][2] .= '<br>';
+$table->data[1][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
+	'common', false, '', '', true);
 $table->data[1][3] = html_print_select (array(), 'module[]',	'', false, '', '', true, true, false, '', false, 'width:180px;');
 
 $templates = alerts_get_alert_templates (false, array ('id', 'name'));
@@ -221,7 +224,11 @@ $(document).ready (function () {
 			
 	$("#module").blur (function () {
 		$(this).css ("width", "180px"); 
-	});			
+	});		
+	
+	$("#modules_selection_mode").change (function() {
+		$("#id_agents").trigger('change');
+	});	
 	
 });
 /* ]]> */

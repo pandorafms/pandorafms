@@ -36,23 +36,9 @@ if (is_ajax ()) {
 			echo json_encode ('');
 			return;
 		}
-		$get_compounds = get_parameter ('get_compounds');
-		if (!$get_compounds) {
-			$alert_templates = agents_get_alerts_simple ($id_agents);
-			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
-			return;
-		} else {
-			$filter = '';
-			foreach ($id_agents as $id_agent) {
-				if ($filter != '') {
-					$filter .= ' OR ';
-				}
-				$filter .= 'id_agent=' . $id_agent;
-			}
-			$alert_compounds = alerts_get_alert_compounds ($filter, array('id', 'name'));
-			echo json_encode (index_array ($alert_compounds, 'id', 'name'));
-			return;
-		}
+		$alert_templates = agents_get_alerts_simple ($id_agents);
+		echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
+		return;
 	}
 	return;
 }
@@ -60,7 +46,6 @@ if (is_ajax ()) {
 $id_group = (int) get_parameter ('id_group');
 $id_agents = get_parameter ('id_agents');
 $id_alert_templates = (array) get_parameter ('id_alert_templates');
-$id_alert_compounds = (array) get_parameter ('id_alert_compounds');
 $recursion = get_parameter ('recursion');
 
 $delete = (bool) get_parameter_post ('delete');
@@ -69,9 +54,9 @@ if ($delete) {
 	if(empty($id_agents) || $id_agents[0] == 0)
 		ui_print_result_message (false, '', __('Could not be deleted').". ".__('No agents selected'));
 	else {
-		$action = (int) get_parameter ('action');
+		$actions = get_parameter ('action');
 		
-		if($action > 0){
+		if(!empty($actions)){
 			$agent_alerts = agents_get_alerts($id_agents);
 			
 			$alerts_agent_modules = array();
@@ -80,17 +65,8 @@ if ($delete) {
 					$alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
 				}
 			}
-			
-			$cont = 0;
-			$alerts_compound = array();
-			foreach($agent_alerts['compounds'] as $agent_alert){
-				if (in_array($agent_alert['id'], $id_alert_compounds)) {
-					$alerts_compound[$cont] = $agent_alert['id'];
-					$cont = $cont + 1;
-				}
-			}
 
-			if (empty($alerts_agent_modules) && empty($alerts_compound)) {
+			if (empty($alerts_agent_modules)) {
 				ui_print_result_message (false, '', __('Could not be deleted').". ".__('No alerts selected'));
 			} else {
 				$results = true;
@@ -100,22 +76,13 @@ if ($delete) {
 					$agent_module_actions = alerts_get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
 				
 					foreach ($agent_module_actions as $agent_module_action){
-						if($agent_module_action['id_alert_action'] == $action) {
-							$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);
-						
-							if($result === false)
-								$results = false;
-						}
-					}
-				}
-
-				foreach($alerts_compound as $alert_compound) {
-					$compound_actions = alerts_get_alert_compound_actions ($alert_compound['id'], array('id','id_alert_action'));
-					foreach ($compound_actions as $compound_action) {
-						if ($compound_action['id_alert_action'] == $action) {
-							$result = alerts_delete_alert_compound_action($compound_action['id']);
-							if($result === false)
-								$results = false;
+						foreach($actions as $action) {
+							if($agent_module_action['id_alert_action'] == $action) {
+								$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);
+							
+								if($result === false)
+									$results = false;
+							}
 						}
 					}
 				}
@@ -123,15 +90,15 @@ if ($delete) {
 				if ($results) {
 					db_pandora_audit("Masive management", "Delete alert action", false, false,
 						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-						' Alert compound: ' . $id_alert_compounds . ' Action: ' . $action);
+						' Actions: ' . implode(',',$actions));
 				}
 				else {
 					db_pandora_audit("Masive management", "Fail try to delete alert action", false, false,
 						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-						' Alert compound: ' . $id_alert_compounds . ' Action: ' . $action);
+						' Actions: ' . implode(',',$actions));
 				}
 			
-				ui_print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
+				ui_print_result_message ($results, __('Successfully deleted'), __('Could not be deleted'));
 			}
 		}
 		else {
@@ -162,12 +129,11 @@ $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
-$table->data[1][0] = __('Agents');
+$table->data[1][0] = __('Agents with templates');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
-	'id_agents[]', 0, false, '', '', true, true);
+$table->data[1][1] = html_print_select (array(),'id_agents[]', 0, false, '', '', true, true);
 
 if (empty($id_agents)) {
 	$alert_templates = '';
@@ -180,30 +146,22 @@ $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = html_print_select (index_array ($alert_templates, 'id_alert_template', 'template_name'), 'id_alert_templates[]', '', '', '', '', true, true, true, '', $alert_templates == 0);
 
-if (empty($id_agents)) {
-	$alert_compounds = '';
-} else {
-	$filter = '';
-	foreach ($id_agents as $id_agent) {
-		if ($filter != '') {
-			$filter .= ' OR ';
-		}
-		$filter .= 'id_agent=' . $id_agent;
-	}
-	$alert_compounds = alerts_get_alert_compounds ($filter, array('id', 'name'));
-}
-$table->data[3][0] = __('Alert compounds');
-$table->data[3][0] .= '<span id="compound_loading" class="invisible">';
-$table->data[3][0] .= html_print_image('images/spinner.png', true);
-$table->data[3][0] .= '</span>';
-$table->data[3][1] = html_print_select (index_array ($alert_compounds, 'id', 'name'), 'id_alert_compounds[]', '', false, '', '', true, true, true, '', $alert_compounds == 0);
-
 $actions = alerts_get_alert_actions ();
-$table->data[4][0] = __('Action');
-$table->data[4][1] = html_print_select ($actions, 'action', '', '', __('None'), 0, true);	
+$table->data[3][0] = __('Action');
+$table->data[3][1] = html_print_select ($actions, 'action[]', '', '', '', '', true, true);	
 
 echo '<form method="post" id="form_alert" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_action_alerts">';
 html_print_table ($table);
+
+$sql = 'SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo IN (SELECT id_agent_module FROM talert_template_modules)';
+$agents_with_templates = db_get_all_rows_sql($sql);
+$agents_with_templates_json = array();
+foreach($agents_with_templates as $ag) {
+	$agents_with_templates_json[] = $ag['id_agente'];
+}
+$agents_with_templates_json = json_encode($agents_with_templates_json);
+
+echo "<input type='hidden' id='hidden-agents_with_templates' value='$agents_with_templates_json'>";
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 html_print_input_hidden ('delete', 1);
@@ -226,15 +184,16 @@ $(document).ready (function () {
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});
-
+	
+	var filter_agents_json = $("#hidden-agents_with_templates").val();
+	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
 		recursion: function() {return recursion},
+		filter_agents_json: filter_agents_json,
 		callbackPost: function () {
 			var $select_template = $("#id_alert_templates").disable ();
-			var $select_compound = $("#id_alert_compounds").disable ();
 			$("option", $select_template).remove ();
-			$("option", $select_compound).remove ();
 		}
 	});
 
@@ -248,17 +207,13 @@ $(document).ready (function () {
 			idAgents.push($(val).val());
 		});
 		$("#template_loading").show();
-		$("#compound_loading").show();
 
 		var $select_template = $("#id_alert_templates").disable ();
-		var $select_compound = $("#id_alert_compounds").disable ();
 		$("option", $select_template).remove ();
-		$("option", $select_compound).remove ();
 
 		jQuery.post ("ajax.php",
 				{"page" : "godmode/massive/massive_delete_action_alerts",
 				"get_alerts" : 1,
-				"get_compounds" : 0,
 				"id_agents[]" : idAgents
 				},
 				function (data, status) {
@@ -271,26 +226,11 @@ $(document).ready (function () {
 					$select_template.enable ();
 				},
 				"json"
-			);
+		);
+	}
+	
+	$('#id_group').trigger('change');
 
-		jQuery.post ("ajax.php",
-				{"page" : "godmode/massive/massive_delete_action_alerts",
-				"get_alerts" : 1,
-				"get_compounds" : 1,
-				"id_agents[]" : idAgents
-				},
-				function (data, status) {
-					options = "";
-					jQuery.each (data, function (id, value) {
-						options += "<option value=\""+id+"\">"+value+"</option>";
-					});
-					$("#id_alert_compounds").append (options);
-					$("#compound_loading").hide ();
-					$select_compound.enable ();
-				},
-				"json"
-			);
-        }
 });
 /* ]]> */
 </script>

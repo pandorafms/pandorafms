@@ -1,3 +1,18 @@
+2012-04-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/jquery.pandora.controls.js
+	include/javascript/pandora.js
+	include/functions_agents.php
+	operation/agentes/ver_agente.php
+	godmode/groups/group_list.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/massive/massive_add_action_alerts.php: Improve
+	several massive operations merged from trunk
+
 2012-04-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_ui.php: cleaned source code style.

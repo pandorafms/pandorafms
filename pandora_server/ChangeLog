@@ -1,3 +1,8 @@
+2012-04-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Merged from trunk. Check for single tag
+	  XMLs. Fixes bug #3514207.
+
 2012-04-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/WMIServer.pm: Merged from trunk. Put a regexp that

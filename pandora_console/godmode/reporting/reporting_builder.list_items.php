@@ -270,14 +270,18 @@ foreach ($items as $item) {
 		$connection = metaconsole_get_connection($server_name);
 		if (!metaconsole_load_external_db($connection)) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
-			continue;
+			// Don't skip SLA or top N or general report items
+			if (($item['type'] != 'SLA') and ($item['type'] != 'top_n') and ($item['type'] != 'general')
+				and ($item['type'] != 'exception') and ($item['type'] != 'group_report'))
+				continue;
 		}
 	}
 	
 	if ($item['id_agent'] == 0) {
-		if ($item['id_agent_module'] == '') {
-			$row[2] = '-';
-			$row[3] = '-';
+		// Due to SLA or top N or general report items
+		if (($item['id_agent_module'] == '') or ($item['id_agent_module'] == 0)) {
+			$row[2] = '';
+			$row[3] = '';
 		}
 		else {
 			$row[2] = ui_print_truncate_text(agents_get_name(agents_get_module_id($item['id_agent_module'])), 35);
@@ -288,7 +292,7 @@ foreach ($items as $item) {
 		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 35);
 		
 		if ($item['id_agent_module'] == '') {
-			$row [3] = '-';
+			$row [3] = '';
 		}
 		else {
 			$row[3] = ui_print_truncate_text(db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module'])),35);
@@ -316,7 +320,7 @@ foreach ($items as $item) {
 	}
 	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;&nbsp;';
-	$row[6] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false" href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	
 	$table->data[] = $row;
 	$count++;

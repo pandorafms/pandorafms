@@ -1,3 +1,12 @@
+2012-04-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/ajax/reporting.ajax.php
+	 godmode/reporting/reporting_builder.list_items.php
+	 godmode/reporting/graph_builder.main.php
+	 godmode/reporting/reporting_builder.php
+	 godmode/reporting/reporting_builder.item_editor.php: Several fixes 
+	 in metaconsole reports.
+
 2012-04-10 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/menu.php,

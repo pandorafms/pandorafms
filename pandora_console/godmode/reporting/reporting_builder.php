@@ -387,7 +387,10 @@ switch ($action) {
 
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-						$values['id_agent_module'] = get_parameter('id_agent_module');
+						if (($type == 'alert_report_agent') or ($type == 'event_report_agent'))
+							$values['id_agent_module'] = '';
+						else
+							$values['id_agent_module'] = get_parameter('id_agent_module');
 						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
@@ -510,7 +513,10 @@ switch ($action) {
 
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-						$values['id_agent_module'] = get_parameter('id_agent_module');
+						if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent'))
+							$values['id_agent_module'] = '';
+						else
+							$values['id_agent_module'] = get_parameter('id_agent_module');
 						switch ($config['dbtype']) {
 							case "mysql":
 							case "postgresql":

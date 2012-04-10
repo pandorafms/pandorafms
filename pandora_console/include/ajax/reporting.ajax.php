@@ -33,6 +33,8 @@ $add_sla = get_parameter('add_sla', 0);
 $add_general = get_parameter('add_general', 0);
 $id = get_parameter('id', 0);
 $truncate_text = get_parameter ('truncate_text', 0);
+$get_metaconsole_hash_data = get_parameter('get_metaconsole_hash_data', 0);
+$get_metaconsole_server_url = get_parameter('get_metaconsole_server_url', 0);
 
 if ($delete_sla_item) {
 	$result = db_process_sql_delete('treport_content_sla_combined', array('id' => (int)$id));
@@ -135,5 +137,34 @@ if ($truncate_text) {
 	$text = get_parameter ('text', '');
 	return ui_print_truncate_text ($text, 20, true, false);
 }
+
+if ($get_metaconsole_hash_data) {
+	$server_name = get_parameter('server_name');
+	
+	enterprise_include_once('include/functions_metaconsole.php');
+	
+	$server = enterprise_hook('metaconsole_get_connection', array($server_name));
+			
+	$pwd = $server["auth_token"];            // Create HASH login info
+	$user = $config["id_user"];
+	$hashdata = $user.$pwd;
+	$hashdata = md5($hashdata);
+	$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
+
+	echo $url_hash;
+	return;
+}
+
+if ($get_metaconsole_server_url) {
+	$server_name = get_parameter('server_name');
+	
+	enterprise_include_once('include/functions_metaconsole.php');
+	
+	$server = enterprise_hook('metaconsole_get_connection', array($server_name));
+
+	echo $server["server_url"];
+	return;
+}
+
 
 ?>

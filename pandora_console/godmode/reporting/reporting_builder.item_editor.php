@@ -264,7 +264,7 @@ switch ($action) {
 				break;
 			case 'alert_report_agent':
 				$description = $item['description'];
-				$idAgent = $item['id_agent'];
+				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente' => $item['id_agent']));
 				$period = $item['period'];
 				break;
 			case 'event_report_agent':
@@ -469,11 +469,25 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
 			<td style="">
 				<?php
+				if ($config['metaconsole'] == 1) {
+					$connection = metaconsole_get_connection($server_name);
+					$agent_name = '';
+
+					if (metaconsole_load_external_db($connection))
+						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));				
+						
+					//Restore db connection
+					metaconsole_restore_db();
+				}
+				else {
+					$agent_name = agents_get_name ($idAgent);
+				}
 				html_print_input_hidden('id_agent', $idAgent) .
-					html_print_input_text_extended ('agent', agents_get_name ($idAgent), 'text-agent', '', 30, 100, false, '',
-						array('style' => 'background: url(images/lightning.png) no-repeat right;'))
-						. ui_print_help_tip(__("Type at least two characters to search"), false);
-					html_print_input_hidden ('server_name', $server_name);
+				html_print_input_text_extended ('agent', $agent_name,
+					'text-agent', '', 30, 100, false, '',
+					array('style' => 'background: url(images/lightning.png) no-repeat right;'))
+					. ui_print_help_tip(__("Type at least two characters to search"), false);
+				html_print_input_hidden ('server_name', $server_name);
 				?>
 			</td>
 		</tr>
@@ -483,7 +497,30 @@ html_print_input_hidden('id_item', $idItem);
 				<?php
 				if($idAgent) {
 					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent . " AND  delete_pending = 0";
-					html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');
+					
+					if ($config['metaconsole'] == 1) {
+						$connection = metaconsole_get_connection($server_name);
+
+						if (metaconsole_load_external_db($connection)) {
+							$agent_name_temp = db_get_all_rows_sql($sql);
+							
+							if ($agent_name_temp === false)
+								$agent_name_temp = array();
+								
+							$result_select = array();
+							foreach ($agent_name_temp as $module_element) {
+								$result_select[$module_element['id_agente_modulo']] = $module_element['nombre'];
+							}
+							
+							html_print_select($result_select, 'id_agent_module', $idAgentModule, '', '', '0');
+						}
+						
+						//Restore db connection
+						metaconsole_restore_db();
+					}
+					else {		
+						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');					
+					}	
 				}
 				else {	
 					?>
@@ -538,6 +575,8 @@ html_print_input_hidden('id_item', $idItem);
 				if ($config['metaconsole'] == 1) {
 					$graphs = array();
 					$graphs = metaconsole_get_custom_graphs();
+					$value_selected = $idCustomGraph . '|' . $server_name;
+					html_print_select($graphs, 'id_custom_graph', $value_selected, 'change_custom_graph();', __('None'), 0);
 				}
 				else {
 					switch ($config["dbtype"]) {
@@ -549,14 +588,37 @@ html_print_input_hidden('id_item', $idItem);
 							$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
 							break;
 					}
+					html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, 'change_custom_graph();', __('None'), 0);
 				}
-				html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, 'change_custom_graph();', '--', 0);
 					
 				$style_button_create_custom_graph = 'style="display: none;"';
 				$style_button_edit_custom_graph = '';
 				if (empty($idCustomGraph)) {
 					$style_button_create_custom_graph = '';
 					$style_button_edit_custom_graph = 'style="display: none;"';
+					// Select the target server
+					if ($config['metaconsole'] == 1) {
+						$metaconsole_connections = enterprise_hook('metaconsole_get_connection_names');
+						if ($metaconsole_connections === false) {
+							$metaconsole_connections = array();
+						}
+						$result_servers = array();
+						foreach ($metaconsole_connections as $metaconsole_element){
+							$connection_data = enterprise_hook('metaconsole_get_connection', array($metaconsole_element));
+							$result_servers[$connection_data['server_name']] = $connection_data['server_name'];
+						}
+						// Print select combo with metaconsole servers
+						if (!empty($result_servers)) {
+							echo '<div id="meta_target_servers" style="display:none;">';
+							echo '&nbsp;&nbsp;&nbsp;&nbsp;' . __('Target server') . '&nbsp;&nbsp;';
+							html_print_select($result_servers, 'meta_servers', '', '', __('None'), 0);
+							echo '</div>';
+						}
+						else {
+							// If there are not metaconsole servers don't allow to create new custom graphs 
+							$style_button_create_custom_graph = 'style="display: none;"';	
+						}
+					}
 				}
 				echo "&nbsp;";
 				html_print_button(__("Create"), 'create_graph', false,
@@ -907,21 +969,136 @@ $(document).ready (function () {
 });
 
 function create_custom_graph() {
-	window.location.href = "index.php?sec=greporting&sec2=godmode/reporting/graph_builder&create=Create graph";
+	<?php 
+		global $config;
+	
+		// Metaconsole activated
+		if ($config['metaconsole'] == 1) {
+	?>
+			var target_server = $("#meta_servers").val();
+			// If target server is not selected
+			if (target_server == 0) {
+				$("#meta_target_servers").fadeIn ('normal');
+				$("#meta_target_servers").css('display', 'inline');
+			}
+			else {
+				
+				var hash_data;
+				var params1 = [];
+				params1.push("get_metaconsole_hash_data=1");
+				params1.push("server_name=" + target_server);
+				params1.push("page=include/ajax/reporting.ajax");
+				jQuery.ajax ({
+					data: params1.join ("&"),
+					type: 'POST',
+					url: action="ajax.php",
+					async: false,
+					timeout: 10000,
+					success: function (data) {
+						hash_data = data;
+					}
+				});
+				
+				var server_url;
+				var params1 = [];
+				params1.push("get_metaconsole_server_url=1");
+				params1.push("server_name=" + target_server);
+				params1.push("page=include/ajax/reporting.ajax");
+				jQuery.ajax ({
+					data: params1.join ("&"),
+					type: 'POST',
+					url: action="ajax.php",
+					async: false,
+					timeout: 10000,
+					success: function (data) {
+						server_url = data;
+					}
+				});					
+					
+				window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph" + hash_data;
+			}
+	<?php		
+		}
+		else {
+	?>	
+		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph";
+	<?php
+		}
+	?>
 }
 
 function edit_custom_graph() {
 	var id_graph = $("#id_custom_graph").val();
-	window.location.href = "index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+	<?php 
+		global $config;
+	
+		// Metaconsole activated
+		if ($config['metaconsole'] == 1) {
+	?>
+			var agent_server_temp;
+			var id_element_graph;
+			var id_server;
+		
+			if (id_graph.indexOf("|") != -1){
+				agent_server_temp = id_graph.split('|');
+				id_element_graph = agent_server_temp[0];
+				id_server = agent_server_temp[1];
+			}
+			
+			var hash_data;
+			var params1 = [];
+			params1.push("get_metaconsole_hash_data=1");
+			params1.push("server_name=" + id_server);
+			params1.push("page=include/ajax/reporting.ajax");
+			jQuery.ajax ({
+				data: params1.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					hash_data = data;
+				}
+			});
+			
+			var server_url;
+			var params1 = [];
+			params1.push("get_metaconsole_server_url=1");
+			params1.push("server_name=" + id_server);
+			params1.push("page=include/ajax/reporting.ajax");
+			jQuery.ajax ({
+				data: params1.join ("&"),
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				timeout: 10000,
+				success: function (data) {
+					server_url = data;
+				}
+			});			
+					
+			window.location.href = server_url + "/index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
+	<?php		
+		}
+		else {
+	?>
+			window.location.href = "index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+	<?php
+		}
+	?>
 }
 
 function change_custom_graph() {
 	//Hidden the button create or edit custom graph
 	if ($("#id_custom_graph").val() != "0") {
+		$("#meta_servers").val(0);
+		$("#meta_target_servers").css('display', 'none');		
 		$("#button-create_graph").css("display", "none");
 		$("#button-edit_graph").css("display", "");
 	}
 	else {
+		$("#meta_servers").val(0);
+		$("#meta_target_servers").css('display', 'none');
 		$("#button-create_graph").css("display", "");
 		$("#button-edit_graph").css("display", "none");
 	}

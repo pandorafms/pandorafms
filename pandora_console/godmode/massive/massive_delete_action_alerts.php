@@ -54,9 +54,9 @@ if ($delete) {
 	if(empty($id_agents) || $id_agents[0] == 0)
 		ui_print_result_message (false, '', __('Could not be deleted').". ".__('No agents selected'));
 	else {
-		$action = (int) get_parameter ('action');
+		$actions = get_parameter ('action');
 		
-		if($action > 0){
+		if(!empty($actions)){
 			$agent_alerts = agents_get_alerts($id_agents);
 			
 			$alerts_agent_modules = array();
@@ -76,11 +76,13 @@ if ($delete) {
 					$agent_module_actions = alerts_get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
 				
 					foreach ($agent_module_actions as $agent_module_action){
-						if($agent_module_action['id_alert_action'] == $action) {
-							$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);
-						
-							if($result === false)
-								$results = false;
+						foreach($actions as $action) {
+							if($agent_module_action['id_alert_action'] == $action) {
+								$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);
+							
+								if($result === false)
+									$results = false;
+							}
 						}
 					}
 				}
@@ -88,15 +90,15 @@ if ($delete) {
 				if ($results) {
 					db_pandora_audit("Masive management", "Delete alert action", false, false,
 						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-						' Action: ' . $action);
+						' Actions: ' . implode(',',$actions));
 				}
 				else {
 					db_pandora_audit("Masive management", "Fail try to delete alert action", false, false,
 						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-						' Action: ' . $action);
+						' Actions: ' . implode(',',$actions));
 				}
 			
-				ui_print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
+				ui_print_result_message ($results, __('Successfully deleted'), __('Could not be deleted'));
 			}
 		}
 		else {
@@ -146,7 +148,7 @@ $table->data[2][1] = html_print_select (index_array ($alert_templates, 'id_alert
 
 $actions = alerts_get_alert_actions ();
 $table->data[3][0] = __('Action');
-$table->data[3][1] = html_print_select ($actions, 'action', '', '', __('None'), 0, true);	
+$table->data[3][1] = html_print_select ($actions, 'action[]', '', '', '', '', true, true);	
 
 echo '<form method="post" id="form_alert" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_action_alerts">';
 html_print_table ($table);

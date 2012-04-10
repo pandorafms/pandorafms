@@ -59,11 +59,11 @@ if ($add) {
 	if(empty($id_agents) || $id_agents[0] == 0)
 		ui_print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
 	else {
-		$action = (int) get_parameter ('action');
+		$actions = get_parameter ('action');
 		$fires_min = get_parameter ('fires_min');
 		$fires_max = get_parameter ('fires_max');
 		
-		if ($action > 0) {
+		if (!empty($actions)) {
 			$agent_alerts = agents_get_alerts($id_agents);
 			$cont = 0;
 			$agent_alerts_id = array();
@@ -87,14 +87,16 @@ if ($add) {
 			else {
 				$results = true;
 				foreach ($agent_alerts_id as $agent_alert_id) {
-					$result = alerts_add_alert_agent_module_action($agent_alert_id, $action, $options);
-					if($result === false)
-						$results = false;
+					foreach($actions as $action) {
+						$result = alerts_add_alert_agent_module_action($agent_alert_id, $action, $options);
+						if($result === false)
+							$results = false;
+					}
 				}
 			
 				db_pandora_audit("Masive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
 					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
-					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Action: ' . $action);
+					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Actions: ' . implode(',',$actions));
 				
 				ui_print_result_message ($results, __('Successfully added'), __('Could not be added'));
 			}
@@ -141,7 +143,7 @@ $table->data[2][1] = html_print_select (array(), 'id_alert_templates[]', '', '',
 
 $actions = alerts_get_alert_actions ();
 $table->data[3][0] = __('Action');
-$table->data[3][1] = html_print_select ($actions, 'action', '', '', __('None'), 0, true);	
+$table->data[3][1] = html_print_select ($actions, 'action[]', '', '', '', '', true, true);	
 $table->data[3][1] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
 $table->data[3][1] .= '<span id="advanced_actions" class="advanced_actions invisible">';
 $table->data[3][1] .= __('Number of alerts match from').' ';

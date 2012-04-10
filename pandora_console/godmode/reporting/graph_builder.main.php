@@ -127,8 +127,6 @@ echo "<td class='datos2'>";
 echo "<b>".__('Height')."</b></td>";
 echo "<td class='datos2'>";
 echo "<input type='text' name='height' value='$height' size=6></td></tr>";
-					
-$period_label = $periods[$period];
 
 echo "<tr>";
 echo "<td class='datos'>";

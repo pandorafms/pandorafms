@@ -158,7 +158,10 @@ $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 $table->data[2][1] = html_print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
-$table->data[2][2] = __('Modules');
+$table->data[2][2] = __('When select agents');
+$table->data[2][2] .= '<br>';
+$table->data[2][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
+	'common', false, '', '', true);
 $table->data[2][3] = html_print_select (array(), 'module[]',	'', false, '', '', true, true, false);
 
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_alerts" >';
@@ -222,6 +225,10 @@ $(document).ready (function () {
 	$("#checkbox-recursion").click(function (){
 		$("#id_group").trigger("change");
 	});
+	
+	$("#modules_selection_mode").change (function() {
+		$("#id_agents").trigger('change');
+	});	
 });
 /* ]]> */
 </script>

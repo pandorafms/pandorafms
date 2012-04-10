@@ -118,18 +118,28 @@ if (is_ajax ()) {
 		$idAgents = get_parameter('id_agent');
 		$id_template = get_parameter('template');
 		
-		$nameModules = db_get_all_rows_sql('SELECT DISTINCT(nombre)
+		$selection_mode = get_parameter('selection_mode','common');
+		
+		$sql = 'SELECT DISTINCT(nombre)
 			FROM tagente_modulo t1, talert_template_modules t2
 			WHERE t2.id_agent_module = t1.id_agente_modulo
 				AND delete_pending = 0
 				AND id_alert_template = '.$id_template.'
-				AND id_agente IN (' . implode(',', $idAgents) . ') AND (
+				AND id_agente IN (' . implode(',', $idAgents) . ')';
+			
+		if($selection_mode == 'common') {
+			$sql .= ' AND (
 					SELECT count(nombre)
 					FROM tagente_modulo t3, talert_template_modules t4
 					WHERE t4.id_agent_module = t3.id_agente_modulo
 						AND delete_pending = 0 AND t1.nombre = t3.nombre
 						AND id_agente IN (' . implode(',', $idAgents) . ')
-						AND id_alert_template = '.$id_template.') = (' . count($idAgents) . ')');
+						AND id_alert_template = '.$id_template.') = (' . count($idAgents) . ')';
+		}
+		
+		$sql .= ' ORDER BY t1.nombre';
+		
+		$nameModules = db_get_all_rows_sql($sql);
 		
 		if ($nameModules == false) {
 			$nameModules = array();

@@ -1,3 +1,17 @@
+2012-04-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js
+	operation/agentes/ver_agente.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/massive/massive_add_action_alerts.php: Improve some parts
+	of massive operations section as add ALL/COMMON switch in the
+	agents/modules selectors, allow to select multiple alert actions 
+	in the delete/add operations, add the period advanced control to
+	the modules edition section and improve this period control
+
 2012-04-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/reporting_builder.list_items.php

@@ -355,9 +355,8 @@ $table->data['edit1'][3] .= '<br /><em>'.__('Str.').'</em>';
 $table->data['edit1'][3] .= html_print_input_text ('str_critical', '', '', 5, 15, true);
 
 $table->data['edit2'][0] = __('Interval');
-$table->data['edit2'][1] = html_print_input_text ('module_interval', '', '', 5, 15, true);
+$table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
 $table->data['edit2'][2] = __('Disabled');
-//$table->data['edit2'][3] = html_print_checkbox ("disabled", 1, '', true);
 $table->data['edit2'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
 
 $table->data['edit3'][0] = __('Post process');

@@ -85,8 +85,39 @@ if (is_ajax ()) {
 		if($search != '') {
 			$filter['string'] = $search;
 		}
+		
+		if ($config['metaconsole'] == 1) {
+			enterprise_include_once('include/functions_metaconsole.php');
 			
-		$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+			$connection_names = enterprise_hook('metaconsole_get_connection_names');
+			if ($connection_names === false)
+				$connection_names = array();
+		
+			$agents_tmp = array();
+			$agents = array();
+			foreach ($connection_names as $connection) {
+				$connection_data = enterprise_hook('metaconsole_get_connection', array($connection));
+				
+				$connection_result = enterprise_hook('metaconsole_load_external_db', array($connection_data)); 
+				
+				if ($connection_result) {
+					$agents_tmp = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+					
+					if ($agents_tmp === false)
+						$agents_tmp = array();
+						
+					foreach ($agents_tmp as $agent_key => $agent_name) {
+						$agents[$connection_data['server_name'] . '|' . $agent_key] = $agent_name;
+					}
+				}
+				
+				enterprise_hook('metaconsole_restore_db');
+			}
+		} 
+		else {
+			$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+		}
+		
 		echo json_encode ($agents);
 		return;
 	}

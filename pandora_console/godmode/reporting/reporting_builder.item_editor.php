@@ -39,6 +39,7 @@ if (enterprise_include_once ('include/functions_metaconsole.php')) {
 }
 
 $idAgent = null;
+$idAgentModule = null;
 $idCustomGraph = null;
 $text = null;
 $header = null;
@@ -74,6 +75,9 @@ $time_from = '00:00';
 $time_to = '23:59';
 $show_graph = 0;
 $sla_sorted_by = 0;
+$id_agents = '';
+$inventory_modules = array();
+$date = null;
 
 switch ($action) {
 	case 'new':
@@ -558,7 +562,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Date'); ?></td>
 			<td style="max-width: 180px">
 				<?php
-				$dates = enterprise_hook('inventory_get_dates',array($idAgentModule, $idAgent, $id_group));
+				$dates = enterprise_hook('inventory_get_dates',array($idAgentModule, $idAgent, $group));
 				if($dates === ENTERPRISE_NOT_HOOK) {
 					$dates = array();
 				}

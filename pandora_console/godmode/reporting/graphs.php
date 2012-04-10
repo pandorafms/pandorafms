@@ -146,14 +146,14 @@ if (! empty ($graphs)) {
 	$table->head[1] = __('Description');
 	$table->head[2] = __('Number of Graphs');
 	$table->head[3] = __('Group');
-	$table->size[2] = '125px';
+	$table->size[2] = '80px';
 	$table->size[3] = '50px';
 	$table->align[2] = 'center';
 	$table->align[3] = 'center';
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		$table->align[4] = 'center';
 		$table->head[4] = __('Op.');
-		$table->size[4] = '50px';
+		$table->size[4] = '70px';
 	}
 	$table->data = array ();
 	

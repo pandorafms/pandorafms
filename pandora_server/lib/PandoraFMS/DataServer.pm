@@ -144,8 +144,12 @@ sub data_consumer ($$) {
 		};
 	
 		# Invalid XML
-		if ($@) {
-			$xml_err = $@;
+		if ($@ || ref($xml_data) ne 'HASH') {
+			if ($@) {
+				$xml_err = $@;
+			} else {
+				$xml_err = "Invalid XML format.";
+			}
 			sleep (2);
 			next;
 		}

@@ -1,5 +1,10 @@
 2012-04-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: Several
+	fixes on inventory reports.
+
+2012-04-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/reporting/graph_builder.graph_editor.php: Fixed display
 	of agents in custom graphs editor when metaconsole is activated.
 

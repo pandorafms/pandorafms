@@ -1,3 +1,9 @@
+2012-04-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php: Fixed ui_print_timestamp function.
+	
+	Merged bug from trunk.
+
 2012-04-11  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_delete_modules.php: Fixed a 
@@ -10,7 +16,10 @@
 
 2012-04-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
-	* godmode/reporting/reporting_builder.item_editor.php: 
+	* godmode/reporting/reporting_builder.item_editor.php: Several fixes
+	on inventory reports.
+	
+	Merged from trunk.
 
 2012-04-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

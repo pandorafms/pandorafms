@@ -35,7 +35,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 }
 
 $buttons['graph_list'] = array('active' => true,
-		'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs">' .
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' .
 		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
 		
 if ($enterpriseEnable){
@@ -65,7 +65,7 @@ $id = (int) get_parameter ('id');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
 // Header
-ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting", false, "");
+ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting", false, "", false, $buttons);
 
 // Delete module SQL code
 if ($delete_graph) {
@@ -183,7 +183,7 @@ if (! empty ($graphs)) {
 		array_push ($table->data, $data);
 	}
 	
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graphs'>";
+	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";

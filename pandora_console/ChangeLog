@@ -1,3 +1,8 @@
+2012-04-11  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_delete_modules.php: Fixed a 
+	minor style bug
+
 2012-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_menu.php,

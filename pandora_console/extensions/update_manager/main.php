@@ -90,11 +90,10 @@ function main_view_enterprise($settings, $user_key) {
 	
 	
 	/* Translators: Do not translade Update Manager, it's the name of the program */
-	echo '<p>' .
-		html_print_image("images/information.png", true) . '&nbsp;' .
-		__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
-		'</p>';
 	ui_print_info_message(
+		'<p>' .
+			__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
+		'</p>' .
 		'<p>' .
 			__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
 		'</p>' .

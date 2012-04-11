@@ -1,3 +1,9 @@
+2012-04-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/groups/group_list.php
+	 godmode/reporting/graph_builder.graph_editor.php: Reverted some 
+	 modifications in custom graphs metaconsole compatibility.
+
 2012-04-11  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_delete_modules.php: Fixed a 

@@ -86,7 +86,7 @@ if (is_ajax ()) {
 			$filter['string'] = $search;
 		}
 		
-		if ($config['metaconsole'] == 1) {
+		/*if ($config['metaconsole'] == 1) {
 			enterprise_include_once('include/functions_metaconsole.php');
 			
 			$connection_names = enterprise_hook('metaconsole_get_connection_names');
@@ -114,9 +114,9 @@ if (is_ajax ()) {
 				enterprise_hook('metaconsole_restore_db');
 			}
 		} 
-		else {
+		else {	*/
 			$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
-		}
+		//}
 		
 		echo json_encode ($agents);
 		return;

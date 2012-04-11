@@ -129,7 +129,7 @@ echo "<td></td>";
 echo "<td style='vertical-align: top;'>".__('Modules')."</td>";
 echo "</tr><tr>";
 // If metaconsole is activated
-if ($config['metaconsole'] == 1) {
+/*if ($config['metaconsole'] == 1) {
 	enterprise_include_once('include/functions_metaconsole.php');
 	
 	$connection_names = enterprise_hook('metaconsole_get_connection_names');
@@ -160,9 +160,9 @@ if ($config['metaconsole'] == 1) {
 
 	echo "<td>".html_print_select ($agents, 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
 }
-else {
+else {*/
 	echo "<td>".html_print_select (agents_get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
-}	
+//}	
 echo "<td style='vertical-align: center; text-align: center;'>" . html_print_image("images/darrowright.png", true) . "</td>";
 echo "<td>".html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;')."</td>";
 echo "</tr><tr>";

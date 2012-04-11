@@ -14,6 +14,30 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+if (is_ajax ()) {
+	global $config;
+	
+	check_login ();
+	
+	if (! check_acl ($config["id_user"], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access event viewer");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	require_once('update_manager/lib/functions.ajax.php');
+	
+	$checking_online_enterprise_package =
+		(bool)get_parameter('checking_online_enterprise_package', false);
+	
+	if ($checking_online_enterprise_package) {
+		checking_online_enterprise_package();
+	}
+	
+	return;
+}
+
 function load_update_manager_lib () {
 	set_time_limit (0);
 	require_once ('update_manager/load_updatemanager.php');
@@ -32,34 +56,6 @@ function update_settings_database_connection () {
 
 function pandora_update_manager_install () {
 	global $config;
-	
-	if (isset ($config['update_manager_installed'])) {
-		$update_server_path = db_get_value('value', 'tupdate_settings', '`key`', 'update_server_path');
-		
-		
-		////OVERWRITE EVER THE UPDATE SERVER PATH.//////////////////////
-		/*
-		The server path is ever the value from PHP. And you wonder
-		"Why?". Yes, I wonder too. And it is for when the user update
-		the Pandora Console PHP files to new version, this conf param
-		"automagic" change to new path for the new updates in the new
-		version.
-		*/
-		
-		if ($update_server_path != '/pandoraupdate4/server.php') {
-			$result = db_process_sql_update('tupdate_settings',
-				array('value' => '/pandoraupdate4/server.php'),
-				array('key' => 'update_server_path'));
-			
-			if ($result === false) {
-				db_pandora_audit("ERROR update extension", "Error in the update the extension 'update manager' when update the 'update_server_path' field.");
-			}
-		}
-		////////////////////////////////////////////////////////////////
-		
-		/* Already installed */
-		return;
-	}
 	
 	load_update_manager_lib ();
 	
@@ -97,21 +93,24 @@ function pandora_update_manager_uninstall () {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			db_process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
+			db_process_sql ('DELETE FROM `tconfig`
+				WHERE `token` = "update_manager_installed"');
 			db_process_sql ('DROP TABLE `tupdate_settings`');
 			db_process_sql ('DROP TABLE `tupdate_journal`');
 			db_process_sql ('DROP TABLE `tupdate`');
 			db_process_sql ('DROP TABLE `tupdate_package`');
 			break;
 		case "postgresql":
-			db_process_sql ('DELETE FROM "tconfig" WHERE "token" = \'update_manager_installed\'');
+			db_process_sql ('DELETE FROM "tconfig"
+				WHERE "token" = \'update_manager_installed\'');
 			db_process_sql ('DROP TABLE "tupdate_settings"');
 			db_process_sql ('DROP TABLE "tupdate_journal"');
 			db_process_sql ('DROP TABLE "tupdate"');
 			db_process_sql ('DROP TABLE "tupdate_package"');
 			break;
 		case "oracle":
-			db_process_sql ('DELETE FROM tconfig WHERE token = \'update_manager_installed\'');
+			db_process_sql ('DELETE FROM tconfig
+				WHERE token = \'update_manager_installed\'');
 			db_process_sql ('DROP TABLE tupdate_settings');
 			db_process_sql ('DROP TABLE tupdate_journal');
 			db_process_sql ('DROP TABLE tupdate');
@@ -132,6 +131,8 @@ function pandora_update_manager_main () {
 	update_settings_database_connection ();
 	
 	require_once ('update_manager/main.php');
+	
+	main_view();
 }
 
 function pandora_update_manager_login () {
@@ -179,7 +180,7 @@ function pandora_update_manager_godmode () {
 if(isset($config['id_user'])) {
 	if (check_acl($config['id_user'], 0, "PM")) {
 		extensions_add_operation_menu_option (__('Update manager'));
-		extensions_add_godmode_menu_option (__('Update manager settings'), 'PM','gsetup');
+		extensions_add_godmode_menu_option (__('Update manager settings'), 'PM');
 		extensions_add_main_function ('pandora_update_manager_main');
 		extensions_add_godmode_function ('pandora_update_manager_godmode');
 		extensions_add_login_function ('pandora_update_manager_login');

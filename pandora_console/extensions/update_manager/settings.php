@@ -49,9 +49,8 @@ $table->data[0][1] = html_print_input_text ('keys[customer_key]', $settings->cus
 $table->data[1][0] = '<strong>'.__('Update server host').'</strong>';
 $table->data[1][1] = html_print_input_text ('keys[update_server_host]', $settings->update_server_host, '', 20, 255, true);
 
-$table->data[2][0] = '<strong>'.__('Update server path').'</strong>'
-	. ui_print_help_tip (__('The server path is automatically updated with each Pandora Console version.'), true);
-$table->data[2][1] = html_print_input_text ('keys[update_server_path]', $settings->update_server_path, '', 40, 255, true, true);
+$table->data[2][0] = '<strong>'.__('Update server path').'</strong>';
+$table->data[2][1] = html_print_input_text ('keys[update_server_path]', $settings->update_server_path, '', 40, 255, true);
 
 $table->data[3][0] = '<strong>'.__('Update server port').'</strong>';
 $table->data[3][1] = html_print_input_text ('keys[update_server_port]', $settings->update_server_port, '', 5, 5, true);
@@ -82,9 +81,3 @@ echo '</div>';
 echo '</form>';
 
 ?>
-<style>
-#text-keys\[update_server_path\] {
-	color: grey;
-	background: #DDDDDD;
-}
-</style>

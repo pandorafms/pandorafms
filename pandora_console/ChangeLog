@@ -1,3 +1,16 @@
+2012-04-11 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: cleaned source code style.
+	
+	* extensions/update_manager.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/settings.php,
+	extensions/update_manager/main.php,
+	extensions/update_manager/update_pandora.php: changes and fixes to show
+	better the update manager Enterprise and Open.
+
 2012-04-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_ui.php: Fixed ui_print_timestamp function.

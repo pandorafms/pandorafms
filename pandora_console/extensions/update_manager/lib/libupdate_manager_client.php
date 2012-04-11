@@ -634,6 +634,8 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 }
 
 function um_client_upgrade_to_latest ($user_key, $force = true) {
+	$success = false;
+	
 	$settings = um_db_load_settings ();
 	db_process_sql_begin();
 	do {
@@ -655,6 +657,8 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 	
 	/* Break on error, when there are no more packages on the server (server return true)
 		or on auth failure (server return false) */
+	
+	return $success;
 }
 
 function um_client_db_connect (&$settings = NULL) {

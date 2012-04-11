@@ -51,7 +51,7 @@ function update_pandora_get_packages_online_ajax() {
 	if ($result == false) {
 		$return['last'] = $last;
 		$return['correct'] = 0;
-		$return['package'] = __('Error download packages.');
+		$return['package'] = ui_print_error_message(__('Error download packages.'), '', true);
 		$return['end'] = 1;
 	}
 	else {
@@ -79,6 +79,10 @@ function update_pandora_download_package() {
 	
 	require_once ($config["homedir"] .
 		"/extensions/update_manager/lib/libupdate_manager_client.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/load_updatemanager.php");
 	
 	$dir = $config['attachment_store'] .  '/update_pandora/';
 	
@@ -137,6 +141,10 @@ function update_pandora_download_package() {
 			$running = null;
 			do {
 				curl_multi_exec($mch ,$running);
+				if ($running == 0) {
+					fclose($file);
+				}
+				
 				$info = curl_getinfo ($c);
 				
 				$data = array();
@@ -145,6 +153,7 @@ function update_pandora_download_package() {
 				$data['size'] = $info['download_content_length'];
 				$data['size_download'] = $info['size_download'];
 				$data['speed_download'] = $info['speed_download'];
+				$data['total_time'] = $info['total_time'];
 				
 				$info_json = json_encode($data);
 				
@@ -170,7 +179,9 @@ function update_pandora_check_download_package() {
 	
 	$package = get_parameter('package', '');
 	$return = array('correct' => 1,
-		'info_download' => "<b>Size:</b> %s/%s bytes <b>Speed:</b> %s bytes/second",
+		'info_download' => "<b>" . __('Size') . ":</b> %s/%s " . __('bytes') . " " .
+			"<b>" . __('Speed') . ":</b> %s " . __('bytes/second') ."<br />" .
+			"<b>" . __('Time') . ":</b> %s",
 		'progres_bar' => progress_bar(0, 300, 20, '0%', 1, false, "#00ff00"),
 		'progres_bar_text' => '0%',
 		'percent' => 0);
@@ -188,6 +199,7 @@ function update_pandora_check_download_package() {
 		$size_download = 0;
 		$size = 0;
 		$speed_download = 0;
+		$total_time = 0;
 		if ($info['size_download'] > 0) {
 			$percent = format_numeric(
 				($info['size_download'] / $info['size']) * 100, 2);
@@ -195,10 +207,12 @@ function update_pandora_check_download_package() {
 			$size_download = $info['size_download'];
 			$size = $info['size'];
 			$speed_download = $info['speed_download'];
+			$total_time = $info['total_time'];
 			
 			$return['info_download'] = sprintf($return['info_download'],
 				format_for_graph($size_download, 2), format_for_graph($size, 2),
-				format_for_graph($speed_download, 2));
+				format_for_graph($speed_download, 2),
+				human_time_description_raw($total_time));
 		}
 		else {
 			$return['info_download'] = __('<b>Starting: </b> connect to server');
@@ -229,13 +243,15 @@ function update_pandora_install_package() {
 	$package = get_parameter('package', '');
 	$filename = get_parameter('filename', '');
 	
+	unlink("/tmp/$package.info.txt");
+	
 	//Get total files
-	$command = 'tar tzvf ' . $dir . $filename . '| wc -l > /tmp/' . $package . '.info.txt';
+	$command = 'tar tzvf ' . $dir . $filename . ' | wc -l > /tmp/' . $package . '.info.txt';
 	exec($command, $output, $status);
-	html_debug_print($command, true);
+	//html_debug_print($command, true);
 	
 	$command = 'tar xzvf ' . $dir . $filename . ' -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
-	html_debug_print($command, true);
+	//html_debug_print($command, true);
 	
 	//Maybe this line run for seconds or minutes
 	exec($command, $output, $status);
@@ -299,4 +315,60 @@ function update_pandora_check_install_package() {
 	echo json_encode($return);
 }
 
+function checking_online_enterprise_package() {
+	global $config;
+	
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager_client.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/load_updatemanager.php");
+	
+	$return = array('correct' => 1, 'text' => '',
+		'enable_buttons' => false, 'details_text' => '',
+		'version_package_text' => '');
+	
+	$settings = um_db_load_settings();
+	$user_key = get_user_key($settings);
+	
+	//Disabled output error messages
+	$package = @um_client_check_latest_update ($settings, $user_key);
+	//Get error message
+	$error_message = '';
+	$error = error_get_last();
+	if (!empty($error)) {
+		$error_message = $error['message'];
+	}
+	
+	if ($package === true) {
+		$return['text'] = ui_print_success_message(
+			__('Your system is up-to-date'), '', true);
+	}
+	elseif ($package === false) {
+		$return['text'] = ui_print_error_message(
+			__('Server authorization rejected'), '', true);
+	}
+	elseif ($package === 0) {
+		$return['text'] = ui_print_error_message(
+			__('Server connection failed'), '', true) . '<br />' .
+			$error_message;
+	}
+	else {
+		$return['enable_buttons'] = true;
+		
+		$return['version_package_text'] = '<strong>'.__('Id').'</strong>: ' .
+			$package->id .
+			' <strong>'.__('Timestamp').'</strong>: ' .
+			$package->timestamp;
+		
+		$return['text'] = ui_print_success_message(
+			__('There\'s a new update for Pandora FMS'), '', true) .
+			$return['version_package_text'];
+		
+		$return['details_text'] = html_entity_decode($package->description);
+	}
+	
+	echo json_encode($return);
+}
 ?>

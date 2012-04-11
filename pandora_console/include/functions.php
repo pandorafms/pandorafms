@@ -310,7 +310,7 @@ function human_time_comparation ($timestamp, $units = 'large') {
  */
 function get_system_time () {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_get_system_time();
@@ -906,7 +906,24 @@ function get_priority_class($priority) {
 			break;
 	}
 }
+
+/**
+ * Check if the enterprise version is installed.
+ * 
+ * @return boolean If it is installed return true, otherwise return false.
+ */
+function enterprise_installed() {
+	$return = false;
 	
+	if (defined('PANDORA_ENTERPRISE')) {
+		if (PANDORA_ENTERPRISE) {
+			$return = true;
+		}
+	}
+	
+	return $return;
+}
+
 /**
  * TODO: Document enterprise functions
  */
@@ -970,12 +987,12 @@ if (!function_exists ("mb_strtoupper")) {
 	function mb_strtoupper ($string, $encoding = false) {
 			return strtoupper ($string);
 		}
-
+	
 	/**
 	 * @ignore
-	 */		
+	 */
 	function mb_strtolower ($string, $encoding = false) {
-			return strtoupper ($string);
+		return strtoupper ($string);
 	}
 	
 	/**
@@ -991,7 +1008,7 @@ if (!function_exists ("mb_strtoupper")) {
 	function mb_strlen ($string, $encoding = false) {
 		return strlen ($string);
 	}
-
+	
 	/**
 	 * @ignore
 	 */

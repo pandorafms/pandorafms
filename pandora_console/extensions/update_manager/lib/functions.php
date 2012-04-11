@@ -113,16 +113,19 @@ function update_pandora_get_list_downloaded_packages($mode = 'operation') {
 					$packages[] = $entry;
 				}
 				else {
+					$time_file = date($config["date_format"],
+						filemtime($conf_update_pandora['dir'] . $entry));
+					
 					if ($conf_update_pandora['last_installed'] == $entry) {
 						$packages[] = array('name' => $entry,
-							'current' => true);
+							'current' => true,
+							'time' => $time_file);
 					}
 					else {
 						$packages[] = array('name' => $entry,
-							'current' => false);
+							'current' => false,
+							'time' => $time_file);
 					}
-					
-					
 				}
 			}
 		}
@@ -230,6 +233,7 @@ function update_pandora_print_javascript_admin() {
 			$("#dialog_download").show();
 			
 			$("#title_downloading_update_pandora").hide();
+			$("#title_downloaded_update_pandora").show();
 			$("#title_installing_update_pandora").show();
 			
 			install_package(package, package);
@@ -240,7 +244,7 @@ function update_pandora_print_javascript_admin() {
 			
 			$("#dialog_download").dialog({
 					resizable: false,
-					draggable: false,
+					draggable: true,
 					modal: true,
 					height: 400,
 					width: 600,
@@ -327,6 +331,7 @@ function update_pandora_print_javascript_admin() {
 			});
 			
 			$("#title_downloading_update_pandora").hide();
+			$("#title_downloaded_update_pandora").show();
 			$("#title_installing_update_pandora").show();
 			
 			check_install_package(package, filename);
@@ -390,11 +395,16 @@ function update_pandora_print_javascript_admin() {
 						
 						$("tbody", "#online_packages").append(
 							'<tr class="package_' + data['package'] + '">' + 
-								'<td style=" text-align:left; width:80%;" class="name_package">' +
+								'<td style=" text-align:left; width:50%;" class="name_package">' +
+									'<?php echo '<b>' . __('There is a new version:') . '</b> '; ?>' +
 									data['package'] +
+								'</td>' +
+								'<td style=" text-align:left; width:30%;" class="timestamp_package">' +
+									data['timestamp'] +
 								'</td>' +
 								'<td style=" text-align:center; width:50px;">' +
 								buttonUpdate +
+								' ' + data['text_adv'] + 
 								'</td>' +
 							'</tr>');
 						

@@ -14,8 +14,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-function update_pandora_get_packages_online_ajax() {
+function update_pandora_get_packages_online_ajax($ajax = true) {
 	global $config;
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/lib/functions.php");
+	
 	global $conf_update_pandora;
 	if (empty($conf_update_pandora))
 		$conf_update_pandora = update_pandora_get_conf();
@@ -58,7 +62,14 @@ function update_pandora_get_packages_online_ajax() {
 	}
 	else {
 		$value = $result->value();
-		$package = $value->scalarval();
+		list($k,$v) = $value->structeach();
+		if ($k == 'package') {
+			$package = $v->scalarval();
+		}
+		list($k,$v) = $value->structeach();
+		if ($k == 'timestamp') {
+			$timestamp = $v->scalarval();
+		}
 		
 		$return['correct'] = 1;
 		if (empty($package)) {
@@ -67,10 +78,15 @@ function update_pandora_get_packages_online_ajax() {
 		
 		$return['last'] = $last;
 		$return['package'] = $package;
+		$return['timestamp'] = date($config["date_format"], $timestamp);
+		$return['text_adv'] = html_print_image('images/world.png', true);
 		$return['end'] = 1;
 	}
 	
-	echo json_encode($return);
+	if ($ajax)
+		echo json_encode($return);
+	else
+		return $return;
 }
 
 function update_pandora_download_package() {
@@ -248,12 +264,14 @@ function update_pandora_install_package() {
 	unlink("/tmp/$package.info.txt");
 	
 	//Get total files
-	$command = 'tar tzvf ' . $dir . $filename . ' | wc -l > /tmp/' . $package . '.info.txt';
+	//The grep command is because the fucking tar don't apply
+	//strip-components in mode "t"
+	$command = 'tar tzvf ' . $dir . $filename . ' | grep -v "pandora_console/$" | wc -l > /tmp/' . $package . '.info.txt';
 	exec($command, $output, $status);
-	//html_debug_print($command, true);
+	html_debug_print($command, true);
 	
 	$command = 'tar xzvf ' . $dir . $filename . ' --strip-components=1 -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
-	//html_debug_print($command, true);
+	html_debug_print($command, true);
 	
 	//Maybe this line run for seconds or minutes
 	exec($command, $output, $status);
@@ -281,7 +299,7 @@ function update_pandora_check_install_package() {
 	$files = @file('/tmp/' . $package . '.files.info.txt');
 	if (empty($files))
 		$files = array();
-	$total = (int)file_get_contents('/tmp/' . $package . '.info.txt');
+	$total = (int)@file_get_contents('/tmp/' . $package . '.info.txt');
 	
 	$return = array('correct' => 1,
 		'info' => "<div id='list_files_install'

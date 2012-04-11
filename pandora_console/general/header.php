@@ -32,16 +32,15 @@ config_check();
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
 	<tr>
 		<td rowspan="2">
-
-		<a href="index.php?sec=main">
-<?php
-		if (!defined ('PANDORA_ENTERPRISE')){
-			echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
-		} else {
-			echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
-		}
-?>
-		</a>
+			<a href="index.php?sec=main">
+				<?php
+				if (!defined ('PANDORA_ENTERPRISE')){
+					echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
+				} else {
+					echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
+				}
+				?>
+			</a>
 		</td>
 		<td width="20%">
 			<?php 
@@ -69,21 +68,21 @@ config_check();
                     echo "&nbsp;";
 				}
 			}
-
-            if ($config["alert_cnt"] > 0){
-                echo '<div id="alert_messages" style="display: none"></div>';
-                ui_require_css_file ('dialog');
-       			ui_require_jquery_file ('ui.core');
-    			ui_require_jquery_file ('ui.dialog');
-                
-    			echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
-	    		html_print_image ("images/error.png", false,
-    			array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
-	    		echo '</a>';
-                echo "&nbsp;";
-                echo "&nbsp;";
-            }
-
+			
+			if ($config["alert_cnt"] > 0) {
+				echo '<div id="alert_messages" style="display: none"></div>';
+				ui_require_css_file ('dialog');
+				ui_require_jquery_file ('ui.core');
+				ui_require_jquery_file ('ui.dialog');
+				
+				echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
+				html_print_image ("images/error.png", false,
+					array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
+				echo '</a>';
+				echo "&nbsp;";
+				echo "&nbsp;";
+			}
+			
             echo '<a class="white_bold" href="index.php?bye=bye">';
             html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
             echo '</a></td>';

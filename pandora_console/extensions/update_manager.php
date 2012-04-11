@@ -138,34 +138,31 @@ function pandora_update_manager_main () {
 function pandora_update_manager_login () {
 	global $config;
 	
-	// If first time, make the first autoupdate and disable it in DB
-	if (!isset($config["autoupdate"])){
-		$config["autoupdate"] = 1;
-		
-		db_process_sql_insert('tconfig', array('token' => 'autoupdate', 'value' => 0));
-	}
+	unset($_SESSION['new_update']);
 	
-	if ($config["autoupdate"] == 0)
-		return;
-	
-	load_update_manager_lib ();
-	
-	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+	if (enterprise_installed()) {
+		um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
-	$settings = um_db_load_settings ();
-	
-	$user_key = get_user_key ($settings);
-	
-	$package = um_client_check_latest_update ($settings, $user_key);
-	
-	if (is_object ($package)) {
-		echo '<div class="notify">';
-		echo '<img src="images/information.png" alt="info" /> ';
-		echo __('There\'s a new update for Pandora');
-		echo '. <a href="index.php?sec=extensions&amp;sec2=extensions/update_manager">';
-		echo __('More info');
-		echo '</a>';
-		echo '</div>';
+		$settings = um_db_load_settings ();
+		
+		$user_key = get_user_key ($settings);
+		
+		$package = um_client_check_latest_update ($settings, $user_key);
+		html_debug_print($package, true);
+		if (is_object ($package)) {
+			if ($package->id != 'ERROR_NON_NUMERIC_FOUND')
+				$_SESSION['new_update'] = 'new';
+		}
+	}
+	else {
+		require(
+			"extensions/update_manager/lib/functions.ajax.php");
+		
+		$result = update_pandora_get_packages_online_ajax(false);
+		html_debug_print($result, true);
+		if ($result['correct']) {
+			$_SESSION['new_update'] = 'new';
+		}
 	}
 }
 

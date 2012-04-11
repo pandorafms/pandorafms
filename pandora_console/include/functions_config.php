@@ -620,9 +620,9 @@ function config_process_config () {
 	if (!isset ($config['api_password'])) {
 		config_update_value( 'api_password', '');
 	}
-
+	
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
-
+	
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {		
 			if(isset($config['id_user']))
@@ -632,105 +632,130 @@ function config_process_config () {
 			$config['relative_path'] = $relative_path;
 		}
 	}
-
+	
 	if (!isset ($config['dbtype'])) {
 		config_update_value ('dbtype', 'mysql');
 	}
 	
 	if (!isset ($config['vc_refr'])) {
 		config_update_value ('vc_refr', 60);
-	}	
+	}
 	
 	if (!isset ($config['refr'])) {
 		config_update_value ('refr', '');
-	}		
+	}
 	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
 
 function config_check (){
-    global $config;
-    
-    // At this first version I'm passing errors using session variables, because the error management
-    // is done by an AJAX request. Better solutions could be implemented in the future :-)
-
-    // Check default password for "admin"
-    $hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
-    if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
-        $config["alert_cnt"]++;
-        $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.').'</p>';
-    }
-
-    if (!is_writable ("attachment")){
-        $config["alert_cnt"]++;
-        $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory').'</p>';
-    }
-
-    // Get remote file dir.
-    $remote_config = db_get_value_filter('value', 'tconfig', array('token' => 'remote_config'));
-
-    if (defined ('PANDORA_ENTERPRISE')){
-
-        if (!is_writable ($remote_config)){
-            $config["alert_cnt"]++;
-            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
-        }
-
-        $remote_config_conf = $remote_config . "/conf";
-        if (!is_writable ($remote_config_conf)){
-            $config["alert_cnt"]++;
-            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
-        }
-
-        $remote_config_col = $remote_config . "/collections";
-        if (!is_writable ($remote_config_col)){
-            $config["alert_cnt"]++;
-            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Remote configuration directory is not writtable for the console').' - $remote_config</h3>';
-        }
-    }
-
-    // Check attachment directory (too much files?)
-
-    $filecount = count(glob($config["homedir"]."/attachment/*"));
-    // 100 temporal files of trash should be enough for most people.
-    if ($filecount > 100){
-            $config["alert_cnt"]++;
-            $_SESSION["alert_msg"] .= '<h3 class="error">'.__('Too much files in your tempora/attachment directory').'</h3>';
-            $_SESSION["alert_msg"] .= __("There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually"). " ( $filecount ". __("files") . " )";
-    }
-
-    // Check database maintance
-    $db_maintance = db_get_value_filter ('value', 'tconfig', array('token' => 'db_maintance')); 
-    $now = date("U");
-    
-    // First action in order to know if it's a new installation or db maintenance never have been executed 
-    $first_action = db_get_value_filter('utimestamp', 'tsesion', array('1' => '1', 'order' => 'id_sesion ASC'));
-    $fresh_installation = $now - $first_action;
-    
-    $resta = $now - $db_maintance;
-    // ~ about 50 hr
-    if (($resta > 190000 AND $fresh_installation> 190000)){
-            $config["alert_cnt"]++;
-            $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Database maintance problem").'</h3>';
-            $_SESSION["alert_msg"] .= __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible').'</h3>';
-    }
-    
-    $fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
-    if (($fontpath == "") OR (!file_exists ($fontpath))) {
-        $config["alert_cnt"]++;
-        $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Default font doesnt exist").'</h3>';
-        $_SESSION["alert_msg"] .= __('Your defined font doesnt exist or is not defined. Please check font parameters in your config').'</h3>';
-    }
-
-    global $develop_bypass;
-
-    if ($develop_bypass == 1){
-        $config["alert_cnt"]++;
-        $_SESSION["alert_msg"] .= '<h3 class="error">'.__("Developer mode is enabled").'</h3>';
-        $_SESSION["alert_msg"] .= __('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file').'</h3>';
-    }
-
+	global $config;
+	
+	// At this first version I'm passing errors using session variables, because the error management
+	// is done by an AJAX request. Better solutions could be implemented in the future :-)
+	
+	// Check default password for "admin"
+	$hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
+	if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('message' => __('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.'),
+				'no_close' => true), '', true);
+	}
+	
+	if (!is_writable ("attachment")){
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('message' => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
+				'no_close' => true), '', true);
+	}
+	
+	// Get remote file dir.
+	$remote_config = db_get_value_filter('value', 'tconfig', array('token' => 'remote_config'));
+	
+	if (enterprise_installed()) {
+		if (!is_writable ($remote_config)){
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= ui_print_error_message(
+				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
+				'no_close' => true), '', true);
+		}
+		
+		$remote_config_conf = $remote_config . "/conf";
+		if (!is_writable ($remote_config_conf)){
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= ui_print_error_message(
+				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
+				'no_close' => true), '', true);
+		}
+		
+		$remote_config_col = $remote_config . "/collections";
+		if (!is_writable ($remote_config_col)){
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= ui_print_error_message(
+				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
+				'no_close' => true), '', true);
+		}
+	}
+	
+	// Check attachment directory (too much files?)
+	
+	$filecount = count(glob($config["homedir"]."/attachment/*"));
+	// 100 temporal files of trash should be enough for most people.
+	if ($filecount > 100) {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('title' => __('Too much files in your tempora/attachment directory'),
+			'message' => __("There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually"). " ( $filecount ". __("files") . " )",
+			'no_close' => true), '', true);
+	}
+	
+	// Check database maintance
+	$db_maintance = db_get_value_filter ('value', 'tconfig', array('token' => 'db_maintance')); 
+	$now = date("U");
+	
+	// First action in order to know if it's a new installation or db maintenance never have been executed 
+	$first_action = db_get_value_filter('utimestamp', 'tsesion', array('1' => '1', 'order' => 'id_sesion ASC'));
+	$fresh_installation = $now - $first_action;
+	
+	$resta = $now - $db_maintance;
+	// ~ about 50 hr
+	if (($resta > 190000 AND $fresh_installation> 190000)){
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('title' => __("Database maintance problem"),
+			'message' => __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible'),
+			'no_close' => true), '', true);
+	}
+	
+	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
+	if (($fontpath == "") OR (!file_exists ($fontpath))) {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('title' => __("Default font doesnt exist"),
+			'message' => __('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
+			'no_close' => true), '', true);
+	}
+	
+	global $develop_bypass;
+	
+	if ($develop_bypass == 1){
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('title' => __("Developer mode is enabled"),
+			'message' => __('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file'),
+			'no_close' => true), '', true);
+	}
+	
+	//pandora_update_manager_login();
+	if ($_SESSION['new_update'] == 'new') {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => __("New update of Pandora Console"),
+			'message' => __('There is a new update please go to menu operation and into extensions go to Update Manager for more details.'),
+			'no_close' => true), '', true);
+	}
 }
 
 ?>

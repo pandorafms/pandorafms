@@ -1,3 +1,8 @@
+2012-04-11  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/sound_events.php: Fixed bad name in 
+	the windows title
+
 2012-04-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_ui.php: standariced the messages and added one more for

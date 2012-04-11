@@ -43,7 +43,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 
 echo "<html>";
 echo "<head>";
-echo "<title>" . __("Sound Alerts") . "</title>";
+echo "<title>" . __("Sound Events") . "</title>";
 echo "<style type='text/css'>";
 ?>
 *

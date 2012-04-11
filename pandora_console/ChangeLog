@@ -1,3 +1,8 @@
+2012-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_menu.php,
+	include/styles/menu.css: Added a color to mark submenus.
+
 2012-04-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/reporting_builder.item_editor.php: 

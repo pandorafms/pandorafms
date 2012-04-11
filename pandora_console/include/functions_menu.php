@@ -101,7 +101,7 @@ function menu_print_menu (&$menu) {
 			$class = '';
 			
 			$selected_submenu2 = false;
-			
+			$submenu2 = true;
 			//Look for submenus in level2!
 			if(isset($sub['sub2'])) {
 				$class .= 'has_submenu ';
@@ -238,7 +238,14 @@ function menu_print_menu (&$menu) {
 				} else {
 					$title = '';
 				}
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
+				
+				//Check if we must mark the menu 
+				if (isset($sub['sub2'])) {
+					$submenu_output .= '<a class="is_submenu2" href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
+				} else {
+ 				
+					$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
+				}
 				
 				if(isset($sub['sub2'])) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));

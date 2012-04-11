@@ -1,5 +1,15 @@
 2012-04-11 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_ui.php: standariced the messages and added one more for
+	info.
+	
+	* extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/main.php,
+	extensions/update_manager/update_pandora.php: some changes and fixes in this
+	part.
+
+2012-04-11 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: cleaned source code style.
 	
 	* extensions/update_manager.php,

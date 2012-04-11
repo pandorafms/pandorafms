@@ -135,7 +135,7 @@ function printSmallFont ($string, $return = true) {
 /** 
  * Prints a generic message between tags.
  * 
- * @param string The message string to be displayed
+ * @param mixed The string message or array ('title', 'message', 'icon', 'no_close')  to be displayed
  * @param string the class to user
  * @param string Any other attributes to be set for the tag.
  * @param bool Whether to output the string or return it
@@ -145,7 +145,89 @@ function printSmallFont ($string, $return = true) {
  * @return string HTML code if return parameter is true.
  */
 function ui_print_message ($message, $class = '', $attributes = '', $return = false, $tag = 'h3') {
-	$output = '<'.$tag.(empty ($class) ? '' : ' class="'.$class.'" ').$attributes.'>'.$message.'</'.$tag.'>';
+	static $first_execution = true;
+	
+	$text_title = '';
+	$text_message = '';
+	$icon_image = '';
+	$no_close_bool = false;
+	if (is_array($message)) {
+		if (!empty($message['title']))
+			$text_title = $message['title'];
+		if (!empty($message['message']))
+			$text_message = $message['message'];
+		if (!empty($message['icon']))
+			$icon_image = $message['icon'];
+		if (!empty($message['no_close']))
+			$no_close_bool = $message['no_close'];
+	}
+	else {
+		$text_message = $message;
+	}
+	
+	if (empty($text_title)) {
+		switch ($class) {
+			default:
+			case 'info':
+				$text_title = __('Information');
+				break;
+			case 'error':
+				$text_title = __('Error');
+				break;
+			case 'suc':
+				$text_title = __('Success');
+				break;
+		}
+	}
+	
+	if (empty($icon_image)) {
+		switch ($class) {
+			default:
+			case 'info':
+				$icon_image = 'images/information.png';
+				break;
+			case 'error':
+				$icon_image = 'images/err.png';
+				break;
+			case 'suc':
+				$icon_image = 'images/suc.png';
+				break;
+		}
+	}
+	
+	$id = 'info_box_' . uniqid();
+	
+	$output = '<table cellspacing="0" cellpadding="0" id="' . $id . '" ' . $attributes . '
+		class="info_box ' . $class . '" >
+		<tr>
+			<td class="icon">' . html_print_image($icon_image, true) . '</td>
+			<td class="title"><b>' . $text_title . '</b></td>
+			<td class="icon">';
+	if (!$no_close_bool) {
+		$output .= '<a href="javascript: close_info_box(\'' . $id . '\')">' .
+			html_print_image('images/cross.disabled.png', true) . '</a>';
+	}
+	
+	$output .= 	'</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>' . $text_message . '</td>
+			<td></td>
+		</tr>
+		</table>';
+	
+	if ($first_execution) {
+		$first_execution = false;
+		
+		$output .= '
+			<script type="text/javascript">
+				function close_info_box(id) {
+					$("#" + id).hide();
+				}
+			</script>
+		';
+	}
 	
 	if ($return)
 		return $output;
@@ -155,7 +237,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 /** 
  * Prints an error message.
  * 
- * @param string The error message to be displayed
+ * @param mixed The string error message or array ('title', 'message', 'icon', 'no_close') to be displayed
  * @param string Any other attributes to be set for the tag.
  * @param bool Whether to output the string or return it
  * @param string What tag to use (you could specify something else than
@@ -170,7 +252,7 @@ function ui_print_error_message ($message, $attributes = '', $return = false, $t
 /** 
  * Prints an operation success message.
  * 
- * @param string The message to be displayed
+ * @param mixed The string message or array ('title', 'message', 'icon', 'no_close') to be displayed
  * @param string Any other attributes to be set for the tag.
  * @param bool Whether to output the string or return it
  * @param string What tag to use (you could specify something else than
@@ -183,12 +265,27 @@ function ui_print_success_message ($message, $attributes = '', $return = false, 
 }
 
 /** 
+ * Prints an operation info message.
+ * 
+ * @param mixed The string message or array ('title', 'message', 'icon', 'no_close') to be displayed
+ * @param string Any other attributes to be set for the tag.
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
+ * h3 like div or h2)
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function ui_print_info_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return ui_print_message ($message, 'info', $attributes, $return, $tag);
+}
+
+/** 
  * Evaluates a result using empty() and then prints an error or success message
  * 
  * @param mixed The results to evaluate. 0, NULL, false, '' or 
  * array() is bad, the rest is good
- * @param string The string to be displayed if the result was good
- * @param string The string to be displayed if the result was bad
+ * @param mixed The string or array ('title', 'message') to be displayed if the result was good
+ * @param mixed The string or array ('title', 'message') to be displayed if the result was bad
  * @param string Any other attributes to be set for the h3
  * @param bool Whether to output the string or return it
  * @param string What tag to use (you could specify something else than
@@ -284,7 +381,7 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 		default:
 			//Usually tags have title attributes, so by default we add,
 			//then fall through to add attributes and data
-			$output .= ' title="'.$title.'">'.$data.'</'.$tag.'>';
+			$output .= ' title="'.$title.'"';
 			break;
 		case "h1":
 		case "h2":

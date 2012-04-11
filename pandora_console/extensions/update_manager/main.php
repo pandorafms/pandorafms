@@ -82,10 +82,9 @@ function main_view_enterprise($settings, $user_key) {
 	$table->width = '98%';
 	$table->style = array();
 	$table->style[0] = 'font-weight: bolder; font-size: 20px;';
-	$table->style[1] = 'font-weight: bolder; font-size: 20px;';
 	$table->data = array();
-	$table->data[0][0] = __('Your Pandora FMS Enterprise version number is');
-	$table->data[0][1] = $settings->current_update;
+	$table->data[0][0] = __('Your Pandora FMS Enterprise version number is')
+		. ' ' . $settings->current_update;
 	html_print_table($table);
 	
 	
@@ -95,15 +94,16 @@ function main_view_enterprise($settings, $user_key) {
 		html_print_image("images/information.png", true) . '&nbsp;' .
 		__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
 		'</p>';
-	echo '<p>' .
-		__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
-		'</p>';
-	echo '<p>' .
+	ui_print_info_message(
+		'<p>' .
+			__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
+		'</p>' .
+		'<p>' .
 		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.') .
-		'</p>';
+		'</p>');
 	
 	
-	
+	echo '<h4>' . __('Online') . '</h4>';
 	$table = null;
 	$table->width = '98%';
 	$table->size = array();
@@ -113,7 +113,6 @@ function main_view_enterprise($settings, $user_key) {
 	$table->colspan = array();
 	$table->colspan[0][0] = 3;
 	$table->data = array();
-	$table->data[0][0] = '<h4>' . __('Online') . '</h4>';
 	$table->data[1][0] = '<span id="box_ajax_checking_online">' .
 		__('Checking for a update') . '&nbsp;' . html_print_image('images/spinner.gif', true) .
 		'</span>';
@@ -151,11 +150,10 @@ function main_view_enterprise($settings, $user_key) {
 	
 	
 	
-	
+	echo '<h4>' . __('Offline') . '</h4>';
 	$table = null;
 	$table->width = '98%';
 	$table->data = array();
-	$table->data[0][0] = '<h4>' . __('Offline') . '</h4>';
 	$table->data[1][0] = '<h5>'.__('Offline packages loader').'</h5>' . 
 		'<input type="hidden" name="upload_package" value="1">' .
 		'<input type="file" size="55" name="fileloaded">' . 

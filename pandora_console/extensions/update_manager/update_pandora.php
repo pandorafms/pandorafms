@@ -83,20 +83,20 @@ function update_pandora_administration($settings, $user_key) {
 	$table->width = '98%';
 	$table->style = array();
 	$table->style[0] = 'font-weight: bolder; font-size: 20px;';
-	$table->style[1] = 'font-weight: bolder; font-size: 20px;';
 	$table->data = array();
-	$table->data[0][0] = __('Your Pandora FMS open source package installed is');
-	$table->data[0][1] = $conf_update_pandora['last_installed'];
+	$table->data[0][0] = __('Your Pandora FMS open source package installed is') .
+	 ' ' . $conf_update_pandora['last_installed'];
 	html_print_table($table);
 	
 	
-	echo '<p>' .
-		html_print_image("images/information.png", true) . '&nbsp;' .
-		__('This is a automatilly update Pandora Console only. Be careful if you have changed any php file of console, please make a backup this modified files php. Because the update action ovewrite all php files in Pandora console.') .
-		'</p>';
-	echo '<p>' .
+	ui_print_info_message(
+		'<p>' .
+			__('This is a automatilly update Pandora Console only. Be careful if you have changed any php file of console, please make a backup this modified files php. Because the update action ovewrite all php files in Pandora console.') .
+		'</p>' .
+		'<p>' .
 		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.') .
-		'</p>';
+		'</p>'
+	);
 	
 	$table = null;
 	$table->width = '98%';

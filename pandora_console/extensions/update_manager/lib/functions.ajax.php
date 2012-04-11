@@ -51,7 +51,9 @@ function update_pandora_get_packages_online_ajax() {
 	if ($result == false) {
 		$return['last'] = $last;
 		$return['correct'] = 0;
-		$return['package'] = ui_print_error_message(__('Error download packages.'), '', true);
+		$return['package'] = ui_print_error_message(
+			array('message' => __('Error download packages.'),
+				'no_close' => true), '', true);
 		$return['end'] = 1;
 	}
 	else {
@@ -250,7 +252,7 @@ function update_pandora_install_package() {
 	exec($command, $output, $status);
 	//html_debug_print($command, true);
 	
-	$command = 'tar xzvf ' . $dir . $filename . ' -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
+	$command = 'tar xzvf ' . $dir . $filename . ' --strip-components=1 -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
 	//html_debug_print($command, true);
 	
 	//Maybe this line run for seconds or minutes
@@ -343,30 +345,40 @@ function checking_online_enterprise_package() {
 	
 	if ($package === true) {
 		$return['text'] = ui_print_success_message(
-			__('Your system is up-to-date'), '', true);
+			array('message' => __('Your system is up-to-date'),
+				'no_close' => true), '', true);
 	}
 	elseif ($package === false) {
 		$return['text'] = ui_print_error_message(
-			__('Server authorization rejected'), '', true);
+			array('message' => __('Server authorization rejected'),
+				'no_close' => true), '', true);
 	}
 	elseif ($package === 0) {
 		$return['text'] = ui_print_error_message(
-			__('Server connection failed'), '', true) . '<br />' .
+			array('message' => __('Server connection failed'),
+				'no_close' => true), '', true) . '<br />' .
 			$error_message;
 	}
 	else {
-		$return['enable_buttons'] = true;
-		
-		$return['version_package_text'] = '<strong>'.__('Id').'</strong>: ' .
-			$package->id .
-			' <strong>'.__('Timestamp').'</strong>: ' .
-			$package->timestamp;
-		
-		$return['text'] = ui_print_success_message(
-			__('There\'s a new update for Pandora FMS'), '', true) .
-			$return['version_package_text'];
-		
-		$return['details_text'] = html_entity_decode($package->description);
+		if ($package->id == 'ERROR_NON_NUMERIC_FOUND') {
+			$return['text'] = ui_print_error_message(
+				array('message' => __('Server unknow error'),
+				'no_close' => true), '', true);
+		}
+		else {
+			$return['enable_buttons'] = true;
+			$return['version_package_text'] = '<strong>'.__('Id').'</strong>: ' .
+				$package->id .
+				' <strong>'.__('Timestamp').'</strong>: ' .
+				$package->timestamp;
+			
+			$return['text'] = ui_print_success_message(
+				array('message' => __('There\'s a new update for Pandora FMS'),
+				'no_close' => true), '', true) .
+				$return['version_package_text'];
+			
+			$return['details_text'] = html_entity_decode($package->description);
+		}
 	}
 	
 	echo json_encode($return);

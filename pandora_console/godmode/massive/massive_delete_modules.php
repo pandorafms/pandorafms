@@ -202,6 +202,7 @@ foreach ($module_types as $type) {
 
 $table->width = '99%';
 $table->data = array ();
+$table->style[2] = 'font-weight: bold';
 	
 $table->data[0][0] = __('Selection mode');
 $table->data[0][1] = __('Select modules first').' '.html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);

@@ -1,3 +1,8 @@
+2012-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/agentes/estado_agente.php: Added columns to edit agent
+	from operaion view. Only for admins
+
 2012-04-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/groups/group_list.php

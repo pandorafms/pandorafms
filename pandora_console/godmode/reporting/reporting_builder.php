@@ -139,7 +139,7 @@ switch ($action) {
 	case 'list':
 		$buttons = array(
 			'list_reports' => array('active' => false,
-				'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">' . 
+				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
 					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
 			);	
 
@@ -158,7 +158,7 @@ switch ($action) {
 		}
 	
 		// Report LIST
-		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "");
+		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "",false, $buttons);
 		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
@@ -852,7 +852,7 @@ switch ($action) {
 		if ($enterpriseEnable){
 			$buttons = array(
 				'list_reports' => array('active' => false,
-					'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">' . 
+					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
 						html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
 				);	
 

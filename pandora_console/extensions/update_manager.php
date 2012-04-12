@@ -31,8 +31,20 @@ if (is_ajax ()) {
 	$checking_online_enterprise_package =
 		(bool)get_parameter('checking_online_enterprise_package', false);
 	
+	$get_license_info = get_parameter('get_license_info', 0);	
+	
 	if ($checking_online_enterprise_package) {
 		checking_online_enterprise_package();
+		
+		return;
+	}
+		
+	if ($get_license_info) {
+	
+		include_once("include/functions_db.php");
+		enterprise_include_once('include/functions_license.php');
+
+		enterprise_hook('license_show_info');
 	}
 	
 	return;

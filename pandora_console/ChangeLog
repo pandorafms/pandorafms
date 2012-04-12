@@ -1,3 +1,11 @@
+2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/jquery.pandora.js
+	 extensions/update_license_info.php
+	 extensions/update_manager.php
+	 extensions/update_manager/settings.php: Added modal window and view 
+	 of UM license information.
+
 2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* index.php, extensions/update_manager.php,

@@ -106,6 +106,34 @@ $(document).ready (function () {
 	});	
 	
 	
+	$("a#dialog_license_info").click (function () {
+		jQuery.get ("ajax.php",
+			{"page": "extensions/update_manager",
+			 "get_license_info": "1"},
+			function (data, status) {
+				$("#dialog_show_license").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						title: $("a#dialog_license_info").attr ("title"),
+						resizable: false,
+                        draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						bgiframe: jQuery.browser.msie,
+						width: 500,
+						height: 180
+					})
+					.show ();
+			},
+			"html"
+		);	
+		return false;
+	});
+	
 }
 
 );

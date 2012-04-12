@@ -14,6 +14,30 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+if (is_ajax ()) {
+	global $config;
+	
+	check_login ();
+	
+	if (! check_acl ($config["id_user"], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access event viewer");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	require_once('update_manager/lib/functions.ajax.php');
+	
+	$checking_online_enterprise_package =
+		(bool)get_parameter('checking_online_enterprise_package', false);
+	
+	if ($checking_online_enterprise_package) {
+		checking_online_enterprise_package();
+	}
+	
+	return;
+}
+
 function load_update_manager_lib () {
 	set_time_limit (0);
 	require_once ('update_manager/load_updatemanager.php');
@@ -32,34 +56,6 @@ function update_settings_database_connection () {
 
 function pandora_update_manager_install () {
 	global $config;
-	
-	if (isset ($config['update_manager_installed'])) {
-		$update_server_path = db_get_value('value', 'tupdate_settings', '`key`', 'update_server_path');
-		
-		
-		////OVERWRITE EVER THE UPDATE SERVER PATH.//////////////////////
-		/*
-		The server path is ever the value from PHP. And you wonder
-		"Why?". Yes, I wonder too. And it is for when the user update
-		the Pandora Console PHP files to new version, this conf param
-		"automagic" change to new path for the new updates in the new
-		version.
-		*/
-		
-		if ($update_server_path != '/pandoraupdate4/server.php') {
-			$result = db_process_sql_update('tupdate_settings',
-				array('value' => '/pandoraupdate4/server.php'),
-				array('key' => 'update_server_path'));
-			
-			if ($result === false) {
-				db_pandora_audit("ERROR update extension", "Error in the update the extension 'update manager' when update the 'update_server_path' field.");
-			}
-		}
-		////////////////////////////////////////////////////////////////
-		
-		/* Already installed */
-		return;
-	}
 	
 	load_update_manager_lib ();
 	
@@ -97,21 +93,24 @@ function pandora_update_manager_uninstall () {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			db_process_sql ('DELETE FROM `tconfig` WHERE `token` = "update_manager_installed"');
+			db_process_sql ('DELETE FROM `tconfig`
+				WHERE `token` = "update_manager_installed"');
 			db_process_sql ('DROP TABLE `tupdate_settings`');
 			db_process_sql ('DROP TABLE `tupdate_journal`');
 			db_process_sql ('DROP TABLE `tupdate`');
 			db_process_sql ('DROP TABLE `tupdate_package`');
 			break;
 		case "postgresql":
-			db_process_sql ('DELETE FROM "tconfig" WHERE "token" = \'update_manager_installed\'');
+			db_process_sql ('DELETE FROM "tconfig"
+				WHERE "token" = \'update_manager_installed\'');
 			db_process_sql ('DROP TABLE "tupdate_settings"');
 			db_process_sql ('DROP TABLE "tupdate_journal"');
 			db_process_sql ('DROP TABLE "tupdate"');
 			db_process_sql ('DROP TABLE "tupdate_package"');
 			break;
 		case "oracle":
-			db_process_sql ('DELETE FROM tconfig WHERE token = \'update_manager_installed\'');
+			db_process_sql ('DELETE FROM tconfig
+				WHERE token = \'update_manager_installed\'');
 			db_process_sql ('DROP TABLE tupdate_settings');
 			db_process_sql ('DROP TABLE tupdate_journal');
 			db_process_sql ('DROP TABLE tupdate');
@@ -132,39 +131,41 @@ function pandora_update_manager_main () {
 	update_settings_database_connection ();
 	
 	require_once ('update_manager/main.php');
+	
+	main_view();
 }
 
 function pandora_update_manager_login () {
 	global $config;
 	
-	// If first time, make the first autoupdate and disable it in DB
-	if (!isset($config["autoupdate"])){
-		$config["autoupdate"] = 1;
-		
-		db_process_sql_insert('tconfig', array('token' => 'autoupdate', 'value' => 0));
-	}
-	
 	if ($config["autoupdate"] == 0)
 		return;
 	
-	load_update_manager_lib ();
+	unset($_SESSION['new_update']);
 	
-	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+	if (enterprise_installed()) {
+		um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
-	$settings = um_db_load_settings ();
-	
-	$user_key = get_user_key ($settings);
-	
-	$package = um_client_check_latest_update ($settings, $user_key);
-	
-	if (is_object ($package)) {
-		echo '<div class="notify">';
-		echo '<img src="images/information.png" alt="info" /> ';
-		echo __('There\'s a new update for Pandora');
-		echo '. <a href="index.php?sec=extensions&amp;sec2=extensions/update_manager">';
-		echo __('More info');
-		echo '</a>';
-		echo '</div>';
+		$settings = um_db_load_settings ();
+		
+		$user_key = get_user_key ($settings);
+		
+		$package = um_client_check_latest_update ($settings, $user_key);
+		
+		if (is_object ($package)) {
+			if ($package->id != 'ERROR_NON_NUMERIC_FOUND')
+				$_SESSION['new_update'] = 'new';
+		}
+	}
+	else {
+		require(
+			"extensions/update_manager/lib/functions.ajax.php");
+		
+		$result = update_pandora_get_packages_online_ajax(false);
+		
+		if ($result['correct']) {
+			$_SESSION['new_update'] = 'new';
+		}
 	}
 }
 

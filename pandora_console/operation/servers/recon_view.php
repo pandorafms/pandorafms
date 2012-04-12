@@ -109,7 +109,7 @@ foreach ($servers as $serverItem) {
 		$data = array ();
 		
 		if($task["disabled"] == 0) {
-			$data[0] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'&amp;force='.$task["id_rt"].'">';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$id_server.'&amp;force='.$task["id_rt"].'">';
 			$data[0] .= html_print_image ("images/target.png", true, array ("title" => __('Force')));
 			$data[0] .= '</a>';
 		}

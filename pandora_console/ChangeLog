@@ -1,3 +1,16 @@
+2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_config.php, extensions/update_manager.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/settings.php,
+	extensions/update_manager/main.php,
+	extensions/update_manager/update_pandora.php: added feature to update the
+	Pandora Console open.
+
+	Merged from the branch "pandora_4.0"
+
 2012-04-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/servers/recon_view.php: Fixed a broken link.

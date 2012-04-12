@@ -1,5 +1,12 @@
 2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/styles/pandora.css: add changes for the new standarized messages.
+	 
+	* extensions/update_manager/update_pandora.php: reverded the deleted file,
+	sorry.
+
+2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: standariced the messages and added one more for
 	info.
 	

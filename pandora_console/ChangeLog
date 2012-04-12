@@ -1,3 +1,19 @@
+2012-04-12  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* extensions/tree.php
+	  extensions/tree/no_branch_.png
+	  extensions/tree/branch_.png
+	  extensions/tree/closed_.png
+	  extensions/tree/expanded_.png
+	  extensions/tree/first_closed_.png
+	  extensions/tree/first_expanded_.png
+	  extensions/tree/last_closed_.png
+	  extensions/tree/last_expanded_.png
+	  extensions/tree/last_leaf_.png
+	  extensions/tree/leaf_.png
+	  extensions/tree/one_closed_.png
+	  extensions/tree/one_expanded_.png. Added files to new open tree view.
+
 2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/update_license_info.php

@@ -756,7 +756,7 @@ if ($action == 'new') {
 	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
 }
 else {
-	html_print_submit_button(__('Edit item'), 'edit_item', false, 'class="sub upd"');
+	html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"');
 }
 echo '</div>';
 echo '</form>';

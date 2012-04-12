@@ -68,7 +68,7 @@ echo '<div id="editor" style="margin-top: -10px;">';
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
 		
-		visual_map_print_button_editor('edit_item', __('Edit item'), 'right', true, 'config_min', true);
+		visual_map_print_button_editor('edit_item', __('Update item'), 'right', true, 'config_min', true);
 		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
 	echo '</div>';
 echo '</div>';

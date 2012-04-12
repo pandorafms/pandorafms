@@ -1,3 +1,9 @@
+2012-04-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_agents.php: Fixed pendigdelete
+	rename of the modules when the agent is erased for
+	bug 3509327
+
 2012-04-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_config.php, extensions/update_manager.php,

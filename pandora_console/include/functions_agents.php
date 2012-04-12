@@ -1743,7 +1743,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		// db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);
 
 		db_process_sql_update ('tagente_modulo',
-		array ('delete_pending' => 1, 'disabled' => 1),
+		array ('delete_pending' => 1, 'disabled' => 1, 'nombre' => 'pendingdelete'),
 			'id_agente = '. $id_agent);
 
 		// Access entries

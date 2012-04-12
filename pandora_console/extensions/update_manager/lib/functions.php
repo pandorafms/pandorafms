@@ -37,6 +37,8 @@ function update_pandora_get_conf() {
 	$conf['last_installed'] = $row['value'];
 	$row = db_get_row('tconfig', 'token', 'update_pandora_conf_last_contact');
 	$conf['last_contact'] = $row['value'];
+	$row = db_get_row('tconfig', 'token', 'update_pandora_conf_download_mode');
+	$conf['download_mode'] = $row['value'];
 	
 	$conf['dir'] = $config['attachment_store'] .  '/update_pandora/';
 	
@@ -52,7 +54,8 @@ function update_pandora_installation() {
 		//The url of update manager.
 		$conf_update_pandora = array('url' => 'http://192.168.70.213/pandora.tar.gz',
 			'last_installed' => '',
-			'last_contact' => '');
+			'last_contact' => '',
+			'download_mode' => 'curl');
 		
 		$values = array('token' => 'update_pandora_conf_url',
 			'value' => $conf_update_pandora['url']);
@@ -62,6 +65,9 @@ function update_pandora_installation() {
 		$return = db_process_sql_insert('tconfig', $values);
 		$values = array('token' => 'update_pandora_conf_last_contact',
 			'value' => $conf_update_pandora['last_contact']);
+		$return = db_process_sql_insert('tconfig', $values);
+		$values = array('token' => 'update_pandora_conf_download_mode',
+			'value' => $conf_update_pandora['download_mode']);
 		$return = db_process_sql_insert('tconfig', $values);
 		
 		ui_print_result_message($return, __('Succesful store conf data in DB.'),
@@ -93,6 +99,9 @@ function update_pandora_update_conf() {
 	$values = array('value' => $conf_update_pandora['last_contact']);
 	$return = db_process_sql_update('tconfig', $values,
 		array('token' => 'update_pandora_conf_last_contact'));
+	$values = array('value' => $conf_update_pandora['download_mode']);
+	$return = db_process_sql_update('tconfig', $values,
+		array('token' => 'update_pandora_conf_download_mode'));
 	
 	return $return;
 }
@@ -196,7 +205,9 @@ function update_pandora_print_javascript_admin() {
 	
 	?>
 	<script type="text/javascript">
+		var disabled_download_package = false;
 		var last = 0;
+		
 		$(document).ready(function() {
 			ajax_get_online_package_list_admin();
 			
@@ -268,6 +279,13 @@ function update_pandora_print_javascript_admin() {
 				data: parameters,
 				dataType: "json",
 				success: function(data) {
+					if (data['correct'] == 1) {
+						if (data['mode'] == 'wget') {
+							disabled_download_package = true;
+							$("#progress_bar_img img").show();
+							install_package(package, data['filename']);
+						}
+					}
 				}
 			});
 			
@@ -286,19 +304,29 @@ function update_pandora_print_javascript_admin() {
 				data: parameters,
 				dataType: "json",
 				success: function(data) {
+					if (disabled_download_package)
+						return;
+					
 					if (data['correct'] == 1) {
-						$("#info_text").show();
-						$("#info_text").html(data['info_download']);
-						
-						$("#progress_bar_img img").attr('src', data['progres_bar_src']);
-						$("#progress_bar_img img").attr('alt', data['progres_bar_alt']);
-						$("#progress_bar_img img").attr('title', data['progres_bar_title']);
-						
-						if (data['percent'] < 100) {
-							check_download_package(package);
+						if (data['mode'] == 'wget') {
+							$("#info_text").show();
+							$("#info_text").html(data['info_download']);
+							$("#progress_bar_img img").hide();
 						}
 						else {
-							install_package(package, data['filename']);
+							$("#info_text").show();
+							$("#info_text").html(data['info_download']);
+							
+							$("#progress_bar_img img").attr('src', data['progres_bar_src']);
+							$("#progress_bar_img img").attr('alt', data['progres_bar_alt']);
+							$("#progress_bar_img img").attr('title', data['progres_bar_title']);
+							
+							if (data['percent'] < 100) {
+								check_download_package(package);
+							}
+							else {
+								install_package(package, data['filename']);
+							}
 						}
 					}
 					else {
@@ -419,14 +447,16 @@ function update_pandora_print_javascript_admin() {
 					}
 					else {
 						$(".spinner_row", "#online_packages").remove();
-						
+						row_html = '<tr class="package_' + data['package'] + '">' + 
+							'<td style=" text-align:left; width:80%;" class="name_package">' +
+							data['package'] +
+							'</td>' +
+							'<td style=" text-align:center; width:50px;"></td>' +
+							'</tr>';
+						console.log(row_html);
+						$("tbody", "#online_packages").append(row_html); return;
 						$("tbody", "#online_packages").append(
-							'<tr class="package_' + data['package'] + '">' + 
-								'<td style=" text-align:left; width:80%;" class="name_package">' +
-									data['package'] +
-								'</td>' +
-								'<td style=" text-align:center; width:50px;"></td>' +
-							'</tr>');
+							);
 					}
 				}
 			});

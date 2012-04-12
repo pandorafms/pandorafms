@@ -58,12 +58,12 @@ function config_update_value ($token, $value) {
 			}
 			
 			$value = io_safe_output($value);
-
+			
 			if (strpos($value, "\r\n") !== false)
 				$ips = explode("\r\n", $value);
 			else
 				$ips = explode("\n", $value);
-
+			
 			$valueDB = '';
 			$count = 0;
 			$lastInsert = false;
@@ -749,12 +749,14 @@ function config_check (){
 	}
 	
 	//pandora_update_manager_login();
-	if ($_SESSION['new_update'] == 'new') {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => __("New update of Pandora Console"),
-			'message' => __('There is a new update please go to menu operation and into extensions go to Update Manager for more details.'),
-			'no_close' => true), '', true);
+	if (isset($_SESSION['new_update'])) {
+		if ($_SESSION['new_update'] == 'new') {
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= ui_print_info_message(
+				array('title' => __("New update of Pandora Console"),
+				'message' => __('There is a new update please go to menu operation and into extensions go to Update Manager for more details.'),
+				'no_close' => true), '', true);
+		}
 	}
 }
 

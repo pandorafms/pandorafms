@@ -138,6 +138,9 @@ function pandora_update_manager_main () {
 function pandora_update_manager_login () {
 	global $config;
 	
+	if ($config["autoupdate"] == 0)
+		return;
+	
 	unset($_SESSION['new_update']);
 	
 	if (enterprise_installed()) {
@@ -148,7 +151,7 @@ function pandora_update_manager_login () {
 		$user_key = get_user_key ($settings);
 		
 		$package = um_client_check_latest_update ($settings, $user_key);
-		html_debug_print($package, true);
+		
 		if (is_object ($package)) {
 			if ($package->id != 'ERROR_NON_NUMERIC_FOUND')
 				$_SESSION['new_update'] = 'new';
@@ -159,7 +162,7 @@ function pandora_update_manager_login () {
 			"extensions/update_manager/lib/functions.ajax.php");
 		
 		$result = update_pandora_get_packages_online_ajax(false);
-		html_debug_print($result, true);
+		
 		if ($result['correct']) {
 			$_SESSION['new_update'] = 'new';
 		}

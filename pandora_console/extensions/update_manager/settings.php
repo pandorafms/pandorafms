@@ -22,17 +22,39 @@ if (! check_acl ($config['id_user'], 0, 'PM')) {
 	return;
 }
 
+include ("extensions/update_manager/lib/functions.php");
+
 um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
 
 $update_settings = (bool) get_parameter_post ('update_settings');
 
-ui_print_page_header (__('Update manager').' - '. __('Settings'), "images/extensions.png", false, "", true, "" );
+$buttons = array(
+	'admin' => array(
+	'active' => false,
+	'text' => '<a href="index.php?sec=extensions&sec2=extensions/update_manager">' . 
+		html_print_image ("images/eye.png",
+			true, array ("title" => __('Update manager'))) .'</a>'));
+
+ui_print_page_header (__('Update manager').' - '. __('Settings'),
+	"images/extensions.png", false, "", true, $buttons);
 
 if ($update_settings) {
 	foreach ($_POST['keys'] as $key => $value) {
 		um_db_update_setting ($key, $value);
 	}
+	
+	if (!enterprise_installed()) {
+		global $conf_update_pandora;
+		if (empty($conf_update_pandora))
+			$conf_update_pandora = update_pandora_get_conf();
+		
+		$conf_update_pandora['download_mode'] =
+			get_parameter('download_mode', 'curl');
+		
+		update_pandora_update_conf();
+	}
+	
 	echo "<h3 class=suc>".__('Update manager settings updated')."</h3>";
 }
 
@@ -72,6 +94,21 @@ $table->data[8][1] = html_print_input_text ('keys[proxy_user]', $settings->proxy
 
 $table->data[9][0] = '<strong>'.__('Proxy password').'</strong>';
 $table->data[9][1] = html_print_input_password ('keys[proxy_pass]', $settings->proxy_pass, '', 40, 255, true);
+
+if (!enterprise_installed()) {
+	global $conf_update_pandora;
+	if (empty($conf_update_pandora))
+		$conf_update_pandora = update_pandora_get_conf();
+	
+	$methods = array(
+		'wget' => __('WGET, no interactive, external command, fast'),
+		'curl' =>__('CURL, interactive, internal command, slow'));
+	
+	$table->data[10][0] = '<strong>' . __('Download Method') . '</strong>';
+	$table->data[10][1] = html_print_select($methods,
+		'download_mode', $conf_update_pandora['download_mode'], '', '',
+		0, true);
+}
 
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

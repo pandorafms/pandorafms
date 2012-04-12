@@ -35,8 +35,15 @@ function main_view() {
 	$settings = um_db_load_settings ();
 	$user_key = get_user_key ($settings);
 	
+	$buttons = array(
+		'admin' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gextensions&sec2=extensions/update_manager">' . 
+			html_print_image ("images/god7.png",
+				true, array ("title" => __('Update manager'))) .'</a>'));
+	
 	ui_print_page_header (__('Update manager'), "images/extensions.png",
-		false, "", false);
+		false, "", false, $buttons);
 	
 	if (enterprise_installed()) {
 		main_view_enterprise($settings, $user_key);

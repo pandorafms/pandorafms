@@ -1,3 +1,11 @@
+2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_config.php, extensions/update_manager.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/settings.php, extensions/update_manager/main.php:
+	some changes and fixes in this part.
+
 2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_ui.php: Fixed ui_print_timestamp function.

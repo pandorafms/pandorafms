@@ -152,19 +152,30 @@ sub data_consumer ($$) {
 		# Get agent address
 		my $addr = $host->addr();
 		next unless ($addr ne '0');
-		
+
 		# Update the recon task or break if it does not exist anymore
 		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_up / 100))) eq '0E0');
-       
+
+		# Resolve hostnames
+		my $host_name = undef;
+		if ($task->{'resolve_names'} == 1){
+			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
+		}
+		$host_name = $addr unless defined ($host_name);
+
 		# Does the host already exist?
 		my $agent = get_agent_from_addr ($dbh, $addr);
+		if (! defined ($agent)) {
+			$agent = get_agent_from_name ($dbh, $host_name);
+		}		
+
 		my $agent_id = defined ($agent) ? $agent->{'id_agente'} : 0;
 		if ($agent_id > 0) {
 
-			# Skip if not in learning mode or parent detection is disabled
-			next if ($agent->{'modo'} != 1 || $task->{'parent_detection'} == 0);
+			# Skip if not in learning mode
+			next if ($agent->{'modo'} != 1);
 		}
-		
+
 		# Filter by TCP port
 		if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
 			next unless (tcp_scan ($pa_config, $addr, $task->{'recon_ports'}) > 0);
@@ -182,27 +193,27 @@ sub data_consumer ($$) {
 		if ($task->{'parent_detection'} == 1) {
 			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
 		}
-		
-		# If the agent already exists update parent and continue
-		if ($agent_id > 0) {
-			if ($parent_id > 0) {
-				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
-			}
-			next;
-		}
-
-		# Resolve hostnames
-		my $host_name = undef;
-		if ($task->{'resolve_names'} == 1){
-			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
-		}
-		$host_name = $addr unless defined ($host_name);
 
 		# Add the new address if it does not exist
 		my $addr_id = get_addr_id ($dbh, $addr);
 		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
 		if ($addr_id <= 0) {
 			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
+			next;
+		}
+
+		# Assign the new address to the agent
+		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
+		if ($agent_addr_id <= 0) {
+			db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		                  VALUES (?, ?)', $addr_id, $agent_id);
+		}
+
+		# If the agent already exists update parent and continue
+		if ($agent_id > 0) {
+			if ($parent_id > 0) {
+				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
+			}
 			next;
 		}
 
@@ -268,10 +279,6 @@ sub data_consumer ($$) {
 			logger($pa_config, "Error creating agent '$host_name'.", 3);
 			next;
 		}
-
-		# Assign the new address to the agent
-		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		                  VALUES (?, ?)', $addr_id, $agent_id);
 
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});

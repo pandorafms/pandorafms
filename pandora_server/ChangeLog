@@ -1,3 +1,10 @@
+2012-04-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm,
+	  lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/ReconServer.pm: Improved Recon Server to detect
+	  hostnames that resolve to multiple IP addresses. Fixes bug #3052350.
+
 2012-04-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Check for single tag XMLs. Fixes bug #3514207.

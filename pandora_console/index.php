@@ -99,7 +99,6 @@ $config["pure"] = (bool) get_parameter ("pure");
 // Auto Refresh page (can now be disabled anywhere in the script)
 $config["refr"] = (int) get_parameter ("refr");
 
-
 ob_start ();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
@@ -125,6 +124,8 @@ $page = $sec2; //Reference variable for old time sake
 
 $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);
+
+$process_login = false;
 
 $searchPage = false;
 $search = get_parameter_get("head_search_keywords");
@@ -161,13 +162,16 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
 	$nick = db_escape_string_sql($nick);
 	$pass = db_escape_string_sql($pass);
+	
 	// process_user_login is a virtual function which should be defined in each auth file.
 	// It accepts username and password. The rest should be internal to the auth file.
 	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
 	// process_user_login should return false in case of errors or invalid login, the nickname if correct
 	$nick_in_db = process_user_login ($nick, $pass);
-			
+	
 	if ($nick_in_db !== false) {
+		$process_login = true;
+		
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
 		db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
@@ -175,9 +179,9 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		$config['id_user'] = $nick_in_db;
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
-
+		
 		$user_language = get_user_language ($config['id_user']);
-
+		
 		$l10n = NULL;
 		if (file_exists ('./include/languages/'.$user_language.'.mo')) {
 			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
@@ -195,6 +199,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 }
 elseif (! isset ($config['id_user'])) {
 	// There is no user connected
+	
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");
@@ -217,7 +222,10 @@ if (isset ($_GET["bye"])) {
  * Load here, because if not, some extensions not load well, I don't why.
  */
 extensions_load_extensions ($config['extensions']);
-
+if ($process_login) {
+	 /* Call all extensions login function */
+	extensions_call_login_function ();
+}
 
 // Header
 if ($config["pure"] == 0) {

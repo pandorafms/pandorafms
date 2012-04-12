@@ -1,5 +1,13 @@
 2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* index.php, extensions/update_manager.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/update_pandora.php: some fixeds and
+	changes, the most important fixed/change have been the call to
+	hook for the login extensions.
+
+2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_config.php, extensions/update_manager.php,
 	extensions/update_manager/lib/functions.ajax.php,
 	extensions/update_manager/lib/functions.php,

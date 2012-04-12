@@ -143,11 +143,13 @@ function update_pandora_get_list_downloaded_packages($mode = 'operation') {
 	if (empty($packages)) {
 		if ($mode == 'operation') {
 			$packages[] = array('name' => 
-				__('There are not downloaded packages in your Pandora Console.'));
+				__('There are not downloaded packages in your Pandora Console.'),
+				'time' => '');
 		}
 		else {
 			$packages[] = array('empty' => true, 'name' =>
-				__('There are not downloaded packages in your Pandora Console.'));
+				__('There are not downloaded packages in your Pandora Console.'),
+				'time' => '');
 		}
 	}
 	
@@ -423,16 +425,15 @@ function update_pandora_print_javascript_admin() {
 						
 						$("tbody", "#online_packages").append(
 							'<tr class="package_' + data['package'] + '">' + 
-								'<td style=" text-align:left; width:50%;" class="name_package">' +
-									'<?php echo '<b>' . __('There is a new version:') . '</b> '; ?>' +
+								'<td style=" text-align:left; width:50%;" valign="top" class="name_package">' + 
+									'<?php echo '<b>' . __('There is a new version:') . '</b><br><br> '; ?>' +
 									data['package'] +
 								'</td>' +
-								'<td style=" text-align:left; width:30%;" class="timestamp_package">' +
+								'<td style=" text-align:left; width:30%;" valign="bottom" class="timestamp_package">' +
 									data['timestamp'] +
 								'</td>' +
-								'<td style=" text-align:center; width:50px;">' +
+								'<td style=" text-align:center; width:50px;" valign="bottom">' +
 								buttonUpdate +
-								' ' + data['text_adv'] + 
 								'</td>' +
 							'</tr>');
 						

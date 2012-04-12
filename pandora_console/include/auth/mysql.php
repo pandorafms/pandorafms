@@ -103,6 +103,7 @@ function process_user_login ($login, $pass) {
 		}
 		else {
 			$mysql_cache["auth_error"] = "User not found in database or incorrect password";
+			$config["auth_error"] = "User not found in database or incorrect password";
 		}
 
 		return false;

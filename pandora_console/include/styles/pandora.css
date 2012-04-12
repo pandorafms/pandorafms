@@ -168,11 +168,25 @@ div#login_in, #login_f {
 	width: 400px;
 }
 div#error_login {
-	margin: 0 auto;
-	margin-top: -10px; 
+	#margin: 0 auto;
+	#margin-top: -10px; 
 	text-align: center;
-	margin-left: 20px;
+	margin-top: 30px;
+	margin-left: 5px;
+	width: 73%;
+	float: left;
 }
+
+div#error_login_icon {
+	#margin: 0 auto;
+	margin-top: 10px; 
+	margin-right: 7px; 
+	text-align: center;
+	#margin-left: 20px;
+	width: 20%;
+	float: right;
+}
+
 div#login_f {
 	margin-top: 10px;
 	margin-bottom: 25px;

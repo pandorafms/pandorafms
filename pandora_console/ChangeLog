@@ -1,3 +1,16 @@
+2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/dialog.css
+	 include/styles/pandora.css
+	 include/auth/mysql.php
+	 general/login_page.php: Modal windows improved and login page error
+	 changed.
+	 
+	 Merged from trunk. 
+
+	* include/styles/images/ui-bg_diagonals-thick_20_666666_40x40.png:
+	Added background image of modal windows.
+
 2012-04-12  Sergio Martin <sergio.martin@artica.es>
 
 	* enterprise/godmode/reporting/reporting_builder.template_item.php: 

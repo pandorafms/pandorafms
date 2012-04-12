@@ -2,7 +2,7 @@
 /* This file skins dialog */
 
 .ui-dialog {
-    background: #EEEEEE !important; 
+    background: #D3D3D3 !important; 
     border: 1px solid #DDDDDD !important;
     color: #333333 !important;
     padding: 0.2em !important;
@@ -19,17 +19,22 @@
 
 .ui-dialog .ui-dialog-titlebar {
 	background: url(../../images/ui_title.png) repeat-x scroll !important;
-	height: 28px !important;
-	_height: 29px !important;
-	margin: 2px auto 0 auto !important;
+	#height: 15px !important;
+	#_height: 16px !important;
+	padding: 0.3em 1em !important;
+	position:relative;
+	margin: 0px auto 0 auto !important;
 	font-weight: bold !important;
-	border: 1px solid #3d6630 !important;
+	border-bottom: 1px solid #A9A9A9 !important;
+	border-top: 1px solid #A9A9A9 !important;
+	border-left: 1px solid #A9A9A9 !important;
+	border-right: 1px solid #A9A9A9 !important;
 	color: #FFFFFF !important;
-	padding: 0.1em 1em !important;
+	#padding: 0.1em 1em !important;
 
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
 }
 
 .ui-dialog .ui-dialog-title {
@@ -37,8 +42,9 @@
 	color: white !important;
 	font-weight: bold !important;
 	position: relative !important;
-	top: 7px !important;
+	#top: 7px !important;
 	left: 4px !important;
+	float: none !important;
 }
 
 .ui-dialog.ui-draggable .ui-dialog-titlebar {
@@ -50,7 +56,7 @@
 	height: 16px !important;
 	background: url(images/dialog-titlebar-close.png) no-repeat !important;
 	position: absolute !important;
-	top: 6px;
+	top: 2px;
 	right: 17px !important;
 	cursor: default !important;
 }
@@ -66,15 +72,43 @@
 	.ui-dialog .ui-dialog-titlebar-close-hover {
 		color: #000000 !important;
 	}
+	
+
+	.ui-dialog .ui-dialog-titlebar-close:hover span {
+		display: none !important;
+	}
+
+	.ui-dialog .ui-dialog-titlebar-close:hover {
+		background: url(images/dialog-titlebar-close-hover.png) no-repeat !important;
+	}
+
+	.ui-dialog .ui-dialog-titlebar-close:hover {
+		color: #000000 !important;
+	}
+
+	
 
 .ui-dialog .ui-dialog-content {
 	margin: 1.2em !important;
-	padding: 0.5em 1em !important;
+	#padding: 0.5em 1em !important;
 	overflow: auto !important;
+	
+	border-left: 1px solid #A9A9A9 !important;
+	border-right: 1px solid #A9A9A9 !important;
+	border-bottom: 1px solid #A9A9A9 !important;
+    border-radius: 0px 0px 4px 4px !important;
+	#height: 80% !important;
+    #width: 98% !important;
+    margin: 0 auto !important;
+    background: #EEEEEE !important;	
+    position: relative !important;
+	
 }
 
 .ui-dialog-content {
 	overflow: auto !important;
+	width: auto !important;
+	#height: auto !important;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
@@ -180,12 +214,12 @@
 .ui-dialog .ui-button-dialog {
     background: #F6F6F6;
     border: 1px solid #CCCCCC;
-    color: #1C94C4;
+    color: #696969;
     font-weight: bold;
     outline: medium none;
     cursor: pointer;    
-    margin: 0.5em 0.4em 0.5em 0;
-    border-radius: 4px 4px 4px 4px;
+    margin: 0.5em 0.4em 0.5em 0 !important;
+    border-radius: 4px 4px 4px 4px !important;
 }
 
 .ui-dialog .ui-button-dialog:hover {
@@ -196,3 +230,6 @@
     outline: medium none;
 }
 
+.ui-dialog-overlay {
+	background: url("images/ui-bg_diagonals-thick_20_666666_40x40.png") repeat scroll 50% 50% #666666 !important;
+}

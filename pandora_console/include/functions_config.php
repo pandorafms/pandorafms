@@ -384,7 +384,7 @@ function config_process_config () {
 	if (!isset ($config["font_size"])) {
 		config_update_value ('font_size', 7);
 	}
-
+	
 	/* 
 	 *Parse the ACL IP list for access API that it's save in chunks as
 	 *list_ACL_IPs_for_API_<num>, because the value has a limit of 100

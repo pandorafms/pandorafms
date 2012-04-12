@@ -1,5 +1,10 @@
 2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* extensions/update_license_info.php
+	 extensions/update_manager.php: Cleaned source code.
+
+2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/javascript/jquery.pandora.js
 	 extensions/update_manager.php
 	 extensions/update_manager/settings.php: Added modal window with UM

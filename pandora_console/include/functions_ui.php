@@ -378,17 +378,16 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 	
 	$output = '<'.$tag;
 	switch ($tag) {
-		default:
-			//Usually tags have title attributes, so by default we add,
-			//then fall through to add attributes and data
-			$output .= ' title="'.$title.'"';
-			break;
-		case "h1":
-		case "h2":
-		case "h3":
-			//Above tags don't have title attributes
-			$output .= ' '.$attributes.' '.$style.'>'.$data.'</'.$tag.'>';
-			break;
+	default:
+		//Usually tags have title attributes, so by default we add, then fall through to add attributes and data
+		$output .= ' title="'.$title.'">' . $data .'</'.$tag.'>';
+		break;
+	case "h1":
+	case "h2":
+	case "h3":
+		//Above tags don't have title attributes
+		$output .= ' '.$attributes.' '.$style.'>'.$data.'</'.$tag.'>';
+		break;
 	}
 	
 	if ($return)

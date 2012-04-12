@@ -1,3 +1,9 @@
+2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php: Fixed ui_print_timestamp function.
+
+	Merged from trunk.
+
 2012-04-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/servers/recon_view.php: Merged from trunk. Fixed a broken

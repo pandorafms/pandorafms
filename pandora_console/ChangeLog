@@ -1,5 +1,12 @@
 2012-04-12  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.php
+	godmode/reporting/reporting_builder.item_editor.php: 
+	Changed "Edit item" by "Update item" in visual console
+	and report editors for bug 3504527
+
+2012-04-12  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_agents.php: Fixed pendigdelete
 	rename of the modules when the agent is erased for
 	bug 3509327

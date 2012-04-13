@@ -332,7 +332,8 @@ CREATE TABLE "talert_compound" (
 	"last_reference" BIGINT NOT NULL default 0,
 	"times_fired" INTEGER NOT NULL default 0,
 	"disabled" SMALLINT default 0,
-	"priority" SMALLINT default 0
+	"priority" SMALLINT default 0,
+	"special_day" SMALLINT default 0
 );
 
 CREATE TYPE type_talert_compound_elements_operation AS ENUM ('NOP', 'AND','OR','XOR','NAND','NOR','NXOR');

@@ -131,6 +131,7 @@ function update_compound ($step) {
 		$friday = (bool) get_parameter ('friday');
 		$saturday = (bool) get_parameter ('saturday');
 		$sunday = (bool) get_parameter ('sunday');
+		$special_day = (bool) get_parameter ('special_day');
 		$time_from = (string) get_parameter ('time_from');
 		$time_from = date ("H:s:00", strtotime ($time_from));
 		$time_to = (string) get_parameter ('time_to');
@@ -151,6 +152,7 @@ function update_compound ($step) {
 					'friday' => $friday,
 					'saturday' => $saturday,
 					'sunday' => $sunday,
+					'special_day' => $special_day,
 					'time_from' => $time_from,
 					'time_to' => $time_to,
 					'time_threshold' => $threshold,
@@ -166,6 +168,7 @@ function update_compound ($step) {
 					'friday' => $friday,
 					'saturday' => $saturday,
 					'sunday' => $sunday,
+					'special_day' => $special_day,
 					'time_from' => "#to_date('" . $time_from . "', 'hh24:mi:ss')",
 					'time_to' => "#to_date('" . $time_to . "', 'hh24:mi:ss')",
 					'time_threshold' => $threshold,
@@ -226,6 +229,7 @@ $thursday = true;
 $friday = true;
 $saturday = true;
 $sunday = true;
+$special_day = false;
 $default_action = 0;
 $field1 = '';
 $field2 = '';
@@ -250,6 +254,7 @@ if ($id && ! $create_compound) {
 	$friday = (bool) $compound['friday'];
 	$saturday = (bool) $compound['saturday'];
 	$sunday = (bool) $compound['sunday'];
+	$special_day = (bool) $template['special_day'];
 	$max_alerts = $compound['max_alerts'];
 	$min_alerts = $compound['min_alerts'];
 	$threshold = $compound['time_threshold'];
@@ -337,7 +342,6 @@ if ($step == 2) {
 		$table->rowstyle['preview'] = 'display: none';
 	}
 	$table->colspan = array ();
-	$table->colspan[0][1] = 3;
 	$table->colspan[4][1] = 3;
 	$table->colspan['actions'][1] = 3;
 	$table->colspan['field1'][1] = 3;
@@ -360,6 +364,9 @@ if ($step == 2) {
 	$table->data[0][1] .= html_print_checkbox ('saturday', 1, $saturday, true);
 	$table->data[0][1] .= __('Sun');
 	$table->data[0][1] .= html_print_checkbox ('sunday', 1, $sunday, true);
+
+	$table->data[0][2] = __('Use special days list');
+	$table->data[0][3] = html_print_checkbox ('special_day', 1, $special_day, true);
 	
 	$table->data[1][0] = __('Time from');
 	$table->data[1][1] = html_print_input_text ('time_from', $time_from, '', 7, 7,

@@ -405,7 +405,8 @@ CREATE TABLE talert_compound (
 	last_reference NUMBER(19, 0) default 0 NOT NULL,
 	times_fired NUMBER(10, 0) default 0 NOT NULL,
 	disabled NUMBER(5, 0) default 0,
-	priority NUMBER(5, 0) default 0
+	priority NUMBER(5, 0) default 0,
+	special_day NUMBER(5, 0) default 0
 );
 
 CREATE SEQUENCE talert_compound_s INCREMENT BY 1 START WITH 1;

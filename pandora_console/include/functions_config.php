@@ -95,8 +95,8 @@ function config_update_value ($token, $value) {
 			
 			break;
 		default:
-			if (!isset ($config[$token])){
-			$config[$token] = $value;
+			if (!isset ($config[$token])) {
+				$config[$token] = $value;
 				return (bool) config_create_value ($token, $value);
 			}
 			
@@ -244,7 +244,8 @@ function config_update_config () {
 
 	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
 	config_update_value ('refr', get_parameter('refr', $config['refr']));	
-	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));	
+	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
+
 	
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
@@ -614,7 +615,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['autoupdate'])) {
-		config_update_value ( 'autoupdate', 0);
+		config_update_value ( 'autoupdate', 1);
 	}
 	
 	if (!isset ($config['api_password'])) {

@@ -1,3 +1,13 @@
+2012-04-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php, index.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/main.php,
+	extensions/update_manager/update_pandora.php,
+	general/logon_ok.php:: some fixeds and some changes for run fine and
+	pretty the update manager. 
+
 2012-04-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php
@@ -14,8 +24,26 @@
 	 extensions/update_manager/settings.php: Added modal window and view 
 	 of UM license information.
 
-2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
+2012-04-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/main.php,
+	extensions/update_manager/update_pandora.php: some fixeds and some
+	changes for run fine and pretty the update manager.
 
+2012-04-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php: set by default the check update in
+	tconfig as true.
+	
+	* extensions/update_manager/lib/functions.ajax.php: fixed for some
+	old wget version the name of file to download, now it is force to
+	the name return from xml rpc call.
+
+2012-04-12 Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* index.php, extensions/update_manager.php,
 	extensions/update_manager/lib/functions.php,
 	extensions/update_manager/update_pandora.php: some fixeds and

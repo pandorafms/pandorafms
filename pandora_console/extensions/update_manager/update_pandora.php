@@ -117,7 +117,7 @@ function update_pandora_administration($settings, $user_key) {
 	?>
 	<div id="dialog_download" title="<?php echo __('Process packge'); ?>"
 		style="display:none;">
-		<div style="position:absolute; top:20%; text-align: center; left:0%; right:0%; width:600px;">
+		<div style="position:absolute; top:10%; text-align: center; left:0%; right:0%; width:600px;">
 			<?php
 			echo '<h4 id="title_downloading_update_pandora">' . __('Downloading <span class="package_name">package</span> in progress') . " ";
 			html_print_image('images/spinner.gif');
@@ -138,6 +138,11 @@ function update_pandora_administration($settings, $user_key) {
 				</div>";
 			
 			?>
+			<div id="button_close_download_disabled" style="position: absolute; top:280px; right:43%;">
+				<?php
+				html_print_submit_button(__("Close"), 'hide_download_disabled_dialog', true, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');
+				?>  
+			</div>
 			<div id="button_close_download" style="display: none; position: absolute; top:280px; right:43%;">
 				<?php
 				html_print_submit_button(__("Close"), 'hide_download_dialog', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');

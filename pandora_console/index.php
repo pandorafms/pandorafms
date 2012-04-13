@@ -230,7 +230,7 @@ if ($process_login) {
 // Header
 if ($config["pure"] == 0) {
 	echo '<div id="container"><div id="head">';
-	require ("general/header.php"); 
+	require ("general/header.php");
 	echo '</div><div id="page"><div id="menu">';
 	require ("general/main_menu.php");
 	echo '</div>';
@@ -259,11 +259,11 @@ else {
 	if ($page != "") {
 		$page .= '.php';
 		// Enterprise ACL check
-		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $sec, $sec2)) == false){
+		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $sec, $sec2)) == false) {
 			require ("general/noaccess.php");
 		} 
 		elseif (file_exists ($page)) {
-			if (! extensions_is_extension ($page)){
+			if (! extensions_is_extension ($page)) {
 				require_once($page);
 			}
 			else {

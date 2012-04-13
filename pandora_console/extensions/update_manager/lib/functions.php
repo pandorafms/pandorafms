@@ -235,7 +235,7 @@ function update_pandora_print_javascript_admin() {
 					draggable: false,
 					modal: true,
 					height: 400,
-					width: 600,
+					width: 650,
 					overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -260,7 +260,7 @@ function update_pandora_print_javascript_admin() {
 					draggable: true,
 					modal: true,
 					height: 400,
-					width: 600,
+					width: 650,
 					overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -338,6 +338,7 @@ function update_pandora_print_javascript_admin() {
 						
 						$("#info_text").html('');
 						
+						$("#button_close_download_disabled").hide();
 						$("#button_close_download").show();
 					}
 				}
@@ -396,6 +397,7 @@ function update_pandora_print_javascript_admin() {
 						else {
 							$("#title_installing_update_pandora").hide();
 							$("#title_installed_update_pandora").show();
+							$("#button_close_download_disabled").hide();
 							$("#button_close_download").show();
 						}
 					}

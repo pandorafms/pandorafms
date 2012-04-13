@@ -78,17 +78,20 @@ function update_pandora_administration($settings, $user_key) {
 	}
 	
 	$conf_update_pandora = update_pandora_get_conf();
-	
-	$table = null;
-	$table->width = '98%';
-	$table->style = array();
-	$table->style[0] = 'font-weight: bolder; font-size: 20px;';
-	$table->data = array();
-	$table->data[0][0] = __('Your Pandora FMS open source package installed is') .
-	 ' ' . $conf_update_pandora['last_installed'];
-	html_print_table($table);
-	
-	
+
+	if (!empty($conf_update_pandora['last_installed'])){
+		echo '<h4>';
+		echo __('Your Pandora FMS open source package installed is') .
+         ' ' . $conf_update_pandora['last_installed'];
+		echo "</h4>";
+	} else {
+		echo '<h4>';
+                echo __('Your Pandora FMS does not have any update installed yet');
+		echo "</h4>";
+        }
+
+	echo "<br><br>";	
+
 	ui_print_info_message(
 		'<p>' .
 			__('This is a automatilly update Pandora Console only. Be careful if you have changed any php file of console, please make a backup this modified files php. Because the update action ovewrite all php files in Pandora console.') .
@@ -97,13 +100,10 @@ function update_pandora_administration($settings, $user_key) {
 		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.') .
 		'</p>'
 	);
-	
-	$table = null;
-	$table->width = '98%';
-	$table->data = array();
-	$table->data[0][0] = '<h4>' . __('Online') . '</h4>';
-	$table->data[1][0] =
-		'<table id="online_packages" class="databox" width="80%" cellspacing="4" cellpadding="4" border="0" style="">' .
+
+	echo "<h4>". __('Online') . '</h4>';	
+
+	echo '<table id="online_packages" class="databox" width="95%" cellspacing="4" cellpadding="4" border="0" style="">' .
 			'<tbody>
 				<tr id="online_packages-0" class="spinner_row" style="">
 					<td id="online_packages-0-0" style=" text-align:left; width:80%;">' .
@@ -113,22 +113,21 @@ function update_pandora_administration($settings, $user_key) {
 				</tr>
 			</tbody>' .
 		'</table>';
-	html_print_table($table);
 	
 	?>
 	<div id="dialog_download" title="<?php echo __('Process packge'); ?>"
 		style="display:none;">
-		<div style="position:absolute; top:20%; text-align: center; left:0%; right:0%; width:600px;">
+		<div style="position:absolute; top:10%; text-align: center; left:0%; right:0%; width:600px;">
 			<?php
-			echo '<h2 id="title_downloading_update_pandora">' . __('Downloading <span class="package_name">package</span> in progress') . " ";
+			echo '<h4 id="title_downloading_update_pandora">' . __('Downloading <span class="package_name">package</span> in progress') . " ";
 			html_print_image('images/spinner.gif');
-			echo '</h2>';
-			echo '<h2 style="display: none;" id="title_downloaded_update_pandora">' . __('Downloaded <span class="package_name">package</span>') . '</h2>';
-			echo '<h2 style="display: none;" id="title_installing_update_pandora">' . __('Installing <span class="package_name">package</span> in progress') . " ";
+			echo '</h4>';
+			echo '<h4 style="display: none;" id="title_downloaded_update_pandora">' . __('Downloaded <span class="package_name">package</span>') . '</h2>';
+			echo '<h4 style="display: none;" id="title_installing_update_pandora">' . __('Installing <span class="package_name">package</span> in progress') . " ";
 			html_print_image('images/spinner.gif');
-			echo '</h2>';
-			echo '<h2 style="display: none;" id="title_installed_update_pandora">' . __('Installed <span class="package_name">package</span> in progress') . '</h2>';
-			echo '<h2 style="display: none;" id="title_error_update_pandora">' . __('Fail download <span class="package_name">package</span>') . '</h2>';
+			echo '</h4>';
+			echo '<h4 style="display: none;" id="title_installed_update_pandora">' . __('Installed <span class="package_name">package</span> in progress') . '</h2>';
+			echo '<h4 style="display: none;" id="title_error_update_pandora">' . __('Fail download <span class="package_name">package</span>') . '</h2>';
 			echo '<br /><br />';
 			echo "<div id='progress_bar_img'>";
 				echo progress_bar(0, 300, 20, 0 . '%', 1, false, "#00ff00");
@@ -139,6 +138,11 @@ function update_pandora_administration($settings, $user_key) {
 				</div>";
 			
 			?>
+			<div id="button_close_download_disabled" style="position: absolute; top:280px; right:43%;">
+				<?php
+				html_print_submit_button(__("Close"), 'hide_download_disabled_dialog', true, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');
+				?>  
+			</div>
 			<div id="button_close_download" style="display: none; position: absolute; top:280px; right:43%;">
 				<?php
 				html_print_submit_button(__("Close"), 'hide_download_dialog', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');
@@ -147,11 +151,11 @@ function update_pandora_administration($settings, $user_key) {
 		 </div> 
 	</div>
 	<?php
-	
+
+	echo '<h4>' . __('Downloaded Packages') . '</h4>';	
 	$tableMain = null;
-	$tableMain->width = '98%';
+	$tableMain->width = '95%';
 	$tableMain->data = array();
-	$tableMain->data[0][0] = '<h4>' . __('Downloaded Packages') . '</h4>';
 	
 	$list_downloaded_packages = update_pandora_get_list_downloaded_packages('administration');
 	$table = null;

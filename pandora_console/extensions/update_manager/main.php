@@ -84,16 +84,12 @@ function main_view_enterprise($settings, $user_key) {
 	}
 	
 	
+	echo '<h4>';
+		echo __('Your Pandora FMS Enterprise version number is') . ' ' .
+			$settings->current_update;
+	echo "</h4>";
 	
-	$table = null;
-	$table->width = '98%';
-	$table->style = array();
-	$table->style[0] = 'font-weight: bolder; font-size: 20px;';
-	$table->data = array();
-	$table->data[0][0] = __('Your Pandora FMS Enterprise version number is')
-		. ' ' . $settings->current_update;
-	html_print_table($table);
-	
+	echo "<br><br>";
 	
 	
 	/* Translators: Do not translade Update Manager, it's the name of the program */

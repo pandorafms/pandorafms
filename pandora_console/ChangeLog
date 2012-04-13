@@ -1,3 +1,15 @@
+2012-04-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php, index.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/main.php,
+	extensions/update_manager/update_pandora.php,
+	general/logon_ok.php:: some fixeds and some changes for run fine and
+	pretty the update manager. 
+	
+	Merged from the branch "pandora_4.0"
+	
 2012-04-13  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/alerts/configure_alert_compound.php: Added special days

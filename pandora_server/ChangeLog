@@ -1,3 +1,8 @@
+2012-04-13  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Fixed entities trouble in the action
+	exist check merged from trunk
+
 2012-04-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Merged from trunk. Check for single tag

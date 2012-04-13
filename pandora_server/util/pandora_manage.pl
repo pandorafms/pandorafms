@@ -1113,7 +1113,7 @@ sub cli_create_template_action() {
 	exist_check($template_id,'template',$template_name);
 	my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
 	exist_check($template_module_id,'template module',$template_name);
-	my $action_id = get_action_id($dbh,$action_name);
+	my $action_id = get_action_id($dbh,safe_input($action_name));
 	exist_check($action_id,'action',$action_name);
 	
 	$fires_min = 0 unless defined ($fires_min);
@@ -1147,7 +1147,7 @@ sub cli_delete_template_action() {
 	exist_check($template_id,'template',$template_name);
 	my $template_module_id = get_template_module_id($dbh,$module_id,$template_id);
 	exist_check($template_module_id,'template module',$template_name);
-	my $action_id = get_action_id($dbh,$action_name);
+	my $action_id = get_action_id($dbh,safe_input($action_name));
 	exist_check($action_id,'action',$action_name);
 
 	pandora_delete_template_module_action ($dbh, $template_module_id, $action_id);

@@ -89,47 +89,12 @@ switch ($action) {
 		$unit_text = false;
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		switch ($layoutData['type']) {
+			case SIMPLE_VALUE:
 			case SIMPLE_VALUE_MAX:
-				$unit = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-				$unit = trim(io_safe_output($unit));
-				
-				$value = reporting_get_agentmodule_data_max ($layoutData['id_agente_modulo'], 86400, 0);
-				if ($value === false) {
-					$returnValue = __('Unknown');
-				}
-				else {
-					$returnValue = format_for_graph($returnValue, 2);
-					if (!empty($unit_text))
-						$returnValue .= " " . $unit_text;
-				}
-				break;
 			case SIMPLE_VALUE_MIN:
-				$unit = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-				$unit = trim(io_safe_output($unit));
-				
-				$value = reporting_get_agentmodule_data_min ($layoutData['id_agente_modulo'], 86400, 0);
-				if ($value === false) {
-					$returnValue = __('Unknown');
-				}
-				else {
-					$returnValue = format_for_graph($returnValue, 2);
-					if (!empty($unit_text))
-						$returnValue .= " " . $unit_text;
-				}
-				break;
 			case SIMPLE_VALUE_AVG:
-				$unit = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-				$unit = trim(io_safe_output($unit));
-				
-				$value = reporting_get_agentmodule_data_average ($layoutData['id_agente_modulo'], 86400, 0);
-				if ($value === false) {
-					$returnValue = __('Unknown');
-				}
-				else {
-					$returnValue = format_for_graph($returnValue, 2);
-					if (!empty($unit_text))
-						$returnValue .= " " . $unit_text;
-				}
+				$type = visual_map_get_simple_value_type($process_simple_value);
+				$returnValue = visual_map_get_simple_value($type, $layoutData['id_agente_modulo']);
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
@@ -235,9 +200,9 @@ switch ($action) {
 		break;
 	case 'update':
 	case 'move':
+		$values = array();
 		switch ($type) {
 			case 'background':
-				$values = array();
 				if ($background !== null)
 					$values['background'] = $background;
 				if ($width !== null)
@@ -247,13 +212,13 @@ switch ($action) {
 				db_process_sql_update('tlayout', $values, array('id' => $id_visual_console));
 				break;
 			case 'simple_value':
+				$values['type'] = visual_map_get_simple_value_type($process_simple_value);
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
 			case 'module_graph':
 			case 'label':
 			case 'icon':
-				$values = array();
 				if ($label !== null) {
 					$values['label'] = $label;
 				}
@@ -454,21 +419,8 @@ switch ($action) {
 				$values['height'] = $height;
 				break;
 			case 'simple_value':
-				//This allows min, max and avg process in a simple value
-				switch ($process_simple_value){
-					case 0:
-						$values['type'] = SIMPLE_VALUE;
-						break;						
-					case 1:
-						$values['type'] = SIMPLE_VALUE_MIN;
-						break;
-					case 2:
-						$values['type'] = SIMPLE_VALUE_MAX;
-						break;
-					case 3:
-						$values['type'] = SIMPLE_VALUE_AVG;
-						break;		
-				}							
+				//This allows min, max and avg process in a simple value		
+				$values['type'] = visual_map_get_simple_value_type($process_simple_value);				
 				break;
 			case 'label':
 				$values['type'] = LABEL;

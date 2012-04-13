@@ -223,57 +223,10 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
-			$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
-			$unit_text = trim(io_safe_output($unit_text));
-			
 			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text;
-			switch ($type){
-				case SIMPLE_VALUE:
-					$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module);
-					$value = format_for_graph($value, 2);
-					if (!empty($unit_text))
-						$value .= " " . $unit_text;
-					echo ' <strong>' . $value . '</strong>';
-					break;
-				case SIMPLE_VALUE_MAX:	
-					$value = reporting_get_agentmodule_data_max ($id_module, 86400, 0);
-					if ($value === false) {
-						$value = __('Unknown');
-					}
-					else {
-						$value = format_for_graph($value, 2);
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-					}
-					
-					echo ' <strong> ' . $value . '</strong>';
-					break;
-				case SIMPLE_VALUE_MIN:
-					$value = reporting_get_agentmodule_data_min ($id_module, 86400, 0);
-					if ($value === false) {
-						$value = __('Unknown');
-					}
-					else {
-						$value = format_for_graph($value, 2);
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-					}					
-					echo ' <strong> ' . $value . '</strong>';
-					break;
-				case SIMPLE_VALUE_AVG:	
-					$value = reporting_get_agentmodule_data_average ($id_module, 86400, 0);
-					if ($value === false) {
-						$value = __('Unknown');
-					}
-					else {
-						$value = format_for_graph($value, 2);
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-					}				
-					echo ' <strong> ' . $value . '</strong>';
-					break;
-			}						
+			$value = visual_map_get_simple_value($type, $id_module);	
+			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
 			echo '</div>';
 			break;
 		case LABEL:
@@ -315,6 +268,90 @@ function visual_map_print_item($layoutData) {
 		});';
 		echo '</script>';
 	}
+}
+
+/**
+ * The function to get simple value type from the value of process type in the form
+ * 
+ * @param int process simple value from form
+ * 
+ * @return int type among the constants:
+ * SIMPLE_VALUE, SIMPLE_VALUE_MAX, SIMPLE_VALUE_MIN, SIMPLE_VALUE_AVG
+ */
+function visual_map_get_simple_value_type($process_simple_value) {
+	switch ($process_simple_value){
+		case 0:
+			return SIMPLE_VALUE;
+			break;						
+		case 1:
+			return SIMPLE_VALUE_MIN;
+			break;
+		case 2:
+			return SIMPLE_VALUE_MAX;
+			break;
+		case 3:
+			return SIMPLE_VALUE_AVG;
+			break;		
+	}
+}
+
+/**
+ * The function to get the simple value of a module 
+ * 
+ * @param int type of the retrieving choosed among the constants:
+ * SIMPLE_VALUE, SIMPLE_VALUE_MAX, SIMPLE_VALUE_MIN, SIMPLE_VALUE_AVG
+ * @param int id agent module
+ * 
+ * @return string value retrieved with units
+ */
+function visual_map_get_simple_value($type, $id_module) {
+	$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+	$unit_text = trim(io_safe_output($unit_text));
+	switch ($type){
+		case SIMPLE_VALUE:
+			$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module);
+			$value = format_for_graph($value, 2);
+			if (!empty($unit_text))
+				$value .= " " . $unit_text;
+			return $value;
+			break;
+		case SIMPLE_VALUE_MAX:	
+			$value = reporting_get_agentmodule_data_max ($id_module, 86400, 0);
+			if ($value === false) {
+				$value = __('Unknown');
+			}
+			else {
+				$value = format_for_graph($value, 2);
+				if (!empty($unit_text))
+					$value .= " " . $unit_text;
+			}
+			return $value;
+			break;
+		case SIMPLE_VALUE_MIN:
+			$value = reporting_get_agentmodule_data_min ($id_module, 86400, 0);
+			if ($value === false) {
+				$value = __('Unknown');
+			}
+			else {
+				$value = format_for_graph($value, 2);
+				if (!empty($unit_text))
+					$value .= " " . $unit_text;
+			}					
+			return $value;
+			break;
+		case SIMPLE_VALUE_AVG:	
+			$value = reporting_get_agentmodule_data_average ($id_module, 86400, 0);
+			if ($value === false) {
+				$value = __('Unknown');
+			}
+			else {
+				$value = format_for_graph($value, 2);
+				if (!empty($unit_text))
+					$value .= " " . $unit_text;
+			}				
+			return $value;
+			break;
+	}		
 }
 
 /**

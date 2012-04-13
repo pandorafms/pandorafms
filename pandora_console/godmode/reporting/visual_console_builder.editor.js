@@ -220,6 +220,7 @@ function updateAction() {
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
+			$("#simplevalue_" + idItem).html(getModuleValue(idItem,values['process_simple_value']));
 			break;
 		case 'label':
 			$("#" + idItem).css('color', values['label_color']);
@@ -355,10 +356,6 @@ function createAction() {
 			}
 			if ((values['module'] == 0)) {
 				alert($("#message_alert_no_module").html());
-				validate = false;
-			}
-			if ((values['process_simple_value'] == 0)) {
-				alert($("#message_alert_no_process").html());
 				validate = false;
 			}
 			break;
@@ -742,11 +739,14 @@ function getModuleGraph(id_data) {
 	return img;
 }
 
-function getModuleValue(id_data) {
+function getModuleValue(id_data, process_simple_value) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
+	if(process_simple_value != undefined) {
+		parameter.push ({name: "process_simple_value", value: process_simple_value});
+	}
 	jQuery.ajax({
 		async: false,
 		url: "ajax.php",

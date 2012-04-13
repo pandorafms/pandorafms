@@ -143,11 +143,13 @@ function update_pandora_get_list_downloaded_packages($mode = 'operation') {
 	if (empty($packages)) {
 		if ($mode == 'operation') {
 			$packages[] = array('name' => 
-				__('There are not downloaded packages in your Pandora Console.'));
+				__('There are not downloaded packages in your Pandora Console.'),
+				'time' => '');
 		}
 		else {
 			$packages[] = array('empty' => true, 'name' =>
-				__('There are not downloaded packages in your Pandora Console.'));
+				__('There are not downloaded packages in your Pandora Console.'),
+				'time' => '');
 		}
 	}
 	
@@ -233,7 +235,7 @@ function update_pandora_print_javascript_admin() {
 					draggable: false,
 					modal: true,
 					height: 400,
-					width: 600,
+					width: 650,
 					overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -258,7 +260,7 @@ function update_pandora_print_javascript_admin() {
 					draggable: true,
 					modal: true,
 					height: 400,
-					width: 600,
+					width: 650,
 					overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -336,6 +338,7 @@ function update_pandora_print_javascript_admin() {
 						
 						$("#info_text").html('');
 						
+						$("#button_close_download_disabled").hide();
 						$("#button_close_download").show();
 					}
 				}
@@ -394,6 +397,7 @@ function update_pandora_print_javascript_admin() {
 						else {
 							$("#title_installing_update_pandora").hide();
 							$("#title_installed_update_pandora").show();
+							$("#button_close_download_disabled").hide();
 							$("#button_close_download").show();
 						}
 					}
@@ -423,16 +427,15 @@ function update_pandora_print_javascript_admin() {
 						
 						$("tbody", "#online_packages").append(
 							'<tr class="package_' + data['package'] + '">' + 
-								'<td style=" text-align:left; width:50%;" class="name_package">' +
-									'<?php echo '<b>' . __('There is a new version:') . '</b> '; ?>' +
+								'<td style=" text-align:left; width:50%;" valign="top" class="name_package">' + 
+									'<?php echo '<b>' . __('There is a new version:') . '</b><br><br> '; ?>' +
 									data['package'] +
 								'</td>' +
-								'<td style=" text-align:left; width:30%;" class="timestamp_package">' +
+								'<td style=" text-align:left; width:30%;" valign="bottom" class="timestamp_package">' +
 									data['timestamp'] +
 								'</td>' +
-								'<td style=" text-align:center; width:50px;">' +
+								'<td style=" text-align:center; width:50px;" valign="bottom">' +
 								buttonUpdate +
-								' ' + data['text_adv'] + 
 								'</td>' +
 							'</tr>');
 						

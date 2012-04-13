@@ -131,7 +131,7 @@ function update_pandora_download_package() {
 		
 		if ($conf_update_pandora['download_mode'] == 'wget') {
 			$command = "wget " .
-				$package_url . " -P " . $dir .
+				$package_url . " -O " . $dir . $package .
 				" -o /tmp/" . $package . ".info.txt";
 			
 			$return = array('correct' => 0);

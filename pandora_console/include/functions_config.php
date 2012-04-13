@@ -586,7 +586,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['autoupdate'])) {
-		config_update_value ( 'autoupdate', 0);
+		config_update_value ( 'autoupdate', 1);
 	}
 	
 	if (!isset ($config['api_password'])) {

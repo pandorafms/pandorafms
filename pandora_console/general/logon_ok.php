@@ -23,7 +23,7 @@ global $config;
 check_login ();
 
 /* Call all extensions login function */
-extensions_call_login_function ();
+//extensions_call_login_function ();
 
 require_once ("include/functions_reporting.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');

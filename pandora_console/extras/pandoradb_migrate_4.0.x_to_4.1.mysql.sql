@@ -197,3 +197,9 @@ ALTER TABLE `treport_content_item` ADD COLUMN `operation` TEXT DEFAULT '';
 -- Table `tmensajes`
 -- -----------------------------------------------------
 ALTER TABLE `tmensajes` MODIFY COLUMN `mensaje` TEXT NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `talert_compound`
+-- -----------------------------------------------------
+
+ALTER TABLE `talert_compound` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';

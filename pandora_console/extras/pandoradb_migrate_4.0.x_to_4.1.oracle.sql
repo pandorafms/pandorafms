@@ -193,3 +193,9 @@ ALTER TABLE treport_content_item ADD (operation CLOB default '');
 -- Table `tmensajes`
 -- -----------------------------------------------------
 ALTER TABLE tmensajes MODIFY mensaje VARCHAR2(255) NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `talert_compound`
+-- -----------------------------------------------------
+
+alter table talert_compound add (special_day NUMBER(5,0) default 0);

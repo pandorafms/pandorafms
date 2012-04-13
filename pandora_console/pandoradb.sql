@@ -361,6 +361,7 @@ CREATE TABLE IF NOT EXISTS `talert_compound` (
   `times_fired` int(3) NOT NULL default '0',
   `disabled` tinyint(1) default '0',
   `priority` tinyint(4) default '0',
+  `special_day` tinyint(1) default 0,
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
     ON DELETE CASCADE ON UPDATE CASCADE

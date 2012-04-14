@@ -33,6 +33,12 @@ require_once ($config['homedir'] . '/include/functions_ui.php');
 
 check_login ();
 
+$user_language = get_user_language ($config['id_user']);
+if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('../../include/languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
+}
+
 $id = get_parameter('id');
 $label = base64_decode(get_parameter('label', ''));
 ?>

@@ -1,5 +1,9 @@
 2012-04-14  Junichi Satoh  <junichi@rworks.jp>
 
+	* operation/agentes/stat_win.php: Merged from trunk. Fixed i18n support.
+
+2012-04-14  Junichi Satoh  <junichi@rworks.jp>
+
 	* pandoradb.postgreSQL.sql: Merged from trunk. Fixed database creation
 	failure with version 9.0 or later of PostgreSQL.
 

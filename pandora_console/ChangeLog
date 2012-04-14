@@ -1,5 +1,10 @@
 2012-04-14  Junichi Satoh  <junichi@rworks.jp>
 
+	* pandoradb.postgreSQL.sql: Fixed database creation failure with
+	version 9.0 or later of PostgreSQL.
+
+2012-04-14  Junichi Satoh  <junichi@rworks.jp>
+
 	* operation/agentes/stat_win.php: Fixed i18n support. Changed
 	the description for reloading and the name of the submit button.
 

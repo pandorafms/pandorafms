@@ -30,6 +30,12 @@ require_once ($config['homedir'] . '/include/functions_modules.php');
 
 check_login ();
 
+$user_language = get_user_language ($config['id_user']);
+if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('../../include/languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
+}
+
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 
 $id = get_parameter('id');
@@ -202,7 +208,7 @@ switch ($graph_type) {
 echo "</div>";
 
 //z-index is 1 because 2 made the calendar show under the divmenu.
-echo '<div id="divmenu" class="menu" style="z-index:1; height:280px;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+echo '<div id="divmenu" class="menu" style="z-index:1; height:280px;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Update</i> button');
 echo '<form method="get" action="stat_win.php">';
 html_print_input_hidden ("id", $id);
 html_print_input_hidden ("label", $label);
@@ -262,7 +268,7 @@ html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph);
 
 echo '</td><td>';
 
-html_print_submit_button (__('GO'), "submit", false, 'class="sub next"');
+html_print_submit_button (__('Update'), "submit", false, 'class="sub next"');
 
 echo '</td></tr></table></form></div></body></html>';
 ?>

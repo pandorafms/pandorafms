@@ -57,7 +57,7 @@ if (is_ajax ())
 		echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
 			
 			//Floating div
-			echo '<div id="agent_access" style="float:right; width:35%; padding-top:11px;">';
+			echo '<div id="agent_access" width:35%; padding-top:11px;">';
 
 		if ($config["agentaccess"]){
 			echo '<b>'.__('Agent access rate (24h)').'</b><br />';
@@ -65,9 +65,6 @@ if (is_ajax ())
 			graphic_agentaccess($id_agente, 280, 110, 86400);
 		}
 
-		echo '<div id="id_div2" style="height:25px">&nbsp;</div>';
-		echo '<b>'.__('Events generated -by module-').'</b><br />';
-		echo graph_event_module (290, 120, $id_agente);
 		echo '<br>';
 		graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
 
@@ -106,24 +103,6 @@ if (is_ajax ())
 
 		echo '</td></tr>';
 
-		//OS
-		echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
-		echo '<td class="datos" colspan="2">' . ui_print_os_icon ($agent["id_os"], true, true);
-
-		// Want to print last 15 characters of OS version, or start from 0 if smaller
-		$osversion_offset = strlen($agent["os_version"]);
-		if ($osversion_offset > 15)
-			$osversion_offset = $osversion_offset - 15;
-		else
-			$osversion_offset = 0;
-
-
-		echo '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_version"],$osversion_offset,15).' </span></i></td></tr>';
-
-		// Parent
-		echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
-		echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a></td></tr>';
-
 		// Agent Interval
 		echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';
 		echo '<td class="datos" colspan="2">'.human_time_description_raw ($agent["intervalo"]).'</td></tr>';
@@ -131,14 +110,6 @@ if (is_ajax ())
 		// Comments
 		echo '<tr><td class="datos2"><b>'.__('Description').'</b></td>';
 		echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
-
-		// Group
-		echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
-		echo '<td class="datos" colspan="2">';
-		echo ui_print_group_icon ($agent["id_grupo"], true);
-		echo '&nbsp;(<b>';
-		echo ui_print_truncate_text(groups_get_name ($agent["id_grupo"]));
-		echo '</b>)</td></tr>';
 
 		// Agent version
 		echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
@@ -330,9 +301,9 @@ if (is_ajax ())
 				echo "<ul style='margin: 0; padding: 0;'>\n";
 				echo "<li style='margin: 0; padding: 0;'>";
 				if ($lessBranchs == 1)
-					echo html_print_image ("extensions/tree/no_branch.png", true, array ("style" => 'vertical-align: middle;'));
+					echo html_print_image ("operation/tree/no_branch.png", true, array ("style" => 'vertical-align: middle;'));
 				else
-					echo html_print_image ("extensions/tree/branch.png", true, array ("style" => 'vertical-align: middle;'));
+					echo html_print_image ("operation/tree/branch.png", true, array ("style" => 'vertical-align: middle;'));
 				echo "<i>" . __("Empty") . "</i>";
 				echo "</li>";
 				echo "</ul>";
@@ -394,19 +365,19 @@ if (is_ajax ())
 			
 				$less = $lessBranchs;
 				if ($count != $countRows)
-					$img = html_print_image ("extensions/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
+					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
 				else {
 					$less = $less + 2; // $less = $less or 0b10
-					$img = html_print_image ("extensions/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $row["id_agente"], "pos_tree" => "3"));
+					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $row["id_agente"], "pos_tree" => "3"));
 				}
 				echo "<li style='margin: 0; padding: 0;'>";
 				echo "<a onfocus='JavaScript: this.blur()'
 					href='javascript: loadSubTree(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\")'>";
 				
 				if ($lessBranchs == 1)
-					html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+					html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 				else
-					html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 
 				echo $img;
 				ui_print_group_icon ($row["id_grupo"], false, "groups_small", "vertical-align: middle; width: 16px; height: 16px;", false);
@@ -520,20 +491,20 @@ if (is_ajax ())
 				echo "<li style='margin: 0; padding: 0;'>";
 				switch ($lessBranchs) {
 					case 0:
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 					case 1:
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 					case 2:
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 					case 3:
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 				}
 				echo "<i>" . __("Empty") . "</i>";
@@ -552,27 +523,27 @@ if (is_ajax ())
 
 				switch ($lessBranchs) {
 					case 0:
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 					case 1:
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 					case 2:
-						html_print_image ("extensions/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 					case 3:
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("extensions/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
 						break;
 				}
 				
 				if ($countRows != $count)
-					html_print_image ("extensions/tree/leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "1" ));
+					html_print_image ("operation/tree/leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "1" ));
 				else
-					html_print_image ("extensions/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
+					html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
 		
 				// This line checks for (non-initialized) asyncronous modules
 				if ($row["estado"] == 0 AND $row["utimestamp"] == 0 AND ($row["id_tipo_modulo"] >= 21 AND $row["id_tipo_modulo"] <= 23)){
@@ -627,9 +598,7 @@ if (is_ajax ())
 				echo "</span><span style='margin-left: 20px;'>";
 					echo $data;
 					if ($row['utimestamp'] != '') {
-						echo " (";
-						ui_print_timestamp ($row["utimestamp"], true);
-						echo ")";
+						ui_print_help_tip ($row["timestamp"], '', 'images/clock2.png');
 					}
 				echo "</span></li>";
 			}
@@ -931,21 +900,21 @@ function printTree_($type) {
 			$lessBranchs = 0;
 			if ($first) {
 				if ($item != end($list)) {
-					$img = html_print_image ("extensions/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "0"));
+					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "0"));
 					$first = false;
 				}
 				else {
 					$lessBranchs = 1;
-					$img = html_print_image ("extensions/tree/one_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "1"));
+					$img = html_print_image ("operation/tree/one_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "1"));
 				}
 			}
 			else {
 				if ($item != end($list))
-					$img = html_print_image ("extensions/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "2"));
+					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "2"));
 				else
 				{
 					$lessBranchs = 1;
-					$img = html_print_image ("extensions/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "3"));
+					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "3"));
 				}
 			}
 
@@ -973,15 +942,77 @@ function printTree_($type) {
 
 }
 
-function printJS_() {
-	global $config;
+
+global $config;
+
+$enterpriseEnable = false;
+if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
+	$enterpriseEnable = true;
+}
+
+/////////	INI MENU AND TABS /////////////
+$img_style = array ("class" => "top", "width" => 16);
+$activeTab = get_parameter('sort_by','group');
+
+$os_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=os'>"
+			. html_print_image ("images/computer.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
+
+$group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=group'>"
+			. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
+
+$module_group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=module_group'>"
+			. html_print_image ("images/agents_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
+
+if ($enterpriseEnable) {
+	$policies_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=policies'>"
+				. html_print_image ("images/policies.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
+} else {
+	$policies_tab = '';
+}
+
+$module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by=module'>"
+			. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
+
+$onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
+		
+ui_print_page_header (__('Tree view')." - ".__('Sort the agents by'), "images/extensions.png", false, "", false, $onheader);
+
+
+echo "<br>";
+echo '<form id="tree_search" method="post" action="index.php??extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'">';
+echo "<b>" . __('Monitor status') . "</b>";
+
+$search_free = get_parameter('search_free', '');
+$select_status = get_parameter('status', -1);
+
+$fields = array ();
+$fields[ALL] = __('All'); //default
+$fields[NORMAL] = __('Normal'); 
+$fields[WARNING] = __('Warning');
+$fields[CRITICAL] = __('Critical');
+$fields[UNKNOWN] = __('Unknown');
+
+html_print_select ($fields, "status", $select_status);
+
+echo "&nbsp;&nbsp;&nbsp;";
+echo "<b>" . __('Search agent') .  ui_print_help_tip (__('Case sensitive'))."</b>";
+echo "&nbsp;";
+html_print_input_text ("search_free", $search_free, '', 40,30, false);
+echo "&nbsp;&nbsp;&nbsp;";
+html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
+echo "</form>";
+echo "<div class='pepito' id='a'></div>";
+echo "<div class='pepito' id='b'></div>";
+echo "<div class='pepito' id='c'></div>";
+/////////	END MENU AND TABS /////////////
+printTree_($activeTab);
+
+?>
+
+<script language="javascript" type="text/javascript">
 	
-	?>
-	<script language="javascript" type="text/javascript">
-		//var status = -1;
-		status = $('#status').val();
-		search_free = $('#text-search_free').val();
-	
+	status = $('#status').val();
+	search_free = $('#text-search_free').val();
 		/**
 		 * loadSubTree asincronous load ajax the agents or modules (pass type, id to search and binary structure of branch),
 		 * change the [+] or [-] image (with same more or less div id) of tree and anime (for show or hide)
@@ -1017,16 +1048,16 @@ function printJS_() {
 							//change image of tree [+] to [-]
 							switch (pos) {
 								case 0:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/first_expanded.png');
+									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_expanded.png');
 									break;
 								case 1:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/one_expanded.png');
+									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_expanded.png');
 									break;
 								case 2:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/expanded.png');
+									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/expanded.png');
 									break;
 								case 3:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/last_expanded.png');
+									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_expanded.png');
 									break;
 							}
 							$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddendiv',0);
@@ -1043,16 +1074,16 @@ function printJS_() {
 					//change image of tree [-] to [+]
 					switch (pos) {
 						case 0:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/first_closed.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_closed.png');
 							break;
 						case 1:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/one_closed.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_closed.png');
 							break;
 						case 2:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/closed.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/closed.png');
 							break;
 						case 3:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/last_closed.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_closed.png');
 							break;
 					}
 				}
@@ -1060,16 +1091,16 @@ function printJS_() {
 					//change image of tree [+] to [-]
 					switch (pos) {
 						case 0:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/first_expanded.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_expanded.png');
 							break;
 						case 1:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/one_expanded.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_expanded.png');
 							break;
 						case 2:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/expanded.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/expanded.png');
 							break;
 						case 3:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','extensions/tree/last_expanded.png');
+							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_expanded.png');
 							break;
 					}
 					
@@ -1109,80 +1140,5 @@ function printJS_() {
 				}
 			});		
 	}
-		
-	</script>
-	<?php
-}
+</script>
 
-function mainTreeView_() {
-
-	global $config;
-	
-	$enterpriseEnable = false;
-	if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
-		$enterpriseEnable = true;
-	}
-	
-	/////////	INI MENU AND TABS /////////////
-	$img_style = array ("class" => "top", "width" => 16);
-	$activeTab = get_parameter('sort_by','group');
-	
-	$os_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=os'>"
-				. html_print_image ("images/computer.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
-
-	$group_tab = array('text' => "<a href='index.php??extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=group'>"
-				. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
-
-	$module_group_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=module_group'>"
-				. html_print_image ("images/agents_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
-	
-	if ($enterpriseEnable) {
-		$policies_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=policies'>"
-					. html_print_image ("images/policies.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
-	} else {
-		$policies_tab = '';
-	}
-
-	$module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=module'>"
-				. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
-
-	$onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
-			
-	ui_print_page_header (__('Tree view')." - ".__('Sort the agents by'), "images/extensions.png", false, "", false, $onheader);
-
-
-	echo "<br>";
-	echo '<form id="tree_search" method="post" action="index.php??extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by='.$activeTab.'">';
-	echo "<b>" . __('Monitor status') . "</b>";
-
-	$search_free = get_parameter('search_free', '');
-	$select_status = get_parameter('status', -1);
-	
-	$fields = array ();
-	$fields[ALL] = __('All'); //default
-	$fields[NORMAL] = __('Normal'); 
-	$fields[WARNING] = __('Warning');
-	$fields[CRITICAL] = __('Critical');
-	$fields[UNKNOWN] = __('Unknown');
-	
-	html_print_select ($fields, "status", $select_status);
-	
-	echo "&nbsp;&nbsp;&nbsp;";
-	echo "<b>" . __('Search agent') .  ui_print_help_tip (__('Case sensitive'))."</b>";
-	echo "&nbsp;";
-	html_print_input_text ("search_free", $search_free, '', 40,30, false);
-	echo "&nbsp;&nbsp;&nbsp;";
-	html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
-	echo "</form>";
-	echo "<div class='pepito' id='a'></div>";
-	echo "<div class='pepito' id='b'></div>";
-	echo "<div class='pepito' id='c'></div>";
-	/////////	END MENU AND TABS /////////////
-	printTree_($activeTab);
-	printJS_();
-	
-}
-
-extensions_add_operation_menu_option('Tree view','estado');
-extensions_add_main_function('mainTreeView_');
-?>

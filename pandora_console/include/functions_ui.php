@@ -135,7 +135,7 @@ function printSmallFont ($string, $return = true) {
 /** 
  * Prints a generic message between tags.
  * 
- * @param mixed The string message or array ('title', 'message', 'icon', 'no_close')  to be displayed
+ * @param mixed The string message or array ('title', 'message', 'icon', 'no_close', 'force_style')  to be displayed
  * @param string the class to user
  * @param string Any other attributes to be set for the tag.
  * @param bool Whether to output the string or return it
@@ -151,6 +151,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$text_message = '';
 	$icon_image = '';
 	$no_close_bool = false;
+	$force_style = '';
 	if (is_array($message)) {
 		if (!empty($message['title']))
 			$text_title = $message['title'];
@@ -160,6 +161,8 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 			$icon_image = $message['icon'];
 		if (!empty($message['no_close']))
 			$no_close_bool = $message['no_close'];
+		if (!empty($message['force_style']))
+			$force_style = $message['force_style'];
 	}
 	else {
 		$text_message = $message;
@@ -198,7 +201,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$id = 'info_box_' . uniqid();
 	
 	$output = '<table cellspacing="0" cellpadding="0" id="' . $id . '" ' . $attributes . '
-		class="info_box ' . $class . '" >
+		class="info_box ' . $class . '" style="' . $force_style . '">
 		<tr>
 			<td class="icon">' . html_print_image($icon_image, true) . '</td>
 			<td class="title"><b>' . $text_title . '</b></td>

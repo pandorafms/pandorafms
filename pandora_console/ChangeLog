@@ -1,3 +1,9 @@
+2012-04-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/fgraph.php
+	include/functions_visual_map.php: Improved the 
+	min size of the area graphs and clean code
+
 2012-04-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/dialog.css

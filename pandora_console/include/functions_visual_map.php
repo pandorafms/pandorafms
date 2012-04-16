@@ -1221,9 +1221,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					if ($resizedMap) {
 						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
 						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
-						if($layout_data['height'] < 105) {
-							$layout_data['height'] = 105;		
-						}
 						$layout_data['pos_x'] = ((integer)($proportion * $layout_data['pos_x']));
 						$layout_data['pos_y'] = ((integer)($proportion * $layout_data['pos_y']));
 					}

@@ -1,5 +1,11 @@
 2012-04-16  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/fgraph.php
+	include/functions_visual_map.php: Fixed minimum size of the
+	area graphs to more pixels by security merged from trunk
+
+2012-04-16  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/menu.php: Switched the visual console and custom reports
 	order in the menu and change the main Reporting section link 
 	to give more important to reports.

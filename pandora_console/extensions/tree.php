@@ -225,9 +225,14 @@ if (is_ajax ())
 	require_once ('include/functions_reporting.php');
 	require_once ('include/functions_users.php');
 	require_once ('include/functions_servers.php');
-	require_once ('enterprise/include/functions_policies.php');
 	
 	global $config;
+	
+	$enterpriseEnable = false;
+	if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
+		$enterpriseEnable = true;
+		require_once ('enterprise/include/functions_policies.php');
+	}
 	
 	$type = get_parameter('type');
 	$id = get_parameter('id');
@@ -263,7 +268,7 @@ if (is_ajax ())
 			$countRows = 0;
 			
 			if (!empty($avariableGroupsIds)) {
-				$extra_sql = policies_get_agents_sql_condition();
+				$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
 				if($extra_sql != '') {
 					$extra_sql .= ' OR';
 				}
@@ -294,10 +299,10 @@ if (is_ajax ())
 						if ($id == 0)
 							$queryWhere = 'id_agente NOT IN (SELECT id_agent FROM tpolicy_agents)';
 						else
-							$queryWhere = sprintf('id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = %s)',$id);
+							$queryWhere = sprintf(' id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = %s)',$id);
 							
 						$sql = sprintf('SELECT * FROM tagente 
-								WHERE %s (%s id_grupo IN (%s))', $queryWhere, $extra_sql, $groups_sql);
+								WHERE %s AND ( %s id_grupo IN (%s))', $queryWhere, $extra_sql, $groups_sql);
 						break;
 					case 'module':
 						//Replace separator token "articapandora_32_pandoraartica_" for " "
@@ -350,6 +355,13 @@ if (is_ajax ())
 						break;
 					case 'module_group':
 						$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' id_module_group = ' . $id);
+						break;
+					case 'policies':
+						$whereQuery = '';
+						if ($id_father != 0)
+							$whereQuery = ' id_modulo IN 
+								(SELECT id_module FROM tpolicy_modules WHERE id_policy = ' . $id_father . ')';
+						$agent_info = reporting_get_agent_module_info ($row["id_agente"], $whereQuery);
 						break;
 					case 'module':
 						switch ($config["dbtype"]) {
@@ -634,6 +646,7 @@ if (is_ajax ())
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_reporting.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
 
 
 function printTree_($type) {
@@ -698,7 +711,22 @@ function printTree_($type) {
 					array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));
 			}
 			break;
-
+		case 'policies':
+			if ($search_free != '') {
+				$groups_id = array_keys($avariableGroups);
+				$groups = implode(',',$groups_id);
+				$sql = "SELECT * FROM tpolicies
+						WHERE id_group IN ($groups) 
+						AND id IN (SELECT id_policy FROM tpolicy_agents
+								WHERE id_agent IN (SELECT id_agente FROM tagente
+											WHERE nombre LIKE '%$search_free%'))";
+				$list = db_get_all_rows_sql($sql);
+			} else {
+				$list = db_get_all_rows_filter('tpolicies', array('id_group' => array_keys($avariableGroups)));
+				if ($list !== false)
+					array_push($list, array('id' => 0, 'name' => 'No policy'));
+			}
+			break;
 		case 'module':
 			if ($search_free != '') {
 					$sql_search = " AND t1.id_agente IN (SELECT id_agente FROM tagente
@@ -725,7 +753,8 @@ function printTree_($type) {
 	}
 	
 	if ($list === false) {
-		echo __("<h2>There aren't agents in this agrupation.</h2>");
+		ui_print_error_message("There aren't agents in this agrupation");
+
 	}
 	else {
 		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";
@@ -781,7 +810,6 @@ function printTree_($type) {
 					$num_critical = 0;
 					$num_warning = 0;
 					$num_unknown = 0;
-			//html_debug_print($agentes);
 					foreach ($agentes as $agente) {
 						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
 
@@ -833,7 +861,38 @@ function printTree_($type) {
 						}
 					}
 					break;
+				case 'policies':
+					$id = $item['id'];
+					$name = $item['name'];
+					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente
+													WHERE id_agente IN (SELECT id_agent FROM tpolicy_agents
+																		WHERE id_policy=$id)");
+					if ($agentes === false) {
+						$agentes = array();
+					}
+					$num_ok = 0;
+					$num_critical = 0;
+					$num_warning = 0;
+					$num_unknown = 0;
+					foreach ($agentes as $agente) {
+						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
 
+						switch ($stat['status']) {
+							case 'agent_ok.png':
+								$num_ok++;
+								break;
+							case 'agent_critical.png':
+								$num_critical++;
+								break;
+							case 'agent_warning.png':
+								$num_warning++;
+								break;
+							case 'agent_down.png':
+								$num_unknown++;
+								break;
+						}
+					}
+					break;
 				case 'module':
 					$id = str_replace(array(' ','#'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_'),io_safe_output($item['nombre']));
 					$name = io_safe_output($item['nombre']);
@@ -1059,29 +1118,41 @@ function mainTreeView_() {
 
 	global $config;
 	
+	$enterpriseEnable = false;
+	if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
+		$enterpriseEnable = true;
+	}
+	
 	/////////	INI MENU AND TABS /////////////
 	$img_style = array ("class" => "top", "width" => 16);
 	$activeTab = get_parameter('sort_by','group');
 	
-	$os_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/tree&refr=0&sort_by=os'>"
+	$os_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=os'>"
 				. html_print_image ("images/computer.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
 
-	$group_tab = array('text' => "<a href='index.php??extension_in_menu=estado&sec=extensions&sec2=extensions/tree&refr=0&sort_by=group'>"
+	$group_tab = array('text' => "<a href='index.php??extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=group'>"
 				. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
 
-	$module_group_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/tree&refr=0&sort_by=module_group'>"
+	$module_group_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=module_group'>"
 				. html_print_image ("images/agents_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
+	
+	if ($enterpriseEnable) {
+		$policies_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=policies'>"
+					. html_print_image ("images/policies.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
+	} else {
+		$policies_tab = '';
+	}
 
-	$module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/tree&refr=0&sort_by=module'>"
+	$module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by=module'>"
 				. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
 
-	$onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'module' => $module_tab);
+	$onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
 			
 	ui_print_page_header (__('Tree view')." - ".__('Sort the agents by'), "images/extensions.png", false, "", false, $onheader);
 
 
 	echo "<br>";
-	echo '<form id="tree_search" method="post" action="index.php??extension_in_menu=estado&sec=extensions&sec2=extensions/tree&refr=0&sort_by='.$activeTab.'">';
+	echo '<form id="tree_search" method="post" action="index.php??extension_in_menu=estado&sec=estado&sec2=extensions/tree&refr=0&sort_by='.$activeTab.'">';
 	echo "<b>" . __('Monitor status') . "</b>";
 
 	$search_free = get_parameter('search_free', '');

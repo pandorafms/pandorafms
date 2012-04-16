@@ -62,7 +62,7 @@
 	background: url(images/dialog-titlebar-close.png) no-repeat !important;
 	position: absolute !important;
 	top: 2px;
-	right: 17px !important;
+	right: 5px !important;
 	cursor: default !important;
 }
 
@@ -94,7 +94,7 @@
     #height: auto !important;
     #width: 99% !important;
     margin: 0 auto !important;
-    background: #EEEEEE !important;	
+    background: #FFFFFF !important;	
     #margin-bottom: 10px !important;
     position: relative !important;	
 }

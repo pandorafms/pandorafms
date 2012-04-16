@@ -1,7 +1,7 @@
 /* 
 
 Author: The Pandora FMS team
-Name: Default theme
+Name: Legacy theme
 Description: The default Pandora FMS theme layout
 
 // Pandora FMS - http://pandorafms.com
@@ -222,10 +222,10 @@ div#container {
 	margin: 0 auto;
 	width: 960px;
 	text-align: left;
-	#border-left: solid 2px #000;
-	#border-right: solid 2px #000;
-	#border-top: solid 2px #000;
-	#margin-top: 5px;
+	border-left: solid 2px #000;
+	border-right: solid 2px #000;
+	border-top: solid 2px #000;
+	margin-top: 5px;
 	background: #fff;
 }
 div#page {
@@ -1301,7 +1301,7 @@ div.warn {
 /* Pandora width style theme */
 
 div#container {
-	width: 100%;
+	width: 95%;
 }
 div#page {
 	width: auto;

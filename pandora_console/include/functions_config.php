@@ -662,14 +662,14 @@ function config_check (){
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('message' => __('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.'),
-				'no_close' => true), '', true);
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	if (!is_writable ("attachment")){
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('message' => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
-				'no_close' => true), '', true);
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	// Get remote file dir.
@@ -680,7 +680,7 @@ function config_check (){
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_error_message(
 				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
-				'no_close' => true), '', true);
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 		
 		$remote_config_conf = $remote_config . "/conf";
@@ -688,7 +688,7 @@ function config_check (){
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_error_message(
 				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
-				'no_close' => true), '', true);
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 		
 		$remote_config_col = $remote_config . "/collections";
@@ -696,7 +696,7 @@ function config_check (){
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_error_message(
 				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
-				'no_close' => true), '', true);
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 	}
 	
@@ -709,7 +709,7 @@ function config_check (){
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('title' => __('Too much files in your tempora/attachment directory'),
 			'message' => __("There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually"). " ( $filecount ". __("files") . " )",
-			'no_close' => true), '', true);
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	// Check database maintance
@@ -727,7 +727,7 @@ function config_check (){
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('title' => __("Database maintance problem"),
 			'message' => __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible'),
-			'no_close' => true), '', true);
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
@@ -736,7 +736,7 @@ function config_check (){
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('title' => __("Default font doesnt exist"),
 			'message' => __('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
-			'no_close' => true), '', true);
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	global $develop_bypass;
@@ -746,7 +746,7 @@ function config_check (){
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('title' => __("Developer mode is enabled"),
 			'message' => __('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file'),
-			'no_close' => true), '', true);
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	//pandora_update_manager_login();
@@ -756,7 +756,7 @@ function config_check (){
 			$_SESSION["alert_msg"] .= ui_print_info_message(
 				array('title' => __("New update of Pandora Console"),
 				'message' => __('There is a new update please go to menu operation and into extensions go to Update Manager for more details.'),
-				'no_close' => true), '', true);
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 	}
 }

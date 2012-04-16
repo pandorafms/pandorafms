@@ -87,7 +87,7 @@ if (isset ($login_failed)) {
 		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:330px; margin: 0 auto; ">';
 		
 			echo '<div id="error_login">';
-			echo '<b>' . $config["auth_error"] . '</b>';
+			echo '<strong style="font-size: 10pt">' . $config["auth_error"] . '</strong>';
 			echo '</div>';
 	
 			echo '<div id="error_login_icon">';

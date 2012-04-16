@@ -1,3 +1,18 @@
+2012-04-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/dialog.css
+	 include/styles/pandora.css
+	 operation/system_alert.php
+	 include/functions_config.php
+	 general/login_page.php: Modified style in UM license advises, also
+	 modified style in system alerts dialog. 
+
+	* include/functions_ui.php: Modified function ui_print_message to 
+	allow force the style.
+	
+	* include/styles/pandora_legacy.css: New css style with Pandora old
+	style "legacy". New style has 100% page width.
+
 2012-04-14  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/stat_win.php: Merged from trunk. Fixed i18n support.

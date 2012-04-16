@@ -1,3 +1,19 @@
+2012-04-16  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* extensions/tree.php
+	  extensions/tree/no_branch.png
+	  extensions/tree/branch.png
+	  extensions/tree/closed.png
+	  extensions/tree/expanded.png
+	  extensions/tree/first_closed.png
+	  extensions/tree/first_expanded.png
+	  extensions/tree/last_closed.png
+	  extensions/tree/last_expanded.png
+	  extensions/tree/last_leaf.png
+	  extensions/tree/leaf.png
+	  extensions/tree/one_closed.png
+	  extensions/tree/one_expanded.png. Added files to new open tree view.
+
 2012-04-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/dialog.css

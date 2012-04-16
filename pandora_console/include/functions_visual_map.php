@@ -1007,7 +1007,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// ****************************************************************
 					// SIMPLE DATA VALUE (type = 2)
 					// ****************************************************************
-					$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+					$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
 					$unit_text = trim(io_safe_output($unit_text));
 					
 					if ($resizedMap)
@@ -1216,11 +1216,19 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// ****************************************************************
 					// Single module graph
 					// ****************************************************************
-					// SINGLE GRAPH (type = 1)
-					if ($resizedMap)
-						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-					else
-						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					// SINGLE GRAPH (type = 1)			
+										
+					if ($resizedMap) {
+						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
+						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
+						if($layout_data['height'] < 105) {
+							$layout_data['height'] = 105;		
+						}
+						$layout_data['pos_x'] = ((integer)($proportion * $layout_data['pos_x']));
+						$layout_data['pos_y'] = ((integer)($proportion * $layout_data['pos_y']));
+					}
+					
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					
 					echo $layout_data['label'];
 					echo "<br>";
@@ -1251,11 +1259,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						} else {
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
-					}
-
-					if ($resizedMap) {
-						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
-						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
 					}
 					
 					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work

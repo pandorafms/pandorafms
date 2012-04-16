@@ -1,3 +1,9 @@
+2012-04-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php: Fixed minimum size on 
+	dashboards graphs into visual maps widget and a ugly sql error 
+	bug
+
 2012-04-16  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* extensions/tree.php

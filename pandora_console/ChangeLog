@@ -1,3 +1,12 @@
+2012-04-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/update_license_info.php: Added view to show UM license
+	info.
+	
+	* extensions/update_manager.php
+	 extensions/update_manager/settings.php: Added UM license dialog in 
+	 this view.
+
 2012-04-16  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* extensions/tree.php: Added policy tab.
@@ -78,6 +87,13 @@
 	  extensions/tree/leaf_.png
 	  extensions/tree/one_closed_.png
 	  extensions/tree/one_expanded_.png. Added files to new open tree view.
+
+2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/update_license_info.php
+	 extensions/update_manager.php
+	 extensions/update_manager/settings.php: Added modal window and view 
+	 of UM license information.
 
 2012-04-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

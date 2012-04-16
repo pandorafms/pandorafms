@@ -2,7 +2,7 @@
 /* This file skins dialog */
 
 .ui-dialog {
-    background: #D3D3D3 !important; 
+    background: none repeat scroll 0 0 #D3D3D3 !important; 
     border: 1px solid #DDDDDD !important;
     color: #333333 !important;
     padding: 0.2em !important;
@@ -16,6 +16,7 @@
 	-webkit-box-shadow: 0px 5px 5px #010E1B !important;
 	box-shadow: 0px 5px 5px #010E1B !important;
 }
+
 
 .ui-dialog .ui-dialog-titlebar {
 	background: url(../../images/ui_title.png) repeat-x scroll !important;
@@ -57,7 +58,7 @@
 	background: url(images/dialog-titlebar-close.png) no-repeat !important;
 	position: absolute !important;
 	top: 2px;
-	right: 17px !important;
+	right: 5px !important;
 	cursor: default !important;
 }
 
@@ -72,7 +73,6 @@
 	.ui-dialog .ui-dialog-titlebar-close-hover {
 		color: #000000 !important;
 	}
-	
 
 	.ui-dialog .ui-dialog-titlebar-close:hover span {
 		display: none !important;
@@ -100,7 +100,7 @@
 	#height: 80% !important;
     #width: 98% !important;
     margin: 0 auto !important;
-    background: #EEEEEE !important;	
+    background: #FFFFFF !important;	
     position: relative !important;
 	
 }
@@ -214,7 +214,7 @@
 .ui-dialog .ui-button-dialog {
     background: #F6F6F6;
     border: 1px solid #CCCCCC;
-    color: #696969;
+    color: #696969 !important;
     font-weight: bold;
     outline: medium none;
     cursor: pointer;    

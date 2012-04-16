@@ -1,5 +1,9 @@
 2012-04-16  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* extensions/tree.php: Added policy tab.
+
+2012-04-16  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* extensions/tree.php
 	  extensions/tree/no_branch.png
 	  extensions/tree/branch.png

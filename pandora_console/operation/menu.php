@@ -115,12 +115,16 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	// Reporting
 	$menu["reporting"]["text"] = __('Reporting');
-	$menu["reporting"]["sec2"] = "godmode/reporting/map_builder";
+	$menu["reporting"]["sec2"] = "godmode/reporting/reporting_builder";
 	$menu["reporting"]["id"] = "oper-reporting";
 	$menu["reporting"]["refr"] = 60;
 	
 	$sub = array ();
 
+	$sub["godmode/reporting/reporting_builder"]["text"] = __('Custom reporting');
+	//Set godomode path
+	$sub["godmode/reporting/reporting_builder"]["subsecs"] = array("godmode/reporting/reporting_builder",
+																"operation/reporting/reporting_viewer");
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
 	//Set godomode path
@@ -177,11 +181,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	}
 	
 	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
-	
-	$sub["godmode/reporting/reporting_builder"]["text"] = __('Custom reporting');
-	//Set godomode path
-	$sub["godmode/reporting/reporting_builder"]["subsecs"] = array("godmode/reporting/reporting_builder",
-																"operation/reporting/reporting_viewer");
 	
 	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
 	//Set godomode path

@@ -1,5 +1,11 @@
 2012-04-16  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/menu.php: Switched the visual console and custom reports
+	order in the menu and change the main Reporting section link 
+	to give more important to reports.
+
+2012-04-16  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_visual_map.php: Fixed minimum size on 
 	dashboards graphs into visual maps widget and a ugly sql error 
 	bug

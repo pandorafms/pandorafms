@@ -66,7 +66,7 @@ if (is_ajax ())
 		}
 
 		echo '<br>';
-		graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
+		//graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
 
 		echo '</div>';
 			

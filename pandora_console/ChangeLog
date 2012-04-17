@@ -1,5 +1,9 @@
 2012-04-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* extensions/update_license_info.php: Delete innecesary extension.
+
+2012-04-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_html.php
 	 include/styles/pandora.css
 	 include/javascript/jquery.pandora.js

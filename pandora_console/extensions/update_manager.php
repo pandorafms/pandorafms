@@ -52,8 +52,11 @@ if (is_ajax ()) {
 			$table->style = array();
 			$table->style[0] = 'text-align: left';
 
-			$table->data[0][0] = html_print_image('images/noaccess.png', true);
-			$table->data[0][0] .= '<strong>'.__('Expires').'</strong>';
+			echo '<div style="float: left; margin-top: 40px; margin-left: 20px; margin-right: 20px;">'; 
+			html_print_image('images/noaccess.png', false);
+			echo '</div>';
+
+			$table->data[0][0] = '<strong>'.__('Expires').'</strong>';
 			$table->data[0][1] = __('Never');
 			$table->data[1][0] = '<strong>'.__('Platform Limit').'</strong>';
 			$table->data[1][1] = __('Unlimited');
@@ -63,7 +66,9 @@ if (is_ajax ()) {
 			$table->data[3][0] = '<strong>'.__('License Mode').'</strong>';
 			$table->data[3][1] = __('Open Source Version');
 
-			html_print_table ($table);			
+			echo '<div style="width: 80%; margin-top: 30px; margin-left: 20px">';
+			html_print_table ($table);
+			echo '</div>';		
 		}
 		
 	}

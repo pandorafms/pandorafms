@@ -840,6 +840,7 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
  *	$table->titlestyle - Title style
  *	$table->titleclass - Title class
  *	$table->styleTable - Table style
+ *  $table->caption - Table title
  * @param bool Whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.
@@ -957,6 +958,9 @@ function html_print_table (&$table, $return = false) {
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
 	$countcols = 0;
+	if (!empty($table->caption)) {
+	$output .= '<caption style="text-align: left"><h4>' . $table->caption . '</h4></caption>';	
+	}
 	if (!empty ($table->head)) {
 		$countcols = count ($table->head);
 		$output .= '<thead><tr>';

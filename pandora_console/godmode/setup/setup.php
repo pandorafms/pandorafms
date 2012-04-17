@@ -52,8 +52,11 @@ enterprise_include ('godmode/setup/setup.php');
 ui_print_page_header (__('General configuration'), "", false, "", true);
 
 
-$table->width = '98%';
+$table->width = '100%';
 $table->data = array ();
+$table->size = array();
+$table->size[0] = '45%';
+$table->size[1] = '55%';
 
 // Current config["language"] could be set by user, not taken from global setup !
 
@@ -90,12 +93,12 @@ $sources["sql"] = __('Database');
 $table->data[9][1] = html_print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
 
 $table->data[10][0] = __('Automatic check for updates');
-$table->data[10][1] = __('Yes').'&nbsp;'.html_print_radio_button ('autoupdate', 1, '', $config["autoupdate"], true).'&nbsp;&nbsp;';
-$table->data[10][1] .= __('No').'&nbsp;'.html_print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
+$table->data[10][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('autoupdate', 1, '', $config["autoupdate"], true).'&nbsp;&nbsp;';
+$table->data[10][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
 
 $table->data[11][0] = __('Enforce https');
-$table->data[11][1] = __('Yes').'&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
-$table->data[11][1] .= __('No').'&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
+$table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
+$table->data[11][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
 
 $table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory where temporary data is stored."), true);
 $table->data[14][1] = html_print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
@@ -109,12 +112,12 @@ $table->data[16][0] = __('API password') .
 $table->data[16][1] = html_print_input_text('api_password', $config['api_password'], '', 25, 255, true);
 
 $table->data[17][0] = __('Enable GIS features in Pandora Console');
-$table->data[17][1] = __('Yes').'&nbsp;'.html_print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
-$table->data[17][1] .= __('No').'&nbsp;'.html_print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
+$table->data[17][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
+$table->data[17][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
 
 $table->data[18][0] = __('Enable Integria incidents in Pandora Console');
-$table->data[18][1] = __('Yes').'&nbsp;'.html_print_radio_button ('integria_enabled', 1, '', $config["integria_enabled"], true).'&nbsp;&nbsp;';
-$table->data[18][1] .= __('No').'&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
+$table->data[18][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 1, '', $config["integria_enabled"], true).'&nbsp;&nbsp;';
+$table->data[18][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
 
 if($config["integria_enabled"]) {
        require_once('include/functions_incidents.php');
@@ -194,6 +197,15 @@ $table->data[25][0] = __('Sound for Monitor warning');
 $table->data[25][1] = html_print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
 $table->data[25][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
 $table->data[25][1] .= '<div id="layer_sound_warning"></div>';
+
+$table->data[26][0] = __('License information');
+$license_info = db_get_value_sql ('SELECT value FROM tupdate_settings WHERE `key`="customer_key"');
+if ($license_info === false)
+	$license_info = '';
+$table->data[26][1] = html_print_input_text ('license_info_key', $license_info, '', 40, 255, true);
+$table->data[26][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
+$table->data[26][1] .= '<div id="dialog_show_license" style="display:none"></div>';
+
 ?>
 <script type="text/javascript">
 function toggleButton(type) {
@@ -226,11 +238,13 @@ $(document).ready (function () {
 </script>
 <?php
 
-enterprise_hook ('setup');
-
 echo '<form id="form_setup" method="post">';
-html_print_input_hidden ('update_config', 1);
-html_print_table ($table);
+echo "<fieldset>";
+echo "<legend>" . __('General options') . "</legend>";
+	html_print_input_hidden ('update_config', 1);
+	html_print_table ($table);
+echo "</fieldset>";
+	enterprise_hook ('setup');
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';

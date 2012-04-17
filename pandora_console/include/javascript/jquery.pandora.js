@@ -91,7 +91,7 @@ $(document).ready (function () {
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 200,
+				height: 250,
 				width: 600,
 				overlay: {
 							opacity: 0.5,
@@ -125,7 +125,7 @@ $(document).ready (function () {
 						},
 						bgiframe: jQuery.browser.msie,
 						width: 500,
-						height: 180
+						height: 190
 					})
 					.show ();
 			},

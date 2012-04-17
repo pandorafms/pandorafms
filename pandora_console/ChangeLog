@@ -1,3 +1,17 @@
+2012-04-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php
+	 include/styles/pandora.css
+	 include/javascript/jquery.pandora.js
+	 include/functions_config.php
+	 extensions/update_manager.php
+	 extensions/update_manager/load_updatemanager.php
+	 extensions/update_manager/lib/functions.ajax.php
+	 extensions/update_manager/settings.php
+	 operation/system_alert.php
+	 godmode/setup/setup.php: Changed layout in lincense model window 
+	 and modified layout in setup view.
+
 2012-04-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions.php: Stripped # character in a 

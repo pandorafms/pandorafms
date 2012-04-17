@@ -253,6 +253,18 @@ function config_update_config () {
 		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
 	}
 	
+	# Update of Pandora FMS license 
+	$update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
+
+	if ($update_manager_installed == 1) {
+
+		if (isset($_POST['license_info_key'])){
+			$values = array("value" => get_parameter('license_info_key'));
+			$where = array("key" => 'customer_key');
+			$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
+		}
+	}
+	
 }
 
 /**
@@ -755,9 +767,33 @@ function config_check (){
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_info_message(
 				array('title' => __("New update of Pandora Console"),
-				'message' => __('There is a new update please go to menu operation and into extensions go to Update Manager for more details.'),
+				'message' => __('There is a new update please go to menu operation and into extensions <a style="font-weight:bold;" href="index.php?sec=extensions&sec2=extensions/update_manager">go to Update Manager</a> for more details.'),
 				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
+	}
+	
+	if (enterprise_installed()) {
+		um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+			$config['dbpass'], $config['dbname']);
+		
+		$settings = um_db_load_settings ();
+		
+		$result_check_keygen = check_keygen($settings);
+		
+		if (!empty($result_check_keygen)) {
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= $result_check_keygen;
+		}
+	}
+	else {
+		require_once("extensions/update_manager/lib/functions.ajax.php");
+		
+		$result_check_keygen = check_keygen_online();
+		
+		if (!empty($result_check_keygen)) {
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= $result_check_keygen;
+		}		
 	}
 }
 

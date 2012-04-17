@@ -40,11 +40,32 @@ if (is_ajax ()) {
 	}
 		
 	if ($get_license_info) {
-	
-		include_once("include/functions_db.php");
 		enterprise_include_once('include/functions_license.php');
 
-		enterprise_hook('license_show_info');
+		// If Pandora enterprise check license 
+		$is_enteprise = enterprise_hook('license_show_info');
+
+		// If Open show info
+		if ($is_enteprise === ENTERPRISE_NOT_HOOK){		
+			$table->width = '98%';
+			$table->data = array ();
+			$table->style = array();
+			$table->style[0] = 'text-align: left';
+
+			$table->data[0][0] = html_print_image('images/noaccess.png', true);
+			$table->data[0][0] .= '<strong>'.__('Expires').'</strong>';
+			$table->data[0][1] = __('Never');
+			$table->data[1][0] = '<strong>'.__('Platform Limit').'</strong>';
+			$table->data[1][1] = __('Unlimited');
+			$table->data[2][0] = '<strong>'.__('Current Platform Count').'</strong>';
+			$count_agents = db_get_value_sql ('SELECT count(*) FROM tagente');
+			$table->data[2][1] = $count_agents;
+			$table->data[3][0] = '<strong>'.__('License Mode').'</strong>';
+			$table->data[3][1] = __('Open Source Version');
+
+			html_print_table ($table);			
+		}
+		
 	}
 	
 	return;
@@ -171,7 +192,7 @@ function pandora_update_manager_login () {
 		}
 	}
 	else {
-		require(
+		require_once(
 			"extensions/update_manager/lib/functions.ajax.php");
 		
 		$result = update_pandora_get_packages_online_ajax(false);

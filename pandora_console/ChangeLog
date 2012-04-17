@@ -1,3 +1,19 @@
+2012-04-17 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_html.php, extensions/net_tools.php: cleaned
+	source code style.
+	
+	* include/functions_networkmap.php: into the functions
+	"networkmap_generate_dot" and "networkmap_create_agent_node"
+	added new parameter $relative for set the url of icons as relative.
+	It is used in networmap enterprise.
+	
+	* include/functions_ui.php: fixed into the function
+	"ui_print_message" lost the javascript code when the first messages
+	are without close button. And into the function "ui_print_os_icon"
+	added new parameter $relative for set the url of icons as relative.
+	It is used in networmap enterprise.
+
 2012-04-17  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/tree.php: Exclude graph bar.

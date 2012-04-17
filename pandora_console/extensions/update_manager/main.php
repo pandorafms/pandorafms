@@ -116,7 +116,7 @@ function main_view_enterprise($settings, $user_key) {
 	$table->colspan[0][0] = 3;
 	$table->data = array();
 	$table->data[1][0] = '<span id="box_ajax_checking_online">' .
-		__('Checking for a update') . '&nbsp;' . html_print_image('images/spinner.gif', true) .
+		__('Checking for an update') . '&nbsp;' . html_print_image('images/spinner.gif', true) .
 		'</span>';
 	$table->data[1][1] = html_print_button(__('Details'),
 		'details_online', true, 'show_details();', 'class="sub search"', true);

@@ -220,7 +220,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 		</tr>
 		</table>';
 	
-	if ($first_execution) {
+	if (($first_execution) && (!$no_close_bool)) {
 		$first_execution = false;
 		
 		$output .= '
@@ -500,7 +500,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * 
  * @return string HTML with icon of the OS
  */
-function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false) {
+function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false, $relative = false) {
 	$subfolter = 'os_icons';
 	if ($networkmap) {
 		$subfolter = 'networkmap';
@@ -510,7 +510,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		if ($only_src) {
-			$output = html_print_image("images/".$subfolter."/unknown.png", false, false, true);
+			$output = html_print_image("images/".$subfolter."/unknown.png", false, false, true, $relative);
 		}
 		else {
 			return "-";
@@ -519,10 +519,10 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	
 	if ($apply_skin) {
 		if ($only_src) {
-			$output = html_print_image("images/".$subfolter."/".$icon, true, false, true);
+			$output = html_print_image("images/".$subfolter."/".$icon, true, false, true, $relative);
 		}
 		else {
-			$output = html_print_image("images/".$subfolter."/".$icon, true, array("alt" => $os_name, "title" => $os_name));
+			$output = html_print_image("images/".$subfolter."/".$icon, true, array("alt" => $os_name, "title" => $os_name), false, $relative);
 		}
 	}
 	else

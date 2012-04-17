@@ -25,47 +25,45 @@ function main_net_tools () {
 		echo "<h3 class=error>The agent hasn't got IP</h3>";
 		return;
 	}
-    echo "<div>";
-    echo "<form name='actionbox' method='post'>";
-    echo "<table class=databox width=650>";
-    echo "<tr><td>";
-    echo __("Operation");
-    echo "<td>";
-    echo "<select name='operation'>";
-    echo "<option value=1>".__("Traceroute");
-    echo "<option value=2>".__("Ping host & Latency");
-    echo "<option value=3>".__("SNMP Interface status");
-    echo "<option value=4>".__("Basic TCP Port Scan");
-    echo "<option value=5>".__("DiG/Whois Lookup");
-    echo "</select>";
-    echo "<td>";
-    echo __("SNMP Community");
-    echo "<td>";
-    echo "<input name=community type=text value='public'>";
-    echo "<td>";
-    echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
-    echo "</tr></table>";
-    echo "</form>";
-
-
-    $operation = get_parameter ("operation",0);
-    $community = get_parameter ("community","public");
-    
-    switch($operation){
-
-        case 1:
-    			if (!file_exists('/usr/sbin/traceroute')) {
-        			ui_print_error_message(__('Traceroute executable does not exist.'));
-        		}
-        		else {
-	        		echo "<h3>".__("Traceroute to "). $ip. "</h3>";
-	        		echo "<pre>";
-	                echo system ("/usr/sbin/traceroute $ip");
-	                echo "</pre>";
-        		}
-                break;
-
-        case 2: 
+	echo "<div>";
+	echo "<form name='actionbox' method='post'>";
+	echo "<table class=databox width=650>";
+	echo "<tr><td>";
+	echo __("Operation");
+	echo "<td>";
+	echo "<select name='operation'>";
+	echo "<option value=1>".__("Traceroute");
+	echo "<option value=2>".__("Ping host & Latency");
+	echo "<option value=3>".__("SNMP Interface status");
+	echo "<option value=4>".__("Basic TCP Port Scan");
+	echo "<option value=5>".__("DiG/Whois Lookup");
+	echo "</select>";
+	echo "<td>";
+	echo __("SNMP Community");
+	echo "<td>";
+	echo "<input name=community type=text value='public'>";
+	echo "<td>";
+	echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
+	echo "</tr></table>";
+	echo "</form>";
+	
+	
+	$operation = get_parameter ("operation",0);
+	$community = get_parameter ("community","public");
+	
+	switch($operation) {
+		case 1:
+			if (!file_exists('/usr/sbin/traceroute')) {
+				ui_print_error_message(__('Traceroute executable does not exist.'));
+			}
+			else {
+				echo "<h3>".__("Traceroute to "). $ip. "</h3>";
+				echo "<pre>";
+				echo system ("/usr/sbin/traceroute $ip");
+				echo "</pre>";
+			}
+			break;
+			case 2: 
 				ob_start();
         		system('whereis ping');
         		$output = ob_get_clean();

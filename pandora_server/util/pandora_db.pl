@@ -242,7 +242,7 @@ sub pandora_purgedb ($$) {
 	print "[PURGE] Delete contents in report that have some deleted agents...\n";
 	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
 	
-	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n"
+	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n";
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
 }
@@ -335,16 +335,24 @@ sub pandora_init ($) {
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
-
-	# If there are not valid parameters
-	foreach my $param (@ARGV) {
-		
+	
+	$conf->{'_pandora_path'} = shift(@ARGV);
+	
+	# If there are valid parameters store it
+	foreach my $param (@ARGV) {	
 		# help!
 		help_screen () if ($param =~ m/--*h\w*\z/i );
 		if ($param =~ m/-p\z/i) {
 			$conf->{'_onlypurge'} = 1;
-		} else {
-			$conf->{'_pandora_path'} = $param;
+		}
+		else if ($param =~ m/-v\z/i) {
+			$conf->{'_verbose'} = 1;
+		}
+		else if ($param =~ m/-q\z/i) {
+			$conf->{'_quiet'} = 1;
+		}
+		else if ($param =~ m/-d\z/i) {
+			$conf->{'_debug'} = 1;
 		}
 	}
 
@@ -516,10 +524,11 @@ sub pandora_checkdb_consistency {
 ##############################################################################
 sub help_screen{
 	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
-	print "\n\tAvailable options:\n\t\t-d  Debug output (very verbose).\n";
-	print "\t\t-v   Verbose output.\n";
-	print "\t\t-q   Quiet output.\n";
-	print "\t\t-p   Only purge and consistency check, skip compact.\n\n";
+	print "\n\tAvailable options:\n";
+	#~ print "\t\t-d  Debug output (very verbose).\n";
+	#~ print "\t\t-v  Verbose output.\n";
+	#~ print "\t\t-q  Quiet output.\n";
+	print "\t\t-p  Only purge and consistency check, skip compact.\n\n";
 	exit;
 }
 

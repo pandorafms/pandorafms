@@ -335,16 +335,24 @@ sub pandora_init ($) {
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
-
-	# If there are not valid parameters
-	foreach my $param (@ARGV) {
-		
+	
+	$conf->{'_pandora_path'} = shift(@ARGV);
+	
+	# If there are valid parameters store it
+	foreach my $param (@ARGV) {	
 		# help!
 		help_screen () if ($param =~ m/--*h\w*\z/i );
 		if ($param =~ m/-p\z/i) {
 			$conf->{'_onlypurge'} = 1;
-		} else {
-			$conf->{'_pandora_path'} = $param;
+		}
+		else if ($param =~ m/-v\z/i) {
+			$conf->{'_verbose'} = 1;
+		}
+		else if ($param =~ m/-q\z/i) {
+			$conf->{'_quiet'} = 1;
+		}
+		else if ($param =~ m/-d\z/i) {
+			$conf->{'_debug'} = 1;
 		}
 	}
 

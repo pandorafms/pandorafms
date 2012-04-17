@@ -1,3 +1,8 @@
+2012-04-17  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/reporting/reporting_builder.item_editor.php: Fixed
+	bug: In the item list of a report appears a wrong period.
+
 2012-04-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/update_license_info.php: Delete innecesary extension.

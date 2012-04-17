@@ -1,3 +1,6 @@
+2012-04-17  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* images/clock2.php: Include image.
 2012-04-17 Sancho Lerena <slerena@artica.es>
 
 	* install.php: Fixed some messages and version number.

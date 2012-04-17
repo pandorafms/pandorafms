@@ -207,21 +207,25 @@ switch ($action) {
 				$sql = $item['external_source'];
 				$idCustom = $item['treport_custom_sql_id'];
 				$header = $item['header_definition'];
+				$period = 0;
 				break;
 			case 'sql_graph_pie':
 				$description = $item['description'];
 				$sql = $item['external_source'];
 				$idCustom = $item['treport_custom_sql_id'];
+				$period = 0;
 				break;
 			case 'sql_graph_vbar':
 				$description = $item['description'];
 				$sql = $item['external_source'];
 				$idCustom = $item['treport_custom_sql_id'];
+				$period = 0;
 				break;
 			case 'sql_graph_hbar':
 				$description = $item['description'];
 				$sql = $item['external_source'];
 				$idCustom = $item['treport_custom_sql_id'];
+				$period = 0;
 				break;
 			case 'url':
 				$description = $item['description'];

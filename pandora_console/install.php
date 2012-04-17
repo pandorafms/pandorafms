@@ -66,8 +66,8 @@ function ChangeDBAction(causer) {
 
 <?php
 
-$version = '4.0.1';
-$build = '111213';
+$version = '4.0.2';
+$build = '120417';
 $banner = "v$version Build $build";
 
 error_reporting(0);
@@ -394,10 +394,10 @@ function install_step1() {
 		</div>";
 
 		echo "<div class='info'><b>Upgrade</b>: 
-		If you want to upgrade from Pandora FMS 3.2 to 4.0 version, 
-		please download the migration tool from our website at 
-		<a href='http://www.pandorafms.com'>PandoraFMS.com web site</a>.</div>";
-		
+		If you want to upgrade from Pandora FMS 3.2.x to 4.0.x version, 
+		please use the migration tool inside /extras directory in this setup.</div>";
+	
+			
 		echo "</div>";
 
 		print_logo_status (1, 5);

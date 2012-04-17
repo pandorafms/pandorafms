@@ -1,3 +1,7 @@
+2012-04-17 Sancho Lerena <slerena@artica.es>
+
+	* install.php: Fixed some messages and version number.
+
 2012-04-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/update_manager.php: Changed layout in 

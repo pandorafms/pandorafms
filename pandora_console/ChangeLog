@@ -1,3 +1,8 @@
+2012-04-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php: Stripped # character in a 
+	string before converted it to image 3504479
+
 2012-04-17  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/tree.php

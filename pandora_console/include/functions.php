@@ -1228,7 +1228,9 @@ function string2image($string, $width, $height, $fontsize = 3,
 	$padding_left = 4, $padding_top = 1, $home_url = '') {
 	
 	global $config;
-	
+
+	$string = str_replace('#','',$string);
+
 	//Set the size of image from the size of text
 	if ($width === false) {
 		$size = calculateTextBox($fontsize, 0, $config['fontpath'], $string);

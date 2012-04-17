@@ -92,6 +92,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 	$sub["godmode/snmpconsole/snmp_trap_generator"]["refr"] = 0;
+	
+	$sub['operation/tree']['text'] = __('Tree view');
+	$sub["operation/tree"]["refr"] = 0;
 		
 	$menu["estado"]["sub"] = $sub;
 	//End of view agents

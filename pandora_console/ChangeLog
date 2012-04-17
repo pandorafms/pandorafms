@@ -1,3 +1,20 @@
+2012-04-17  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* operation/tree.php
+	  operation/menu.php
+	  operation/tree/no_branch.png
+	  operation/tree/branch.png
+	  operation/tree/closed.png
+	  operation/tree/expanded.png
+	  operation/tree/first_closed.png
+	  operation/tree/first_expanded.png
+	  operation/tree/last_closed.png
+	  operation/tree/last_expanded.png
+	  operation/tree/last_leaf.png
+	  operation/tree/leaf.png
+	  operation/tree/one_closed.png
+	  operation/tree/one_expanded.png. Changed path.
+
 2012-04-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/fgraph.php

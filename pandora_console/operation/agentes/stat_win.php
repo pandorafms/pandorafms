@@ -67,23 +67,60 @@ if ($refresh > 0) {
 var defOffset = 2;
 var defSlideTime = 220;
 var tnActive = 0;
-var visibleMargin = 15;
+var visibleMargin = 45;
 var menuW = 400;
 var menuH = 310;
+var showed = 0;
 window.onload = function() {
 	var d;
 	d = xGetElementById('divmenu');
 	d.termNumber = 1;
 	xMoveTo(d, visibleMargin - menuW, 0);
 	xShow(d);
-	xAddEventListener(document, 'mousemove', docOnMousemove, false);
+
+	// If navigator is IE then call attachEvent, else call addEventListener
+	if ('\v'=='v')
+		document.getElementById('show_menu').attachEvent('onclick', docOnMousemoveIn);
+	else
+		document.getElementById('show_menu').addEventListener('click', docOnMousemoveIn, false);
+	
+
 
 	// Hack to repeat the init process to period select
 	var periodSelectId = $('[name="period"]').attr('class');
 
 	period_select_init(periodSelectId);
+	
+	$("#graph_menu_arrow").click(function(){
+		console.log($("#graph_menu_arrow").attr("src").indexOf("hide"));
+		if ($("#graph_menu_arrow").attr("src").indexOf("hide") == -1){
+			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");	
+		}
+		else {
+			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow.png");
+		}
+	});
 
 };
+
+function docOnMousemoveIn(evt) {
+
+	var e = new xEvent(evt);
+	var d = getTermEle(e.target);
+
+//	if (!tnActive) { // no def is active
+//		if (d) { // mouse is over a term, activate its def
+		if (showed == 0) {
+			xSlideTo('divmenu', 0, xPageY(d), defSlideTime);
+			showed = 1;
+		}
+		else {
+			xSlideTo('divmenu', visibleMargin - menuW, xPageY(d), defSlideTime);
+			showed = 0;
+		}
+//		}
+//	}
+}
 
 function docOnMousemove(evt) {
 	var e = new xEvent(evt);
@@ -154,7 +191,7 @@ if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
 
-	echo "<script type='text/javascript'>window.resizeTo($width + 10, $height + 80);</script>";
+	echo "<script type='text/javascript'>window.resizeTo($width + 60, $height + 120);</script>";
 }
 
 $utime = get_system_time ();
@@ -169,6 +206,7 @@ $urlImage = ui_get_full_url(false);
 
 // log4x doesnt support flash yet
 //
+echo '<div style="margin-left: 30px">';
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
@@ -191,9 +229,11 @@ switch ($graph_type) {
 		echo fs_error_image ('../images');
 		break;
 }
+echo '</div>';
 
 //z-index is 1 because 2 made the calendar show under the divmenu.
-echo '<div id="divmenu" class="menu" style="z-index:1;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+echo '<div id="divmenu" class="menu" style="z-index:1; height: 98%;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br /><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+echo '<div style="float: left">';
 echo '<form method="get" action="stat_win.php">';
 html_print_input_hidden ("id", $id);
 html_print_input_hidden ("label", $label);
@@ -248,9 +288,9 @@ if ($config['enterprise_installed'] && $graph_type == "sparse") {
 
 echo '</td><td>';
 
-html_print_submit_button ('GO', "submit", false, 'class="sub next"');
+html_print_submit_button ('Reload', "submit", false, 'class="sub next"');
 
-echo '</td></tr></table></form></div></body></html>';
+echo '</td></tr></table></form></div><div id="show_menu" style="position: relative; border:1px solid #FFF; float: right; height: 50px; width: 50px;">' . html_print_image("images/graphmenu_arrow.png", true, array('id' => 'graph_menu_arrow')) . '<div></div></body></html>';
 ?>
 </body>
 </html>

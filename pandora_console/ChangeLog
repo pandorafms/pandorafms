@@ -1,3 +1,15 @@
+2012-04-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora_minimal.css
+	 include/javascript/pandora.js
+	 include/functions_ui.php
+	 operation/agentes/stat_win.php: Changed layout of interactive graph
+	 menu.
+	 
+	* images/graphmenu_arrow.png
+	 images/graphmenu_arrow_hide.png: Added images for interactive 
+	 graph menu.
+
 2012-04-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php: into the function

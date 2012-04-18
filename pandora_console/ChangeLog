@@ -1,3 +1,15 @@
+2012-04-18 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: into the function
+	"agents_get_agent_id" the parameter "$io_safe_input" for transform
+	the names if true, by default false.
+	
+	* operation/agentes/networkmap.topology.php,
+	operation/agentes/networkmap.php, include/functions_ui.php: cleaned
+	source code style.
+	
+	Merged from th branch "pandora_4.0".
+
 2012-04-18 Dario Rodriguez <dario.rodriguez@artica.es>
 	
 	* godmode/agentes/agent_manager.php: Fixed a problem with links

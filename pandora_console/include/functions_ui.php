@@ -79,7 +79,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 		else{
 			if ($style !== false){
 				$truncateText = '<span style="' . $style . '">'.$truncateText.'</span>';
-			}				
+			}
 		}
 	}
 	else {
@@ -87,7 +87,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			$truncateText = '<span style="' . $style . '">' . $text . '</span>';
 		}
 		else{ 
-			$truncateText = $text;	
+			$truncateText = $text;
 		}
 	}
 	

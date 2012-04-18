@@ -219,25 +219,29 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 		mkdir $PANDORA_LOG 2> /dev/null	
 
 		echo "Giving proper permission to /var/spool/pandora"
-		id -g www-data 2> /dev/null
+		IDGROUP=`id -g www-data 2> /dev/null`
 		if [ $? -eq 0 ]
 		then
-			chown -R pandora:www-data $PANDORA_SPOOL
+			GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
+			chown -R pandora:$GROUPNAME $PANDORA_SPOOL
 		else
-			id -g wwwrun 2> /dev/null
+			IDGROUP=`id -g wwwrun 2> /dev/null`
 			if [ $? -eq 0 ]
 			then
-				chown -R pandora:wwwrun $PANDORA_SPOOL
+				GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
+				chown -R pandora:$GROUPNAME $PANDORA_SPOOL
 			else
-				id -g www 2> /dev/null
+				IDGROUP=`id -g www 2> /dev/null`
 				if [ $? -eq 0 ]
 				then
-					chown -R pandora:www $PANDORA_SPOOL
+					GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
+					chown -R pandora:$GROUPNAME $PANDORA_SPOOL
 				else
-					id -g apache 2> /dev/null
+					IDGROUP=`id -g apache 2> /dev/null`
 					if [ $? -eq 0 ]
 					then
-						chown -R pandora:apache $PANDORA_SPOOL
+						GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
+						chown -R pandora:$GROUPNAME $PANDORA_SPOOL
 					else
 						echo "No web server user found, some functionality might not perform correctly"
 						chown -R pandora:root $PANDORA_SPOOL

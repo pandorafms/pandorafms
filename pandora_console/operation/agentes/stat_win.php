@@ -61,22 +61,65 @@ if ($refresh > 0) {
 <script type='text/javascript' src='../../include/javascript/x_event.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_slide.js'></script>
 <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.js'></script>
 <script type='text/javascript'><!--
 var defOffset = 2;
 var defSlideTime = 220;
 var tnActive = 0;
-var visibleMargin = 15;
+var visibleMargin = 45;
 var menuW = 400;
 var menuH = 310;
+var showed = 0;
 window.onload = function() {
 	var d;
 	d = xGetElementById('divmenu');
 	d.termNumber = 1;
 	xMoveTo(d, visibleMargin - menuW, 0);
 	xShow(d);
-	xAddEventListener(document, 'mousemove', docOnMousemove, false);
+
+	// If navigator is IE then call attachEvent, else call addEventListener
+	if ('\v'=='v')
+		document.getElementById('show_menu').attachEvent('onclick', docOnMousemoveIn);
+	else
+		document.getElementById('show_menu').addEventListener('click', docOnMousemoveIn, false);
+	
+
+
+	// Hack to repeat the init process to period select
+	var periodSelectId = $('[name="period"]').attr('class');
+
+	period_select_init(periodSelectId);
+	
+	$("#graph_menu_arrow").click(function(){
+		console.log($("#graph_menu_arrow").attr("src").indexOf("hide"));
+		if ($("#graph_menu_arrow").attr("src").indexOf("hide") == -1){
+			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");	
+		}
+		else {
+			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow.png");
+		}
+	});
+
 };
+
+function docOnMousemoveIn(evt) {
+
+	var e = new xEvent(evt);
+	var d = getTermEle(e.target);
+
+//	if (!tnActive) { // no def is active
+//		if (d) { // mouse is over a term, activate its def
+		if (showed == 0) {
+			xSlideTo('divmenu', 0, xPageY(d), defSlideTime);
+			showed = 1;
+		}
+		else {
+			xSlideTo('divmenu', visibleMargin - menuW, xPageY(d), defSlideTime);
+			showed = 0;
+		}
+//		}
+//	}
+}
 
 function docOnMousemove(evt) {
 	var e = new xEvent(evt);
@@ -148,7 +191,7 @@ if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
 
-	echo "<script type='text/javascript'>window.resizeTo($width + 10, $height + 280);</script>";
+	echo "<script type='text/javascript'>window.resizeTo($width + 80, $height + 120);</script>";
 }
 
 $utime = get_system_time ();
@@ -167,10 +210,7 @@ $urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
 
 // log4x doesnt support flash yet
 //
-echo "<br>";
-
-echo "<div style='margin-left:30px'>";
-
+echo '<div style="margin-left: 30px">';
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
@@ -205,10 +245,11 @@ switch ($graph_type) {
 		echo fs_error_image ('../images');
 		break;
 }
-echo "</div>";
+echo '</div>';
 
 //z-index is 1 because 2 made the calendar show under the divmenu.
-echo '<div id="divmenu" class="menu" style="z-index:1; height:280px;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Update</i> button');
+echo '<div id="divmenu" class="menu" style="z-index:1; height: 98%;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br /><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+echo '<div style="float: left">';
 echo '<form method="get" action="stat_win.php">';
 html_print_input_hidden ("id", $id);
 html_print_input_hidden ("label", $label);
@@ -266,11 +307,12 @@ echo '</td><td>';
 echo '</td></tr><tr><td>'.__('Show event graph').'</td><td>';
 html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph);
 
-echo '</td><td>';
+echo '</td></tr>';
+echo '<tr><td></td><td style="text-align: right">';
 
-html_print_submit_button (__('Update'), "submit", false, 'class="sub next"');
+html_print_submit_button (__('Reload'), "submit", false, 'class="sub next"');
 
-echo '</td></tr></table></form></div></body></html>';
+echo '</td></tr></table></form></div><div id="show_menu" style="position: relative; border:1px solid #FFF; float: right; height: 50px; width: 50px;">' . html_print_image("images/graphmenu_arrow.png", true, array('id' => 'graph_menu_arrow')) . '<div></div></body></html>';
 ?>
 </body>
 </html>

@@ -225,6 +225,7 @@ sub print_usage () {
 sub error ($) {
 	my $msg = shift;
 	print ("[ERROR] $msg\n\n");
+	`logger -i -t pandora_agent_daemon [ERROR] $msg 2>/dev/null`;
 	exit 1;
 }
 
@@ -299,7 +300,16 @@ sub log_message ($$;$) {
 	if (defined ($dest)) {
 		print $dest strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
 	} else {
-		print $LogFileFH strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+		#Trying to write into log file to test its writable
+		syswrite ($LogFileFH, "");
+		
+		#If no error, the file is writable
+		if (!$!) {
+			print $LogFileFH strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+		} else {
+			#If error then log into syslog!
+			`logger -i -t pandora_agent_daemon [ERROR] $msg 2>/dev/null`;
+		}
 	}
 }
 
@@ -1703,7 +1713,7 @@ my $PID = $$;
 if ($Conf{'proxy_mode'}) {
 	
 	#Check if user is root
-	if ($< != 0) {		
+	if ($> != 0) {		
 		launch_tentacle_proxy();
 	} else {
 		error ('Proxy mode can not be launched as root');

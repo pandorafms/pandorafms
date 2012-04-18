@@ -242,7 +242,7 @@ sub pandora_purgedb ($$) {
 	print "[PURGE] Delete contents in report that have some deleted agents...\n";
 	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
 	
-	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n"
+	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n";
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
 }
@@ -345,13 +345,13 @@ sub pandora_init ($) {
 		if ($param =~ m/-p\z/i) {
 			$conf->{'_onlypurge'} = 1;
 		}
-		else if ($param =~ m/-v\z/i) {
+		elsif ($param =~ m/-v\z/i) {
 			$conf->{'_verbose'} = 1;
 		}
-		else if ($param =~ m/-q\z/i) {
+		elsif ($param =~ m/-q\z/i) {
 			$conf->{'_quiet'} = 1;
 		}
-		else if ($param =~ m/-d\z/i) {
+		elsif ($param =~ m/-d\z/i) {
 			$conf->{'_debug'} = 1;
 		}
 	}

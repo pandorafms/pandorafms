@@ -1,3 +1,7 @@
+2012-04-18  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* util/pandora_db.pl: Fixed several syntax errors.
+
 2012-04-18 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandora_server_installer: Fixed a problem setting permissions

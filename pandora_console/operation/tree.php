@@ -918,17 +918,20 @@ function printTree_($type) {
 					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "3"));
 				}
 			}
-
-			echo "<li style='margin: 0px 0px 0px 0px;'>
-				<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\")'>" .
-				$img . $iconImg ."&nbsp;" . __($name) . ' ('.
-				'<span class="green">'.'<b>'.$num_ok.'</b>'.'</span>'. 
-				' : <span class="red">'.$num_critical.'</span>' .
-				' : <span class="yellow">'.$num_warning.'</span>'.
-				' : <span class="grey">'.$num_unknown.'</span>'.') '. "</a>";
-						
-			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
-			echo "</li>\n";
+			if (($type == 'os') && ($num_ok == 0) && ($num_critical == 0) && ($num_warning == 0) && ($num_unknown == 0)) {
+				continue;
+			} else {
+				echo "<li style='margin: 0px 0px 0px 0px;'>
+					<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\")'>" .
+					$img . $iconImg ."&nbsp;" . __($name) . ' ('.
+					'<span class="green">'.'<b>'.$num_ok.'</b>'.'</span>'. 
+					' : <span class="red">'.$num_critical.'</span>' .
+					' : <span class="yellow">'.$num_warning.'</span>'.
+					' : <span class="grey">'.$num_unknown.'</span>'.') '. "</a>";
+							
+				echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
+				echo "</li>\n";
+			}
 		}
 		echo "</ul>\n";
 		echo '</td>';

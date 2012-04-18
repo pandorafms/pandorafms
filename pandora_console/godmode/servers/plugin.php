@@ -19,8 +19,10 @@ if (is_ajax ()) {
 	$id_plugin = get_parameter('id_plugin');
 	
 	$description = db_get_value_filter('description', 'tplugin', array('id' => $id_plugin));
-	
-	echo htmlentities (io_safe_output($description), ENT_QUOTES, "UTF-8", true);
+	$preload = io_safe_output($description);	
+	$preload = str_replace ("\n", "<br>", $preload);
+
+	echo $preload;
 	return;
 }
 

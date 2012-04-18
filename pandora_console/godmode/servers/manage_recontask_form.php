@@ -144,6 +144,7 @@ $table->rowclass[12]="recon_script";
 $table->rowclass[13]="recon_script";
 $table->rowclass[14]="recon_script";
 $table->rowclass[15]="recon_script";
+$table->rowclass[16]="recon_script";
 // Name
 $table->data[0][0] = "<b>".__('Task name')."</b>";
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 0, true);
@@ -227,7 +228,7 @@ $table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community,
 
 $table->data[12][0] = "<b>" . __('Explanation') . "</b>";
 $table->data[12][1] = "<span id='spinner_layour' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
-"</span>" . html_print_textarea('explanation', 4, 40, '', 'style="width: 288px;"', true);
+"</span>" . html_print_textarea('explanation', 4, 60, '', 'style="width: 388px;"', true);
 
 
 // Field1

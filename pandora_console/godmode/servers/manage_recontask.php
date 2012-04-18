@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -89,6 +89,7 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 		$id_recon_script = 'NULL';
 	else
 		$id_network_profile = 0;
+
 	$os_detect = (int) get_parameter ("os_detect", 0);
 	$resolve_names = (int) get_parameter ("resolve_names", 0);
 	$parent_detection = (int) get_parameter ("parent_detection", 0);
@@ -276,7 +277,7 @@ if ($result !== false) {
 		}
 		
 		// ACTION
-		$data[8] = '<a href="index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id='.$row["id_recon_server"].'">' . html_print_image("images/eye.png", true) . '</a>&nbsp;';
+		$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>&nbsp;';
 		$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>&nbsp;';
 		$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>&nbsp;';
 		

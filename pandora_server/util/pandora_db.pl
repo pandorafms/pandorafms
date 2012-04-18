@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2012 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "5.0 Build 120307";
+my $version = "5.0 Build 120418";
 
 # Pandora server configuration
 my %conf;

@@ -345,13 +345,13 @@ sub pandora_init ($) {
 		if ($param =~ m/-p\z/i) {
 			$conf->{'_onlypurge'} = 1;
 		}
-		else if ($param =~ m/-v\z/i) {
+		elsif ($param =~ m/-v\z/i) {
 			$conf->{'_verbose'} = 1;
 		}
-		else if ($param =~ m/-q\z/i) {
+		elsif ($param =~ m/-q\z/i) {
 			$conf->{'_quiet'} = 1;
 		}
-		else if ($param =~ m/-d\z/i) {
+		elsif ($param =~ m/-d\z/i) {
 			$conf->{'_debug'} = 1;
 		}
 	}

@@ -134,7 +134,7 @@ if ($disk_conf_delete) {
 	@unlink ($filename['conf']);
 }
 
-echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+echo '<form name="conf_agent" method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
 
 $table->width = '98%';
 $table->class = "databox_color";
@@ -159,7 +159,7 @@ if ($id_agente) {
 // Remote configuration available
 if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
-		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
 		$table->data[0][1] .= html_print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
 		$table->data[0][1] .= '</a>'.ui_print_help_tip (__('You can remotely edit this agent configuration'), true);
 	}
@@ -167,7 +167,7 @@ if (!$new_agent) {
 
 // Delete link from here
 if (!$new_agent) {
-$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
+$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=estado&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
 }
 
 $table->data[1][0] = __('IP Address');
@@ -252,7 +252,7 @@ if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
 		$table->data[3][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 		// Delete remote configuration
-		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
+		$table->data[3][1] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
 		$table->data[3][1] .= html_print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
 		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}

@@ -1,4 +1,9 @@
 2012-04-18 Dario Rodriguez <dario.rodriguez@artica.es>
+	
+	* godmode/agentes/agent_manager.php: Fixed a problem with links
+	and new menu strcuture.
+
+2012-04-18 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* godmode/agentes/agent_disk_conf_editor.php: Print message
 	using new message box

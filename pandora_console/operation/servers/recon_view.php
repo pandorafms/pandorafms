@@ -93,7 +93,7 @@ foreach ($servers as $serverItem) {
 	$table->head[4] = __('Status');
 	$table->align[4] = "center";
 
-	$table->head[5] = __('Recon module');
+	$table->head[5] = __('Template');
 	$table->align[5] = "center";
 
 	$table->head[6] = __('Progress');

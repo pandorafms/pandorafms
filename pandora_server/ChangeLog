@@ -1,3 +1,17 @@
+2012-04-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_installer: Fixed version.
+
+	* lib/PandoraFMS/Config.pm: Updated version.
+
+	* util/pandora_db.pl: Updated version.
+
+	* util/plugin/SMTP_check.pl: New remote plugin to check SMTP.
+
+	* util/pandora_xml_stress.agents: New default file for XML stress with "real names".
+	
+	* util/pandora_xml_stress.conf: Better default config.
+
 2012-04-18  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Fixed several syntax errors.

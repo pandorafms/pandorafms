@@ -1,3 +1,21 @@
+2012-04-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php
+	 include/styles/pandora.css
+	 include/javascript/jquery.pandora.js
+	 include/functions_config.php
+	 include/functions_ui.php
+	 extensions/update_manager.php
+	 extensions/update_manager/load_updatemanager.php
+	 extensions/update_manager/lib/functions.ajax.php
+	 extensions/update_manager/settings.php
+	 operation/system_alert.php
+	 general/login_page.php
+	 godmode/setup/setup.php: Changed layout in modal windows for 
+	 license information also changed several styles.
+	 
+	 Merged from branches.
+
 2012-04-17 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_html.php, extensions/net_tools.php: cleaned

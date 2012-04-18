@@ -1,3 +1,8 @@
+2012-04-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged from trunk. Add the temporal directory to the
+	  file path before trying to send a buffered XML file.
+
 2012-03-02  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* pandora_agent: Merged from trunk. Added symlink checks for temporary

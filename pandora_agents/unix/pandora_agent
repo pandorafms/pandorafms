@@ -675,7 +675,7 @@ sub send_buffered_xml_files () {
 		# Skip symlink and non data files
 		next if (-l $xml_file || $xml_file !~ m/\.data$/);
 
-		send_file ($xml_file, 1);
+		send_file ("$Conf{'temporal'}/$xml_file", 1);
 	}
 }
 

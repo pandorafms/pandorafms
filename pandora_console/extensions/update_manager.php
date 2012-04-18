@@ -191,18 +191,26 @@ function pandora_update_manager_login () {
 		$package = um_client_check_latest_update ($settings, $user_key);
 		
 		if (is_object ($package)) {
-			if ($package->id != 'ERROR_NON_NUMERIC_FOUND')
+			if ($package->id != 'ERROR_NON_NUMERIC_FOUND') {
 				$_SESSION['new_update'] = 'new';
+			}
 		}
 	}
 	else {
 		require_once(
 			"extensions/update_manager/lib/functions.ajax.php");
+		require_once("extensions/update_manager/lib/functions.php");
+		
+		$return_installation_open = array();
+		if (!update_pandora_check_installation()) {
+			$return_installation_open = update_pandora_installation();
+		}
 		
 		$result = update_pandora_get_packages_online_ajax(false);
 		
 		if ($result['correct']) {
 			$_SESSION['new_update'] = 'new';
+			$_SESSION['return_installation_open'] = $return_installation_open;
 		}
 	}
 }
@@ -215,15 +223,11 @@ function pandora_update_manager_godmode () {
 	require_once ('update_manager/settings.php');
 }
 
-if(isset($config['id_user'])) {
-	if (check_acl($config['id_user'], 0, "PM")) {
-		extensions_add_operation_menu_option (__('Update manager'));
-		extensions_add_godmode_menu_option (__('Update manager settings'), 'PM');
-		extensions_add_main_function ('pandora_update_manager_main');
-		extensions_add_godmode_function ('pandora_update_manager_godmode');
-		extensions_add_login_function ('pandora_update_manager_login');
-	}
-}
+extensions_add_operation_menu_option (__('Update manager'));
+extensions_add_godmode_menu_option (__('Update manager settings'), 'PM');
+extensions_add_main_function ('pandora_update_manager_main');
+extensions_add_godmode_function ('pandora_update_manager_godmode');
+extensions_add_login_function ('pandora_update_manager_login');
 
 pandora_update_manager_install ();
 

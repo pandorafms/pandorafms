@@ -1,3 +1,23 @@
+2012-04-18  Sancho Lerena <slerena@artica.es>
+
+	* operation/servers/recon_view.php: Fix column header.
+
+	* godmode/agentes/module_manager_editor_plugin.php: Now plugin description
+	is shown formatted (\n -> <br>). Some fields have better layout.
+
+	* godmode/servers/plugin.php: Ajax load of description is now formatted.
+
+	* godmode/servers/manage_recontask.php: Fix link to show recon server.
+
+	* godmode/servers/manage_recontask_form.php: Wider textarea.
+
+	* pandoradb_data.sql: New defaults (4 plugins, 2 recon scripts).
+
+	* include/functions_events.php: More space visible in event info, smaller
+	font.
+
+	* include/config_process.php: Updated version.
+
 2012-04-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/javascript/pandora.js

@@ -407,13 +407,8 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			
 			/* Event type */
 			$data[2] = events_print_type_img ($event["event_type"], true);
-			
-			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
-			$wrap = floor ($width / 10);
-
-
-
-			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. ui_print_string_substr (io_safe_output($event["evento"]), 45, true, '9.5'). '</span>';
+					
+			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9'). '</span>';
 
 			if ($event["id_agente"] > 0) {
 				// Agent name

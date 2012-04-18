@@ -22,10 +22,14 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC120214';
+$build_version = 'PC120418';
 $pandora_version = 'v4.0.2dev';
 
-date_default_timezone_set("Europe/Berlin");
+// Do not overwrite default timezone set if defined.
+$script_tz = date_default_timezone_get();
+if (empty($script_tz)){
+	date_default_timezone_set("Europe/Berlin");
+}
 
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;

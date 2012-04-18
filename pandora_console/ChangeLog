@@ -1,5 +1,11 @@
 2012-04-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/javascript/pandora.js
+	 operation/agentes/stat_win.php: Changed width attribute in popup 
+	 window for graphs. 
+
+2012-04-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/styles/pandora_minimal.css
 	 include/javascript/pandora.js
 	 include/functions_ui.php

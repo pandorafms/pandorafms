@@ -191,7 +191,7 @@ if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
 
-	echo "<script type='text/javascript'>window.resizeTo($width + 60, $height + 120);</script>";
+	echo "<script type='text/javascript'>window.resizeTo($width + 80, $height + 120);</script>";
 }
 
 $utime = get_system_time ();

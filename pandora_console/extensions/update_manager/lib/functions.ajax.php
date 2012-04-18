@@ -14,6 +14,30 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+function check_keygen_online() {
+	global $config;
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/lib/functions.php");
+	
+	global $conf_update_pandora;
+	if (empty($conf_update_pandora))
+		$conf_update_pandora = update_pandora_get_conf();
+	
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager_client.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/lib/libupdate_manager.php");
+	require_once ($config["homedir"] .
+		"/extensions/update_manager/load_updatemanager.php");
+		
+	$last = get_parameter('last', 0);
+	
+	db_clean_cache();
+	$settings = um_db_load_settings ();
+	return check_keygen ($settings);		
+}
+
 function update_pandora_get_packages_online_ajax($ajax = true) {
 	global $config;
 	

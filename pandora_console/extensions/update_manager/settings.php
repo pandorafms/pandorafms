@@ -22,7 +22,7 @@ if (! check_acl ($config['id_user'], 0, 'PM')) {
 	return;
 }
 
-include ("extensions/update_manager/lib/functions.php");
+include_once ("extensions/update_manager/lib/functions.php");
 
 um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
@@ -67,10 +67,10 @@ $table->data = array ();
 
 $table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
 $table->data[0][1] = html_print_input_text ('keys[customer_key]', $settings->customer_key, '', 40, 255, true);
-if (defined('PANDORA_ENTERPRISE')) {
-	$table->data[0][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
-	$table->data[0][1] .= '<div id="dialog_show_license" style="display:none"></div>';
-}
+
+$table->data[0][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
+$table->data[0][1] .= '<div id="dialog_show_license" style="display:none"></div>';
+
 $table->data[1][0] = '<strong>'.__('Update server host').'</strong>';
 $table->data[1][1] = html_print_input_text ('keys[update_server_host]', $settings->update_server_host, '', 20, 255, true);
 

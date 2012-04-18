@@ -25,21 +25,42 @@ if (! extension_loaded ('mysql'))
 
 require_once ('lib/libupdate_manager.php');
 
+
+function check_keygen ($settings) {
+	global $config;
+	
+	if ($settings->customer_key != FREE_USER) {
+		if (! file_exists ($settings->keygen_path)) {
+			return ui_print_error_message( array('title' => __("Keygen error"),
+			'message' => __('Pandora Console updates need a valid keygen file. Keygen file does not exists'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		}
+		if (! is_executable ($settings->keygen_path)) {
+			return ui_print_error_message( array('title' => __("Keygen error"),
+			'message' => __('Pandora Console updates need a valid keygen file. Keygen file is not executable'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+
+		}
+	}
+	
+	return '';
+}
+
 function get_user_key ($settings) {
 	global $config;
 	
 	if ($settings->customer_key != FREE_USER) {
 		if (! file_exists ($settings->keygen_path)) {
-			echo '<h3 class="error">';
+			/*echo '<h3 class="error">';
 			echo __('Keygen file does not exists');
-			echo '</h3>';
+			echo '</h3>';*/
 			
 			return '';
 		}
 		if (! is_executable ($settings->keygen_path)) {
-			echo '<h3 class="error">';
+			/*echo '<h3 class="error">';
 			echo __('Keygen file is not executable');
-			echo '</h3>';
+			echo '</h3>';*/
 			
 			return '';
 		}

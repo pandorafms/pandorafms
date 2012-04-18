@@ -199,11 +199,18 @@ function pandora_update_manager_login () {
 	else {
 		require_once(
 			"extensions/update_manager/lib/functions.ajax.php");
+		require_once("extensions/update_manager/lib/functions.php");
+		
+		$return_installation_open = array();
+		if (!update_pandora_check_installation()) {
+			$return_installation_open = update_pandora_installation();
+		}
 		
 		$result = update_pandora_get_packages_online_ajax(false);
 		
 		if ($result['correct']) {
 			$_SESSION['new_update'] = 'new';
+			$_SESSION['return_installation_open'] = $return_installation_open;
 		}
 	}
 }

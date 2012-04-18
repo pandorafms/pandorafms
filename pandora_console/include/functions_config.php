@@ -763,6 +763,17 @@ function config_check (){
 	
 	//pandora_update_manager_login();
 	if (isset($_SESSION['new_update'])) {
+		if (!empty($_SESSION['return_installation_open'])) {
+			if (!$_SESSION['return_installation_open']['return']) {
+				foreach ($_SESSION['return_installation_open']['text'] as $message) {
+					$config["alert_cnt"]++;
+					$_SESSION["alert_msg"] .= ui_print_error_message(
+						array('title' => __("Error first setup Open update"),
+						'message' => $message,
+						'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+				}
+			}
+		}
 		if ($_SESSION['new_update'] == 'new') {
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_info_message(

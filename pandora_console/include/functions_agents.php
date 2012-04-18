@@ -173,7 +173,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		
 		if (empty ($id_modules))
 			return array ();
-			
+		
 		$subQuery = implode (",", $id_modules);
 	}
 

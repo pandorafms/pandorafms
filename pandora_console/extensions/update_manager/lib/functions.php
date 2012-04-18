@@ -48,6 +48,8 @@ function update_pandora_get_conf() {
 function update_pandora_installation() {
 	global $config;
 	
+	$return_var = array('return' => true, 'text' => null);
+	
 	$row = db_get_row_filter('tconfig', array('token' => 'update_pandora_conf_url'));
 	
 	if (empty($row)) {
@@ -70,23 +72,23 @@ function update_pandora_installation() {
 			'value' => $conf_update_pandora['download_mode']);
 		$return = db_process_sql_insert('tconfig', $values);
 		
-		ui_print_result_message($return, __('Succesful store conf data in DB.'),
-			__('Unsuccesful store conf data in DB.'));
-	}
-	else {
-		ui_print_message(__('Conf data have been in the DB.'));
+		if (!$return) {
+			$return_var['return'] = false;
+			$return_var['text'][] = __('Unsuccesful store conf data in DB.');
+		}
 	}
 	
 	$dir = $config['attachment_store'] .  '/update_pandora/';
 	if (!is_dir($dir)) {
 		$result = mkdir($dir);
 		
-		ui_print_result_message($result, __('Succesful create a dir to save package in Pandora Console'),
-			__('Unsuccesful create a dir to save package in Pandora Console'));
+		if (!$return) {
+			$return_var['return'] = false;
+			$return_var['text'][] = __('Unsuccesful create a dir to save package in Pandora Console');
+		}
 	}
-	else {
-		ui_print_message(__('The directory for save package have been in Pandora Console.'));
-	}
+	
+	return $return_var;
 }
 
 function update_pandora_update_conf() {

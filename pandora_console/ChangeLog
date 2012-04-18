@@ -1,3 +1,12 @@
+2012-04-18 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php, extensions/update_manager.php,
+	extensions/update_manager/lib/functions.php: fixed the first
+	intallation of update manager.
+	
+	* include/functions_ui.php, include/functions_agents.php: cleaned
+	source code style.
+
 2012-04-18  Sancho Lerena <slerena@artica.es>
 
 	* operation/servers/recon_view.php: Fix column header.

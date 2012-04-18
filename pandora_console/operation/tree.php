@@ -52,24 +52,6 @@ if (is_ajax ())
 			return;
 		}
 
-		// Blank space below title, DONT remove this, this
-		// Breaks the layout when Flash charts are enabled :-o
-		echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
-			
-			//Floating div
-			echo '<div id="agent_access" width:35%; padding-top:11px;">';
-
-		if ($config["agentaccess"]){
-			echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-
-			graphic_agentaccess($id_agente, 280, 110, 86400);
-		}
-
-		echo '<br>';
-		//graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
-
-		echo '</div>';
-			
 		echo '<div id="id_div3" width="450px">';
 		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:15%">';
 		//Agent name
@@ -184,6 +166,25 @@ if (is_ajax ())
 
 		//End of table
 		echo '</table></div>';
+		
+		// Blank space below title, DONT remove this, this
+		// Breaks the layout when Flash charts are enabled :-o
+		echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
+			
+			//Floating div
+			echo '<div id="agent_access" width:35%; padding-top:11px;">';
+
+		if ($config["agentaccess"]){
+			echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+
+			graphic_agentaccess($id_agente, 280, 110, 86400);
+		}
+
+		echo '<br>';
+		echo graphic_agentevents ($id_agente, 290, 60, 86400, '');
+		
+		echo '</div>';
+			
 		echo '<form id="agent_detail" method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
 			echo '<div class="action-buttons" style="width: '.$table->width.'">';
 				html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub upd"');
@@ -380,7 +381,6 @@ if (is_ajax ())
 					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 
 				echo $img;
-				ui_print_group_icon ($row["id_grupo"], false, "groups_small", "vertical-align: middle; width: 16px; height: 16px;", false);
 				echo "</a>";
 				echo " ";
 				echo str_replace('.png' ,'_ball.png',
@@ -391,7 +391,7 @@ if (is_ajax ())
 						str_replace('img', 'img style="vertical-align: middle;"', $agent_info["alert_img"])
 					);
 				echo "<a onfocus='JavaScript: this.blur()'
-					href='javascript: loadTable(\"". $row["id_agente"]. "\")'>";
+					href='javascript: loadTable(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\")'>";
 				echo " ";
 					
 				echo $row["nombre"];
@@ -598,6 +598,7 @@ if (is_ajax ())
 				echo "</span><span style='margin-left: 20px;'>";
 					echo $data;
 					if ($row['utimestamp'] != '') {
+						echo "&nbsp;";
 						ui_print_help_tip ($row["timestamp"], '', 'images/clock2.png');
 					}
 				echo "</span></li>";
@@ -625,7 +626,7 @@ function printTree_($type) {
 	$select_status = get_parameter('status', -1);
 
 	echo '<table class="databox" style="width:98%">';
-	echo '<tr><td style="width:60%">';
+	echo '<tr><td style="width:60%" valign="top">';
 	$avariableGroups = users_get_groups(); //db_get_all_rows_in_table('tgrupo', 'nombre');
 	$avariableGroupsIds = implode(',',array_keys($avariableGroups));
 	if($avariableGroupsIds == ''){
@@ -920,7 +921,7 @@ function printTree_($type) {
 
 			echo "<li style='margin: 0px 0px 0px 0px;'>
 				<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\")'>" .
-				$img . $iconImg . __($name) . ' ('.
+				$img . $iconImg ."&nbsp;" . __($name) . ' ('.
 				'<span class="green">'.'<b>'.$num_ok.'</b>'.'</span>'. 
 				' : <span class="red">'.$num_critical.'</span>' .
 				' : <span class="yellow">'.$num_warning.'</span>'.
@@ -931,7 +932,7 @@ function printTree_($type) {
 		}
 		echo "</ul>\n";
 		echo '</td>';
-		echo '<td style="width:38%">';
+		echo '<td style="width:38%" valign="top">';
 			echo '<div id="cont">';
 				echo '&nbsp;';
 			echo'</div>';
@@ -1130,7 +1131,8 @@ printTree_($activeTab);
 			);
 		}
 		
-		function loadTable(id_agent) {			
+		function loadTable(type, div_id, less_branchs, id_father) {
+			id_agent = div_id;				
 			$.ajax({
 				type: "POST",
 				url: "ajax.php",
@@ -1138,7 +1140,9 @@ printTree_($activeTab);
 				id_agent, success: function(data){
 					$('#cont').html(data);	
 				}
-			});		
+			});
+			
+			loadSubTree(type, div_id, less_branchs, id_father);		
 	}
 </script>
 

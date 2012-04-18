@@ -184,7 +184,7 @@ if($config['enterprise_installed']) {
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
 				html_print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
 }
-			
+
 $buttons['groups'] = array('active' => $activeTab == 'groups',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=groups&amp;pure='.$pure.'">' . 
 			html_print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');

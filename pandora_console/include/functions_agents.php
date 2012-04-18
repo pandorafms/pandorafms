@@ -1059,10 +1059,10 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		}
 		
 		$id_groups = array_keys($groups);
-
+		
 		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
 		$id_agent = db_get_all_rows_sql($sql);
-
+		
 		if($id_agent == false) {
 			$id_agent = array();
 		}
@@ -1293,10 +1293,14 @@ function agents_get_module_id ($id_agente_modulo) {
  * Get agent id from an agent name.
  *
  * @param string $agent_name Agent name to get its id.
+ * @param boolean $io_safe_input If it is true transform to safe string, by default false.
  *
  * @return int Id from the agent of the given name.
  */
-function agents_get_agent_id ($agent_name) {
+function agents_get_agent_id ($agent_name, $io_safe_input = false) {
+	if ($io_safe_input) {
+		$agent_name = io_safe_input($agent_name);
+	}
 	return (int) db_get_value ('id_agente', 'tagente', 'nombre', $agent_name);
 }
 

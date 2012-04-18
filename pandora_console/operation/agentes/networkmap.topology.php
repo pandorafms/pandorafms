@@ -61,7 +61,8 @@ $filename_dot .= "_".$id_networkmap.".dot";
 
 if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > get_system_time () - 300) {
 	$result = true;
-} else {
+}
+else {
 	$fh = @fopen ($filename_dot, 'w');
 	if ($fh === false) {
 		$result = false;
@@ -85,7 +86,8 @@ if ($result !== false) {
 	}
 	html_print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	require ($filename_map);
-} else {
+}
+else {
 	ui_print_error_message (__('Map could not be generated'));
 	echo $result;
 	echo "<div class='warn'>Apparently something went wrong executing the command or writing the output.</div>";

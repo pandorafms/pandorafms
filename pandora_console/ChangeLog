@@ -1,3 +1,13 @@
+2012-04-18 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: into the function
+	"agents_get_agent_id" the parameter "$io_safe_input" for transform
+	the names if true, by default false.
+	
+	* operation/agentes/networkmap.topology.php,
+	operation/agentes/networkmap.php, include/functions_ui.php: cleaned
+	source code style.
+
 2012-04-18  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/tree.php: Changes in tab os.
@@ -19,6 +29,7 @@
 2012-04-17  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* images/clock2.php: Include image.
+
 2012-04-17 Sancho Lerena <slerena@artica.es>
 
 	* install.php: Fixed some messages and version number.

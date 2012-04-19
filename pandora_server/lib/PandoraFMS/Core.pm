@@ -266,9 +266,9 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value, $events, $event) = @_;
 
 	if (defined ($agent)) {
-		logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "'.", 10);
+		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output ($agent->{'nombre'}) . "'.", 10);
 	} else {
-		logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "'.", 10);
+		logger ($pa_config, "Evaluating alert '" . safe_output($alert->{'name'}) . "'.", 10);
 	}
 
 	# Value returned on valid data
@@ -369,7 +369,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 				$data =~ m/$alert->{'value'}/i;
 			};
 			if ($@) {
-				logger ($pa_config, "Error evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': '" . $alert->{'value'} . "' is not a valid regular expression.", 10);
+				logger ($pa_config, "Error evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': '" . $alert->{'value'} . "' is not a valid regular expression.", 10);
 				return $status;
 			}
 
@@ -411,9 +411,9 @@ sub pandora_process_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp, $extra_macros) = @_;
 	
 	if (defined ($agent)) {
-		logger ($pa_config, "Processing alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
+		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	} else {
-		logger ($pa_config, "Processing alert '" . $alert->{'name'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
+		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
 
 	# Simple, event or compound alert?
@@ -524,7 +524,7 @@ fired, 0 if not.
 sub pandora_evaluate_compound_alert ($$$$) {
 	my ($pa_config, $id, $name, $dbh) = @_;
 
-	logger ($pa_config, "Evaluating compound alert '$name'.", 10);
+	logger ($pa_config, "Evaluating compound alert '".safe_output($name)."'.", 10);
 
 	# Return value
 	my $status = 0;
@@ -617,17 +617,17 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	# Alerts in stand-by are not executed
 	if ($alert->{'standby'} == 1) {
 		if (defined ($module)) {
-			logger ($pa_config, "Alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "' is in stand-by. Not executing.", 10);
+			logger ($pa_config, "Alert '" . safe_output($alert->{'name'}) . "' for module '" . safe_output($module->{'nombre'}) . "' is in stand-by. Not executing.", 10);
 		} else {
-			logger ($pa_config, "Alert '" . $alert->{'name'} . "' is in stand-by. Not executing.", 10);
+			logger ($pa_config, "Alert '" . safe_output($alert->{'name'}) . "' is in stand-by. Not executing.", 10);
 		}
 		return;
 	}
 
 	if (defined ($module)) {
-		logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
+		logger ($pa_config, "Executing alert '" . safe_output($alert->{'name'}) . "' for module '" . safe_output($module->{'nombre'}) . "'.", 10);
 	} else {
-		logger ($pa_config, "Executing alert '" . $alert->{'name'} . "'.", 10);
+		logger ($pa_config, "Executing alert '" . safe_output($alert->{'name'}) . "'.", 10);
 	}
 
 	# Get active actions/commands
@@ -683,9 +683,9 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	# No actions defined
 	if ($#actions < 0) {
 		if (defined ($module)) {
-			logger ($pa_config, "No actions defined for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+			logger ($pa_config, "No actions defined for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
 		} else {
-			logger ($pa_config, "No actions defined for alert '" . $alert->{'name'} . "'.", 10);
+			logger ($pa_config, "No actions defined for alert '" . safe_output($alert->{'name'}) . "'.", 10);
 		}
 		return;
 	}
@@ -702,9 +702,9 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
 		} else {
 			if (defined ($module)) {
-				logger ($pa_config, "Skipping action " . $action->{'name'} . " for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
 			} else {
-				logger ($pa_config, "Skipping action " . $action->{'name'} . " for alert '" . $alert->{'name'} . "'.", 10);
+				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "'.", 10);
 			}
 		}
 	}
@@ -728,7 +728,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $alert,
 		$alert_mode, $action, $module, $dbh, $timestamp, $extra_macros) = @_;
 
-	logger($pa_config, "Executing action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 10);
+	logger($pa_config, "Executing action '" . safe_output($action->{'name'}) . "' for alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 10);
 
 	my $field1 = $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
 	my $field2 = $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
@@ -786,21 +786,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$macros{_field2_} = subst_alert_macros ($field2, \%macros);
 		$macros{_field3_} = subst_alert_macros ($field3, \%macros);
 		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros);
-		logger($pa_config, "Executing command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 8);
+		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 8);
 
 		eval {
 			system ($command);
-			logger($pa_config, "Command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
+			logger($pa_config, "Command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
 		};
 
 		if ($@){
-			logger($pa_config, "Error $@ executing command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') ."'.", 8);
+			logger($pa_config, "Error $@ executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') ."'.", 8);
 		}
 
 	# Internal Audit
 	} elsif ($action->{'name'} eq "Internal Audit") {
 		$field1 = subst_alert_macros ($field1, \%macros);
-		pandora_audit ($pa_config, $field1, defined ($agent) ? $agent->{'nombre'} : 'N/A', 'Alert (' . $alert->{'description'} . ')', $dbh);
+		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
 
 	# Email		
 	} elsif ($action->{'name'} eq "eMail") {
@@ -858,13 +858,13 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my ($pa_config, $data_object, $agent, $module, $module_type,
 		$timestamp, $utimestamp, $server_id, $dbh, $extra_macros) = @_;
 	
-	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
+	logger($pa_config, "Processing module '" . safe_output($module->{'nombre'}) . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . safe_output($agent->{'nombre'}) . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 
 	# Get agent information
 	if (! defined ($agent) || $agent eq '') {
 		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 		if (! defined ($agent)) {
-			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while processing module '" . $module->{'nombre'} . "'.", 3);
+			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while processing module '" . safe_output($module->{'nombre'}) . "'.", 3);
 			pandora_update_module_on_error ($pa_config, $module, $dbh);
 			return;
 		}
@@ -1278,7 +1278,7 @@ Updates the keep_alive module for the given agent.
 sub pandora_module_keep_alive ($$$$$) {
 	my ($pa_config, $id_agent, $agent_name, $server_id, $dbh) = @_;
 	
-	logger($pa_config, "Updating keep_alive module for agent '" . $agent_name . "'.", 10);
+	logger($pa_config, "Updating keep_alive module for agent '" . safe_output($agent_name) . "'.", 10);
 
 	# Update keepalive module 
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND delete_pending = 0 AND id_tipo_modulo = 100', $id_agent);
@@ -1595,7 +1595,7 @@ sub pandora_update_module_on_error ($$$) {
 	# Set tagente_estado.current_interval to make sure it is not 0
 	my $current_interval = ($module->{'module_interval'} == 0 ? 300 : $module->{'module_interval'});
 
-	logger($pa_config, "Updating module " . $module->{'nombre'} . " (ID " . $module->{'id_agente_modulo'} . ") on error.", 10);
+	logger($pa_config, "Updating module " . safe_output($module->{'nombre'}) . " (ID " . $module->{'id_agente_modulo'} . ") on error.", 10);
 
 	# Update last_execution_try
 	db_do ($dbh, 'UPDATE tagente_estado SET last_execution_try = ?, current_interval = ?
@@ -2082,7 +2082,7 @@ sub pandora_validate_event ($$$) {
 sub generate_status_event ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $status, $last_status, $dbh) = @_;
 	my ($event_type, $severity);
-	my $description = "Module " . $module->{'nombre'} . " ($data) is ";
+	my $description = "Module " . safe_output($module->{'nombre'}) . " (".safe_output($data).") is ";
 
 	# Mark as "validated" any previous event for this module
 	pandora_validate_event ($pa_config, $module->{'id_agente_modulo'}, $dbh);

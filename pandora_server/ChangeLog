@@ -1,3 +1,18 @@
+2012-04-19  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_xml_stress.conf: default path for default agentname list.
+
+	* lib/PandoraFMS/DataServer.pm: Units are not overwrite by an empty XML
+	parameter.
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed creation of network components
+	with double encoding.
+
+	* lib/PandoraFMS/Core.pm: Applied Junichi patch (from trunk) for detecting
+	keepalive in some newer SQL systems. Added a lot of safe_output in logfile.
+	Added aditional check for INC types on date collision (same date for different
+	data). Fixed generation of some events with double encoding. 
+
 2012-04-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_installer: Fixed version.

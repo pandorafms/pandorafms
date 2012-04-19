@@ -202,7 +202,7 @@ sub data_consumer ($$) {
 		my $addr_id = get_addr_id ($dbh, $addr);
 		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
 		if ($addr_id <= 0) {
-			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
+			logger($pa_config, "Could not add address '$addr' for host '".safe_output($host_name)."'.", 3);
 			next;
 		}
 
@@ -444,10 +444,10 @@ sub create_network_profile_modules {
 			next;
 		}
 
-		logger($pa_config, "Processing network component '" . $component->{'name'} . "' for agent $addr.", 10);
+		logger($pa_config, "Processing network component '" . safe_output ($component->{'name'}) . "' for agent $addr.", 10);
 
         # Use snmp_community from network task instead the component snmp_community
-        $component->{'snmp_community'} = $snmp_community;
+        $component->{'snmp_community'} = safe_output ($snmp_community);
 
 		# Create the module
 		my $module_id = db_insert ($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, id_plugin, post_process)
@@ -458,7 +458,7 @@ sub create_network_profile_modules {
 		# An entry in tagente_estado is necessary for the module to work
         	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'1970-01-01 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
 
-		logger($pa_config, 'Creating module ' . $component->{'name'} . " for agent $addr from network component '" . $component->{'name'} . "'.", 10);
+		logger($pa_config, 'Creating module ' . safe_output ($component->{'name'}) . " for agent $addr from network component.", 10);
 	}
 }
 

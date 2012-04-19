@@ -211,8 +211,8 @@ foreach ($zones as $zone) {
 		$zone_name[$name] = $name;
 	}
 }
-
-$timezones = db_get_all_rows_sql ("SELECT timezone FROM ttimezone WHERE zone='Africa'");
+$zone_selected = get_parameter('zone', 'Europe');
+$timezones = db_get_all_rows_sql ("SELECT timezone FROM ttimezone WHERE zone='$zone_selected'");
 foreach ($timezones as $timezone) {
 	foreach ($timezone as $key=>$name_tz) {
 		if ($key == 'timezone')
@@ -223,7 +223,7 @@ foreach ($timezones as $timezone) {
 $table->data[23][0] = __('Timezone setup');
 $table->data[23][1] = html_print_input_text_extended ('timezone_text', $config["timezone"], 'text-timezone_text', '', 25, 25, false, '', 'readonly', true); 
 $table->data[23][1] .= '<a id="change_timezone">'.html_print_image ('images/pencil.png', true, array ('title' => __('Change timezone'))).'</a>';
-$table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($zone_name, 'zone', 'None', 'show_timezone();', '', '', true);
+$table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone();', '', '', true);
 $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone', $config["timezone"], '', '', '', true);
 
 

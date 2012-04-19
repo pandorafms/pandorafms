@@ -784,26 +784,30 @@ function config_check (){
 	}
 	
 	if (enterprise_installed()) {
-		um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-			$config['dbpass'], $config['dbname']);
-		
-		$settings = um_db_load_settings ();
-		
-		$result_check_keygen = check_keygen($settings);
-		
-		if (!empty($result_check_keygen)) {
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= $result_check_keygen;
+		if ($config['update_manager_installed'] == 1) {
+			um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+				$config['dbpass'], $config['dbname']);
+			
+			$settings = um_db_load_settings ();
+			
+			$result_check_keygen = check_keygen($settings);
+			
+			if (!empty($result_check_keygen)) {
+				$config["alert_cnt"]++;
+				$_SESSION["alert_msg"] .= $result_check_keygen;
+			}
 		}
 	}
 	else {
-		require_once("extensions/update_manager/lib/functions.ajax.php");
-		
-		$result_check_keygen = check_keygen_online();
-		
-		if (!empty($result_check_keygen)) {
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= $result_check_keygen;
+		if ($config['update_manager_installed'] == 1) {
+			require_once("extensions/update_manager/lib/functions.ajax.php");
+			
+			$result_check_keygen = check_keygen_online();
+			
+			if (!empty($result_check_keygen)) {
+				$config["alert_cnt"]++;
+				$_SESSION["alert_msg"] .= $result_check_keygen;
+			}
 		}		
 	}
 }

@@ -284,16 +284,6 @@ $table->align = array ();
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	if ($print_agent) {
-		$table->size[0] = '20px';
-		$table->size[1] = '20px';
-		$table->size[2] = '20px';
-		$table->size[3] = '25%';
-		$table->size[4] = '25%';
-		$table->size[5] = '30%';
-		$table->size[6] = '30%';
-		$table->size[7] = '20px';
-		$table->size[8] = '60px';
-		
 		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
@@ -316,14 +306,6 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->align[9] = 'center';
 	}
 	else {
-		$table->size[0] = '20px';
-		$table->size[1] = '20px';
-		$table->size[2] = '20px';
-		$table->size[3] = '25%';
-		$table->size[4] = '50%';
-		$table->size[5] = '25%';
-		$table->size[6] = '20px';
-		$table->size[7] = '60px';
 		
 		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
@@ -347,14 +329,6 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 else
 {
 	if ($print_agent) {
-		$table->size[0] = '20px';
-		$table->size[1] = '20px';
-		$table->size[2] = '25%';
-		$table->size[3] = '25%';
-		$table->size[4] = '50%';
-		$table->size[5] = '25%';
-		$table->size[6] = '20px';
-		$table->size[7] = '60px';
 		
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
@@ -377,14 +351,6 @@ else
 		$table->align[8] = 'center';
 	}
 	else {
-		$table->size[0] = '20px';
-		$table->size[1] = '20px';
-		$table->size[2] = '25%';
-		$table->size[3] = '50%';
-		$table->size[4] = '25%';
-		$table->size[5] = '20px';
-		$table->size[6] = '60px';
-		
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Module') . ' ' .

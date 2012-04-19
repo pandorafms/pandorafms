@@ -133,7 +133,7 @@ if ($config["pure"] == 0) {
 	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
 }
 else {
-	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 98%; height:94%; min-height:500px; border: 1px solid black;' ></div>";
+	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 100%; height:94%; min-height:500px; border: 1px solid black;' ></div>";
 }
 
 gis_print_map('map', $map['zoom_level'], $map['initial_latitude'],
@@ -196,12 +196,24 @@ if ($config["pure"] != 0) {
 		$().ready(function(){
 			
 			var new_height = $(document).height();
-			var new_width = $(document).width();
 			$("#map").css("height", new_height - 60);
-			$("#map").css("width", new_width - 25);
 			
 		});
 	</script>
 <?php
+}
+else {
+	// Resize GIS map on normalview
+?>
+	<script type="text/javascript">
+		$().ready(function(){
+			
+			var new_height = $("#menu").height();
+			$("#map").css("height", new_height - 20);
+			
+		});
+		
+	</script>
+<?php	
 }
 ?>

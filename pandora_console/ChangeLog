@@ -1,3 +1,9 @@
+2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/gis_maps/render_view.php: Resize GIS map on fullscreen.
+	
+	Bugfix merged from branches.
+
 2012-04-19  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb.data.oracle.sql

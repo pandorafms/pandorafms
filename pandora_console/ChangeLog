@@ -1,5 +1,11 @@
 2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/gis_maps/render_view.php: Resize GIS map on fullscreen.
+	
+	Bugfix: #3469971.
+
+2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_config.php: Added check for update manager in 
 	the config process.
 	

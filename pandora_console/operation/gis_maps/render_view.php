@@ -188,4 +188,20 @@ if ($layers != false) {
 	gis_activate_select_control();
 	gis_activate_ajax_refresh($layers, $timestampLastOperation);
 }
+
+// Resize GIS map on fullscreen
+if ($config["pure"] != 0) {
+?>
+	<script type="text/javascript">
+		$().ready(function(){
+			
+			var new_height = $(document).height();
+			var new_width = $(document).width();
+			$("#map").css("height", new_height - 60);
+			$("#map").css("width", new_width - 25);
+			
+		});
+	</script>
+<?php
+}
 ?>

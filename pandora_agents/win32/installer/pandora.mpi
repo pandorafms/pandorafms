@@ -659,6 +659,7 @@ InstallComponent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C -setup Uninstall -type act
 InstallComponent 19131BB8-88ED-C9E4-A5CF-8873BE8F5D09 -setup Uninstall -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent 3A1294BA-6D93-95C0-D81D-3435E62A69F3 -setup Uninstall -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent 73C87D6F-ACBB-026B-157C-1CC1FD4C4EEC -setup Uninstall -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
+InstallComponent 0BABDE07-5132-BB2B-CDB4-AED542367076 -setup Uninstall -type action -title {Remove Directory From Path} -component RemoveDirectoryFromPath -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent D2829903-F232-F03E-070A-386860F74F4A -setup Uninstall -type action -title {Delete File} -component DeleteFile -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent ACFFE9C0-C404-4FD9-AD70-8F60E822DE65 -setup Uninstall -type action -title {Uninstall Selected Files} -component UninstallSelectedFiles -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent AA00EDED-9979-419F-A32C-DF1480E9EFF0 -setup Uninstall -type actiongroup -title {Finish Actions} -active Yes -parent ActionGroupsUninstall
@@ -709,6 +710,15 @@ array set Properties {
 
 06959B7F-380D-DEF6-431A-1894BF9A367C,WorkingDirectory
 {<%InstallDir%>}
+
+0BABDE07-5132-BB2B-CDB4-AED542367076,Conditions
+{0 conditions}
+
+0BABDE07-5132-BB2B-CDB4-AED542367076,Directory
+{<%InstallDir%>\util}
+
+0BABDE07-5132-BB2B-CDB4-AED542367076,Level
+{system}
 
 0C4A17DA-7867-40CC-81B4-0D1F170581AC,Conditions
 {0 conditions}

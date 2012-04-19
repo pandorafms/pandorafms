@@ -191,3 +191,13 @@ ALTER TABLE "tmensajes" ALTER COLUMN "mensaje" TYPE TEXT;
 -- -----------------------------------------------------
 
 ALTER TABLE "talert_compound" ADD COLUMN "special_day" SMALLINT default 0;
+
+-- -----------------------------------------------------
+-- Table `ttimezone`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS "ttimezone" (
+  "id_tz" INTEGER NOT NULL PRIMARY KEY,
+  "zone" varchar(60) NOT NULL,
+  "timezone" varchar(60) NOT NULL
+);

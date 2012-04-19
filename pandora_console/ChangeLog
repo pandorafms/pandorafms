@@ -1,3 +1,12 @@
+2012-04-19  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  include/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  include/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  include/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added
+	table 'ttimezone' and data.
+
 2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_config.php: Added check for update manager in 

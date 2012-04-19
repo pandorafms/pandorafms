@@ -1282,4 +1282,12 @@ CREATE TABLE "tevent_filter" (
   "filter_only_alert" INTEGER NOT NULL default -1
 );
 
+-- -----------------------------------------------------
+-- Table `ttimezone`
+-- -----------------------------------------------------
 
+CREATE TABLE IF NOT EXISTS "ttimezone" (
+  "id_tz" INTEGER NOT NULL PRIMARY KEY,
+  "zone" varchar(60) NOT NULL,
+  "timezone" varchar(60) NOT NULL
+);

@@ -672,8 +672,8 @@ sub send_buffered_xml_files () {
 	opendir(TEMPORAL, $Conf{'temporal'}) or return;
 	while (my $xml_file = readdir(TEMPORAL)) { 
 	
-		# Skip symlink and non data files
-		next if (-l $xml_file || $xml_file !~ m/\.data$/);
+		# Skip non data files and symlinks
+		next if ($xml_file !~ m/\.data$/ || -l "$Conf{'temporal'}/$xml_file");
 
 		send_file ("$Conf{'temporal'}/$xml_file", 1);
 	}

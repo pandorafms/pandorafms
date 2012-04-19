@@ -1,3 +1,8 @@
+2012-04-19  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* pandora_agent: Merged from trunk. Also added the temporal directory
+	 to the file path for symlink check.
+
 2012-04-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Merged from trunk. Add the temporal directory to the

@@ -1,3 +1,8 @@
+2012-04-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module.cc: Merged from trunk. Default to generic_data
+	  if no module_type is not set.
+
 2012-02-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Merged from trunk. Convert

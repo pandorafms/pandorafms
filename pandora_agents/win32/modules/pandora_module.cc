@@ -161,7 +161,7 @@ Pandora_Module::cleanDataList () {
  */
 Module_Type
 Pandora_Module::parseModuleTypeFromString (string type) {
-	if (type == module_generic_data_str) {
+	if (type == module_generic_data_str || type == "") {
 		return TYPE_GENERIC_DATA;
 	} else if (type == module_generic_data_inc_str) {
 		return TYPE_GENERIC_DATA_INC;

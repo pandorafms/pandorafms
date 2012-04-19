@@ -1,3 +1,13 @@
+2012-04-19  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/estado_monitores.php: Put units in module view. 
+	Fixed a Postgrest missing ")" in SQL.
+
+	* operation/agentes/status_monitor.php: Put units in module view.
+
+	* operation/agentes/alerts_status.php: better layout on alert 
+	tabular view, now using dynamic width.
+
 2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/gis_maps/render_view.php: Resize GIS map on normal view.

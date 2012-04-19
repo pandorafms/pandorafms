@@ -353,6 +353,11 @@ foreach ($modules as $module) {
 	else {
 		if (is_numeric($module["datos"])){
 			$salida = format_numeric($module["datos"]);
+
+			// Show units ONLY in numeric data types
+			if (isset($module["unit"])){
+				$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
+			}
 		}
 		else {
 			$module_value = io_safe_output($module["datos"]);

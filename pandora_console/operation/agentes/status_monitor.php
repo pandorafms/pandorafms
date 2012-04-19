@@ -394,6 +394,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.min_warning,
 			tagente_modulo.max_warning,
 			tagente_modulo.str_warning,
+			tagente_modulo.unit,
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
@@ -419,10 +420,11 @@ switch ($config["dbtype"]) {
 			tagente_modulo.max_warning,
 			tagente_modulo.str_warning,
 			tagente_modulo.min_critical,
+			tagente_modulo.unit,
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
 			tagente_modulo.extended_info,
-			tagente_estado.utimestamp AS utimestamp".$sql." LIMIT " . $config["block_size"] . " OFFSET " . $offset;
+			tagente_estado.utimestamp AS utimestamp".$sql.") LIMIT " . $config["block_size"] . " OFFSET " . $offset;
 		break;
 	case "oracle":
 		$set = array();
@@ -443,6 +445,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.min_warning,
 			tagente_modulo.max_warning,
 			tagente_modulo.str_warning,
+			tagente_modulo.unit,
 			tagente_modulo.min_critical,
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
@@ -628,8 +631,14 @@ foreach ($result as $row) {
 
 	$data[7] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
 
-	if (is_numeric($row["datos"]))
+	if (is_numeric($row["datos"])){
 		$salida = format_numeric($row["datos"]);
+
+		// Show units ONLY in numeric data types
+		if (isset($row["unit"])){
+			$salida .= "&nbsp;" . '<i>'. io_safe_output($row["unit"]) . '</i>';
+		}
+	}
 	else {
 		$module_value = io_safe_output($row["datos"]);
 		$sub_string = substr(io_safe_output($row["datos"]),0, 12);

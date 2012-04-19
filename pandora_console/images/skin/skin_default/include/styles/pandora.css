@@ -33,6 +33,29 @@ body {
 	background: #022F5C;
 }
 
+#login_body {
+	/* Set rules to fill background */
+	min-height: 100%;
+	min-width: 1024px;
+
+	/* Set up proportionate scaling */
+	width: 100%;
+	height: auto;
+
+	/* Set up positioning */
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -999;
+}
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+	#login_body  {
+		left: 50%;
+		margin-left: -512px;   /* 50% */
+	}
+}
+
 body.pure {
 	background: #fff none!important;
 }
@@ -440,6 +463,24 @@ label {
 	font-weight: bold;
 	text-align: left;
 }
+#bottom_logo {
+	bottom: 0; 
+	height: 70px; 
+	margin: 0 auto 0 44%; 
+	overflow: hidden; 
+	position: fixed;	
+}
+
+#ver_num {
+	bottom: 0; 
+	height: 20px; 
+	right: 0; 
+	padding-right: 20px; 
+	overflow: hidden; 
+	position: fixed; 
+	color: #696969
+}
+
 th > label {
 	padding-top: 7px;
 }

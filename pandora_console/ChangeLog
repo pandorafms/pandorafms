@@ -1,3 +1,8 @@
+2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/skin/skin_default/include/styles/pandora.css: Modified 
+	styles in skin like in the main css style file.
+
 2012-04-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php, extensions/update_manager.php,

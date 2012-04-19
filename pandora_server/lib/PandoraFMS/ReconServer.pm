@@ -152,30 +152,19 @@ sub data_consumer ($$) {
 		# Get agent address
 		my $addr = $host->addr();
 		next unless ($addr ne '0');
-
+		
 		# Update the recon task or break if it does not exist anymore
 		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_up / 100))) eq '0E0');
-
-		# Resolve hostnames
-		my $host_name = undef;
-		if ($task->{'resolve_names'} == 1){
-			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
-		}
-		$host_name = $addr unless defined ($host_name);
-
+       
 		# Does the host already exist?
 		my $agent = get_agent_from_addr ($dbh, $addr);
-		if (! defined ($agent)) {
-			$agent = get_agent_from_name ($dbh, $host_name);
-		}		
-
 		my $agent_id = defined ($agent) ? $agent->{'id_agente'} : 0;
 		if ($agent_id > 0) {
 
-			# Skip if not in learning mode
-			next if ($agent->{'modo'} != 1);
+			# Skip if not in learning mode or parent detection is disabled
+			next if ($agent->{'modo'} != 1 || $task->{'parent_detection'} == 0);
 		}
-
+		
 		# Filter by TCP port
 		if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
 			next unless (tcp_scan ($pa_config, $addr, $task->{'recon_ports'}) > 0);
@@ -193,27 +182,27 @@ sub data_consumer ($$) {
 		if ($task->{'parent_detection'} == 1) {
 			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
 		}
-
-		# Add the new address if it does not exist
-		my $addr_id = get_addr_id ($dbh, $addr);
-		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
-		if ($addr_id <= 0) {
-			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
-			next;
-		}
-
-		# Assign the new address to the agent
-		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
-		if ($agent_addr_id <= 0) {
-			db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		                  VALUES (?, ?)', $addr_id, $agent_id);
-		}
-
+		
 		# If the agent already exists update parent and continue
 		if ($agent_id > 0) {
 			if ($parent_id > 0) {
 				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
 			}
+			next;
+		}
+
+		# Resolve hostnames
+		my $host_name = undef;
+		if ($task->{'resolve_names'} == 1){
+			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
+		}
+		$host_name = $addr unless defined ($host_name);
+
+		# Add the new address if it does not exist
+		my $addr_id = get_addr_id ($dbh, $addr);
+		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
+		if ($addr_id <= 0) {
+			logger($pa_config, "Could not add address '$addr' for host '".safe_output($host_name)."'.", 3);
 			next;
 		}
 
@@ -279,6 +268,10 @@ sub data_consumer ($$) {
 			logger($pa_config, "Error creating agent '$host_name'.", 3);
 			next;
 		}
+
+		# Assign the new address to the agent
+		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		                  VALUES (?, ?)', $addr_id, $agent_id);
 
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
@@ -451,10 +444,10 @@ sub create_network_profile_modules {
 			next;
 		}
 
-		logger($pa_config, "Processing network component '" . $component->{'name'} . "' for agent $addr.", 10);
+		logger($pa_config, "Processing network component '" . safe_output ($component->{'name'}) . "' for agent $addr.", 10);
 
         # Use snmp_community from network task instead the component snmp_community
-        $component->{'snmp_community'} = $snmp_community;
+        $component->{'snmp_community'} = safe_output ($snmp_community);
 
 		# Create the module
 		my $module_id = db_insert ($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, id_plugin, post_process)
@@ -465,7 +458,7 @@ sub create_network_profile_modules {
 		# An entry in tagente_estado is necessary for the module to work
         	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'1970-01-01 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
 
-		logger($pa_config, 'Creating module ' . $component->{'name'} . " for agent $addr from network component '" . $component->{'name'} . "'.", 10);
+		logger($pa_config, 'Creating module ' . safe_output ($component->{'name'}) . " for agent $addr from network component.", 10);
 	}
 }
 

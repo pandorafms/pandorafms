@@ -1,5 +1,10 @@
 2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_config.php: Added check for update manager in 
+	the config process.
+	
+2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* extensions/update_license_info.php: Delete innecesary extension.
 
 2012-04-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

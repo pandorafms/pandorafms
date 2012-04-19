@@ -1,3 +1,11 @@
+2012-04-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module.cc: Default to generic_data if no module_type
+	  is not set.
+
+	* installer/pandora.mpi: Remove the util directory from the PATH when
+	  uninstalling.
+
 2012-02-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Convert tentacle_timeout to milliseconds.

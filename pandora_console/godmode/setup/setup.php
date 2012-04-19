@@ -20,6 +20,7 @@ check_login ();
 
 if (is_ajax ()) {
 	$get_os_icon = (bool) get_parameter ('get_os_icon');
+	$select_timezone = get_parameter ('select_timezone', 0);
 	
 	if ($get_os_icon) {
 		$id_os = (int) get_parameter ('id_os');
@@ -27,6 +28,21 @@ if (is_ajax ()) {
 		return;
 	}
 	
+	if ($select_timezone) {
+		$zone = get_parameter('zone');
+		
+		$timezones = db_get_all_rows_sql ("SELECT timezone FROM ttimezone WHERE zone='$zone'");
+		if ($timezones === false)
+			$timezones = array();
+			
+		foreach ($timezones as $timezone) {
+			foreach ($timezone as $key=>$name_tz) {
+				if ($key == 'timezone')
+					$timezone_name[$name_tz] = $name_tz;
+			}
+		}
+		echo json_encode($timezone_name);
+	}
 	return;
 }
 
@@ -186,8 +202,30 @@ if ($config["integria_enabled"]) {
 	$table->data[22][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
 }
 
+$zones = db_get_all_rows_sql("SELECT DISTINCT(zone) FROM ttimezone");
+if ($zones === false) {
+	$zones = array();
+}
+foreach ($zones as $zone) {
+	foreach ($zone as $key=>$name) {
+		$zone_name[$name] = $name;
+	}
+}
+
+$timezones = db_get_all_rows_sql ("SELECT timezone FROM ttimezone WHERE zone='Africa'");
+foreach ($timezones as $timezone) {
+	foreach ($timezone as $key=>$name_tz) {
+		if ($key == 'timezone')
+			$timezone_n[$name_tz] = $name_tz;
+	}
+}
+
 $table->data[23][0] = __('Timezone setup');
-$table->data[23][1] = html_print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
+$table->data[23][1] = html_print_input_text_extended ('timezone_text', $config["timezone"], 'text-timezone_text', '', 25, 25, false, '', 'readonly', true); 
+$table->data[23][1] .= '<a id="change_timezone">'.html_print_image ('images/pencil.png', true, array ('title' => __('Change timezone'))).'</a>';
+$table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($zone_name, 'zone', 'None', 'show_timezone();', '', '', true);
+$table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone', $config["timezone"], '', '', '', true);
+
 
 $sounds = get_sounds();
 $table->data[24][0] = __('Sound for Alert fired');
@@ -233,13 +271,39 @@ function replaySound(type) {
 	}
 }
 
+function show_timezone () {
+	zone = $("#zone").val();
+	$.ajax({
+		type: "POST",
+		url: "ajax.php",
+		data: "page=<?php echo $_GET['sec2']; ?>&select_timezone=1&zone=" + zone,
+		dataType: "json",
+		success: function(data){
+				$("#timezone").empty();
+				jQuery.each (data, function (id, value) {
+					timezone = value;
+					$("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
+				});	
+			}
+		});
+}		
 
 $(document).ready (function () {
+
+	$("#zone").attr("disabled", true);
+	$("#timezone").attr("disabled", true);
+		
 	$("#radiobtn0011").click(function(){
 			flag = $("#radiobtn0011").is(':checked');
 			if (flag == true){
 				<?php echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false" ?>
 			}
+	});
+	
+	$("#change_timezone").click(function () {	
+		$("#zone").attr("disabled", false);
+		$("#timezone").attr("disabled", false);
+					
 	});
 });
 </script>

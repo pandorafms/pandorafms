@@ -1,3 +1,10 @@
+2012-04-19  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/setup/setup.php
+	  index.php
+	  pandora_db.sql
+	  pandoradb_data.sql: Changed timezone setup. 
+
 2012-04-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php, extensions/update_manager.php,

@@ -1172,7 +1172,7 @@ sub pandora_create_template_module ($$$$;$$$) {
 	$standby = 0 unless defined $standby;
 	
 	my $module_name = get_module_name($dbh, $id_agent_module);
-	return db_insert ($dbh, 'id', "INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`) VALUES (?, ?, ?, ?, ?)", $id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby);
+	return db_insert ($dbh, 'id', "INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`, `last_reference`) VALUES (?, ?, ?, ?, ?, ?)", $id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby, time);
 }
 
 ##########################################################################

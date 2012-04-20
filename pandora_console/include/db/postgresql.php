@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function postgresql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null) {
+function postgresql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
 	global $config;
 	
 	if ($host === null)
@@ -25,8 +25,11 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 		$user = $config["dbuser"];
 	if ($pass === null)
 		$pass = $config["dbpass"];
+	if ($port === null)
+		$port = $config["dbport"];
 	
 	$connect_id = pg_connect("host='" . $host . "'" .
+		" port=" . $port .
 		" dbname='" . $db . "'" .
 		" user='" . $user . "'" .
 		" password='" . $pass . "'");

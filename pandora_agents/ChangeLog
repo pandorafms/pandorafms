@@ -1,3 +1,8 @@
+2012-04-20 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agents/win32/bin/pandora_agent.conf: Added more inventory
+	parameters to inventory module
+
 2012-04-19 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* win32/bin/pandora_agent.conf: Added sencodary server parameters example

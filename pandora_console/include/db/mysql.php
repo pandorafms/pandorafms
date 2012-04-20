@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null) {
+function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
 	global $config;
 	
 	if ($host === null)
@@ -25,11 +25,13 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		$user = $config["dbuser"];
 	if ($pass === null)
 		$pass = $config["dbpass"];
-	
+	if ($port === null)
+		$port = $config["dbport"];
+
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 
 
-	$connect_id = mysql_connect($host, $user, $pass);
+	$connect_id = mysql_connect($host . ":" . $port, $user, $pass);
 	mysql_select_db($db, $connect_id);
 	
 	if (! $connect_id) {

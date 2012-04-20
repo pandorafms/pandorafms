@@ -30,25 +30,27 @@ function users_extension_main_god ($god = true) {
 	// Header
 	ui_print_page_header (__("Users connected"), "images/group.png", false, "", $god);
 
+	// Get user conected last 5 minutes
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT id_usuario, ip_origen, fecha, accion
-				FROM tsesion
-				WHERE descripcion = '" . io_safe_input('Logged in') . "' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
+			$sql = "SELECT id_user, last_connect
+				FROM tusuario
+				WHERE last_connect > (UNIX_TIMESTAMP(NOW()) - 300) ORDER BY last_connect DESC";
 		break;
 		case "postgresql":
-			$sql = "SELECT id_usuario, ip_origen, fecha, accion
-				FROM tsesion
-				WHERE descripcion = '" . io_safe_input('Logged in') . "' AND utimestamp > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 3600) GROUP BY id_usuario, ip_origen, accion";
+			$sql = "SELECT id_user, last_connect
+				FROM tusuario
+				WHERE last_connect > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 300) ORDER BY last_connect DESC";
 		break;
 		case "oracle":
-			$sql = "SELECT id_usuario, ip_origen, fecha, accion
-				FROM tsesion
-				WHERE to_char(descripcion) = '" . io_safe_input('Logged in') . "' AND utimestamp > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 3600) GROUP BY id_usuario, ip_origen,fecha, accion";
+			$sql = "SELECT id_user, last_connect
+				FROM tusuario
+				WHERE last_connect > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 300) ORDER BY last_connect DESC";
 		break;
 	}
-	
+		
 	$rows = db_get_all_rows_sql ($sql);
+
 	if (empty ($rows)) {
 		$rows = array ();
 		echo "<div class='nf'>".__('No other users connected')."</div>";
@@ -71,6 +73,25 @@ function users_extension_main_god ($god = true) {
 
 		// Get data
 		foreach ($rows as $row) {
+			// Get ip_origin of the last login of the user
+			switch ($config["dbtype"]) {
+				case "mysql":
+				case "postgresql":
+					$ip_origin = db_get_value_sql(sprintf("SELECT ip_origen 
+																	FROM tsesion 
+																	WHERE id_usuario = '%s'
+																	AND descripcion = '" . io_safe_input('Logged in') . "' 
+																	ORDER BY fecha DESC",$row["id_user"]));
+				break;
+				case "oracle":
+					$ip_origin = db_get_value_sql(sprintf("SELECT ip_origen 
+																	FROM tsesion 
+																	WHERE id_usuario = '%s'
+																	AND to_char(descripcion) = '" . io_safe_input('Logged in') . "' 
+																	ORDER BY fecha DESC",$row["id_user"]));
+				break;
+			}
+														
 			if ($rowPair)
 				$table->rowclass[$iterator] = 'rowPair';
 			else
@@ -79,9 +100,9 @@ function users_extension_main_god ($god = true) {
 			$iterator++;
 
 			$data = array ();
-			$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$row["id_usuario"].'">'.$row["id_usuario"].'</a>';
-			$data[1] = $row["ip_origen"];
-			$data[2] = $row["fecha"];
+			$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$row["id_user"].'">'.$row["id_user"].'</a>';
+			$data[1] = $ip_origin;
+			$data[2] = date($config["date_format"], $row['last_connect']);
 			array_push ($table->data, $data);
 		}
 

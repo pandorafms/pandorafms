@@ -1,3 +1,10 @@
+2012-04-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/config_process.php
+	extensions/users_connected.php: Improved users connected extension
+	to know users connected last 5 minutes (connected means charge
+	any page, not only login)
+
 2012-04-20  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/menu.php: Changed default path to 'Module Manage'.

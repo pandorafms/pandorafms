@@ -113,7 +113,13 @@ $config["global_flash_charts"] = $config["flash_charts"];
 
 if (isset ($config['id_user'])){
 	$userinfo = get_user_info ($config['id_user']);
-
+	
+	// Refresh the last_connect info in the user table 
+	// if last update was more than 5 minutes ago
+	if($userinfo['last_connect'] < (time()-SECONDS_1MINUTE)) {
+		update_user($config['id_user'], array('last_connect' => time()));
+	}
+	
 	// If block_size or flash_chart are provided then override global settings
 	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
 		$config["block_size"] = $userinfo["block_size"];

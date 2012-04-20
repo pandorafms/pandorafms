@@ -1,3 +1,10 @@
+2012-04-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_network_map.php
+	include/help/es/help_network_map.php
+	operation/agentes/networkmap.php: Fixed bug changing the
+	map name and improved the usability of the settings form
+
 2012-04-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/config_process.php

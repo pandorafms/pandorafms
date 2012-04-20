@@ -102,7 +102,7 @@ if($save_networkmap || $update_networkmap) {
 	$subcheck = db_get_value('name', 'tnetwork_map', 'id_networkmap', $id_networkmap);
 	
 	if($save_networkmap){
-		if (!$check && !preg_match("/$activeTab/", $name) || $subcheck == $name) {
+		if (!$check || $subcheck == $name) {
 			$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
 							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
 							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
@@ -114,12 +114,7 @@ if($save_networkmap || $update_networkmap) {
 				__('Could not save network map'), '', true);
 		}
 		else {
-			if (preg_match("/$activeTab/", $name)) {
-			$message = "<h3 class='error'>".__("Network map name cannot be manually defined as $activeTab")."</h3>";
-			}
-			else {
-			$message = "<h3 class='error'>".__('Each network map must have a different name')."</h3>";
-			}
+			$message = ui_print_error_message(__('Each network map must have a different name'),'',true);
 		}
 	}
 }
@@ -367,7 +362,7 @@ $options_form .= "</td>";
 $options_form .= '<td>';
 $options_form .= html_print_input_hidden('update_networkmap',1, true);
 $options_form .= html_print_input_hidden('hidden_options',0, true);
-$options_form .= html_print_submit_button (__('Update'), "updbutton", false, 'class="sub upd"', true);
+$options_form .= html_print_submit_button (__('Apply'), "updbutton", false, 'class="sub next"', true);
 $options_form .= '</td></tr>';
 $options_form .= '</table></table></form>';
 

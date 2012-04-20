@@ -1,5 +1,9 @@
 2012-04-20  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* godmode/menu.php: Changed default path to 'Module Manage'.
+
+2012-04-20  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* godmode/alerts/alert_list.builder.php: Fixed bug: In tab alert
 	within agent detail, the actions depends on the template.
 

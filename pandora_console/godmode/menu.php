@@ -67,7 +67,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu["gmodules"]["text"] = __('Manage modules');
-	$menu["gmodules"]["sec2"] = "godmode/modules/module_list";
+	$menu["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
 	$menu["gmodules"]["id"] = "god-modules";
 	
 	$sub = array ();
@@ -80,6 +80,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	// Tag
 	$sub["godmode/tag/tag"]["text"] = __('Manage tags');
 	$sub["godmode/tag/tag"]["subsecs"] = "godmode/tag/edit_tag";
+	
+	$sub["godmode/modules/module_list"]["text"] = __('Module types');
 	
 	$menu["gmodules"]["sub"] = $sub;
 }

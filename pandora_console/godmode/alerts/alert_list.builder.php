@@ -65,8 +65,6 @@ $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
 $table->data[0][1] .= html_print_image('images/spinner.png', true) . '</span>';
 
 $table->data[1][0] = __('Template');
-
-$table->data[1][0] = __('Template');
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$templates = alerts_get_alert_templates (false, array ('id', 'name'));
@@ -90,12 +88,25 @@ if (check_acl ($config['id_user'], 0, "LM")) {
 
 $table->data[2][0] = __('Actions');
 
-$actions = array ('0' => __('None'));
+$groups_user = users_get_groups($config["id_user"]);
+if (!empty($groups_user)) {
+	$groups = implode(',', array_keys($groups_user));
+	$sql = "SELECT name FROM talert_actions WHERE id_group IN ($groups)";
+	$actions = db_get_all_rows_sql($sql);
+}
+
+$i=1;
+$action_name = array ('0' => __('None'));
+foreach ($actions as $action) {
+	foreach ($action as $key=>$name) {
+		$action_name[$i] = $name;
+		$i++;
+	}
+}
 
 $table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] = html_print_select($actions,'action_select','','','','',true);
-$table->data[2][1] .= ' <span id="action_loading" class="invisible">';
-$table->data[2][1] .= html_print_image('images/spinner.png', true) . '</span>';
+
+$table->data[2][1] = html_print_select($action_name,'action_select','','','','',true, false, false);
 $table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
@@ -220,44 +231,7 @@ $(document).ready (function () {
 				return false;
 			});
 
-		$("#action_select").hide();
-		$("#action_select").html('');
 		$("#action_loading").show ();
-
-		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/estado_agente",
-			"get_actions_alert_template" : 1,
-			"id_template" : this.value
-			},
-			function (data, status) {
-				option = $("<option></option>")
-					.attr ("value", '0')
-					.append ('<?php echo __('None'); ?>');
-				$("#action_select").append (option);
-				
-				if (data == false) {
-					//There aren't any action
-				}
-				else {
-					 if (data != '') {
-						jQuery.each (data, function (i, val) {
-							option = $("<option></option>")
-								.attr ("value", val["id"])
-								.append (val["name"]);
-
-							if (val["sort_order"] == 1)
-								option.attr ("selected", true);
-							
-							$("#action_select").append (option);
-						});
-					}	
-					$('#advanced_action').show();
-				}
-				$("#action_loading").hide ();
-				$("#action_select").show();
-			},
-			"json"
-		);
 	});
 
 	$("#action_select").change(function () {

@@ -1,3 +1,8 @@
+2012-04-20  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/alerts/alert_list.builder.php: Fixed bug: In tab alert
+	within agent detail, the actions depends on the template.
+
 2012-04-19  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/estado_monitores.php: Put units in module view. 

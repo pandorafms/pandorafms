@@ -1,3 +1,8 @@
+2012-04-20  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Setted last_reference to current utimestamp
+	in the alert table when create it
+
 2012-04-20  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* conf/pandora_server.conf.windows,

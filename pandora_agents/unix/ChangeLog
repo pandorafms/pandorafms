@@ -1,3 +1,9 @@
+2012-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Merged from trunk. Backup and restore conf
+	  file and daemon launcher. Moved the code that sets PANDORA_USER back
+	  to its original place and set the variable properly instead.
+
 2012-04-19  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* pandora_agent: Merged from trunk. Also added the temporal directory

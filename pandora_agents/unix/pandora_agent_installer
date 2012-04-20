@@ -28,7 +28,12 @@ PANDORA_MAN=/usr/share/man
 
 MODE=$1
 PANDORA_BASE=`echo $2 | sed -e 's/\/$//'`
-PANDORA_USER=$3
+if [ "$3" != "" ]
+then
+	PANDORA_USER=$3
+else
+	PANDORA_USER="root"
+fi
 
 # Check for Perl 5.6.x or higher available
 PERL_VERSION=`perl -v | egrep 'v5.6|v5.7|v5.8|v5.9|v5.1[0-9]' | grep perl`
@@ -202,8 +207,14 @@ install () {
 			DAEMON_TEMP=pandora_agent_daemon_temp
 		fi
 		
+		# Backup the daemon script
+		cp -f "$DAEMON_SCRIPT" "$DAEMON_SCRIPT.bak"
+		
 		AGENT_CFG=$OS_NAME/pandora_agent.conf
 		AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
+
+		# Backup the configuration file
+		cp -f "$AGENT_CFG" "$AGENT_CFG.bak"
 
 		echo $PANDORA_BASE > PANDORA_BASE.temp
 		sed 's/\//\\\//g' PANDORA_BASE.temp > PANDORA_BASE.temp2
@@ -271,14 +282,12 @@ install () {
 	mkdir -p $PANDORA_BASE$PANDORA_LOG_DIR 2> /dev/null
 
 	# Set the user the agent will run as
-	if [ "$PANDORA_USER" != "" ]
+	if [ "$PANDORA_USER" != "root" ]
 	then
 		sed -e "s/.*pandora_user .*/pandora_user $PANDORA_USER/" $AGENT_CFG > $AGENT_CFG_TEMP 2> /dev/null && \
 		mv $AGENT_CFG_TEMP $AGENT_CFG
 		chmod 755 pandora_agent_daemon
 		chown -R $PANDORA_USER $PANDORA_BASE
-	else
-		PANDORA_USER="root"
 	fi
 
 	# Create logfile
@@ -432,6 +441,14 @@ install () {
 		echo "Check your startup configuration to be sure Pandora FMS Agent is ready "
 		echo "to start automatically when system restarts":
 	fi
+
+	# Restore the daemon script
+	cp -f "$DAEMON_SCRIPT.bak" "$DAEMON_SCRIPT" >/dev/null 2>&1
+	rm -f "$DAEMON_SCRIPT.bak" >/dev/null 2>&1
+
+	# Restore the configuration file
+	cp -f "$AGENT_CFG.bak" "$AGENT_CFG" >/dev/null 2>&1
+	rm -f "$AGENT_CFG.bak" >/dev/null 2>&1
 
 }
 

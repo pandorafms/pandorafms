@@ -814,6 +814,7 @@ function alerts_create_alert_agent_module ($id_agent_module, $id_alert_template,
 		$values = array ();
 	$values['id_agent_module'] = (int) $id_agent_module;
 	$values['id_alert_template'] = (int) $id_alert_template;
+	$values['last_reference'] = time();
 	
 	return @db_process_sql_insert ('talert_template_modules', $values);
 }

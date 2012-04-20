@@ -85,7 +85,7 @@ sub db_connect ($$$$$$) {
 		$RDBMS = 'mysql';
 		
 		# Connect to MySQL
-		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:3306", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		# Enable auto reconnect
@@ -99,7 +99,7 @@ sub db_connect ($$$$$$) {
 		$RDBMS = 'postgresql';
 		
 		# Connect to PostgreSQL
-		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=5432", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		return $dbh;
@@ -107,7 +107,7 @@ sub db_connect ($$$$$$) {
 		$RDBMS = 'oracle';
 		
 		# Connect to Oracle
-		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=1521;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		# Set date format

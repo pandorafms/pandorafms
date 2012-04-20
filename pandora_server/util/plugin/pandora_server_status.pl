@@ -146,7 +146,11 @@ sub load_config {
 		elsif ($parametro =~ m/^dbhost\s(.*)/i) { 
 			$pa_config->{'dbhost'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^dbport\s(.*)/i) { 
+			$pa_config->{'dbport'}= clean_blank($1); 
+		}
 	} # end of loop for parameter #
+	$pa_config->{'dbport'} = 3306 unless exists $pa_config->{'dbport'};
 }
 
 
@@ -177,7 +181,7 @@ $SIG{ALRM} = sub { die_return_timeout(); };
 eval {
 
 	# Connect to MySQL
-	my $dbh = DBI->connect("DBI:mysql:".$pa_config{'dbname'}.":".$pa_config{"dbhost"}.":3306", $pa_config{"dbuser"}, $pa_config{"dbpass"}, { RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:".$pa_config{'dbname'}.":".$pa_config{"dbhost"}.":".$pa_config{"dbport"}, $pa_config{"dbuser"}, $pa_config{"dbpass"}, { RaiseError => 1, AutoCommit => 1 });
 	return undef unless defined ($dbh);
 
 	if ($queuedmodules == 0){

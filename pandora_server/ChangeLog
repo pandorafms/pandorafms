@@ -1,3 +1,24 @@
+2012-04-19  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* conf/pandora_server.conf.windows,
+	  conf/pandora_server.conf,
+	  lib/PandoraFMS/DB.pm
+	  lib/PandoraFMS/Core.pm
+	  lib/PandoraFMS/SNMPServer.pm
+	  lib/PandoraFMS/Config.pm
+	  lib/PandoraFMS/ProducerConsumerServer.pm
+	  bin/pandora_server
+	  FreeBSD/pandora_server.conf
+	  util/pandora_db.pl
+	  util/recon_scripts/snmpdevices.pl
+	  util/recon_scripts/ipmi-recon.pl
+	  util/plugin/pandora_inventory_change.pl
+	  util/plugin/pandora_server_status.pl
+	  util/pandora_manage.pl
+	  util/pandora_recode_db.pl
+	  util/pandora_dbstress.pl: Now pandora_server supports MySQL
+	 server running on non-standard port.
+
 2012-04-19  Sancho Lerena <slerena@artica.es>
 
 	(Merged from 4.0.x Branch)

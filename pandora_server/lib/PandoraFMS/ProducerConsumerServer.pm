@@ -104,7 +104,7 @@ sub data_producer ($$$$$) {
 
 	eval {
 		# Connect to the DB
-		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, 3306,
+		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
 							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 		$self->setDBH ($dbh);
 
@@ -151,7 +151,7 @@ sub data_consumer ($$$$$) {
 
 	eval {
 		# Connect to the DB
-		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, 3306,
+		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
 							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 		$self->setDBH ($dbh);
 

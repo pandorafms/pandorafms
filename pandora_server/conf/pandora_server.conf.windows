@@ -59,6 +59,11 @@ dbpass pandora
 
 dbhost 192.168.55.1
 
+# dbport: Database port number
+# Default value depends on the dbengine (mysql: 3306, postgresql: 5432, oracle: 1521)
+
+#dbport 3306
+
 # verbosity: level of detail on errors/messages (0 default, 1 verbose, 2 debug.... 10 noisy)
 # -v in command line (verbose) or -d (debug). Set this to 10 when try to locate problems and
 # set to 0 or 1 on production enviroments.

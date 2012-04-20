@@ -292,7 +292,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		# Recover takes precedence over cease
 		$status = 4 if ($alert->{'recovery_notify'} == 1);
 
-	} elsif ($utimestamp > $limit_utimestamp) {
+	} elsif ($utimestamp > $limit_utimestamp && $alert->{'internal_counter'} > 0) {
 		$status = 5;
 	}
 
@@ -890,11 +890,6 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status_changes++;
 	} else {
 		$status_changes = 0;
-	}
-
-	# Active ff interval
-	if ($module->{'module_ff_interval'} != 0 && $status_changes < $module->{'min_ff_event'}) {
-		$current_interval = $module->{'module_ff_interval'};
 	}
 
 	# Change status
@@ -1846,16 +1841,15 @@ sub process_data ($$$$$) {
 	# Process INC modules
 	if ($module_type =~ m/_inc$/) {
 		$data = process_inc_data ($data, $module, $utimestamp, $dbh);
-		
-		# Same timestamp as previous data. Discard.
-		return undef if($data == -1);
-		
+				
 		# Not an error, no previous data
 		if (!defined($data)){
 			$data_object->{'data'} = 0;
 			return 0;
 		}
-		#return 0 unless defined ($data);
+
+		# Same timestamp as previous data. Discard.
+		return undef if($data == -1);
 	}
 
 	# Post process

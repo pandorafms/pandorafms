@@ -1,3 +1,9 @@
+2012-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Do not try to reset the internal counter
+	  unless it is > 0. Fixes bug #3519518. Removed some 5.0 code that
+	  seems to have been merged by mistake and fixed a warning.
+
 2012-04-20  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Setted last_reference to current utimestamp

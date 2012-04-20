@@ -1,5 +1,9 @@
 2012-04-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent_installer: Removed an unused variable.
+
+2012-04-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent_installer: Backup and restore conf file and daemon
 	  launcher. Moved the code that sets PANDORA_USER back to its original
 	  place and set the variable properly instead.

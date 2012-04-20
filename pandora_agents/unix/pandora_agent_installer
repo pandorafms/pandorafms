@@ -161,7 +161,6 @@ install () {
 	OS_VERSION=`uname -r`
 	OS_NAME=`uname -s`
 	OLDFILENAMETMP=`date +"%Y-%m-%d"`
-	PANDORA_CFG_BAK="/tmp/pandora_agent.conf.bak"
 
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then

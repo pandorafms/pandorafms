@@ -1,3 +1,8 @@
+2012-04-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_network_map.php: Merged from trunk. Updated
+	description to follow usability improvement of network map.
+
 2012-04-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_alerts.php: Setted last_reference database

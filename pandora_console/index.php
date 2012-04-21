@@ -182,34 +182,34 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 			$home_url = $user_info['data_section'];
 			if ($home_page != '') {
 				switch($home_page) {
-					case __('Event list'):
+					case 'Event list':
 						$_GET["sec"] = "eventos";
 						$_GET["sec2"] = "operation/events/events";
 						break;
-					case __('Group view'):
+					case 'Group view':
 						$_GET["sec"] = "estado";
 						$_GET["sec2"] = "operation/agentes/group_view";
 						break;
-					case __('Alert detail'):
+					case 'Alert detail':
 						$_GET["sec"] = "estado";
 						$_GET["sec2"] = "operation/agentes/alerts_status";
 						break;
-					case __('Tactical view'):
+					case 'Tactical view':
 						$_GET["sec"] = "estado";
 						$_GET["sec2"] = "operation/agentes/tactical";
 						break;
-					case __('Default'):
+					case 'Default':
 						$_GET["sec"] = "general/logon_ok";
 						break;
-					case __('Dashboard'):
+					case 'Dashboard':
 						$_GET["sec"] = "dashboard";
 						$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
 						break;
-					case __('Visual console'):
+					case 'Visual console':
 						$_GET["sec"] = "visualc";
 						$_GET["sec2"] = "operation/visual_console/index";
 						break;
-					case __('Other'):
+					case 'Other':
 						$home_url = io_safe_output($home_url);
 						parse_str ($home_url, $res);
 						$_GET["sec"] = $res["sec"];
@@ -333,22 +333,22 @@ else {
 		
 		if ($home_page != '') {
 			switch($home_page) {
-				case __('Event list'):
+				case 'Event list':
 					require ('operation/events/events.php');
 					break;
-				case __('Group view'):
+				case 'Group view':
 					require ('operation/agentes/group_view.php');
 					break;
-				case __('Alert detail'):
+				case 'Alert detail':
 					require ('operation/agentes/alerts_status.php');
 					break;
-				case __('Tactical view'):
+				case 'Tactical view':
 					require ('operation/agentes/tactical.php');
 					break;
-				case __('Default'):
+				case 'Default':
 					require ('general/logon_ok.php');
 					break;
-				case __('Dashboard'):
+				case 'Dashboard':
 					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
 					$str = 'sec=visualc&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
 					parse_str($str, $res);
@@ -357,7 +357,7 @@ else {
 					}
 					require(ENTERPRISE_DIR.'/dashboard/main_dashboard.php');
 					break;
-				case __('Visual console'):
+				case 'Visual console':
 					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
 					if (($home_url == '') || ($id_visualc == false)) {
 						$str = 'sec=visualc&sec2=operation/visual_console/index&refr=60';
@@ -369,7 +369,7 @@ else {
 					}
 					require($_GET["sec2"].'.php');
 					break;
-				case __('Other'):
+				case 'Other':
 					$home_url = io_safe_output($home_url);
 					parse_str ($home_url, $res);
 					foreach ($res as $key => $param) {
@@ -403,6 +403,7 @@ if ($config["pure"] == 0) {
 else {
 	echo "</div>"; // main_pure
 }
+
 
 if ($config["pure"] == 0) {
 	echo '<div id="foot">';

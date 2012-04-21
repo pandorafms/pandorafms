@@ -332,7 +332,6 @@ $total_agents = 0;
 $agents = false;
 
 $total_agents = agents_get_agents(array (
-	'order' => 'nombre ASC',
 	'disabled' => 0,
 	'id_grupo' => $groups,
 	'search' => $search_sql,

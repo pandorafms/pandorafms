@@ -729,7 +729,7 @@ function config_check (){
 	$now = date("U");
 	
 	// First action in order to know if it's a new installation or db maintenance never have been executed 
-	$first_action = db_get_value_filter('utimestamp', 'tsesion', array('1' => '1', 'order' => 'id_sesion ASC'));
+	$first_action = db_get_value_filter('utimestamp', 'tsesion', array('1 = 1', 'order' => 'id_sesion ASC'));
 	$fresh_installation = $now - $first_action;
 	
 	$resta = $now - $db_maintance;

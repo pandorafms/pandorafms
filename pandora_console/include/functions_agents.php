@@ -497,10 +497,18 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 
 	switch ($config["dbtype"]) {
 		case "mysql":
-		case "postgresql":
 			$limit_sql = '';
 			if(isset($offset) && isset($limit)) {
 				$limit_sql = " LIMIT $offset, $limit "; 
+			}
+			$sql = sprintf("%s %s", $sql, $limit_sql);
+
+			$agents = db_get_all_rows_sql($sql);
+			break;
+		case "postgresql":
+			$limit_sql = '';
+			if(isset($offset) && isset($limit)) {
+				$limit_sql = " OFFSET $offset LIMIT $limit ";
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
 

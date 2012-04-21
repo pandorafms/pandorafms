@@ -101,7 +101,6 @@ function mainModuleGroups() {
 	//The big query
 	switch ($config["dbtype"]) {
 		case "mysql":
-		case "postgresql":
 			$sql = "SELECT COUNT(id_agente) AS count, estado
 				FROM tagente_estado
 				WHERE utimestamp != 0 AND id_agente IN
@@ -112,6 +111,17 @@ function mainModuleGroups() {
 						WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
 				GROUP BY estado";
 			break;
+		case "postgresql":
+			$sql = "SELECT COUNT(id_agente) AS count, estado
+				FROM tagente_estado
+				WHERE utimestamp != 0 AND id_agente IN
+					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled = 0)
+					AND id_agente_modulo IN
+					(SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE id_module_group = %d AND disabled = 0 AND delete_pending = 0)
+				GROUP BY estado";
+                        break;
 		case "oracle":	
 			$sql = "SELECT COUNT(id_agente) AS count, estado
 				FROM tagente_estado

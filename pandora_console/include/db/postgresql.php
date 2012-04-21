@@ -57,6 +57,9 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
  * @return mixed Value of first column of the first row. False if there were no row.
  */
 function postgresql_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
+	if ($field_search[0] == '`')
+		$field_search = str_replace ('`', '', $field_search);
+
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
@@ -278,7 +281,7 @@ function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnecti
  */
 function postgresql_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY "'.$order_field . '" ' . $order);
+		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY '.$order_field . ' ' . $order);
 	}
 	else {	
 		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'"');
@@ -709,7 +712,7 @@ function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields =
 		$fields = '*';
 	}
 	elseif (is_array($fields)) {
-		$fields = '"' . implode('" , "', $fields) . '"';
+		$fields = implode(',', $fields);
 	}
 	elseif (!is_string($fields)) {
 		return false;
@@ -726,7 +729,7 @@ function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields =
 		$filter = '';
 	}
 
-	$sql = sprintf ('SELECT %s FROM "%s" %s', $fields, $table, $filter);
+	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
 	
 	if ($returnSQL)
 		return $sql;
@@ -789,7 +792,7 @@ function postgresql_db_get_all_fields_in_table ($table, $field = '', $condition 
 	}
 
 	if ($order_field != "")
-		$sql .= sprintf (" ORDER BY \"%s\"", $order_field);
+		$sql .= sprintf (" ORDER BY %s", $order_field);
 
 	return db_get_all_rows_sql ($sql);
 }

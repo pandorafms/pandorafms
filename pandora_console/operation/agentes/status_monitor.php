@@ -375,7 +375,7 @@ elseif ($status == 5) { //Not init
 }
 
 // Build final SQL sentences
-$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)". $sql . ") ORDER BY tagente.id_grupo, tagente.nombre");
+$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)". $sql . ")");
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT tagente_modulo.id_agente_modulo,

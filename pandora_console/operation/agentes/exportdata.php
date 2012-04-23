@@ -202,43 +202,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$rowend = '</td></tr>';
 			$dataend = '</table>';
 			break;
-		case "excel":
-			//Excel is tab-delimited, needs quotes and needs Windows-style newlines
-			$datastart = __('Agent')."\t".__('Module')."\t".__('Data')."\t".__('Timestamp')."\r\n";
-			$rowstart = '"';
-			$divider = '"'."\t".'"';
-			$rowend = '"'."\r\n";
-			$dataend = "\r\n";
-			$extension = "xls";
-			break;
-		case "csv":
-			//Pure CSV is comma delimited
-			$datastart = __('Agent').','.__('Module').','.__('Data').','.__('Timestamp')."\n";
-			$rowstart = '"';
-			$divider = '","';
-			$rowend = '"'."\n";
-			$dataend = "\n";
-			$extension = "csv";
-			break;
-	}
-
-	// ***************************************************
-	// Header output
-	// ***************************************************
-
-
-
-	switch ($export_type) {
-		case "excel":
-		case "csv":
-			$config['ignore_callback'] = true;
-			while (@ob_end_clean ());
-			
-			header("Content-type: application/octet-stream");
-			header("Content-Disposition: attachment; filename=export_".date("Ymd", $start)."_".date("Ymd", $end).".".$extension);
-			header("Pragma: no-cache");
-			header("Expires: 0");
-			break;
 	}
 
 	// ***************************************************
@@ -248,8 +211,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 	$data = array ();
 	switch ($export_type) {
 		case "data":
-		case "excel":
-		case "csv":
 		case "avg":
 
 			// Show header
@@ -287,12 +248,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 							$data = array_merge ($data, $data_single);
 						}
 					}
-/*
-					if ($work_end > $end) {
-						$work_period = $work_end - $end;
-						$work_end = $end;
-					}
-*/
+					
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
 						$output .= io_safe_output($module['agent_name']);
@@ -310,11 +266,8 @@ if (!empty ($export_btn) && !empty ($module)) {
 						case "data":
 						case "avg":
 							echo $output;
+							exit;
 							break;
-						case "excel":
-						case "csv":
-							echo $output;
-						break;
 					}
 					unset($output);
 					$output = "";
@@ -327,29 +280,13 @@ if (!empty ($export_btn) && !empty ($module)) {
 			} // main foreach
 			echo $dataend;
 			break;
-		default:
-			ui_print_error_message (__('Invalid method supplied'));
-			return;
-			break;
 	}
-
-switch ($export_type) {
-	case "excel":
-	case "csv":
-		exit; // Necesary for CSV export, if not give problems
-		break;
-	default: 
-		return;
-		break;
-}
-
-	
 }
 elseif (!empty ($export_btn) && empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
 }
 
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/exportdata" name="export_form">';
+echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form">';
 
 $table->width = '98%';
 $table->border = 0;
@@ -387,7 +324,6 @@ if (!in_array ($agent, array_keys ($agents))) {
 	$agent = current (array_keys ($agents));
 }
 
-//$table->data[1][1] = html_print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
 //Src code of lightning image with skins 
 $src_code = html_print_image ('images/lightning.png', true, false, true);
 $table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 40, 100, false, '',
@@ -529,5 +465,25 @@ $(document).ready (function () {
 		$(".ui-autocomplete").css("text-align", "left");
 	}
 });
+
+$("select#export_type").change (function () {
+	type = $("#export_type").val();
+	var f = document.forms.export_form;
+	switch (type) {
+		case 'csv':
+			f.action = "operation/agentes/exportdata.csv.php";
+			break;
+		case 'excel':
+			f.action = "operation/agentes/exportdata.excel.php";
+			break;
+		case 'avg':
+		case 'data':
+			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
+			break;
+
+	}
+		
+});
+
 /* ]]> */
 </script>

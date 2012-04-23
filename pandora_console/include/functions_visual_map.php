@@ -1164,21 +1164,25 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 								//Link to an service page
 								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 									$id_service . '&offset=0">';
+								$endTagA = true;
 							}
 							else {
 								// Link to an agent
 								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+								$endTagA = true;
 							}
 						}
 						elseif ($layout_data['id_layout_linked'] > 0) {
 						
 							// Link to a map
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							$endTagA = true;
 						
 						}
 						else {
 							// A void object
 							echo '<a href="#">';
+							$endTagA = true;
 						}
 					}
 					
@@ -1208,7 +1212,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
 					}
 					
-					if ($endTagA) echo '</a>';	
+					if ($endTagA) echo '</a>';
 						
 					echo '</div>';
 					break;

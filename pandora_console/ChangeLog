@@ -1,3 +1,10 @@
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_visual_map.php: fixed into the function
+	"visual_map_print_visual_map" the unclose links of percentile bar.
+	
+	Fixes: #3520640
+
 2012-04-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/graphs/functions_fsgraph.php: Added urlencode in units to

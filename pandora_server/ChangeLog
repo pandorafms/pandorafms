@@ -1,3 +1,10 @@
+2012-04-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/WMIServer.pm,
+	  lib/PandoraFMS/PluginServer.pm: Simplified the calculation of
+	  time_left to make sure it is always positive. Fixes bug #3519099.
+
 2012-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Merged from 4.0 branch. Do not try to reset

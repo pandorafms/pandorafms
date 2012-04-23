@@ -348,7 +348,7 @@ switch ($action) {
 		break;
 }
 
-$urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
+$urlForm = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
@@ -1084,12 +1084,12 @@ function edit_custom_graph() {
 				}
 			});			
 					
-			window.location.href = server_url + "/index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
+			window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
 	<?php		
 		}
 		else {
 	?>
-			window.location.href = "index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+			window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
 	<?php
 		}
 	?>

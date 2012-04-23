@@ -1,3 +1,14 @@
+2012-04-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_networkmap.php
+	 include/functions_ui.php
+	 operation/agentes/networkmap_list.php
+	 operation/agentes/networkmap.php
+	 operation/agentes/stat_win.php
+	 operation/menu.php: Added new view with a list of networkmaps.
+	 
+	 Fixes: #3519785
+
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_html.php, include/javascript/jquery.pandora.js,

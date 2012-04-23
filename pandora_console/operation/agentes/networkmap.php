@@ -44,6 +44,8 @@ if($delete_networkmap) {
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
+		
+	echo $message;
 	
 	$id_networkmap = 0;
 }

@@ -104,14 +104,14 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//Start network view
 	
 	$menu["network"]["text"] = __('Network View');
-	$menu["network"]["sec2"] = "operation/agentes/networkmap";
+	$menu["network"]["sec2"] = "operation/agentes/networkmap_list";
 	$menu["network"]["refr"] = 0;
 	$menu["network"]["id"] = "oper-networkconsole";
 	
 	$sub = array();
 	
-	$sub["operation/agentes/networkmap"]["text"] = __('Network map');
-	$sub["operation/agentes/networkmap"]["refr"] = 0;
+	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
+	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
 	
 	enterprise_hook ('networkmap_console');
 	

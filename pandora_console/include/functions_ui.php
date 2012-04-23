@@ -1163,6 +1163,8 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	//Pandora specific jquery should go first
 	$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
+		"ui" => "include/javascript/jquery.ui.core.js",
+		"dialog" => "include/javascript/jquery.ui.dialog.js",
 		"pandora" => "include/javascript/jquery.pandora.js"),
 		$config['jquery']);
 	

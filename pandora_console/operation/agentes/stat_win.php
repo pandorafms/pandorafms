@@ -159,7 +159,7 @@ function show_others() {
 //-->
 </script>
 </head>
-<body bgcolor="#ffffff">
+<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
 
 // Get input parameters

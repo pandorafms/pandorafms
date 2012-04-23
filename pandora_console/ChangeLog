@@ -1,3 +1,11 @@
+2012-04-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_networkmap.php
+	include/ajax/networkmap.ajax.php
+	operation/agentes/networkmap.topology.php: Fixed several
+	errors in the apache log when generate networkmap and add
+	to the root node a little map summary
+
 2012-04-23 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* godmode/reporting/visual_console_builder.data.php: Fixed a problem
@@ -10,9 +18,9 @@
 
 2012-04-23 Dario Rodriguez <dario.rodriguez@artica.es>
 
-        * godmode/reporting/visual_console_builder.wizard.php: Unsorted
-        combo in visual console wizard to switch the default type of item
-        to static graph to preserve the previous default behaviour.
+	* godmode/reporting/visual_console_builder.wizard.php: Unsorted
+	combo in visual console wizard to switch the default type of item
+	to static graph to preserve the previous default behaviour.
 
 2012-04-23  Vanessa Gil  <vanessa.gil@artica.es>
 

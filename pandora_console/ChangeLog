@@ -1,5 +1,9 @@
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* ChangeLog: fixed lost action in the previous lines.
+
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* index.php: fixed notice message php.
 	
 	* extensions/update_manager/lib/libupdate_manager.php: fixed into
@@ -9,17 +13,12 @@
 	* include/config_process.php: added for a long time the setting the
 	$develop_bypass as global.
 	
-	* extensions/update_manager/settings.php
+	* extensions/update_manager/settings.php, operation/menu.php,
+	operation/search_agents.php: cleaned source code style.
 	
-	* include/functions_config.php
-
-
-
-
-operation/menu.php
-operation/search_agents.php
-operation/users/user_edit.php
-
+	* include/functions_config.php: fixed php noticie message of the
+	var "$config['update_manager_installed']" in the first execution
+	after intallation.
 
 2012-04-23  Sergio Martin <sergio.martin@artica.es>
 

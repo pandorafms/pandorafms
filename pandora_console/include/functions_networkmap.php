@@ -139,9 +139,11 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 		switch($node['type']){
 			case 'agent':
 				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, $cut_names, $relative)."\n\t\t";
+				$stats['agents'][] = $node['id_agente'];
 				break;
 			case 'module':
 				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
+				$stats['modules'][] = $node['id_agente_modulo'];
 				break;
 		}
 	}
@@ -158,7 +160,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 	
 	// Create a central node if orphan nodes exist
 	if (count ($orphans) || empty ($nodes)) {
-		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple);
+		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
 	}
 	
 	// Define edges for orphan nodes
@@ -309,12 +311,15 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		switch($node['type']){
 			case 'group':
 				$graph .= networkmap_create_group_node ($node , $simple, $font_size)."\n\t\t";
+				$stats['groups'][] = $node['id_grupo'];
 				break;
 			case 'agent':
-				$graph .= networkmap_create_agent_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, true, true)."\n\t\t";
+				$stats['agents'][] = $node['id_agente'];
 				break;
 			case 'module':
 				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
+				$stats['modules'][] = $node['id_agente_modulo'];
 				break;
 		}
 	}
@@ -330,7 +335,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
-		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple);
+		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
 	}
 
 	// Define edges for orphan nodes
@@ -399,7 +404,7 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 		}
 		
 		$node = $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
-		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
+		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
 		 shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
 	}
@@ -453,7 +458,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
-		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
+		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
@@ -490,7 +495,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 	
 	if ($simple == 0){
 		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
-		 <TR><TD>'.$module['nombre'].'</TD></TR></TABLE>>,
+		 <TR><TD>'.io_safe_output($module['nombre']).'</TD></TR></TABLE>>,
 		 shape="circle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
 	}
@@ -501,7 +506,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 }
 
 // Returns the definition of the central module
-function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0) {
+function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $stats = array()) {
 	$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true, false, false, true) . '</TD></TR>';
 	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
 	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
@@ -509,8 +514,10 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0) {
 		$label = '';
 	}
 
+	$stats_json = base64_encode(json_encode($stats));
+	
 	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
-		shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/group_view" ];';
+		shape="ellipse", tooltip="ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view" ];';
 
 	return $node;
 }

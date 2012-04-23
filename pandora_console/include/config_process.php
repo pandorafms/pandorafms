@@ -27,6 +27,7 @@ $pandora_version = 'v5.0-dev';
 
 date_default_timezone_set("Europe/Berlin");
 
+global $develop_bypass;
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;
 

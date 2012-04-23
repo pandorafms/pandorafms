@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], 0, 'PM')) {
 include_once ("extensions/update_manager/lib/functions.php");
 
 um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-			$config['dbpass'], $config['dbname']);
+	$config['dbpass'], $config['dbname']);
 
 $update_settings = (bool) get_parameter_post ('update_settings');
 
@@ -55,9 +55,10 @@ if ($update_settings) {
 		update_pandora_update_conf();
 	}
 	
-	echo "<h3 class=suc>".__('Update manager settings updated')."</h3>";
+	echo "<h3 class=suc>" . __('Update manager settings updated') . "</h3>";
 }
 
+$settings = null;
 $settings = um_db_load_settings ();
 
 echo '<form method="post">';

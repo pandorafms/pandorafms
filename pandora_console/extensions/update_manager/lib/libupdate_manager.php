@@ -20,8 +20,10 @@ require_once ('libupdate_manager_components.php');
 require_once ('libupdate_manager_client.php');
 
 function um_db_load_settings () {
-	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_settings');
-	if($result === false) {
+	db_clean_cache();
+	$result = db_get_all_rows_in_table(DB_PREFIX . 'tupdate_settings');
+	
+	if ($result === false) {
 		echo '<strong>Error reading settings</strong><br />';
 		return NULL;
 	}
@@ -54,7 +56,7 @@ function um_db_update_setting ($key, $value = '') {
 	}
 	
 	if ($result === false) {
-		echo '<strong>Error reading settings</strong> <br />';
+		echo '<strong>' . __('Error reading settings') . '</strong> <br />';
 		return NULL;
 	}
 	
@@ -72,7 +74,7 @@ function um_db_update_setting ($key, $value = '') {
 		}
 		
 		if ($result === false) {
-			echo '<strong>Error updating settings</strong> <br />';
+			echo '<strong>' . __('Error updating settings') . '</strong> <br />';
 			return false;
 		}
 	}
@@ -90,7 +92,7 @@ function um_db_update_setting ($key, $value = '') {
 		}
 		
 		if ($result === false) {
-			echo '<strong>Error creating settings</strong> <br />';
+			echo '<strong>' . __('Error creating settings') . '</strong> <br />';
 			return false;
 		}
 	}

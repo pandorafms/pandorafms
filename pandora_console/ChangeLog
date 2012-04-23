@@ -1,3 +1,23 @@
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* index.php: fixed notice message php.
+	
+	* extensions/update_manager/lib/libupdate_manager.php: fixed into
+	the function "um_db_load_settings" the cache of DB, and set to
+	translate some untranslate text.
+	
+	* include/config_process.php: added for a long time the setting the
+	$develop_bypass as global.
+	
+	* extensions/update_manager/settings.php, operation/menu.php,
+	operation/search_agents.php: cleaned source code style.
+	
+	* include/functions_config.php: fixed php noticie message of the
+	var "$config['update_manager_installed']" in the first execution
+	after intallation.
+	
+	MERGED FROM 4.0.2
+
 2012-04-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_networkmap.php

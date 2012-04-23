@@ -424,8 +424,10 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 			$chart->addChartData($v);
 		}
 	}
-	
-	$chart->setChartParams('yAxisName=' . $unit . ';'.'animation=0;numVDivLines=' . $num_vlines . 
+	$unit_encode = '';
+	if (isset($unit))
+		$unit_encode = urlencode($unit);
+	$chart->setChartParams('yAxisName=' . $unit_encode . ';'.'animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
 		'lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
@@ -596,8 +598,10 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 		}
 	}
-
-    $chart->setChartParams('yAxisName=' . $yaxisname . ';decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
+	$unit_encode = '';
+	if (isset($yaxisname))
+		$yaxisname_encode = urlencode($yaxisname);
+    $chart->setChartParams('yAxisName=' . $yaxisname_encode . ';decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code

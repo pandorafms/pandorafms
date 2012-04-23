@@ -32,17 +32,15 @@ config_check();
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
 	<tr>
 		<td rowspan="2">
-		
-		<a href="index.php?sec=main">
-<?php
-		if (!defined ('PANDORA_ENTERPRISE')){
-			echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
-		}
-		else {
-			echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
-		}
-?>
-		</a>
+			<a href="index.php?sec=main">
+				<?php
+				if (!defined ('PANDORA_ENTERPRISE')){
+					echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
+				} else {
+					echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
+				}
+				?>
+			</a>
 		</td>
 		<td width="20%">
 			<?php 
@@ -57,7 +55,6 @@ config_check();
 			if ($config["metaconsole"] == 0){
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
-					
 					echo '<div id="dialog_messages" style="display: none"></div>';
 					ui_require_css_file ('dialog');
 					
@@ -70,13 +67,19 @@ config_check();
 				}
 			}
 			
-			if ($config["alert_cnt"] > 0){
+			echo "<span id='icon_new_messages_chat' style='display: none;'>";
+			echo "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
+			html_print_image('images/comments.png');
+			echo "</a>";
+			echo "</span>";
+			
+			if ($config["alert_cnt"] > 0) {
 				echo '<div id="alert_messages" style="display: none"></div>';
 				ui_require_css_file ('dialog');
 				
 				echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
 				html_print_image ("images/error.png", false,
-				array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
+					array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
 				echo '</a>';
 				echo "&nbsp;";
 				echo "&nbsp;";
@@ -86,7 +89,7 @@ config_check();
 			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
 			echo '</a></td>';
 		echo '<td width="20%">';
-		
+			
 			if ($config["metaconsole"] == 0){
 				echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				
@@ -111,7 +114,6 @@ config_check();
 			else {
 				// TODO: Put here to remark this is a metaconsole
 				echo "";
-				
 			}
 ?>
 		</td>
@@ -125,7 +127,7 @@ config_check();
 				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				echo '</a>';
 			}
-			else {	
+			else {
 				$ignored_params['refr'] = '';
 				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
 				$values = array (
@@ -155,7 +157,7 @@ config_check();
 	</tr>
 	<tr>
 		<td colspan="2">
-
+		
 		<?php
 		if ($config["metaconsole"] == 0){
 		?>
@@ -199,49 +201,53 @@ if ($config["metaconsole"] == 0){
 <script type="text/javascript" src="include/javascript/jquery.ui.draggable.js "></script>	
 <script type="text/javascript" src="include/javascript/jquery.ui.droppable.js "></script>
 <script type="text/javascript" src="include/javascript/jquery.ui.resizable.js "></script>
- -->	
-	
+ -->
+<script type="text/javascript" src="include/javascript/webchat.js "></script>	
+
 <script type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-/* Temporal fix to hide graphics when ui_dialog are displayed */
-$("#yougotalert").click(function () { 
-	$("#agent_access").css("display", "none");	
-});
-$("#ui_close_dialog_titlebar").click(function () {
-	$("#agent_access").css("display","");
-});	
-	
-<?php if ($msg_cnt > 0): ?>
-	$("#yougotmail").pulsate ();
-<?php endif; ?>
-<?php if ($config["alert_cnt"] > 0): ?>
-	$("#yougotalert").pulsate ();
-<?php endif; ?>
-<?php if ($config["refr"]): ?>
-	t = new Date();
-	t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
-	$("#refrcounter").countdown ({until: t, 
-		layout: '%M%nn%M:%S%nn%S',
-		labels: ['', '', '', '', '', '', ''],
-		onExpiry: function () {
-				$(this).text ("...");
-			}
-		});
-<?php else: ?>
-	$("a#autorefresh").click (function () {
-		var a = this;
+	/* <![CDATA[ */
+	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
+	$(document).ready (function () {
+		check_new_chats_icon('icon_new_messages_chat');
 		
-		$(this).hide ().unbind ("click");
-		$("#combo_refr").show ();
-		$("select#ref").change (function () {
-			href = $(a).attr ("href");
-			$(document).attr ("location", href + this.value);
+		/* Temporal fix to hide graphics when ui_dialog are displayed */
+		$("#yougotalert").click(function () { 
+			$("#agent_access").css("display", "none");	
+		});
+		$("#ui_close_dialog_titlebar").click(function () {
+			$("#agent_access").css("display","");
 		});
 		
-		return false;
+		<?php if ($msg_cnt > 0): ?>
+			$("#yougotmail").pulsate ();
+		<?php endif; ?>
+		<?php if ($config["alert_cnt"] > 0): ?>
+			$("#yougotalert").pulsate ();
+		<?php endif; ?>
+		<?php if ($config["refr"]): ?>
+			t = new Date();
+			t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
+			$("#refrcounter").countdown ({until: t, 
+				layout: '%M%nn%M:%S%nn%S',
+				labels: ['', '', '', '', '', '', ''],
+				onExpiry: function () {
+						$(this).text ("...");
+					}
+				});
+		<?php else: ?>
+			$("a#autorefresh").click (function () {
+				var a = this;
+				
+				$(this).hide ().unbind ("click");
+				$("#combo_refr").show ();
+				$("select#ref").change (function () {
+					href = $(a).attr ("href");
+					$(document).attr ("location", href + this.value);
+				});
+				
+				return false;
+			});
+		<?php endif; ?>
 	});
-<?php endif; ?>
-});
 /* ]]> */
 </script>

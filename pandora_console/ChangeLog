@@ -1,3 +1,16 @@
+2012-04-23 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	*extensions/snmp_explorer.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/ver_agente.php,
+	operation/search_agents.php,
+	operation/snmpconsole/snmp_view.php,
+	operation/gis_maps/render_view.php,
+	godmode/agentes/fields_manager.php,
+	godmode/agentes/configure_field.php,
+	godmode/agentes/planned_downtime.php: Fixed a problem with agent sec
+	param changed from gagente to estado in order to display new menus properly
+
 2012-04-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_agents.php, include/functions_config.php,

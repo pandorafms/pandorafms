@@ -279,7 +279,7 @@ else {
 		$manage_agent = '';
 
 		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
-			$manage_agent = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='. $agent["id_agente"] . '">' .
+			$manage_agent = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='. $agent["id_agente"] . '">' .
 				html_print_image("images/setup.png", true, array("title" => __('Manage'), "alt" => __('Manage'))) . '</a>';
 		}
 	

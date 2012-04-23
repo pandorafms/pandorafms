@@ -270,7 +270,7 @@ function snmp_explorer() {
     }
 
     echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
-    echo "<form method='post' id='walk_form' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
+    echo "<form method='post' id='walk_form' action='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
 
     $table->width = '98%';
 
@@ -351,7 +351,7 @@ function snmp_explorer() {
     if(!empty($interfaces_list)){
 	    echo '<span id="form_interfaces">';
 	    echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
-	    echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
+	    echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente=$id_agent&id_extension=snmp_explorer'>";
 		
 	    $id_snmp_serialize = serialize_in_temp($interfaces, $config['id_user']."_snmp");
 	    html_print_input_hidden('id_snmp_serialize', $id_snmp_serialize);

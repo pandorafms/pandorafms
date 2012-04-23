@@ -515,7 +515,7 @@ $tab = get_parameter ("tab", "main");
 $managetab = "";
 
 if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
-	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
+	$managetab['text'] ='<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
 

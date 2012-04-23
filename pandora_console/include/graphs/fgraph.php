@@ -186,6 +186,10 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false) {
 		
 	if($flash_chart) {
+		// Url encode the legend to avoid eliminate weird symbols like %, &...
+		foreach($legend as $i => $v) {
+			$legend[$i] = urlencode($v);
+		}
 		echo fs_2d_column_chart ($chart_data, $width, $height, $homedir, $reduce_data_columns, $yaxisname);
 	}
 	else {
@@ -235,6 +239,10 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
+		// Url encode the legend to avoid eliminate weird symbols like %, &...
+		foreach($legend as $i => $v) {
+			$legend[$i] = urlencode($v);
+		}
 		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit);
 	}
 	else {
@@ -265,6 +273,10 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	}
 	
 	if($flash_chart) {
+		// Url encode the legend to avoid eliminate weird symbols like %, &...
+		foreach($legend as $i => $v) {
+			$legend[$i] = urlencode($v);
+		}
 		return fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
@@ -301,6 +313,10 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	stack_data($chart_data, $legend, $color);
 	
 	if($flash_chart) {
+		// Url encode the legend to avoid eliminate weird symbols like %, &...
+		foreach($legend as $i => $v) {
+			$legend[$i] = urlencode($v);
+		}
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {		
@@ -331,6 +347,10 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if($flash_chart) {
+		// Url encode the legend to avoid eliminate weird symbols like %, &...
+		foreach($legend as $i => $v) {
+			$legend[$i] = urlencode($v);
+		}
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
 	else {
@@ -379,6 +399,10 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	$legend = array(), $xaxisname = "", $yaxisname = "", $force_height = true,
 	$homedir="", $water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $return = false) {
 	if($flash_chart) {
+		// Url encode the legend to avoid eliminate weird symbols like %, &...
+		foreach($legend as $i => $v) {
+			$legend[$i] = urlencode($v);
+		}
 		include_flash_chart_script();
 		if ($return){
 			return fs_2d_hcolumn_chart ($chart_data, $width, $height);

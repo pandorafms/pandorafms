@@ -1,3 +1,8 @@
+2012-04-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/fgraph.php: Fixed codification issue
+	in the flash graphs legends 3520641
+
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* ChangeLog: fixed lost action in the previous lines.

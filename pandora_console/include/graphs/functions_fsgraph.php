@@ -474,6 +474,7 @@ function get_chart_code ($chart, $width, $height, $swf) {
         			$(document).ready(function pie_' . $chart_id . ' () {
         				var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
         				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
+        				myChart.addParam("WMode", "Transparent");
         				myChart.render("' . $div_id . '");
         			})
         		-->

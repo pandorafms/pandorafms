@@ -1,3 +1,8 @@
+2012-04-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/graphs/functions_fsgraph.php: Modified z-index in flash 
+	graphs for string datatype.
+
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* index.php: fixed php noticie message about uninicialized var.

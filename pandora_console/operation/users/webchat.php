@@ -28,6 +28,7 @@ if (is_ajax ()) {
 		$send_logout = (bool)get_parameter('send_logout', 0);
 		$long_polling_check_messages = (bool)get_parameter('long_polling_check_messages', 0);
 		$get_last_global_counter = (bool)get_parameter('get_last_global_counter', 0);
+		$check_users = (bool)get_parameter('check_users', 0);
 		
 		if ($get_last_messages) {
 			$time = (int)get_parameter('time', 24 * 60 * 60);
@@ -50,6 +51,10 @@ if (is_ajax ()) {
 		if ($get_last_global_counter) {
 			users_get_last_global_counter();
 		}
+		
+		if ($check_users) {
+			users_check_users();
+		}
 	}
 	else {
 		echo json_encode(array('correct' => false));
@@ -67,12 +72,15 @@ ui_print_page_header (__('Webchat'), "images/group.png", false, "", false, "");
 $table = null;
 
 $table->width = '95%';
+$table->style[0][1] = 'text-align: right; vertical-align: top;';
 
-$table->colspan[0][0] = 2;
-
-$table->data[0][0] = '<div id="chat_box" style="width: 100%;
+$table->data[0][0] = '<div id="chat_box" style="width: 95%;
 	height: 300px; background: #ffffff; border: 1px inset black;
 	overflow: auto; padding: 10px;"></div>';
+$table->data[0][1] = '<h4>' . __('Users Online') . '</h4>' .
+	'<div id="userlist_box" style="width: 90% !important; height: 200px !important;
+		height: 300px; background: #ffffff; border: 1px inset black;
+		overflow: auto; padding: 10px;"></div>';
 $table->data[1][0] = html_print_input_text('message_box', '', '',
 	100, 150, true);
 $table->data[1][1] = html_print_button('send', 'send', false, 'send_message()',
@@ -104,6 +112,25 @@ html_print_table($table);
 	function init_webchat() {
 		send_login_message();
 		long_polling_check_messages();
+		check_users();
+	}
+	
+	function check_users() {
+		var parameters = {};
+		parameters['page'] = "operation/users/webchat";
+		parameters['check_users'] = 1;
+		
+		$.ajax({
+			type: 'POST',
+			url: 'ajax.php',
+			data: parameters,
+			dataType: "json",
+			success: function(data) {
+				if (data['correct'] == 1) {
+					$("#userlist_box").html(data['users']);
+				}
+			}
+		});
 	}
 	
 	function long_polling_check_messages() {
@@ -119,6 +146,8 @@ html_print_table($table);
 			dataType: "json",
 			success: function(data) {
 				if (data['correct'] == 1) {
+					check_users();
+					
 					if (first_time) {
 						print_messages({
 							0: {'type' : 'notification',
@@ -217,7 +246,6 @@ html_print_table($table);
 				}
 			}
 		});
-		
 	}
 	
 	function exit_webchat() {

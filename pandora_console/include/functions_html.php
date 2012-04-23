@@ -632,7 +632,7 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 	
 	if ($size == 0)
 		$size = 10;
-		
+	
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, $disabled, '', '', $return);
 }
 
@@ -657,16 +657,16 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 	
 	/* Checks if user's skin is available */
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
-
+	
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$skin_path = enterprise_hook('skins_get_image_path',array($src));
 		if ($skin_path)
-			$src = $skin_path;		
+			$src = $skin_path;
 	}
-
+	
 	// path to image 
 	$src = $config["homeurl"] . '/' . $src;
-
+	
 	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image"';
 	
 	//Valid attributes (invalid attributes get skipped)
@@ -1012,7 +1012,10 @@ function html_print_table (&$table, $return = false) {
 				$output .= '<td colspan="'. $countcols .'"><div class="tabledivider"></div></td>';
 				continue;
 			}
-			
+
+			if (!is_array($row))
+				$row = (array)$row;
+	
 			/* It's a normal row */
 			foreach ($row as $key => $item) {
 				if (!isset ($size[$key])) {

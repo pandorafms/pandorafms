@@ -1292,14 +1292,20 @@ function check_sql ($sql) {
  * Check if login session variables are set.
  *
  * It will stop the execution if those variables were not set
+ * 
+ * @param boolean $output Set return instead the output. By default true.
  *
  * @return bool 0 on success exit() on no success
  */
 
-function check_login () {
+function check_login ($output = true) {
 	global $config;
 	
 	if (!isset ($config["homedir"])) {
+		if (!$output) {
+			return false;
+		}
+		
 		// No exists $config. Exit inmediatly
 		include("general/noaccess.php");
 		exit;
@@ -1308,7 +1314,8 @@ function check_login () {
 	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
 		if (is_user ($_SESSION["id_usuario"])) {
 			$config['id_user'] = $_SESSION["id_usuario"];
-			return 0;
+			
+			return true;
 		}
 	}
 	else {
@@ -1319,11 +1326,15 @@ function check_login () {
 			$user = $_SESSION['user'];
 			$id_user = $user->getIdUser();
 			if (is_user ($id_user)) {
-				return 0;
+				return true;
 			}
 		}
 	}
-
+	
+	if (!$output) {
+		return false;
+	}
+	
 	db_pandora_audit("No session", "Trying to access without a valid session", "N/A");
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;

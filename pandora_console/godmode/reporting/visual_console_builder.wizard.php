@@ -59,7 +59,7 @@ $type_list = array(
 
 $table->rowstyle["all_0"] = 'display: none;';
 $table->data["all_0"][0] = __('Type');
-$table->data["all_0"][1] = html_print_select ($type_list, 'type', '', 'hidden_rows()', '', '', true);
+$table->data["all_0"][1] = html_print_select ($type_list, 'type', '', 'hidden_rows()', '', '', true, false, false);
 
 $table->rowstyle["staticgraph"] = 'display: none;';
 $table->data["staticgraph"][0] = __('Image');

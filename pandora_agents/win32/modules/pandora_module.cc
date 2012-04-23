@@ -855,6 +855,7 @@ Pandora_Module::addPrecondition (string precondition) {
 		precond->operation = "=~";
 		precond->string_value = string_value;
 		precond->command = command;
+		precond->command = "cmd.exe /c \"" + precond->command + "\"";
 		if (regcomp (&(precond->regexp), string_value, 0) != 0) {
 			pandoraDebug ("Invalid regular expression %s", string_value);
 			delete (precond);
@@ -866,6 +867,7 @@ Pandora_Module::addPrecondition (string precondition) {
 	} else if (sscanf (precondition.c_str (), "(%lf , %lf) %1023[^\n]s", &(precond->value_1), &(precond->value_2), command) == 3) {
 		precond->operation = "()";
 		precond->command = command;
+		precond->command = "cmd.exe /c \"" + precond->command + "\"";
 		this->precondition_list->push_back (precond);
 	} else {
 		pandoraDebug ("Invalid module condition: %s", precondition.c_str ());
@@ -1016,56 +1018,59 @@ Pandora_Module::evaluatePreconditions () {
 				}
 				ResumeThread (pi.hThread);
 	
-			/*string output;*/
-			int tickbase = GetTickCount();
-			while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
-				PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
+				/*string output;*/
+				output = "";
+				int tickbase = GetTickCount();
+				while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
+					PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
 					if (avail > 0) {
 						ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
 						buffer[read] = '\0';
 						output += (char *) buffer;
-				}
+					}
 			
-			float_output = atof(output.c_str());
+					float_output = atof(output.c_str());
 
-			if (dwRet == WAIT_OBJECT_0) { 
-				break;
-			} else if(this->getTimeout() < GetTickCount() - tickbase) {
-				/* STILL_ACTIVE */
-				TerminateProcess(pi.hThread, STILL_ACTIVE);
-				pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
-				break;
+					if (dwRet == WAIT_OBJECT_0) { 
+						break;
+					} else if(this->getTimeout() < GetTickCount() - tickbase) {
+						/* STILL_ACTIVE */
+						TerminateProcess(pi.hThread, STILL_ACTIVE);
+						pandoraLog ("evaluatePreconditions: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
+						break;
+					}
+				}
+
+				GetExitCodeProcess (pi.hProcess, &retval);
+
+				if (retval != 0) {
+					if (! TerminateJobObject (job, 0)) {
+						pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
+						GetLastError ());
+					}
+            
+					if (retval != STILL_ACTIVE) {
+						pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
+						this->module_name.c_str (), retval);
+					}
+				
+					/* Close job, process and thread handles. */
+					CloseHandle (job);
+					CloseHandle (pi.hProcess);
+					CloseHandle (pi.hThread);
+					CloseHandle (new_stdout);
+					CloseHandle (out_read);
+					return 0;
+				}
+	
+				/* Close job, process and thread handles. */
+				CloseHandle (job);
+				CloseHandle (pi.hProcess);
+				CloseHandle (pi.hThread);
 			}
-		}
 
-		GetExitCodeProcess (pi.hProcess, &retval);
-
-		if (retval != 0) {
-			if (! TerminateJobObject (job, 0)) {
-				pandoraLog ("evaluatePreconditions: TerminateJobObject failed. (error %d)",
-				GetLastError ());
-			}
-            if (retval != STILL_ACTIVE) {
-				pandoraLog ("evaluatePreconditions: %s did not executed well (retcode: %d)",
-                this->module_name.c_str (), retval);
-            }
-			/* Close job, process and thread handles. */
-			CloseHandle (job);
-			CloseHandle (pi.hProcess);
-			CloseHandle (pi.hThread);
 			CloseHandle (new_stdout);
 			CloseHandle (out_read);
-			return 0;
-		}
-	
-		/* Close job, process and thread handles. */
-		CloseHandle (job);
-		CloseHandle (pi.hProcess);
-		CloseHandle (pi.hThread);
-	}
-
-	CloseHandle (new_stdout);
-	CloseHandle (out_read);
 
 	if ((precond->operation == ">" && float_output > precond->value_1) ||
 			    (precond->operation == "<" && float_output < precond->value_1) ||
@@ -1080,8 +1085,9 @@ Pandora_Module::evaluatePreconditions () {
 			}
 			
 			CloseHandle (pi.hProcess);			
-	} 
-}
+		} 
+	}
+	
 	return exe;
 }
 			

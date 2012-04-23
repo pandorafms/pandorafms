@@ -1,3 +1,9 @@
+2012-04-23  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/menu.php: Changed the order of the reporting 
+	subsections and set reports view to default target in the 
+	reporting section link
+
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* index.php: fixed notice message php.

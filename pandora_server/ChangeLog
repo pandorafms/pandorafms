@@ -1,5 +1,10 @@
 2012-04-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Do not insert zeroes when something goes
+	  wrong while processing an inc module. Fixes bug #3519591.
+
+2012-04-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/NetworkServer.pm,
 	  lib/PandoraFMS/WMIServer.pm,
 	  lib/PandoraFMS/PluginServer.pm: Merged from trunk. Simplified the

@@ -850,7 +850,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Process data
- 	my $processed_data = process_data ($data_object, $module, $module_type, $utimestamp, $dbh);
+ 	my $processed_data = process_data ($pa_config, $data_object, $module, $module_type, $utimestamp, $dbh);
  	if (! defined ($processed_data)) {
 		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
@@ -1808,8 +1808,8 @@ sub subst_alert_macros ($$) {
 ##########################################################################
 # Process module data.
 ##########################################################################
-sub process_data ($$$$$) {
-	my ($data_object, $module, $module_type, $utimestamp, $dbh) = @_;
+sub process_data ($$$$$$) {
+	my ($pa_config, $data_object, $module, $module_type, $utimestamp, $dbh) = @_;
 
 	if ($module_type eq "log4x") {
 		return log4x_get_severity_num($data_object);
@@ -1840,16 +1840,10 @@ sub process_data ($$$$$) {
 
 	# Process INC modules
 	if ($module_type =~ m/_inc$/) {
-		$data = process_inc_data ($data, $module, $utimestamp, $dbh);
-				
-		# Not an error, no previous data
-		if (!defined($data)){
-			$data_object->{'data'} = 0;
-			return 0;
-		}
-
-		# Same timestamp as previous data. Discard.
-		return undef if($data == -1);
+		$data = process_inc_data ($pa_config, $data, $module, $utimestamp, $dbh);
+		
+		# No previous data or error.
+		return undef unless defined ($data);
 	}
 
 	# Post process
@@ -1869,8 +1863,8 @@ sub process_data ($$$$$) {
 ##########################################################################
 # Process data of type *_inc.
 ##########################################################################
-sub process_inc_data ($$$$) {
-	my ($data, $module, $utimestamp, $dbh) = @_;
+sub process_inc_data ($$$$$) {
+	my ($pa_config, $data, $module, $utimestamp, $dbh) = @_;
 
 	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 
@@ -1879,6 +1873,7 @@ sub process_inc_data ($$$$) {
 		db_do ($dbh, 'INSERT INTO tagente_datos_inc
 				(id_agente_modulo, datos, utimestamp)
 				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
+		logger($pa_config, "Discarding first data for incremental module " . $module->{'nombre'} . "(module id " . $module->{'id_agente_modulo'} . ").", 10);
 		return undef;
 	}
 
@@ -1888,11 +1883,12 @@ sub process_inc_data ($$$$) {
 		db_do ($dbh, 'INSERT INTO tagente_datos_inc
 				(id_agente_modulo, datos, utimestamp)
 				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
+		logger($pa_config, "Discarding data and resetting counter for incremental module " . $module->{'nombre'} . "(module id " . $module->{'id_agente_modulo'} . ").", 10);
 		return undef;
 	}
 
 	# Should not happen
-	return -1 if ($utimestamp == $data_inc->{'utimestamp'});
+	return undef if ($utimestamp == $data_inc->{'utimestamp'});
 
 	# Update inc data
 	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});

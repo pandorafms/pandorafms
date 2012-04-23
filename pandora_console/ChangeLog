@@ -1,3 +1,16 @@
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_html.php, include/javascript/jquery.pandora.js,
+	include/functions_db.php: cleaned source code style.
+	
+	* include/functions_users.php, index.php, operation/menu.php,
+	operation/users/webchat.php, include/javascript/webchat.js,
+	general/header.php: added first version of webchat.
+	
+	* include/functions.php: into the function "check_login" added the
+	parameter $output for some cases don't want see the error page like
+	as the ajax querys.
+
 2012-04-23 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	*extensions/snmp_explorer.php,

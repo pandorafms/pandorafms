@@ -51,11 +51,10 @@ config_check();
 			?>			
 			<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
-
+			
 			if ($config["metaconsole"] == 0){
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
-
 					echo '<div id="dialog_messages" style="display: none"></div>';
 					ui_require_css_file ('dialog');
 					ui_require_jquery_file ('ui.core');
@@ -64,10 +63,16 @@ config_check();
 					html_print_image ("images/email.png", false,
 					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
 					echo '</a>';
-                    echo "&nbsp;";
-                    echo "&nbsp;";
+					echo "&nbsp;";
+					echo "&nbsp;";
 				}
 			}
+			
+			echo "<span id='icon_new_messages_chat' style='display: none;'>";
+			echo "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
+			html_print_image('images/comments.png');
+			echo "</a>";
+			echo "</span>";
 			
 			if ($config["alert_cnt"] > 0) {
 				echo '<div id="alert_messages" style="display: none"></div>';
@@ -83,36 +88,36 @@ config_check();
 				echo "&nbsp;";
 			}
 			
-            echo '<a class="white_bold" href="index.php?bye=bye">';
-            html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
-            echo '</a></td>';
-	    echo '<td width="20%">';
-
-		    if ($config["metaconsole"] == 0){
-			    echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-
-			    $servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
-			    $servers["up"] = (int) servers_check_status ();
-			    $servers["down"] = $servers["all"] - $servers["up"];
-			    if ($servers["up"] == 0) {
-				    //All Servers down or no servers at all
-				    echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
-			    }
-			    elseif ($servers["down"] != 0) {
-				    //Some servers down
-				    echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
-			    }
-			    else {
-				    //All servers up
-				    echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
-			    }
-			    unset ($servers); // Since this is the header, we don't like to trickle down variables.
-			    echo '</a>';
-		    } else {
-			    // TODO: Put here to remark this is a metaconsole
-			    echo "";
-
-		    }
+			echo '<a class="white_bold" href="index.php?bye=bye">';
+			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
+			echo '</a></td>';
+		echo '<td width="20%">';
+			
+			if ($config["metaconsole"] == 0){
+				echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
+				
+				$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
+				$servers["up"] = (int) servers_check_status ();
+				$servers["down"] = $servers["all"] - $servers["up"];
+				if ($servers["up"] == 0) {
+					//All Servers down or no servers at all
+					echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
+				}
+				elseif ($servers["down"] != 0) {
+					//Some servers down
+					echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
+				}
+				else {
+					//All servers up
+					echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
+				}
+				unset ($servers); // Since this is the header, we don't like to trickle down variables.
+				echo '</a>';
+			}
+			else {
+				// TODO: Put here to remark this is a metaconsole
+				echo "";
+			}
 ?>
 		</td>
 		<td width="20%">
@@ -125,7 +130,7 @@ config_check();
 				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				echo '</a>';
 			}
-			else {	
+			else {
 				$ignored_params['refr'] = '';
 				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
 				$values = array (
@@ -155,7 +160,7 @@ config_check();
 	</tr>
 	<tr>
 		<td colspan="2">
-
+		
 		<?php
 		if ($config["metaconsole"] == 0){
 		?>
@@ -175,7 +180,7 @@ config_check();
 				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
 			<!-- onClick="javascript: document.quicksearch.submit()" -->					
 			<input type='hidden' name='head_search_keywords' value='abc' />
-		</form>				
+		</form>
 		<?php
 		}
 		?>
@@ -193,53 +198,56 @@ if ($config["metaconsole"] == 0){
 	ui_require_jquery_file ('countdown');
 ?>
 
-
 <script type="text/javascript" src="include/javascript/jquery.ui.dialog.js "></script>	
 <script type="text/javascript" src="include/javascript/jquery.ui.draggable.js "></script>	
 <script type="text/javascript" src="include/javascript/jquery.ui.droppable.js "></script>		
 <script type="text/javascript" src="include/javascript/jquery.ui.resizable.js "></script>	
-	
+<script type="text/javascript" src="include/javascript/webchat.js "></script>	
+
 <script language="javascript" type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-/* Temporal fix to hide graphics when ui_dialog are displayed */
-$("#yougotalert").click(function () { 
-	$("#agent_access").css("display", "none");	
-});
-$("#ui_close_dialog_titlebar").click(function () {
-	$("#agent_access").css("display","");
-});	
-	
-<?php if ($msg_cnt > 0): ?>
-	$("#yougotmail").pulsate ();
-<?php endif; ?>
-<?php if ($config["alert_cnt"] > 0): ?>
-	$("#yougotalert").pulsate ();
-<?php endif; ?>
-<?php if ($config["refr"]): ?>
-	t = new Date();
-	t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
-	$("#refrcounter").countdown ({until: t, 
-		layout: '%M%nn%M:%S%nn%S',
-		labels: ['', '', '', '', '', '', ''],
-		onExpiry: function () {
-				$(this).text ("...");
-			}
-		});
-<?php else: ?>
-	$("a#autorefresh").click (function () {
-		var a = this;
+	/* <![CDATA[ */
+	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
+	$(document).ready (function () {
+		check_new_chats_icon('icon_new_messages_chat');
 		
-		$(this).hide ().unbind ("click");
-		$("#combo_refr").show ();
-		$("select#ref").change (function () {
-			href = $(a).attr ("href");
-			$(document).attr ("location", href + this.value);
+		/* Temporal fix to hide graphics when ui_dialog are displayed */
+		$("#yougotalert").click(function () { 
+			$("#agent_access").css("display", "none");	
+		});
+		$("#ui_close_dialog_titlebar").click(function () {
+			$("#agent_access").css("display","");
 		});
 		
-		return false;
+		<?php if ($msg_cnt > 0): ?>
+			$("#yougotmail").pulsate ();
+		<?php endif; ?>
+		<?php if ($config["alert_cnt"] > 0): ?>
+			$("#yougotalert").pulsate ();
+		<?php endif; ?>
+		<?php if ($config["refr"]): ?>
+			t = new Date();
+			t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
+			$("#refrcounter").countdown ({until: t, 
+				layout: '%M%nn%M:%S%nn%S',
+				labels: ['', '', '', '', '', '', ''],
+				onExpiry: function () {
+						$(this).text ("...");
+					}
+				});
+		<?php else: ?>
+			$("a#autorefresh").click (function () {
+				var a = this;
+				
+				$(this).hide ().unbind ("click");
+				$("#combo_refr").show ();
+				$("select#ref").change (function () {
+					href = $(a).attr ("href");
+					$(document).attr ("location", href + this.value);
+				});
+				
+				return false;
+			});
+		<?php endif; ?>
 	});
-<?php endif; ?>
-});
 /* ]]> */
 </script>

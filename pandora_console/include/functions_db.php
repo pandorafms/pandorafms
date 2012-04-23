@@ -38,7 +38,7 @@ function db_select_engine() {
 			break;
 		case "oracle":
 			require_once ($config['homedir'] . '/include/db/oracle.php');
-			break;			
+			break;
 	}
 }
 
@@ -54,7 +54,7 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $histo
 			break;
 		case "oracle":
 			return oracle_connect_db($host, $db, $user, $pass, $history);
-			break;			
+			break;
 	}
 }
 

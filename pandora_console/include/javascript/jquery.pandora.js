@@ -58,7 +58,7 @@ $(document).ready (function () {
 		
 		return false;
 	});
-
+	
 	$("a#show_systemalert_dialog").click (function () {
 		jQuery.get ("ajax.php",
 			{"page": "operation/system_alert"},
@@ -69,7 +69,7 @@ $(document).ready (function () {
 					.dialog ({
 						title: $("a#show_systemalert_dialog").attr ("title"),
 						resizable: true,
-                        draggable: true,
+						draggable: true,
 						modal: true,
 						overlay: {
 							opacity: 0.5,

@@ -45,21 +45,22 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 0;
-	$sub["operation/agentes/estado_agente"]["subsecs"] = array("godmode/agentes/agent_conf_gis",
-																"godmode/agentes/agent_disk_conf_editor",
-																"godmode/agentes/agent_template",
-																"godmode/agentes/configurar_agente",
-																"godmode/agentes/modificar_agente",
-																"godmode/agentes/module_manager",
-																"godmode/agentes/module_manager_editor",
-																"godmode/agentes/module_manager_editor_common",
-																"godmode/agentes/module_manager_editor_data",
-																"godmode/agentes/module_manager_editor_network",
-																"godmode/agentes/module_manager_editor_plugin",
-																"godmode/agentes/module_manager_editor_prediction",
-																"godmode/agentes/module_manager_editor_wmi",
-																"operation/agentes/ver_agente");
-				
+	$sub["operation/agentes/estado_agente"]["subsecs"] = array(
+		"godmode/agentes/agent_conf_gis",
+		"godmode/agentes/agent_disk_conf_editor",
+		"godmode/agentes/agent_template",
+		"godmode/agentes/configurar_agente",
+		"godmode/agentes/modificar_agente",
+		"godmode/agentes/module_manager",
+		"godmode/agentes/module_manager_editor",
+		"godmode/agentes/module_manager_editor_common",
+		"godmode/agentes/module_manager_editor_data",
+		"godmode/agentes/module_manager_editor_network",
+		"godmode/agentes/module_manager_editor_plugin",
+		"godmode/agentes/module_manager_editor_prediction",
+		"godmode/agentes/module_manager_editor_wmi",
+		"operation/agentes/ver_agente");
+	
 	$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');
 	$sub["operation/agentes/alerts_status"]["refr"] = 0;
 	
@@ -77,10 +78,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//SNMP Console
 	$sub["operation/snmpconsole/snmp_view"]["text"] = __('SNMP console');
 	$sub["operation/snmpconsole/snmp_view"]["refr"] = 0;
-	$sub["operation/snmpconsole/snmp_view"]["subsecs"] = array("enterprise/godmode/snmpconsole",
-														"godmode/snmpconsole/snmp_trap_editor",
-														"godmode/snmpconsole/snmp_alert",
-														"godmode/snmpconsole/snmp_filters");
+	$sub["operation/snmpconsole/snmp_view"]["subsecs"] = array(
+		"enterprise/godmode/snmpconsole",
+		"godmode/snmpconsole/snmp_trap_editor",
+		"godmode/snmpconsole/snmp_alert",
+		"godmode/snmpconsole/snmp_filters");
 	
 	$sub2 = array();
 	
@@ -131,9 +133,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
 	//Set godomode path
-	$sub["godmode/reporting/map_builder"]["subsecs"] = array("godmode/reporting/map_builder",
-														"godmode/reporting/visual_console_builder");
-														
+	$sub["godmode/reporting/map_builder"]["subsecs"] = array(
+		"godmode/reporting/map_builder",
+		"godmode/reporting/visual_console_builder");
+	
 	if (!empty($config['vc_refr'])){
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
 	}
@@ -187,12 +190,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
 	//Set godomode path
-	$sub["godmode/reporting/graphs"]["subsecs"] = array("operation/reporting/graph_viewer",
-														"godmode/reporting/graph_builder");	
-														
+	$sub["godmode/reporting/graphs"]["subsecs"] = array(
+		"operation/reporting/graph_viewer",
+		"godmode/reporting/graph_builder");	
+	
 	enterprise_hook ('dashboard_menu');
 	enterprise_hook ('reporting_godmenu');	
-		
+	
 	$menu["reporting"]["sub"] = $sub;
 	//End reporting
 	
@@ -295,6 +299,12 @@ $sub = array();
 $sub["operation/users/user_edit"]["text"] = __('Edit my user');
 $sub["operation/users/user_edit"]["refr"] = 0;
 
+// ANY user can chat with other user and dogs.
+// Users
+$sub = array();
+$sub["operation/users/webchat"]["text"] = __('WebChat');
+$sub["operation/users/webchat"]["refr"] = 0;
+
 //Incidents
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$temp_sec2 = $sec2; 
@@ -304,13 +314,14 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	else {
 		$sec2 = "operation/incidents/incident";
 	}
-
+	
 	$sub[$sec2]["text"] = __('Incidents');
 	$sub[$sec2]["refr"] = 0;
-	$sub[$sec2]["subsecs"] = array("operation/incidents/incident_detail",
-									"operation/integria_incidents");
+	$sub[$sec2]["subsecs"] = array(
+		"operation/incidents/incident_detail",
+		"operation/integria_incidents");
 	
-	$sub2 = array ();	
+	$sub2 = array ();
 	$sub2["operation/incidents/incident_statistics"]["text"] = __('Statistics');
 	
 	$sub[$sec2]["sub2"] = $sub2;
@@ -332,9 +343,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 $menu["workspace"]["sub"] = $sub;
 
 //End Workspace
-	
-if (check_acl ($config['id_user'], 0, "AR")) {	
-			
+
+if (check_acl ($config['id_user'], 0, "AR")) {
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu["extensions"]["text"] = __('Extensions');
@@ -356,10 +366,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			
 			//Check if was displayed inside other menu
 			if ($extension["operation_menu"]["fatherId"] == '') {
-
 				$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
 				$sub[$extension_menu["sec2"]]["refr"] = 0;
-			} else {
+			}
+			else {
 				if (array_key_exists('fatherId',$extension_menu)) {
 					if (strlen($extension_menu['fatherId']) > 0) {
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
@@ -370,7 +380,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["enterprise"] = $extension['enterprise'];
 						$menu[$extension_menu['fatherId']]['hasExtensions'] = true;
 					}
-			}
+				}
 			}
 		}
 		

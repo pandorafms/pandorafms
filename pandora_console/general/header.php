@@ -48,7 +48,7 @@ config_check();
 					html_print_image("images/user_suit.png" , false, array("class" => 'bot', "alt" => 'user'));
 				else
 					html_print_image("images/user_green.png" , false, array("class" => 'bot', "alt" => 'user'));
-			?>			
+			?>
 			<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 			
@@ -165,7 +165,7 @@ config_check();
 		if ($config["metaconsole"] == 0){
 		?>
 		<form method="get" style="" name="quicksearch" action="">
-			<script type="text/javascript" language="javascript">
+			<script type="text/javascript">
 			var fieldKeyWordEmpty = true;
 			</script>
 			<input type="text" id="keywords" name="keywords"
@@ -178,7 +178,7 @@ config_check();
 				?>
 				onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
 				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
-			<!-- onClick="javascript: document.quicksearch.submit()" -->					
+			<!-- onClick="javascript: document.quicksearch.submit()" -->
 			<input type='hidden' name='head_search_keywords' value='abc' />
 		</form>
 		<?php
@@ -204,7 +204,7 @@ if ($config["metaconsole"] == 0){
 <script type="text/javascript" src="include/javascript/jquery.ui.resizable.js "></script>	
 <script type="text/javascript" src="include/javascript/webchat.js "></script>	
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 	/* <![CDATA[ */
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {

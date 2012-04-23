@@ -108,7 +108,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 	$user_groups = array ();
 	
 	if (!$groups)
-	return $user_groups;
+		return $user_groups;
 	
 	if ($returnAllGroup) { //All group
 		if ($returnAllColumns) {
@@ -295,16 +295,57 @@ function users_get_last_messages($last_time = false) {
 function users_save_login() {
 	global $config;
 	
+	$file_global_user_list = sys_get_temp_dir() . '/pandora_chat.user_list.json.txt';
+	
 	$user = db_get_row_filter('tusuario',
 		array('id_user' => $config['id_user']));
 		
 	$message = sprintf(__('User %s login at %s'), $user['fullname'],
 		date($config['date_format']));
 	users_save_text_message($message, 'notification');
+	
+	//First lock the file
+	$fp_user_list = @fopen($file_global_user_list, "a+");
+	if ($fp_user_list === false) {
+		return;
+	}
+	//Try to look $max_times times
+	$tries = 0;
+	while (!flock($fp_user_list, LOCK_EX)) {
+		$tries++;
+		if ($tries >= $max_times) {
+			return;
+		}
+		
+		sleep(1);
+	}
+	@fscanf($fp_user_list, "%s", $user_list_json);
+	
+	$user_list = json_decode($user_list_json, true);
+	if (empty($user_list))
+		$user_list = array();
+	$user_list[$config['id_user']] = $user['fullname'];
+	
+	//Clean the file
+	ftruncate($fp_user_list, 0);
+	
+	$status = fwrite($fp_user_list, json_encode($user_list));
+	
+	if ($status === false) {
+		fclose($fp_user_list);
+		
+		return;
+	}
+	
+	fclose($fp_user_list);
 }
 
 function users_save_logout() {
 	global $config;
+	
+	$return = array('correct' => false, 'users' => array());
+	
+	$file_global_user_list = sys_get_temp_dir() . '/pandora_chat.user_list.json.txt';
 	
 	$user = db_get_row_filter('tusuario',
 		array('id_user' => $config['id_user']));
@@ -312,6 +353,41 @@ function users_save_logout() {
 	$message = sprintf(__('User %s logout at %s'), $user['fullname'],
 		date($config['date_format']));
 	users_save_text_message($message, 'notification');
+	
+	//First lock the file
+	$fp_user_list = @fopen($file_global_user_list, "a+");
+	if ($fp_user_list === false) {
+		return;
+	}
+	//Try to look $max_times times
+	$tries = 0;
+	while (!flock($fp_user_list, LOCK_EX)) {
+		$tries++;
+		if ($tries >= $max_times) {
+			return;
+		}
+		
+		sleep(1);
+	}
+	@fscanf($fp_user_list, "%s", $user_list_json);
+	
+	$user_list = json_decode($user_list_json, true);
+	if (empty($user_list))
+		$user_list = array();
+	unset($user_list[$config['id_user']]);
+	
+	//Clean the file
+	ftruncate($fp_user_list, 0);
+	
+	$status = fwrite($fp_user_list, json_encode($user_list));
+	
+	if ($status === false) {
+		fclose($fp_user_list);
+		
+		return;
+	}
+	
+	fclose($fp_user_list);
 }
 
 function users_save_text_message($message = false, $type = 'message') {
@@ -561,5 +637,46 @@ function users_is_last_system_message() {
 		return true;
 	else
 		return false;
+}
+
+function users_check_users() {
+	global $config;
+	
+	$return = array('correct' => false, 'users' => '');
+	
+	$file_global_user_list = sys_get_temp_dir() . '/pandora_chat.user_list.json.txt';
+	
+	//First lock the file
+	$fp_user_list = @fopen($file_global_user_list, "a+");
+	if ($fp_user_list === false) {
+		echo json_encode($return);
+		
+		return;
+	}
+	//Try to look $max_times times
+	$tries = 0;
+	while (!flock($fp_user_list, LOCK_EX)) {
+		$tries++;
+		if ($tries >= $max_times) {
+			echo json_encode($return);
+			
+			return;
+		}
+		
+		sleep(1);
+	}
+	@fscanf($fp_user_list, "%s", $user_list_json);
+	
+	$user_list = json_decode($user_list_json, true);
+	if (empty($user_list))
+		$user_list = array();
+	
+	fclose($fp_user_list);
+	
+	$return['correct'] = true;
+	$return['users'] = implode('<br />', $user_list);
+	echo json_encode($return);
+	
+	return;
 }
 ?>

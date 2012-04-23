@@ -1,3 +1,8 @@
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_users.php, operation/users/webchat.php,
+	general/header.php: added list users in chat.
+
 2012-04-23 Dario Rodriguez <dario.rodriguez@artica.es>
 
         * godmode/reporting/visual_console_builder.wizard.php: Unsorted
@@ -23,6 +28,13 @@
 	 operation/menu.php: Added new view with a list of networkmaps.
 	 
 	 Fixes: #3519785
+
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_users.php, general/header.php: cleaned source
+	code style. (MERGED FROM THE TRUNK)
+	
+	* operation/users/webchat.php: added lost file from previous commit.
 
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	

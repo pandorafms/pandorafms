@@ -46,7 +46,7 @@ $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 $table->data[1][0] = __('Display on front').ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
 $table->data[1][1] = html_print_checkbox ('display_on_front', 1, $display_on_front, true);
 
-echo '<form name="field" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/fields_manager">';
+echo '<form name="field" method="post" action="index.php?sec=estado&sec2=godmode/agentes/fields_manager">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 

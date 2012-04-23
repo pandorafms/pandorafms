@@ -799,16 +799,18 @@ function config_check (){
 		}
 	}
 	else {
-		if ($config['update_manager_installed'] == 1) {
-			require_once("extensions/update_manager/lib/functions.ajax.php");
-			
-			$result_check_keygen = check_keygen_online();
-			
-			if (!empty($result_check_keygen)) {
-				$config["alert_cnt"]++;
-				$_SESSION["alert_msg"] .= $result_check_keygen;
+		if (isset($config['update_manager_installed'])) {
+			if ($config['update_manager_installed'] == 1) {
+				require_once("extensions/update_manager/lib/functions.ajax.php");
+				
+				$result_check_keygen = check_keygen_online();
+				
+				if (!empty($result_check_keygen)) {
+					$config["alert_cnt"]++;
+					$_SESSION["alert_msg"] .= $result_check_keygen;
+				}
 			}
-		}		
+		}
 	}
 }
 

@@ -1,3 +1,26 @@
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* index.php: fixed notice message php.
+	
+	* extensions/update_manager/lib/libupdate_manager.php: fixed into
+	the function "um_db_load_settings" the cache of DB, and set to
+	translate some untranslate text.
+	
+	* include/config_process.php: added for a long time the setting the
+	$develop_bypass as global.
+	
+	* extensions/update_manager/settings.php
+	
+	* include/functions_config.php
+
+
+
+
+operation/menu.php
+operation/search_agents.php
+operation/users/user_edit.php
+
+
 2012-04-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_networkmap.php

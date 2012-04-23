@@ -235,7 +235,9 @@ if ($process_login) {
 //Get old parameters before navigation.
 $old_sec = '';
 $old_sec2 = '';
-$old_page = $_SERVER['HTTP_REFERER'];
+$old_page = '';
+if (isset($_SERVER['HTTP_REFERER']))
+	$old_page = $_SERVER['HTTP_REFERER'];
 $chunks = explode('?', $old_page);
 if (count($chunks) == 2) {
 	$chunks = explode('&', $chunks[1]);

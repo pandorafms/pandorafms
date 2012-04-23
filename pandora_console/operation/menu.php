@@ -190,8 +190,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
 	//Set godomode path
-	$sub["godmode/reporting/graphs"]["subsecs"] = array("operation/reporting/graph_viewer",
-														"godmode/reporting/graph_builder");
+	$sub["godmode/reporting/graphs"]["subsecs"] = array(
+		"operation/reporting/graph_viewer",
+		"godmode/reporting/graph_builder");
 															
 	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
 	$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");

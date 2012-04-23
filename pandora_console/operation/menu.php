@@ -190,10 +190,12 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
 	//Set godomode path
-	$sub["godmode/reporting/graphs"]["subsecs"] = array(
-		"operation/reporting/graph_viewer",
-		"godmode/reporting/graph_builder");	
-	
+	$sub["godmode/reporting/graphs"]["subsecs"] = array("operation/reporting/graph_viewer",
+														"godmode/reporting/graph_builder");
+															
+	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
+	$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
+														
 	enterprise_hook ('dashboard_menu');
 	enterprise_hook ('reporting_godmenu');	
 	
@@ -352,9 +354,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$menu["extensions"]["id"] = "oper-extensions";
 		
 		$sub = array ();
-		
-		$sub["operation/agentes/exportdata"]["text"] = __('Export data');
-		$sub["operation/agentes/exportdata"]["refr"] = 0;
 		
 		foreach ($config["extensions"] as $extension) {
 			//If no operation_menu is a godmode extension

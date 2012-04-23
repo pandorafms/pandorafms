@@ -1,3 +1,12 @@
+2012-04-23  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* operation/menu.php
+	  operation/agentes/exportdata.php: Fixed bug: Error exporting
+	data to excel or csv.
+
+	* operation/agentes/exportdata.csv.php
+	operation/agentes/exportdata.excel.php: Added files.
+
 2012-04-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_networkmap.php

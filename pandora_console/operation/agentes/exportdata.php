@@ -148,43 +148,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$rowend = '</td></tr>';
 			$dataend = '</table>';
 			break;
-		case "excel":
-			//Excel is tab-delimited, needs quotes and needs Windows-style newlines
-			$datastart = __('Agent')."\t".__('Module')."\t".__('Data')."\t".__('Timestamp')."\r\n";
-			$rowstart = '"';
-			$divider = '"'."\t".'"';
-			$rowend = '"'."\r\n";
-			$dataend = "\r\n";
-			$extension = "xls";
-			break;
-		case "csv":
-			//Pure CSV is comma delimited
-			$datastart = __('Agent').','.__('Module').','.__('Data').','.__('Timestamp')."\n";
-			$rowstart = '"';
-			$divider = '","';
-			$rowend = '"'."\n";
-			$dataend = "\n";
-			$extension = "csv";
-			break;
-	}
-
-	// ***************************************************
-	// Header output
-	// ***************************************************
-
-
-
-	switch ($export_type) {
-		case "excel":
-		case "csv":
-			$config['ignore_callback'] = true;
-			while (@ob_end_clean ());
-			
-			header("Content-type: application/octet-stream");
-			header("Content-Disposition: attachment; filename=export_".date("Ymd", $start)."_".date("Ymd", $end).".".$extension);
-			header("Pragma: no-cache");
-			header("Expires: 0");
-			break;
 	}
 
 	// ***************************************************
@@ -194,10 +157,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 	$data = array ();
 	switch ($export_type) {
 		case "data":
-		case "excel":
-		case "csv":
 		case "avg":
-
 			// Show header
 			echo $datastart;
 
@@ -233,12 +193,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 						}
 					}
 
-/*
-					if ($work_end > $end) {
-						$work_period = $work_end - $end;
-						$work_end = $end;
-					}
-*/
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
 						$output .= io_safe_output($module['agent_name']);
@@ -256,11 +210,8 @@ if (!empty ($export_btn) && !empty ($module)) {
 						case "data":
 						case "avg":
 							echo $output;
+							exit;
 							break;
-						case "excel":
-						case "csv":
-							echo $output;
-						break;
 					}
 					unset($output);
 					$output = "";
@@ -273,27 +224,13 @@ if (!empty ($export_btn) && !empty ($module)) {
 			} // main foreach
 			echo $dataend;
 			break;
-		default:
-			ui_print_error_message (__('Invalid method supplied'));
-			return;
-		break;
 	}
 
-switch ($export_type) {
-		case "excel":
-		case "csv":
-			exit; // Necesary for CSV export, if not give problems
-			break;
-		default: 
-			return;
-}
-
-	
 } elseif (!empty ($export_btn) && empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
 }
 
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/exportdata" name="export_form">';
+echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form">';
 
 $table->width = '98%';
 $table->border = 0;
@@ -437,8 +374,26 @@ $(document).ready (function () {
 	
 	$("#text-agent").result(function(event, data, formatted) {
  		this.form.submit();
-	});
-	
+	});	
+});
+
+$("select#export_type").change (function () {
+	type = $("#export_type").val();
+	var f = document.forms.export_form;
+	switch (type) {
+		case 'csv':
+			f.action = "operation/agentes/exportdata.csv.php";
+			break;
+		case 'excel':
+			f.action = "operation/agentes/exportdata.excel.php";
+			break;
+		case 'avg':
+		case 'data':
+			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
+			break;
+
+	}
+		
 });
 /* ]]> */
 </script>

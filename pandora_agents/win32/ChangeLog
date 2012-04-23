@@ -1,5 +1,9 @@
 2012-04-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* modules/pandora_module.cc: Small changes merged from trunk.
+
+2012-04-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* modules/pandora_module.cc: Bug fixes and code re-indentation.
 
 	* installer/pandora.mpi: Removed files under .svn from the installer.

@@ -414,6 +414,7 @@ Pandora_Module::setOutput (string output, SYSTEMTIME *system_time) {
  */
 void
 Pandora_Module::setNoOutput () {
+	this->cleanDataList ();
 	this->has_output = false;
 }
 
@@ -874,7 +875,8 @@ Pandora_Module::addPrecondition (string precondition) {
 		delete (precond);
 		return;
 	}
-return;
+
+	return;
 }
 
 /** 

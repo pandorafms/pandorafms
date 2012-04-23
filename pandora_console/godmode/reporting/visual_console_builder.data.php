@@ -29,16 +29,16 @@ require_once ('include/functions_users.php');
 
 switch ($action) {
 	case 'new':
-		echo "<form method='post' action='index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "'>";
+		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "'>";
 		html_print_input_hidden('action', 'save');
 		break;
 	case 'update':
 	case 'save':
-		echo "<form method='post' action='index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
+		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
 		html_print_input_hidden('action', 'update');
 		break;
 	case 'edit':		
-		echo "<form method='post' action='index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
+		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
 		html_print_input_hidden('action', 'update');
 		break;
 }

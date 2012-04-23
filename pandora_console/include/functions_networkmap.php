@@ -764,6 +764,50 @@ function networkmap_update_networkmap ($id_networkmap, $values) {
 		array ('id_networkmap' => $id_networkmap))) !== false;
 }
 
+/**
+ * Get different networkmaps types for creation.
+ * 
+ * @return Array Networkmap diferent types.
+ */
+function networkmap_get_types () {
+	$networkmap_types = array();
+
+	$is_enterprise = enterprise_include_once('include/functions_policies.php');
+
+	$networkmap_types['topology'] = __('Create a new topology map');
+	$networkmap_types['groups'] = __('Create a new group map');
+
+	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
+		$enterprise_types = enterprise_hook('policies_get_networkmap_types');
+	
+		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
+	}
+
+	return $networkmap_types;
+}
+
+/**
+ * Get networkmaps types.
+ * 
+ * @return Array Networkmap diferent types.
+ */
+function networkmap_get_filter_types () {
+	$networkmap_types = array();
+
+	$is_enterprise = enterprise_include_once('include/functions_policies.php');
+
+	$networkmap_types['topology'] = __('Topology');
+	$networkmap_types['groups'] = __('Group');
+
+	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
+		$enterprise_types = enterprise_hook('policies_get_networkmap_filter_types');
+	
+		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
+	}
+
+	return $networkmap_types;
+}
+
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

@@ -82,9 +82,8 @@ else {
 	$table->data = array ();
 	foreach ($reports as $report) {
 		if($linkReport) {
-			$reportstring = "<a href='?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report=" . $report['id_report'] . "' title='" . __("Edit") . "'>" . $report['name'] . "</a>";
-		}
-		else {
+			$reportstring = "<a href='?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report=" . $report['id_report'] . "' title='" . __("Edit") . "'>" . $report['name'] . "</a>";
+		} else {
 			$reportstring = $report['name'];
 		}
 		$data = array(

@@ -240,9 +240,12 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	
 	if($flash_chart) {
 		// Url encode the legend to avoid eliminate weird symbols like %, &...
-		foreach($legend as $i => $v) {
-			$legend[$i] = urlencode($v);
-		}
+		if (isset($legend))
+			foreach($legend as $i => $v) {
+				$legend[$i] = urlencode($v);
+			}
+		else
+			$legend = array();
 		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit);
 	}
 	else {

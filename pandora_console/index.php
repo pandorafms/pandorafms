@@ -261,7 +261,11 @@ if ($page == 'operation/users/webchat') {
 	//Reload the global counter.
 	users_get_last_global_counter('session');
 }
-$old_global_counter_chat = $_SESSION['global_counter_chat'];
+
+if (isset($_SESSION['global_counter_chat']))
+	$old_global_counter_chat = $_SESSION['global_counter_chat'];
+else
+	$old_global_counter_chat = users_get_last_global_counter('return');
 $now_global_counter_chat = users_get_last_global_counter('return');
 
 if ($old_global_counter_chat != $now_global_counter_chat) {

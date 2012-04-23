@@ -262,7 +262,7 @@ if ($action == 'new' || $idVisualConsole === false){
 	
 $buttons[$activeTab]['active'] = true;
  
-ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
+ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit.png", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
 
 //The source code for PAINT THE PAGE
 if ($statusProcessInDB !== null) {

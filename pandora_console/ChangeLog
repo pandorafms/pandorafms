@@ -1,3 +1,10 @@
+2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* index.php: fixed php noticie message about uninicialized var.
+	
+	* godmode/reporting/visual_console_builder.php: fixed the image url
+	in the header.
+
 2012-04-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/fgraph.php: Fixed codification issue

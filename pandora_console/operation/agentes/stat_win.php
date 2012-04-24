@@ -210,7 +210,10 @@ $urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
 
 // log4x doesnt support flash yet
 //
-echo '<div style="margin-left: 30px">';
+if ($config['flash_charts'] == 1)
+	echo '<div style="margin-left: 70px">';
+else
+	echo '<div style="margin-left: 50px">';
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,

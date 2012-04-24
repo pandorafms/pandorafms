@@ -274,7 +274,7 @@ if ($id_agente) {
 	
 	/* Group tab */
 	
-	$grouptab['text'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'
+	$grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'
 			. html_print_image ("images/agents_group.png", true, array( "title" => __('Group')))
 			. '</a>';
 	
@@ -285,7 +285,7 @@ if ($id_agente) {
 	/* GIS tab */
 	if ($config['activate_gis']) {
 		
-		$gistab['text'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'
+		$gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'
 			. html_print_image ("images/world.png", true, array ( "title" => __('GIS data')))
 			. '</a>';
 
@@ -314,7 +314,7 @@ if ($id_agente) {
 				$active = false;
 			}
 			
-			$url = 'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
+			$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
 			
 			$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
 			

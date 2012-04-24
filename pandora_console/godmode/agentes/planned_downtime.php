@@ -305,7 +305,7 @@ if ($create_downtime || $update_downtime) {
 			$disabled_add_button = true;
 		}
 	
-		echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
+		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
 
 		html_print_select_groups(false, "AR", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');	
 
@@ -313,7 +313,7 @@ if ($create_downtime || $update_downtime) {
 		html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";
 	
-		echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime&first_update=1&insert_downtime_agent=1&id_downtime=$id_downtime'>";
+		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 		echo html_print_select ($data, "id_agent[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 		echo "<br /><br /><br />";

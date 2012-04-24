@@ -167,7 +167,7 @@ if (!$new_agent) {
 
 // Delete link from here
 if (!$new_agent) {
-$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=estado&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
+$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
 }
 
 $table->data[1][0] = __('IP Address');

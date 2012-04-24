@@ -99,11 +99,11 @@ if (isset($result)) {
 if (isset($_POST["ag_group"])) {
 	$ag_group = get_parameter_post ("ag_group");
 	echo "<form method='post'
-	action='index.php?sec=estado&sec2=godmode/agentes/modificar_agente&ag_group_refresh=".$ag_group."'>";
+	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group_refresh=".$ag_group."'>";
 }
 else {
 	echo "<form method='post'
-	action='index.php?sec=estado&sec2=godmode/agentes/modificar_agente'>";
+	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
 echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'><tr>";
@@ -130,7 +130,7 @@ echo __('Free text for search (*)');
 echo "</td><td>";
 
 // Show group selector
-echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/modificar_agente&refr=60&ag_group_refresh=$ag_group&recursion=$recursion'>";
+echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60&ag_group_refresh=$ag_group&recursion=$recursion'>";
 echo "<input type=text name='search' size='15' value='$search' >";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
@@ -344,24 +344,24 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 }
 
 // Prepare pagination
-ui_pagination ($total_agents, "index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort", $offset);
+ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort", $offset);
 echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
 	
 	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='98%' class='databox'>";
 	echo "<th>".__('Agent name') . ' ' .
-		'<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
-		'<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	echo "</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
 	echo "<th>".__('OS'). ' ' .
-		'<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
-		'<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
 	echo "</th>";
 	echo "<th>".__('Group'). ' ' .
-			'<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
-			'<a href="index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
 	echo "<th>".__('Description')."</th>";
 	echo "<th>".__('Delete')."</th>";
@@ -432,7 +432,7 @@ if ($agents !== false) {
 		// Has remote configuration ?
 		$agent_md5 = md5 ($agent["nombre"], false);
 		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
-			echo "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>";
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>";
 			echo html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')));		
 			echo "</a>";
 		}
@@ -454,13 +454,13 @@ if ($agents !== false) {
 		else
 			$offsetArg = $offset;
 		
-		echo "<td class='$tdcolor' align='center' valign='middle'><a href='index.php?sec=estado&sec2=godmode/agentes/modificar_agente&
+		echo "<td class='$tdcolor' align='center' valign='middle'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 		borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
 		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a></td>";
 	}
 	echo "</table>";
-	ui_pagination ($total_agents, "index.php?sec=estado&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
+	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
 	echo "<table width='95%'><tr><td align='right'>";
 }
 else {

@@ -31,6 +31,8 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 		
 	$sub = array ();
 	$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
+	$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
+		"godmode/agentes/configurar_agente");
 		
 	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
 	

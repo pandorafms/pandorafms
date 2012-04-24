@@ -26,7 +26,7 @@ $build_version = 'PC120418';
 $pandora_version = 'v4.0.2dev';
 
 // Do not overwrite default timezone set if defined.
-$script_tz = date_default_timezone_get();
+$script_tz = @date_default_timezone_get();
 if (empty($script_tz)){
 	date_default_timezone_set("Europe/Berlin");
 }

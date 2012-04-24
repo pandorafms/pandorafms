@@ -1,3 +1,12 @@
+2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/Image/image_functions.php: fixed into the function
+	"createthumb" when you have a path with "." character try to extract
+	the extension of file before of name of file.
+	
+	* include/config_process.php: disabled warning message of PHP5 about
+	the timezone.
+
 2012-04-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Added units to legend in flash 

@@ -1,3 +1,8 @@
+2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/menu.php: Moved submenu "SNMP trap generator" to a second
+	level menu inside "SNMP console" submenu.
+
 2012-04-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: fixed into the function

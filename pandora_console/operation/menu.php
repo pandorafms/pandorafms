@@ -82,18 +82,17 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		"enterprise/godmode/snmpconsole",
 		"godmode/snmpconsole/snmp_trap_editor",
 		"godmode/snmpconsole/snmp_alert",
-		"godmode/snmpconsole/snmp_filters");
+		"godmode/snmpconsole/snmp_filters",
+		"godmode/snmpconsole/snmp_trap_generator");
 	
 	$sub2 = array();
 	
 	$sub2["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
 	$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
 	enterprise_hook ('snmpconsole_submenu');	
-	
+	$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
+
 	$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
-	
-	$sub['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-	$sub["godmode/snmpconsole/snmp_trap_generator"]["refr"] = 0;
 	
 	$sub['operation/tree']['text'] = __('Tree view');
 	$sub["operation/tree"]["refr"] = 0;

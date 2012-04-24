@@ -1,5 +1,10 @@
 2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* unix/Linux/pandora_agent.conf: Added more modules by default and 
+	more examples of modules and parameters with comments
+
+2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* win32/bin/pandora_agent.conf: Added more modules by default and 
 	more examples of modules and parameters with comments
 

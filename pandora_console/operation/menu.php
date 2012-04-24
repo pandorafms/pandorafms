@@ -46,19 +46,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 0;
 	$sub["operation/agentes/estado_agente"]["subsecs"] = array(
-		"godmode/agentes/agent_conf_gis",
-		"godmode/agentes/agent_disk_conf_editor",
-		"godmode/agentes/agent_template",
-		"godmode/agentes/configurar_agente",
-		"godmode/agentes/modificar_agente",
-		"godmode/agentes/module_manager",
-		"godmode/agentes/module_manager_editor",
-		"godmode/agentes/module_manager_editor_common",
-		"godmode/agentes/module_manager_editor_data",
-		"godmode/agentes/module_manager_editor_network",
-		"godmode/agentes/module_manager_editor_plugin",
-		"godmode/agentes/module_manager_editor_prediction",
-		"godmode/agentes/module_manager_editor_wmi",
 		"operation/agentes/ver_agente");
 	
 	$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');
@@ -192,7 +179,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["godmode/reporting/graphs"]["subsecs"] = array(
 		"operation/reporting/graph_viewer",
 		"godmode/reporting/graph_builder");
-	
+															
 	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
 	$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
 														
@@ -335,7 +322,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	// Messages
 	$sub["operation/messages/message_list"]["text"] = __('Messages');
 	$sub["operation/messages/message_list"]["refr"] = 0;	
-	$sub["operation/messages/message_list"]["subsecs"] = array("operation/messages/message_edit");	
+	
+	$sub2 = array ();
+	$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
+	
+	$sub["operation/messages/message_list"]["sub2"] = $sub2;
 }
 
 $menu["workspace"]["sub"] = $sub;

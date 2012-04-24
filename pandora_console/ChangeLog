@@ -1,5 +1,12 @@
 2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/agentes/estado_agente.php,
+	operation/agentes/ver_agente.php,
+	godmode/agentes/configurar_agente.php: Fixed some problems with
+	links and new menu structure.
+
+2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* godmode/menu.php: Fixed some problems with manage agents
 	and new menu structure.
 

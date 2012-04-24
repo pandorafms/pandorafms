@@ -1,3 +1,8 @@
+2012-04-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Leave the secondary server password empty by default.
+	  Fixes bug #3519520.
+
 2012-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_installer: Merged from trunk. Backup and restore conf

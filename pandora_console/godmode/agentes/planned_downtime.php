@@ -246,7 +246,7 @@ if ($create_downtime || $update_downtime) {
 		$table->data[5][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
 		$table->data[6][0] = __('Only alerts');
 		$table->data[6][1] = html_print_checkbox('only_alerts', 1, $only_alerts, true);
-		echo '<form method="POST" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime">';
+		echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
 		if ($id_downtime > 0){
 			echo "<table width=100% border=0 cellpadding=4 >";
@@ -359,7 +359,7 @@ if ($create_downtime || $update_downtime) {
 			
 			$data[3] = $downtime["ultimo_contacto"];
 	
-			$data[4] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+			$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
 				$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">' .
 				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 	
@@ -422,10 +422,10 @@ else {
 					$data[5] = __('All');	
 				}
 				if ($downtime["executed"] == 0){
-					$data[6] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
 					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
-					$data[7] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
+					$data[7] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
 					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 				}
 				else {
@@ -439,7 +439,7 @@ else {
 					$data[8] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 				
 				if ($downtime["executed"] != 0) {
-					$data[9] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+					$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 					html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
 				}
 				
@@ -449,7 +449,7 @@ else {
 		}
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime">';
+	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 	html_print_input_hidden ("first_create", 1);
 	html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 	echo '</form>';

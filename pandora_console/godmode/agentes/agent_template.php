@@ -175,7 +175,7 @@ foreach ($result as $row) {
 	}
 	$data[2] = mb_substr ($row["descripcion"], 0, 60);
 	
-	$data[3] = '<a href="index.php?sec=estado&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'">' . html_print_image("images/cross.png", true, array("border" => "0", "alt" => __('Delete'), "onclick" => "if (!confirm('".__('Are you sure?') . "')) return false;")) . '</a>&nbsp;&nbsp;';
+	$data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'">' . html_print_image("images/cross.png", true, array("border" => "0", "alt" => __('Delete'), "onclick" => "if (!confirm('".__('Are you sure?') . "')) return false;")) . '</a>&nbsp;&nbsp;';
 	
 	$data[3] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row["id_agente_modulo"].'">' . html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update')))  . '</a>';
 	

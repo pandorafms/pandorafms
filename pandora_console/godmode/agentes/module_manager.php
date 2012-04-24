@@ -522,12 +522,12 @@ foreach ($modules as $module) {
 
 	// Delete module
 	$data[8] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-	$data[8] .= '&nbsp;<a href="index.php?sec=estado&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[8] .= html_print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
 	$data[8] .= '</a> ';
-	$data[8] .= '&nbsp;<a href="index.php?sec=estado&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[8] .= html_print_image ('images/copy.png', true,
 		array ('title' => __('Duplicate')));

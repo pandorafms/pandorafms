@@ -210,7 +210,7 @@ $img_style = array ("class" => "top", "width" => 16);
 if ($id_agente) {
 	
 	/* View tab */
-	$viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">' 
+	$viewtab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
 			. '</a>';
 			
@@ -220,7 +220,7 @@ if ($id_agente) {
 		$viewtab['active'] = false;
 	
 	/* Main tab */
-	$maintab['text'] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">' 
+	$maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/cog.png", true, array ("title" =>__('Setup')))
 			. '</a>';
 	if($tab == 'main')
@@ -230,7 +230,7 @@ if ($id_agente) {
 		$maintab['active'] = false;
 		
 	/* Module tab */
-	$moduletab['text'] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">' 
+	$moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/brick.png", true, array ("title" =>__('Modules')))
 			. '</a>';
 	
@@ -240,7 +240,7 @@ if ($id_agente) {
 		$moduletab['active'] = false;
 		
 	/* Alert tab */
-	$alerttab['text'] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">' 
+	$alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/bell.png", true, array ("title" =>__('Alerts')))
 			. '</a>';
 	
@@ -250,7 +250,7 @@ if ($id_agente) {
 		$alerttab['active'] = false;
 		
 	/* Template tab */
-	$templatetab['text'] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
+	$templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/network.png", true, array ("title" =>__('Module templates')))
 			. '</a>';
 	

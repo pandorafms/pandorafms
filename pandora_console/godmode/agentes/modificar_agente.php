@@ -69,7 +69,7 @@ if (!empty($agent_to_delete)) {
 $tab = 'view';
 
 /* Setup tab */
-$viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">' 
+$viewtab['text'] = '<a href="index.php?sec=gagente&sec2=operation/agentes/estado_agente">' 
 		. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
 		. '</a>';
 		
@@ -137,7 +137,7 @@ echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Sear
 echo "</form>";
 echo "<td>";
 
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
+echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form>";
@@ -401,7 +401,7 @@ if ($agents !== false) {
 			echo "<em>";
 		}
 		echo '<span class="left">';
-		echo "<strong><a href='index.php?sec=estado&
+		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
 		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 60, true, true, true, '[&hellip;]', 'font-size: 7pt')."</a></strong>";
 		if ($agent["disabled"]) {
@@ -409,19 +409,19 @@ if ($agents !== false) {
 			echo "</em>";
 		}
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
-		echo '<a href="index.php?sec=estado&
+		echo '<a href="index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
 		id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 		echo ' | ';
-		echo '<a href="index.php?sec=estado&
+		echo '<a href="index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=module&
 			id_agente='.$agent["id_agente"].'">'.__('Modules').'</a>';
 		echo ' | ';
-		echo '<a href="index.php?sec=estado&
+		echo '<a href="index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=alert&
 			id_agente='.$agent["id_agente"].'">'.__('Alerts').'</a>';
 		echo ' | ';
-		echo '<a href="index.php?sec=estado
+		echo '<a href="index.php?sec=gagente
 			&sec2=operation/agentes/ver_agente
 			&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 		
@@ -470,7 +470,7 @@ else {
 
 // Create agent button
 echo '<a name="bottom">';
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
+echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 html_print_input_hidden ('new_agent', 1);
 html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form></td></tr></table>";

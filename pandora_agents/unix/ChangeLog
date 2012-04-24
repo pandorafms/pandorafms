@@ -1,3 +1,8 @@
+2012-04-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged from 4.0 branch. Leave the secondary server
+	  password empty by default. Fixes bug #3519520.
+
 2012-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_installer: Removed an unused variable.

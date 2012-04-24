@@ -96,6 +96,9 @@ foreach ($layoutDatas as $layoutData) {
 		case PERCENTILE_BAR:
 			$table->data[$i + 1]['icon'] = html_print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
 			break;
+		case PERCENTILE_BUBBLE:
+			$table->data[$i + 1]['icon'] = html_print_image('images/dot_red.png', true, array('title' => __('Percentile Bubble')));
+			break;
 		case MODULE_GRAPH:
 			$table->data[$i + 1]['icon'] = html_print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
 			break;

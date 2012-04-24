@@ -1,3 +1,9 @@
+2012-04-24  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.elements.php: Added 
+	icon to the percentile bubble type of item in the visual 
+	console items list for bug 3520610
+
 2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* install.php: cleaned source code style.

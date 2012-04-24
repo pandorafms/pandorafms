@@ -1038,7 +1038,7 @@ function ui_process_page_head ($string, $bitfield) {
 	<link rel="icon" href="images/pandora.ico" type="image/ico" />
 	<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
 	<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
-
+	
 	if ($config["language"] != "en") {
 		//Load translated strings - load them last so they overload all the objects
 		ui_require_javascript_file ("time_".$config["language"]);
@@ -1051,7 +1051,7 @@ function ui_process_page_head ($string, $bitfield) {
 	if (empty ($config['css'])) {
 		$config['css'] = array ();
 	}
-
+	
 	$login_ok = true;
 	if (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		if (isset($_POST['nick']) and isset($_POST['pass'])) {
@@ -1059,7 +1059,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$pass = get_parameter_post ("pass"); //This is the variable with the password
 			$nick = db_escape_string_sql($nick);
 			$pass = db_escape_string_sql($pass);
-
+			
 			// process_user_login is a virtual function which should be defined in each auth file.
 			// It accepts username and password. The rest should be internal to the auth file.
 			// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
@@ -1071,7 +1071,7 @@ function ui_process_page_head ($string, $bitfield) {
 			}
 		}
 	}
-
+	
 	//First, if user has assigned a skin then try to use css files of skin subdirectory
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if (!$login_ok) {
@@ -1079,7 +1079,7 @@ function ui_process_page_head ($string, $bitfield) {
 			enterprise_hook('skins_cleanup');
 		}
 	}
-
+	
 	$exists_css = false;
 	if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		//Checks if user's skin is available 
@@ -1088,28 +1088,28 @@ function ui_process_page_head ($string, $bitfield) {
 			$skin_path = enterprise_hook('skins_get_skin_path');
 			$skin_styles = themes_get_css ($skin_path . 'include/styles/');
 			$exists_css = !empty($skin_styles);
-		}		
+		}
 	}
 	//If skin's css files exists then add them
-	if ($exists_css){
+	if ($exists_css) {
 		foreach ($skin_styles as $filename => $name){
 			$style = substr ($filename, 0, strlen ($filename) - 4);
 			$config['css'][$style] = $skin_path . 'include/styles/' . $filename; 
 		}
 	} 
 	//Otherwise assign default and user's css
-	else{
+	else {
 		//User style should go last so it can rewrite common styles
 		$config['css'] = array_merge (array (
 			"common" => "include/styles/common.css", 
 			"menu" => "include/styles/menu.css", 
 			"tip", "include/styles/tip.css", 
 			$config['style'] => "include/styles/".$config['style'].".css"), $config['css']);
-	}	
+	}
 	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
-
+	
 	foreach ($config['css'] as $name => $filename) {
 		if (in_array ($name, $loaded))
 			continue;
@@ -1123,8 +1123,9 @@ function ui_process_page_head ($string, $bitfield) {
 			//Remove comments
 			$output .= preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $style);
 			$output .= '</style>';
-		} else {
-			$output .= '<link rel="stylesheet" href="'.$filename.'" type="text/css" />'."\n\t";
+		}
+		else {
+			$output .= '<link rel="stylesheet" href="' . $config['homeurl'] . '/' .$filename.'" type="text/css" />'."\n\t";
 		}
 	}
 	//End load CSS
@@ -1151,11 +1152,11 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= "\n".'/* ]]> */</script>';
 		}
 		else {
-			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
+			$output .= '<script type="text/javascript" src="'. $config['homeurl'] . '/' .$filename.'"></script>'."\n\t";
 		}
 	}
 	//End load JS
-			
+	
 	//Load jQuery
 	if (empty ($config['jquery'])) {
 		$config['jquery'] = array (); //If it's empty, false or not init set array to empty just in case
@@ -1168,7 +1169,7 @@ function ui_process_page_head ($string, $bitfield) {
 		"pandora" => "include/javascript/jquery.pandora.js"),
 		$config['jquery']);
 	
-		
+	
 	//Then add each script as necessary
 	$loaded = array ('');
 	foreach ($config['jquery'] as $name => $filename) {
@@ -1182,7 +1183,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= "\n".'/* ]]> */</script>';
 		}
 		else {
-			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
+			$output .= '<script type="text/javascript" src="' . $config['homeurl'] . '/' . $filename.'"></script>'."\n\t";
 		}
 	}
 	
@@ -1190,9 +1191,9 @@ function ui_process_page_head ($string, $bitfield) {
 	$output .= '<!--[if gte IE 6]>
 	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
 	<![endif]-->';
-
+	
 	$output .= $string;
-
+	
 	if (!empty ($config["compact_header"])) {
 		$output = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $output);
 	}

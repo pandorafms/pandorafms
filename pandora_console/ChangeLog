@@ -1,11 +1,31 @@
 2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* install.php: cleaned source code style.
+	
+	* include/functions_graph.php: added into the src attribute the
+	$config['homeurl'] in the functions "progress_bar" and
+	"progress_bubble" to show the images in other paths that usually
+	path.
+	
+	* include/functions_ui.php: fixed into the function
+	"ui_process_page_head" when try to use in others paths that usually
+	path (like as homeurl) and this bug have been for js and css.
+	
+	* operation/visual_console/public_console.php: fixed and re-design
+	the page.
+	
+	Fixes: #3520670
+
+2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/Image/image_functions.php: fixed into the function
 	"createthumb" when you have a path with "." character try to extract
 	the extension of file before of name of file.
 	
 	* include/config_process.php: disabled warning message of PHP5 about
 	the timezone.
+	
+	Fixes: #3520657
 
 2012-04-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

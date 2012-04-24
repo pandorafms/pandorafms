@@ -535,7 +535,7 @@ function install_step3() {
 	if (empty($options)) {
 		$error = true;
 	}
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='height: 665px;'>
@@ -549,7 +549,7 @@ function install_step3() {
 			You need a privileged user to create database schema, this is usually <b>root</b> user.
 			Information about <b>root</b> user will not be used or stored anymore.	
 			</p>
-			<p>		
+			<p>
 			You can also deploy the scheme into an existing Database. 
 			In this case you need a privileged Database user and password of that instance. 
 			</p>
@@ -562,19 +562,19 @@ function install_step3() {
 			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
 			</div>";
-
+			
 			if (extension_loaded("oci8")) {
 				echo  " <div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
 			}
 	if (!$error) {
 		echo "<form method='post' name='step2_form' action='install.php?step=4'>";
 	}
-
-    echo "<table cellpadding=6 celwidth=100% border=0>";
-    echo "<tr><td>";
+	
+	echo "<table cellpadding=6 celwidth=100% border=0>";
+	echo "<tr><td>";
 	echo "DB Engine<br>";
-
-
+	
+	
 	if ($error) {
 		echo "
 			<div class='warn'>
@@ -585,8 +585,8 @@ function install_step3() {
 		echo "<select name='engine' onChange=\"ChangeDBAction(this)\">";
 		echo $options;
 		echo "</select>";
-
-        echo "<td>";
+		
+		echo "<td>";
 		echo " Installation in <br>";
 		echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
 		echo 	"<option value='db_new'>A new Database</option>";
@@ -595,33 +595,33 @@ function install_step3() {
 	}
 	echo "		<tr><td>DB User with privileges<br>
 				<input class='login' type='text' name='user' value='root' size=8>
-               
+				
 				<td>DB Password for this user<br>
 				<input class='login' type='password' name='pass' value='' size=8>
 				
 				<tr><td>DB Hostname<br>
 				<input class='login' type='text' name='host' value='localhost' size=12>
-
+				
 				<td>DB Name (pandora by default)<br>
 				<input class='login' type='text' name='dbname' value='pandora' size=8>
-
-                <tr><td valign=top>
+				
+				<tr><td valign=top>
 				Drop Database if exists<br>
 				<input class='login' type='checkbox' name='drop' value=1 disabled>				
-
-
+				
+				
 				<td>Full path to HTTP publication directory<br>
 					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
 				<br>
 				<input class='login' type='text' name='path' style='width: 240px;' 
 				value='".dirname (__FILE__)."'>
-
+				
 				<tr><td colspan=2>URL path to Pandora FMS Console<br>
 				<span style='font-size: 9px'>For example '/pandora_console'</span>
 				</br>
 				<input class='login' type='text' name='url' style='width: 250px;' 
 				value='".dirname ($_SERVER["SCRIPT_NAME"])."'>
-            </table>
+				</table>
 				";
 	
 	if (!$error) {
@@ -712,13 +712,13 @@ function install_step4() {
 						if ($step1 == 1) {
 							$step2 = mysql_select_db($dbname);
 							check_generic ($step2, "Opening database '$dbname'");
-			
+							
 							$step3 = parse_mysql_dump("pandoradb.sql");
 							check_generic ($step3, "Creating schema");
-					
+							
 							$step4 = parse_mysql_dump("pandoradb_data.sql");
 							check_generic ($step4, "Populating database");
-			
+							
 							$random_password = random_name (8);
 							$host = 'localhost';
 							if ($dbhost != 'localhost')
@@ -727,23 +727,23 @@ function install_step4() {
 							IDENTIFIED BY '".$random_password."'");
 							mysql_query ("FLUSH PRIVILEGES");
 							check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
-			
+							
 							$step6 = is_writable("include");
 							check_generic ($step6, "Write permissions to save config file in './include'");
-								
+							
 							$cfgin = fopen ("include/config.inc.php","r");
 							$cfgout = fopen ($pandora_config,"w");
 							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 							$dbtype = 'mysql';
 							$config_new = '<?php
 							// Begin of automatic config file
-							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
-							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
-							$config["dbuser"]="pandora";			// DB User
-							$config["dbpass"]="'.$random_password.'";	// DB Password
-							$config["dbhost"]="'.$dbhost.'";			// DB Host
-							$config["homedir"]="'.$path.'";		// Config homedir
-							$config["homeurl"]="'.$url.'";			// Base URL
+							$config["dbtype"] = "' . $dbtype . '";			//DB type (mysql, postgresql...in future others)
+							$config["dbname"]="' . $dbname . '";			// MySQL DataBase name
+							$config["dbuser"]="pandora";					// DB User
+							$config["dbpass"]="' . $random_password . '";	// DB Password
+							$config["dbhost"]="' . $dbhost . '";			// DB Host
+							$config["homedir"]="' . $path . '";				// Config homedir
+							$config["homeurl"]="' . $url . '";				// Base URL
 							// End of automatic config file
 							?>';
 							$step7 = fputs ($cfgout, $config_new);
@@ -767,13 +767,13 @@ function install_step4() {
 						check_generic(0, "Connection with Database");
 					}
 					else {
-						check_generic(1, "Connection with Database");					
-
+						check_generic(1, "Connection with Database");
+						
 						// Drop all objects if needed
 						if ($dbdrop == 1) {
 							oracle_drop_all_objects($connection);
-						}	
-
+						}
+						
 					 	$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
 						
 						check_generic($step1, "Creating schema");

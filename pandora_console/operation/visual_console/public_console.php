@@ -15,6 +15,8 @@
 
 // Real start
 
+
+
 require_once ("../../include/config.php");
 
 // Set root on homedir, as defined in setup
@@ -64,11 +66,12 @@ $background = $layout["background"];
 $bwidth = $layout["width"];
 $bheight = $layout["height"];
 
-$pure_url = "&pure=".$config["pure"];
+if (!isset($config['pure']))
+	$config['pure'] = 0;
 
 // Render map
 $options = array();
-
+echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
 echo "<h1>". $layout_name. "</h1>";
 
 visual_map_print_visual_map ($id_layout, true, true, null, null, '../../');
@@ -98,7 +101,7 @@ $table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class=
 $table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
 
 if ($vc_refr){
-	$config["vc_refr"] = 0;	
+	$config["vc_refr"] = 0;
 }
 
 echo '<div style="height:30px">&nbsp;</div>';
@@ -114,6 +117,7 @@ html_print_input_hidden ('pure', $config["pure"]);
 html_print_input_hidden ('id', $id_layout);
 html_print_table ($table);
 echo '</form>';
+echo '</div>';
 
 if ($config["pure"] && $config["refr"] != 0) {
 	ui_require_jquery_file ('countdown');
@@ -127,7 +131,7 @@ ui_require_javascript_file ('pandora_visual_console');
 $(document).ready (function () {
 	$("#refr").change(function () {	
 		$("#hidden-vc_refr").val($("#refr option:selected").val());
-	});		
+	});
 	
 <?php if ($config["pure"] && $config["refr"] > 0): ?>
 	t = new Date();

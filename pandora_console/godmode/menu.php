@@ -26,10 +26,15 @@ $menu['class'] = 'godmode';
 
 if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu["gagente"]["text"] = __('Manage monitoring');
-	$menu["gagente"]["sec2"] = "godmode/groups/group_list";
+	$menu["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu["gagente"]["id"] = "god-agents";
 		
 	$sub = array ();
+	$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
+	$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
+		"godmode/agentes/configurar_agente");
+		
+	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
 	
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');

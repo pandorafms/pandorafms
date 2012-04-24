@@ -122,12 +122,12 @@ function toggleButton() {
 function ok() {
 	fired = false;
 	$('body').css('background', 'white');
-	$('embed').remove();
+	$('audio').remove();
 }
 
 function stopSound() {
-	$('embed').remove();
-
+	$('audio').remove();
+	
 	$('body').css('background', 'white');
 	redBackground = false;
 	
@@ -179,7 +179,7 @@ function check_event() {
 						id_row = firedId;
 						fired = true;
 						$('embed').remove();
-						$('body').append("<embed src='../../" + data['sound'] + "' autostart='true' hidden='true' loop='true'>");
+						$('body').append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
 					}
 				},
 				"json"

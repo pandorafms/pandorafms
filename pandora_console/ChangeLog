@@ -1,5 +1,14 @@
 2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/events/sound_events.php, godmode/setup/setup.php: fixed
+	the audio, now it uses the html5 tag.
+	
+	Fixes: #3472957
+	
+	MERGED FROM 4.0.2
+
+2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* install.php: cleaned source code style.
 	
 	* include/functions_graph.php: added into the src attribute the

@@ -1,5 +1,11 @@
 2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/menu.php,
+	godmode/menu.php: Moved manage agent menu from operation to administration
+	menu
+
+2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/menu.php: Moved submenu "SNMP trap generator" to a second
 	level menu inside "SNMP console" submenu.
 

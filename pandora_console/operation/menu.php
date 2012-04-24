@@ -46,19 +46,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 0;
 	$sub["operation/agentes/estado_agente"]["subsecs"] = array(
-		"godmode/agentes/agent_conf_gis",
-		"godmode/agentes/agent_disk_conf_editor",
-		"godmode/agentes/agent_template",
-		"godmode/agentes/configurar_agente",
-		"godmode/agentes/modificar_agente",
-		"godmode/agentes/module_manager",
-		"godmode/agentes/module_manager_editor",
-		"godmode/agentes/module_manager_editor_common",
-		"godmode/agentes/module_manager_editor_data",
-		"godmode/agentes/module_manager_editor_network",
-		"godmode/agentes/module_manager_editor_plugin",
-		"godmode/agentes/module_manager_editor_prediction",
-		"godmode/agentes/module_manager_editor_wmi",
 		"operation/agentes/ver_agente");
 	
 	$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');

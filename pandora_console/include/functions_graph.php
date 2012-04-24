@@ -493,13 +493,12 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}	
 
 	// Added support for projection graphs (normal_module + 1(prediction data))
-	if ($projection !== false) { 
+	if ($projection !== false){ 
 		$module_number = count ($module_list) + 1;
-	}
-	else {
+	}else{
 		$module_number = count ($module_list);		
 	}
-	
+
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//	     more interval, more resolution, and slower.
 	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
@@ -970,7 +969,7 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 	include_graphs_dependencies($config['homedir'].'/');
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
-		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
+		" src='" . $config['homeurl'] . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
 		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
@@ -997,7 +996,7 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	include_graphs_dependencies($config['homedir'].'/');
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
-		" src='include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		" src='" . $config['homeurl'] . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
 		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
@@ -1006,10 +1005,10 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 
 function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url) {
 	global $config;
-
+	
 	$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
 	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
-
+	
 	return slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'],
 		$config['round_corner'], $home_url);
 }
@@ -1036,16 +1035,16 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	
 	// All data (now)
 	$time["all"] = get_system_time ();
-
+	
 	// 1 day ago
 	$time["1day"] = $time["all"] - 86400;
-
+	
 	// 1 week ago
 	$time["1week"] = $time["all"] - 604800;
-
+	
 	// 1 month ago
 	$time["1month"] = $time["all"] - 2592000;
-
+	
 	// Three months ago
 	$time["3month"] = $time["all"] - 7776000;
 	
@@ -1060,13 +1059,13 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	$data["1 ".__("Month")]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
 	$data["3 ".__("Months")] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
 	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query), 0, true);
-
+	
 	$data[__("Today")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
 	$data["1 ".__("Week")]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
 	$data["1 ".__("Month")]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
 	$data["3 ".__("Months")] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
 	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query), 0, true);
-
+	
 	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
 	
 	if ($data[__("Today")] == 0 && $data["1 ".__("Week")] == 0 && 
@@ -1216,7 +1215,7 @@ function graphic_user_activity ($width = 350, $height = 230) {
 function grafico_incidente_prioridad () {
 	global $config;
 	global $graphic_type;
-
+	
 	$data_tmp = array (0, 0, 0, 0, 0, 0);
 	$sql = 'SELECT COUNT(id_incidencia) n_incidents, prioridad
 		FROM tincidencia
@@ -1286,7 +1285,7 @@ function graph_incidents_status () {
 function graphic_incident_group () {
 	global $config;
 	global $graphic_type;
-
+	
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
@@ -1329,7 +1328,7 @@ function graphic_incident_group () {
 function graphic_incident_user () {
 	global $config;
 	global $graphic_type;
-
+	
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
@@ -1348,7 +1347,7 @@ function graphic_incident_user () {
 		else {
 			$name = $incident['id_usuario'];
 		}
-
+		
 		$data[$name] = $incident['n_incidents'];
 	}
 	

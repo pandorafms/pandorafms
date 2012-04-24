@@ -597,6 +597,10 @@ if (is_ajax ())
 				
 				echo "</span><span style='margin-left: 20px;'>";
 					echo $data;
+					if ($row['unit'] != '') {
+						echo "&nbsp;";
+						echo '('.$row['unit'].')';
+					}
 					if ($row['utimestamp'] != '') {
 						echo "&nbsp;";
 						ui_print_help_tip ($row["timestamp"], '', 'images/clock2.png');

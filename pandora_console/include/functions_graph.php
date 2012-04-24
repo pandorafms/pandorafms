@@ -371,10 +371,17 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$legend['alert'] = __('Alerts');
 		$chart_extra_data['legend_alerts'] = $legend['alert'];
 	}
-	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
-	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
-	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
-	$legend['baseline'] = __('Baseline');
+
+	if (!$avg_only){
+		$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ') ' . $unit;
+		$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;
+		$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ') ' . $unit;
+	}
+	else
+		$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;	
+	if ($baseline) {
+		$legend['baseline'] = __('Baseline');
+	}
 	
 	if ($only_image) {
 		$flash_chart = false;
@@ -385,7 +392,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	// Color commented not to restrict serie colors
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 		 $water_mark,
 		 $config['fontpath'], $config['font_size'], $unit, $ttl, $series_type, 
 		 $chart_extra_data, $warning_min, $critical_min, $adapt_key);
@@ -1991,19 +1998,19 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
     // Flash chart
 	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . 
-	': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+	': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value . '   ' . __('Units') . ': ' . $unit;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$legend = array();
-	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
+	$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;
 	if($show_events) {
 		$legend['event'] = __('Events');
 	}
 	if($show_alerts) {
 		$legend['alert'] = __('Alerts');
 	}
-	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
-	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
+	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ') ' . $unit;
+	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ') ' . $unit;
 	$legend['baseline'] = __('Baseline');
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$color = array();

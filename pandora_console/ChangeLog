@@ -1,3 +1,11 @@
+2012-04-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 operation/agentes/stat_win.php: Added units to Y axis in static 
+	graphs. Also changed layout of launcher module graph window. 
+	
+	Fixes: #3520728
+
 2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/agentes/estado_agente.php,

@@ -84,17 +84,23 @@ function getFile ($destFileName,$fileLocation) {
 function createthumb ($origFileName, $destFileName, $newWidth, $newHeight) {
 	//TODO $newWidth and $newHeight values as percent.
 	
-	$system = explode(".",$origFileName);
-	if (preg_match ("/jpg|jpeg/",$system[1])) 
+	preg_match("/\.(jpg|jpeg|png)$/", $origFileName, $match);
+	$extension = '';
+	if (!empty($match))
+		$extension = $match[1];
+	
+	if (preg_match ("/jpg|jpeg/", $extension))
 		$src_img = imagecreatefromjpeg($origFileName);
-	if (preg_match ("/png/",$system[1]))
+	
+	if (preg_match ("/png/", $extension))
 		$src_img = imagecreatefrompng($origFileName);
+	
 	$oldWidth = imageSX($src_img);
 	$oldHeight = imageSY($src_img); 
-
+	
 	$dst_img = ImageCreateTrueColor($newWidth, $newHeight);
 	imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $newWidth, $newHeight, $oldWidth, $oldHeight); 
-	if (preg_match("/png/",$system[1]))
+	if (preg_match("/png/", $extension))
 		imagepng($dst_img,$destFileName); 
 	else
 		imagejpeg($dst_img,$destFileName);

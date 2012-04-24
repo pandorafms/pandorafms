@@ -51,7 +51,7 @@ function ChangeDBAction(causer) {
 	else {
 		window.document.step2_form.db_action.length=2;
 	}
-	while (i < window.document.step2_form.db_action.length){
+	while (i < window.document.step2_form.db_action.length) {
 		window.document.step2_form.db_action.options[i].value =options_values[i];
 		window.document.step2_form.db_action.options[i].text =options_text[i];
 		i++;
@@ -72,11 +72,11 @@ $banner = "v$version Build $build";
 
 error_reporting(0);
 
-function check_extension ( $ext, $label ){
+function check_extension ( $ext, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if (!extension_loaded($ext)){
+	if (!extension_loaded($ext)) {
 		echo "<img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -87,11 +87,11 @@ function check_extension ( $ext, $label ){
 	echo "</td></tr>";
 }
 
-function check_include ( $ext, $label ){
+function check_include ( $ext, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if (!include($ext)){
+	if (!include($ext)) {
 		echo "<img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -102,11 +102,11 @@ function check_include ( $ext, $label ){
 	echo "</td></tr>";
 }
 
-function check_exists ( $file, $label ){
+function check_exists ( $file, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if (!file_exists ($file)){
+	if (!file_exists ($file)) {
 		echo " <img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -117,11 +117,11 @@ function check_exists ( $file, $label ){
 	echo "</td></tr>";
 }
 
-function check_generic ( $ok, $label ){
+function check_generic ( $ok, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if ($ok == 0 ){
+	if ($ok == 0 ) {
 		echo " <img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -132,12 +132,12 @@ function check_generic ( $ok, $label ){
 	echo "</td></tr>";
 }
 
-function check_writable ( $fullpath, $label ){
+function check_writable ( $fullpath, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if (file_exists($fullpath))
-		if (is_writable($fullpath)){
+		if (is_writable($fullpath)) {
 			echo " <img src='images/dot_green.png'>";
 			echo "</td></tr>";
 			return 0;

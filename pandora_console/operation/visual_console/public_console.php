@@ -15,8 +15,6 @@
 
 // Real start
 
-
-
 require_once ("../../include/config.php");
 
 // Set root on homedir, as defined in setup

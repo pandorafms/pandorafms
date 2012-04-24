@@ -215,14 +215,14 @@ function toggleButton(type) {
 	}
 	else {
 		$("#button_sound_" + type).attr('src', 'images/control_pause.png');
-		$('#layer_sound_' + type).html("<embed src='" + $("#sound_" + type).val() + "' autostart='true' hidden='true' loop='true'>");
+		$('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
 	}
 }
 
 function replaySound(type) {
 	if ($("#button_sound_" + type).attr('src') == 'images/control_pause.png') {
 		$('#layer_sound_' + type).html("");
-		$('#layer_sound_' + type).html("<embed src='" + $("#sound_" + type).val() + "' autostart='true' hidden='true' loop='true'>");
+		$('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
 	}
 }
 

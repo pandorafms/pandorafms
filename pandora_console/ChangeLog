@@ -1,3 +1,13 @@
+2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
+	* install.php, include/functions_graph.php,
+	operation/visual_console/public_console.php: cleaned source code
+	style.
+	
+	* operation/events/sound_events.php, godmode/setup/setup.php: fixed
+	the audio, now it uses the html5 tag.
+	
+	Fixes: #3472957
+
 2012-04-24  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/visual_console_builder.elements.php: Added 

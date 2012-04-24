@@ -342,15 +342,15 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		*/
 	
 	$legend = array();
-	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
+	$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;
 	if($show_events) {
 		$legend['event'] = __('Events');
 	}
 	if($show_alerts) {
 		$legend['alert'] = __('Alerts');
 	}
-	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
-	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
+	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ') ' . $unit;
+	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ') ' . $unit;
 	$legend['baseline'] = __('Baseline');
 	
 	$flash_chart = $config['flash_charts'];
@@ -1966,19 +1966,19 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
     // Flash chart
 	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . 
-	': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+	': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value . '   ' . __('Units') . ': ' . $unit;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$legend = array();
-	$legend['sum'] = __('Avg') . ' (' . $avg_value . ')';
+	$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;
 	if($show_events) {
 		$legend['event'] = __('Events');
 	}
 	if($show_alerts) {
 		$legend['alert'] = __('Alerts');
 	}
-	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ')';
-	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ')';
+	$legend['max'] = __('Max') . ' (' .format_for_graph($max_value) . ') ' . $unit;
+	$legend['min'] = __('Min') . ' (' . format_for_graph($min_value) . ') ' . $unit;
 	$legend['baseline'] = __('Baseline');
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$color = array();
@@ -2391,7 +2391,6 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
 	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
 	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
-	$unit = modules_get_unit($agent_module_id);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;

@@ -84,8 +84,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('netflow_path', '/var/spool/pandora/data_in/netflow'),
 ('netflow_interval', '300'),
 ('netflow_daemon', '/usr/bin/nfcapd'),
-('event_fields', 'evento,id_agente,estado,timestamp');
-
+('event_fields', 'evento,id_agente,estado,timestamp'),
+('list_ACL_IPs_for_API_0', '127.0.0.1');
 
 UNLOCK TABLES;
 

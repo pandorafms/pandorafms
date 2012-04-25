@@ -89,6 +89,7 @@ INSERT INTO tconfig (token, value) VALUES ('netflow_path', '/var/spool/pandora/d
 INSERT INTO tconfig (token, value) VALUES ('netflow_interval', '300');
 INSERT INTO tconfig (token, value) VALUES ('netflow_daemon', '/usr/bin/nfcapd');
 INSERT INTO tconfig (token, value) VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
+INSERT INTO tconfig (token, value) VALUES ('list_ACL_IPs_for_API_0', '127.0.0.1');
 COMMIT;
 END;;
 

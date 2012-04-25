@@ -957,7 +957,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])){
 							// Link to an URL
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $layout_data['label'] .'">';
-							$endTagA = true;							
+							$endTagA = true;
 						}
 					}
 					
@@ -1257,7 +1257,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							else {
 								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
 							}
-						} else {
+						}
+						else {
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}

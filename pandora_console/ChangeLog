@@ -1,3 +1,15 @@
+2012-04-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_users.php: into the function "users_get_groups"
+	fixed when the $config['id_user'] don't exists.
+	
+	* include/functions_api.php, include/api.php: fixed when some error
+	in get_events__user, and added constants flags for debug in the
+	header of source file.
+	
+	* include/functions_visual_map.php, include/functions_db.php,
+	godmode/setup/setup.php: cleaned source code style.
+
 2012-04-25  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/agents/agent_template.php: Fixed bug creating network
@@ -30,6 +42,7 @@
 	* operation/tree.php: Added units to modules.
 
 2012-04-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* install.php, include/functions_graph.php,
 	operation/visual_console/public_console.php: cleaned source code
 	style.

@@ -87,7 +87,11 @@ function users_get_all_model_groups () {
 function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null) {
 	if (empty ($id_user)) {
 		global $config;
-		$id_user = $config['id_user'];
+		
+		$id_user = null;
+		if (isset($config['id_user'])) {
+			$id_user = $config['id_user'];
+		}
 	}
 	
 	if (isset($id_groups)) {

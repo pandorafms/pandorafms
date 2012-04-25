@@ -124,33 +124,35 @@ if($config["integria_enabled"]) {
         $invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
      	$bad_input = false;
 	// Wrong connection to api, bad password
-	if (empty($invent)){
-                $bad_input = true;
-        }
-
-        $inventories = array();   
+	if (empty($invent)) {
+		$bad_input = true;
+	}
+	
+	$inventories = array();   
 	// Right connection but  theres is no inventories 
-	if ($invent == 'false'){
+	if ($invent == 'false') {
 		unset($invent);
 		$invent = array();
 	}
 	// Checks if URL is right
-	else{
+	else {
 		$invent = explode("\n",$invent);
 	}
 	// Wrong URL 
-	if ((strripos($config['integria_url'], '.php') !== false)){
+	if ((strripos($config['integria_url'], '.php') !== false)) {
 		$bad_input = true;
 	}
 	// Check page result and detect errors
-	else{ 
-        	foreach($invent as $inv){
-                	if ((stristr($inv, 'ERROR 404') !== false) OR (stristr($inv, 'Status 404') !== false) OR (stristr($inv, 'Internal Server Error') !== false)){
-                        	$inventories[""] = __('None'); 
-                       		$bad_input = true; 
-                        	break;
-                	}
-        	}
+	else {
+		foreach ($invent as $inv) {
+			if ((stristr($inv, 'ERROR 404') !== false)
+				OR (stristr($inv, 'Status 404') !== false)
+				OR (stristr($inv, 'Internal Server Error') !== false)) {
+				$inventories[""] = __('None'); 
+				$bad_input = true; 
+				break;
+			}
+		}
 	}
 	$table->data[19][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
 	$table->data[19][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
@@ -168,10 +170,11 @@ if($config["integria_enabled"]) {
 				continue;
 			}
 			$invexp = explode(',',$inv);
-			if(substr($invexp[1], 0, 1) == '"' && substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
+			if (substr($invexp[1], 0, 1) == '"'
+				&& substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
 				$invexp[1] = substr($invexp[1], 1, strlen($invexp[1])-2);
 			}
-
+			
 			$inventories[$invexp[0]] = $invexp[1];
 		}
 	}

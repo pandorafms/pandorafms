@@ -18,6 +18,10 @@ require_once("functions_api.php");
 
 global $config;
 
+define("DEBUG", 0);
+define("VERBOSE", 0);
+
+
 enterprise_include_once ('include/functions_enterprise_api.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
@@ -69,6 +73,14 @@ if ($correctLogin) {
 		if (!function_exists($op.'_'.$op2))
 			returnError('no_exist_operation', $returnType);
 		else {
+			if (!DEBUG) {
+				error_reporting(0);
+			}
+			if (VERBOSE) {
+				error_reporting(E_ALL);
+				ini_set("display_errors", 1);
+			}
+			
 			call_user_func($op.'_'.$op2, $id, $id2, $other, $returnType, $user_in_db);
 		}
 	}

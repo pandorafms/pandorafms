@@ -24,7 +24,7 @@ include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
-include_once($config['homedir'] . '/include/functions_users.php');
+include_once($config['homedir'] . "/include/functions_users.php");
 
 function db_select_engine() {
 	global $config;
@@ -44,7 +44,7 @@ function db_select_engine() {
 
 function db_connect($host = null, $db = null, $user = null, $pass = null, $history = null) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql": 
 			return mysql_connect_db($host, $db, $user, $pass, $history);
@@ -74,7 +74,7 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $histo
  */
 function db_escape_string_sql($string) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_escape_string_sql($string);
@@ -101,11 +101,10 @@ function db_escape_string_sql($string) {
  */
 function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, $info = '') {
 	global $config;
-
+	
 	if ($ip !== false) {
 		if (isset($config["remote_addr"])) {
 			$ip = $config["remote_addr"];
-				
 		}
 		else {
 			if ($_SERVER['REMOTE_ADDR']) {
@@ -116,7 +115,7 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 			}
 		}
 	}
-
+	
 	if ($user_id !== false) {
 		$id = $user_id;
 	}
@@ -126,10 +125,10 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 		}
 		else $id = 0;
 	}
-
+	
 	$accion = io_safe_input($accion);
 	$descripcion = io_safe_input($descripcion);
-
+	
 	switch ($config['dbtype']){	
 		case "mysql":
 		case "postgresql":

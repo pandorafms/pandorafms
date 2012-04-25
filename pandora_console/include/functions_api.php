@@ -34,7 +34,7 @@ enterprise_include_once ('include/functions_local_components.php');
  * @return mixed
  */
 function parseOtherParameter($other, $otherType) {
-
+	
 	switch ($otherType) {
 		case 'url_encode':
 			$returnVar = array('type' => 'string', 'data' => urldecode($other));
@@ -61,7 +61,7 @@ function parseOtherParameter($other, $otherType) {
  * @param $returnType
  * @return unknown_type
  */
-function returnError($typeError, $returnType) {	
+function returnError($typeError, $returnType = 'string') {
 	switch ($typeError) {
 		case 'no_set_no_get_no_help':
 			returnData($returnType,
@@ -76,8 +76,8 @@ function returnError($typeError, $returnType) {
 				array('type' => 'string', 'data' => __('Id does not exist in BD.')));
 			break;
 		default:
-			returnData('string',
-				array('type' => 'string', 'data' => __($returnType)));
+			returnData($returnType,
+				array('type' => 'string', 'data' => __($typeError)));
 			break;
 	}
 }
@@ -132,6 +132,9 @@ function returnData($returnType, $data, $separator = ';') {
 							}
 						}
 					}
+					break;
+				case 'string':
+					echo $data['data'];
 					break;
 			}
 			break;
@@ -240,7 +243,7 @@ function get_agent_module_name_last_value($agentName, $moduleName, $other = ';',
 		}
 	}
 	else {
-			get_module_last_value($idModuleAgent, null, $other, $returnType);
+		get_module_last_value($idModuleAgent, null, $other, $returnType);
 	}
 }
 
@@ -531,13 +534,13 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 	else
 		$data['list_index'] = array(
 				'type_row',
-
+				
 				'group_id',
 				'group_name',
 				'group_parent',
 				'disabled',
 				'custom_id',
-	
+				
 				'agent_id',
 				'agent_name',
 				'agent_direction',
@@ -603,7 +606,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 				'module_last_execution_try',
 				'module_status_changes',
 				'module_last_status',
-	
+				
 				'alert_id_agent_module',
 				'alert_id_alert_template',
 				'alert_internal_counter',
@@ -680,7 +683,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
  */
 function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
-
+	
 	$name = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
@@ -4465,6 +4468,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	$groups = users_get_groups ($user_in_db, "IR");
 	$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $user_in_db);
 	
+	$sql_post = '';
+	
 	if (!empty($groups)) {
 		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
 	}
@@ -4702,6 +4707,11 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	if ($user_in_db !== null) {
 		get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		$last_error = error_get_last();
+		if (!empty($last_error)) {
+			returnError('ERROR_API_PANDORAFMS', $returnType);
+		}
+		
 		return;
 	}
 	
@@ -4716,11 +4726,17 @@ function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	}
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
-
+		
 		$filterString = otherParameter2Filter($other);
 	}
 	
 	$dataRows = db_get_all_rows_filter('tevento', $filterString);
+	$last_error = error_get_last();
+	if (!empty($last_error)) {
+		returnError('ERROR_API_PANDORAFMS', $returnType);
+		
+		return;
+	}
 	
 	$data['type'] = 'array';
 	$data['data'] = $dataRows;

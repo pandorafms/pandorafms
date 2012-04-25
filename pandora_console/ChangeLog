@@ -1,5 +1,13 @@
-2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+2012-04-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php, include/api.php: fixed when some error
+	in get_events__user, and added constants flags for debug in the
+	header of source file.
+	
+	MERGED FROM 4.0.2
 
+2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
 	* operation/menu.php
 	 operation/events/events.php: SoundEvent popup now it's resizable in
 	 IE.
@@ -7,7 +15,7 @@
 	 Merged from branches.
 
 2012-04-25  Vanessa Gil  <vanessa.gil@artica.es>
-
+	
 	* godmode/setup/performance.php: Changed the order of options.
 
 2012-04-25 Dario Rodriguez <dario.rodriguez@artica.es>

@@ -1,3 +1,20 @@
+2012-04-25  Sancho Lerena <slerena@artica.es>
+
+	* general/error_emptyconfig.php,
+	general/error_authconfig.php,
+	general/error_dbconfig.php: minimal changes on text to fit the error
+	window message.
+
+	* godmode/modules/manage_network_templates_form.php: Fixed description.
+	
+	* godmode/modules/manage_network_components.php: minimal layout changes.
+
+	* pandoradb_data.sql: New "default" values for network components, tags,
+	network (group) templates, ant agent custom fields.
+
+	* operation/agentes/estado_monitores.php: More size for the description 
+	in the agent main view.
+
 2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/update_manager.php: Changed license modal window style 

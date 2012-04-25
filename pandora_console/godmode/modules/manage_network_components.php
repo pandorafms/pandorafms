@@ -340,11 +340,10 @@ if ($components === false)
 
 unset ($table);
 
-$table->width = '98%';
+$table->width = '100%';
 $table->head = array ();
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');
-$table->head[2] = __('Interval');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
@@ -366,15 +365,14 @@ foreach ($components as $component) {
 	$data[0] .= io_safe_output($component['name']);
 	$data[0] .= '</a>';
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
-	$data[2] = $component['module_interval'] ? $component['module_interval'] : __('N/A	');
-	$data[3] = mb_strimwidth (io_safe_output($component['description']), 0, 30, "...");
+	$data[3] = "<span style='font-size: 8px'>". mb_strimwidth (io_safe_output($component['description']), 0, 60, "...") . "</span>";
 	$data[4] = network_components_get_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	
 	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . '&duplicate_network_component=1&source_id=' . $component['id_nc'] . '">' . 
 		html_print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>';
-	$data[6] .= '&nbsp;&nbsp;<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
+	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . 
 		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
 		html_print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .

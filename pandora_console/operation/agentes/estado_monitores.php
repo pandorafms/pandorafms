@@ -333,7 +333,7 @@ foreach ($modules as $module) {
 		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
 		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
 	}
-	$data[4] = ui_print_string_substr ($module["descripcion"], 40, true, 9);
+	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
 	
 	modules_get_status($module['id_agente_modulo'], $module['estado'], $module['datos'], $status, $title);
 

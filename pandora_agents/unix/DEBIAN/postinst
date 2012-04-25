@@ -8,9 +8,10 @@ PANDORA_CFG=/etc/pandora
 
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 
-echo "Copy new version of plugins into dir"
-cp -i /tmp/plugins/* /usr/share/pandora_agent/plugins/
-rm /tmp/plugins -rf
+#Disabled, now the package overwrite the previous files.
+#echo "Copy new version of plugins into dir"
+#cp -i /tmp/plugins/* /usr/share/pandora_agent/plugins/
+#rm /tmp/plugins -rf
 
 echo "Linking Pandora FMS Agent plugins directory to $PANDORA_CFG/plugins..."
 rm $PANDORA_CFG/plugins 2> /dev/null

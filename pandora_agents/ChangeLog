@@ -1,5 +1,10 @@
 2012-04-25  Sergio Martin <sergio.martin@artica.es>
 
+	* unix/plugins/inventory: Fixed method of obtain
+	runlevel to be valid on OpenSuse
+
+2012-04-25  Sergio Martin <sergio.martin@artica.es>
+
 	* unix/plugins/inventory: Fixed init_services inventory modules
 	in machines /etc/rc.d/rcX.d paths instead of /etc/rcX.d/ paths
 

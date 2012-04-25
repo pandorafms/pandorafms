@@ -1,5 +1,10 @@
 2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* DEBIAN/make_deb_package.sh: removed the lost "return" in the
+	source code. I am sorry.
+
+2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* DEBIAN/postinst, DEBIAN/make_deb_package.sh: disabled the checking
 	the plugins files with same name.
 

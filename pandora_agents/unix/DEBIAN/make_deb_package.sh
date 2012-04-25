@@ -109,7 +109,7 @@ do
 	fi
 done
 echo "END"
-return
+
 echo "Make the package \"Pandorafms console\"."
 dpkg-deb --build temp_package
 mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb

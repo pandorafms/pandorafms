@@ -1166,6 +1166,8 @@ function ui_process_page_head ($string, $bitfield) {
 	$black_list_pages_old_jquery = array('operation/gis_maps/index');
 	if (in_array(get_parameter('sec2'), $black_list_pages_old_jquery)) {
 		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
+					"ui" => "include/javascript/jquery.ui.core.js",
+					"dialog" => "include/javascript/jquery.ui.dialog.js",
 					"pandora" => "include/javascript/jquery.pandora.js"),
 		$config['jquery']);
 	}

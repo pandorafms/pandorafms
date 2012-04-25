@@ -14,6 +14,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+ui_require_css_file ('dialog');
+ui_require_jquery_file ('ui.core');
+ui_require_jquery_file ('ui.dialog');
+ui_require_jquery_file ('ui.draggable');
+
 ?>
 <img src="images/login_background.png" id="login_body">
 <div class="databox_logout" id="login">

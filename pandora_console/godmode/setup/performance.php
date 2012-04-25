@@ -42,6 +42,8 @@ ui_print_page_header (__('Performance  configuration'), "", false, "", true);
 $table->width = '98%';
 $table->data = array ();
 
+$table->size[0] = '70%';
+$table->size[1] = '30%';
 
 $table->data[1][0] = __('Max. days before delete events');
 $table->data[1][1] = html_print_input_text ('event_purge', $config["event_purge"], '', 5, 5, true);
@@ -64,8 +66,17 @@ $table->data[6][1] = html_print_input_text ('days_purge', $config["days_purge"],
 $table->data[7][0] = __('Max. days before compact data');
 $table->data[7][1] = html_print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
 
-$table->data[8][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table->data[8][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
+$table->data[8][0] = __('Max. days before delete unknown modules');
+$table->data[8][1] = html_print_input_text ('days_delete_unknown', $config["days_delete_unknown"], '', 5, 5, true);
+
+$table_other->width = '98%';
+$table_other->data = array ();
+
+$table_other->size[0] = '70%';
+$table_other->size[1] = '30%';
+
+$table_other->data[1][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
+$table_other->data[1][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
 $intervals = array ();
 $intervals[3600] = "1 ".__('hour');
@@ -77,33 +88,39 @@ $intervals[604800] = __('Last week');
 $intervals[1209600] = "2 " . __('weeks');
 $intervals[2592000] = __('Last month');
 
-$table->data[9][0] = __('SLA period (seconds)') . ui_print_help_tip(__('You can see this in SLA agent tab.'), true);
-$table->data[9][1] = html_print_select ($intervals, 'sla_period', $config["sla_period"], '', '', '0', true);
+$table_other->data[2][0] = __('SLA period (seconds)') . ui_print_help_tip(__('You can see this in SLA agent tab.'), true);
+$table_other->data[2][1] = html_print_select ($intervals, 'sla_period', $config["sla_period"], '', '', '0', true);
 
-$table->data[10][0] = __('Default hours for event view');
-$table->data[10][1] = html_print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
+$table_other->data[3][0] = __('Default hours for event view');
+$table_other->data[3][1] = html_print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
 //$table->data[11][0] = __('Compact CSS and JS into header');
 //$table->data[11][1] = __('Yes').'&nbsp;'.html_print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
 //$table->data[11][1] .= __('No').'&nbsp;'.html_print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
 
-$table->data[12][0] = __('Use realtime statistics');
-$table->data[12][1] = __('Yes').'&nbsp;'.html_print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
-$table->data[12][1] .= __('No').'&nbsp;'.html_print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
+$table_other->data[4][0] = __('Use realtime statistics');
+$table_other->data[4][1] = __('Yes').'&nbsp;'.html_print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
+$table_other->data[4][1] .= __('No').'&nbsp;'.html_print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
 
-$table->data[13][0] = __('Batch statistics period (secs)') . ui_print_help_tip(__('If realtime statistics are disabled, statistics interval resfresh will be set here.'), true);
-$table->data[13][1] = html_print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
+$table_other->data[5][0] = __('Batch statistics period (secs)') . ui_print_help_tip(__('If realtime statistics are disabled, statistics interval resfresh will be set here.'), true);
+$table_other->data[5][1] = html_print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
 
-$table->data[14][0] = __('Use agent access graph') . ui_print_help_icon("agent_access", true);
-$table->data[14][1] = __('Yes').'&nbsp;'.html_print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
-$table->data[14][1] .= __('No').'&nbsp;'.html_print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
-
-$table->data[15][0] = __('Max. days before delete unknown modules');
-$table->data[15][1] = html_print_input_text ('days_delete_unknown', $config["days_delete_unknown"], '', 5, 5, true);
+$table_other->data[6][0] = __('Use agent access graph') . ui_print_help_icon("agent_access", true);
+$table_other->data[6][1] = __('Yes').'&nbsp;'.html_print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
+$table_other->data[6][1] .= __('No').'&nbsp;'.html_print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
 
 echo '<form id="form_setup" method="post">';
-html_print_input_hidden ('update_config', 1);
-html_print_table ($table);
+echo "<fieldset>";
+echo "<legend>" . __('Database maintenance options') . "</legend>";
+	html_print_input_hidden ('update_config', 1);
+	html_print_table ($table);
+echo "</fieldset>";
+
+echo "<fieldset>";
+echo "<legend>" . __('Others') . "</legend>";
+	html_print_input_hidden ('update_config', 1);
+	html_print_table ($table_other);
+echo "</fieldset>";
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';

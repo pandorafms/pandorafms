@@ -1,3 +1,18 @@
+2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/dialog.css
+	 index.php: Added support for new login help modal window.
+
+	* general/login_help_dialog.php: New login help modal window.
+	 
+	* include/functions_ui.php
+	 general/logoff.php: Added required javascript files.
+      
+	* extensions/update_manager.php: Changed license modal 
+	window style to Chrome box model.
+
+	Merged from branches.
+
 2012-04-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php, include/api.php: fixed when some error

@@ -1,3 +1,9 @@
+2012-04-25  Sergio Martin <sergio.martin@artica.es>
+
+	* unix/plugins/inventory: Fixed several bugs in the
+	inventory plugin as missed separator to end the parse,
+	fill with empty string the empty columns, etc. for bug 3519796
+
 2012-04-25 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* win32/bin/pandora_agent.conf: Fixed a default module type.

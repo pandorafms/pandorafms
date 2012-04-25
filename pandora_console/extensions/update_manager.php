@@ -52,7 +52,7 @@ if (is_ajax ()) {
 			$table->style = array();
 			$table->style[0] = 'text-align: left';
 
-			echo '<div style="float: left; margin-top: 40px; margin-left: 20px; margin-right: 20px;">'; 
+			echo '<div style="float: left; width: 20%; margin-top: 40px; margin-left: 20px;">'; 
 			html_print_image('images/noaccess.png', false);
 			echo '</div>';
 
@@ -66,7 +66,7 @@ if (is_ajax ()) {
 			$table->data[3][0] = '<strong>'.__('License Mode').'</strong>';
 			$table->data[3][1] = __('Open Source Version');
 
-			echo '<div style="width: 80%; margin-top: 30px; margin-left: 20px">';
+			echo '<div style="width: 70%; margin-top: 30px; margin-left: 20px; float: right;">';
 			html_print_table ($table);
 			echo '</div>';		
 		}

@@ -1,4 +1,9 @@
 2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/update_manager.php: Changed license modal window style 
+	 to Chrome box model.
+
+2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* include/styles/dialog.css
 	 index.php: Added support for new login help modal window.

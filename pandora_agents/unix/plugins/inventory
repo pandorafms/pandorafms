@@ -81,7 +81,7 @@ sub get_file_system($$) {
 # Get a list of services init in machine
 sub get_servicies_init_machine($$) {
 	my ($name, $modules) = @_;
-	my $runlevel = `runlevel | cut -d' ' -f2`;
+	my $runlevel = `who -r | awk '{print \$2}'`;
 
 	#ini trim($runlevel)
 		$runlevel =~ s/^\s*//; #ltrim

@@ -1,5 +1,11 @@
 2012-04-25  Sergio Martin <sergio.martin@artica.es>
 
+	* unix/plugins/inventory: Fixed method of obtain
+	runlevel to be valid on OpenSuse
+	Merged from 4.0.x
+
+2012-04-25  Sergio Martin <sergio.martin@artica.es>
+
 	* win32/bin/pandora_agent.conf
 	unix/Linux/pandora_agent.conf: Restore files changed
 	by error in last commit

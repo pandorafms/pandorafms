@@ -1,3 +1,12 @@
+2011-12-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	Apply patch from user Santiago Munín González <burning1@gmail.com>
+
+	* src/pandroid_event_viewer/pandorafms/Main.java: fixed the empty
+	combo group because sometimes this is as null.
+	
+	Fixes: #3495038
+
 2011-10-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* AndroidManifest.xml: update num version.

@@ -1,5 +1,10 @@
 2012-04-25  Sergio Martin <sergio.martin@artica.es>
 
+	* unix/plugins/inventory: Fixed init_services inventory modules
+	in machines /etc/rc.d/rcX.d paths instead of /etc/rcX.d/ paths
+
+2012-04-25  Sergio Martin <sergio.martin@artica.es>
+
 	* unix/plugins/inventory: Fixed several bugs in the
 	inventory plugin as missed separator to end the parse,
 	fill with empty string the empty columns, etc. for bug 3519796

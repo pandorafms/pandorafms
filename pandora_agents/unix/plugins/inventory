@@ -88,8 +88,15 @@ sub get_servicies_init_machine($$) {
 		$runlevel =~ s/\s*$//; #rtrim
 	#end trim($runlevel)
 
-	my $script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11";
-
+	my $script = "";
+	
+	if (-e "/etc/rc" . $runlevel .".d/") {
+		$script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11";
+	}
+	else {
+		$script = "ls /etc/rc.d/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11";
+	}
+	
 	my @services = `$script`;
 	foreach my $row (@services) {
 		next unless ($row =~ /^\S+\/(\S+)$/);

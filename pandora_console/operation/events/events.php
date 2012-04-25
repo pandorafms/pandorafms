@@ -218,7 +218,7 @@ if ($config["pure"] == 0) {
 		?>
 		url = '<?php echo $url . 'operation/events/sound_events.php'; ?>';
 		
-		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=yes'); 
 	}
 	
 	function openURLTagWindow(url) {		

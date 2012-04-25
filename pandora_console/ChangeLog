@@ -1,3 +1,11 @@
+2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/menu.php
+	 operation/events/events.php: SoundEvent popup now it's resizable in
+	 IE.
+	 
+	 Fixes: #3469955
+
 2012-04-25  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/setup/performance.php: Changed the order of options.

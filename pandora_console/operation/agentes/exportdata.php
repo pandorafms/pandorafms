@@ -93,7 +93,6 @@ ui_require_javascript_file ('calendar');
 ui_print_page_header (__("Export data"), "images/server_export.png");
 
 $group = get_parameter_post ('group', 0);
-//$agent = get_parameter_post ('agent', 0);
 $agentName = get_parameter_post ('agent', 0);
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -210,7 +209,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 						case "data":
 						case "avg":
 							echo $output;
-							exit;
 							break;
 					}
 					unset($output);
@@ -230,97 +228,94 @@ if (!empty ($export_btn) && !empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
 }
 
-echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form">';
+if (empty($export_btn)) {
+	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form">';
 
-$table->width = '98%';
-$table->border = 0;
-$table->cellspacing = 3;
-$table->cellpadding = 5;
-$table->class = "databox_color";
-$table->style[0] = 'vertical-align: top;';
+	$table->width = '98%';
+	$table->border = 0;
+	$table->cellspacing = 3;
+	$table->cellpadding = 5;
+	$table->class = "databox_color";
+	$table->style[0] = 'vertical-align: top;';
 
-$table->data = array ();
+	$table->data = array ();
 
-//Group selector
-$table->data[0][0] = '<b>'.__('Group').'</b>';
-	
-$groups = users_get_groups ($config['id_user'], "AR");
-	
-$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "group", $group, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
-	
-//Agent selector
-$table->data[1][0] = '<b>'.__('Source agent').'</b>';
+	//Group selector
+	$table->data[0][0] = '<b>'.__('Group').'</b>';
+		
+	$groups = users_get_groups ($config['id_user'], "AR");
+		
+	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "group", $group, 'submit_group();', '', 0, true, false, true, 'w130', false);
+		
+	//Agent selector
+	$table->data[1][0] = '<b>'.__('Source agent').'</b>';
 
-if ($group > 0) {
-	$filter['id_grupo'] = (array) $group;
-} else {
-	$filter['id_grupo'] = array_keys ($groups);
+	if ($group > 0) {
+		$filter['id_grupo'] = (array) $group;
+	} else {
+		$filter['id_grupo'] = array_keys ($groups);
+	}
+
+	$agents = array ();
+	$rows = agents_get_agents ($filter, false, 'AR');
+	if ($rows == null) $rows = array();
+	foreach ($rows as $row) {
+		$agents[$row['id_agente']] = $row['nombre'];
+	}
+
+	//Src code of lightning image with skins 
+	$src_code = html_print_image ('images/lightning.png', true, false, true);
+	$table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 40, 100, false, '',
+		array('style' => "background: url($src_code) no-repeat right;"), true)
+		. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+		
+	//Module selector
+	$table->data[2][0] = '<b>'.__('Modules').'</b>';
+
+	if ($agent > 0) {
+		$modules = agents_get_modules ($agent);
+	} else {
+		$modules = array ();
+	}
+
+	$disabled_export_button = false;
+	if (empty($modules)) {
+		$disabled_export_button = true;
+	}
+
+	$table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w155', false);
+
+	//Start date selector
+	$table->data[3][0] = '<b>'.__('Begin date').'</b>';
+
+	$table->data[3][1] = html_print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
+	$table->data[3][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
+	$table->data[3][1] .= html_print_input_text ('start_time', date ("H:i", get_system_time () - 86400), false, 10, 5, true);
+		
+	//End date selector
+	$table->data[4][0] = '<b>'.__('End date').'</b>';
+	$table->data[4][1] = html_print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
+	$table->data[4][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
+	$table->data[4][1] .= html_print_input_text ('end_time', date ("H:i", get_system_time ()), false, 10, 5, true);
+		
+	//Export type
+	$table->data[5][0] = '<b>'.__('Export type').'</b>';
+
+	$export_types = array ();
+	$export_types["data"] = __('Data table');
+	$export_types["csv"] = __('CSV');
+	$export_types["excel"] = __('MS Excel');
+	$export_types["avg"] = __('Average per hour/day');
+
+	$table->data[5][1] = html_print_select ($export_types, "export_type", $export_type, '', '', 0, true, false, true, 'w130', false);
+
+	html_print_table ($table);
+
+	// Submit button
+	echo '<div class="action-buttons" style="width:80%;">';
+		html_print_submit_button (__('Export'), 'export_btn', $disabled_export_button, 'class="sub wand"');
+	echo '</div></form>';
 }
-
-$agents = array ();
-$rows = agents_get_agents ($filter, false, 'AR');
-if ($rows == null) $rows = array();
-foreach ($rows as $row) {
-	$agents[$row['id_agente']] = $row['nombre'];
-}
-
-if (!in_array ($agent, array_keys ($agents))) {
-	$agent = current (array_keys ($agents));
-}
-
-//$table->data[1][1] = html_print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
-//Src code of lightning image with skins 
-$src_code = html_print_image ('images/lightning.png', true, false, true);
-$table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 40, 100, false, '',
-	array('style' => "background: url($src_code) no-repeat right;"), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
-	
-//Module selector
-$table->data[2][0] = '<b>'.__('Modules').'</b>';
-
-if ($agent > 0) {
-	$modules = agents_get_modules ($agent);
-} else {
-	$modules = array ();
-}
-
-$disabled_export_button = false;
-if (empty($modules)) {
-	$disabled_export_button = true;
-}
-
-$table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w155', false);
-
-//Start date selector
-$table->data[3][0] = '<b>'.__('Begin date').'</b>';
-
-$table->data[3][1] = html_print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
-$table->data[3][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
-$table->data[3][1] .= html_print_input_text ('start_time', date ("H:i", get_system_time () - 86400), false, 10, 5, true);
-	
-//End date selector
-$table->data[4][0] = '<b>'.__('End date').'</b>';
-$table->data[4][1] = html_print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
-$table->data[4][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
-$table->data[4][1] .= html_print_input_text ('end_time', date ("H:i", get_system_time ()), false, 10, 5, true);
-	
-//Export type
-$table->data[5][0] = '<b>'.__('Export type').'</b>';
-
-$export_types = array ();
-$export_types["data"] = __('Data table');
-$export_types["csv"] = __('CSV');
-$export_types["excel"] = __('MS Excel');
-$export_types["avg"] = __('Average per hour/day');
-
-$table->data[5][1] = html_print_select ($export_types, "export_type", $export_type, '', '', 0, true, false, true, 'w130', false);
-
-html_print_table ($table);
-
-// Submit button
-echo '<div class="action-buttons" style="width:80%;">';
-	html_print_submit_button (__('Export'), 'export_btn', $disabled_export_button, 'class="sub wand"');
-echo '</div></form>';
 
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
@@ -375,6 +370,8 @@ $(document).ready (function () {
 	$("#text-agent").result(function(event, data, formatted) {
  		this.form.submit();
 	});	
+	
+	$("select#export_type").trigger('change');
 });
 
 $("select#export_type").change (function () {
@@ -392,8 +389,13 @@ $("select#export_type").change (function () {
 			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
 			break;
 
-	}
-		
+	}		
 });
+
+function submit_group() {
+	var f = document.forms.export_form;
+	f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
+	f.form.submit();
+}
 /* ]]> */
 </script>

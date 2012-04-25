@@ -44,16 +44,16 @@
 		<tr><td align="left">
 			<a href="index.php"><img src="images/pandora_login.png" border="0" height="100px" alt="Pandora FMS"></a>
 		</td><td valign="bottom">
-			Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
-			Probably one or more of your user, database or hostname values are incorrect or 
-			the database server is not running.</i><br /><br /><span class="error">
+			Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
+			Probably your database, hostname, user or password values are incorrect or 
+			the database server is not running.</i><br /><br /><span style='line-height: 18px' class="error">
 				<b>DB ERROR:</b>
 				<?php
 				echo db_get_last_error();
 				?></span>
 			</div>	
 			<div class="msg">
-			If you have modified auth system, problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>
+			If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>
 			</div>
 		</td></tr>
 		</table>

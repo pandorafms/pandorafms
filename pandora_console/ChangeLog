@@ -1,3 +1,8 @@
+2012-04-25  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/agents/agent_template.php: Fixed bug creating network
+	components.
+
 2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/menu.php

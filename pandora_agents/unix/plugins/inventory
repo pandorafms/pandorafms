@@ -31,7 +31,12 @@ my $Separator;
 sub get_module_data ($$$$) {
 	my ($name, $hwinfo, $keys, $modules) = @_;
 	my %module;
-
+		
+	# Store keys	
+	foreach my $key (@{$keys}) {
+		push (@{$module{'_keys'}}, $key);
+	}
+		
 	# Parse module data
 	while (my $line = shift (@{$hwinfo})) {
 		if ($line =~ /$Separator/) {
@@ -41,7 +46,8 @@ sub get_module_data ($$$$) {
 		foreach my $key (@{$keys}) {
 			if ($line =~ /$key:\s+(.+)/) {
 				$module{$key} = $1;
-				push (@{$module{'_keys'}}, $key);
+				# Replace semicolon by comma to avoid parse errors 
+				$module{$key} =~ s/;/,/g;
 			}
 		}
 	}
@@ -106,6 +112,8 @@ sub get_processes ($$) {
                 my %module;
 				# Remove carriage returns				
 				$row =~ s/[\n\l\f]//g;
+				# Replace semicolon by comma to avoid parse errors 
+				$row =~ s/;/,/g;
                 $module{'service'} = $row;
                 $module{'_keys'} = ['service'];
                 push (@{$modules->{$name}}, \%module);
@@ -170,6 +178,10 @@ sub get_software_module_data ($$) {
 		$module{'program'} = $1;
 		$module{'version'} = $2;
 		$module{'description'} = $3;
+		# Replace semicolon by comma to avoid parse errors 
+		$module{'program'} =~ s/;/,/g;
+		$module{'version'} =~ s/;/,/g;
+		$module{'description'} =~ s/;/,/g;
 		$module{'_keys'} = ['program', 'version','description'];
 		push (@{$modules->{$name}}, \%module);
 	}
@@ -184,10 +196,12 @@ sub print_module ($$) {
 	print "    <datalist>\n";
 	foreach my $item (@{$module}) {
 		# Compose module data
-		my $data = '';
+		my $data = undef;
 		foreach my $key (@{$item->{'_keys'}}) {
-			next unless defined ($item->{$key});
-			$data .= ($data eq '' ? '' : ';') . $item->{$key};
+			$data = (!defined($data) ? '' : "$data;");
+			if (defined($item->{$key})) {
+				$data .= $item->{$key};
+			}
 		}
 
 		print "      <data><![CDATA[$data]]></data>\n";
@@ -232,7 +246,7 @@ close (FILE);
 
 # Retrieve hardware information
 $Mode = 'LSHW';
-$Separator = '';
+$Separator = '\s+\*\-';
 my @hwinfo = `lshw 2>/dev/null`;
 if ($? != 0) {
 	$Mode = 'HWINFO';

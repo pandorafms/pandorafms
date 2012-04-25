@@ -44,7 +44,7 @@
 		</td><td valign="bottom">
 			<br><br>
 			Cannot load configuration variables from database. Please check your database setup in the
-			<b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br><br>
+			<b>include/config.php</b> file.<i><br><br>
 			Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
 			<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
 			permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>

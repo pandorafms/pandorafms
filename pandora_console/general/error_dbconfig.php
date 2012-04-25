@@ -43,7 +43,7 @@
 		<tr><td align="left">
 			<a href="index.php"><img src="images/pandora_login.png" border="0" height="100px" alt="Pandora FMS"></a>
 		</td><td valign="bottom">
-			Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br><br>
+			Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br><br>
 			Probably one or more of your user, database or hostname values are incorrect or 
 			the database server is not running.</i><br /><br /><span class="error">
 			<b>DB ERROR:</b><?php echo db_get_last_error(); ?></span>

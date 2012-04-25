@@ -1,3 +1,8 @@
+2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/postinst, DEBIAN/make_deb_package.sh: disabled the checking
+	the plugins files with same name.
+
 2012-04-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Leave the secondary server password empty by default.

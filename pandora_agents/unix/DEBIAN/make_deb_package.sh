@@ -65,9 +65,10 @@ cp Linux/pandora_agent.conf temp_package/etc/pandora/
 
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
-#Create a temp file for to update files of plugins dir but don't crush dir.
-cp -aRf temp_package/usr/share/pandora_agent/plugins temp_package/tmp
-rm -rf temp_package/usr/share/pandora_agent/plugins/*
+#Disabled, now the package overwrite the previous files.
+##Create a temp file for to update files of plugins dir but don't crush dir.
+##cp -aRf temp_package/usr/share/pandora_agent/plugins temp_package/tmp
+##rm -rf temp_package/usr/share/pandora_agent/plugins/*
 
 echo "Remove the SVN files and other temp files."
 for item in `find temp_package`
@@ -108,7 +109,7 @@ do
 	fi
 done
 echo "END"
-
+return
 echo "Make the package \"Pandorafms console\"."
 dpkg-deb --build temp_package
 mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb

@@ -2,7 +2,7 @@
 /* This file skins dialog */
 
 .ui-dialog {
-    background: none repeat scroll 0 0 #D3D3D3 !important; 
+    background: none repeat scroll 0 0 #b0d68d !important; 
     border: 1px solid #DDDDDD !important;
     color: #333333 !important;
     padding: 0.2em !important;
@@ -24,16 +24,16 @@
 
 .ui-dialog .ui-dialog-titlebar {
 	background: url(../../images/ui_title.png) repeat-x scroll !important;
-	#height: 15px !important;
+	height: 14px !important;
 	#_height: 16px !important;
 	padding: 0.3em 1em !important;
 	position:relative;
 	margin: 0px auto 0 auto !important;
 	font-weight: bold !important;
-	border-bottom: 1px solid #A9A9A9 !important;
-	border-top: 1px solid #A9A9A9 !important;
-	border-left: 1px solid #A9A9A9 !important;
-	border-right: 1px solid #A9A9A9 !important;
+	#border-bottom: 1px solid #A9A9A9 !important;
+	#border-top: 1px solid #A9A9A9 !important;
+	#border-left: 1px solid #A9A9A9 !important;
+	#border-right: 1px solid #A9A9A9 !important;
 	color: #FFFFFF !important;
 	#padding: 0.1em 1em !important;
 

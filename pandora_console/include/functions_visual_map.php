@@ -88,9 +88,9 @@ function visual_map_print_item($layoutData) {
 	
 	// Single object
 	}
-	elseif (($layout_data["type"] == 0)
-				|| ($layout_data["type"] == 3)
-				|| ($layout_data["type"] == 4)) {
+	elseif (($layoutData["type"] == 0)
+				|| ($layoutData["type"] == 3)
+				|| ($layoutData["type"] == 4)) {
 		// Status for a simple module
 		if ($layoutData['id_agente_modulo'] != 0) {
 			$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
@@ -118,28 +118,28 @@ function visual_map_print_item($layoutData) {
 	switch ($status) {
 		case 1:
 			//Critical (BAD)
-			$imgStatus = "_bad.png";
+			//$imgStatus = "_bad.png";
 			$colorStatus = "#ff0000";
 			break;
 		case 4:
 			//Critical (ALERT)
-			$imgStatus = "4".$img."_bad.png";
+			//$imgStatus = "4".$img."_bad.png";
 			$colorStatus = "#ff8800";
 			break;
 		case 0:
 			//Normal (OK)
-			$imgStatus .= "_ok.png";
+			//$imgStatus .= "_ok.png";
 			$colorStatus = "#00ff00";
 			break;
 		case 2:
 			//Warning
-			$imgStatus .= "_warning.png";
+			//$imgStatus .= "_warning.png";
 			$colorStatus = "#ffff00";
 			break;
 		case 3:
 			//Unknown
 		default:
-			$imgStatus .= ".png";
+			//$imgStatus .= ".png";
 			$colorStatus = "#5A5AFF";
 			// Default is Blue (Other)
 			break;

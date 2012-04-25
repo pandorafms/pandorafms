@@ -1,3 +1,13 @@
+2012-04-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* include/styles/dialog.css
+	 index.php: Added support for new login help modal window.
+	 
+	* general/login_help_dialog.php: New login help modal window.
+
+	* include/functions_visual_map.php: Fixed some warnings 
+	with bubble percentile items in visual console edition mode.
+
 2012-04-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_users.php: into the function "users_get_groups"

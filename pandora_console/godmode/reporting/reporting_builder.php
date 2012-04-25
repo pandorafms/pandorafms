@@ -153,7 +153,7 @@ switch ($action) {
 			case 'main':			$buttons['list_reports']['active'] = true;
 									$subsection = ' &raquo; '.__('Custom reporting');
 									break;
-			default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, &$buttons);
+			default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
 									break;
 		}
 	
@@ -864,7 +864,7 @@ switch ($action) {
 				case 'main':			$buttons['list_reports']['active'] = true;
 										$subsection = ' &raquo; '.__('Custom reporting');
 										break;
-				default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, &$buttons);
+				default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
 										break;
 			}
 		

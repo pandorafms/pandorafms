@@ -84,6 +84,7 @@ INSERT INTO tconfig (token, value) VALUES ('integria_enabled', '0');
 INSERT INTO tconfig (token, value) VALUES ('integria_api_password', ' ');
 INSERT INTO tconfig (token, value) VALUES ('integria_inventory', '0');
 INSERT INTO tconfig (token, value) VALUES ('integria_url', ' ');
+INSERT INTO tconfig (token, value) VALUES ('list_ACL_IPs_for_API_0', '127.0.0.1');
 COMMIT;
 END;;
 

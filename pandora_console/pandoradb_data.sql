@@ -79,7 +79,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('integria_enabled', '0'),
 ('integria_api_password', ''),
 ('integria_inventory', '0'),
-('integria_url', '');
+('integria_url', ''),
+('list_ACL_IPs_for_API_0', '127.0.0.1');
 
 UNLOCK TABLES;
 

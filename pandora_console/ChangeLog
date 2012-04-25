@@ -1,3 +1,9 @@
+2012-04-24 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandoradb_data.sql,
+	pandoradb.data.postgreSQL.sql,
+	pandoradb.data.oracle.sql: Added default value 127.0.0.1 to IP ACL API list
+
 2012-04-24  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/tree.php: Added units to modules.

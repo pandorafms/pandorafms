@@ -1,3 +1,9 @@
+2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora_forms.css
+	 include/functions_themes.php: Removed bad Css files from visual 
+	 styles.
+
 2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_filemanager.php: Changed all messages.

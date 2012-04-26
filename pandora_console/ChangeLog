@@ -1,3 +1,10 @@
+2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css
+	 include/javascript/jquery.pandora.js
+	 general/login_help_dialog.php: Added input for license in blocking
+	 license modal windows.
+
 2012-04-26  Sancho lerena
 
 	* operation/agentes/networkmap.php: Wider field for network map name.

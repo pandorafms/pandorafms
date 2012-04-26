@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 
 require_once('functions_agents.php');
@@ -4410,7 +4412,7 @@ function set_validate_events($id_event, $trash1, $other, $return_type, $user_in_
 		returnData('string', array('type' => 'string', 'data' => 'Correct validation'));
 	}
 	else {
-		returnError('error_validate_event', 'Error in validation operation.');
+		returnError('Error in validation operation.');
 	}
 }
 
@@ -4530,25 +4532,25 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 		$sql_post .= " AND id_alert_am = ".$id_alert_am;
 	
 	if ($id_event != -1)
-		$sql_post .= " AND id_evento = ".$id_event;
+		$sql_post .= " AND id_evento = " . $id_event;
 	
 	if ($id_user_ack != "0")
-		$sql_post .= " AND id_usuario = '".$id_user_ack."'";
+		$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 	
 	if ($utimestamp_upper != 0)
-		$sql_post .= " AND utimestamp >= ".$utimestamp_upper;
+		$sql_post .= " AND utimestamp >= " . $utimestamp_upper;
 	
 	if ($utimestamp_bottom != 0)
-		$sql_post .= " AND utimestamp <= ".$utimestamp_bottom;
+		$sql_post .= " AND utimestamp <= " . $utimestamp_bottom;
 	
 	if ($event_view_hr > 0) {
 		$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
-		$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
+		$sql_post .= " AND (utimestamp > " . $unixtime . " OR estado = 2)";
 	}
 	
 	//Search by tag
 	if ($tag != "") {
-		$sql_post .= " AND tags LIKE '%".io_safe_input($tag)."%'";
+		$sql_post .= " AND tags LIKE '%" . io_safe_input($tag) . "%'";
 	}
 	
 	if ($group_rep == 0) {
@@ -4557,12 +4559,12 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 				if ($filter['total']) {
 					$sql = "SELECT COUNT(*)
 						FROM tevento
-						WHERE 1=1 ".$sql_post;
+						WHERE 1=1 " . $sql_post;
 				}
 				else if ($filter['more_criticity']) {
 					$sql = "SELECT criticity
 						FROM tevento
-						WHERE 1=1 ".$sql_post." ORDER BY criticity DESC LIMIT 1";
+						WHERE 1=1 " . $sql_post . " ORDER BY criticity DESC LIMIT 1";
 				}
 				else {
 					$sql = "SELECT *,
@@ -4570,7 +4572,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 						(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
 						(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
 						FROM tevento
-						WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+						WHERE 1=1 " . $sql_post . " ORDER BY utimestamp DESC LIMIT " . $offset . "," . $pagination;
 				}
 				break;
 			case "postgresql":
@@ -4580,7 +4582,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 					(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
 					(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
 					FROM tevento
-					WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
+					WHERE 1=1 " . $sql_post . " ORDER BY utimestamp DESC LIMIT " . $pagination . " OFFSET " . $offset;
 				break;
 			case "oracle":
 				//TODO TOTAL
@@ -4652,7 +4654,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 	}
 	//html_debug_print($filter, true);
 	$result = db_get_all_rows_sql ($sql);
-	//html_debug_print($sql);
+	//html_debug_print($sql, true);
 	
 	if (($result !== false) && (!$filter['total']) && (!$filter['more_criticity'])) {
 		//Add the description and image

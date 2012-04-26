@@ -166,10 +166,10 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		}
 		$id_event = array_unique($id_event);
 	}
-		
+	
 	db_process_sql_begin ();
 	
-	switch($new_status) {
+	switch ($new_status) {
 		case 1:
 			$new_status_string = __('Validated');
 			break;
@@ -183,9 +183,10 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	
 	$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
 	
-	if($comment != '') {
+	if ($comment != '') {
 		$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$comment.'</div>';
-	}else {
+	}
+	else {
 		$commentbox = '';
 	}
 	
@@ -196,7 +197,7 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		
 		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
 		$fullevent = events_get_event($event);
-		if($fullevent['user_comment'] != ''){
+		if ($fullevent['user_comment'] != '') {
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
 		
@@ -209,11 +210,13 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 			'id_usuario' => $config['id_user'],
 			'user_comment' => $comment);
 		
-		$ret = db_process_sql_update('tevento', $values, array('id_evento' => $event), 'AND', false);
-		if ($ret === false) {
-			process_sql_rollback ();
+		$ret = db_process_sql_update('tevento', $values,
+			array('id_evento' => $event), 'AND', false);
+		
+		if (($ret === false) || ($ret === 0)) {
+			db_process_sql_rollback ();
 			return false;
-		}	
+		}
 	}
 	
 /*
@@ -222,6 +225,7 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	}
 */
 	db_process_sql_commit ();
+	
 	return true;
 }
 

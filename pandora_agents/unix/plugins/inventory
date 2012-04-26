@@ -91,18 +91,19 @@ sub get_servicies_init_machine($$) {
 	my $script = "";
 	
 	if (-e "/etc/rc" . $runlevel .".d/") {
-		$script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11";
+		$script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
 	}
 	else {
-		$script = "ls /etc/rc.d/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11";
+		$script = "ls /etc/rc.d/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
+
 	}
 	
 	my @services = `$script`;
 	foreach my $row (@services) {
-		next unless ($row =~ /^\S+\/(\S+)$/);
                 
 		my %module;
-                $module{'service'} = $1;
+				$row =~ s/\n//;
+                $module{'service'} = $row;
                 $module{'_keys'} = ['service'];
                 push (@{$modules->{$name}}, \%module);
 	}

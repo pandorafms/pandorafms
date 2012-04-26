@@ -462,7 +462,6 @@ $(document).ready (function () {
 	}
 	
 	$("select#export_type").trigger('change');
-	
 });
 
 $("select#export_type").change (function () {
@@ -479,7 +478,7 @@ $("select#export_type").change (function () {
 		case 'data':
 			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
 			break;
-	}	
+	}
 });
 
 function submit_group() {
@@ -487,6 +486,5 @@ function submit_group() {
 	f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
 	f.form.submit();
 }
-
 /* ]]> */
 </script>

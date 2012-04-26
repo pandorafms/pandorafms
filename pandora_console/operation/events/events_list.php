@@ -127,7 +127,7 @@ $tag = get_parameter("tag", "");
 
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
-
+	
 	switch ($text_agent)
 	{
 		case __('All'):
@@ -176,7 +176,7 @@ else {
 
 // Skip system messages if user is not PM
 if (!check_acl ($config["id_user"], 0, "PM")) {
-    $sql_post .= " AND id_grupo != 0";
+	$sql_post .= " AND id_grupo != 0";
 }
 
 switch($status) {
@@ -455,7 +455,7 @@ else {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
 			$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
@@ -463,7 +463,7 @@ else {
 			break;
 		case "postgresql":
 			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
@@ -499,7 +499,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	for ($i=0; $i < count($result); $i++) {
 		unset($result[$i]['rnum']);	
 	}
-}	
+}
 
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
@@ -909,14 +909,14 @@ foreach ($result as $event) {
 	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
 	$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
 	$string .= io_safe_output($event["evento"]);
-	$string .= '</td></tr><tr>';	
+	$string .= '</td></tr><tr>';
 	$string .= '<td align="left" valign="top" width="15%">';
 	$string .= '<b>' . __('Severity') . '</b></td><td align="left">';
 	$string .= html_print_image ($img_sev, true, 
-				array ("class" => "image_status",
-				"width" => 12,
-				"height" => 12,
-				"title" => get_priority_name ($event["criticity"])));
+		array ("class" => "image_status",
+			"width" => 12,
+			"height" => 12,
+			"title" => get_priority_name ($event["criticity"])));
 	$string .= ' '.get_priority_name ($event["criticity"]);
 	$string .= '</td></tr><tr  style="border-left: solid 1px; #D3D3D3;" class="rowOdd">';
 	$string .= '<td align="left" valign="top" width="15%">';
@@ -934,7 +934,7 @@ foreach ($result as $event) {
 	}
 	else {
 		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
-	}		
+	}
 	$string .= '</td></tr><tr>';
 
 	$odd = 'rowOdd';
@@ -966,9 +966,10 @@ foreach ($result as $event) {
 		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . '">';
 		$string .= $module_group;
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
-	
+		
 		$odd = ($odd == '')? 'rowOdd' : '';
-	} else {
+	}
+	else {
 		$string .= '<td align="left" valign="top" width="15%">';
 		$string .= '<b>' . __('Agent module') . '</b></td><td align="left">';
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
@@ -995,17 +996,17 @@ foreach ($result as $event) {
 			$string .= html_print_image ("images/bell_pause.png", true,
 				array ("title" => __('Go to data overview')));
 		}
-	
+		
 		$sql = 'SELECT name
 			FROM talert_templates
 			WHERE id IN (SELECT id_alert_template
 					FROM talert_template_modules
 					WHERE id = ' . $event["id_alert_am"] . ');';
-	
+		
 		$templateName = db_get_sql($sql);
-	
+		
 		$string .= $templateName;
-	
+		
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
 		
 		$odd = ($odd == '')? 'rowOdd' : '';
@@ -1114,15 +1115,14 @@ if (!empty ($table->data)) {
 	
 	echo '<form method="post" id="form_events" action="'.$url.'&amp;section=validate">';
 	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
-
+	
 	html_print_table ($table);
-
+	
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
 		html_print_submit_button (__('Update'), 'validate_btn', false, 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
-
 		html_print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
 		?>
 		<script type="text/javascript">
@@ -1134,7 +1134,6 @@ if (!empty ($table->data)) {
 		<?php
 	}
 	echo '</div></form>';
-
 }
 else {
 	echo '<div class="nf">'.__('No events').'</div>';

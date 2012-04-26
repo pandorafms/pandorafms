@@ -268,7 +268,7 @@ $options_form .= '<table cellpadding="0" cellspacing="0" border="0" width="100%"
 $options_form .= '<tr>';
 $options_form .= '<td>';
 $options_form .= __('Name') . '<br />';
-$options_form .= html_print_input_text ('name', $name, '', 10, 25, true);
+$options_form .= html_print_input_text ('name', $name, '', 25, 25, true);
 $options_form .= '</td>';
 $options_form .= '<td valign="top">' . __('Group') . '<br />';
 $options_form .= html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);

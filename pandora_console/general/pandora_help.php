@@ -23,7 +23,9 @@ require_once ("../include/functions_html.php");
 <?php
 	echo __('Pandora FMS help system');
 ?>
-</title></head>
+</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+</head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
 <body style="background-color: #555555; height: 100%; ">
 <?php

@@ -267,6 +267,7 @@ if (isset ($_GET["bye"])) {
  * Load the basic configurations of extension and add extensions into menu.
  * Load here, because if not, some extensions not load well, I don't why.
  */
+
 extensions_load_extensions ($config['extensions']);
 if ($process_login) {
 	 /* Call all extensions login function */
@@ -277,7 +278,7 @@ if ($process_login) {
 	//Set the initial global counter for chat.
 	users_get_last_global_counter('session');
 }
-
+	
 //Get old parameters before navigation.
 $old_sec = '';
 $old_sec2 = '';

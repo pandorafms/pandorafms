@@ -86,24 +86,23 @@ $(document).ready (function () {
 		return false;
 	});
 	
-	$(function() {
-		$( "#license_error_msg_dialog" ).dialog({
+
+	$( "#license_error_msg_dialog" ).dialog({
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 250,
+				height: 280,
 				width: 600,
 				overlay: {
 							opacity: 0.5,
 							background: "black"
 						},
 				bgiframe: jQuery.browser.msie
-			});
 	});
 	
 	$("#submit-hide-license-error-msg").click (function () {
 		$("#license_error_msg_dialog" ).dialog('close')
-	});	
+	});
 	
 	
 	$("a#dialog_license_info").click (function () {
@@ -134,6 +133,4 @@ $(document).ready (function () {
 		return false;
 	});
 
-}
-
-);
+});

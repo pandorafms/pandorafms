@@ -156,7 +156,6 @@ h1#log_f {
 }
 div#login {
 	margin: 0 auto;
-	#margin-top: 200px;
 	padding-top: 63px;
 	width: 657px;
 	border-left: solid 1px #000;
@@ -173,9 +172,9 @@ div#error_login {
 	#margin: 0 auto;
 	#margin-top: -10px; 
 	text-align: center;
-	margin-top: 10px;
+	margin-top: 5px;
 	margin-left: 5px;
-	width: 70%;
+	width: 75%;
 	float: right;
 	text-align: left;
 	top: 100px;

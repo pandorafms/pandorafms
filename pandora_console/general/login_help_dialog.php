@@ -36,6 +36,9 @@ if (is_ajax()) {
 
 // Prints help dialog information
 
+if ($license_fail == 1)
+	return;
+
 echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" style="">';
 
 	echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; width:560px; margin: 0 auto; border: 1px solid #FFF; line-height: 19px;">';
@@ -122,11 +125,11 @@ $(document).ready (function () {
 		
 	
 	$("#submit-hide-login-help").click (function () {
-				
+		
 		$("#login_help_dialog" ).dialog('close');
 		
 		var skip_login_help = $("#checkbox-skip_login_help").attr('checked');
-				
+		
 		// Update config['skip_login_help_dialog'] to don't display more this message
 		if (skip_login_help == 'checked') {
 			jQuery.get ("ajax.php",

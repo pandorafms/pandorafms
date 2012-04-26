@@ -1,3 +1,13 @@
+2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* include/styles/pandora.css
+	 include/javascript/jquery.pandora.js
+	 index.php
+	 general/login_help_dialog.php: Added input for license in blocking
+	 license modal windows.
+
+	Merged from branches.
+
 2012-04-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/exportdata.php,

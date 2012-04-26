@@ -39,7 +39,7 @@ $tag = get_parameter("tag", "");
 
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
-
+	
 	switch ($text_agent)
 	{
 		case __('All'):
@@ -88,7 +88,7 @@ else {
 
 // Skip system messages if user is not PM
 if (!check_acl ($config["id_user"], 0, "PM")) {
-    $sql_post .= " AND id_grupo != 0";
+	$sql_post .= " AND id_grupo != 0";
 }
 
 switch($status) {
@@ -155,7 +155,8 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" . $tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset;
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" .
+	$tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset;
 
 echo "<br>";
 //Link to toggle filter
@@ -211,8 +212,9 @@ echo '</td>';
 $src_code = html_print_image('images/lightning.png', true, false, true);
 echo "<td>".__('Agent search')."</td><td>";
 html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
-array('style' => 'background: url(' . $src_code . ') no-repeat right;'))
-. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+	array('style' => 'background: url(' . $src_code . ') no-repeat right;')) .
+	'<a href="#" class="tip">&nbsp;<span>' .
+	__("Type at least two characters to search") . '</span></a>';
 
 
 echo "</td></tr>";
@@ -318,7 +320,7 @@ else {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
 			$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
@@ -326,7 +328,7 @@ else {
 			break;
 		case "postgresql":
 			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-			        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule
@@ -351,7 +353,6 @@ else {
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
-
 }
 
 //Extract the events by filter (or not) from db
@@ -362,7 +363,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	for ($i=0; $i < count($result); $i++) {
 		unset($result[$i]['rnum']);	
 	}
-}	
+}
 
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
@@ -444,7 +445,7 @@ foreach ($result as $event) {
 			$title_st = __('Event in process');
 			break;
 	}
-
+	
 	$data[0] = html_print_image ($img_st, true, 
 		array ("class" => "image_status",
 			"width" => 16,
@@ -476,7 +477,7 @@ foreach ($result as $event) {
 	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode(io_safe_input($event["evento"])).'">';
 	$data[1] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
 	$data[1] .= '</a></span>';
-
+	
 	$data[2] = '<span style="color: #000000">';
 	if ($event["event_type"] == "system") {
 		$data[2] .= __('System');
@@ -499,7 +500,7 @@ foreach ($result as $event) {
 		$data[3] .= ui_print_timestamp ($event["timestamp"], true);
 	}
 	$data[3] .= '</span>';
-
+	
 	//Actions
 	$data[4] = '';
 	// Validate event
@@ -552,7 +553,7 @@ foreach ($result as $event) {
 		$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
 	}
 	array_push ($table->data, $data);
-
+	
 	//Hiden row with description form
 	$string = '';//$string = '<form method="post" action="'.$url.'&amp;section=list">';
 	$string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
@@ -584,7 +585,7 @@ foreach ($result as $event) {
 	$table->colspan[$idx][0] = 10;
 	$table->rowstyle[$idx] = 'display: none;';
 	array_push ($table->data, $data);
-
+	
 	//Hiden row with extended description
 	$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
 	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
@@ -615,7 +616,7 @@ foreach ($result as $event) {
 	}
 	else {
 		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
-	}		
+	}
 	$string .= '</td></tr><tr class="rowOdd">';	
 	$odd = '';
 	
@@ -686,7 +687,8 @@ foreach ($result as $event) {
 	$string .= '<td align="left" valign="top" width="15%">';
 	if ($group_rep == 0) {
 		$string .= '<b>' . __('User ID') . '</b></td><td align="left">';
-	} else {
+	}
+	else {
 		$string .= '<b>' . __('Count') . '</b></td><td align="left">';
 	}
 	
@@ -754,15 +756,14 @@ if (!empty ($table->data)) {
 	
 	echo '<form method="post" id="form_events" action="'.$url.'&amp;section=validate">';
 	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
-
+	
 	html_print_table ($table);
-
+	
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
 		html_print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
-
 		html_print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
 		?>
 		<script type="text/javascript">
@@ -774,7 +775,6 @@ if (!empty ($table->data)) {
 		<?php
 	}
 	echo '</div></form>';
-
 }
 else {
 	echo '<div class="nf">'.__('No events').'</div>';

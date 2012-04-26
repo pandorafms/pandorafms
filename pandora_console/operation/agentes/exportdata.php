@@ -94,15 +94,16 @@ ui_print_page_header (__("Export data"), "images/server_export.png");
 
 $group = get_parameter_post ('group', 0);
 $agentName = get_parameter_post ('agent', 0);
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$agents = agents_get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
-			break;
-		case "oracle":
-			$agents = agents_get_agents (array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
-			break;
-	}
+
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$agents = agents_get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+		break;
+	case "oracle":
+		$agents = agents_get_agents (array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
+		break;
+}
 $agent = $agents[0]['id_agente'];
 
 $module = (array) get_parameter_post ('module_arr', array ());
@@ -185,13 +186,14 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
 						$arr["utimestamp"] = $end;				
 						array_push ($data, $arr);
-					} else {
+					}
+					else {
 						$data_single = modules_get_agentmodule_data ($selected, $work_period, $work_end);
 						if (!empty ($data_single)) {
 							$data = array_merge ($data, $data_single);
 						}
 					}
-
+					
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
 						$output .= io_safe_output($module['agent_name']);
@@ -203,7 +205,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$output .= date ("Y-m-d G:i:s", $module['utimestamp']);
 						$output .= $rowend;
 					}
-
+					
 					switch ($export_type) {
 						default:
 						case "data":
@@ -217,14 +219,14 @@ if (!empty ($export_btn) && !empty ($module)) {
 					unset($data_single);
 					$work_end = $work_end + $work_period;
 				}
-			unset ($output);
-			$output = "";
+				unset ($output);
+				$output = "";
 			} // main foreach
 			echo $dataend;
 			break;
 	}
-
-} elseif (!empty ($export_btn) && empty ($module)) {
+}
+elseif (!empty ($export_btn) && empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
 }
 
@@ -326,7 +328,7 @@ ui_require_jquery_file ('autocomplete');
 /* <![CDATA[ */
 $(document).ready (function () {
 	var inputActive = true;
-
+	
 	$.ajax({
 		type: "POST",
 		url: "ajax.php",

@@ -1,3 +1,16 @@
+2012-04-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/exportdata.php,
+	operation/events/events_list.php: cleaned source code style.
+	
+	* include/functions_events.php,
+	include/functions_network_components.php,
+	include/functions_api.php: fixed some things, the function
+	"events_validate_event" when can't update as validate any event
+	return false, into the file "functions_network_components" added
+	$config['homedir'] for situations where include in a other path that
+	index. And show error when make a bad validate event.
+
 2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora_forms.css

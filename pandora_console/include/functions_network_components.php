@@ -18,12 +18,14 @@
  * @subpackage Network components
  */
 
+global $config;
+
 /**
  * Include modules functions
  */
-include_once ('include/functions_modules.php');
-include_once ('include/functions_agents.php');
-include_once ('include/functions_users.php');
+include_once ($config['homedir'] . 'include/functions_modules.php');
+include_once ($config['homedir'] . 'include/functions_agents.php');
+include_once ($config['homedir'] . 'include/functions_users.php');
 
 /**
  * Get a list of network components.
@@ -43,7 +45,7 @@ include_once ('include/functions_users.php');
  */
 function network_components_get_network_components ($id_module, $filter = false, $fields = false) {
 	global $config;
-
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	if (! empty ($id_module))
@@ -55,18 +57,17 @@ function network_components_get_network_components ($id_module, $filter = false,
 			$components = db_get_all_rows_filter ('tnetwork_component',
 				$filter, $fields);
 			break;
-		case "oracle":	
+		case "oracle":
 			if (count ($fields) > 1) {
 				$fields = implode(',',$fields);
-			}		
+			}
 			if (isset($filter['offset'])) {
 				$components = oracle_recode_query ('SELECT ' . $fields . ' FROM tnetwork_component', $filter, 'AND', false);		
 				if ($components != false) {
-					
 					for ($i=0; $i < count($components); $i++) {
-						unset($components[$i]['rnum']);		
+						unset($components[$i]['rnum']);
 					}
-				}			
+				}
 			}
 			else {
 				$components = db_get_all_rows_filter ('tnetwork_component',
@@ -76,6 +77,7 @@ function network_components_get_network_components ($id_module, $filter = false,
 	}
 	if ($components === false)
 		return array ();
+	
 	return $components;
 }
 
@@ -235,14 +237,15 @@ function network_components_get_network_component ($id_network_component, $filte
  */
 function network_components_create_network_component ($name, $type, $id_group, $values = false) {
 	global $config;
-
+	
 	switch ($config['dbtype']) {
 		case "oracle":
 			if (empty($values['tcp_rcv']))
 				$values['tcp_rcv'] = " ";
-		return;
+			return;
+			break;
 	}
-
+	
 	if (empty ($name))
 		return false;
 	if (empty ($type))
@@ -374,31 +377,31 @@ function network_components_duplicate_network_component ($id_local_component) {
 		return false;
 	
 	$name = __('Copy of').' '.$network['name'];
-
-    $networkCopy['description'] = $network['description'];
-    $networkCopy['max'] = $network['max'];
-    $networkCopy['min'] = $network['min'];
-    $networkCopy['module_interval'] = $network['module_interval'];
-    $networkCopy['tcp_port'] = $network['tcp_port'];
-    $networkCopy['tcp_send'] = $network['tcp_send'];
-    $networkCopy['tcp_rcv'] = $network['tcp_rcv'];
-    $networkCopy['snmp_community'] = $network['snmp_community'];
-    $networkCopy['snmp_oid'] = $network['snmp_oid'];
-    $networkCopy['id_module_group'] = $network['id_module_group'];
-    $networkCopy['id_modulo'] = $network['id_modulo'];
-    $networkCopy['id_plugin'] = $network['id_plugin'];
-    $networkCopy['plugin_user'] = $network['plugin_user'];
-    $networkCopy['plugin_pass'] = $network['plugin_pass'];
-    $networkCopy['plugin_parameter'] = $network['plugin_parameter'];
-    $networkCopy['max_timeout'] = $network['max_timeout'];
-    $networkCopy['history_data'] = $network['history_data'];
-    $networkCopy['min_warning'] = $network['min_warning'];
-    $networkCopy['max_warning'] = $network['max_warning'];
-    $networkCopy['str_warning'] = $network['str_warning'];
-    $networkCopy['min_critical'] = $network['min_critical'];
-    $networkCopy['max_critical'] = $network['max_critical'];
-    $networkCopy['str_critical'] = $network['str_critical'];
-    $networkCopy['min_ff_event'] = $network['min_ff_event'];
+	
+	$networkCopy['description'] = $network['description'];
+	$networkCopy['max'] = $network['max'];
+	$networkCopy['min'] = $network['min'];
+	$networkCopy['module_interval'] = $network['module_interval'];
+	$networkCopy['tcp_port'] = $network['tcp_port'];
+	$networkCopy['tcp_send'] = $network['tcp_send'];
+	$networkCopy['tcp_rcv'] = $network['tcp_rcv'];
+	$networkCopy['snmp_community'] = $network['snmp_community'];
+	$networkCopy['snmp_oid'] = $network['snmp_oid'];
+	$networkCopy['id_module_group'] = $network['id_module_group'];
+	$networkCopy['id_modulo'] = $network['id_modulo'];
+	$networkCopy['id_plugin'] = $network['id_plugin'];
+	$networkCopy['plugin_user'] = $network['plugin_user'];
+	$networkCopy['plugin_pass'] = $network['plugin_pass'];
+	$networkCopy['plugin_parameter'] = $network['plugin_parameter'];
+	$networkCopy['max_timeout'] = $network['max_timeout'];
+	$networkCopy['history_data'] = $network['history_data'];
+	$networkCopy['min_warning'] = $network['min_warning'];
+	$networkCopy['max_warning'] = $network['max_warning'];
+	$networkCopy['str_warning'] = $network['str_warning'];
+	$networkCopy['min_critical'] = $network['min_critical'];
+	$networkCopy['max_critical'] = $network['max_critical'];
+	$networkCopy['str_critical'] = $network['str_critical'];
+	$networkCopy['min_ff_event'] = $network['min_ff_event'];
 	
 	return network_components_create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);
 }

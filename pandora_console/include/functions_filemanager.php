@@ -154,7 +154,7 @@ if ($upload_file) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			$config['filemanager']['message'] = "<h4 class=error>".__('Security error.')."</h4>";
+			$config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
 		}
 		else {
 			// Copy file to directory and change name
@@ -166,11 +166,11 @@ if ($upload_file) {
 			}
 			
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-				$config['filemanager']['message'] = "<h4 class=error>".__('Upload error')."</h4>";
+				$config['filemanager']['message'] = ui_print_error_message(__('Upload error'), '', true);
 			}
 			else {
 				$config['filemanager']['correct_upload_file'] = 1;
-				$config['filemanager']['message'] = '<h4 class=suc>'.__('Upload correct').'</h4>';
+				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				
 				// Delete temporal file
 				unlink ($_FILES['file']['tmp_name']);
@@ -220,16 +220,16 @@ if ($create_text_file) {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
 			if (! @touch($nombre_archivo)) {
-				$config['filemanager']['message'] = "<h4 class=error>".__('Error create file.')."</h4>";
+				$config['filemanager']['message'] = ui_print_error_message(__('Error creating file'), '', true);
 			}
 			else {
-				$config['filemanager']['message'] = '<h4 class=suc>'.__('Upload correct').'</h4>';
+				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				$config['filemanager']['correct_upload_file'] = 1;
 			}
 		}
 	}
 	else {
-		$config['filemanager']['message'] = "<h4 class=error>".__('Error create file with empty name.')."</h4>";
+		$config['filemanager']['message'] = ui_print_error_message(__('Error creating file with empty name'), '', true);
 	}
 }
 
@@ -260,7 +260,7 @@ if ($upload_zip) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			$config['filemanager']['message'] = "<h4 class=error>".__('Security error.')."</h4>";
+			$config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
 		}
 		else {
 			// Copy file to directory and change name
@@ -271,7 +271,7 @@ if ($upload_zip) {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-				$config['filemanager']['message'] = "<h4 class=error>".__('attach_error')."</h4>";
+				$config['filemanager']['message'] = ui_print_error_message(__('Attach error'), '', true);
 			}
 			else {
 				// Delete temporal file
@@ -285,7 +285,7 @@ if ($upload_zip) {
 					$zip->extractTo($pathname);
 					unlink($nombre_archivo);
 				}
-				$config['filemanager']['message'] = '<h4 class=suc>'.__('Upload correct').'</h4>';
+				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				$config['filemanager']['correct_upload_file'] = 1;
 			}
 		}
@@ -314,12 +314,12 @@ if ($create_dir) {
 		$dirname = io_safe_output($dirname);
 		if ($dirname != '') {
 			@mkdir ($directory.'/'.$dirname);
-			$config['filemanager']['message'] = '<h4 class="suc">'.__('Created directory').'</h4>';
+			$config['filemanager']['message'] = ui_print_success_message(__('Directory created'), '', true);
 			
 			$config['filemanager']['correct_create_dir'] = 1;
 		}
 		else {
-			$config['filemanager']['message'] = "<h4 class=error>".__('Error create file with empty name.')."</h4>";
+			$config['filemanager']['message'] = ui_print_error_message(__('Error creating file with empty name'), '', true);
 		}
 	}
 }
@@ -339,10 +339,10 @@ if ($delete_file) {
 	$testHash = md5($filename . $config['dbpass']);
 	
 	if ($hash != $testHash) {
-		 $config['filemanager']['message'] = "<h4 class=error>".__('Security error.')."</h4>";
+		 $config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
 	}
 	else {
-		$config['filemanager']['message'] = "<h4 class=suc>".__('Deleting')."</h4>";
+		$config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
 		if (is_dir ($filename)) {		
 			rmdir ($filename);
 			$config['filemanager']['delete'] = 1;

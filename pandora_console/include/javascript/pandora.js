@@ -232,6 +232,12 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 		//val() because the var is same <option val="NNN"></option>
 		idAgents.push($(val).val());
 	});
+	
+	var selection_mode = $('#modules_selection_mode').val();
+	if(selection_mode == undefined) {
+		selection_mode = 'common';
+	}
+	
 	template = $('#id_alert_template option:selected').attr("value");
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
@@ -240,7 +246,8 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 				 {"page": "operation/agentes/ver_agente",
 				 "get_agent_modules_alerts_json_for_multiple_agents": 1,
 				 "template": template,
-				 "id_agent[]": idAgents
+				 "id_agent[]": idAgents,
+				 "selection_mode": selection_mode
 				 },
 				 function (data) {
 					 $('#module').empty ();
@@ -269,11 +276,12 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 								  });
 					 if (selected != undefined)
 					 $('#module').attr ('value', selected);
-					 $('#module').attr ('disabled', 0);
+					 $('#module').removeAttr('disabled');
 				 },
 				 "json"
 				 );
 }
+
 
 /**
  * Fill up select box with id "agent" with agents after module has been selected, but this not empty the select box.s

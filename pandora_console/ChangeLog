@@ -1,5 +1,9 @@
 2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* include/javascript/pandora.js: Fixed bug in massive alerts deletion.
+
+2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* godmode/reports/reporting_builder.list_items.php: Added sort column.
 
 2012-04-26  Junichi Satoh  <junichi@rworks.jp>

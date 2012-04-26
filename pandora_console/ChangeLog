@@ -1,3 +1,11 @@
+2012-04-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_db.php, operation/agentes/exportdata.php:
+	cleaned source code style.
+	
+	* include/functions_api.php: fixed prevent the empty string in the
+	status into the search events.
+
 2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/javascript/pandora.js: Fixed bug in massive alerts deletion.
@@ -40,7 +48,7 @@
 	 index.php: Added support for new login help modal window.
 	 
 	* general/login_help_dialog.php: New login help modal window.
-
+	
 	* include/functions_visual_map.php: Fixed some warnings 
 	with bubble percentile items in visual console edition mode.
 

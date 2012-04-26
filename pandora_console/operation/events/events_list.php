@@ -609,8 +609,10 @@ if ($i != 0) {
 	$table->align[$i] = 'center';
 	$table->size[$i] = '80px';
 	$i++;
-	$table->head[$i] = html_print_checkbox ("allbox", "1", false, true);
-	$table->align[$i] = 'center';
+	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+		$table->head[$i] = html_print_checkbox ("allbox", "1", false, true);
+		$table->align[$i] = 'center';
+	}
 }
 
 $idx = 0;
@@ -856,8 +858,10 @@ foreach ($result as $event) {
 		}
 		$i++;
 	
-		//Checkbox
-		$data[$i] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+		if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+			//Checkbox
+			$data[$i] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+		}
 		array_push ($table->data, $data);
 	}
 	

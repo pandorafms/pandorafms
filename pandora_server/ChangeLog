@@ -1,3 +1,8 @@
+2012-04-26  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added call to delete the agent
+	related nodes of the network map enterprise
+
 2012-04-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Do not insert zeroes when something goes

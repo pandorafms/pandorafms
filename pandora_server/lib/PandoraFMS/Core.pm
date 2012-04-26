@@ -1497,6 +1497,9 @@ sub pandora_delete_agent ($$;$) {
 	foreach my $module (@modules) {
 			pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
 	}
+	
+	# Delete all the associated nodes of networkmap enterprise, if exist
+	enterprise_hook('pandora_delete_networkmap_enterprise_agents', [$dbh,$agent_id]);
 }
 
 ##########################################################################

@@ -86,8 +86,8 @@ $(document).ready (function () {
 		return false;
 	});
 	
-	$(function() {
-		$( "#license_error_msg_dialog" ).dialog({
+
+	$( "#license_error_msg_dialog" ).dialog({
 				resizable: true,
 				draggable: true,
 				modal: true,
@@ -98,7 +98,6 @@ $(document).ready (function () {
 							background: "black"
 						},
 				bgiframe: jQuery.browser.msie
-			});
 	});
 	
 	$("#submit-hide-license-error-msg").click (function () {
@@ -134,6 +133,4 @@ $(document).ready (function () {
 		return false;
 	});
 
-}
-
-);
+});

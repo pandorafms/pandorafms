@@ -1,3 +1,9 @@
+2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/jquery.pandora.js: Fixed modal windows in IE.
+	
+	Fixes: #3521410
+
 2012-04-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_db.php, operation/agentes/exportdata.php:

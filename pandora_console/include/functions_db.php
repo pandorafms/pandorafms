@@ -24,7 +24,7 @@ include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
-include_once($config['homedir'] . '/include/functions_users.php');
+include_once($config['homedir'] . "/include/functions_users.php");
 
 function db_select_engine() {
 	global $config;
@@ -44,7 +44,7 @@ function db_select_engine() {
 
 function db_connect($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql": 
 			return mysql_connect_db($host, $db, $user, $pass, $history, $port);
@@ -74,7 +74,7 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $histo
  */
 function db_escape_string_sql($string) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_escape_string_sql($string);
@@ -101,11 +101,10 @@ function db_escape_string_sql($string) {
  */
 function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, $info = '') {
 	global $config;
-
+	
 	if ($ip !== false) {
 		if (isset($config["remote_addr"])) {
 			$ip = $config["remote_addr"];
-				
 		}
 		else {
 			if ($_SERVER['REMOTE_ADDR']) {
@@ -116,7 +115,7 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 			}
 		}
 	}
-
+	
 	if ($user_id !== false) {
 		$id = $user_id;
 	}
@@ -126,10 +125,10 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 		}
 		else $id = 0;
 	}
-
+	
 	$accion = io_safe_input($accion);
 	$descripcion = io_safe_input($descripcion);
-
+	
 	switch ($config['dbtype']){	
 		case "mysql":
 		case "postgresql":
@@ -145,15 +144,16 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 				'accion' => $accion,
 				'ip_origen' => $ip,
 				'descripcion' => $descripcion,
-				'fecha' => '#to_date(\'' . date('Y-m-d H:i:s') . '\',\'YYYY-MM-DD HH24:MI:SS\')',
+				'fecha' => '#to_date(\'' . date('Y-m-d H:i:s') .
+					'\',\'YYYY-MM-DD HH24:MI:SS\')',
 				'utimestamp' => time());
 			break;
 	}
 	$id_audit = db_process_sql_insert('tsesion', $values);
-
+	
 	enterprise_include_once('include/functions_audit.php');
 	enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
-
+	
 	return $id_audit;
 }
 
@@ -167,7 +167,7 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
  */
 function db_logon ($id_user, $ip) {
 	db_pandora_audit("Logon", "Logged in", $id_user, $ip);
-
+	
 	// Update last registry of user to set last logon. How do we audit when the user was created then?
 	process_user_contact ($id_user);
 }
@@ -196,7 +196,7 @@ $sql_cache = array ('saved' => 0);
  */
 function db_get_value($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_value($field, $table, $field_search, $condition, $search_history_db);
@@ -237,7 +237,7 @@ function db_get_value($field, $table, $field_search = 1, $condition = 1, $search
  */
 function db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_value_filter($field, $table, $filter, $where_join);
@@ -261,7 +261,7 @@ function db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
  */
 function db_get_value_sql($sql) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_value_sql($sql);
@@ -284,7 +284,7 @@ function db_get_value_sql($sql) {
  */
 function db_get_row_sql($sql, $search_history_db = false) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_row_sql($sql, $search_history_db);
@@ -314,7 +314,7 @@ function db_get_row_sql($sql, $search_history_db = false) {
  */
 function db_get_row ($table, $field_search, $condition, $fields = false) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_row($table, $field_search, $condition, $fields);
@@ -354,7 +354,7 @@ function db_get_row ($table, $field_search, $condition, $fields = false) {
  */
 function db_get_row_filter($table, $filter, $fields = false, $where_join = 'AND') {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_row_filter($table, $filter, $fields, $where_join);
@@ -379,10 +379,10 @@ function db_get_row_filter($table, $filter, $fields = false, $where_join = 'AND'
 
 function db_get_sql ($sql, $field = 0, $search_history_db = false) {
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
-
+	
 	if($result === false)
 	return false;
-
+	
 	$ax = 0;
 	foreach ($result[0] as $f){
 		if ($field == $ax)
@@ -403,7 +403,7 @@ function db_get_sql ($sql, $field = 0, $search_history_db = false) {
  */
 function db_get_all_rows_sql($sql, $search_history_db = false, $cache = true) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_all_rows_sql($sql, $search_history_db, $cache);

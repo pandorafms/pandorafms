@@ -176,7 +176,7 @@ function isInACL($ip) {
 	return false;
 }
 
-//-------------------------DEFINED OPERATIONS FUNCTIONS-------------------------
+//-------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 function get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
@@ -3687,25 +3687,25 @@ function set_update_user($id, $thrash2, $other, $thrash3) {
  */
 
 function set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
-
+	
 	if ($id == ""){
 		returnError('error_enable_disable_user', 'Error enable/disable user. Id_user cannot be left blank.');
 		return;
 	}
-
-
+	
+	
 	if ($other['data'][0] != "0" and $other['data'][0] != "1"){
 		returnError('error_enable_disable_user', 'Error enable/disable user. Enable/disable value cannot be left blank.');
-		return;		
+		return;
 	}
 	
 	if (users_get_user_by_id($id) == false){
 		returnError('error_enable_disable_user', 'Error enable/disable user. The user doesn\'t exists.');
-		return;				
+		return;
 	}
-
+	
 	$result = users_disable($id, $other['data'][0]);
-    
+	
 	if (is_error($result)) {
 		// TODO: Improve the error returning more info
 		returnError('error_create_network_module', __('Error in user enabling/disabling.'));
@@ -3723,7 +3723,7 @@ function set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
 
 function otherParameter2Filter($other, $array = false) {
 	$filter = array();
-
+	
 	if (($other['data'][1] != null) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
 		$filter['criticity'] = $other['data'][1];
 	}
@@ -3790,7 +3790,11 @@ function otherParameter2Filter($other, $array = false) {
 			$filter['estado'] = $other['data'][8];
 		}
 		else {
-			$filterString .= ' AND estado = ' . $other[8];
+			$estado = (int)$other[8];
+			
+			if ($estado >= 0) {
+				$filterString .= ' AND estado = ' . $estado;
+			}
 		}
 	}
 	
@@ -4504,7 +4508,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 			$sql_post .= " AND event_type LIKE '%$event_type%' ";
 		}
 		elseif ($event_type == "not_normal") {
-			$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+			$sql_post .= " AND event_type LIKE '%warning%'
+				OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
 		}
 		else {
 			$sql_post .= " AND event_type = '".$event_type."'";
@@ -4564,10 +4569,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 						(SELECT t1.nombre FROM tagente AS t1 WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 						(SELECT t2.nombre FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
 						(SELECT t2.icon FROM tgrupo AS t2 WHERE t2.id_grupo = tevento.id_grupo) AS group_icon
-						FROM tevento" .
-//FOR THE TEST THE API IN THE ANDROID
-//						" WHERE 1=1 ".$sql_post." ORDER BY id_evento ASC LIMIT ".$offset.",".$pagination;
-						" WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+						FROM tevento
+						WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 				}
 				break;
 			case "postgresql":
@@ -4599,7 +4602,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 			case "mysql":
 				db_process_sql ('SET group_concat_max_len = 9999999');
 				$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-				        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+						MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 					FROM tevento
 					WHERE 1=1 ".$sql_post."
 					GROUP BY evento, id_agentmodule
@@ -4607,7 +4610,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 				break;
 			case "postgresql":
 				$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-				        MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+						MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 					FROM tevento
 					WHERE 1=1 ".$sql_post."
 					GROUP BY evento, id_agentmodule

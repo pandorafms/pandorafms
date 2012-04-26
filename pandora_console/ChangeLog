@@ -1,3 +1,13 @@
+2012-04-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_db.php, operation/agentes/exportdata.php:
+	cleaned source code style.
+	
+	* include/functions_api.php: fixed prevent the empty string in the
+	status into the search events.
+	
+	MERGED FROM 4.0.2
+
 2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
 	
 	* godmode/reporting/reporting_builder.list_items.php: Added sort column.

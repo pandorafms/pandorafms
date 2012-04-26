@@ -212,7 +212,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 	switch ($export_type) {
 		case "data":
 		case "avg":
-
 			// Show header
 			echo $datastart;
 
@@ -287,7 +286,7 @@ elseif (!empty ($export_btn) && empty ($module)) {
 
 if (empty($export_btn)) {
 	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form">';
-
+	
 	$table->width = '98%';
 	$table->border = 0;
 	$table->cellspacing = 3;
@@ -315,7 +314,6 @@ if (empty($export_btn)) {
 
 	$agents = array ();
 	$rows = agents_get_agents ($filter, false, 'AR');
-
 	if ($rows == null) $rows = array();
 	foreach ($rows as $row) {
 		$agents[$row['id_agente']] = $row['nombre'];

@@ -23,7 +23,8 @@
  * Get a list of CSS themes installed.
  *
  * @param bool List all css files of an specific path without filter "pandora*" pattern
- *
+ * Note: If you want to exclude a Css file from the resulting list put "Exclude css from visual styles" in the file header
+ * 
  * @return array An indexed array with the file name in the index and the theme
  * name (if available) as the value.
  */
@@ -44,6 +45,9 @@ function themes_get_css ($path = false) {
 		if ($path && ($file == '.' || $file == '..' || strtolower(substr ($file, strlen ($file) - 4)) !== '.css'))
 			continue;
 		$data = implode ('', file ($theme_dir.'/'.$file));
+		if (preg_match ('|Exclude css from visual styles|', $data)) {
+			continue;
+		}
 		preg_match ('|Name:(.*)$|mi', $data, $name);
 		if (isset ($name[1]))
 			$retval[$file] = trim ($name[1]);

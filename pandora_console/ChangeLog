@@ -1,3 +1,11 @@
+2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora_forms.css
+	 include/functions_themes.php: Removed bad Css files from visual 
+	 styles.
+	 
+	 Merged from branches.
+
 2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/events/events_list.php: The column to validate events 

@@ -401,8 +401,10 @@ $table->head[4] = __('Action');
 $table->align[4] = 'center';
 $table->size[4] = '80px';
 
-$table->head[5] = html_print_checkbox ("allbox", "1", false, true);
-$table->align[5] = 'center';
+if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+	$table->head[5] = html_print_checkbox ("allbox", "1", false, true);
+	$table->align[5] = 'center';
+}
 
 $idx = 0;
 //Arrange data. We already did ACL's in the query
@@ -545,8 +547,10 @@ foreach ($result as $event) {
 		$data[4] .= '</a>';
 	}
 	
-	//Checkbox
-	$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+		//Checkbox
+		$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+	}
 	array_push ($table->data, $data);
 
 	//Hiden row with description form

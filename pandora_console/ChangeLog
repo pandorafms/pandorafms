@@ -1,3 +1,7 @@
+2012-04-26  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/reports/reporting_builder.list_items.php: Added sort column.
+
 2012-04-26  Junichi Satoh  <junichi@rworks.jp>
 
 	* general/pandora_help.php: Merged from trunk. Added meta tag to

@@ -205,7 +205,8 @@ if ($items) {
 	$table->size[0] = '5px';
 	$table->size[1] = '15%';
 	$table->size[4] = '8%';
-	$table->size[6] = '65px';
+	$table->size[6] = '50px';
+	$table->size[7] = '30px';
 	
 	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
 	$table->head[1] = __('Type');
@@ -226,8 +227,10 @@ if ($items) {
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
 	$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';
+	$table->head[7] = __('Sort');
 
 	$table->align[6] = 'center';
+	$table->align[7] = 'center';
 } else {
 	echo '<br><br><div class="nf">'. __('No items') . '</div>';
 }
@@ -314,14 +317,15 @@ foreach ($items as $item) {
 	}
 	
 	$row[6] = '';
-	//You can sort the items if the filter is not enable.
-	if (!$filterEnable) {
-		$row[6] .= html_print_checkbox_extended('sorted_items[]', $item['id_rc'], false, false, '', 'class="selected_check"', true);
-	}
 	$row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;&nbsp;';
 	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	
+	$row[7] = '';
+	//You can sort the items if the filter is not enable.
+	if (!$filterEnable) {
+		$row[7] .= html_print_checkbox_extended('sorted_items[]', $item['id_rc'], false, false, '', 'class="selected_check"', true);
+	}
 	$table->data[] = $row;
 	$count++;
 	//Restore db connection

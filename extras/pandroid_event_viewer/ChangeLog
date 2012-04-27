@@ -1,7 +1,21 @@
-2011-12-25  Miguel de Dios  <miguel.dedios@artica.es>
+2012-12-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml,
+	src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/About.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/Info.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java,
+	res/values/strings.xml,res/values-en/strings.xml,
+	res/values-es/strings.xml,res/layout/info.xml: fixed some things and
+	added more stability and a pretty splashscreen.
+
+2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	Apply patch from user Santiago Munín González <burning1@gmail.com>
-
+	
 	* src/pandroid_event_viewer/pandorafms/Main.java: fixed the empty
 	combo group because sometimes this is as null.
 	

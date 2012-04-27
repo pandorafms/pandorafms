@@ -74,6 +74,13 @@
         	android:configChanges="orientation|keyboardHidden"
         >
         </activity>
+		<activity
+        	android:name=".Info"
+        	android:label="@string/pandroid_event_viewer_str"
+        	android:configChanges="orientation|keyboardHidden"
+        	android:theme="@android:style/Theme.Dialog"
+        >
+        </activity>
         
         <service android:name=".PandroidEventviewerService"></service>
         

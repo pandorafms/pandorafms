@@ -54,6 +54,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	public boolean getNewListEvents;
 	
 	//Configuration
+	public boolean show_popup_info;
 	public String url;
     public String user;
     public String password;
@@ -84,7 +85,8 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
         SharedPreferences preferences = getSharedPreferences(
         	this.getString(R.string.const_string_preferences), 
         	Activity.MODE_PRIVATE);
-            
+        
+        this.show_popup_info = preferences.getBoolean("show_popup_info", true);
         this.url = preferences.getString("url", "");
         this.user = preferences.getString("user", "");
         this.password = preferences.getString("password", "");
@@ -316,6 +318,7 @@ public class PandroidEventviewerActivity extends TabActivity implements Serializ
 	    	entityResponse = response.getEntity();
 	    	return_api = Core.convertStreamToString(entityResponse.getContent());
 	    	return_api = return_api.replace("\n", "");
+	    	Log.e("PandroidEventviewerActivity getEvents", return_api);
 	    	this.count_events = new Long(return_api).longValue();
 	    	Log.e("getEvents", return_api);
 	    	

@@ -56,8 +56,8 @@ public class Main extends Activity {
 		final Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 		
 		//Check if the user preferences it is set.
-		if ((object.user.length() == 0) && (object.password.length() == 0)
-			&& (object.url.length() == 0)) {
+		if (object.user.length() == 0 || object.password.length() == 0 ||
+				object.url.length() == 0) {
 			Toast toast = Toast.makeText(this.getApplicationContext(),
 				this.getString(R.string.please_set_preferences_str),
 				Toast.LENGTH_SHORT);
@@ -66,6 +66,12 @@ public class Main extends Activity {
 			buttonReset.setEnabled(false);
 			buttonSearch.setEnabled(false);
 			buttonbuttonSetAsFilterWatcher.setEnabled(false);
+		}
+		else if (object.user.equals("demo") || object.password.equals("demo")) {
+			Toast toast = Toast.makeText(this.getApplicationContext(),
+					this.getString(R.string.preferences_set_demo_pandora_str),
+					Toast.LENGTH_LONG);
+				toast.show();
 		}
 		else {
 			buttonSearch.setEnabled(false);
@@ -81,7 +87,7 @@ public class Main extends Activity {
 		
 		comboSeverity = (Spinner) findViewById(R.id.severity_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
+			this, R.array.severity_array_values, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		comboSeverity.setAdapter(adapter);
 		
@@ -123,6 +129,12 @@ public class Main extends Activity {
 				save_filter_watcher();
 			}
 		});
+		
+    	if (this.object.show_popup_info) {
+    		this.object.show_popup_info = false;
+    		i = new Intent(this, About.class);
+    		startActivity(i);
+    	}
 	}
 	
 	public void onRestart() {

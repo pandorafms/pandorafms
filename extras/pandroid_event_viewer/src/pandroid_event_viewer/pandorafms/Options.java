@@ -38,9 +38,9 @@ public class Options extends Activity {
         	this.getString(R.string.const_string_preferences), 
         	Activity.MODE_PRIVATE);
         
-        url = preferences.getString("url", "http://farscape.artica.es/pandora_console");
-        user = preferences.getString("user", "");
-        password = preferences.getString("password", "");
+        url = preferences.getString("url", "http://firefly.artica.es/pandora_demo");
+        user = preferences.getString("user", "demo");
+        password = preferences.getString("password", "demo");
         refreshTimeKey = preferences.getInt("refreshTimeKey", 3);
         
         EditText text = (EditText) findViewById(R.id.url);
@@ -64,6 +64,12 @@ public class Options extends Activity {
 				save_options();
 			}
 		});
+        
+    	if (this.object.show_popup_info) {
+    		this.object.show_popup_info = false;
+    		i = new Intent(this, About.class);
+    		startActivity(i);
+    	}
     }
     
     public void save_options() {

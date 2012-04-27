@@ -1,5 +1,11 @@
 2012-04-27 Dario Rodriguez <dario.rodriguez@artica.es>
 
+ 	* unix/plugins/inventory: Fixed a small error related to inventory plugin
+
+	MERGED FROM 4.0.2
+
+2012-04-27 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* unix/plugins/inventory,
 	unix/Linux/pandora_agent.conf: Inventory improved: added Mac to NIC, 
 	created new modules for IPs and Route table. Update pandora agent conf.

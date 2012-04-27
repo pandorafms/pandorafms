@@ -1,3 +1,15 @@
+2012-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* images/enterprise_version.png
+	 images/online_help.png
+	 images/error_login.png
+	 images/documentation.png
+	 images/support.png: Added images for login error and login help 
+	 modal windows.
+	 
+	* general/login_help_dialog.php
+	 general/login_page.php: Changed images and layout in modal windows.  
+
 2012-04-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_events.php: into the function

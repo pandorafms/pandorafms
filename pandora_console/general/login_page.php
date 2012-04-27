@@ -86,16 +86,14 @@ if (isset ($login_failed)) {
 
 		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:330px; margin: 0 auto; ">';
 		
-			echo '<div id="error_login">';
+			echo '<div id="error_login" style="margin-top: 20px">';
 			echo '<strong style="font-size: 10pt">' . $config["auth_error"] . '</strong>';
 			echo '</div>';
 	
 			echo '<div id="error_login_icon">';
-			echo html_print_image('images/noaccess.png', true, array("alt" => __('Login failed'), "border" => 0));
+			echo html_print_image('images/error_login.png', true, array("alt" => __('Login failed'), "border" => 0));
 			echo '</div>';
-
-
-			//echo '<div style="position: absolute; top:60px; right:40%;">';	  
+	  
 			echo '<div style="position:absolute; margin: 0 auto; top: 70px; left: 35%; ">';	  
 				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');  
 			echo '</div>';

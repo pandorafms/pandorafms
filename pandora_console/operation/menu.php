@@ -290,7 +290,6 @@ $sub["operation/users/user_edit"]["refr"] = 0;
 
 // ANY user can chat with other user and dogs.
 // Users
-$sub = array();
 $sub["operation/users/webchat"]["text"] = __('WebChat');
 $sub["operation/users/webchat"]["refr"] = 0;
 

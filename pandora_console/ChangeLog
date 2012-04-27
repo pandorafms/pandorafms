@@ -1,3 +1,15 @@
+2012-04-27  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php
+	include/functions_ui.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_monitores.php
+	godmode/reporting/visual_console_builder.elements.php: Fixed several 
+	title text in force icon (green donut)
+
+	* operation/menu.php: Fixed missed "Edit my user" option
+
 2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* include/styles/pandora.css

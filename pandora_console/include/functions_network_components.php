@@ -23,9 +23,9 @@ global $config;
 /**
  * Include modules functions
  */
-include_once ($config['homedir'] . 'include/functions_modules.php');
-include_once ($config['homedir'] . 'include/functions_agents.php');
-include_once ($config['homedir'] . 'include/functions_users.php');
+include_once ($config['homedir'] . '/include/functions_modules.php');
+include_once ($config['homedir'] . '/include/functions_agents.php');
+include_once ($config['homedir'] . '/include/functions_users.php');
 
 /**
  * Get a list of network components.

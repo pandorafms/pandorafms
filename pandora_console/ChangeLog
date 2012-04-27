@@ -1,3 +1,15 @@
+2012-04-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_events.php: into the function
+	"events_validate_event" fixed the return false when fail validation.
+	
+	* include/functions_network_components.php: fixed the includes.
+	
+	* operation/agentes/exportdata.php: cleaned source code style.
+	
+	* include/functions_api.php: fixed the checking error to healty
+	level into the function "get_events".
+
 2012-04-27  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/alerts/alerts_list.list.php: Fixed: Action filter

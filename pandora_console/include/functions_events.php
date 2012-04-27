@@ -190,6 +190,8 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	foreach ($id_event as $event) {
 		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
+			
+			return false;
 		}
 		
 		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;

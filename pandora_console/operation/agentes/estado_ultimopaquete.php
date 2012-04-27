@@ -311,7 +311,7 @@ foreach ($modules as $module) {
 	// Has flag = 0
 	if ($write && $module["id_modulo"] > 1 && $module["id_tipo_modulo"] < 100) {
 		if ($module["flag"] == 0) {
-			echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."&amp;id_agente_modulo=".$module["id_agente_modulo"]."&amp;flag=1&amp;tab=data&amp;refr=60'>" . html_print_image('images/target.png', true, array("border" => '0', "alt" => "")) . "</a>";
+			echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."&amp;id_agente_modulo=".$module["id_agente_modulo"]."&amp;flag=1&amp;tab=data&amp;refr=60'>" . html_print_image('images/target.png', true, array("border" => '0', "alt" => __('Force'))) . "</a>";
 		}
 		else {
 			echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."&amp;id_agente_modulo=".$module["id_agente_modulo"]."&amp;tab=data&amp;refr=60'>" . html_print_image('images/refresh.png', true, array("border" => '0', "alt" => '')) . "</a>";

@@ -195,6 +195,71 @@ sub get_software_module_data ($$) {
 	}
 }
 
+#Get the list of interfaces with the ip assigned
+sub get_ips ($$) {
+	my ($name, $modules) = @_;
+
+	my $ifconfig = `ifconfig`;
+		
+	my @ifconfig_array = split("\n", $ifconfig);
+	
+	for(my $i = 0; $i<$#ifconfig_array; $i++) {		
+	
+		#Check for an interface
+		if ($ifconfig_array[$i] =~ /Link/) {
+			my %info;
+			
+			my @line_split = split(" ", $ifconfig_array[$i]);
+			
+			#Get interface name
+			$info{'interface'} = $line_split[0];
+
+			#Get IP address
+			my $line = $ifconfig_array[$i+1];
+	
+			$line =~ s/\s+//g;
+
+			@line_split = split(":", $line);
+			
+			if($line_split[1] =~ /(\d+\.\d+\.\d+\.\d+).+/) {
+				$info{'ip'} = $1;
+			}
+			
+			$info{'_keys'} = ['interface', 'ip'];
+			push (@{$modules->{$name}}, \%info);
+			
+		}		
+	}
+}
+
+#Get route table
+sub get_route_table ($$) {
+	my ($name, $modules) = @_;
+	
+	my $route_table = `route`;
+	
+	my @table_split = split("\n", $route_table);
+	
+	for (my $i=2; $i<=$#table_split; $i++) {
+		
+		my @split = split(" ", $table_split[$i]);
+			
+		my %info;
+		
+		$info{'destination'} = $split[0];
+		$info{'gateway'} = $split[1];
+		$info{'mask'} = $split[2];
+		$info{'flags'} = $split[3];
+		$info{'metric'} = $split[4];
+		$info{'ref'} = $split[5];
+		$info{'use'} = $split[6];
+		$info{'interface'} = $split[7];
+				
+		$info{'_keys'} = ['destination', 'gateway', 'mask', 'flags', 'metric', 'use', 'interface'];
+		
+		push (@{$modules->{$name}}, \%info);
+	}
+}
 # Print module data
 sub print_module ($$) {
 	my ($name, $module) = @_;
@@ -220,7 +285,7 @@ sub print_module ($$) {
 
 # Check command line parameters
 if ($#ARGV < 0) {
-	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] \n\n";
+	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] [ip] [route]\n\n";
 	exit 1;
 }
 
@@ -298,13 +363,13 @@ while (my $line = shift (@hwinfo)) {
 	# NIC
 	if (($line =~ /\*\-network/ || $line =~ /Hardware Class: network/) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor', 'serial'], \%modules);
 		} else {
 			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
-			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
+			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor', 'HW Address'], \%modules);
 		}
 	}
-
+	
 	# CDROM
 	if (($line =~ /\*\-cdrom/ || $line =~ /Hardware Class: cdrom/) && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
 		if ($Mode eq 'LSHW') {
@@ -348,6 +413,16 @@ if ($enable_all == 1 || $enabled{'process'} == 1) {
 #users
 if ($enable_all == 1 || $enabled{'users'} == 1){
 	get_users ('Users', \%modules);
+}
+
+#ip
+if ($enable_all == 1 || $enabled{'ip'} == 1) {
+	get_ips('IP', \%modules);
+}
+
+#route
+if ($enable_all == 1 || $enabled{'route'} == 1) {
+	get_route_table('Route', \%modules);
 }
 
 # Print module data

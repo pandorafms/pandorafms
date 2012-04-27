@@ -422,7 +422,7 @@ if ($enable_all == 1 || $enabled{'ip'} == 1) {
 
 #route
 if ($enable_all == 1 || $enabled{'route'} == 1) {
-	get_route_table('Route', \%modules);
+	get_route_table('Routes', \%modules);
 }
 
 # Print module data

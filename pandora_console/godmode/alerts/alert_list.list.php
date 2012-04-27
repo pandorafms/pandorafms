@@ -70,14 +70,22 @@ $form_filter .= html_print_input_text ('module_name', $moduleName, '', 12, 255, 
 $form_filter .= "</td>\n";
 $form_filter .= "</tr>\n";
 
+$all_groups = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
+
+$groups_user = users_get_groups($config['id_user'], 'AR', $all_groups);
+if ($groups_user === false) {
+	$groups_user = array();
+}
+$groups_id = implode(',', array_keys($groups_user));
+
 $form_filter .= "<tr>\n";
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions;");
+			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id);");
 			break;
 		case "oracle":
-			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions");
+			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id)");
 			break;
 }
 

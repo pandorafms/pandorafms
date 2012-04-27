@@ -1,3 +1,8 @@
+2012-04-27  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/alerts/alerts_list.list.php: Fixed: Action filter
+	don't show right actions group.
+
 2012-04-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css

@@ -50,7 +50,7 @@ echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" s
 		echo '<tr>';
 			echo '<td style="border:1px solid #FFF; width:50%; height: 50%;">';
 				echo '<div style="position: relative; float: left; width:40%;">';
-				echo html_print_image('images/noaccess.png', true, array("alt" => __('Online help'), "border" => 0));
+				echo '<a href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank" style="text-decoration:none;">' . html_print_image('images/online_help.png', true, array("alt" => __('Online help'), "border" => 0)) . '</a>';
 				echo '</div>';
 				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
 				echo  '<a href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Online help') . '</span></a>';
@@ -58,7 +58,7 @@ echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" s
 			echo '</td>';
 			echo '<td style="border:1px solid #FFF">';
 				echo '<div style="position: relative; float: left; width:40%;">';
-				echo html_print_image('images/noaccess.png', true, array("alt" => __('Support'), "border" => 0));
+				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none;">' . html_print_image('images/support.png', true, array("alt" => __('Support'), "border" => 0)) . '</a>';
 				echo '</div>';
 				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
 				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Support') . ' / ' . __('Forums') . '</span></a>';
@@ -68,7 +68,7 @@ echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" s
 			echo '<tr>';			
 			echo '<td style="border:1px solid #FFF; width:50%; height: 50%">';
 				echo '<div style="position: relative; float: left; width:40%;">';
-				echo html_print_image('images/noaccess.png', true, array("alt" => __('Enterprise version'), "border" => 0));
+				echo '<a href="http://pandorafms.com/" target="_blank" style="text-decoration:none;">' . html_print_image('images/enterprise_version.png', true, array("alt" => __('Enterprise version'), "border" => 0)) . '</a>';
 				echo '</div>';
 				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
 				echo '<a href="http://pandorafms.com/" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Enterprise version') . '</span></a>';
@@ -76,7 +76,7 @@ echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" s
 			echo '</td>';
 			echo '<td style="border:1px solid #FFF">';
 				echo '<div style="position: relative; float: left; width:40%;">';
-				echo html_print_image('images/noaccess.png', true, array("alt" => __('Documentation'), "border" => 0));
+				echo '<a href="http://pandorafms.org/index.php?lng=en&sec=project&sec2=documentation" target="_blank" style="text-decoration:none;">' . html_print_image('images/documentation.png', true, array("alt" => __('Documentation'), "border" => 0)) . '</a>';
 				echo '</div>';
 				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
 				echo '<a href="http://pandorafms.org/index.php?lng=en&sec=project&sec2=documentation" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Documentation') . '</span></a>';

@@ -1,3 +1,17 @@
+2012-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/enterprise_version.png
+	 images/online_help.png
+	 images/license_key.png
+	 images/error_login.png
+	 images/documentation.png
+	 images/support.png
+	 images/lock_license.png: Added new images for modal windows.
+
+	* general/login_help_dialog.php
+	 general/login_page.php: 
+	 extensions/update_manager.php: Changed images for modal windows.
+
 2012-04-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_events.php: into the function

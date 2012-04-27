@@ -1,4 +1,12 @@
 2012-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/update_manager.php: Changed images in info license modal 
+	window.
+	
+	* images/license_key.png
+	 images/lock_license.png: Added images for license modal windows.
+
+2012-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* images/enterprise_version.png
 	 images/online_help.png

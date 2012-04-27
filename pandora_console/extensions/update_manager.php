@@ -53,7 +53,7 @@ if (is_ajax ()) {
 			$table->style[0] = 'text-align: left';
 
 			echo '<div style="float: left; width: 20%; margin-top: 40px; margin-left: 20px;">'; 
-			html_print_image('images/noaccess.png', false);
+			html_print_image('images/lock_license.png', false);
 			echo '</div>';
 
 			$table->data[0][0] = '<strong>'.__('Expires').'</strong>';

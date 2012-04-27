@@ -59,6 +59,7 @@
 	<string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>
     <string name="please_set_preferences_str">Please set the preferences as the API URL, user and password for your Pandora FMS.</string>
+    <string name="preferences_set_demo_pandora_str">Pandroid Event Viewer is connecting with PandoraFMS public demo, please change the preferences for your Pandora FMS.</string>
     <string name="filter_update_succesful_str">Update filter successful.</string>
     <string name="filter_update_fail_str">Update filter is failed.</string>
     
@@ -97,8 +98,9 @@
     <string name="unknown_event_str">Unknown event</string>
     
     <string name="validate_event_label_str">Event validated</string>
-
-    <string name="pandroid_event_viewer_description_str">Realtime event viewer for Pandora FMS.
-
-</string>
+	
+    <string name="pandroid_event_viewer_description_str">Realtime event viewer for Pandora FMS.</string>
+    <string name="pandroid_info_txt"><b>Welcome to Pandora FMS Event viewer for Android</b></string>
+    <string name="pandroid_info_long_txt"><p>This app is used for to see confortable and standaralone the events status from the monitoring server of Pandora FMS. From this app you can see in realtime the events and validate or filter.</p>
+        <p>The configuration as default connecting with public demo of Pandora FMS in firefly.artica.es. Please change the configuration for to use your Pandora FMS server.</p></string>
 </resources>

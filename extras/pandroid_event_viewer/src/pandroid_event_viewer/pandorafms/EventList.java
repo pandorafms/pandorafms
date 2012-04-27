@@ -115,6 +115,12 @@ public class EventList extends ListActivity {
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
     	
     	this.toggleLoadingLayout();
+    	
+    	if (this.object.show_popup_info) {
+    		this.object.show_popup_info = false;
+    		i = new Intent(this, About.class);
+    		startActivity(i);
+    	}
     }
     
     public void onRestart() {
@@ -588,7 +594,7 @@ public class EventList extends ListActivity {
 			return return_var;
 		}
 		
-		private class OnItemClickListener implements OnClickListener{   	
+		private class OnItemClickListener implements OnClickListener{
 	    	private int mPosition;
 	    	private PandroidEventviewerActivity object;
 	    	OnItemClickListener(int position, PandroidEventviewerActivity object){
@@ -600,8 +606,8 @@ public class EventList extends ListActivity {
 	    		EventListItem item = this.object.eventList.get(mPosition);
 	    		item.opened = !item.opened;
 	    		this.object.eventList.set(mPosition, item);
-	    		la.notifyDataSetChanged();	
-	    	}		
+	    		la.notifyDataSetChanged();
+	    	}
 	    }
 		
 		public class OnClickListenerButtonValidate implements OnClickListener {

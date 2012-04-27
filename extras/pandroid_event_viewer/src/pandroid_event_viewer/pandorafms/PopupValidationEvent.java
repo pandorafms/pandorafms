@@ -149,9 +149,7 @@ public class PopupValidationEvent extends Activity {
 			Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
     		toast.show();
     		
-    		if (result) {
-    			destroyPopup();
-    		}
+    		destroyPopup();
 		}
     }
 }

@@ -244,7 +244,7 @@ $table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . ht
 $table->data[26][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[27][0] = __('License information');
-$license_info = db_get_value_sql ('SELECT value FROM tupdate_settings WHERE `key`="customer_key"');
+$license_info = db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key');
 if ($license_info === false)
 	$license_info = '';
 $table->data[27][1] = html_print_input_text ('license_info_key', $license_info, '', 40, 255, true);

@@ -53,8 +53,10 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 	if ($filter !== false){
 		switch ($config["dbtype"]) {
 			case "mysql":
-			case "postgresql":
 				$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
+				break;
+			case "postgresql":
+				$result = db_get_all_rows_sql ($sql . ' OFFSET ' . $filter['offset'] . ' LIMIT ' . $filter['limit']);
 				break;
 			case "oracle":
 				$result = oracle_recode_query ($sql, $filter, 'AND', false);

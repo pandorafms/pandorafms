@@ -1,3 +1,9 @@
+2012-04-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandoradb.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Fixed database
+	creation failure with before 9.1 version of PostgreSQL.
+
 2012-04-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* images/enterprise_version.png

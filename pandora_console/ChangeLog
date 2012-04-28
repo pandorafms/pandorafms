@@ -1,5 +1,10 @@
 2012-04-28  Junichi Satoh  <junichi@rworks.jp>
 
+	* operation/agentes/estado_agente.php: Merged from trunk. Fixed	SQL
+	error with PostgreSQL.
+
+2012-04-28  Junichi Satoh  <junichi@rworks.jp>
+
 	* godmode/admin_access_logs.php, include/functions_graph.php: Fixed
 	SQL error with PostgreSQL.
 

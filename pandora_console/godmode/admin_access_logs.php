@@ -119,7 +119,7 @@ if ($filter_hours_old != 0) {
 			$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL -' . $filter_hours_old . ' HOUR)';
 			break;
 		case "postgresql":
-			$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL - \'' . $filter_hours_old . ' HOUR \')';
+			$filter .= ' AND fecha >= NOW() - INTERVAL \'' . $filter_hours_old . ' HOUR \'';
 			break;
 		case "oracle":
 			$filter .= ' AND fecha >= (SYSTIMESTAMP - INTERVAL \'' . $filter_hours_old . '\' HOUR)';

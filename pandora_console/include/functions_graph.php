@@ -1256,7 +1256,7 @@ function graphic_incident_group () {
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
 		FROM tincidencia,tgrupo
 		WHERE tgrupo.id_grupo = tincidencia.id_grupo
-		GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
+		GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC LIMIT %d',
 		$max_items);
 	$incidents = db_get_all_rows_sql ($sql);
 	
@@ -1390,11 +1390,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	switch ($config["dbtype"]) {
 		case "mysql":
-		case "postgresql":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
 				FROM tevento WHERE 1=1 %s
 				GROUP BY id_agente ORDER BY count DESC', $url); 
 			break;
+		case "postgresql":
 		case "oracle":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
 				FROM tevento WHERE 1=1 %s

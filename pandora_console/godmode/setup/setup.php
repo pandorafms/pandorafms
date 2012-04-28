@@ -205,7 +205,7 @@ $table->data[26][0] = __('License information');
 $update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
 
 if ($update_manager_installed == 1)
-	$license_info = db_get_value_sql ('SELECT value FROM tupdate_settings WHERE `key`="customer_key"');
+	$license_info = db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key');
 else
 	$license_info = false;
 	

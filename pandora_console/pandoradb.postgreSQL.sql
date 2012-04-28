@@ -1286,7 +1286,7 @@ CREATE TABLE "tevent_filter" (
 -- Table `ttimezone`
 -- -----------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS "ttimezone" (
+CREATE TABLE "ttimezone" (
   "id_tz" INTEGER NOT NULL PRIMARY KEY,
   "zone" varchar(60) NOT NULL,
   "timezone" varchar(60) NOT NULL

@@ -137,12 +137,23 @@ else {
 		$data[2] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
 		if ($server["master"] == 1)
 			$data[2] .= ui_print_help_tip (__("This is a master server"), true);
-
-		// Load
-		$data[3] =
-			progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
-		$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
-		$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
+		
+		switch ($server['type']) {
+			case "snmp":
+			case "event":
+				$data[3] = 'N/A';
+				$data[4] = 'N/A';
+				$data[5] = 'N/A';
+				break;
+			default:
+				// Load
+				$data[3] =
+					progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
+				$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
+				$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
+				break;
+		}
+				
 		$data[6] = $server['threads'].' : '.$server['queued_modules'];
 		$data[7] = ui_print_timestamp ($server['keepalive'], true);
 

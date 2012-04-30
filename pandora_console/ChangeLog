@@ -1,3 +1,8 @@
+2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/servers/modificar_server.php: Changed values of columns 'load',
+	'modules' and 'lag'.
+
 2012-04-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/setup/setup.php: Merged from trunk. Fixed SQL error with

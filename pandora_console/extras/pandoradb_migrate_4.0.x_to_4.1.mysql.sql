@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 
 ALTER TABLE `tusuario` ADD COLUMN `disabled` int(4) NOT NULL DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `shortcut` tinyint(1) DEFAULT 0;
-ALTER TABLE tusuario ADD COLUMN `shortcut_data` text default '';
+ALTER TABLE tusuario ADD COLUMN `shortcut_data` text;
 
 -- -----------------------------------------------------
 -- Table `tincidencia`
@@ -67,7 +67,7 @@ ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;
 -- Table `tagente`
 -- -----------------------------------------------------
 
-ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL default '';
+ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL;
 
 -- -----------------------------------------------------
 -- Table `talert_special_days`
@@ -101,14 +101,14 @@ ON DELETE CASCADE;
 -- Table `tevento`
 -- -----------------------------------------------------
 
-ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL DEFAULT '',
-`id_extra` tinytext NOT NULL DEFAULT '');
+ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL,
+`id_extra` tinytext NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
-ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text DEFAULT '', `_snmp_f2_` text DEFAULT '', `_snmp_f3_` text DEFAULT '',
-`_snmp_f4_` text DEFAULT '', `_snmp_f5_` text DEFAULT '', `_snmp_f6_` text DEFAULT '', `trap_type` int(11) NOT NULL default '-1',
+ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text, `_snmp_f2_` text, `_snmp_f3_` text,
+`_snmp_f4_` text, `_snmp_f5_` text, `_snmp_f6_` text, `trap_type` int(11) NOT NULL default '-1',
 `single_value` varchar(255) DEFAULT '');
 
 -- -----------------------------------------------------
@@ -136,11 +136,11 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_group_filter` int(10) NOT NULL default 0,
   `id_name` varchar(600) NOT NULL,
   `id_group` int(10) NOT NULL default 0,
-  `event_type` text NOT NULL default '',
+  `event_type` text NOT NULL,
   `severity` int(10) NOT NULL default -1,
   `status` int(10) NOT NULL default -1,
-  `search` TEXT default '',
-  `text_agent` TEXT default '', 
+  `search` TEXT,
+  `text_agent` TEXT, 
   `pagination` int(10) NOT NULL default 25,
   `event_view_hr` int(10) NOT NULL default 8,
   `id_user_ack` TEXT,
@@ -191,12 +191,12 @@ ALTER TABLE `tusuario` ADD COLUMN `data_section` TEXT NOT NULL;
 -- -----------------------------------------------------
 -- Table `treport_content_item`
 -- -----------------------------------------------------
-ALTER TABLE `treport_content_item` ADD COLUMN `operation` TEXT DEFAULT '';
+ALTER TABLE `treport_content_item` ADD COLUMN `operation` TEXT;
 
 -- -----------------------------------------------------
 -- Table `tmensajes`
 -- -----------------------------------------------------
-ALTER TABLE `tmensajes` MODIFY COLUMN `mensaje` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `tmensajes` MODIFY COLUMN `mensaje` TEXT NOT NULL;
 
 -- -----------------------------------------------------
 -- Table `talert_compound`

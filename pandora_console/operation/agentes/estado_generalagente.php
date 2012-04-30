@@ -55,12 +55,12 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 echo '<div style="height: 10px">&nbsp;</div>';	
 	
 	//Floating div
-	echo '<div id="agent_access" style="float:right; width:320px; padding-top:11px;">';
+	echo '<div id="agent_access" style="float:right; width:320px; padding-top:10px;">';
 
 if ($config["agentaccess"]){
 	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
 
-	graphic_agentaccess($id_agente, 280, 110, 86400);
+	graphic_agentaccess($id_agente, 280, 100, 86400);
 }
 
 echo '<div style="height:25px">&nbsp;</div>';
@@ -166,7 +166,7 @@ if ($config['activate_gis']) {
     echo '</td></tr>';
 }
 // Last contact
-echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
+echo '<tr><td class="datos"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos f9" colspan="2">';
 ui_print_timestamp ($agent["ultimo_contacto"]);
 
 echo " / ";
@@ -186,8 +186,8 @@ if ($agent['timezone_offset'] != 0) {
 // Next contact (agent)
 $progress = agents_get_next_contact($id_agente);
 
-echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
+echo '<tr><td class="datos2"><b>'.__('Next agent contact').'</b></td>';
+echo '<td class="datos2 f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
 
 // Custom fields
 $fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));

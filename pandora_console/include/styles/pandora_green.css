@@ -1,7 +1,7 @@
 /* 
 
 Author: The Pandora FMS team
-Name: Green "float window"
+Name: Old green style (<= 4.0.1)
 Description: The default Pandora FMS theme layout
 
 // Pandora FMS - http://pandorafms.com
@@ -156,6 +156,7 @@ h1#log_f {
 }
 div#login {
 	margin: 0 auto;
+	#margin-top: 200px;
 	padding-top: 63px;
 	width: 657px;
 	border-left: solid 1px #000;
@@ -222,10 +223,10 @@ div#container {
 	margin: 0 auto;
 	width: 960px;
 	text-align: left;
-	border-left: solid 2px #000;
-	border-right: solid 2px #000;
-	border-top: solid 2px #000;
-	margin-top: 5px;
+	#border-left: solid 2px #000;
+	#border-right: solid 2px #000;
+	#border-top: solid 2px #000;
+	#margin-top: 5px;
 	background: #fff;
 }
 div#page {
@@ -363,7 +364,7 @@ input.camera, input.config, input.cancel {
 	padding-right: 21px;
 }
 input.delete_min, input.graph_min, input.percentile_min, input.percentile_item_min, input.binary_min,
-input.camera_min, input.config_min, input.label_min, input.icon_min {
+input.camera_min, input.config_min, input.label_min, input.icon_min, input.grid_min, input.save {
 	padding-right: 25px;
 }
 input.next {
@@ -467,6 +468,18 @@ input.icon_min {
 }
 input.icon_min[disabled] {
 	background: #e5e5e5 url(../../images/photo.disabled.png) no-repeat center;
+}
+input.grid_min {
+	background: #e5e5e5 url(../../images/grid.png) no-repeat center;
+}
+input.save_min {
+	background: #e5e5e5 url(../../images/file.png) no-repeat center;
+}
+input.save_min[disabled] {
+	background: #e5e5e5 url(../../images/file.disabled.png) no-repeat center;
+}
+input.grid_min[disabled] {
+	background: #e5e5e5 url(../../images/grid.disabled.png) no-repeat center;
 }
 #toolbox {
 	margin-top: 10px;
@@ -838,9 +851,6 @@ span.rmess, span.nrmess {
 	#margin-top: 100px !important;
 	width: 657px !important;
 	height: 400px;
-	#margin-bottom: 5px;
-	#margin-top: 5px;
-	#margin-left: 0px;
 	border: none !important; 
 	background-color: #fafafa;
 	background: url(../../images/splash_pandora.png) no-repeat; 
@@ -1165,11 +1175,26 @@ ol.steps li.visited {
 }
 
 fieldset {
-	border: 2px solid #E9F3D2;
-	padding: 0 0 0 10px;
-	width: 90%;
-	margin-bottom: 15px;
+	background-color:#fafafa;
+	border: 1px solid #f2f2f2;
+	padding:0.5em;
+	margin-top:0.5em;
+	margin-right: -1px;
+	margin-bottom:1em;
+	position:relative;
 }
+fieldset legend {
+	font-size:1.3em;
+	font-weight:bold;
+	#color:#3f4e2f;
+	color:#000;
+	#top:-2em;
+}
+
+fieldset .databox {
+	border: 0px solid;
+}
+
 fieldset legend span,
 span#latest_value {
 	font-style:italic;
@@ -1301,7 +1326,7 @@ div.warn {
 /* Pandora width style theme */
 
 div#container {
-	width: 95%;
+	width: 100%;
 }
 div#page {
 	width: auto;

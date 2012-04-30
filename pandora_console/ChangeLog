@@ -1,3 +1,48 @@
+2012-04-30  Sancho Lerena <slerena@artica.es>
+
+	* include/help/en/help_main_help.php: Added new general
+	introduction help file. Need work.
+
+	* include/functions_events.php: Fixed link colors and other 
+	aesthetic improvements.
+	
+	* include/styles/pandora_legacy.css
+	include/styles/pandora_black.css
+	include/styles/pandora.css
+	include/styles/pandora_bluenavy.css
+	include/styles/pandora_minimal.css
+	include/styles/pandora_blackmetal.css
+	include/styles/pandora_green.css:
+	
+	
+	* extensions/agents_modules.php,
+	include/functions_groups.php: now colors uses CSS instead
+	fixed codes in code.
+	
+	* operation/events/sound_events.php: Fixed small format problem.
+	
+	* operation/events/events_list.php: Link on event now "zoom it" instead
+	filter for the same events (nosense since agrupatio is the default view!). 
+	Fixed a	lof of aesthetic issues, now uses CSS for most issues.
+
+	* operation/agentes/tactical.php
+	operation/agentes/estado_generalagente.php: more work in the visual
+	aspect of the information.
+	
+	* images/status_sets/default/agent_ok.png
+	images/status_sets/default/module_warning.png
+	images/status_sets/default/module_ok.png
+	images/status_sets/default/agent_warning.png: Replaced colors with
+	more contrast, easier to view for operators!.
+	
+	* images/header_f2b.png
+	images/header_f2.png: new style headers.
+	
+	* general/header.php: New icon for general help.
+	
+	* godmode/agentes/agent_manager.php: Removed ugly visualization for GIS
+	agent icons. Now it's much better :)
+
 2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_filemanager.php: Fixed: Collection list

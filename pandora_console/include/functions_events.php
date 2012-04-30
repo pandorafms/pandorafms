@@ -329,7 +329,6 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->width = $width;
 		$table->class = "databox";
 		$table->title = __('Latest events');
-		$table->titlestyle = "background-color:#799E48;";
 		$table->headclass = array ();
 		$table->head = array ();
 		$table->rowclass = array ();
@@ -349,14 +348,10 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->head[3] = __('Event name');
 		
 		$table->head[4] = __('Agent name');
-		
-		$table->head[5] = __('User ID');
+				
+		$table->head[5] = __('Timestamp');
 		$table->headclass[5] = "datos3 f9";
-		$table->align[5] = "center";
-		
-		$table->head[6] = __('Timestamp');
-		$table->headclass[6] = "datos3 f9";
-		$table->align[6] = "right";
+		$table->align[5] = "right";
 		
 		foreach ($result as $event) {
 			if (! check_acl ($config["id_user"], $event["id_grupo"], "AR")) {
@@ -414,11 +409,16 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			/* Event type */
 			$data[2] = events_print_type_img ($event["event_type"], true);
 					
-			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9'). '</span>';
+			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
 
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$data[4] = ui_print_agent_name ($event["id_agente"], true, 25, '', true);
+				// Get class name, for the link color...
+				$myclass =  get_priority_class ($event["criticity"]);
+				
+				$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".agents_get_name ($event["id_agente"]). "</A>";
+				
+//				ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 			// for System or SNMP generated alerts
 			}
 			elseif ($event["event_type"] == "system") {
@@ -427,17 +427,9 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			else {
 				$data[4] = __('Alert')."SNMP";
 			}
-			
-			// User who validated event
-			if ($event["estado"] != 0) {
-				$data[5] = ui_print_username ($event["id_usuario"], true);
-			}
-			else {
-				$data[5] = '';
-			}
-			
+						
 			// Timestamp
-			$data[6] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7pt'));
+			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7px'));
 			
 			array_push ($table->rowclass, get_priority_class ($event["criticity"]));
 			array_push ($table->data, $data);

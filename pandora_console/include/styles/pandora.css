@@ -30,10 +30,20 @@ svg * {
 	}
 body {
 	text-align: center;
-	background-color: #555555;
-    background-image:  url(../../images/greyback.gif);
+	background-color: #fafafa;
 	margin: 0 auto;
 }
+
+div#page {
+	background: #fafafa;
+	background-image: none;
+}
+
+div#main {
+	background: #fafafa;
+	background-image: none;
+}
+
 
 #login_body {
 	/* Set rules to fill background */
@@ -230,10 +240,9 @@ div#container {
 }
 div#page {
 	width: 960px;
-	background: #fff;
 	clear: both;
-	border-bottom: solid 5px #80ab51;
-	border-top: solid 5px #80ab51;
+	border-bottom: solid 5px #567953;
+	border-top: solid 5px #567953;
 }
 div#main {
 	width: 785px;
@@ -243,8 +252,6 @@ div#main {
 	padding-top: 0px;
 	padding-bottom: 20px;
 	margin-bottom: 25px;
-	background-color: #fefefe;
-	background-image: url(../../images/backgrounds/background4.jpg);
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
@@ -269,7 +276,7 @@ div#head {
 	width: 960px;
 	height: 62px; 
 	padding-top: 1px;
-	background: url(../../images/header.jpg);
+	background-color: #274C00;
 }
 
 div#foot {
@@ -474,39 +481,50 @@ input.icon_min[disabled] {
 table, img {
 	border: 0px;
 }
+
 th {
 	color: #fff;
-	background-color: #90b165;
+	background-color: #B1B1B1;
 	text-align:center;
 	font-size: 7pt;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
-tr.datosf9, tr.datos2, tr.datos2t, 
-tr.datos2b, tr.datos2_id , tr.datos2f9 {
-	background-color: #f9f9f9;
+tr.datosf9 { 
+	background-color: #eaeaea;
 }
+
+tr.datos2, tr.datos2t, 
+tr.datos2b, tr.datos2_id , tr.datos2f9 {
+	background-color: #f2f2f2;
+}
+
 tr.datos:hover, tr.datost:hover, tr.datosb:hover, tr.datos_id:hover, 
 tr.datosf9:hover, tr.datos2:hover, tr.datos2t:hover,
 tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
 	background-color: #efefef; 
 }
+
 td.datos3 {
 	background-color: #d4ddc6;
 }
+
 td.datos4 {
 	/*Add !important because in php the function html_print_table write style in cell and this is style head.*/
 	text-align: center !important;
 	background-color: #d4ddc6;
 }
+
 td.datos_id {
 	color: #1a313a;
 }
+
 tr.rowPair {
-	background-color: #fff;
+	background-color: #efefef;
 }
 tr.rowOdd {
-	background-color: #EEEEEE;
+	background-color: #f2f2f2;
 }
+
 tr.rowPair:hover {
 	background-color: #E0E0E0;
 }
@@ -514,16 +532,16 @@ tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
 .bg { /* op menu */
-	background-color: #80ab51;
+	background-color: #567953;
 }
 .bg2 { /* main page */
-	background-color: #e79b5d;
+	background-color: #0A160C;
 }
 .bg3 { /* godmode */
-	background-color: #e79b5d;
+	background-color: #0A160C;
 }
 .bg4 { /* links */
-	background-color: #5385bf;
+	background-color: #6BBE2F;
 }
 .bg, .bg2, .bg3, .bg4 {
 	position: relative;
@@ -533,7 +551,7 @@ tr.rowOdd:hover {
 	height: 20px;
 }
 .bg2, .bg3, .bg4 {
-	height: 17px;
+	height: 18px;
 }
 .f10, #ip {
 	font-size: 7pt;
@@ -546,7 +564,7 @@ tr.rowOdd:hover {
 	font-style: italic;
 }
 .tit {
-	padding: 3px 1px; 
+	padding: 5px 1px; 
 }
 .tit, .titb {
 	font-weight: bold;
@@ -651,18 +669,25 @@ div.title_line {
 	height: 5px;
 	width: 762px;
 }
+
+#menu_tab_frame {
+	background:#0A160C;
+}
+#menu_tab_frame_view {
+	background:#567953;
+}
+
 #menu_tab_frame, #menu_tab_frame_view {
 	display: block !important;
-	background:#e79b5d none repeat scroll 0 0;
-	border-bottom:1px solid #778866;
+	border-bottom:1px solid #B1B1B1;
 /*	float:left; */
 	margin-left:-8px;
 	min-height:25px;
-	padding-right:8px;
+	padding-right:28px;
 	width:100%;
 }
 #menu_tab_frame_view {
-	background: #9bc969;
+	background: #567953;
 }
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
@@ -677,7 +702,7 @@ div.title_line {
 	background: #d4ddc6;
 	padding: 3px 5px;
 	color: #666;
-	border-left: 2px solid #80AB51;
+	border-left: 2px solid #567953;
 	font-weight: bold;
 	line-height: 18px;
 }
@@ -828,10 +853,14 @@ span.rmess, span.nrmess {
 	margin-bottom: 5px;
 	margin-top: 5px;
 	margin-left: 0px;
-	border: 1px solid #f2f2f2;
+	border: 1px solid #e2e2e2;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	
 }
 .databox {
-	background-color: #fafafa;
+	background-color: #f4f5f4;
 }
 /* Style for login form */
 .databox_login {
@@ -915,25 +944,7 @@ div#logo_text3 {
 #table-add-item select, #table-add-sla select {
 	width: 180px;
 }
-/* classes for event priorities. Sits now in functions.php */
-.datos_green, .datos_greenf9 {
-	background-color: #BBFFA4;
-}
-.datos_red, .datos_redf9 {
-	background-color: #FFC0B5;
-}
-.datos_yellow, .datos_yellowf9 {
-	background-color: #F4FFBF;
-}
-.datos_blue, .datos_bluef9 {
-	background-color: #CDE2EA;
-}
-.datos_grey, .datos_greyf9 {
-	background-color: #E4E4E4;
-}
-td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
-	padding: 5px 5px 5px 5px;
-}
+
 /* end of classes for event priorities */
 div#main_pure {
 	background-color: #fefefe;
@@ -1174,9 +1185,10 @@ fieldset {
 	position:relative;
 }
 fieldset legend {
-	font-size:1.3em;
+	font-size:1.1em;
 	font-weight:bold;
 	#color:#3f4e2f;
+	line-height: 20px;
 	color:#000;
 	#top:-2em;
 }
@@ -1332,7 +1344,11 @@ div#main {
 }
 div#head {
 	width: auto;
+	background-color: #000;
+	background-image: url(../../images/header_f2.png); 
+
 }
+
 div#foot {
 	width: auto;
 }
@@ -1504,3 +1520,135 @@ div.cellBig {
 	width: 30px !important;
 	text-align: center;
 }
+
+/* Standard styles for status colos (groups, events, backgrounds...) */
+
+
+tr.group_view_crit, .group_view_crit {
+	background-color:  #FA3030;
+}
+
+tr.group_view_norm, .group_view_norm {
+	background-color: #ffffff;
+}
+tr.group_view_ok, .group_view_ok {
+	background-color: #00C000;
+}
+
+tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
+	background-color: #F5E535;
+}
+
+a.group_view_warn {
+	color: #000;
+}
+
+tr.group_view_alrm, .group_view_alrm {
+	background-color: #ED8701;
+}
+
+tr.group_view_unk, .group_view_unk {
+	background-color: #C4C4C4;
+}
+
+tr.group_view_data, .group_view_data {
+	color: #000;
+}
+
+.group_view_data_unk {
+	color: #303030;
+}
+
+.group_view_data_ok{
+	color: #00C000;
+}
+
+.group_view_data_crit {
+	color: #5C0000;
+}
+
+.group_view_data_alrm {
+	color: #5C1D00;
+}
+
+.group_view_data_warn {
+	color: #5C5900;
+}
+
+
+/* classes for event priorities. Sits now in functions.php */
+.datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {
+	background-color: #52A000;
+	color: #fff;
+}
+.datos_red, .datos_redf9, .datos_red a, .datos_redf9 a{
+	background-color: #FF3E41;
+	color: #fff !important;
+}
+
+.datos_yellow, .datos_yellowf9  {
+	background-color: #F5E535;
+	color: #000;
+}
+a.datos_blue, .datos_bluef9, .datos_blue {
+	background-color: #77E2F2;
+	color: #000;
+}
+.datos_grey, .datos_greyf9 {
+	background-color: #E4E4E4;
+}
+td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
+	padding: 5px 5px 5px 5px;
+}
+
+.menu li.selected {
+     background-color: #B1B1B1 !important;
+}
+
+.menu li {
+     background-color: #fff !important;
+}
+
+.submenu li a{
+     background-color: #E4E4E4 !important;
+}
+
+.menu li a:hover, 
+.submenu li a:hover {
+	color: #000;
+}
+
+.is_submenu2 li {
+	background-color #ff0000;
+}
+
+.is_submenu2 {
+   background-color: #222222 !important;
+}
+
+.menu li.submenu_selected a {
+	background-color: #C5C5C5 !important;
+}
+
+.operation.ul, ul.operation .operation ul {
+	background-color: #00ff00 !important;
+}
+
+.menu ul {
+	background-color: #DEDEDE !important;
+}
+
+.menu li, .menu li.selected, .menu .li.not_selected {
+	border-radius: 0px 0px 0px 0px;
+	background-color: #EBEBEB !important;
+}
+
+#menu_tab li.separator {
+
+}
+
+input#text-id_parent.ac_input, input, textarea, select {
+	background-color: #ffffff !important;
+	border: 1px solid #cbcbcb;
+	}
+

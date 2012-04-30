@@ -413,7 +413,8 @@ foreach ($result as $event) {
 	$data = array ();
 	
 	//First pass along the class of this row
-	$table->rowclass[] = get_priority_class ($event["criticity"]);
+	$myclass = get_priority_class ($event["criticity"]);
+	$table->rowclass[] = $myclass;
 	
 	// Grouped events
 	if ($group_rep != 0) {
@@ -474,11 +475,15 @@ foreach ($result as $event) {
 	
 	// Event description
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
-	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode(io_safe_input($event["evento"])).'">';
-	$data[1] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
+
+
+	$data[1] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
+
+	$data[1] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
 	$data[1] .= '</a></span>';
+
 	
-	$data[2] = '<span style="color: #000000">';
+	$data[2] = '<span class="'.$myclass.'">';
 	if ($event["event_type"] == "system") {
 		$data[2] .= __('System');
 	}
@@ -492,7 +497,7 @@ foreach ($result as $event) {
 	$data[2] .= '</span>';
 	
 	//Time
-	$data[3] = '<span style="color: #000000">';
+	$data[3] = '<span class="'.$myclass.'">';
 	if ($group_rep == 1) {
 		$data[3] .= ui_print_timestamp ($event['timestamp_rep'], true);
 	}
@@ -529,10 +534,6 @@ foreach ($result as $event) {
 		}
 	}
 	
-	$data[4] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
-	$data[4] .= html_print_image ("images/eye.png", true,
-			array ("title" => __('Show more')));	
-	$data[4] .= '</a>&nbsp;';
 	
 	// Create incident from this event
 	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {

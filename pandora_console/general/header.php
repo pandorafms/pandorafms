@@ -90,7 +90,13 @@ config_check();
 			
 			echo '<a class="white_bold" href="index.php?bye=bye">';
 			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
-			echo '</a></td>';
+			echo '</a>';
+			
+			// Main help icon
+			echo "&nbsp;";
+			echo "&nbsp;";
+			echo ui_print_help_icon ("main_help", true);			
+			echo '</td>';
 		echo '<td width="20%">';
 			
 			if ($config["metaconsole"] == 0){

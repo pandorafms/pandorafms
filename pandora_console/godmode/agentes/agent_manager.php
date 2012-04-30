@@ -288,13 +288,12 @@ else {
 }
 
 $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': ' . html_print_image($path_without, true, array("id" => "icon_without_status", "style" => "display:".$display_icons.";")) .
-	'&nbsp;' . __('Default') . ': ' . html_print_image($path_default, true, array("id" => "icon_default", "style" => "display:".$display_icons.";")) .
-	'&nbsp;' . __('Ok') . ': ' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
 
-	'&nbsp;' . __('Bad') . ': ' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
 
-	'&nbsp;' . __('Warning') . ': ' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+	'&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
+
+	'&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');

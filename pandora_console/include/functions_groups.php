@@ -637,41 +637,41 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 	// Calculate entire row color
 	if ($data["monitor_alerts_fired"] > 0){
-		echo "<tr style='background-color: #ffd78f; height: 35px;'>";
+		echo "<tr class='group_view_alrm' style='height: 35px;'>";
 	}
 	elseif ($data["monitor_critical"] > 0) {
-		echo "<tr style='background-color: #ffc0b5; height: 35px;'>";
+		echo "<tr class='group_view_crit' style='height: 35px;'>"; //background-color: #ffc0b5;
 	}
 	elseif ($data["monitor_warning"] > 0) {
-		echo "<tr style='background-color: #f4ffbf; height: 35px;'>";
+		echo "<tr class='group_view_warn' style='height: 35px;'>";
 	}
 	elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
-		echo "<tr style='background-color: #ddd; height: 35px;'>";
+		echo "<tr class='group_view_unk' style='height: 35px;'>";
 	}
 	elseif ($data["monitor_ok"] > 0)  {
-		echo "<tr style='background-color: #bbffa4; height: 35px;'>";
+		echo "<tr class='group_view_ok' style='height: 35px;'>";
 	}
 	else {
-		echo "<tr style='height: 35px;'>";
+		echo "<tr class='group_view_normal' style='height: 35px;'>";
 	}
 
 	// Group name
-	echo "<td style='font-weight: bold; font-size: 12px;'>&nbsp;&nbsp;";
+	echo "<td class='group_view_data' style='font-weight: bold; font-size: 12px;'>&nbsp;&nbsp;";
 	echo $group['prefix'].ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
-	echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
+	echo "&nbsp;<a class='group_view_data' href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
 	echo ui_print_truncate_text($group['name'], 35);
 	echo "</a>";
 	echo "</td>";
-	echo "<td style='text-align: center; vertica-align: middle;'>";
+	echo "<td class='group_view_data'  style='text-align: center; vertica-align: middle;'>";
 	if (check_acl ($config['id_user'], $id_group, "AW")) {
 		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . html_print_image("images/target.png", true, array("border" => '0')) . '</a>';
 	}
 	echo "</td>";
 
 	// Total agents
-	echo "<td style='font-weight: bold; font-size: 18px; text-align: center;'>";
+	echo "<td class='group_view_data' class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["total_agents"] > 0)
-		echo "<a style='font-weight: bold; font-size: 18px; text-align: center;' 
+		echo "<a class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
 
 		//Total agent field given by function reporting_get_group_stats return the number of agents
@@ -682,6 +682,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		$data["total_agents"];
 
 		if($id_group != 0) {
+	
 			$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente) FROM tagente 
 							WHERE id_grupo = $id_group AND disabled = 0");
 		} else {
@@ -694,8 +695,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 	// Agents unknown
 	if ($data["agents_unknown"] > 0) {
-		echo "<td style='font-weight: bold; font-size: 18px; color: #886666; text-align: center;'>";
-		echo "<a style='font-weight: bold; font-size: 18px; text-align: center;' 
+		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;' 
                         href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group&status=3'>";
 		echo $data["agents_unknown"];
 		echo "</a>";
@@ -707,7 +708,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 	// Monitors Unknown
 	if ($data["monitor_unknown"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'>";
+		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=3'>";
 		echo $data["monitor_unknown"];
@@ -721,8 +722,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 	// Monitors Not Init
 	if ($data["monitor_not_init"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #729fcf; text-align: center;'>";
-                echo "<a style='font-weight: bold; font-size: 18px; color: #729fcf; text-align: center;'
+		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+                echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
                         href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=5'>";
 		echo $data["monitor_not_init"];
 		echo "</a>";
@@ -734,10 +735,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 
 	// Monitors OK
-	echo "<td style='font-weight: bold; font-size: 18px; color: #6ec300; text-align: center;'>";
+	echo "<td class='group_view_data_ok' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["monitor_ok"] > 0) {
-                echo "<a style='font-weight: bold; font-size: 18px; color: #6ec300; text-align: center;'
-                        href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
+                echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'                       href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
 		echo $data["monitor_ok"];
 		echo "</a>";
 	}
@@ -748,8 +748,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 	// Monitors Warning
 	if ($data["monitor_warning"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #f2ef00; text-align: center;'>";
-                echo "<a style='font-weight: bold; font-size: 18px; color: #f2ef00; text-align: center;'
+		echo "<td class='group_view_data_warn' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+                echo "<a class='group_view_data_warn' class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
                         href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=1'>";
 		echo $data["monitor_warning"];
 		echo "</a>";
@@ -761,8 +761,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 	// Monitors Critical
 	if ($data["monitor_critical"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'>";
-                echo "<a style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'
+		echo "<td class='group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+                echo "<a class='group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'
                         href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=2'>";
 		echo $data["monitor_critical"];
 		echo "</a>";
@@ -773,8 +773,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	}
 	// Alerts fired
 	if ($data["monitor_alerts_fired"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #ffa300; text-align: center;'>";
-		echo "<a style='font-weight: bold; font-size: 18px; color: #ffa300; text-align: center;'
+		echo "<td class='group_view_data_alrm' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
+		echo "<a class='group_view_data_alrm' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/alerts_status&ag_group=$id_group&filter=fired'>";
 		echo $data["monitor_alerts_fired"];
 		echo "</a>";

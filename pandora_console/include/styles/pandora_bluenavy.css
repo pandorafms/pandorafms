@@ -1,7 +1,7 @@
 /* 
 
 Author: The Pandora FMS team
-Name: Blue Navy theme
+Name: Blue theme
 Description: A blue/grey theme with a variable width layout
 
 // Pandora FMS - the Free monitoring system
@@ -23,6 +23,15 @@ Description: A blue/grey theme with a variable width layout
 
 @import url(pandora.css);
 
+div#page {
+	background: #E0E0E0;
+	background-image: none;
+}
+
+div#main {
+	background: #E0E0E0;
+	background-image: none;
+}
 
 
 div#pandora_logo_header {
@@ -44,7 +53,7 @@ div#page {
 div#head {
 	background: none;
 	font-size: 8pt;
-	background-color: #27408B;
+	background-color: #0C2B56;
 	background-repeat: repeat-x;
 	background-position: 0% 0%;
 	border-bottom: solid 2px #000;
@@ -114,7 +123,7 @@ tr.rowOdd:hover {
 	margin: 0;
 }
 .menu li.selected {
-	 background-color: #808080 !important; 
+	 background-color: #9F9F9F !important; 
 }
 	/*d9fb86 !important; */
 
@@ -129,7 +138,7 @@ tr.rowOdd:hover {
 
 .menu a:hover {
 	text-decoration:none;
-	color: #D54E21;
+	color: #144890;
 }
 .submenu {
 	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
@@ -137,14 +146,14 @@ tr.rowOdd:hover {
 	width: 164px;
 }
 .submenu li a {
-	background-color: #fff;
+	background-color: #d8d8d8;
 	margin-left: 0px;
 	padding-left: 29px;
 	display:block;
-	border-width: 1px 1px 0 1px;
-	border-style: solid;
-	border-color: #dadbdc;
+
 }
+
+
 .menu li img.toggle {
 	visibility: hidden;
 	float:right;
@@ -161,7 +170,7 @@ tr.rowOdd:hover {
 }
 
 .menu .menu_icon, .menu li.links {
-	background-color: #9FB6CD; /* Color fondo menus*/
+	background-color: #B8B8B8; /* Color fondo menus*/
 	background-position: 4px 4px;
 	background-repeat: no-repeat;
 }
@@ -191,7 +200,6 @@ th {
 /*	float:left; */
 	margin-left:-8px;
 	min-height:25px;
-	padding-right:8px;
 	width:100%;
 }
 
@@ -199,3 +207,32 @@ th {
 .bg3 { /* godmode */
 	background-color: #2F2F4F;
 }
+
+tr.datos2, tr.datos2t, td.datos2, 
+tr.datos2b, tr.datos2_id , tr.datos2f9 {
+	background-color: #E7E7E7;
+}
+
+tr.datos2:hover, tr.datos2t:hover, td.datos2,
+tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
+	background-color: #E7E7E7; 
+}
+
+td.datos2 {
+	line-height: 20px;
+	background-color: #E7E7E7;
+}
+
+td.datos {
+	line-height: 20px;
+}
+
+#menu_tab li.separator {
+	background: none;
+	padding: 4px;
+}
+
+input#text-id_parent.ac_input, input {
+	background-color: #fafafa !important;
+	}
+

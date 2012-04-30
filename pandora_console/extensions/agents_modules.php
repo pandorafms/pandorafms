@@ -162,9 +162,9 @@ function mainAgentsModules() {
 		return;
 	}
 	
-	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE; width:98%;">';
+	echo '<table cellpadding="4" cellspacing="4" border="0" width=98%>';
 
-	echo "<th width='140px' height='25px' style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";	
+	echo "<th width='140px' height='25px'>".__("Agents")." / ".__("Modules")."</th>";	
 
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
@@ -178,7 +178,7 @@ function mainAgentsModules() {
 			continue;
 		}
 		
-		echo '<th width="20px" style ="background-color:#90B165 !important">'. html_print_image('images/information.png', true, array('title' => io_safe_output($module['name']))) ."</th>";
+		echo '<th width="20px" >'. html_print_image('images/information.png', true, array('title' => io_safe_output($module['name']))) ."</th>";
 	}
 	
 	if(($hor_offset + $block) < $nmodules) {
@@ -200,32 +200,27 @@ function mainAgentsModules() {
 
 		switch($agent_status) {
 			case 4: // Alert fired status
-				$rowcolor = '#ffa300';
-				$textcolor = '#000';
+				$rowcolor = 'group_view_alrm';
 				break;
 			case 1: // Critical status
-				$rowcolor = '#bc0000';
-				$textcolor = '#FFF';
+				$rowcolor = 'group_view_crit';
 				break;
 			case 2: // Warning status
-				$rowcolor = '#f2ef00';
-				$textcolor = '#000';
+				$rowcolor = 'group_view_warn';
 				break;
 			case 0: // Normal status
-				$rowcolor = '#8ae234';
-				$textcolor = '#000';
+				$rowcolor = "group_view_ok";
 				break;
 			case 3: 
 			case -1: 
 			default: // Unknown status
-				$rowcolor = '#babdb6';
-				$textcolor = '#000';
+				$rowcolor = 'group_view_unk';
 				break;
 		}
 		
 		echo "<tr style='height: 25px;'>";
 		
-		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" . ui_print_truncate_text(io_safe_output($agent['nombre']), 35, true, true, true, '...', 'font-size:8.5px; font-weight: bold;') . "</a></td>";
+		echo "<td class='$rowcolor'><a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" . ui_print_truncate_text(io_safe_output($agent['nombre']), 35, true, true, true, '...', 'font-size:10px; font-weight: bold;') . "</a></td>";
 		$agent_modules = agents_get_modules($agent['id_agente']);
 		
 		$nmodules = 0;
@@ -241,7 +236,7 @@ function mainAgentsModules() {
 			foreach($module['id'] as $module_id){
 				if(!$match && array_key_exists($module_id,$agent_modules)) {
 					$status = modules_get_agentmodule_status($module_id);
-					echo "<td style='text-align: center; background-color: #DDD;'>";
+					echo "<td style='text-align: center;'>";
 					$win_handle = dechex(crc32($module_id.$module["name"]));
 					$graph_type = return_graphtype (modules_get_agentmodule_type($module_id));
 					$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module_id."&label=".base64_encode($module["name"])."&refresh=600','day_".$win_handle."')";
@@ -271,7 +266,7 @@ function mainAgentsModules() {
 			}
 						
 			if(!$match) {
-				echo "<td style='background-color: #DDD;'></td>";
+				echo "<td></td>";
 			}
 		}
 		

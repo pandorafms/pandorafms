@@ -69,7 +69,7 @@ else {
 ui_print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
 $data = reporting_get_group_stats();
 
-echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
+echo '<div style="width:20%; float:left; padding-right: 1%;" id="leftcolumn">';
 // Monitor checks
 
 $table->width = "100%";
@@ -119,7 +119,6 @@ $cells = array ();
 $cells[0][0] = __('Monitor checks');
 $cells[0][1] = $data["monitor_checks"];
 $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1"; //All
-$cells[0]["color"] = "#000";
 
 $cells[3][0] = __('Monitors critical');
 $cells[3][1] = $data["monitor_critical"];
@@ -189,7 +188,6 @@ if($is_admin) {
 
 	$cells[4][0] = __('Total running modules');
 	$cells[4][1] = format_numeric($server_performance ["total_modules"]);
-	$cells[4]["color"] = "#000";
 	$cells[4]["href"] = "javascript:";
 
 	print_cells_temp ($cells);
@@ -200,7 +198,6 @@ echo '<tr><th colspan="2">'.__('Summary').'</th></tr>';
 $cells = array ();
 $cells[0][0] = __('Total agents');
 $cells[0][1] = $data["total_agents"];
-$cells[0]["color"] = "#000";
 $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60";
 
 $cells[1][0] = __('Uninitialized modules');
@@ -219,7 +216,7 @@ print_cells_temp ($cells);
 echo "</table>";
 echo '</div>'; //Left column
 
-echo '<div style="width: 70%; float:left;" id="rightcolumn">';
+echo '<div style="width: 77%; float:right;" id="rightcolumn">';
 
 
 // --------------------------------------------------------------------------
@@ -246,7 +243,6 @@ if($is_admin) {
 	$table->width = "100%";
 
 	$table->title = __('Tactical server information');
-	$table->titlestyle = "background-color:#799E48;";
 
 	$table->head = array ();
 	$table->head[0] = __('Name');

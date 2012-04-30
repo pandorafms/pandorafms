@@ -42,11 +42,11 @@ if (is_ajax ()) {
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
-
+	
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
-
+		
 		if($id_group > 0) {
 			$groups = array($id_group);
 			if ($recursion) {
@@ -55,17 +55,17 @@ if (is_ajax ()) {
 		}
 		else {
 			$groups_orig = users_get_groups();
-
+			
 			$groups = array_keys($groups_orig);
 		}
-
+		
 		$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
 		$agents = db_get_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
-
+		
 		echo json_encode($agents);
 		return;
 	}
-
+	
 	if ($get_agent_json) {
 		$id_agent = (int) get_parameter ('id_agent');
 		
@@ -78,10 +78,15 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents_id) {
 		$idAgents = get_parameter('id_agent');
 		
-		$nameModules = db_get_all_rows_sql('SELECT nombre, id_agente_modulo
+		$modules = db_get_all_rows_sql('SELECT nombre, id_agente_modulo
 			FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
 		
-		echo json_encode($nameModules);
+		$return = array();
+		foreach ($modules as $module) {
+			$return[$module['id_agente_modulo']] = $module['nombre'];
+		}
+		
+		echo json_encode($return);
 		return;
 	}
 	
@@ -93,7 +98,7 @@ if (is_ajax ()) {
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
-			
+		
 		if($selection_mode == 'common') {
 			$sql .= 'AND (
 					SELECT count(t3.nombre)
@@ -103,10 +108,10 @@ if (is_ajax ()) {
 		}
 		
 		$sql .= ' ORDER BY t1.nombre';
-			
+		
 		$nameAgents = db_get_all_rows_sql($sql);
 		
-		foreach($nameAgents as $nameAgent) {
+		foreach ($nameAgents as $nameAgent) {
 			$names[] = $nameAgent['name'];
 		}
 		
@@ -169,13 +174,13 @@ if (is_ajax ()) {
 				$enabled = 'disabled = 0';
 				break;
 		}
-
+		
 		if ($config ['metaconsole'] == 1) {
 			$result = array();
 			$nameModules = array();
 			$temp = array();
 			$first = true;
-
+			
 			foreach ($idAgents as $idA) {
 				$row = explode ('|', $idA);
 				$server_name = $row[0];
@@ -230,13 +235,13 @@ if (is_ajax ()) {
 			}
 			
 			$sql .= ' ORDER BY nombre';
-				
+			
 			$nameModules = db_get_all_rows_sql($sql);
-		
+			
 			if ($nameModules == false) {
 				$nameModules = array();
 			}
-		
+			
 			$result = array();
 			foreach($nameModules as $nameModule) {
 				$result[] = io_safe_output($nameModule['nombre']);
@@ -246,7 +251,7 @@ if (is_ajax ()) {
 		echo json_encode($result);
 		return;
 	}
-
+	
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$filter = io_safe_output((string) get_parameter ('filter'));

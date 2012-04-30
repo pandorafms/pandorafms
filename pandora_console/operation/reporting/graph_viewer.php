@@ -177,9 +177,6 @@ if ($view_graph) {
 	/* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
 
-	ui_require_css_file ('datepicker');
-	ui_require_jquery_file ('ui.core');
-	ui_require_jquery_file ('ui.datepicker');
 	ui_require_jquery_file ('timeentry');
 	?>
 	<script language="javascript" type="text/javascript">
@@ -187,8 +184,8 @@ if ($view_graph) {
 	$(document).ready (function () {
 		$("#loading").slideUp ();
 		$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
-		$("#text-date").datepicker ();
-		$.datepicker.regional["<?php echo $config['language']; ?>"];
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo $config['language']; ?>"]);
+		$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	});
 	</script>
 

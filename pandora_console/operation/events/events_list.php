@@ -609,7 +609,7 @@ if ($i != 0) {
 	$table->align[$i] = 'center';
 	$table->size[$i] = '80px';
 	$i++;
-	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+	if (check_acl ($config["id_user"], 0, "IW") == 1) {
 		$table->head[$i] = html_print_checkbox ("allbox", "1", false, true);
 		$table->align[$i] = 'center';
 	}

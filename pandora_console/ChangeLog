@@ -1,5 +1,11 @@
 2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* pandoradb.php
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql: Fixed: BLOB/TEXT column 
+	can't have a default value.
+
+2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* include/functions_server.php: Fixed broken link in server view.
 
 2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>

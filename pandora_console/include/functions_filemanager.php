@@ -475,7 +475,10 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	$table->data = array ();
 	$table->head = array ();
 	$table->size = array ();
-	$table->align[3] = 'right';
+	
+	$table->align[1] = 'center';
+	$table->align[2] = 'center';
+	$table->align[3] = 'center';
 	$table->align[4] = 'center';
 	
 	$table->size[0] = '24px';

@@ -150,7 +150,13 @@ $header_title = __('Received data from')." ".modules_get_agentmodule_agent_name 
 
 echo "<h4>".$header_title. "</h4>";
 
+$formtable->width = '98%';
+$formtable->class = "databox";
 $formtable->data = array ();
+$formtable->size = array ();
+$formtable->size[0] = '40%';
+$formtable->size[1] = '20%';
+$formtable->size[2] = '30%';
 
 echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
 
@@ -158,13 +164,17 @@ $formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fr
 $formtable->data[0][1] = html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);
 
 $formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
-$formtable->data[1][1] = __('Timestamp from');
-$formtable->data[1][1] .= html_print_input_text ('date_from', $date_from, '', 10, 10, true);
-$formtable->data[1][1] .= html_print_input_text ('time_from', $time_from, '', 7, 7, true);
+$formtable->data[1][1] = __('Timestamp from:');
+
+$formtable->data[1][2] = html_print_input_text ('date_from', $date_from, '', 10, 10, true);
+$formtable->data[1][2] .= html_print_input_text ('time_from', $time_from, '', 7, 7, true);
+
 $formtable->data[1][1] .= '<br />';
-$formtable->data[1][1] .= __('Timestamp to');
-$formtable->data[1][1] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
-$formtable->data[1][1] .= html_print_input_text ('time_to', $time_to, '', 7, 7, true);
+$formtable->data[1][1] .= __('Timestamp to:');
+
+$formtable->data[1][2] .= '<br />';
+$formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
+$formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 7, 7, true);
 
 if (preg_match ("/string/", $moduletype_name) || $moduletype_name == "log4x") {
       $formtable->data[2][0] = __('Free text for search');
@@ -173,7 +183,7 @@ if (preg_match ("/string/", $moduletype_name) || $moduletype_name == "log4x") {
 
 html_print_table ($formtable);
 
-echo '<div class="action-buttons" style="width: 75%">';
+echo '<div class="action-buttons" style="width:98%">';
 html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 echo '</div>';
 
@@ -183,7 +193,7 @@ $table->width = '98%';
 
 //
 $index = 0;
-foreach($columns as $col => $attr){
+foreach($columns as $col => $attr) {
 	$table->head[$index] = $col;
 	
 	if (isset($attr["align"]))
@@ -198,7 +208,7 @@ foreach($columns as $col => $attr){
 foreach ($result as $row) {
 	$data = array ();
 
-	foreach($columns as $col => $attr){
+	foreach($columns as $col => $attr) {
 		$data[] = $attr[1] ($row[$attr[0]]);
 	}
 

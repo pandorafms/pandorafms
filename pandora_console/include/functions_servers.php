@@ -364,7 +364,7 @@ function servers_get_info ($id_server = -1) {
 			}
 			elseif ($server["server_type"] == 3) {
 
-				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/recon_view&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
 			
 				//Total jobs running on this recon server
 				$server["modules"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);

@@ -1,5 +1,9 @@
 2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* include/functions_server.php: Fixed broken link in server view.
+
+2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* godmode/servers/modificar_server.php: Changed values of columns 'load',
 	'modules' and 'lag'.
 

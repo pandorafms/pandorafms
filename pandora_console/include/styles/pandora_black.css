@@ -1,12 +1,12 @@
 /* 
 
 Author: The Pandora FMS team
-Name: Black theme
+Name: New black theme
 Description: A theme with a dark style
 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2012 Artica Soluciones Tecnologicas S.L
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ Description: A theme with a dark style
 body, body.pure {
 	color: #EEE;
 	background-color: #4b4949;
-	background: #4b4949 url(../../images/black_background.png) repeat-x left top;
+
 }
 h1, h2, h3, h4 {
 	color: #BBB;
@@ -41,21 +41,24 @@ a:hover {
 h1#log {
 	color: #FFF;	
 }
-div#container, div#page, div#main, div#head {
+
+div#head {
+	background: #1E1E1E;
+	background-image: url(../../images/header_f2b.png); 
+}
+
+div#container, div#page, div#main {
 	background-image: none;
 	background-color: #000;
-	background: #4b4949 url(../../images/black_background.png) repeat-x left top;
 }
 div#page {
 	border-bottom: solid 5px #001E40;
-	border-top: solid 5px #001E40;
+	border-top: solid 5px #202020;
 }
 div#foot {
-	background-color: #960003;	
+	background-color: #503030;	
 }
-div#head {
-	background: url(../../images/black_red_header.png); 
-}
+
 input:hover {
 	background-color: #d4dccd;
 }
@@ -63,19 +66,40 @@ input.login {
 	background-color: #000;
 }
 th {
-    background-color: #041D3D;
+    background-color: #082C43;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
-tr.datosf9, tr.datos2, tr.datos2t, 
-tr.datos2b, tr.datos2_id , tr.datos2f9 {
-	background-color: #020E1D;
+tr.datosf9 {
+	background-color: rgb(14,14,14);
 }
 tr.datos:hover, tr.datost:hover, tr.datosb:hover, tr.datos_id:hover, 
-tr.datosf9:hover, tr.datos2:hover, tr.datos2t:hover,
-tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
-	background-color: #02152A; 
+tr.datosf9:hover {
+	background-color: #262626; 
 }
+
+
+tr.datos2, tr.datos2t, td.datos2, 
+tr.datos2b, tr.datos2_id , tr.datos2f9 {
+	background-color: rgb(24,24,24);
+}
+
+tr.datos2:hover, tr.datos2t:hover, td.datos2,
+tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
+	background-color: #363636; 
+}
+
+td.datos2 {
+	line-height: 20px;
+	background-color: #1B1B1B;
+	}
+
+td.datos {
+	line-height: 20px;
+	background-color: #0E0E0E;
+}
+	
 td.datos3 {
+	line-height: 20px;
 	background-color: #1e1e1e;
 }
 td.datos_id {
@@ -83,19 +107,19 @@ td.datos_id {
 }
 
 tr.rowPair {
-	background-color: #274263;
+	background-color: #202020;
 }
 
 tr.rowOdd {
-	background-color: #020E1D;
+	background-color: #101010;
 }
 
 tr.rowPair:hover {
-	background-color: #4782A3;
+	background-color: #232323;
 }
 
 tr.rowOdd:hover {
-	background-color: #424E5D;
+	background-color: #151515;
 }
 
 div.title_line {
@@ -103,8 +127,7 @@ div.title_line {
 }
 #menu_tab li a, #menu_tab li.nomn a {
 	background: #082C43;
-	color: #CFCFCF;
-	border-left: 1px solid #000;
+	border-left: 1px solid #0C1E56;
 }
 #menu_tab li.nomn_high a {
     background: #799E48;
@@ -127,14 +150,16 @@ div.title_line {
 	background-color: #0B315B;
 }
 .databox, .databox_color, .databox_frame {
-	border: 1px solid #071924;
+	border: none;
 }
+
 .databox {
-	background-color: #000;
+	background-color:#030303;
 	color: #fff;
 }
+
 .databox_color {
-	border-left: 4px solid #071924;
+	border-left:none;
 }
 div#main_pure {
     background-color: #000;
@@ -156,24 +181,22 @@ ol.steps li.visited {
 }
 
 /* Menus */ 
-.menu li a {
-	background-color: #000;	
-	color: #CCC;
+.menu li a {	
+	color: #ACACAC;
 }
 .submenu li a {
-	background-color: #505050;
+	background-color: #121212 !important;
 	color: #CCC;
 }
 
 .menu li.submenu_selected a {
-	background-color: #9c9c9c;
-	color: #222;
+	background-color: #9c9c9c !important;
 }
 .menu li.selected {
 	background-color: #333 !important;
 }
 .menu li.links {
-	border-color: #333;
+	border-color: #333 ;
 }
 .submenu li a {
 	border-color: #333;
@@ -182,7 +205,7 @@ ol.steps li.visited {
 	border-color: #333;
 }
 .menu .menu_icon, .menu li.links {
-	background-color: #000;
+	background-color: #000 !important;
 }
 
 #ip {
@@ -212,3 +235,105 @@ td.scwFoot {
 }
 
 
+.bg {
+	background-color: #333333;
+}
+
+
+.bg3 {
+	background-color: #082C43;
+}
+
+
+a.datos_yellow, a.datos_yellowf9 {
+	color: #000;
+}
+
+fieldset {
+	background-color: #050505;
+	border: 1px solid #303030;
+	color: #ababab;
+}
+
+fieldset legend {
+	color: #ababab;
+	font-size: 1.1em;
+}
+
+.databox_color {
+	background-color: #0E0E0E;
+}
+
+.notify {
+    color: #181818;
+}
+
+
+.info_box {
+	background-color: #BCBCBC;
+	margin: 10px 0px 10px 10px;
+}
+
+
+#menu_tab_frame_view {
+	background: #333333 !important;
+}
+
+
+/* Godmode */
+#menu_tab_frame {
+	background: #082C43 !important;
+}
+
+#menu_tab_frame, #menu_tab_frame_view {
+	display: block !important;
+	border-bottom: 1px solid #082C43;
+	margin-left:-8px;
+	min-height:25px;
+	padding-right:28px;
+	width:100%;
+}
+
+.menu a:hover {
+	color: #fff;
+}
+
+.is_submenu2 {
+   background-color: #222222 !important;
+}
+
+.menu ul {
+	background-color: #101010;
+}
+
+
+#menu_tab li.separator, #menu_tab li.separator_view {
+	background: none !important;
+	padding: 5px;
+}
+
+input#text-id_parent.ac_input, input, textarea, select{
+	background-color: #cfcfcf !important;
+}
+
+.menu li, menu li.selected, .menu li.not_selected {
+	border: 0px none;
+	border-radius: 0px;
+}
+
+.menu ul {
+	background-color: #202020 !important;
+}
+
+.menu li a:hover, 
+.submenu li a:hover {
+	color: #fff;
+}
+
+.ui-dialog-content {
+	background-color: #404040 !important;
+}
+
+.info_box {
+	box-shadow: 0px 5px 5px rgb(22,22,22);
+}

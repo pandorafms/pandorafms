@@ -619,8 +619,10 @@ $idx = 0;
 //Arrange data. We already did ACL's in the query
 foreach ($result as $event) {
 	$data = array ();
+	
 	//First pass along the class of this row
-	$table->rowclass[] = get_priority_class ($event["criticity"]);
+	$myclass = get_priority_class ($event["criticity"]);
+	$table->rowclass[] = $myclass;
 	
 	//print status
 	// Grouped events
@@ -691,8 +693,8 @@ foreach ($result as $event) {
 	if (in_array('evento', $show_fields)) {
 		// Event description
 		$data[$i] = '<span title="'.$event["evento"].'" class="f9">';
-		$data[$i] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode(io_safe_input($event["evento"])).'">';
-		$data[$i] .= '<span style="font-size: 7.5pt; color: #000000">' . io_safe_output($event["evento"]) . '</span>';
+		$data[$i] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
+		$data[$i] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
 		$data[$i] .= '</a></span>';
 		$i++;
 		
@@ -714,7 +716,7 @@ foreach ($result as $event) {
 	
 	if (in_array('timestamp', $show_fields)) {
 		//Time
-		$data[$i] = '<span style="color: #000000">';
+		$data[$i] = '<span class="'.$myclass.'">';
 		if ($group_rep == 1) {
 			$data[$i] .= ui_print_timestamp ($event['timestamp_rep'], true);
 		}

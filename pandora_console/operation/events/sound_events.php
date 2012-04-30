@@ -61,8 +61,8 @@ echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico" />';
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
 echo "</head>";
 echo "<body>";
-
-echo "<h1 style='background: #66AA44; color: #fff;'>" . html_print_image('images/pandora_header_logo.png', true) . __("Sound Events") . "</h1>";
+echo html_print_image('images/pandora_header_logo.png', true);
+echo "<h1 style='background: #66AA44; color: #fff;'>" . __("Sound console"). "</h1>";
 
 $table = null;
 $table->width = '100%';

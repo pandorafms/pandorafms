@@ -1,3 +1,25 @@
+2012-04-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.php: fixed when the
+	module have a spaces or other entities in the name when try to
+	create a items with the wizzard.
+	
+	* godmode/reporting/visual_console_builder.wizard.php: changed the
+	style of form to show more horizontality.
+	
+	Fixes: #3521724
+	
+	
+	
+	* include/functions_reporting.php: fixed the "Top-N".
+	
+	Fixes: #3521724
+	
+	* include/functions_agents.php: cleaned source code style.
+	
+	* operation/agentes/ver_agente.php: return more data in the ajax
+	request for the modules.
+
 2012-04-30  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* operation/agentes/datos_agente.php: Fixed: bad layout in view data.

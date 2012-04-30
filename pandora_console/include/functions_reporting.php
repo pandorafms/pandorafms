@@ -2310,8 +2310,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
 				$output_projection,
 				$content['top_n_value']
-				);			
-			array_push ($table->data, $data);			
+				);
+			array_push ($table->data, $data);
 			break;
 		case 'prediction_date':
 			reporting_header_content($mini, $content, $report, $table, __('Prediction date'),
@@ -2320,7 +2320,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//RUNNING
 			$table->colspan[1][0] = 4;
 			
-			set_time_limit(500);			
+			set_time_limit(500);
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[2][0] = 4;
@@ -2583,20 +2583,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					metaconsole_restore_db();
 				}
 			} 
-
+			
 			// SLA items sorted descending ()
 			if ($content['top_n'] == 2){
 				usort($table1->data, "sla_value_desc_cmp");
 			}
 			// SLA items sorted ascending
 			else if ($content['top_n'] == 1){
-				usort($table1->data, "sla_value_asc_cmp");				
+				usort($table1->data, "sla_value_asc_cmp");
 			}
 			
 			// Delete temporary column used to sort SLA data
 			for ($i=0; $i < count($table1->data); $i++) {
-				unset($table1->data[$i][6]);		
-			}						
+				unset($table1->data[$i][6]);
+			}
 			
 			$table->colspan[2][0] = 3;
 			if ($show_graph == 0 || $show_graph == 1) {
@@ -2604,14 +2604,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
 			}
-
+			
 			$table->colspan[3][0] = 2;
 			$data = array();
 			$data_pie_graph = json_encode ($data_graph);
 			if (($show_graph == 1 || $show_graph == 2) && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
 					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']); 
+				
+				$config['fontpath'], $config['font_size']); 
 				
 				
 				//Print resume
@@ -3631,6 +3632,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->style[2] = 'text-align: left';
 			}
 			
+			//Get data of all agents (before to slide to N values)
 			$data_top = array();
 			foreach ($tops as $key => $row) {
 				
@@ -3679,42 +3681,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					metaconsole_restore_db();
 				}
 			}
-			if(empty($data_top)) {
+			
+			if (empty($data_top)) {
 				$data = array ();
 				$table->colspan[2][0] = 3;
 				$data[0] = __('Insuficient data');
 				array_push ($table->data, $data);
 				break;
 			}
-			switch ($top_n) {
-				//Max
-				case 1:
-					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
-					break;
-				//Min
-				case 2:
-					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
-					break;
-				//By agent name or without selection
-				case 0:
-				case 3:
-					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
-					break;
-			}
 			
-			$data_top_values = array ();
-			$data_top_values['data_top'] = $data_top;
-			$data_top_values['agent_name'] = $agent_name;
-			$data_top_values['module_name'] = $module_name; 
-			$data_top_values['id_agent_module'] = $id_agent_module;
-			$data_top_values['units'] = $units;
-			
-			array_splice ($data_top, $top_n_value);
-			array_splice ($agent_name, $top_n_value);
-			array_splice ($module_name, $top_n_value);
-			array_splice ($id_agent_module, $top_n_value);
-			array_splice ($units, $top_n_value);
-			
+			//Order to show.
 			switch ($order_uptodown) {
 				//Descending
 				case 1:
@@ -3730,6 +3706,19 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
 					break;
 			}
+			
+			array_splice ($data_top, $top_n_value);
+			array_splice ($agent_name, $top_n_value);
+			array_splice ($module_name, $top_n_value);
+			array_splice ($id_agent_module, $top_n_value);
+			array_splice ($units, $top_n_value);
+			
+			$data_top_values = array ();
+			$data_top_values['data_top'] = $data_top;
+			$data_top_values['agent_name'] = $agent_name;
+			$data_top_values['module_name'] = $module_name; 
+			$data_top_values['id_agent_module'] = $id_agent_module;
+			$data_top_values['units'] = $units;
 			
 			// Define truncate size depends the graph width
 			$truncate_size = $sizgraph_w / (4 * ($config['font_size']))-1;
@@ -3793,7 +3782,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
 			}
-
+			
 			$table->colspan[3][0] = 3;
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
@@ -3844,7 +3833,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_summary->data[0][0] = format_for_graph($min, 2);
 				$table_summary->data[0][1] = format_for_graph($avg, 2);
 				$table_summary->data[0][2] = format_for_graph($max, 2);
-							
+				
 				$table->colspan[5][0] = 3;
 				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
 				$table->colspan[6][0] = 3;

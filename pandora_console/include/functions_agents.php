@@ -1074,7 +1074,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		if($id_agent == false) {
 			$id_agent = array();
 		}
-
+		
 		$temp = array();
 		foreach ($id_agent as $item) {
 			$temp[] = $item['id_agente'];

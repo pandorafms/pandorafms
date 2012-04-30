@@ -204,13 +204,15 @@ switch ($activeTab) {
 					}
 					else {
 						$id_modules = array();
-						foreach($name_modules as $mod){
-							foreach($id_agents as $ag){
-								$sql = "SELECT id_agente_modulo
-									FROM tagente_modulo
-									WHERE delete_pending = 0 AND id_agente = ".$ag." AND nombre = '".$mod."'";
-								$result = db_get_row_sql ($sql);
-								$id_modules[] = $result['id_agente_modulo'];
+						foreach ($name_modules as $mod) {
+							foreach ($id_agents as $ag) {
+								$id_module = agents_get_modules($ag,
+									array('id_agente_modulo'),
+									array('nombre' => io_safe_input($mod)));
+								if (empty($id_module))
+									continue;
+								
+								$id_modules[] = $id_module;
 							}
 						}
 						$message .= visual_map_process_wizard_add_modules($id_modules,

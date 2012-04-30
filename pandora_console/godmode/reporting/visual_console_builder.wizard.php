@@ -32,8 +32,8 @@ $table->id = 'wizard_table';
 $table->width = '98%';
 $table->data = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align:top';
-$table->style[2] = 'font-weight: bold';
+$table->style[0] = 'font-weight: bold; vertical-align: text-top;';
+$table->style[1] = 'font-weight: bold; vertical-align: top;';
 $table->size = array ();
 $table->data = array ();
 
@@ -72,7 +72,7 @@ $table->data["all_1"][1] = html_print_input_text ('range', 50, '', 5, 5, true);
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
 $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
 $table->data["staticgraph_modulegraph"][1] = __('Width').': '.html_print_input_text ('width', 0, '', 5, 5, true);
-$table->data["staticgraph_modulegraph"][1] .= '<br />'.__('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
+$table->data["staticgraph_modulegraph"][1] .= ' ' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
 $table->rowstyle["modulegraph"] = 'display: none;';
 $table->data["modulegraph"][0] = __('Period');
@@ -111,11 +111,9 @@ $table->data["all_2"][1] = html_print_select_groups($config['id_user'], "AR", tr
 $table->rowstyle["all_3"] = 'display: none;';
 $table->data["all_3"][0] = __('Agents');
 $table->data["all_3"][1] = html_print_select (agents_get_group_agents (0, false, "none", false, true),
-	'id_agents[]', 0, false, '', '', true, true);
-
-$table->rowstyle["all_4"] = 'display: none;';
-$table->data["all_4"][0] = __('Modules');
-$table->data["all_4"][1] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
+	'id_agents[]', 0, false, '', '', true, true) .
+	' <span style="vertical-align: top;">' . __('Modules') . '</span>' .
+	html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
 
 $table->rowstyle["all_5"] = 'display: none;';
 $table->data["all_5"][0] = __('Label');

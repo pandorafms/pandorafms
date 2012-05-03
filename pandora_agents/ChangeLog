@@ -1,3 +1,11 @@
+2012-05-03  Sergio Martin <sergio.martin@artica.es>
+
+	* win32/windows/pandora_wmi.cc: Added to the windows
+	agent inventory module for patches the service pack
+	column
+
+	Merged from 4.0.2
+
 2012-04-27 Dario Rodriguez <dario.rodriguez@artica.es>
 
  	* unix/plugins/inventory: Fixed a small error related to inventory plugin

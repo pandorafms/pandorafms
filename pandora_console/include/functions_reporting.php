@@ -52,11 +52,11 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
-
+	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
-
+	
 	// Get module data
 	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -64,7 +64,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 			' AND utimestamp < ' . (int) $date .
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Uncompressed module data
 	if ($uncompressed_module) {
 		$min_necessary = 1;
@@ -95,11 +95,11 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 		
 		$min_necessary = 2;
 	}
-
+	
 	if (count ($interval_data) < $min_necessary) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$total = 0;
 	$count = 0;
@@ -121,21 +121,21 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 			$count++;
 		}
 	}
-
+	
 	// Compressed module data
 	if (! $uncompressed_module) {
 		if ($period == 0) {
 			return 0;
 		}
-
+	
 		return $total / $period;
 	}
-
+	
 	// Uncompressed module data
 	if ($count == 0) {
 		return 0;
 	}
-
+	
 	return $total / $count;	
 }
 
@@ -155,11 +155,11 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
-
+	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
-
+	
 	// Get module data
 	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -167,7 +167,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 			' AND utimestamp < ' . (int) $date .
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Uncompressed module data
 	if ($uncompressed_module) {
 	
@@ -193,7 +193,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 			array_push ($interval_data, $next_data);
 		}
 	}
-
+	
 	// Set initial conditions
 	if (empty($iterval_data)) {
 		$max = 0;
@@ -206,13 +206,13 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 			$max = 0;
 		}
 	}
-
+	
 	foreach ($interval_data as $data) {
 		if ($data['datos'] > $max) {
 			$max = $data['datos'];
 		}
 	}
-
+	
 	return $max;
 }
 
@@ -298,7 +298,6 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
  * @return float The sumatory of the module values in the interval.
  */
 function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
-
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -308,15 +307,15 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 	$module_name = db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
 	$module_interval = modules_get_interval ($id_agent_module);
 	$uncompressed_module = is_module_uncompressed ($module_name);
-
+	
 	// Wrong module type
 	if (is_module_data_string ($module_name)) {
 		return 0;
 	}
-
+	
 	// Incremental modules are treated differently
 	$module_inc = is_module_inc ($module_name);
-
+	
 	// Get module data
 	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -324,7 +323,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 			' AND utimestamp < ' . (int) $date .
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Uncompressed module data
 	if ($uncompressed_module) {
 		$min_necessary = 1;
@@ -355,17 +354,17 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 		
 		$min_necessary = 2;
 	}
-
+	
 	if (count ($interval_data) < $min_necessary) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$total = 0;
 	if (! $uncompressed_module) {
 		$previous_data = array_shift ($interval_data);
 	}
-
+	
 	foreach ($interval_data as $data) {
 		if ($uncompressed_module) {
 			$total += $data['datos'];
@@ -378,7 +377,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 		}
 		$previous_data = $data;
 	}
-
+	
 	return $total;
 }
 
@@ -2329,7 +2328,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
-						
+			
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$intervals_text = $content['text'];
@@ -2382,7 +2381,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			break;
-
+			
 		case 2:
 		case 'custom_graph':
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -2435,7 +2434,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				true,
 				$urlImage);
 			array_push ($table->data, $data);
-	
+			
 			break;
 		case 3:
 		case 'SLA':
@@ -2446,7 +2445,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->style[1] = 'text-align: right';
 			
 			// Put description at the end of the module (if exists)
-
+			
 			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
 				$data_desc = array();

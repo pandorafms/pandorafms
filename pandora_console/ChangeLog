@@ -1,9 +1,20 @@
 2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/styles/pandora.css: fixed ".is_submenu2 li" because there
+	is not ":".
+	
+	* include/functions_reporting.php: cleaned source code style.
+	
+	* godmode/reporting/reporting_builder.php: removed a PHP notice
+	message about a uninicialized var.
+	
+	* godmode/reporting/graphs.php: fixed lost icon in the header bar
+	in this page.
+
+2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/styles/menu.css: fixed bad colour name "#grey" for correct
 	colour name "grey".
-	
-	* include/functions_visual_map.php: cleaned source code style.
 	
 	* include/constants.php: added constants for backup.
 

@@ -32,7 +32,7 @@ $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
 
 // Header
-ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting", false, "");
+ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting.png", false, "");
 
 // Delete module SQL code
 if ($delete_graph) {
@@ -60,7 +60,7 @@ if ($delete_graph) {
 	}
 }
 
-	
+
 $graphs = custom_graphs_get_user ($config['id_user'], false, true, "IR");
 
 if (! empty ($graphs)) {

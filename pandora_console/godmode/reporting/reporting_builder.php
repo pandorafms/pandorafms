@@ -384,13 +384,16 @@ switch ($action) {
 								$values['text'] = get_parameter('text');
 								$good_format = true;
 						}
-
+						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-						if (($type == 'alert_report_agent') or ($type == 'event_report_agent'))
-							$values['id_agent_module'] = '';
-						else
-							$values['id_agent_module'] = get_parameter('id_agent_module');
+						$values['id_agent_module'] = '';
+						if (isset($type)) {
+							if (($type == 'alert_report_agent') or ($type == 'event_report_agent'))
+								$values['id_agent_module'] = '';
+							else
+								$values['id_agent_module'] = get_parameter('id_agent_module');
+						}
 						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
@@ -412,7 +415,7 @@ switch ($action) {
 						$values['server_name'] = get_parameter ('server_name');
 						if ($values['server_name'] == '')
 							$values['server_name'] = get_parameter ('combo_server');
-							
+						
 						if (($values['type'] == 'custom_graph') && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
 							$resultOperationDB = false;
 							break;
@@ -424,7 +427,7 @@ switch ($action) {
 							$values ['id_gs'] = $id_gs;
 							$values['server_name'] = substr ($server_name, 1, strlen($server_name));
 						}
-					
+						
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {

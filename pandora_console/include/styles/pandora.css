@@ -1599,7 +1599,7 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 .menu li.selected {
-     background-color: #B1B1B1 !important;
+	background-color: #B1B1B1 !important;
 }
 
 .menu li {
@@ -1607,7 +1607,7 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 .submenu li a{
-     background-color: #E4E4E4 !important;
+	background-color: #E4E4E4 !important;
 }
 
 .menu li a:hover, 
@@ -1616,11 +1616,11 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 .is_submenu2 li {
-	background-color #ff0000;
+	background-color: #ff0000;
 }
 
 .is_submenu2 {
-   background-color: #222222 !important;
+	background-color: #222222 !important;
 }
 
 .menu li.submenu_selected a {
@@ -1647,5 +1647,5 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 input#text-id_parent.ac_input, input, textarea, select {
 	background-color: #ffffff !important;
 	border: 1px solid #cbcbcb;
-	}
+}
 

@@ -1,5 +1,10 @@
 2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/styles/pandora.css: Removed background color of 
+	header separators and background header font color in godmode views. 
+
+2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/events_list.php: Removed php warning due to 
 	reference to an unexisting variable.
 

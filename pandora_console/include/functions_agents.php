@@ -1803,6 +1803,11 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			break;
 	}
 
+	//Delete the agents from the networkmaps enterprise if exist
+	enterprise_include_once('/include/functions_networkmap_enterprise.php');
+	
+	enterprise_hook('networkmap_enterprise_delete_agent', $id_agents);
+		
 	if ($error) {
 		db_process_sql_rollback ();
 		return false;

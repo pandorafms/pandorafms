@@ -1,3 +1,17 @@
+2012-05-03  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php
+	include/functions_ui.php
+	include/functions_agents.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_monitores.php : Fixed several 
+	title text in force icon (green donut)
+
+	* operation/menu.php: Fixed missed "Edit my user" option
+
+	Merged from trunk
+
 2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/styles/pandora.css: fixed ".is_submenu2 li" because there

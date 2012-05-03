@@ -668,7 +668,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	if (! $compound) {
 		if ($alert["force_execution"] == 0) {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true) . '</a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
 		} 
 		else {
 			$data[$index['force_execution']] =

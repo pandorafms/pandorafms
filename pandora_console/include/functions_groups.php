@@ -664,7 +664,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	echo "</td>";
 	echo "<td class='group_view_data'  style='text-align: center; vertica-align: middle;'>";
 	if (check_acl ($config['id_user'], $id_group, "AW")) {
-		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . html_print_image("images/target.png", true, array("border" => '0')) . '</a>';
+		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
 	}
 	echo "</td>";
 

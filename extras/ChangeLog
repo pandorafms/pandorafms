@@ -1,3 +1,7 @@
+2012-05-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Fixed a typo.
+
 2012-02-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Merged from trunk. Update agent version in

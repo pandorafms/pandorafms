@@ -41,7 +41,7 @@ CONSOLE_INSTALL_FILE="$CODE_HOME/pandora_console/install.php"
 AGENT_UNIX_FILE="$CODE_HOME/pandora_agents/unix/pandora_agent"
 AGENT_WIN_FILE="$CODE_HOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODE_HOME/pandora_agents/win32/installer/pandora.mpi"
-AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
+AGENT_WIN_RC_FILE="$CODE_HOME/pandora_agents/win32/versioninfo.rc"
 
 # Update version in spec files
 function update_spec_version {

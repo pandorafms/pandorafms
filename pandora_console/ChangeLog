@@ -1,3 +1,16 @@
+2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora_legacy.css
+	 include/styles/pandora.css
+	 images/skin/skin_default/include/styles/pandora.css: Fixed 
+	 information messages in other css files different than the default
+	 css file. Also resized header image to 100% width.
+	 
+	 Fixes: #3523202
+
+	* operation/agentes/tactical.php: Fixed print_cells_temp function 
+	when it has not color like argument.
+
 2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.php: refixed the add the

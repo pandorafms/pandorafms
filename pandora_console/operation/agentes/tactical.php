@@ -49,10 +49,15 @@ function print_cells_temp ($cells) {
 			$row[1] = "-";
 		}
 
+		// Prevents error for empty color
+		$color = '';
+		if (isset($row["color"]))
+			$color = 'style="color: ' . $row["color"] . ';"';
+
 		if (isset($row["href"]))
-			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.io_safe_input ($row["href"]).'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.io_safe_input ($row["href"]).'" ' . $color . '>'.$row[1].'</a></td></tr>';
 		else
-			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" ' . $color . '>'.$row[1].'</a></td></tr>';
 	}
 }
 

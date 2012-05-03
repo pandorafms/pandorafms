@@ -1346,7 +1346,7 @@ div#head {
 	width: auto;
 	background-color: #000;
 	background-image: url(../../images/header_f2.png); 
-
+	background-size: 100% !important;
 }
 
 div#foot {

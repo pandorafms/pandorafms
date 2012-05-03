@@ -1,5 +1,10 @@
 2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/styles/pandora.css: Removed background color of 
+	header separators and background header font color in godmode views.
+
+2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/styles/pandora_legacy.css
 	 include/styles/pandora.css
 	 images/skin/skin_default/include/styles/pandora.css: Fixed 

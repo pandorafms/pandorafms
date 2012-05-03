@@ -33,7 +33,7 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 	if (! isset ($parents[$node])) {
 		return false;
 	}
-
+	
 	if ($node == $ascendant) {
 		return true;
 	}
@@ -153,7 +153,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
 			$graph .= networkmap_create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
-		} else {
+		}
+		else {
 			$orphans[$node] = 1;
 		}
 	}
@@ -513,7 +514,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	if ($simple == 1){
 		$label = '';
 	}
-
+	
 	$stats_json = base64_encode(json_encode($stats));
 	
 	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,

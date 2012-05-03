@@ -968,7 +968,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])){
 							// Link to an URL
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $layout_data['label'] .'">';
-							$endTagA = true;							
+							$endTagA = true;
 						}
 					}
 					
@@ -1268,7 +1268,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							else {
 								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
 							}
-						} else {
+						}
+						else {
 							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}
@@ -1359,12 +1360,12 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$filter = array ();
 	
 	$where = db_format_array_where_clause_sql ($filter);
-
+	
 	if ($returnAllGroup)
 		$groups = users_get_groups ($id_user);
 	else
 		$groups = users_get_groups ($id_user, 'IR', false);
-		
+	
 	if(!empty($groups)) {
 		if ($where != '') {
 			$where .= ' AND ';
@@ -1375,7 +1376,7 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if($where == '') {
 		$where = array();
 	}
-
+	
 	$layouts = db_get_all_rows_filter ('tlayout', $where);
 	
 	if ($layouts == false)
@@ -1409,12 +1410,12 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
 	$depth++; // For recursion depth checking
-
+	
 	// TODO: Implement this limit as a configurable item in setup
-	if ($depth > 10){
+	if ($depth > 10) {
 		return 3; // No status data if we need to exit by a excesive recursion
 	}
-
+	
 	$id_layout = (int) $id_layout;
 	
 	$result = db_get_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
@@ -1428,11 +1429,14 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
 			$status = visual_map_get_layout_status ($data["id_layout_linked"], $depth);
+		}
 		// Module
-		} elseif ($data["id_agente_modulo"] != 0) {
+		elseif ($data["id_agente_modulo"] != 0) {
 			$status = modules_get_agentmodule_status ($data["id_agente_modulo"]);
+		
+		}
 		// Agent
-		} else {
+		else {
 			$status = agents_get_status ($data["id_agent"]);
 		}
 		if ($status == 1)
@@ -1499,7 +1503,7 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			if (!empty($moduleName)) {
 				$text .= " - " . ui_print_truncate_text($moduleName, 10, false);
 			}
-
+			
 			$text .= ")"; 
 		}
 		$text .= ' (' . $idData . ')'; 

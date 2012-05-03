@@ -1,3 +1,13 @@
+2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.php: refixed the add the
+	items with modules with entities.
+	
+	* include/functions_reporting.php, include/functions_networkmap.php,
+	include/functions_visual_map.php: cleaned source code style.
+	
+	MERGED FROM 4.0.2
+
 2012-04-30  Sancho Lerena <slerena@artica.es>
 
 	All changes (except a small patch on function_groups) are

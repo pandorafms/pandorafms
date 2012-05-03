@@ -1,5 +1,10 @@
 2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/ver_agente.php: Changed way of truncate agent 
+	name in header due to bad visualization if agent name has entities.
+
+2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/styles/pandora.css: Removed background color of 
 	header separators and background header font color in godmode views. 
 

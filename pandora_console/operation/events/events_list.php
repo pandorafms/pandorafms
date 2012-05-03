@@ -402,7 +402,7 @@ $table->head[4] = __('Action');
 $table->align[4] = 'center';
 $table->size[4] = '80px';
 
-if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+if (check_acl ($config["id_user"], 0, "IW") == 1) {
 	$table->head[5] = html_print_checkbox ("allbox", "1", false, true);
 	$table->align[5] = 'center';
 }

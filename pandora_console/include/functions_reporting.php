@@ -3453,7 +3453,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$i = 1;
 						foreach ($modules_list as $m) {
 							foreach ($generals as $g) {
-								
 								//Metaconsole connection
 								$server_name = $g ['server_name'];
 								if (($config ['metaconsole'] == 1) && $server_name != '') {

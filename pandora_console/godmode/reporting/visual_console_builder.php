@@ -208,13 +208,18 @@ switch ($activeTab) {
 							foreach ($id_agents as $ag) {
 								$id_module = agents_get_modules($ag,
 									array('id_agente_modulo'),
-									array('nombre' => io_safe_input($mod)));
+									array('nombre' => $mod));
 								if (empty($id_module))
 									continue;
+								else {
+									$id_module = reset($id_module);
+									$id_module = $id_module['id_agente_modulo'];
+								}
 								
 								$id_modules[] = $id_module;
 							}
 						}
+						
 						$message .= visual_map_process_wizard_add_modules($id_modules,
 							$image, $idVisualConsole, $range, $width, $height,
 							$period, $process_value, $percentileitem_width,

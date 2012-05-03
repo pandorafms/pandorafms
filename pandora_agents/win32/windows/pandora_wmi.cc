@@ -1016,7 +1016,7 @@ int
 Pandora_Wmi::getPatchInfo (list<string> &rows) {
     CDhInitialize init;
 	CDispPtr      wmi_svc =  NULL, patch_info = NULL;
-	char         *hot_fix_id  = NULL, *description = NULL, *comments = NULL;
+	char         *hot_fix_id  = NULL, *description = NULL, *comments = NULL, *service_pack = NULL;
 	string        ret = "";
     int          num_objects = 0;
  	try {
@@ -1027,7 +1027,7 @@ Pandora_Wmi::getPatchInfo (list<string> &rows) {
 
         dhCheck (dhGetValue (L"%o", &patch_info, wmi_svc,
 				     L".ExecQuery(%S)",
-				     L"SELECT HotFixID, Description, FixComments FROM Win32_QuickFixEngineering "));
+				     L"SELECT HotFixID, Description, FixComments, ServicePackInEffect FROM Win32_QuickFixEngineering "));
         
 		FOR_EACH (patch_info_item, patch_info, NULL) {
             num_objects++;
@@ -1050,7 +1050,14 @@ Pandora_Wmi::getPatchInfo (list<string> &rows) {
    			if (comments != NULL) {
                ret += comments; 
             }
-            dhFreeString(comments);
+            ret += inventory_field_separator;
+            dhFreeString (comments);		
+			dhGetValue (L"%s", &service_pack, patch_info_item,
+				    L".ServicePackInEffect");
+   			if (service_pack != NULL) {
+               ret += service_pack; 
+            }
+            dhFreeString(service_pack);
             rows.push_back(ret);
             ret.clear();
 		} NEXT_THROW (patch_info_item);

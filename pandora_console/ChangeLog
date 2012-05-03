@@ -1,3 +1,12 @@
+2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/styles/menu.css: fixed bad colour name "#grey" for correct
+	colour name "grey".
+	
+	* include/functions_visual_map.php: cleaned source code style.
+	
+	* include/constants.php: added constants for backup.
+
 2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/ver_agente.php: Changed way of truncate agent 

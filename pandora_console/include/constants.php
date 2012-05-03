@@ -67,4 +67,16 @@ define('SEPARATOR_ROW', chr(10)); //chr(10) = '\n'
 define('SEPARATOR_COLUMN_CSV', "#");
 define('SEPARATOR_ROW_CSV', "@\n");
 
+/* Backup paths */
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		define ('BACKUP_DIR', 'attachment/backups');
+		define ('BACKUP_FULLPATH', $config['homedir'] . '/' . BACKUP_DIR);
+		break;
+	case "oracle":
+		define ('BACKUP_DIR', 'DATA_PUMP_DIR');	
+		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
+		break;
+}
 ?>

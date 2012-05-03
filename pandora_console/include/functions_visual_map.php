@@ -47,7 +47,7 @@ function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabl
 	
 	echo '<div class="button_toolbox ' . $disableClass . '" id="' . $idDiv . '"
 		style="font-weight: bolder; text-align: center; float: ' . $float . ';' .
-			'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
+		'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
 	if ($disabled) {
 		echo '<span class="label" style="color: #aaaaaa;">';
 	}
@@ -1221,7 +1221,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// Single module graph
 					// ****************************************************************
 					// SINGLE GRAPH (type = 1)			
-										
+					
 					if ($resizedMap) {
 						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
 						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));

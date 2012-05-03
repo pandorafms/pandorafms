@@ -270,6 +270,7 @@ div#head {
 	height: 62px; 
 	padding-top: 1px;
 	background: url(../../images/header.jpg);
+	background-size: 100% !important;
 }
 
 div#foot {

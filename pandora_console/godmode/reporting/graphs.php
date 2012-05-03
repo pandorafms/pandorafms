@@ -65,7 +65,7 @@ $id = (int) get_parameter ('id');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
 // Header
-ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting", false, "", false, $buttons);
+ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting.png", false, "", false, $buttons);
 
 // Delete module SQL code
 if ($delete_graph) {
@@ -82,7 +82,8 @@ if ($delete_graph) {
 		if ($result) {
 			db_pandora_audit("Report management", "Delete graph #$id");
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
-		} else {
+		}
+		else {
 			db_pandora_audit("Report management", "Fail try to delete graph #$id");
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		}

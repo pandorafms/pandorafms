@@ -1,3 +1,11 @@
+2012-05-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/ver_agente.php: Changed way of truncate agent 
+	name in header due to bad visualization if agent name has entities.
+		
+	* include/styles/pandora.css
+	images/header_f2.png: Modified header image with 3000px width. 
+
 2012-05-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/styles/pandora.css: fixed ".is_submenu2 li" because there
@@ -23,6 +31,13 @@
 	* include/constants.php: added constants for backup.
 	
 	MERGED FROM 4.0.2
+
+2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/ver_agente.php: Changed way of truncate agent 
+	name in header due to bad visualization if agent name has entities.
+	
+	Merged from branches.
 
 2012-05-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

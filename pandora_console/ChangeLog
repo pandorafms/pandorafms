@@ -1,3 +1,12 @@
+2012-05-04 Sancho Lerena <slerena@artica.es>
+
+	* extensions/ssh_gateway.php
+	extensions/ssh_gateway
+	extensions/ssh_gateway/secure_console.png: New extension for SSH
+	and telnet connectivity with remote devices.
+
+	* include/styles/pandora.css: Small fixes to style.
+
 2012-05-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css

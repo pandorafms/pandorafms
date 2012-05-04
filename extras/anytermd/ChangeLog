@@ -1,5 +1,8 @@
 2012-05-04  Sancho Lerena <slerena@artica.es>
 
+	* anytermd.suse.spec: Added specific spec for SUSE. Tested on a
+	opensuse 11.3/i586.
+
 	* Added to Pandora FMS repo. Some minor modifications on c files
 	in order to compile it without problems.
 

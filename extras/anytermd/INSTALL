@@ -1,0 +1,36 @@
+Introduction
+------------
+
+Pandora FMS uses a tool called "anytermd" to create a "proxy" between user browser and remote destination. This tool launches as a daemon, listeting in a port, and executing a command, forwarding all output to the user browser.
+
+You need to install the daemon in the server, and execute it. 
+
+Installing anytermd
+-------------------
+
+Sources are placed in extras/anytermd.
+
+Make sure you have installed gnu c++ compiler (gcc-c++), make, boost-devel and zlib-devel.
+
+Run:
+
+ make
+
+Later, install manually the binary to /usr/bin
+
+ cp anytermd /usr/bin
+
+Executing anytermd
+------------------
+
+To run the server daemons, you need to do manually, Pandora FMS server / console doesn't start up automatically. Pandora FMS SSH/Telnet extension will search for a different instance of anyterd running in 8023 for Telnet connections and 8022 for SSH connections.
+
+Execute it like:
+
+ anytermd --port 8023 --user apache -c 'telnet %p' 
+ anytermd --port 8022 --user apache -c 'ssh %p' 
+
+Replace "apache" with "httpd" or any other httpd based user your system may have. This will use ports 8023 and 8022, be sure that ports are "open and clear" from the user browser to the console webserver system. No firewalls there.
+
+For more updated install docs, please refer official Pandora FMS documentation.
+

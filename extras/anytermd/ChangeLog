@@ -1,0 +1,352 @@
+2012-05-04  Sancho Lerena <slerena@artica.es>
+
+	* Added to Pandora FMS repo. Some minor modifications on c files
+	in order to compile it without problems.
+
+	Added README and INSTALL files.
+
+---- old changelog contents below -----
+
+1.1.29
+
+	Fix for compilers that don't think they have atomic operations.
+	Fix brokenness on Linux 2.4.
+
+1.1.28
+
+	Re-organise directory structure with separate build directory.
+	Add manpage.
+	Strip query string before looking for static content.
+	Remove dependency on Boost.Thread and Boost.ProgramOptions.
+
+1.1.27
+
+	Build experimentally on OS X.
+	Work around FF3 scrollbar issue.
+	Remove unused dangling symlink.
+	Fix mimetype.sh when there are multiple matching entries in 
+		/etc/mime.types, e.g. Suse 11.
+
+1.1.26
+
+	Remove apache module and anygetty.
+	Add control keys menu.
+
+1.1.25
+
+	Maybe make Safari keyboard input work again.
+	Add mozilla copy-to-clipboard from Simon Wissinger.
+	Set the erase character to backspace.
+	Add on_close_goto_url.
+	Tidy up various CSS things.
+
+1.1.24
+
+	OpenBSD fixes (from Patrick Augé).
+	Limit scrollback to 1000 lines.
+
+1.1.23
+
+	Compile on g++ 3.4.4.
+	Work with Firefox 3.
+	Try harder to make subprocesses terminate properly.
+	Fix compilation errors in daemon/Screen.hh.
+
+1.1.22
+
+	Handle ALT keys.
+	Handle ctrl-space.
+	Remove standalone daemon's recode dependency.
+	Add --name option to daemon so multiple pid files are possible.
+	Compile on g++ 4.0.2.
+	Cope better when subprocess is unkillable (e.g. sudo).
+	Avoid zombie processes that escape waitpid().
+
+1.1.21
+
+	Add scrollback.
+	Add --local-only option to daemon.
+
+1.1.20
+
+	Remove left-over Sarrissa reference from Daemon makefile.
+
+1.1.19
+
+	Use explicit cross-browser XMLHttpRequest code in place
+		of Sarrissa.js.
+	Support shifted function keys F1-F8.
+	Prevent IE default behaviour for function keys.
+	Fixes for FreeBSD.
+
+1.1.18
+
+	Show a stacktrace if the stand-alone daemon segfaults.
+	Handle alt-gr better.
+	Map ctrl-. to ctrl-^, which browsers don't send.
+	Fix segfault in stand-alone daemon's scroll-up function.
+
+1.1.17
+
+	Use more CSS for colours, so it's easier to define your own
+		colour scheme.
+	Change colours for bold, since real bold messes up the layout.
+	Report subprocess errors in a JavaScript dialog.
+	Fix mutex destruction order bug in daemon.
+	Fix bounds error in differ.
+	Replace server-to-client XML with plain text.
+	Add --max-sessions and --max-http-connections options to daemon.
+	Add --diff and --nodiff options to daemon.
+	Possibly improved performance in Javascript and editscript
+		generation.
+
+1.1.16
+
+	Support arbitary character sets.
+	Replace ROTE with own Terminal class.
+	Fix the shift key in Opera.
+	Deprecate the WAP functionality.
+	Make "ssh %u@localhost" the default anyterm_command in .htaccess.
+	Standalone daemon has a command-line option to select
+		authentication method, including "null" to record but
+		not check the username from Apache.
+	Standalone daemon has better handling of subprocess termination.
+
+1.1.15
+
+	Make in daemon directory builds libpbe.
+	libpbe build from apachemod directory disables Recode.
+	Fix session closing and timeouts in backend to avoid freezes.
+
+1.1.14
+
+	Add copy and paste buttons.
+
+1.1.13
+
+	Don't build things with unwanted dependencies in libpbe.
+	Simplify building of common code with symlinks.
+
+1.1.12
+
+	Support serial ports in the standalone daemon.
+
+1.1.11
+
+	Support POST requests in both Apache module and standalone
+		daemon.
+	Use a new different shared memory segment name each time the
+		module starts.
+
+1.1.10
+
+	Add extra security to example .htaccess file.
+	Share more code between Apache module and standalone daemon.
+	Do data-plumbing to subprocess ourselves, not inside ROTE.
+	Use threads in backend to process process output, rather than
+		SIGIO.
+	Close sessions correctly.
+	Get random session ids from /dev/random.
+	Build two archives in common, one for shmem, one for std
+		containers.
+
+1.1.9
+
+	Use the candidate Boost Shared Memory library.
+
+1.1.8
+
+	Merge patch to support Solaris.
+	Support Apache2.2 (once they can do C++, presumably in 2.2.1).
+	Support F11 and F12 keys.
+	Fix FreeBSD build bug.
+
+1.1.7
+
+	Make compilation on FreeBSD more likely to work.
+	In the standalone daemon:
+		Use a condition variable rather than polling.
+		Get command to run, user to run as and port to listen
+		on from command-line options.
+		Redirect a request for / to /anyterm.html.
+	Use svn:external for libpbe.
+	Use Subversion.
+	Build in common/ with -fPIC.
+
+1.1.6
+
+	Make ctrl-[\] work, and try to make ctrl-^@_ work.  Don't send
+		junk for other undefined ctrl keys.
+	Make cross-compilation easier.
+	Use common code in apachemod.
+
+1.1.5
+
+	Add experimental stand-alone Anyterm daemon.
+	Use apxs to find path to libtool.
+
+1.1.4
+
+	Use rote_vt_get_pty_fd from ROTE 0.2.8, removing need to
+	access roteprivate.h.
+
+1.1.3
+
+	Fix missing <stdint.h> header.
+	Fix stylesheet comment syntax.
+
+1.1.2
+
+	Disable the status page by default.
+	Show only 3 digits of the session ID on the status page.
+	Use a 64-bit session ID.
+	Update to version 0.9.6 of Sarissa.
+	Make HTML more flexible.
+	Add SE-Linux configuration files to contrib directory.
+	Add anyterm.spec file to contrib directory.
+	Work around some Konqueror peculiarities.
+	Expand %u in anyterm_command to username from HTTP AUTH.
+	More 64-bit fixes.
+
+1.1.1
+	
+	Add status page.
+	Manage shared memory properly, thereby removing the limit on
+		the number of sessions and terminal dimensions.
+	Improve error reporting.
+	Support 64-bit architectures.
+	Find Apache include directory automatically.
+
+1.1.0
+
+	Add WAP functionality.
+	Make terminal size adjustable per-session, up to a hard limit.
+	Use more C++.
+	Improve error reporting using exceptions.
+
+1.0
+
+	Fix build error with asm statements on platforms that use them
+		for APR atomic operations (again).
+	Support Escape key.
+
+0.14
+
+	Hack javascript to work with Opera.
+	Make HTTP requests POSTs rather than GETs.
+	Send anti-cache HTTP headers.
+	Update Sarissa to new version.
+	Fix module name so that <IfModule anyterm> works.
+
+0.13
+
+	Iterate after rote_vt_update() returns without processing
+		all pty output.
+	Tweak diff algorithm settings so diffs are sent for bastet.
+	Reduce memory used by diff algorithm when "generous" max_time
+		paramter is supplied.
+	Grey-out terminal when closed.
+	Put hostname and Anyterm version number in terminal title.
+	Improve terminal HTML appearance.
+	Fix potential issue in SIGCHLD handling.
+
+0.12
+
+	Fix non-random random session id.
+	Define character set using a macro.
+
+0.11
+
+	Close files (and sockets) inherited from Apache.
+	Put backend process in same process group as other Apache
+		processes, so hopefully it will die when Apache dies.
+	Possibly avoid some race conditions.
+	Use more C++.
+	Compile incrementally.
+	Improve error reporting.
+	Remove polling from backend (needs to peek inside ROTE private
+		data).
+
+0.10
+
+	Send child processes SIGHUP when terminal is closed or times
+		out.
+	anygetty clears utmp entry on SIGHUP.
+	Start work on removing polling from backend.
+	Fix build error with asm statements on platforms that use them
+		for APR atomic operations.
+	Convert UTF8 keypresses into Latin1 before sending them to the
+		terminal.
+	Split up module source code.
+	Move signal sanitising from anygetty into module, so other
+		applications should get a sane signal state.
+
+0.9
+
+	Remove anylogin.sh
+	Improve locking.
+	Allow client's hostname to be passed to application, so
+		anygetty can include it in utmp.
+	Allow different anyterm_command directives for each directory.
+	Support F1 to F10.
+	Avoid problems with ctrl-C and ctrl-Z by unblocking them in
+		anygetty.
+	Ignore SIGCHLD in module, but restore default behaviour in
+		anygetty.
+	Add anygetty.
+
+0.8
+
+	Attempt colours and bold.
+	Add some basic inter-process locking.
+	Re-enable SIGCHLD in sub-processes so that "man" works.
+	Warn when leaving page.
+	Fix Mozilla double-backspace bug.
+
+0.7
+
+	Officially "beta".
+	Work around IE blank line bug.
+	Handle keypresses better, including TAB and Backspace, and
+		prevent more browser default actions.
+
+0.6
+
+	Display cursor properly (again).
+	Unused sessions time out after 30 seconds.
+	Support multiple sessions.
+
+0.5
+
+	Send differences rather than complete screen each time.
+
+0.4
+
+	Add anyterm_command configuration command.
+	Add anylogin.sh login script.
+	Use a .htaccess file to enable module for a single URL.
+	Make cursor keys work in IE, and make . work in Mozilla
+		(. has the same code as DEL)
+	Add CLOSE button.
+
+0.3
+
+	Use a separate process to contain the ROTE state.
+	Communicate between Apache request-handling processes and ROTE
+		process using shared memory,
+	Separate keypresses and screen updates into two concurrent
+		channels.
+	Avoid polling by stalling in server until screen has changed.
+	Handle cursor keys, PgUp/Dn etc.
+
+0.2
+
+	Use ROTE for terminal emulation.
+	Try to encode control keypresses in the Javascript.
+	Display the cursor.
+	Better functionality in IE.
+
+0.1
+
+	Initial release.  Alpha quality, barely works!
+

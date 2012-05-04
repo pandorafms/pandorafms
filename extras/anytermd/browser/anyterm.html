@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Pandora FMS Remote Gateway</title>
+<script type="text/javascript" src="anyterm.js">
+</script>
+
+<script type="text/javascript">
+  var param = get_url_param("param");
+  window.onload=function() {create_term("term","Pandora FMS Remote Gateway",28,100,param,"",1000);};
+  function get_url_param( name ) {
+  	var regexS = "[\\?&]"+name+"=([^&#]*)";
+	var regex = new RegExp( regexS );
+	var results = regex.exec( window.location.href );
+	if( results == null )
+		return "";
+	else
+		return results[1];
+  } 
+</script>
+<link rel="stylesheet" type="text/css" href="anyterm.css">
+</head>
+<body>
+<noscript>Javascript is essential for this page.  Please use a browser 
+that supports Javascript.</noscript>
+<div id="term"></div>
+</body>
+</html>

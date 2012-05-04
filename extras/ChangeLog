@@ -1,3 +1,9 @@
+2012-05-05  Sancho Lerena <slerena@artica.es>
+
+	* anytermd: Added anyterm to extras. Included modifications on original
+	anytermd project source code. Added a new spec file for centos/fedora/rhel.
+	Tested on FC16/i386 and centos6/x86_84.
+
 2012-05-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Fixed a typo.

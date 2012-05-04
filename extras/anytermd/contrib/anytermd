@@ -1,0 +1,136 @@
+#!/bin/bash
+# Copyright (c) 2005-2010 Artica ST
+#
+# Author: Sancho Lerena <slerena@artica.es> 2006-2010
+#
+# /etc/init.d/anytermd
+#
+# System startup script for Pandora FMS's anyterm tool
+#
+# Comments to support chkconfig on RedHat Linux
+# chkconfig: 2345 90 10
+# description: Pandora FMS Server anytermd startup scrip
+#
+# Comments to support LSB init script conventions
+### BEGIN INIT INFO
+# Provides:       anytermd
+# Required-Start: $network
+# Should-Start:   $network 
+# Required-Stop:  $syslog 
+# Should-Stop:    
+# Default-Start:  2 3 5
+# Default-Stop:   0 1 6
+# Short-Description: Anytermd startup script
+# Description:    Anytermd Server startup script for being used with Pandora FMS
+### END INIT INFO
+
+export PANDORA_DAEMON=/usr/bin/anytermd
+
+# Uses a wait limit before sending a KILL signal, before trying to stop
+# Pandora FMS server nicely. Some big systems need some time before close
+# all pending tasks / threads.
+
+export MAXWAIT=60
+
+# Check for SUSE status scripts
+if [ -f /etc/rc.status ]
+then
+	. /etc/rc.status
+	rc_reset
+else
+	# Define rc functions for non-suse systems, "void" functions.
+	function rc_status () { VOID=1; }
+	function rc_exit () { exit; }
+	function rc_failed () { VOID=1; }
+
+fi
+	
+# This function replace pidof, not working in the same way in different linux distros
+
+function pidof_pandora () (
+	# This sets COLUMNS to XXX chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	echo $PANDORA_PID
+)
+
+# Main script
+
+if [ ! -f $PANDORA_DAEMON ]
+then
+	echo "Anytermd not found, please check setup and read manual"
+	rc_status -s
+	rc_exit
+fi
+
+case "$1" in
+	start)
+		PANDORA_PID=`pidof_pandora`
+		if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "Antermd is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
+			rc_failed 1
+			rc_exit 
+		fi
+
+		$PANDORA_DAEMON --port 8023 --user pandora -c 'telnet %p' 
+		$PANDORA_DAEMON --port 8022 --user pandora -c 'ssh %p'
+	
+		sleep 1
+
+		PANDORA_PID=`pidof_pandora`
+		
+		if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "Anyterm is now running with PID $PANDORA_PID"
+			rc_status -v
+		else
+			echo "Cannot start Anytermd. Aborted."
+			rc_status -s
+		fi
+	;;
+		
+	stop)
+		PANDORA_PID=`pidof_pandora`
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "Anytermd is not running, cannot stop it."
+			rc_failed 
+		else
+			echo "Killing anytermd processes $PANDORA_PID"
+			kill "$PANDORA_PID" > /dev/null 2>&1
+
+			# Let rid of the other process....shazam !
+			PANDORA_PID=`pidof_pandora`
+			if [ ! -z "$PANDORA_PID" ]
+			then
+				kill "$PANDORA_PID" > /dev/null 2>&1
+			fi
+
+			rc_status -v
+		fi
+	;;
+	status)
+		PANDORA_PID=`pidof_pandora`
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "Anytermd is not running."
+			rc_status 
+		else
+			echo "Anytermd is running with PID $PANDORA_PID."
+			rc_status
+		fi
+	;;
+	force-reload|restart)
+		$0 stop
+		$0 start
+		;;
+	*)
+		echo "Usage: anytermd { start | stop | restart | status }"
+		exit 1
+esac
+rc_exit
+
+

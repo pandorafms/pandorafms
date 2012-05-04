@@ -1,0 +1,6 @@
+This is an special bundle/package for anyterm, prepared to use with Pandora FMS as remote connection system for SSH and Telnet. You cannot use it the "default" anyterm packaged in your system, because it has some modifications.
+
+In order to use it, you need to install from sources or from Pandora FMS project packages. Please read INSTALL to know how to do it.
+
+For more information about anyterm, please check http://anyterm.org/
+

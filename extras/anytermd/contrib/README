@@ -1,0 +1,15 @@
+This directory contains Anyterm-related files contributed by users.
+If you have something that you think could be useful to others, do
+please share it.  Get in touch via the Anyterm forum at
+http://anyterm.org/forums/.
+
+se-linux/*
+	Configuration files Security-Enhanced Linux (e.g. Fedora Core).
+	Last updated for Anyterm-1.1.1.
+	Contributed by Carl Roth.
+
+anyterm.spec
+	For building RPMs.
+	Last updated for Anyterm-1.1.1.
+	Contributed by Carl Roth.
+

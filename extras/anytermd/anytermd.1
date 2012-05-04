@@ -1,0 +1,122 @@
+.TH "anytermd" "1" "1.1.27" "Phil Endecott" ""
+.SH "NAME"
+.LP 
+anytermd \- A terminal\-emulating HTTP daemon
+.SH "SYNOPSIS"
+.LP 
+anytermd
+[\fB\-\-command\fR \fIarg\fP] 
+[\fB\-\-device\fR \fIarg\fP]
+[\fB\-\-port\fR \fIarg\fP]
+[\fB\-\-user\fR \fIarg\fP]
+[\fB\-\-auth\fR \fIarg\fP]
+[\fB\-\-charset\fR \fIarg\fP]
+[\fB\-\-foreground\fR]
+[\fB\-\-diff\fR]
+[\fB\-\-nodiff\fR]
+[\fB\-\-max\-sessions\fR \fIarg\fR]
+[\fB\-\-max\-http\-connections\fR \fIarg\fR]
+[\fB\-\-local\-only\fR]
+[\fB\-\-name\fR \fIarg\fR]
+.LP 
+anytermd \-\-help
+.SH "DESCRIPTION"
+.LP 
+Anyterm provides a terminal window on a web page, so you can run command-line programs on
+a machine even when the only access to it is over HTTP.
+.LP
+Anyterm consists of some Javascript on a web page, an XmlHttpRequest channel on standard ports 
+back to the server, an HTTP proxy such as Apache's mod_proxy and the Anyterm daemon. The daemon, 
+anytermd, uses a pseudo\-terminal to communicate with a shell or other application, and includes 
+terminal emulation. Key presses are picked up by the Javscript which sends them to the daemon; 
+changes to the emulated screen are sent from the daemon to the Javascript which updates its 
+display. Performance is quite reasonable and SSL can be used to secure the connection.
+\fIFor security reasons, it is highly recommended that anytermd NOT be exposed directly to 
+the Internet!\fR  See the section \fBSECURITY\fR below.
+.SH "OPTIONS"
+.LP 
+Default values are indicated in parentheses ().
+.TP 
+\fB\-c | \-\-command\fR \fIarg\fP (=/bin/bash)
+Command to run in terminal
+.TP 
+\fB\-d | \-\-device\fR \fIarg\fP
+Device to connect to (e.g. serial port)
+.TP 
+\fB\-p | \-\-port\fR \fIarg\fP (=8080)
+Port number to listen on
+.TP 
+\fB\-u | \-\-user\fR \fIarg\fP
+User to run as
+.TP 
+\fB\-a | \-\-auth\fR \fIarg\fP (=none)
+Authorisation: none|null|trivial
+.TP 
+\fB\-s | \-\-charset\fR \fIarg\fP (=ascii)
+Character set
+.TP 
+\fB\-f | \-\-foreground\fR
+run in foreground
+.TP 
+\fB\-\-diff\fR
+Send only differences to browser
+.TP 
+\fB\-n | \-\-nodiff\fR
+Send whole screen to browser each time
+.TP 
+\fB\-m | \-\-max\-sessions\fR \fIarg\fR (=20)
+Maximum number of simultaneous sessions
+.TP 
+\fB\-\-max\-http\-connections\fR \fIarg\fR (=unlimited)
+Maximum number of simultaneous HTTP connections
+.TP 
+\fB\-\-local\-only\fR
+Accept connections only from localhost
+.TP 
+\fB\-\-name\fR \fIarg\fR (=anyterm)
+Name used for logging and pid file
+.TP
+\fB\-\-help\fR
+show help message
+.SH "SECURITY"
+.LP 
+\fIDo not run anytermd as root.\fR
+.LP 
+Anyterm's code has not been audited for security. It is almost certainly possible to cause it to 
+crash by sending it invalid input, and experience suggests that this sort of weakness can also be 
+exploited to allow arbitary code execution.
+.LP 
+Note that all CGI applications and similar programs are subject to this sort of problem, though 
+some are better written than others. The Anyterm code does not need run with a higher priviledge 
+level than any other web application, so weaknesses in Anyterm do not put your system at any higher 
+risk than weaknesses in any other web application would.
+.LP 
+\fIAvoid exposing anytermd directly to the Internet.\fR
+.LP 
+anytermd should be used only as a backend service, reachable only via a frontend HTTPS 
+proxy, such as Apache, that requires authentication. \fIhttp://anyterm.org/1.1/install.html\fR 
+gives examples of how to set this up.
+.LP 
+A more complete and up\-to\-date discussion of security issues in anytermd can be found at 
+\fIhttp://anyterm.org/security.html\fR. 
+.SH "EXAMPLES"
+.LP 
+If you just want to test Anyterm, you can do:
+.LP 
+anytermd \-\-local\-only
+.LP 
+and then connect to http://localhost:8080 with your Javascript\-enabled web browser.  The 
+brower should display a terminal window containing a bash command prompt owned by the user who 
+started anytermd.
+.LP 
+If you want to set up SSH\-over\-HTTP access on localhost:8022, you might run it as:
+.LP 
+anytermd \-\-command "/usr/bin/ssh \-o your-username@localhost" \-\-port 8022 \-\-user nobody 
+\-\-charset utf\-8 \-\-local\-only
+.SH "SEE ALSO"
+.LP
+Anyterm is more fully documented on its web site, \fBhttp://anyterm.org/\fP.  The web site 
+may be more up-to-date than this man page.
+.SH "AUTHOR"
+.LP 
+Anyterm is written by Phil Endecott.  This man page was contributed by Eric Rossen.

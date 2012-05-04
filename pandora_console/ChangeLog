@@ -1,3 +1,8 @@
+2012-05-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css
+	images/header_f2.png: Modified header image with 3000px width. 
+
 2012-05-03  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_groups.php

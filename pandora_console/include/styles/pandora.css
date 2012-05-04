@@ -1341,9 +1341,9 @@ div#main {
 }
 div#head {
 	width: auto;
+	height: auto;
 	background-color: #000;
-	background-image: url(../../images/header_f2.png); 
-	background-size: 100% !important;
+	background-image: url(../../images/header_f2.png);
 }
 
 div#foot {

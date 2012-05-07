@@ -1,3 +1,8 @@
+2012-05-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css: Fixed background color in login 
+	splash inputs.
+
 2012-05-04 Sancho Lerena <slerena@artica.es>
 
 	* extensions/ssh_gateway.php

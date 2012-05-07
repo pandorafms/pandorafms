@@ -332,7 +332,7 @@ input.datos_readonly {
 }
 input.login {
 	border: 0px none;
-	background-color: #ebebeb;
+	background-color: #ebebeb !important;
 	margin: 0px 0 8px 20px;
 	width: 135px;
 	height: 18px;

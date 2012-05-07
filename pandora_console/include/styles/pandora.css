@@ -341,7 +341,7 @@ input.login {
 /* FF hack for login inputs */
 @-moz-document url-prefix() {
 	input.login{
-		margin: 2px 0 8px 20px !important;
+		margin: -2px 0 8px 20px !important;
 	}
 }
 

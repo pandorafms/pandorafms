@@ -21,9 +21,9 @@ public class Options extends Activity {
 	public Core core;
 	public PandroidEventviewerActivity object;
 	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
         
         Intent i = getIntent();
         this.core = (Core)i.getSerializableExtra("core");
@@ -65,7 +65,7 @@ public class Options extends Activity {
 			}
 		});
         
-    	if (this.object.show_popup_info) {
+        if (this.object != null && this.object.show_popup_info) {
     		this.object.show_popup_info = false;
     		i = new Intent(this, About.class);
     		startActivity(i);

@@ -167,7 +167,8 @@ public class Main extends Activity {
 			parameters.add(new BasicNameValuePair("pass", password));
 			parameters.add(new BasicNameValuePair("op", "get"));
 			parameters.add(new BasicNameValuePair("op2", "groups"));
-			parameters.add(new BasicNameValuePair("other_mode", "url_encode_separator_|"));
+			parameters.add(new BasicNameValuePair("other_mode",
+				"url_encode_separator_|"));
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
 			parameters.add(new BasicNameValuePair("other", ";"));
 			
@@ -294,14 +295,16 @@ public class Main extends Activity {
 		this.object.id_group = 0;
 		
 		combo = (Spinner) findViewById(R.id.group_combo);
-		String selectedGroup = combo.getSelectedItem().toString();
-		
-		Iterator it = pandoraGroups.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<Integer, String> e = (Map.Entry<Integer, String>)it.next();
+		if (combo.getSelectedItem() != null) {
+			String selectedGroup = combo.getSelectedItem().toString();
 			
-			if (e.getValue().equals(selectedGroup)) {
-				this.object.id_group = e.getKey();
+			Iterator it = pandoraGroups.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<Integer, String> e = (Map.Entry<Integer, String>)it.next();
+				
+				if (e.getValue().equals(selectedGroup)) {
+					this.object.id_group = e.getKey();
+				}
 			}
 		}
 		

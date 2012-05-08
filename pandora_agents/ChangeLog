@@ -1,3 +1,7 @@
+2012-05-08 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* unix/Linux/pandora_agent.conf: Fixed an example module name.
+
 2012-05-03  Sergio Martin <sergio.martin@artica.es>
 
 	* win32/windows/pandora_wmi.cc: Added service pack column

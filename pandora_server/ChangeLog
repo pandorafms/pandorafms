@@ -1,3 +1,7 @@
+2012-05-08  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: Better default values.
+
 2012-04-28  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Added a missing argument to process_data()

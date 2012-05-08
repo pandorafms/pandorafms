@@ -1,3 +1,9 @@
+2012-05-08 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* util/plugin/ipmi-plugin.pl,
+	util/recon_scripts/ipmi-recon.pl: Fixed some bugs of plugin and
+	recon
+
 2012-04-26  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added call to delete the agent

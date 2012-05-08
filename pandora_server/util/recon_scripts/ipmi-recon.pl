@@ -21,7 +21,8 @@ use PandoraFMS::Config;
 ##########################################################################
 # Global variables so set behaviour here:
 
-my $target_timeout = 5; # Fixed to 5 secs by default
+my $pkg_count = 3; #Number of ping pkgs
+my $pkg_timeout = 3; #Pkg ping timeout wait
 
 ##########################################################################
 # Code begins here, do not touch
@@ -63,22 +64,12 @@ sub show_help {
 ##########################################################################
 # Get SNMP response.
 ##########################################################################
-sub get_snmp_response ($$$) {
-	my ($target_timeout, $target_community, $addr) = @_;
-
-	# The OID used is the SysUptime OID
-	my $buffer = `/usr/bin/snmpget -v 1 -r0 -t$target_timeout -OUevqt -c '$target_community' $addr .1.3.6.1.2.1.1.3.0 2>/dev/null`;
-
-	# Remove forbidden caracters
-	$buffer =~ s/\l|\r|\"|\n|\<|\>|\&|\[|\]//g;
-	
-	return $buffer;
-}
-
-sub ipmi_ping ($) {
+sub ipmi_ping ($$$) {
 	my $addr = shift;
+	my $pkg_count = shift;
+	my $pkg_timeout = shift;
 	
-	my $cmd = "ipmiping $addr -c 3";
+	my $cmd = "ipmiping $addr -c $pkg_count -t $pkg_timeout";
 	
 	my $res = `$cmd`;	
 
@@ -97,25 +88,35 @@ sub create_ipmi_modules($$$$$$) {
         my $res = `$cmd`;
 
 	my @lines = split(/\n/, $res);
-
+	
 	my $ipmi_plugin_id = get_db_value($dbh, "SELECT id FROM tplugin WHERE name = '".safe_input("IPMI Plugin")."'");
 
 	
-	foreach my $line (@lines) {
-		my @aux = split(/:/, $line);
+	for(my $i=1; $i < $#lines; $i++) {
+		
+		my $line = $lines[$i];
+		
+		my @aux = split(/\|/, $line);
 		
 		my $name = $aux[1];
 
 		#Trim name
 		$name =~ s/^\s+//;
 		$name =~ s/\s+$//;
-
+		
 		my $module_type = "generic_data_string";
 		
-		if ($aux[2] =~ /.+ (\w) \(/) {
+		my $value_read = $aux[3];
+		
+		#Trim name
+		$value_read =~ s/^\s+//;
+		$value_read =~ s/\s+$//;
+		
+		#Check if value read is integer or boolean
+		if ($value_read =~ m/^\d+.\d+$/ || $value_read =~ m/^\d+$/) {
 			$module_type = "generic_data";	
 		} 
-
+		
 		my $id_module_type = get_module_id($dbh, $module_type);
 
 		my $params = "-s $aux[0]";
@@ -197,12 +198,12 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 	
 	# Update the recon task 
 	update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100)));
-      
+       
 	my $alive = 0;
-	if (ipmi_ping ($addr) == 1) {
+	if (ipmi_ping ($addr, $pkg_count, $pkg_timeout) == 1) {
 		$alive = 1;
 	}
-
+	
 	next unless ($alive > 0);
 
 	# Resolve the address

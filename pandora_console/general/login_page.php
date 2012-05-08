@@ -114,28 +114,98 @@ ui_require_jquery_file ('ui.draggable');
 <?php 
 if (!isset ($login_failed)) {
 ?>
-	<!--[if IE]>
-	<div id="dialog" title="Pandora FMS Web browser advise" style="-ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)'; filter: alpha(opacity=50); background:url(images/advise_navigator_background.png) no-repeat center bottom">
 
-		<div style="position:absolute; top:20%; text-align: center; left:0%; right:0%; width:590px;">
-			  <img src="images/error.png">
-			<?php	  
-			  echo __("In order to have the best user experience with Pandora FMS, we <b>strongly recommend</b> to use") . "<br>";
-			  echo __("<a href='http://www.mozilla.org/en-US/firefox/fx/'>Mozilla Firefox</a> or <a href='https://www.google.com/chrome'>Google Chrome</a> browsers.") . "<br>"; 
-			?>
-			  <div style="position: absolute; top:200%; left:20%;">
-			  <a href="http://www.mozilla.org/en-US/firefox/fx/"><img alt="Mozilla Firefox" title="Mozilla Firefox" src="images/mozilla_firefox.png"></a>
-			  </div>
-			  <div style="position: absolute; top:195%; right:20%;">
-			  <a href="https://www.google.com/chrome"><img alt="Google Chrome" title="Google Chrome" src="images/google_chrome.png"></a>
-			  </div>
+	<!--[if lte IE 8]>
+	
+		<div id="dialog" title="WARNING! You are using an outdated browser.">
 
-			<div style="position: absolute; top:180px; right:43%;">	  
-			<?php html_print_submit_button("Ok",'hide-advise',false,'class="sub" style="width:100px;"'); ?>	  
-			</div>
-		 </div> 
-	</div>
+			<div style="position:absolute; top:20px; text-align: left; font-size: 9.5pt; line-height: 18px; left:0%; right:0%; margin: 0 auto; width:650px; border: 1px solid #FFF; ">
+				<?php		
+				  echo __("Pandora FMS frontend is built on advanced, modern technologies and does not support old browsers.");
+				  echo "<br>" . __("It is highly recommended that you choose and install a modern browser. It is free of charge and only takes a couple of minutes.");  
+				?>
+			</div>	  
+				
+			<div style="position: relative; top: 90px; margin: 0 auto; width: 650px; border: 1px solid #FFF;">
+				
+				<table style="width: 650px;">
+				<tr>
+					<td style="width: 20%;">
+						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="https://www.google.com/chrome">
+						<img style="width: 60px;" src="images/google_chrome.png">
+
+						<div style="position: relative; top: 11px;">
+						Google Chrome
+						<br>
+						<span style="text-decoration: underline;">Download page</a></span>
+						</div>
+					</td>
+					<td style="font-size: 10px; line-height: 15px; width: 20%;">
+						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://www.mozilla.org/en-US/firefox/fx/">
+						<img style="width: 60px;" src="images/mozilla_firefox.png">
+
+						<div style="position: relative; top: 5px;">
+						Mozilla Firefox
+						<br>
+						<span style="text-decoration: underline;">Download page</a></span>
+						</div>
+					</td>			
+					<td style="width: 20%;">
+						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://windows.microsoft.com/es-ES/internet-explorer/downloads/ie-9/worldwide-languages">
+						<img style="width: 63px;" src="images/iexplorer.jpeg">
+						
+						<div style="position: relative; top: 10px;">
+						Internet Explorer
+						<br>
+						<span style="text-decoration: underline;">Download page</a></span>
+						</div>
+					</td>
+					<td style="width: 20%;">
+						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://www.opera.com/download/">
+						<img style="width: 50px;" src="images/opera_browser.png">
+						
+						<div style="position: relative; top: 16px;">
+						Opera browser
+						<br>
+						<span style="text-decoration: underline;">Download page</a></span>
+						</div>
+					</td>
+					<td style="width: 20%;">
+						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://www.apple.com/es/safari/download/">
+						<img style="width: 60px;" src="images/safari_browser.jpeg">
+						
+						<div style="position: relative; top: 11px;">
+						Apple safari
+						<br>
+						<span style="text-decoration: underline;">Download page</a></span>
+						</div>
+					</td>
+				</tr>	
+				</table>
+				
+			</div>	
+			
+				<div style="position: relative; top:120px; width:650px; margin: 0 auto; text-align: left;  border: 1px solid #FFF;">	  
+					<?php 
+						echo '<span style="font-size: 10pt; color: #2E2E2E; font-weight: bold;">';
+							echo __('Why is it recommended to upgrade the web browser?'); 
+						echo '</span>';
+						
+						echo '<span style="font-size: 9.5pt; line-height: 18px;">';
+							echo '<br><br>' . __('New browsers usually come with support for new technologies, increasing web page speed, better privacy settings and so on. They also resolve security and functional issues.');
+						echo '</span>';
+					?>
+				</div>
+				
+				<div style="float:right; margin-top:160px; margin-right: 50px; width: 200px;">
+					<?php
+						echo '<a id="close-dialog-browser" href="#" style="text-decoration: none;">' . '<span style="color: #6495ED;">'  . __('Continue despite this warning') . ' >>' . '</span></a>';
+					?>
+				</div>
+		</div>
+	
 	<![endif]-->
+
 <?php
 }
 ?>
@@ -144,23 +214,24 @@ if (!isset ($login_failed)) {
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
 
-$(document).ready (function () {		
+$(document).ready (function () {
+	// IE9- modal warning window		
 	$(function() {
 		$( "#dialog" ).dialog({
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 300,
-				width: 600,
+				height: 400,
+				width: 700,
 				overlay: {
 							opacity: 0.5,
 							background: "black"
 						},
 				bgiframe: jQuery.browser.msie
-			});
+		});
 	});
 	
-	$("#submit-hide-advise").click (function () {
+	$("#close-dialog-browser").click (function () {
 		$("#dialog" ).dialog('close')
 	});
 	

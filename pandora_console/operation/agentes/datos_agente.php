@@ -27,6 +27,7 @@ $period = get_parameter ("period", 86400);
 $group = agents_get_agentmodule_group ($module_id);
 $agentId = get_parameter("id_agente"); 
 $freestring = get_parameter ("freestring");
+
 $selection_mode = get_parameter('selection_mode', 'fromnow');
 $date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
 $time_from = (string) get_parameter ('time_from', date ('h:iA'));
@@ -79,7 +80,7 @@ if ($moduletype_name == "log4x") {
 	} else {
 		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
 	}
-	
+
 	$columns = array(
 		
 		"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
@@ -95,10 +96,10 @@ if ($moduletype_name == "log4x") {
 	} else {
 		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND datos like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
 	}
-	
+
 	$columns = array(
-		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "center"),
-		"Data" 		=> array("datos", 				"modules_format_data", 				"align" => "center"),
+		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
+		"Data" 		=> array("datos", 				"modules_format_data", 				"align" => "left"),
 		"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
 	);
 } else {
@@ -107,13 +108,16 @@ if ($moduletype_name == "log4x") {
 	} else {
 		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
 	}
-	
+
 	$columns = array(
-		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "center"),
-		"Data" 		=> array("datos", 				"modules_format_data", 			"align" => "center"),
+		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "left"),
+		"Data" 		=> array("datos", 				"modules_format_data", 			"align" => "left"),
 		"Time" 		=> array("utimestamp", 			"modules_format_time", 			"align" => "center")
 	);
 }
+
+$sql_body = io_safe_output($sql_body);
+// Clean all codification characters
 
 $sql = "SELECT * " . $sql_body;
 $sql_count = "SELECT count(*) " . $sql_body;

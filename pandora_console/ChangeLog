@@ -1,3 +1,9 @@
+2012-05-08  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/datos_agente.php: Fixed search, was 
+	not working due html encoding in the SQL. Alter some layout
+	issues (centering data in columns)
+
 2012-05-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* images/header_f2b.png: Changed image size to 3000px width.

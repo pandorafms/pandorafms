@@ -1,3 +1,9 @@
+2012-05-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/header_f2b.png: Changed image size to 3000px width.
+	
+	Merged from trunk.
+
 2012-05-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css: Fixed background color in login 

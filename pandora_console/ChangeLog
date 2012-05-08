@@ -1,3 +1,13 @@
+2012-05-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/opera_browser.png
+	 images/safari_browser.jpeg
+	 images/iexplorer.jpeg: Added browser images.
+
+	* general/login_page.php: Changed browser warning modal window.
+
+	* images/mozilla_firefox.png: Modified image.
+
 2012-05-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css: Reverted changes (bag visualization

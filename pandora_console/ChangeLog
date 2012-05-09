@@ -1,3 +1,9 @@
+2012-05-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_alert_macros.php
+	include/help/es/help_alert_macros.php: Fixed some errors in
+	macros help adding some missing macros in spanish and fix others
+
 2012-05-08  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/datos_agente.php: Fixed search, was 

@@ -1,3 +1,11 @@
+2012-05-09 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* util/plugin/ipmi-plugin.pl,
+	util/recon_scripts/ipmi-recon.pl: Fixed some bugs of plugin and
+	recon
+
+	MERGED FROM 4.0.2
+
 2012-05-08  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf: Better default values.

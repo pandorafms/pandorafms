@@ -1,5 +1,10 @@
 2012-05-09  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_agents.php: Merged from 4.0 the extra_sql
+	get code
+
+2012-05-09  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/en/help_alert_macros.php
 	include/help/es/help_alert_macros.php
 	include/functions.php

@@ -661,6 +661,12 @@ function get_alert_priority ($priority = 0) {
 	case 4:
 		return __('Critical');
 		break;
+	case 5:
+		return __('Minor');
+		break;
+	case 6:
+		return __('Major');
+		break;
 	}
 	return '';
 }
@@ -835,7 +841,9 @@ function get_priorities () {
 	$priorities[0] = __('Maintenance');
 	$priorities[1] = __('Informational');
 	$priorities[2] = __('Normal');
+	$priorities[5] = __('Minor');
 	$priorities[3] = __('Warning');
+	$priorities[6] = __('Major');
 	$priorities[4] = __('Critical');
 	
 	if (isset($config['text_char_long'])) {

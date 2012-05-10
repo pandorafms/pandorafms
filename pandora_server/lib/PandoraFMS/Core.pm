@@ -762,6 +762,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_threshold_ => $alert->{'time_threshold'},
 				_alert_times_fired_ => $alert->{'times_fired'},
 				_alert_priority_ => $alert->{'priority'},
+				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',

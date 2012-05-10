@@ -65,6 +65,7 @@ our @EXPORT = qw(
 		get_os_id
 		get_plugin_id
 		get_profile_id
+		get_priority_name
 		get_server_id
 		get_template_id
 		get_template_module_id
@@ -672,6 +673,37 @@ sub db_concat ($$) {
 	return " concat(" . $element1 . ", ' '," . $element2 . ") " if ($RDBMS eq 'mysql');
 	return " " . $element1 . " || ' ' || " . $element2 . " " if ($RDBMS eq 'oracle' or $RDBMS eq 'postgresql');
 	
+}
+
+##########################################################################
+## Get priority/severity name from the associated ID
+##########################################################################
+sub get_priority_name ($) {
+	my ($priority_id) = @_;
+	
+	if($priority_id == 0) {
+		return 'Maintenance';
+	}
+	elsif($priority_id == 1) {
+		return 'Informational';
+	}
+	elsif($priority_id == 2) {
+		return 'Normal';
+	}
+	elsif($priority_id == 3) {
+		return 'Warning';
+	}
+	elsif($priority_id == 4) {
+		return 'Critical';
+	}
+	elsif($priority_id == 5) {
+		return 'Minor';
+	}
+	elsif($priority_id == 6) {
+		return 'Major';
+	}
+	
+	return '';
 }
 
 # End of function declaration

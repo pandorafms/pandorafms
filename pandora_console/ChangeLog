@@ -1,3 +1,10 @@
+2012-05-10  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql: Set default value to id_alert_command
+	column in db to avoid comparison errors in server
+
 2012-05-10  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alert_macros.php: Added to help two new macros.

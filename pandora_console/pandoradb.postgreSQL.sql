@@ -240,7 +240,7 @@ CREATE TABLE "talert_commands" (
 CREATE TABLE "talert_actions" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" text default '',
-	"id_alert_command" INTEGER NOT NULL REFERENCES talert_commands("id")  ON DELETE CASCADE ON UPDATE CASCADE,
+	"id_alert_command" INTEGER NOT NULL default 0 REFERENCES talert_commands("id")  ON DELETE CASCADE ON UPDATE CASCADE,
 	"field1" text NOT NULL default '',
 	"field2" text default '',
 	"field3" text default '',

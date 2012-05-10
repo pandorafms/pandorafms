@@ -273,7 +273,7 @@ CREATE OR REPLACE TRIGGER talert_commands_inc BEFORE INSERT ON talert_commands R
 CREATE TABLE talert_actions (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name CLOB default '',
-	id_alert_command NUMBER(10, 0) NOT NULL REFERENCES talert_commands(id)  ON DELETE CASCADE,
+	id_alert_command NUMBER(10, 0) default 0 NOT NULL REFERENCES talert_commands(id)  ON DELETE CASCADE,
 	field1 CLOB default '',
 	field2 CLOB default '',
 	field3 CLOB default '',

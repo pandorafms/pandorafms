@@ -249,7 +249,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` text,
-  `id_alert_command` int(10) unsigned NOT NULL,
+  `id_alert_command` int(10) unsigned NULL default 0,
   `field1` text NOT NULL,
   `field2` text,
   `field3` text,

@@ -1,3 +1,10 @@
+2012-05-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_users.php: fixes from the equal chat in the
+	Integria IMS.
+	
+	MERGED FROM 4.0.2
+
 2012-05-10  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

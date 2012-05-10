@@ -35,10 +35,6 @@ if (is_ajax()) {
 }
 
 // Prints help dialog information
-
-if ($license_fail == 1)
-	return;
-
 echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" style="">';
 
 	echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; width:560px; margin: 0 auto; border: 1px solid #FFF; line-height: 19px;">';

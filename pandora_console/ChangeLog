@@ -1,3 +1,8 @@
+2012-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* general/login_help_dialog.php: Removed variable due to 
+	obfuscation.
+
 2012-05-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_users.php: fixes from the equal chat in the

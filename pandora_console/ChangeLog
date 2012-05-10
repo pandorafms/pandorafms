@@ -1,3 +1,8 @@
+2012-05-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_users.php: fixes from the equal chat in the
+	Integria IMS.
+
 2012-05-09  Sergio Martin <sergio.martin@artica.es>
 
 	* include/help/en/help_alert_macros.php

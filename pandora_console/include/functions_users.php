@@ -226,6 +226,7 @@ function users_get_user_by_id ($id_user){
 	return $result_user;
 }
 
+define("MAX_TIMES", 10);
 
 ////////////////////////////////////////////////////////////////////////
 //////////////////////WEBCHAT FUNCTIONS/////////////////////////////////
@@ -240,11 +241,11 @@ function users_get_last_messages($last_time = false) {
 		
 		return;
 	}
-	//Try to look $max_times times
+	//Try to look MAX_TIMES times
 	$tries = 0;
 	while (!flock($fp_global_counter, LOCK_EX)) {
 		$tries++;
-		if ($tries >= $max_times) {
+		if ($tries > MAX_TIMES) {
 			echo json_encode($return);
 			
 			return;
@@ -313,17 +314,17 @@ function users_save_login() {
 	if ($fp_user_list === false) {
 		return;
 	}
-	//Try to look $max_times times
+	//Try to look MAX_TIMES times
 	$tries = 0;
 	while (!flock($fp_user_list, LOCK_EX)) {
 		$tries++;
-		if ($tries >= $max_times) {
+		if ($tries > MAX_TIMES) {
 			return;
 		}
 		
 		sleep(1);
 	}
-	@fscanf($fp_user_list, "%s", $user_list_json);
+	@fscanf($fp_user_list, "%[^\n]", $user_list_json);
 	
 	$user_list = json_decode($user_list_json, true);
 	if (empty($user_list))
@@ -363,17 +364,17 @@ function users_save_logout() {
 	if ($fp_user_list === false) {
 		return;
 	}
-	//Try to look $max_times times
+	//Try to look MAX_TIMES times
 	$tries = 0;
 	while (!flock($fp_user_list, LOCK_EX)) {
 		$tries++;
-		if ($tries >= $max_times) {
+		if ($tries > MAX_TIMES) {
 			return;
 		}
 		
 		sleep(1);
 	}
-	@fscanf($fp_user_list, "%s", $user_list_json);
+	@fscanf($fp_user_list, "%[^\n]", $user_list_json);
 	
 	$user_list = json_decode($user_list_json, true);
 	if (empty($user_list))
@@ -400,8 +401,6 @@ function users_save_text_message($message = false, $type = 'message') {
 	$file_global_counter_chat = sys_get_temp_dir() . '/pandora_chat.global_counter.txt';
 	$log_chat_file = sys_get_temp_dir() . '/pandora_chat.log.json.txt';
 	
-	$max_times = 10;
-	
 	$return = array('correct' => false);
 	
 	$id_user = $config['id_user'];
@@ -424,11 +423,11 @@ function users_save_text_message($message = false, $type = 'message') {
 		
 		return;
 	}
-	//Try to look $max_times times
+	//Try to look MAX_TIMES times
 	$tries = 0;
 	while (!flock($fp_global_counter, LOCK_EX)) {
 		$tries++;
-		if ($tries >= $max_times) {
+		if ($tries > MAX_TIMES) {
 			echo json_encode($return);
 			
 			return;
@@ -480,18 +479,19 @@ function users_long_polling_check_messages($global_counter) {
 	$log_chat_file = sys_get_temp_dir() . '/pandora_chat.log.json.txt';
 	
 	$changes = false;
-	$max_times = 10;
+	
+	$tries_general = 0;
 	
 	while (!$changes) {
 		//First lock the file
 		$fp_global_counter = @fopen($file_global_counter_chat, "a+");
 		if ($fp_global_counter) {
-			//Try to look $max_times times
+			//Try to look MAX_TIMES times
 			$tries = 0;
 			$lock = true;
 			while (!flock($fp_global_counter, LOCK_EX)) {
 				$tries++;
-				if ($tries >= $max_times) {
+				if ($tries > MAX_TIMES) {
 					$lock = false;
 					break;
 				}
@@ -534,6 +534,11 @@ function users_long_polling_check_messages($global_counter) {
 		}
 		
 		sleep(3);
+		$tries_general = $tries_general + 3;
+		
+		if ($tries_general > MAX_TIMES) {
+			break;
+		}
 	}
 	
 	echo json_encode(array('correct' => false));
@@ -559,7 +564,7 @@ function users_get_last_global_counter($mode = 'json') {
 		$lock = true;
 		while (!flock($fp_global_counter, LOCK_EX)) {
 			$tries++;
-			if ($tries >= $max_times) {
+			if ($tries > MAX_TIMES) {
 				$lock = false;
 				break;
 			}
@@ -611,7 +616,7 @@ function users_get_last_type_message() {
 		$lock = true;
 		while (!flock($fp_global_counter, LOCK_EX)) {
 			$tries++;
-			if ($tries >= $max_times) {
+			if ($tries > MAX_TIMES) {
 				$lock = false;
 				break;
 			}
@@ -657,11 +662,11 @@ function users_check_users() {
 		
 		return;
 	}
-	//Try to look $max_times times
+	//Try to look MAX_TIMES times
 	$tries = 0;
 	while (!flock($fp_user_list, LOCK_EX)) {
 		$tries++;
-		if ($tries >= $max_times) {
+		if ($tries > MAX_TIMES) {
 			echo json_encode($return);
 			
 			return;
@@ -669,7 +674,7 @@ function users_check_users() {
 		
 		sleep(1);
 	}
-	@fscanf($fp_user_list, "%s", $user_list_json);
+	@fscanf($fp_user_list, "%[^\n]", $user_list_json);
 	
 	$user_list = json_decode($user_list_json, true);
 	if (empty($user_list))

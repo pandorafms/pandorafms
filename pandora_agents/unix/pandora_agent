@@ -356,6 +356,7 @@ sub parse_conf_modules($) {
 				'intensive_conditions' => [],
 				'intensive_match' => 0,
 				'timestamp' => 0,
+				'unit' => '',
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
@@ -498,6 +499,9 @@ sub parse_conf_modules($) {
 		# Min ff event
 		} elsif ($line =~ /^\s*module_min_ff_event\s+(.*)\s*$/) {
 			$module->{'min_ff_event'} = $1;
+		# Unit
+		} elsif ($line =~ /^\s*module_unit\s+(\S+)\s*$/) {
+			$module->{'unit'} = $1;
 		}
 	}
 	return;
@@ -1580,6 +1584,9 @@ sub write_module_xml ($@) {
 
 	# Min ff event
 	$Xml .= "	<min_ff_event>" . $module->{'min_ff_event'} . "</min_ff_event>\n" if (defined ($module->{'min_ff_event'}));
+	
+	# Unit
+	$Xml .= "	<unit>" . $module->{'unit'} . "</unit>\n" if (defined ($module->{'unit'}));
 
 	# Data list
 	if ($#data > 0) {

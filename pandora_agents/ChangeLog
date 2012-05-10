@@ -1,3 +1,10 @@
+2012-05-10  Sergio Martin <sergio.martin@artica.es>
+
+	* unix/Linux/pandora_agent.conf
+	unix/pandora_agent: Added units parameter to the 
+	agent and added units to the default modules in
+	conf for pending task #3520530
+
 2012-05-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* unix/Linux/pandora_agent.conf: Fixed an example module name.

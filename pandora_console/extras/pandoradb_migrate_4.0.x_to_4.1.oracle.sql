@@ -212,3 +212,9 @@ CREATE TABLE IF NOT EXISTS ttimezone (
 
 CREATE SEQUENCE ttimezone_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER ttimezone_inc BEFORE INSERT ON ttimezone REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttimezone_s.nextval INTO :NEW.ID_TZ FROM dual; END ttimezone_inc;;
+
+-- -----------------------------------------------------
+-- Table `tnetwork_component`
+-- -----------------------------------------------------
+
+ALTER TABLE tnetwork_component ADD COLUMN unit CLOB default '';

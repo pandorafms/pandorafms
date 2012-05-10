@@ -645,7 +645,8 @@ CREATE TABLE tnetwork_component (
 	custom_string_3 CLOB default '',
 	custom_integer_1 INTEGER default 0,
 	custom_integer_2 INTEGER default 0,
-	post_process BINARY_DOUBLE default 0
+	post_process BINARY_DOUBLE default 0.
+	unit CLOB default ''
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;

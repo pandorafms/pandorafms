@@ -258,10 +258,12 @@ if ($__code_from == 'policies'){
 } 
 $table_advanced->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
 	'id_export', $id_export, '', $none_text, '0', true, false, false, $disabled_export).ui_print_help_tip (__('In case you use an Export server you can link this module and export data to one these.'), true);
-$table_advanced->colspan[4][1] = 3;
+$table_advanced->colspan[4][1] = 4;
 $table_advanced->data[5][0] = __('Unit');
 $table_advanced->data[5][1] = html_print_input_text ('unit', $unit,
 	'', 20, 65, true);
+$table_advanced->colspan[5][1] = 4;
+
 /* Tags */
 // This var comes from module_manager_editor.php or policy_modules.php
 global $__code_from;

@@ -26,6 +26,8 @@
 <li>_moduledescription_ : アラートが発生したモジュールの説明</li>
 <li>_alert_name_ : アラート名</li>
 <li>_alert_priority_ : アラート優先順位(数値)</li>
+<li>_alert_text_severity_ : テキストでのアラートの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
+<li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_id_agent_ : エージェントのID / Webコンソールへのリンクを生成するのに便利です</li>
 <li>_id_alert_ : アラートの(ユニークな)ID / 他のソフトウエアパッケージとの連携に利用できます</li>
 <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>

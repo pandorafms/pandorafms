@@ -201,3 +201,10 @@ CREATE TABLE "ttimezone" (
   "zone" varchar(60) NOT NULL,
   "timezone" varchar(60) NOT NULL
 );
+
+-- -----------------------------------------------------
+-- Table `tnetwork_component`
+-- -----------------------------------------------------
+
+ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
+

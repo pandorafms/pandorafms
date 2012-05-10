@@ -154,6 +154,7 @@ function configure_modules_form () {
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
 				$("#text-ff_threshold").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"])
+				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				

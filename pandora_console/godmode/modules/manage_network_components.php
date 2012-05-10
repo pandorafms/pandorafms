@@ -58,6 +58,7 @@ $str_critical = (string) get_parameter ('str_critical');
 $ff_event = (int) get_parameter ('ff_event');
 $history_data = (bool) get_parameter ('history_data');
 $post_process = (float) get_parameter('post_process');
+$unit = (string) get_parameter('unit');
 $id = (int) get_parameter ('id');
 
 $snmp_version = (string) get_parameter('snmp_version');
@@ -138,7 +139,8 @@ if ($create_component) {
 				'custom_string_1' => $custom_string_1,
 				'custom_string_2' => $custom_string_2,
 				'custom_string_3' => $custom_string_3,
-				'post_process' => $post_process));
+				'post_process' => $post_process,
+				'unit' => $unit));
 	}
 	else {
 	$id = '';
@@ -204,7 +206,8 @@ if ($update_component) {
 				'custom_string_1' => $custom_string_1,
 				'custom_string_2' => $custom_string_2,
 				'custom_string_3' => $custom_string_3,
-				'post_process' => $post_process));
+				'post_process' => $post_process,
+				'unit' => $unit));
 	}
 	else {
 		$result = '';

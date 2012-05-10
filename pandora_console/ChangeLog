@@ -1,3 +1,19 @@
+2012-05-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql
+	godmode/agentes/module_manager_editor_common.php
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_common.php
+	godmode/modules/manage_network_components.php: Fix some layout
+	little bugs in module editor and added unit parameter
+	to network components for pending task #3520706
+
 2012-05-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_users.php: fixes from the equal chat in the

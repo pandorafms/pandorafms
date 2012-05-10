@@ -512,7 +512,8 @@ CREATE TABLE "tnetwork_component" (
 	"custom_string_3" text default '',
 	"custom_integer_1" INTEGER default 0,
 	"custom_integer_2" INTEGER default 0,
-	"post_process" DOUBLE PRECISION default 0
+	"post_process" DOUBLE PRECISION default 0,
+	"unit" text default ''
 );
 
 CREATE TABLE "tnetwork_component_group" (

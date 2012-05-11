@@ -79,8 +79,9 @@ function update_pandora_installation() {
 	}
 	
 	$dir = $config['attachment_store'] .  '/update_pandora/';
+	
 	if (!is_dir($dir)) {
-		$result = mkdir($dir);
+		$return = mkdir($dir);
 		
 		if (!$return) {
 			$return_var['return'] = false;
@@ -113,13 +114,17 @@ function update_pandora_get_list_downloaded_packages($mode = 'operation') {
 	global $conf_update_pandora;
 	
 	$dir = dir($conf_update_pandora['dir']);
+	if ($dir === false) {
+		ui_print_error_message(sprintf(
+			__('Error reading the dir of packages in "%s".'), $conf_update_pandora['dir']));
+		return;
+	}
 	
 	$packages = array();
 	while (false !== ($entry = $dir->read())) {
 		if (is_file($conf_update_pandora['dir'] . $entry)
 			&& is_readable($conf_update_pandora['dir'] . $entry)) {
 			if (strstr($entry, '.tar.gz') !== false) {
-				
 				if ($mode == 'operation') {
 					$packages[] = $entry;
 				}

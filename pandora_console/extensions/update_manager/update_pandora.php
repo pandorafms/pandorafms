@@ -78,20 +78,21 @@ function update_pandora_administration($settings, $user_key) {
 	}
 	
 	$conf_update_pandora = update_pandora_get_conf();
-
+	
 	if (!empty($conf_update_pandora['last_installed'])){
 		echo '<h4>';
 		echo __('Your Pandora FMS open source package installed is') .
-         ' ' . $conf_update_pandora['last_installed'];
+			' ' . $conf_update_pandora['last_installed'];
 		echo "</h4>";
-	} else {
+	}
+	else {
 		echo '<h4>';
-                echo __('Your Pandora FMS does not have any update installed yet');
+		echo __('Your Pandora FMS does not have any update installed yet');
 		echo "</h4>";
-        }
-
-	echo "<br><br>";	
-
+	}
+	
+	echo "<br><br>";
+	
 	ui_print_info_message(
 		'<p>' .
 			__('This is a automatilly update Pandora Console only. Be careful if you have changed any php file of console, please make a backup this modified files php. Because the update action ovewrite all php files in Pandora console.') .
@@ -99,10 +100,10 @@ function update_pandora_administration($settings, $user_key) {
 		'<p>' .
 		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.') .
 		'</p>'
-	);
-
-	echo "<h4>". __('Online') . '</h4>';	
-
+		);
+	
+	echo "<h4>". __('Online') . '</h4>';
+	
 	echo '<table id="online_packages" class="databox" width="95%" cellspacing="4" cellpadding="4" border="0" style="">' .
 			'<tbody>
 				<tr id="online_packages-0" class="spinner_row" style="">
@@ -158,6 +159,8 @@ function update_pandora_administration($settings, $user_key) {
 	$tableMain->data = array();
 	
 	$list_downloaded_packages = update_pandora_get_list_downloaded_packages('administration');
+	if (empty($list_downloaded_packages))
+		$list_downloaded_packages = array();
 	$table = null;
 	$table->width = '100%';
 	$table->size = array('50%', '25%', '25%');

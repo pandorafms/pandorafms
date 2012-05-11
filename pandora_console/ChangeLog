@@ -1,3 +1,13 @@
+2012-05-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/functions.php: fixed into the
+	function "update_pandora_installation" lost var,  and into the
+	function "update_pandora_get_list_downloaded_packages" check fail
+	dir.
+	
+	* extensions/update_manager/update_pandora.php: fixed foreach a non
+	array in list download packages when fail.
+
 2012-05-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* general/login_help_dialog.php: Removed variable due to 

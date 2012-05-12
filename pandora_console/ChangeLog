@@ -1,3 +1,8 @@
+2012-05-12  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/reporting/reporting_builder.item_editor.php: Merged from
+	trunk. Wrapped inventory_get_agents() in enterprise_hook();
+
 2012-05-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/functions.php: fixed into the

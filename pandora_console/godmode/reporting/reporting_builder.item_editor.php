@@ -543,7 +543,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
-					$agents = inventory_get_agents();
+					$agents = enterprise_hook('inventory_get_agents');
 					$agents_select = array();
 					foreach($agents as $a) {
 						$agents_select[$a['id_agente']] = $a['nombre'];

@@ -1,3 +1,8 @@
+2012-05-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/styles/pandora.css: Added transparent background in input
+	html elements of image type.
+
 2012-05-12  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/reporting/reporting_builder.item_editor.php: Merged from

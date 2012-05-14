@@ -1047,6 +1047,7 @@ select#template, select#action {
 }
 input[type=image] {
 	border:0px;
+	background-color: transparent !important;
 }
 table#simple select#id_module_type,
 table#alert_search select#id_agent,

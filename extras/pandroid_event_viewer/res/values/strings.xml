@@ -52,7 +52,7 @@
     <string name="option_title_str">Options</string>
     <string name="load_more_events_button_str">Load more events</string>
     <string name="empty_label_str">Empty list events</string>
-    <string name="refresh_time_label_str">Refresh time</string>
+    <string name="refresh_time_label_str">Refresh time watcher</string>
     <string name="set_as_filter_watcher_button_str">Filter by default</string>
     <string name="validate_event_button_str">Validate Event</string>
     
@@ -103,13 +103,4 @@
     <string name="pandroid_info_txt"><b>Welcome to Pandora FMS Event viewer for Android</b></string>
     <string name="pandroid_info_long_txt"><p>This app is used for to see confortable and standaralone the events status from the monitoring server of Pandora FMS. From this app you can see in realtime the events and validate or filter.</p>
         <p>The configuration as default connecting with public demo of Pandora FMS in firefly.artica.es. Please change the configuration for to use your Pandora FMS server.</p></string>
-    
-    <string name="check_connection">Connection status</string>
-    <string name="connection">Connection</string>
-    <string name="notification">Notification</string>
-    <string name="vibration">Vibration</string>
-    <string name="led_flash">Led flashes</string>
-    <string name="sound">Sound</string>
-    <string name="select_sound">Select notification sound</string>
-     <string name="silence">Silence</string>
 </resources>

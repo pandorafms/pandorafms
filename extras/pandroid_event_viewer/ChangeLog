@@ -1,18 +1,7 @@
-2012-05-12 Santiago Munín  <burning1@gmail.com>
-
-	* Licenses and javadoc comments added to all files, refactorized code.
-       
-    * Main.java: fixed a bug which was making the app crash when "Reset" button was clicked.
-    
-    * res/drawable-ldpi/help.png,
-      res/drawable-ldpi/cross.png,
-      res/drawable-ldpi/ok.png,
-      res/values/styles.xml: Added in order to build the new notification options' UI.
-
 2012-05-08  Santiago Munín  <burning1@gmail.com>
 	
-	* Options.java: Fixed a null pointer bug which was making the
-	app crash when accessing the options.
+	* Options.java: Fixed a null pointer bug which was making crash the
+	app when accessing the options.
 	
 	* Main.java: Fixed a null pointer bug which crash at the beginning
 	of the app.

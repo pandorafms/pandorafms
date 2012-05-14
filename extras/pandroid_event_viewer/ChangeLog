@@ -1,3 +1,22 @@
+2012-05-12 Santiago Munín  <burning1@gmail.com>
+
+	* Licenses and javadoc comments added to all files, refactorized code.
+       
+    * Main.java: fixed a bug which was making the app crash when "Reset" button was clicked.
+    
+    * res/drawable-ldpi/help.png,
+      res/drawable-ldpi/cross.png,
+      res/drawable-ldpi/ok.png,
+      res/values/styles.xml: Added in order to build the new notification options' UI.
+
+2012-05-08  Santiago Munín  <burning1@gmail.com>
+	
+	* Options.java: Fixed a null pointer bug which was making the
+	app crash when accessing the options.
+	
+	* Main.java: Fixed a null pointer bug which crash at the beginning
+	of the app.
+
 2012-12-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml,
@@ -11,8 +30,6 @@
 	res/values/strings.xml,res/values-en/strings.xml,
 	res/values-es/strings.xml,res/layout/info.xml: fixed some things and
 	added more stability and a pretty splashscreen.
-	
-	MERGED FROM BRANCH 4.0.2
 
 2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
@@ -22,8 +39,6 @@
 	combo group because sometimes this is as null.
 	
 	Fixes: #3495038
-	
-	MERGED FROM BRANCH 4.0.2
 
 2011-10-24  Miguel de Dios  <miguel.dedios@artica.es>
 

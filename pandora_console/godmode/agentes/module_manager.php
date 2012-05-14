@@ -25,11 +25,19 @@ require_once ('include/functions_modules.php');
 require_once ('include/functions_agents.php');
 require_once ('include/functions_servers.php');
 
-// Create module/type combo
-echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
-echo '<form id="create_module_type" method="post" action="'.$url.'">';
-echo "<tr><td class='datos' style='width:50%'>";
+$search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", ""))));
 
+// Search string filter form
+echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
+echo "<tr><td class='datos' style='width:25%'>";
+echo __('Search').' '.html_print_input_text ('search_string', $search_string, '', 15, 255, true);
+echo "</td>";
+echo "<td class='datos' style='width:25%'>";
+html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
+echo "</td>";
+echo "<td class='datos' style='width:25%'>";
+echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
@@ -70,6 +78,8 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	unset($modules['predictionserver']);
 }
 
+// Create module/type combo
+echo '<form id="create_module_type" method="post" action="'.$url.'">';
 html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 html_print_input_hidden ('edit_module', 1);
 echo '</td>';
@@ -328,6 +338,11 @@ $params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion
 		'max_critical', 'min_critical', 'str_critical'));
 		
 $where = sprintf("id_policy_module = 0 AND delete_pending = 0 AND id_agente = %s", $id_agente);		
+
+$search_string_entities = io_safe_input($search_string);
+
+$basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
+
 switch ($config["dbtype"]) {
 	case "postgresql":
 		$limit_sql = " LIMIT $limit OFFSET $offset ";
@@ -335,8 +350,8 @@ switch ($config["dbtype"]) {
 		if(!isset($limit_sql)) {
 			$limit_sql = " LIMIT $offset, $limit ";
 		}
-		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s) %s %s", 
-					$params, $extra_sql, $where, $order_sql, $limit_sql);
+		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s %s) %s %s", 
+					$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
 
 		$modules = db_get_all_rows_sql($sql);
 		break;
@@ -344,13 +359,13 @@ switch ($config["dbtype"]) {
 		$set = array();
 		$set['limit'] = $limit;
 		$set['offset'] = $offset;	
-		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s) %s", 
-					$params, $extra_sql, $where, $order_sql);
+		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s %s) %s", 
+					$params, $basic_where, $extra_sql, $where, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
 	
-$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo WHERE %s (%s)", $extra_sql, $where);
+$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo WHERE %s (%s %s)", $basic_where, $extra_sql, $where);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 
@@ -362,7 +377,7 @@ if ($modules === false) {
 }
 
 // Prepare pagination
-ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort, 'id_agent_module' => false, 'edit_module' => false), true, false));
+ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort, 'id_agent_module' => false, 'edit_module' => false, 'search_string' => urlencode($search_string)), true, false));
 
 $table->width = '98%';
 $table->head = array ();

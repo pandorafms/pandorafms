@@ -1,3 +1,10 @@
+2012-05-14  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_ultimopaquete.php
+	godmode/agentes/module_manager.php: Added string filter
+	to modules view in the operation and godmode views for
+	pending #3482262
+
 2012-05-12  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/reporting/reporting_builder.item_editor.php: Wrapped 

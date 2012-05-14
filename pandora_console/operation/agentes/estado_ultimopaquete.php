@@ -59,6 +59,7 @@ $last_label = "";
 
 
 $sortField = get_parameter('sort_field');
+$search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", ""))));
 $sort = get_parameter('sort', 'none');
 $selected = 'border: 1px solid black;';
 $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=data&amp;id_agente=' . $id_agente;
@@ -200,6 +201,26 @@ foreach($order as $ord) {
 	$order_sql .= $ord['field'].' '.$ord['order'];
 }
 
+// Filter form
+
+$table->width = "98%";
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+$table->size[0] = "230px";
+$table->head = array ();
+$table->data = array ();
+
+$table->data[0][0] = __('Search').':';
+$table->data[0][0] .= html_print_input_text ('search_string', $search_string, '', 15, 255, true);
+$table->data[0][1] = html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"', true);
+
+echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data&sort_field=&sort=none&offset=0'>";
+html_print_table($table);
+echo "</form>";
+
+unset($table);
+
 // Get limit and offset parameters
 $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
@@ -209,7 +230,9 @@ $is_extra_sql = (int)$is_extra;
 
 $where = sprintf("(tagente_modulo.id_policy_module = 0 AND disabled = 0 AND tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente = %s AND delete_pending = 0)", $id_agente);
 
-$basic_where = " tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND ";
+$search_string_entities = io_safe_input($search_string);
+
+$basic_where = sprintf(" tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND (nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
 switch ($config["dbtype"]) {
 	case "postgresql":
@@ -248,7 +271,7 @@ if ($modules === false) {
 }
 
 // Prepare pagination
-ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente, 'tab' => 'data','sort_field' => $sortField, 'sort' => $sort)));
+ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente, 'tab' => 'data','sort_field' => $sortField, 'sort' => $sort, 'search_string' => urlencode($search_string))));
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 

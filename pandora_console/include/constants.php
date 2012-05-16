@@ -79,4 +79,12 @@ switch ($config["dbtype"]) {
 		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
 		break;
 }
+
+/* Color constants */
+define('COL_CRITICAL','#cc0000');
+define('COL_WARNING','#ffcc00');
+define('COL_NORMAL','#8ae234');
+define('COL_NOTINIT','#ef2929');
+define('COL_UNKNOWN','#aaaaaa');
+define('COL_ALERTFIRED','#ff8800');
 ?>

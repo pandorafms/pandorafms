@@ -1,3 +1,12 @@
+2012-05-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/constants.php: Added a constants for
+	more common used colors in pandora: critical, 
+	warning, normal, unknown...
+
+	* extensions/agents_alerts.php: Added new view of
+	agents/alerts for pending tasks #3468889
+
 2012-05-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora.css: Added transparent background in input

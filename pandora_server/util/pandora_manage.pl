@@ -106,6 +106,7 @@ sub help_screen{
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
 	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
     help_screen_line('--get_agents_module_current_data', '<module_name>', 'Get the agent and current data of all the modules with a given name');
+	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', 'Create a new network module from a network component');
 	print "ALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -977,6 +978,41 @@ sub cli_create_data_module($) {
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
 	}
+}
+
+##############################################################################
+# Create network module from component.
+# Related option: --create_network_module_from_component
+##############################################################################
+
+sub cli_create_network_module_from_component() {
+	my ($agent_name, $component_name) = @ARGV[2..3];
+	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	exist_check($agent_id,'agent',$agent_name);
+	
+	my $addr = get_agent_address($dbh,$agent_id);
+	
+	my $nc_id = pandora_get_network_component_id($dbh,$component_name);
+	exist_check($nc_id,'network component',$component_name);
+	
+	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
+	non_exist_check($module_exists, 'module name', $component_name);
+	
+	# Get network component data
+	my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component wHERE id_nc = ?', $nc_id);
+	
+	# Create the module
+	my $module_id = db_insert ($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, id_plugin, post_process)
+												  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+												 $agent_id, $component->{'type'}, $component->{'description'}, safe_input($component->{'name'}), $component->{'max'}, $component->{'min'}, $component->{'module_interval'}, $component->{'tcp_port'}, $component->{'tcp_send'}, $component->{'tcp_rcv'}, $component->{'snmp_community'},
+												 $component->{'snmp_oid'}, $addr, $component->{'id_module_group'}, $component->{'plugin_user'}, $component->{'plugin_pass'}, $component->{'plugin_parameter'}, $component->{'max_timeout'}, $component->{'id_modulo'}, $component->{'min_warning'}, $component->{'max_warning'}, $component->{'str_warning'}, $component->{'min_critical'}, $component->{'max_critical'}, $component->{'str_critical'}, $component->{'min_ff_event'}, $component->{'id_plugin'}, $component->{'post_process'});
+
+	# An entry in tagente_estado is necessary for the module to work
+	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'1970-01-01 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
+
+	logger($conf, 'Creating module ' . $component->{'name'} . " for agent $agent_name from network component '" . $component->{'name'} . "'.", 10);
+
 }
 
 ##############################################################################
@@ -3156,6 +3192,18 @@ sub pandora_get_user_id($$) {
 	return defined ($user_id) ? $user_id : -1;
 }
 
+##############################################################################
+# Return network component id given the name
+##############################################################################
+
+sub pandora_get_network_component_id($$) {
+	my ($dbh,$name) = @_;
+	
+	my $nc_id = get_db_value($dbh, 'SELECT id_nc FROM tnetwork_component WHERE name = ?',safe_input($name));
+	
+	return defined ($nc_id) ? $nc_id : -1;
+}
+
 ###############################################################################
 ###############################################################################
 # MAIN
@@ -3425,6 +3473,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_bad_conf_files') {
 			param_check($ltotal, 0);
 			cli_get_bad_conf_files();
+		}
+		elsif ($param eq '--create_network_module_from_component') {
+			param_check($ltotal, 2);
+			cli_create_network_module_from_component();
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

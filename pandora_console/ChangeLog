@@ -1,5 +1,9 @@
 2012-05-17  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/setup/setup.php: Fixed bug updating setup.
+
+2012-05-17  Vanessa Gil <vanessa.gil@artica.es>
+
 	* pandoradb.sql
 	  pandoradb.postgreSQL.sql
 	  pandoradb.oracle.sql

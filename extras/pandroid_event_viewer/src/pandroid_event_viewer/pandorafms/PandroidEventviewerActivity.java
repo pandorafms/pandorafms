@@ -73,8 +73,6 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	public String eventSearch;
 	public int filterLastTime;
 
-	private Core core;
-
 	public boolean showOptionsFirstTime;
 	public boolean showTabListFirstTime;
 
@@ -95,18 +93,10 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 		this.loadInProgress = false;
 
-		this.core = new Core();
-
 		// Check if the preferences is setted, if not show the option activity.
 		if ((user.length() == 0) && (password.length() == 0)
 				&& (url.length() == 0)) {
-
-			Intent i = new Intent(this, Options.class);
-			// i.putExtra("object", this);
-			i.putExtra("core", this.core);
-
-			startActivity(i);
-
+			startActivity(new Intent(this, Options.class));
 			this.showOptionsFirstTime = true;
 		} else {
 			this.loadInProgress = true;
@@ -122,7 +112,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		this.status = preferences.getInt("filterStatus", 3);
 		this.eventSearch = preferences.getString("filterEventSearch", "");
 		this.filterLastTime = preferences.getInt("filterLastTime", 6);
-		this.timestamp = this.core.convertMaxTimeOldEventValuesToTimestamp(0,
+		this.timestamp = Core.convertMaxTimeOldEventValuesToTimestamp(0,
 				this.filterLastTime);
 
 		this.eventList = new ArrayList<EventListItem>();
@@ -130,12 +120,12 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 		if (!this.showOptionsFirstTime) {
 			// Start the background service for the notifications
-			this.core.startServiceEventWatcher(getApplicationContext());
+			Core.startServiceEventWatcher(getApplicationContext());
 		}
 
 		Intent i_main = new Intent(this, Main.class);
 		i_main.putExtra("object", this);
-		i_main.putExtra("core", this.core);
+		// TODO corei_main.putExtra("core", this.core);
 
 		tabHost.addTab(tabHost
 				.newTabSpec(

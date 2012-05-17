@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.Calendar;
 
 import android.content.Context;
@@ -33,28 +32,17 @@ import android.content.Intent;
  * @author Miguel de Dios Matías
  * 
  */
-public class Core implements Serializable {
-
-	private static final long serialVersionUID = 7071445033114548174L;
-	public Intent intent_service;
-
-	public Core() {
-		intent_service = null;
-	}
+public class Core {
 
 	/**
 	 * Starts PandroidEventviewerService.
 	 * 
 	 * @param context
 	 */
-	public void startServiceEventWatcher(Context context) {
-		if (intent_service == null) {
+	public static void startServiceEventWatcher(Context context) {
 
-			intent_service = new Intent(context,
-					PandroidEventviewerService.class);
-		}
-
-		context.startService(intent_service);
+		context.startService(new Intent(context,
+				PandroidEventviewerService.class));
 	}
 
 	/**
@@ -62,14 +50,10 @@ public class Core implements Serializable {
 	 * 
 	 * @param context
 	 */
-	public void stopServiceEventWatcher(Context context) {
-		if (intent_service == null) {
+	public static void stopServiceEventWatcher(Context context) {
 
-			intent_service = new Intent(context,
-					PandroidEventviewerService.class);
-		}
-
-		context.stopService(this.intent_service);
+		context.stopService(new Intent(context,
+				PandroidEventviewerService.class));
 	}
 
 	/**
@@ -108,7 +92,7 @@ public class Core implements Serializable {
 	 * @param arrayKey
 	 * @return Time in milliseconds.
 	 */
-	public long convertMaxTimeOldEventValuesToTimestamp(long time, int arrayKey) {
+	public static long convertMaxTimeOldEventValuesToTimestamp(long time, int arrayKey) {
 		long return_var = 0;
 
 		if (time == 0) {

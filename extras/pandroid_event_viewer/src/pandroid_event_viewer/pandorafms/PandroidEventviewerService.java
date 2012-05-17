@@ -38,7 +38,6 @@ public class PandroidEventviewerService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

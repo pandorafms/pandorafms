@@ -60,7 +60,6 @@ public class Main extends Activity {
 	private PandroidEventviewerActivity object;
 	private HashMap<Integer, String> pandoraGroups;
 	private Spinner comboSeverity;
-	private Core core;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +68,6 @@ public class Main extends Activity {
 		Intent i = getIntent();
 		this.object = (PandroidEventviewerActivity) i
 				.getSerializableExtra("object");
-		this.core = (Core) i.getSerializableExtra("core");
 
 		this.pandoraGroups = new HashMap<Integer, String>();
 
@@ -280,10 +278,7 @@ public class Main extends Activity {
 		Intent i;
 		switch (item.getItemId()) {
 		case R.id.options_button_menu_options:
-			i = new Intent(this, Options.class);
-			i.putExtra("core", new Core());
-
-			startActivity(i);
+			startActivity(new Intent(this, Options.class));
 			break;
 		case R.id.about_button_menu_options:
 			i = new Intent(this, About.class);
@@ -307,7 +302,7 @@ public class Main extends Activity {
 		Spinner combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		timeKey = combo.getSelectedItemPosition();
 
-		this.object.timestamp = this.core
+		this.object.timestamp = Core
 				.convertMaxTimeOldEventValuesToTimestamp(0, timeKey);
 
 		EditText text = (EditText) findViewById(R.id.agent_name);
@@ -402,8 +397,8 @@ public class Main extends Activity {
 		editorPreferences.putInt("filterLastTime", filterLastTime);
 
 		if (editorPreferences.commit()) {
-			this.core.stopServiceEventWatcher(getApplicationContext());
-			this.core.startServiceEventWatcher(getApplicationContext());
+			Core.stopServiceEventWatcher(getApplicationContext());
+			Core.startServiceEventWatcher(getApplicationContext());
 
 			Toast toast = Toast.makeText(getApplicationContext(),
 					this.getString(R.string.filter_update_succesful_str),

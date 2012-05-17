@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], 0, 'PM')) {
 include_once ("extensions/update_manager/lib/functions.php");
 
 um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-	$config['dbpass'], $config['dbname']);
+	$config['dbpass'], $config['dbname'], $config['dbport']);
 
 $update_settings = (bool) get_parameter_post ('update_settings');
 

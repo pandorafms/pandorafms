@@ -1,5 +1,11 @@
 2012-05-17  Kikuchi Koichiro  <koichiro@rworks.jp>
 
+	* extensions/update_manager/settings.php,
+	  extensions/update_manager/main.php: Added missing dbport parameter to
+	 um_db_connect() call.
+
+2012-05-17  Kikuchi Koichiro  <koichiro@rworks.jp>
+
 	* extensions/update_manager.php,
 	  extensions/update_manager/sql/update_manager.sql,
 	  extensions/update_manager/sql/update_manager.postgreSQL.sql,

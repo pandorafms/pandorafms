@@ -42,18 +42,18 @@ function db_select_engine() {
 	}
 }
 
-function db_connect($host = null, $db = null, $user = null, $pass = null, $history = null) {
+function db_connect($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql": 
-			return mysql_connect_db($host, $db, $user, $pass, $history);
+			return mysql_connect_db($host, $db, $user, $pass, $history, $port);
 			break;
 		case "postgresql":
-			return postgresql_connect_db($host, $db, $user, $pass, $history);
+			return postgresql_connect_db($host, $db, $user, $pass, $history, $port);
 			break;
 		case "oracle":
-			return oracle_connect_db($host, $db, $user, $pass, $history);
+			return oracle_connect_db($host, $db, $user, $pass, $history, $port);
 			break;
 	}
 }

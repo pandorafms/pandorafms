@@ -85,7 +85,15 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('netflow_interval', '300'),
 ('netflow_daemon', '/usr/bin/nfcapd'),
 ('event_fields', 'evento,id_agente,estado,timestamp'),
-('list_ACL_IPs_for_API_0', '127.0.0.1');
+('list_ACL_IPs_for_API_0', '127.0.0.1'),
+('enable_pass_policy', 0),
+('pass_size', 4),
+('pass_needs_numbers', 0),
+('pass_needs_symbols', 0),
+('pass_expire', 0),
+('first_login', 0),
+('mins_fail_pass', 5),
+('number_attempts', 5);
 
 UNLOCK TABLES;
 

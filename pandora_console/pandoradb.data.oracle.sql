@@ -90,6 +90,14 @@ INSERT INTO tconfig (token, value) VALUES ('netflow_interval', '300');
 INSERT INTO tconfig (token, value) VALUES ('netflow_daemon', '/usr/bin/nfcapd');
 INSERT INTO tconfig (token, value) VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
 INSERT INTO tconfig (token, value) VALUES ('list_ACL_IPs_for_API_0', '127.0.0.1');
+INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy', 0);
+INSERT INTO tconfig (token, value) VALUES ('pass_size', 4);
+INSERT INTO tconfig (token, value) VALUES ('pass_needs_numbers', 0);
+INSERT INTO tconfig (token, value) VALUES ('pass_needs_simbols', 0);
+INSERT INTO tconfig (token, value) VALUES ('pass_expire', 0);
+INSERT INTO tconfig (token, value) VALUES ('first_login', 0);
+INSERT INTO tconfig (token, value) VALUES ('mins_fail_pass', 5);
+INSERT INTO tconfig (token, value) VALUES ('number_attempts', 5);
 COMMIT;
 END;;
 

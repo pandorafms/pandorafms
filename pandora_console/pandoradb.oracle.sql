@@ -873,7 +873,11 @@ CREATE TABLE tusuario (
 	shortcut NUMBER(5, 0) DEFAULT 0,
 	shortcut_data CLOB default '',
 	section VARCHAR2(255) NOT NULL,
-	data_section VARCHAR2(255) NOT NULL
+	data_section VARCHAR2(255) NOT NULL,
+	force_change_pass NUMBER(5,0) default 0 NOT NULL,
+	last_pass_change TIMESTAMP default 0,
+	last_failed_login TIMESTAMP default 0,
+	failed_attempt NUMBER(5,0) default 0 NOT NULL
 );
 
 CREATE TABLE tusuario_perfil (

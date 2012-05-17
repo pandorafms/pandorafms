@@ -215,6 +215,18 @@ function config_update_config () {
 		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
 	}
 	
+	$enterprise = enterprise_include_once ('godmode/setup/setup.php');
+	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
+		$config['enable_pass_policy'] = get_parameter('enable_pass_policy', $config['enable_pass_policy']);
+		$config['pass_size'] = get_parameter('pass_size', $config['pass_size']);
+		$config['pass_expire'] = get_parameter('pass_expire', $config['pass_expire']);
+		$config['first_login'] = get_parameter('first_login', $config['first_login']);
+		$config['mins_fail_pass'] = get_parameter('mins_fail_pass', $config['mins_fail_pass']);
+		$config['number_attempts'] = get_parameter('number_attempts', $config['number_attempts']);
+		$config['pass_needs_numbers'] = get_parameter('pass_needs_numbers', $config['pass_needs_numbers']);
+		$config['pass_needs_symbols'] = get_parameter('pass_needs_symbols', $config['pass_needs_symbols']);
+	}
+	
 	# Update of Pandora FMS license 
 	$update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
 

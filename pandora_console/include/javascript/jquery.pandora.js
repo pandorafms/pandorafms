@@ -132,5 +132,32 @@ $(document).ready (function () {
 		);	
 		return false;
 	});
+	
+	$( "#msg_change_password" ).dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 280,
+				width: 600,
+				overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+				bgiframe: jQuery.browser.msie
+	});
+	
+	$( "#login_blocked" ).dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 140,
+				width: 300,
+				overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+				bgiframe: jQuery.browser.msie
+	});
+	
 
 });

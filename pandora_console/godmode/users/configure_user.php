@@ -131,6 +131,11 @@ if ($create_user) {
 	$values['block_size'] = (int) get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = (int) get_parameter ('flash_charts', $config["flash_charts"]);
 	
+	if (defined('PANDORA_ENTERPRISE')) {
+		$values['force_change_pass'] = 1;
+		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
+	}
+	
 	if ($id == '') {
 		ui_print_error_message (__('User ID cannot be empty'));
 		$user_info = $values;

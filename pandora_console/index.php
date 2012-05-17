@@ -62,11 +62,16 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 session_start ();
 require_once ("include/config.php");
 
+$fails = get_parameter('fails', 0);
+
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 	include_once (ENTERPRISE_DIR."/load_enterprise.php");
 }
 
+if (file_exists (ENTERPRISE_DIR."/include/functions_login.php")) {
+	include_once (ENTERPRISE_DIR."/include/functions_login.php");
+}
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = '';
@@ -127,6 +132,18 @@ $sec = safe_url_extraclean ($sec);
 
 $process_login = false;
 
+// Update user password
+$change_pass = get_parameter('renew_password', 0);
+	
+if ($change_pass == 1) {
+	
+	$password_new = (string) get_parameter ('new_password', '');
+	$password_confirm = (string) get_parameter ('confirm_new_password', '');
+	$id = (string) get_parameter ('login', '');
+
+	$changed_pass = login_update_password_check ($password_new, $password_confirm, $id);
+}
+
 $searchPage = false;
 $search = get_parameter_get("head_search_keywords");
 if (strlen($search) > 0) {
@@ -169,7 +186,39 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	// process_user_login should return false in case of errors or invalid login, the nickname if correct
 	$nick_in_db = process_user_login ($nick, $pass);
 	
-	if ($nick_in_db !== false) {
+	$expired_pass = false;
+	
+	if (($nick_in_db != false)&&(!is_user_admin($nick)) && (defined('PANDORA_ENTERPRISE')) && ($config['enable_pass_policy'])) {
+		include_once(ENTERPRISE_DIR."/include/auth/mysql.php");
+	
+		$blocked = login_check_blocked($nick);
+		
+		if ($blocked) {
+			require_once ('general/login_page.php');
+			db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
+			while (@ob_end_flush ());
+			exit ("</html>");
+		}
+		
+		//Checks if password has expired
+		$check_status = check_pass_status($nick, $pass);
+		
+		switch ($check_status) {
+			case 1: //first change
+			case 2: //pass expired
+				$expired_pass = true;
+				login_change_password($nick);
+				break;
+		}
+	
+	}
+		
+	if (($nick_in_db !== false) && $expired_pass) { //login ok and password has expired
+		require_once ('general/login_page.php');
+		db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
+		while (@ob_end_flush ());
+		exit ("</html>");
+	} else	if (($nick_in_db !== false) && (!$expired_pass)) { //login ok and password has not expired
 		$process_login = true;
 		
 		unset ($_GET["sec2"]);
@@ -234,18 +283,32 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 			$l10n->load_tables();
 		}
 	}
-	else {
-		// User not known
-		$login_failed = true;
-		require_once ('general/login_page.php');
-		db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
-		while (@ob_end_flush ());
-		exit ("</html>");
+	else { //login wrong
+		$blocked = false;
+		
+		if (!is_user_admin($nick)) {
+			$blocked = login_check_blocked($nick);
+		}
+		
+		if (!$blocked) {
+			login_check_failed($nick); //Checks failed attempts
+			$login_failed = true;
+			require_once ('general/login_page.php');
+			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+			while (@ob_end_flush ());
+			exit ("</html>");
+		} else {
+			require_once ('general/login_page.php');
+			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+			while (@ob_end_flush ());
+			exit ("</html>");
+		}
+
 	}
 }
 elseif (! isset ($config['id_user'])) {
+
 	// There is no user connected
-	
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");

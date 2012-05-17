@@ -400,7 +400,7 @@ function install_step1() {
 			
 		echo "</div>";
 
-		print_logo_status (1, 5);
+		print_logo_status (1,6);
 
 		echo "<div id='install_img'>";
 		if ($writable == 0) {
@@ -445,7 +445,7 @@ function install_step1_licence() {
 	}
 	echo "</div>";
 
-	print_logo_status (2, 5);
+	print_logo_status (2,6);
 
 	echo "</div>
 	<div style='clear: both;height: 1px;'><!-- --></div>
@@ -492,7 +492,7 @@ function install_step2() {
 			check_extension("oci8", "PHP Oracle extension");
 			echo "</table>";
 		echo "</div>";
-		print_logo_status (3,5);
+		print_logo_status (3,6);
 
 		echo "<div id='install_img'>";
 			if ($res > 0) {
@@ -633,7 +633,7 @@ function install_step3() {
 	echo "	</form>
 			</div>";
 
-	print_logo_status (4,5);
+	print_logo_status (4,6);
 
 	echo "</div>
 		<div id='foot_install'>
@@ -1006,7 +1006,7 @@ function install_step4() {
 			}
 		echo "</table></div>";
 
-		print_logo_status(4,5);
+		print_logo_status(5,6);
 		
 		echo "<div id='install_img'>";
 			if ($everything_ok == 1) {
@@ -1072,7 +1072,7 @@ function install_step5() {
 			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
 			</p>
 		</div>";
-		print_logo_status (5,5);
+		print_logo_status (6,6);
 	echo "</div>
 	<div id='foot_install'>
 		<i>Pandora FMS is an OpenSource Software project registered at 

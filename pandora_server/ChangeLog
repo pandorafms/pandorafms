@@ -1,3 +1,8 @@
+2012-05-17  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added --create_network_module_from_component
+	option to CLI passing component and target agent names
+
 2012-05-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* util/pandora_xml_stress.conf: Fixed a wrong default configuration file

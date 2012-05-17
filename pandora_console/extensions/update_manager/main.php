@@ -30,7 +30,7 @@ function main_view() {
 	}
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-		$config['dbpass'], $config['dbname']);
+		$config['dbpass'], $config['dbname'], $config['dbport']);
 	
 	$settings = um_db_load_settings ();
 	$user_key = get_user_key ($settings);

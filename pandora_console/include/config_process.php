@@ -74,20 +74,6 @@ if (!isset($config['dbtype'])) {
 	$config['dbtype'] = 'mysql';
 }
 
-if (!isset($config['dbport'])) {
-	switch ($config['dbtype']) {
-		case 'mysql':
-			$config['dbport'] = '3306';
-			break;
-		case 'postgresql':
-			$config['dbport'] = '5432';
-			break;
-		case 'oracle':
-			$config['dbport'] = '1521';
-			break;
-	}
-}
-
 require_once ($ownDir . 'constants.php');
 require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir . 'functions.php');

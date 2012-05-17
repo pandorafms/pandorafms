@@ -666,7 +666,7 @@ function um_client_db_connect (&$settings = NULL) {
 		$settings = um_db_load_settings ();
 	
 	//mysql_select_db (DB_NAME);
-	mysql_connect ($settings->dbhost . ':' . $settings->dbport, $settings->dbuser,
+	mysql_connect ($settings->dbhost, $settings->dbuser,
 		$settings->dbpass);
 }
 ?>

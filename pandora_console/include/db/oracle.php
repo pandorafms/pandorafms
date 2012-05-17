@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
+function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null) {
 	global $config;
 	
 	if ($host === null)
@@ -25,12 +25,10 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 		$user = $config["dbuser"];
 	if ($pass === null)
 		$pass = $config["dbpass"];
-	if ($port === null)
-		$port = $config["dbport"];
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to oci_pconnect().
-	$connect_id = oci_connect($user, $pass, '//' . $host . ':' . $port . '/' . $db);
+	$connect_id = oci_connect($user, $pass, '//' . $host . '/' . $db);
 	
 	if (! $connect_id) {
 		include ($config["homedir"]."/general/error_authconfig.php");

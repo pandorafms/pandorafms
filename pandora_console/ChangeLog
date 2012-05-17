@@ -1,3 +1,8 @@
+2012-05-17  Sergio Martin <sergio.martin@artica.es>
+
+        * extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added a entity
+	        encode to network component name
+
 2012-05-17  Kikuchi Koichiro  <koichiro@rworks.jp>
 
 	* extensions/update_manager/settings.php,

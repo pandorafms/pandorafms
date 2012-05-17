@@ -25,6 +25,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,7 +52,6 @@ public class Options extends Activity {
 	private int refreshTimeKey;
 	private TextView connectionStatus;
 
-	private Core core;
 	private PandroidEventviewerActivity object;
 
 	@Override
@@ -59,7 +59,6 @@ public class Options extends Activity {
 		super.onCreate(savedInstanceState);
 
 		Intent i = getIntent();
-		this.core = (Core) i.getSerializableExtra("core");
 
 		setContentView(R.layout.options);
 		connectionStatus = (TextView) findViewById(R.id.check_connection_status);
@@ -132,7 +131,9 @@ public class Options extends Activity {
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT,
 						false);
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT,
-						true);
+						false);
+				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
+						Settings.System.DEFAULT_NOTIFICATION_URI);
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE,
 						RingtoneManager.TYPE_NOTIFICATION);
 				startActivityForResult(intent, RINGTONE_PICK_CODE);
@@ -189,10 +190,6 @@ public class Options extends Activity {
 		Context context = this.getApplicationContext();
 
 		if (editorPreferences.commit()) {
-			if (this.core != null) {
-				this.core.stopServiceEventWatcher(getApplicationContext());
-				this.core.startServiceEventWatcher(getApplicationContext());
-			}
 			Log.i(TAG, "Settings saved");
 			Toast toast = Toast.makeText(context,
 					this.getString(R.string.config_update_succesful_str),

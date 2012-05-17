@@ -184,10 +184,7 @@ public class EventList extends ListActivity {
 		Intent i;
 		switch (item.getItemId()) {
 		case R.id.options_button_menu_options:
-			i = new Intent(this, Options.class);
-			i.putExtra("core", this.core);
-
-			startActivity(i);
+			startActivity(new Intent(this, Options.class));
 			break;
 		case R.id.refresh_button_menu_options:
 			this.object.loadInProgress = true;
@@ -330,7 +327,6 @@ public class EventList extends ListActivity {
 		la.notifyDataSetChanged();
 	}
 
-	// TODO removed a View v argument, check
 	/**
 	 * Loads more events.
 	 * 
@@ -352,7 +348,6 @@ public class EventList extends ListActivity {
 	private class MyAdapter extends BaseAdapter {
 		private Context mContext;
 		public PandroidEventviewerActivity object;
-		public Core core;
 
 		public boolean showLoadingEvents;
 
@@ -361,8 +356,6 @@ public class EventList extends ListActivity {
 			mContext = c;
 
 			this.object = object;
-			this.core = core;
-
 			showLoadingEvents = false;
 		}
 
@@ -571,7 +564,6 @@ public class EventList extends ListActivity {
 					} else if (item.status != 1) {
 						OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
 						clickListener.id_event = item.id_event;
-						clickListener.core = this.core;
 						button.setOnClickListener(clickListener);
 
 						text = (TextView) viewEventExtended
@@ -679,14 +671,12 @@ public class EventList extends ListActivity {
 		 */
 		private class OnClickListenerButtonValidate implements OnClickListener {
 			public int id_event;
-			public Core core;
 
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(),
 						PopupValidationEvent.class);
 				i.putExtra("id_event", id_event);
-				i.putExtra("core", this.core);
 				startActivity(i);
 			}
 		}

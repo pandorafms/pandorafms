@@ -1,3 +1,14 @@
+2012-05-17 Santiago Munín  <burning1@gmail.com>
+	
+	* Core.java: Changed methods to static. 
+	
+	* Main.java,
+	  PandroidEventviewerService.java,
+	  Core.java, Options.java,
+	  EventList.java
+	  PandroidEventviewerActivity.java: Instances of "Core" removed.
+
+
 2012-05-12 Santiago Munín  <burning1@gmail.com>
 
 	* Licenses and javadoc comments added to all files, refactorized code.

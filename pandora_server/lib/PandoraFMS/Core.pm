@@ -2326,7 +2326,7 @@ sub pandora_process_policy_queue ($) {
 	
 	my %pa_config = %{$pa_config};
 	
-	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, 3306,
+	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
 						$pa_config{'dbuser'}, $pa_config{'dbpass'});
 
 	while(1) {

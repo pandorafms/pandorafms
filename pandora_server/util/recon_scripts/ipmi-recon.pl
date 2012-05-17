@@ -161,7 +161,7 @@ $conf{'pandora_path'} = $pandora_conf;
 pandora_load_config (\%conf);
 
 # Connect to the DB
-my $dbh = db_connect ('mysql', $conf{'dbname'}, $conf{'dbhost'}, '3306', $conf{'dbuser'}, $conf{'dbpass'});
+my $dbh = db_connect ('mysql', $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
 
 
 # Start the network sweep

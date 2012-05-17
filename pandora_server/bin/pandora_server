@@ -71,7 +71,7 @@ sub pandora_startup () {
 	pandora_start_log (\%Config);
 
 	# Connect to the DB
-	$DBH = db_connect ($Config{'dbengine'}, $Config{'dbname'}, $Config{'dbhost'}, 3306,
+	$DBH = db_connect ($Config{'dbengine'}, $Config{'dbname'}, $Config{'dbhost'}, $Config{'dbport'},
 					$Config{'dbuser'}, $Config{'dbpass'});
 
 	# Grab config tokens shared with the console and not in the .conf

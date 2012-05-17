@@ -178,6 +178,7 @@ sub pandora_load_config {
 	$pa_config->{"dbuser"} = "pandora";
 	$pa_config->{"dbpass"} = "pandora";
 	$pa_config->{"dbhost"} = "localhost";
+	$pa_config->{'dbport'} = undef; # set to standard port of "dbengine" later
 	$pa_config->{"dbname"} = "pandora";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
@@ -409,6 +410,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dbhost\s(.*)/i) { 
 			$pa_config->{'dbhost'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^dbport\s(.*)/i) { 
+			$pa_config->{'dbport'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { 
 			$pa_config->{'daemon'}= clean_blank($1);
 		}
@@ -615,6 +619,19 @@ sub pandora_load_config {
 			$pa_config->{'block_size'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
+
+	# Set to RDBMS' standard port
+	if (!defined($pa_config->{'dbport'})) {
+		if ($pa_config->{'dbengine'} eq "mysql") {
+			$pa_config->{'dbport'} = 3306;
+		}
+		elsif ($pa_config->{'dbengine'} eq "postgresql") {
+			$pa_config->{'dbport'} = 5432;
+		}
+		elsif ($pa_config->{'dbengine'} eq "oracle") {
+			$pa_config->{'dbport'} = 1521;
+		}
+	}
 
 	if (($pa_config->{"verbosity"} > 4) && ($pa_config->{"quiet"} == 0)){
 		if ($pa_config->{"PID"} ne ""){

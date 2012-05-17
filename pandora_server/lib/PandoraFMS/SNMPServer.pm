@@ -98,7 +98,7 @@ sub pandora_snmptrapd {
 	eval {
 		# Connect to the DB
 		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'},
-							  3306, $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
+							  $pa_config->{'dbport'}, $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 		$self->setDBH ($dbh);
 
 		# Wait for the SNMP log file to be available

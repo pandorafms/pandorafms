@@ -62,7 +62,7 @@ pandora_init(\%pa_config,"Pandora DB Stress tool");
 pandora_load_config (\%pa_config,0); #Start like a data server
 
 # open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
-my $dbh = DBI->connect("DBI:mysql:$pa_config{'dbname'}:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
+my $dbh = DBI->connect("DBI:mysql:$pa_config{'dbname'}:$pa_config{'dbhost'}:$pa_config{'dbport'}",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
 print " [*] Working for agent ID $target_agent \n";
 print " [*] Generating data of $target_days days ago \n";

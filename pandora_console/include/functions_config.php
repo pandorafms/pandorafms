@@ -786,7 +786,7 @@ function config_check (){
 	if (enterprise_installed()) {
 		if ($config['update_manager_installed'] == 1) {
 			um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-				$config['dbpass'], $config['dbname']);
+				$config['dbpass'], $config['dbname'], $config['dbport']);
 			
 			$settings = um_db_load_settings ();
 			

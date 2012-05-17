@@ -11,6 +11,7 @@ CREATE TABLE tupdate_settings ( key VARCHAR2(255) default '' PRIMARY KEY, value 
 /INSERT INTO tupdate_settings VALUES ('dbhost', '')
 /INSERT INTO tupdate_settings VALUES ('dbpass', '')
 /INSERT INTO tupdate_settings VALUES ('dbuser', '')
+/INSERT INTO tupdate_settings VALUES ('dbport', '')
 /INSERT INTO tupdate_settings VALUES ('proxy', '')
 /INSERT INTO tupdate_settings VALUES ('proxy_port', '')
 /INSERT INTO tupdate_settings VALUES ('proxy_user', '')

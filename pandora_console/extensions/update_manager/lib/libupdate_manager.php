@@ -795,14 +795,14 @@ function um_db_is_auth_developer ($id_auth) {
 	return (bool) $developer;
 }
 
-function um_db_connect ($backend = 'mysql', $host = '', $user = '', $password = '', $db_name = '') {
-	return db_connect ($host, $db_name, $user, $password);
+function um_db_connect ($backend = 'mysql', $host = '', $user = '', $password = '', $db_name = '', $port = null) {
+	return db_connect ($host, $db_name, $user, $password, null, $port);
 }
 
 function um_component_db_connect () {
 	$settings = um_db_load_settings ();
 	
-	return db_connect ($settings->dbhost, $settings->dbname, $settings->dbuser, $settings->dbpass);
+	return db_connect ($settings->dbhost, $settings->dbname, $settings->dbuser, $settings->dbpass, null, $settings->dbport);
 }
 
 function um_get_package_status () {

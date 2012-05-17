@@ -85,7 +85,8 @@ function update_settings_database_connection () {
 	global $config;
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-		$config['dbpass'], $config['dbname']);
+		$config['dbpass'], $config['dbname'], $config['dbport']);
+	um_db_update_setting ('dbport', $config['dbport']);
 	um_db_update_setting ('dbname', $config['dbname']);
 	um_db_update_setting ('dbuser', $config['dbuser']);
 	um_db_update_setting ('dbpass', $config['dbpass']);
@@ -120,7 +121,7 @@ function pandora_update_manager_install () {
 	db_process_sql_insert('tconfig', $values);
 	
 	um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-		$config['dbpass'], $config['dbname']);
+		$config['dbpass'], $config['dbname'], $config['dbport']);
 	um_db_update_setting ('updating_code_path',
 		dirname ($_SERVER['SCRIPT_FILENAME']));
 	update_settings_database_connection ();
@@ -183,7 +184,7 @@ function pandora_update_manager_login () {
 	
 	if (enterprise_installed()) {
 		um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-			$config['dbpass'], $config['dbname']);
+			$config['dbpass'], $config['dbname'], $config['dbport']);
 		$settings = um_db_load_settings ();
 		
 		$user_key = get_user_key ($settings);

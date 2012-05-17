@@ -208,3 +208,11 @@ CREATE TABLE "ttimezone" (
 
 ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
 
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+
+ALTER TABLE "tusuario" ADD COLUMN "force_change_pass" SMALLINT NOT NULL default 0;
+ALTER TABLE "tusuario" ADD COLUMN "last_pass_change" BIGINT NOT NULL default 0;
+ALTER TABLE "tusuario" ADD COLUMN "last_failed_login" BIGINT NOT NULL default 0;
+ALTER TABLE "tusuario" ADD COLUMN "failed_attempt" INTEGER NOT NULL DEFAULT 0;

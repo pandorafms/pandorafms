@@ -1,5 +1,11 @@
 2012-05-17  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php: Added create_network_module_from_component 
+	operation to API
+	Merged from trunk
+
+2012-05-17  Sergio Martin <sergio.martin@artica.es>
+
         * extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added a entity
 	        encode to network component name
 

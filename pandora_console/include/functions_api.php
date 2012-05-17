@@ -2368,6 +2368,50 @@ function get_plugins($thrash1, $thrash2, $other, $thrash3) {
 }
 
 /**
+ * Create a network module from a network component. And return the id of new module.
+ * 
+ * @param string $agent_name The name of the agent where the module will be created
+ * @param string $component_name The name of the network component
+ * @param $thrash1 Don't use
+ * @param $thrash2 Don't use
+ */
+function set_create_network_module_from_component($agent_name, $component_name, $thrash1, $thrash2) {
+	$agent_id = agents_get_agent_id($agent_name);
+	
+	if (!$agent_id){
+		returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exists.'));
+		return;		
+	}
+	
+	$component= db_get_row ('tnetwork_component', 'name', $component_name);
+	
+	if (!$component){
+		returnError('error_network_module_from_component', __('Error creating module from network component. Network component doesn\'t exists.'));
+		return;		
+	}
+	
+	// Adapt fields to module structure
+	unset($component['id_nc']);
+	unset($component['id_group']);
+	$component['id_tipo_modulo'] = $component['type'];
+	unset($component['type']);
+	$component['descripcion'] = $component['description'];
+	unset($component['description']);
+	unset($component['name']);
+	$component['ip_target'] = agents_get_address($agent_id);
+
+	// Create module
+	$module_id = modules_create_agent_module ($agent_id, $component_name, $component, true);
+	
+	if (!$module_id){
+		returnError('error_network_module_from_component', __('Error creating module from network component. Error creating module.'));
+		return;		
+	}
+	
+	return $module_id;
+}
+
+/**
  * Assign a module to an alert template. And return the id of new relationship.
  * 
  * @param string $id_template Name of alert template to add.

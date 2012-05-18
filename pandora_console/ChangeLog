@@ -1,3 +1,8 @@
+2012-05-18  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* godmode/agentes/configurar_agente.php: Added missing io_safe_input
+	 to the module copy operation.
+
 2012-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* install.php: Fixed number of step mistakes

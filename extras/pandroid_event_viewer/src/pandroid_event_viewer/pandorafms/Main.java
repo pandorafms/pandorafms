@@ -219,7 +219,7 @@ public class Main extends Activity {
 				array.add(groups[1]);
 			}
 		} catch (Exception e) {
-			Log.e(TAG +": getting groups", e.getMessage());
+			Log.e(TAG + ": getting groups", e.getMessage());
 		}
 
 		return array;
@@ -302,8 +302,8 @@ public class Main extends Activity {
 		Spinner combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		timeKey = combo.getSelectedItemPosition();
 
-		this.object.timestamp = Core
-				.convertMaxTimeOldEventValuesToTimestamp(0, timeKey);
+		this.object.timestamp = Core.convertMaxTimeOldEventValuesToTimestamp(0,
+				timeKey);
 
 		EditText text = (EditText) findViewById(R.id.agent_name);
 		this.object.agentNameStr = text.getText().toString();
@@ -397,9 +397,7 @@ public class Main extends Activity {
 		editorPreferences.putInt("filterLastTime", filterLastTime);
 
 		if (editorPreferences.commit()) {
-			Core.stopServiceEventWatcher(getApplicationContext());
-			Core.startServiceEventWatcher(getApplicationContext());
-
+			Core.setFetchFrequency(getApplicationContext());
 			Toast toast = Toast.makeText(getApplicationContext(),
 					this.getString(R.string.filter_update_succesful_str),
 					Toast.LENGTH_SHORT);
@@ -424,13 +422,13 @@ public class Main extends Activity {
 
 		combo = (Spinner) findViewById(R.id.severity_combo);
 		combo.setSelection(0);
-	
+
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		combo.setSelection(6);
-	
+
 		combo = (Spinner) findViewById(R.id.status_combo);
 		combo.setSelection(3);
-		
+
 		text = (EditText) findViewById(R.id.event_search_text);
 		text.setText("");
 

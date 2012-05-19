@@ -190,6 +190,7 @@ public class Options extends Activity {
 		Context context = this.getApplicationContext();
 
 		if (editorPreferences.commit()) {
+			Core.setFetchFrequency(getApplicationContext());
 			Log.i(TAG, "Settings saved");
 			Toast toast = Toast.makeText(context,
 					this.getString(R.string.config_update_succesful_str),

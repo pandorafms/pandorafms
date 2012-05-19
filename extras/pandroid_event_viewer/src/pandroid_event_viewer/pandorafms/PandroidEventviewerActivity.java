@@ -120,12 +120,11 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 		if (!this.showOptionsFirstTime) {
 			// Start the background service for the notifications
-			Core.startServiceEventWatcher(getApplicationContext());
+			Core.setFetchFrequency(getApplicationContext());
 		}
 
 		Intent i_main = new Intent(this, Main.class);
 		i_main.putExtra("object", this);
-		// TODO corei_main.putExtra("core", this.core);
 
 		tabHost.addTab(tabHost
 				.newTabSpec(

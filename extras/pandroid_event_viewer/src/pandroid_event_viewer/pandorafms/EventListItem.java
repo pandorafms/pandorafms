@@ -16,13 +16,17 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
+import java.io.Serializable;
+
 /**
  * This class represents an event.
  * 
  * @author Miguel de Dios Matías
  * 
  */
-public class EventListItem {
+public class EventListItem implements Serializable {
+
+	private static final long serialVersionUID = 5923680782563861300L;
 	public int id_event;
 	public int id_agent;
 	public String id_user;

@@ -19,7 +19,6 @@ package pandroid_event_viewer.pandorafms;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +60,7 @@ import android.widget.TextView;
  * 
  */
 public class EventList extends ListActivity {
+	private static String TAG = "EventList";
 	private ListView lv;
 	private MyAdapter la;
 
@@ -228,12 +229,9 @@ public class EventList extends ListActivity {
 	 */
 	private Bitmap downloadImage(String fileUrl) {
 		URL myFileUrl = null;
+
 		try {
 			myFileUrl = new URL(fileUrl);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		try {
 			HttpURLConnection conn = (HttpURLConnection) myFileUrl
 					.openConnection();
 			conn.setDoInput(true);
@@ -241,7 +239,7 @@ public class EventList extends ListActivity {
 			InputStream is = conn.getInputStream();
 			return BitmapFactory.decodeStream(is);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(TAG, "Downloading image");
 		}
 		return null;
 	}

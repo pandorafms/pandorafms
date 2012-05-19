@@ -22,8 +22,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 /**
  * This class provides basic functions to manage services and some received
@@ -33,28 +38,7 @@ import android.content.Intent;
  * 
  */
 public class Core {
-
-	/**
-	 * Starts PandroidEventviewerService.
-	 * 
-	 * @param context
-	 */
-	public static void startServiceEventWatcher(Context context) {
-
-		context.startService(new Intent(context,
-				PandroidEventviewerService.class));
-	}
-
-	/**
-	 * Stops PandroidEventviewerService.
-	 * 
-	 * @param context
-	 */
-	public static void stopServiceEventWatcher(Context context) {
-
-		context.stopService(new Intent(context,
-				PandroidEventviewerService.class));
-	}
+	private static String TAG = "Core";
 
 	/**
 	 * Reads from the input stream and returns a string.
@@ -86,13 +70,39 @@ public class Core {
 	}
 
 	/**
+	 * Sets fetch frequency.
+	 * 
+	 * @param ctx
+	 *            Application context.
+	 */
+	public static void setFetchFrequency(Context ctx) {
+		Log.i(TAG, "Setting events fetching frequency");
+		// Stops the service (if it's running)
+		ctx.stopService(new Intent(ctx, PandroidEventviewerService.class));
+		// Sets the launch frequency
+		AlarmManager alarmM = (AlarmManager) ctx
+				.getSystemService(Context.ALARM_SERVICE);
+
+		PendingIntent pandroidService = PendingIntent.getService(ctx, 0,
+				new Intent(ctx, PandroidEventviewerService.class), 0);
+
+		int sleepTimeAlarm = convertRefreshTimeKeyToTime(ctx);
+
+		Log.i(TAG, "sleepTimeAlarm = " + sleepTimeAlarm);
+
+		alarmM.setRepeating(AlarmManager.RTC_WAKEUP,
+				System.currentTimeMillis(), sleepTimeAlarm, pandroidService);
+	}
+
+	/**
 	 * Converts the maximum time setted to filter events to a timestamp.
 	 * 
 	 * @param timestamp
 	 * @param arrayKey
 	 * @return Time in milliseconds.
 	 */
-	public static long convertMaxTimeOldEventValuesToTimestamp(long time, int arrayKey) {
+	public static long convertMaxTimeOldEventValuesToTimestamp(long time,
+			int arrayKey) {
 		long return_var = 0;
 
 		if (time == 0) {
@@ -155,5 +165,82 @@ public class Core {
 		}
 
 		return return_var;
+	}
+
+	/**
+	 * Converts chosen time from spinner to seconds (either are seconds or not)
+	 * 
+	 * @return
+	 */
+	private static int convertRefreshTimeKeyToTime(Context ctx) {
+		int returnvar = 60 * 10;
+
+		SharedPreferences preferences = ctx.getSharedPreferences(
+				ctx.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+
+		int refreshTimeKey = preferences.getInt("refreshTimeKey", 3);
+
+		switch (refreshTimeKey) {
+		case 0:
+			returnvar = 30; // 30 seconds
+			break;
+		case 1:
+			returnvar = 60; // 1 minute
+			break;
+		case 2:
+			returnvar = 60 * 5; // 5 minutes
+			break;
+		case 3:
+			returnvar = 60 * 10; // 10 minutes
+			break;
+		case 4:
+			returnvar = 60 * 15; // 15 minutes
+			break;
+		case 5:
+			returnvar = 60 * 30; // 30 minutes
+			break;
+		case 6:
+			returnvar = 60 * 45; // 45 minutes
+			break;
+		case 7:
+			returnvar = 3600; // 1 hour
+			break;
+		case 8:
+			returnvar = 3600 + (60 * 30); // 1 hour and 30 minutes
+			break;
+		case 9:
+			returnvar = 3600 * 2; // 2 hours
+			break;
+		case 10:
+			returnvar = 3600 * 3; // 3 hours
+			break;
+		case 11:
+			returnvar = 3600 * 4; // 4 hours
+			break;
+		case 12:
+			returnvar = 3600 * 6; // 6 hours
+			break;
+		case 13:
+			returnvar = 3600 * 8; // 8 hours
+			break;
+		case 14:
+			returnvar = 3600 * 10; // 10 hours
+			break;
+		case 15:
+			returnvar = 3600 * 12; // 12 hours
+			break;
+		case 16:
+			returnvar = 3600 * 24; // 24 hours
+			break;
+		case 17:
+			returnvar = 3600 * 36; // 36 hours
+			break;
+		case 18:
+			returnvar = 3600 * 48; // 48 hours
+			break;
+		}
+
+		return returnvar * 1000;
 	}
 }

@@ -65,7 +65,6 @@ public class EventList extends ListActivity {
 	private MyAdapter la;
 
 	private PandroidEventviewerActivity object;
-	private Core core;
 
 	// private HashMap<Integer, Boolean> openedItem;
 	private HashMap<String, Bitmap> imgGroups;
@@ -85,7 +84,6 @@ public class EventList extends ListActivity {
 		Intent i = getIntent();
 		this.object = (PandroidEventviewerActivity) i
 				.getSerializableExtra("object");
-		this.core = (Core) i.getSerializableExtra("core");
 
 		setContentView(R.layout.list_view_layout);
 
@@ -93,7 +91,7 @@ public class EventList extends ListActivity {
 
 		lv = (ListView) findViewById(android.R.id.list);
 
-		la = new MyAdapter(getBaseContext(), object, core);
+		la = new MyAdapter(getBaseContext(), object);
 
 		lv.setAdapter(la);
 
@@ -228,6 +226,7 @@ public class EventList extends ListActivity {
 	 * @return A bitmap of that image
 	 */
 	private Bitmap downloadImage(String fileUrl) {
+		Log.i(TAG, "Downloading image");
 		URL myFileUrl = null;
 
 		try {
@@ -239,7 +238,7 @@ public class EventList extends ListActivity {
 			InputStream is = conn.getInputStream();
 			return BitmapFactory.decodeStream(is);
 		} catch (IOException e) {
-			Log.e(TAG, "Downloading image");
+			Log.e(TAG, "Downloading image: error");
 		}
 		return null;
 	}
@@ -349,8 +348,7 @@ public class EventList extends ListActivity {
 
 		public boolean showLoadingEvents;
 
-		public MyAdapter(Context c, PandroidEventviewerActivity object,
-				Core core) {
+		public MyAdapter(Context c, PandroidEventviewerActivity object) {
 			mContext = c;
 
 			this.object = object;

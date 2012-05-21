@@ -1,3 +1,15 @@
+2012-05-21 Santiago Munín  <burning1@gmail.com>
+
+	* EventList.java, PopupValidationEvent.java: Removed references to Core as an object.
+	
+2012-05-19 Santiago Munín <burning1@gmail.com>
+
+	* AlarmReceiver.java: Removed. Now it's the service which will retrieve data.
+	* Core.java: The method of setting periodically data retrieval was changed. 
+				 Now, the AlarmManager will launch the Service instead of BroadcastReceiver.
+	* PandroidEventviewerService.java: Every time it receives a call from the AlarmManager, will search for new events.
+	* Most of files have little changes to adapt the new data retrieval subsystem.
+	
 2012-05-17 Santiago Munín  <burning1@gmail.com>
 	
 	* Core.java: Changed methods to static. 

@@ -1,3 +1,10 @@
+2012-05-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_alerts.js
+	godmode/alerts/configure_alert_action.php: Added descrption of
+	the selected command under the combo when select one in 
+	the action editor to help user.
+
 2012-05-21  Vanessa Gil <vanessa.gil@artica.es>
 
 	* pandoradb.sql

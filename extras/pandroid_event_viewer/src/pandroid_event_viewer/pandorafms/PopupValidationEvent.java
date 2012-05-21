@@ -58,7 +58,6 @@ public class PopupValidationEvent extends Activity {
 
 		Intent i = getIntent();
 		this.id_event = i.getIntExtra("id_event", -1);
-		// this.core = (Core)i.getSerializableExtra("core");
 
 		setContentView(R.layout.popup_validation_event);
 		final Button button = (Button) findViewById(R.id.button_validate_event);

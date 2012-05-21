@@ -817,6 +817,19 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	} elsif ($action->{'name'} eq "Pandora FMS Event") {
         $field1 = subst_alert_macros ($field1, \%macros);
     	pandora_event ($pa_config, $field1, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, 0, 0, "alert_fired", 0, $dbh);
+	# Validate event (field1: agent name; field2: module name)
+	} elsif ($action->{'name'} eq "Validate Event") {
+        my $agent_id = -1;
+        my $module_id = -1;
+        if($field1 ne '') {
+			$agent_id = get_agent_id ($dbh, $field1);
+			if($field2 ne '' && $agent_id != -1) {
+				$module_id = get_agent_module_id ($dbh, $field2, $agent_id);
+				if($module_id != -1) {
+					pandora_validate_event ($pa_config, $module_id, $dbh);
+				}
+			}
+		}
 
 	# Unknown
 	} else {

@@ -216,3 +216,9 @@ ALTER TABLE "tusuario" ADD COLUMN "force_change_pass" SMALLINT NOT NULL default 
 ALTER TABLE "tusuario" ADD COLUMN "last_pass_change" BIGINT NOT NULL default 0;
 ALTER TABLE "tusuario" ADD COLUMN "last_failed_login" BIGINT NOT NULL default 0;
 ALTER TABLE "tusuario" ADD COLUMN "failed_attempt" INTEGER NOT NULL DEFAULT 0;
+
+-- -----------------------------------------------------
+-- Table `talert_commands`
+-- -----------------------------------------------------
+
+INSERT INTO "talert_commands" ("name", "command", "description", "internal") VALUES ('Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);

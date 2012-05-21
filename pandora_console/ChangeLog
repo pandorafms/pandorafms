@@ -1,3 +1,14 @@
+2012-05-21  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added 
+	new alert command for validate events to the database
+	schemma and migration scripts
+
 2012-05-18  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* godmode/agentes/configurar_agente.php: Merged from 4.0: Added

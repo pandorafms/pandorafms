@@ -1,3 +1,8 @@
+2012-05-21  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* util/pandora_db.pl: Merged from 4.0.2: Set default DB port
+	 number when it's not specified in the configuration file.
+
 2012-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added --create_network_module_from_component

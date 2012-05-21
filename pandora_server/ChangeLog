@@ -1,3 +1,9 @@
+2012-05-21  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added new Internal Command for
+	actions to validate the events of one module given 
+	the agent name (field1) and the module name (field2)
+
 2012-05-21  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Merged from 4.0.2: Set default DB port

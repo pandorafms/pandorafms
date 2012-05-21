@@ -118,6 +118,7 @@ if (check_acl ($config['id_user'], 0, "PM")){
 	$table->data[2][1] .= __('Create Command');
 	$table->data[2][1] .= '</a>';
 }
+$table->data[2][1] .= '<div id="command_description" style=""></div>';
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
 $table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true);
@@ -159,6 +160,9 @@ $(document).ready (function () {
 								echo addslashes($command);
 		?>";
 	render_command_preview ();
+	command_description = "<?php echo str_replace("\r\n","<br>",addslashes(io_safe_output(alerts_get_alert_command_description ($id_command)))); ?>";
+	
+	render_command_description(command_description);
 <?php endif; ?>
 	$("#id_command").change (function () {
 		values = Array ();
@@ -173,6 +177,8 @@ $(document).ready (function () {
 			function (data, status) {
 				original_command = js_html_entity_decode (data["command"]);
 				render_command_preview (original_command);
+				command_description = js_html_entity_decode (data["description"]);
+				render_command_description(command_description);
 			},
 			"json"
 		);

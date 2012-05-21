@@ -19,3 +19,9 @@ function parse_alert_command (command) {
 function render_command_preview () {
 	$("#textarea_command_preview").text (parse_alert_command (original_command));
 }
+function render_command_description (command_description) {
+	if(command_description != '') {
+		command_description = '<br>'+command_description;
+	}
+	$("#command_description").html(command_description);
+}

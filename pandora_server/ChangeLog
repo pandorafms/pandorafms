@@ -1,3 +1,8 @@
+2012-05-21  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* util/pandora_db.pl: Set default DB port number when it's not
+	 specified in the configuration file.
+
 2012-05-17  Koichiro Kikuchi  <koichiro@rworks.jp>
 
 	* conf/pandora_server.conf.windows,

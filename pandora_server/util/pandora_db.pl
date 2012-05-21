@@ -378,6 +378,7 @@ sub pandora_load_config ($) {
  	foreach my $param ('dbuser', 'dbpass', 'dbname', 'dbhost', 'log_file') {
 		die ("[ERROR] Bad config values. Make sure " . $conf->{'_pandora_path'} . " is a valid config file.\n\n") unless defined ($conf->{$param});
  	}
+	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ('mysql', $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});

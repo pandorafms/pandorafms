@@ -783,6 +783,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `last_pass_change` DATETIME  NOT NULL DEFAULT 0,
   `last_failed_login` DATETIME  NOT NULL DEFAULT 0,
   `failed_attempt` int(4) NOT NULL DEFAULT 0,
+  `login_blocked` tinyint(1) unsigned NOT NULL default 0,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

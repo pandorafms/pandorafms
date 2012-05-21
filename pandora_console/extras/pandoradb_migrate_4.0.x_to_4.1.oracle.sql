@@ -227,6 +227,7 @@ alter table tusuario add (force_change_pass NUMBER(5,0) default 0 NOT NULL);
 alter table tusuario add (last_pass_change TIMESTAMP default 0);
 alter table tusuario add (last_failed_login TIMESTAMP default 0);
 alter table tusuario add (failed_attempt NUMBER(5,0) default 0 NOT NULL);
+alter table tusuario add (login_blocked NUMBER(5,0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_commands`

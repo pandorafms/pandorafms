@@ -707,7 +707,8 @@ CREATE TABLE "tusuario" (
 	"force_change_pass" SMALLINT NOT NULL default 0,
 	"last_pass_change" BIGINT NOT NULL default 0,
 	"last_failed_login" BIGINT NOT NULL default 0,
-	"failed_attempt" INTEGER NOT NULL DEFAULT 0
+	"failed_attempt" INTEGER NOT NULL DEFAULT 0,
+	"login_blocked" SMALLINT NOT NULL default 0
 );
 
 CREATE TABLE "tusuario_perfil" (

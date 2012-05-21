@@ -62,8 +62,6 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 session_start ();
 require_once ("include/config.php");
 
-$fails = get_parameter('fails', 0);
-
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 	include_once (ENTERPRISE_DIR."/load_enterprise.php");

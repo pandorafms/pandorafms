@@ -224,6 +224,7 @@ ALTER TABLE `tusuario` ADD COLUMN `force_change_pass` tinyint(1) DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `last_pass_change` DATETIME  NOT NULL DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `last_failed_login` DATETIME  NOT NULL DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `failed_attempt` int(4) NOT NULL DEFAULT 0;
+ALTER TABLE `tusuario` ADD COLUMN `login_blocked` tinyint(1) DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `talert_commands`

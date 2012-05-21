@@ -877,7 +877,8 @@ CREATE TABLE tusuario (
 	force_change_pass NUMBER(5,0) default 0 NOT NULL,
 	last_pass_change TIMESTAMP default 0,
 	last_failed_login TIMESTAMP default 0,
-	failed_attempt NUMBER(5,0) default 0 NOT NULL
+	failed_attempt NUMBER(5,0) default 0 NOT NULL,
+	login_blocked NUMBER(5,0) default 0 NOT NULL
 );
 
 CREATE TABLE tusuario_perfil (

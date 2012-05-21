@@ -1,3 +1,16 @@
+2012-05-21  Vanessa Gil <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.oracle.sql
+	  pandoradb_data.sql
+	  pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added column 'login_blocked'
+	to 'tusuario'.
+
 2012-05-21  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

@@ -216,6 +216,7 @@ ALTER TABLE "tusuario" ADD COLUMN "force_change_pass" SMALLINT NOT NULL default 
 ALTER TABLE "tusuario" ADD COLUMN "last_pass_change" BIGINT NOT NULL default 0;
 ALTER TABLE "tusuario" ADD COLUMN "last_failed_login" BIGINT NOT NULL default 0;
 ALTER TABLE "tusuario" ADD COLUMN "failed_attempt" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "login_blocked" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `talert_commands`

@@ -227,3 +227,9 @@ alter table tusuario add (force_change_pass NUMBER(5,0) default 0 NOT NULL);
 alter table tusuario add (last_pass_change TIMESTAMP default 0);
 alter table tusuario add (last_failed_login TIMESTAMP default 0);
 alter table tusuario add (failed_attempt NUMBER(5,0) default 0 NOT NULL);
+
+-- -----------------------------------------------------
+-- Table `talert_commands`
+-- -----------------------------------------------------
+
+INSERT INTO talert_commands (name, command, description, internal) VALUES ('Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);

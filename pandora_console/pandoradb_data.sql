@@ -33,6 +33,7 @@ INSERT INTO `talert_commands` VALUES (6,'Syslog','logger -p daemon.alert Pandora
 INSERT INTO `talert_commands` VALUES (7,'Sound Alert','/usr/bin/play /usr/share/sounds/alarm.wav','', 0);
 INSERT INTO `talert_commands` VALUES (8,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name', 0);
 INSERT INTO `talert_commands` VALUES (9,'SMS','sendsms _field1_ _field2_','Send SMS using the Pandora FMS standard SMS device, using smstools.  Uses field2 as text message, field1 as destination phone (include international prefix!)', 0);
+INSERT INTO `talert_commands` VALUES (10,'Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);
 
 --
 -- Dumping data for table `tconfig`

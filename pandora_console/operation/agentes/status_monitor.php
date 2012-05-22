@@ -601,13 +601,13 @@ foreach ($result as $row) {
 		$last_status =  modules_get_agentmodule_last_status($row['id_agente_modulo']);
 		switch($last_status) {
 			case 0:
-				$data[5] = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
+				$data[5] = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
 				break;
 			case 1:
-				$data[5] = ui_print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
+				$data[5] = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
 				break;
 			case 2:
-				$data[5] = ui_print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
+				$data[5] = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
 				break;
 		}
 	}

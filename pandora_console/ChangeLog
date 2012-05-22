@@ -1,5 +1,10 @@
 2012-05-22  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php: Fixed 
+	desactivation of history data when edit a policy module
+
+2012-05-22  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php
 	include/ajax/agent.php
 	include/functions_io.php

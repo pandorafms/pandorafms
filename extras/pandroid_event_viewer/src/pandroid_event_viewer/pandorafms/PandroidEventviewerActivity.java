@@ -64,7 +64,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 	// Parameters to search in the API
 	public String agentNameStr;
-	public int id_group;
+	public int id_group = -1;
 	public long timestamp;
 	public int severity;
 	public int pagination;
@@ -248,10 +248,10 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 	/**
 	 * Serializes all params.
-	 * 
+	 * @param total True if only want the count
 	 * @return All params in a string.
 	 */
-	private String serializeParams2Api() {
+	private String serializeParams2Api(boolean total) {
 		String return_var = "";
 
 		return_var += ';'; // Separator for the csv
@@ -279,7 +279,14 @@ public class PandroidEventviewerActivity extends TabActivity implements
 															// list events
 		return_var += "|";
 		return_var += Long.toString(this.offset); // The offset of list events
-
+		return_var += "|";
+		if (total) {
+			return_var+="total";
+		} else {
+			return_var+="-1";
+		}
+		return_var += "|";
+		return_var += Integer.toString(this.id_group);
 		Log.i(TAG + " serializeParams2Api", return_var);
 
 		return return_var;
@@ -320,7 +327,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 					"url_encode_separator_|"));
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
 			parameters.add(new BasicNameValuePair("other",
-					serializeParams2Api() + "|total"));
+					serializeParams2Api(true)));
 			entity = new UrlEncodedFormEntity(parameters);
 			httpPost.setEntity(entity);
 			response = httpClient.execute(httpPost);
@@ -345,7 +352,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 					"url_encode_separator_|"));
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
 			parameters.add(new BasicNameValuePair("other",
-					serializeParams2Api()));
+					serializeParams2Api(false)));
 			entity = new UrlEncodedFormEntity(parameters);
 			httpPost.setEntity(entity);
 			response = httpClient.execute(httpPost);

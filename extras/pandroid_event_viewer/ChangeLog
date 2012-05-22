@@ -1,3 +1,8 @@
+2012-05-22 Santiago Munín <burning1@gmail.com>
+
+	* PandroidEventviewerService.java, PandroidEventviewerActivity.java: Added group filter.
+	* res/layout/main.xml: Enabled group spinner.
+
 2012-05-21 Santiago Munín  <burning1@gmail.com>
 
 	* EventList.java, PopupValidationEvent.java: Removed references to Core as an object.

@@ -110,7 +110,7 @@ public class PandroidEventviewerService extends IntentService {
 
 				httpPost = new HttpPost(this.url + "/include/api.php");
 
-				String parametersAPI = serializeParams2Api(context);
+				String parametersAPI = serializeParams2Api(context, false);
 
 				// Get total count.
 				parameters = new ArrayList<NameValuePair>();
@@ -184,16 +184,14 @@ public class PandroidEventviewerService extends IntentService {
 	 * @param context
 	 * @return Api call.
 	 */
-	public String serializeParams2Api(Context context) {
+	public String serializeParams2Api(Context context, boolean total) {
 		SharedPreferences preferences = context.getSharedPreferences(
 				context.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
 
 		String filterAgentName = preferences.getString("filterAgentName", "");
-		/*
-		 * TODO no api parameter, waiting for it int filterIDGroup =
-		 * preferences.getInt("filterIDGroup", 0);
-		 */
+
+		int idGroup = preferences.getInt("filterIDGroup", 0);
 		int filterSeverity = preferences.getInt("filterSeverity", -1);
 		int filterStatus = preferences.getInt("filterStatus", 3);
 		String filterEventSearch = preferences.getString("filterEventSearch",
@@ -238,13 +236,27 @@ public class PandroidEventviewerService extends IntentService {
 		return_var += filterEventSearch; // The free search in the text event
 											// description.
 		return_var += "|";
-		return_var += Integer.toString(0); // The pagination of list events
+		return_var += Integer.toString(100); // The pagination of list events
 		return_var += "|";
 		return_var += Long.toString(0); // The offset of list events
+		return_var += "|";
+		if (total) {
+			return_var += "total";
+		} else {
+			return_var += "-1";
+		}
+		return_var += "|";
+		return_var += Integer.toString(idGroup);
 
 		Log.i(TAG + " serializeParams2Api", return_var);
 
 		return return_var;
+		//;|-1|||||1337666333||3||20|0|total|-1
+		//;|-1|||||1337695530||3||0 |0|     |12
+		//;|-1|||||1337695739||3||0 |0|-1   |2
+		//;|-1|||||1337666333||3||20|0|-1   |2
+		//;|-1|||||1337695739||3||0 |0|-1   |12
+		//;|-1|||||1337666333||3||20|0|-1|-1
 	}
 
 	/**

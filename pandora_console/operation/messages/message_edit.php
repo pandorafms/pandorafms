@@ -73,10 +73,10 @@ if ($read_message) {
 	$table->width = '98%';
 	$table->data = array();
 	
-	$table->data[0][0] = __('From:');
+	$table->data[0][0] = __('Sender');
 	$table->data[0][1] = $user_name.' '.__('at').' ' . ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
 	
-	$table->data[1][0] = __('To:');
+	$table->data[1][0] = __('Destination');
 	$table->data[1][1] = $dst_name;
 	
 	$table->data[2][0] = __('Subject');
@@ -150,7 +150,7 @@ $table->width = '98%';
 
 $table->data = array();
 
-$table->data[0][0] = __('From:');
+$table->data[0][0] = __('Sender');
 
 if (!empty($own_info['fullname'])) {
 	$table->data[0][1] = $own_info['fullname'];
@@ -158,7 +158,7 @@ if (!empty($own_info['fullname'])) {
 	$table->data[0][1] = $config['id_user'];
 }
 
-$table->data[1][0] = __('To:');
+$table->data[1][0] = __('Destination');
 
 $users_full = groups_get_users (array_keys(users_get_groups()));
 $users = array();

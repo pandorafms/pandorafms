@@ -120,9 +120,9 @@ if (empty ($messages)) {
 	
 	$table->head[0] = __('Status');
 	if ($show_sent)
-		$table->head[1] = __('To');
+		$table->head[1] = __('Destination');
 	else
-		$table->head[1] = __('From');
+		$table->head[1] = __('Sender');
 	$table->head[2] = __('Subject');
 	$table->head[3] = __('Timestamp');
 	$table->head[4] = __('Delete'). html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');

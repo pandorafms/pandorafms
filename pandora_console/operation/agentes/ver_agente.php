@@ -188,7 +188,7 @@ if (is_ajax ()) {
 				
 				//Metaconsole db connection
 				$connection = metaconsole_get_connection($server_name);
-				if (!metaconsole_load_external_db($connection)) {
+				if (metaconsole_load_external_db($connection) != NOERR) {
 					//ui_print_error_message ("Error connecting to ".$server_name);
 					continue;
 				}
@@ -270,7 +270,7 @@ if (is_ajax ()) {
 		if ($config ['metaconsole'] == 1) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
-				if (metaconsole_load_external_db($connection)) {
+				if (metaconsole_load_external_db($connection) == NOERR) {
 					/* Get all agents if no agent was given */
 					if ($id_agent == 0)
 						$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));

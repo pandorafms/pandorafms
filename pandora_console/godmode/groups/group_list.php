@@ -100,7 +100,7 @@ if (is_ajax ()) {
 				
 				$connection_result = enterprise_hook('metaconsole_load_external_db', array($connection_data)); 
 				
-				if ($connection_result) {
+				if ($connection_result == NOERR) {
 					$agents_tmp = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
 					
 					if ($agents_tmp === false)

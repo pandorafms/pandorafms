@@ -327,17 +327,17 @@ function __ ($string /*, variable arguments */) {
 
 	global $config;
 
-	if ($config['enterprise_installed']) {
-		if (isset($config['translate_string_extension_installed']) && $config['translate_string_extension_installed'] == 1) {
-			if (array_key_exists('translate_string.php', $extensions)) {
-				enterprise_include_once('extensions/translate_string/functions.php');
+	if ($config['enterprise_installed'] && 
+				isset($config['translate_string_extension_installed']) && 
+				$config['translate_string_extension_installed'] == 1 &&
+				array_key_exists('translate_string.php', $extensions)) {
+		
+		enterprise_include_once('extensions/translate_string/functions.php');
 
-				$tranlateString = get_defined_translation($string);
+		$tranlateString = get_defined_translation($string);
 
-				if ($tranlateString !== false) {
-					return $tranlateString;
-				}
-			}
+		if ($tranlateString !== false) {
+			return $tranlateString;
 		}
 	}
 

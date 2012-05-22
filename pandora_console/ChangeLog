@@ -1,3 +1,17 @@
+2012-05-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	include/ajax/agent.php
+	include/functions_io.php
+	include/constants.php
+	operation/agentes/ver_agente.php
+	godmode/groups/group_list.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/reporting_builder.item_editor.php: Change the
+	metaconsole error controls to adapt the calls to last changes
+	Clean code
+
 2012-05-22  Sancho Lerena <slerena@artica.es>
 
         * include/functions_ui.php: Added definition for module unknown.

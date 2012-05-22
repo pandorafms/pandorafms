@@ -94,7 +94,7 @@ elseif ($search_agents && ($config['metaconsole'] == 1)) {
 	}
 	
 	foreach ($servers as $server) {
-		if (!metaconsole_load_external_db ($server)) {
+		if (metaconsole_load_external_db ($server) != NOERR) {
 			continue;
 		}
 		
@@ -194,7 +194,7 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1)) {
 	}
 	
 	foreach ($servers as $server) {
-		if (!metaconsole_load_external_db ($server)) {
+		if (metaconsole_load_external_db ($server) != NOERR) {
 			continue;
 		}
 	

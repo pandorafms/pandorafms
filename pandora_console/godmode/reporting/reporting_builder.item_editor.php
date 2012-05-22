@@ -97,7 +97,7 @@ switch ($action) {
 		// Metaconsole db connection
 		if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 			$connection = metaconsole_get_connection($server_name);
-			if (!metaconsole_load_external_db($connection)) {
+			if (metaconsole_load_external_db($connection) != NOERR) {
 				//ui_print_error_message ("Error connecting to ".$server_name);
 			}
 		}
@@ -481,7 +481,7 @@ html_print_input_hidden('id_item', $idItem);
 					$connection = metaconsole_get_connection($server_name);
 					$agent_name = '';
 
-					if (metaconsole_load_external_db($connection))
+					if (metaconsole_load_external_db($connection) == NOERR)
 						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));				
 						
 					//Restore db connection
@@ -509,7 +509,7 @@ html_print_input_hidden('id_item', $idItem);
 					if ($config['metaconsole'] == 1) {
 						$connection = metaconsole_get_connection($server_name);
 
-						if (metaconsole_load_external_db($connection)) {
+						if (metaconsole_load_external_db($connection) == NOERR) {
 							$agent_name_temp = db_get_all_rows_sql($sql);
 							
 							if ($agent_name_temp === false)
@@ -811,7 +811,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 						// Metaconsole db connection
 						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 							$connection = metaconsole_get_connection($server_name);
-							if (!metaconsole_load_external_db($connection)) {
+							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
 								continue;
 							}
@@ -906,7 +906,7 @@ function print_General_list($width, $action, $idItem = null) {
 						// Metaconsole db connection
 						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
 							$connection = metaconsole_get_connection($server_name);
-							if (!metaconsole_load_external_db($connection)) {
+							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
 								continue;
 							}

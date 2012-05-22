@@ -204,7 +204,14 @@ $table_simple->data[3][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_thr
 $table_simple->data[3][1] = html_print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true, $disabledBecauseInPolicy);
 $table_simple->data[3][2] = __('Historical data');
-$table_simple->data[3][3] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
+if($disabledBecauseInPolicy) {
+	// If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
+	$table_simple->data[3][3] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[3][3] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
+}
+else {
+	$table_simple->data[3][3] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
+}
 
 /* Advanced form part */
 $table_advanced->id = 'advanced';

@@ -1,3 +1,9 @@
+2012-05-22  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Fixed 
+	desactivation of history data when edit a policy module
+	Merged from trunk
+
 2012-05-22  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_ui.php: Added definition for module unknown.

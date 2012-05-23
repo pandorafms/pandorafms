@@ -168,9 +168,9 @@ public class Core {
 	}
 
 	/**
-	 * Converts chosen time from spinner to seconds (either are seconds or not)
+	 * Converts max event age chosen from spinner to seconds (either are seconds or not)
 	 * 
-	 * @return
+	 * @return Time in milliseconds.
 	 */
 	private static int convertRefreshTimeKeyToTime(Context ctx) {
 		int returnvar = 60 * 10;
@@ -243,4 +243,19 @@ public class Core {
 
 		return returnvar * 1000;
 	}
-}
+	/**
+	 * 
+	 * @param params
+	 * @return
+	 */
+	public static String serializeParams2Api(String[] params) {
+			String return_var = params[0];
+
+			for (int i = 1; i < params.length; i++) {
+				return_var+= "|" + params[i];
+			}
+
+			Log.i(TAG + " serializeParams2Api", return_var);
+			return return_var;
+		}
+	}

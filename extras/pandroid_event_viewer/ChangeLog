@@ -1,3 +1,8 @@
+2012-05-23 Santiago Munín <burning1@gmail.com>
+
+	* Core.java: Added a generic function which will serialize given params in order to send an API request.
+	* PandroidEventviewerActivity.java, PandroidEventviewerService: Refactorized the serialization of parameters (now, they call Core.java function). 
+
 2012-05-22 Santiago Munín <burning1@gmail.com>
 
 	* PandroidEventviewerService.java, PandroidEventviewerActivity.java: Added group filter.

@@ -98,8 +98,8 @@ public class PandroidEventviewerService extends IntentService {
 					&& (url.length() == 0)) {
 				return;
 			}
-
 			try {
+
 				DefaultHttpClient httpClient = new DefaultHttpClient();
 				UrlEncodedFormEntity entity;
 				HttpPost httpPost;
@@ -110,7 +110,8 @@ public class PandroidEventviewerService extends IntentService {
 
 				httpPost = new HttpPost(this.url + "/include/api.php");
 
-				String parametersAPI = serializeParams2Api(context, false);
+				String parametersAPI = serializeParams2Api(context, true, false, false);
+				Log.d(TAG, "Parameters checking new events: " + parametersAPI);
 
 				// Get total count.
 				parameters = new ArrayList<NameValuePair>();
@@ -121,8 +122,7 @@ public class PandroidEventviewerService extends IntentService {
 				parameters.add(new BasicNameValuePair("other_mode",
 						"url_encode_separator_|"));
 				parameters.add(new BasicNameValuePair("return_type", "csv"));
-				parameters.add(new BasicNameValuePair("other", parametersAPI
-						+ "|total"));
+				parameters.add(new BasicNameValuePair("other", parametersAPI));
 				entity = new UrlEncodedFormEntity(parameters);
 				httpPost.setEntity(entity);
 				response = httpClient.execute(httpPost);
@@ -136,6 +136,7 @@ public class PandroidEventviewerService extends IntentService {
 
 				// Check the event more critical
 				if (this.count_events != 0) {
+					Log.i(TAG, "There are new events");
 					parameters = new ArrayList<NameValuePair>();
 					parameters.add(new BasicNameValuePair("user", this.user));
 					parameters
@@ -147,7 +148,7 @@ public class PandroidEventviewerService extends IntentService {
 					parameters
 							.add(new BasicNameValuePair("return_type", "csv"));
 					parameters.add(new BasicNameValuePair("other",
-							parametersAPI + "|more_criticity"));
+							serializeParams2Api(context, false, true, true)));
 					entity = new UrlEncodedFormEntity(parameters);
 					httpPost.setEntity(entity);
 					response = httpClient.execute(httpPost);
@@ -156,7 +157,6 @@ public class PandroidEventviewerService extends IntentService {
 							.getContent());
 					return_api = return_api.replace("\n", "");
 					this.more_criticity = new Integer(return_api).intValue();
-
 					notificationEvent(context);
 				} else {
 					this.more_criticity = -1;
@@ -182,9 +182,15 @@ public class PandroidEventviewerService extends IntentService {
 	 * Builds an api call from all filter parameters
 	 * 
 	 * @param context
-	 * @return Api call.
+	 * @param total
+	 *            Activate if you want don't want to get details, but a count.
+	 * @param more_criticity
+	 *            Activate if you want to get the more critical level of events.
+	 *            <b>NOTE:</b> Only one can be activated at once.
+	 * @return
 	 */
-	public String serializeParams2Api(Context context, boolean total) {
+	public String serializeParams2Api(Context context, boolean total,
+			boolean more_criticity, boolean updateTime) {
 		SharedPreferences preferences = context.getSharedPreferences(
 				context.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -192,6 +198,7 @@ public class PandroidEventviewerService extends IntentService {
 		String filterAgentName = preferences.getString("filterAgentName", "");
 
 		int idGroup = preferences.getInt("filterIDGroup", 0);
+		Log.d(TAG, "idGroup: " + idGroup);
 		int filterSeverity = preferences.getInt("filterSeverity", -1);
 		int filterStatus = preferences.getInt("filterStatus", 3);
 		String filterEventSearch = preferences.getString("filterEventSearch",
@@ -200,63 +207,42 @@ public class PandroidEventviewerService extends IntentService {
 		Calendar c = Calendar.getInstance();
 		long now = (c.getTimeInMillis() / 1000);
 		long filterTimestamp = preferences.getLong("filterTimestamp", now);
-		SharedPreferences.Editor editorPreferences = preferences.edit();
-		// Save for the next execution
-		editorPreferences.putLong("filterTimestamp", now);
-		// Save the previous for the list.
-		editorPreferences.putLong("previous_filterTimestamp", filterTimestamp);
-		if (editorPreferences.commit()) {
-			Log.i(TAG + " (filter options)",
-					"Configuration changes commited (timestamp)");
-		} else {
-			Log.e(TAG + " (filter options)",
-					"Configuration changes not commited");
+		if (updateTime) {
+			SharedPreferences.Editor editorPreferences = preferences.edit();
+			// Save for the next execution
+			editorPreferences.putLong("filterTimestamp", now);
+			// Save the previous for the list.
+			editorPreferences.putLong("previous_filterTimestamp",
+					filterTimestamp);
+			if (editorPreferences.commit()) {
+				Log.i(TAG + " (filter options)",
+						"Configuration changes commited (timestamp)");
+			} else {
+				Log.e(TAG + " (filter options)",
+						"Configuration changes not commited");
+			}
 		}
-
-		String return_var = "";
-
-		return_var += ';'; // Separator for the csv
-		return_var += "|";
-		return_var += Integer.toString(filterSeverity); // Criticity or severity
-		return_var += "|";
-		return_var += filterAgentName; // The agent name
-		return_var += "|";
-		return_var += ""; // Name of module
-		return_var += "|";
-		return_var += ""; // Name of alert template
-		return_var += "|";
-		return_var += ""; // Id user
-		return_var += "|";
-		return_var += Long.toString(filterTimestamp); // The minimun timestamp
-		return_var += "|";
-		return_var += ""; // The maximum timestamp
-		return_var += "|";
-		return_var += filterStatus; // The status
-		return_var += "|";
-		return_var += filterEventSearch; // The free search in the text event
-											// description.
-		return_var += "|";
-		return_var += Integer.toString(100); // The pagination of list events
-		return_var += "|";
-		return_var += Long.toString(0); // The offset of list events
-		return_var += "|";
-		if (total) {
-			return_var += "total";
-		} else {
-			return_var += "-1";
+		String totalStr = (total) ? "total" : "-1";
+		if (more_criticity) {
+			totalStr = "more_criticity";
 		}
-		return_var += "|";
-		return_var += Integer.toString(idGroup);
-
-		Log.i(TAG + " serializeParams2Api", return_var);
-
-		return return_var;
-		//;|-1|||||1337666333||3||20|0|total|-1
-		//;|-1|||||1337695530||3||0 |0|     |12
-		//;|-1|||||1337695739||3||0 |0|-1   |2
-		//;|-1|||||1337666333||3||20|0|-1   |2
-		//;|-1|||||1337695739||3||0 |0|-1   |12
-		//;|-1|||||1337666333||3||20|0|-1|-1
+		return Core.serializeParams2Api(new String[] { ";", // Separator for the
+															// csv
+				Integer.toString(filterSeverity), // Criticity or severity
+				filterAgentName, // The agent name
+				"", // Name of module
+				"", // Name of alert template
+				"", // Id user
+				Long.toString(filterTimestamp), // The minimun timestamp
+				"", // The maximum timestamp
+				String.valueOf(filterStatus), // The status
+				filterEventSearch, // The free search in the text event
+									// description.
+				Integer.toString(20), // The pagination of list events
+				Long.toString(0), // The offset of list events
+				totalStr, // Count or show
+				Integer.toString(idGroup), // Group ID
+		});
 	}
 
 	/**

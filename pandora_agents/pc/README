@@ -1,0 +1,50 @@
+Pandora FMS : The Flexible Monitoring System
+============================================
+
+http://www.pandorafms.org
+
+How to install
+--------------
+
+Run this command  to see available options:
+
+   ./pandora_agent_installer 
+
+What is Pandora FMS?
+--------------------
+
+Pandora FMS is a monitoring application to watch systems and applications.
+Pandora FMS allows to know the status of any element of your bussiness systems.
+Pandora FMS watches your hardware, your software, your multilayer system and, of
+course, your Operating System. Pandora FMS can detect a network interface down
+or the movement of any NASDAQ new technology market value. If you wish, Pandora
+FMS can send a SMS message when your system or your application fails... or when
+Google stock value drops below 330 US$.
+
+Pandora FMS will adjust, like an octopus, to your systems and requirements,
+because it has been designed to be open, modular, multiplattform and easy to
+customize. Pandora FMS is developed for system administrators.
+
+About the generic Unix agent
+----------------------------
+
+This agent is build on Perl and needs the following minimal requisites:
+
+PERL version 5.8 or higher.
+
+By default this minimum OS has all the requisites to run "standalone":
+
+- Linux: Redhat 6, SUSE 5, Debian 2.x and any distro with Perl 5.6
+- IBM AIX: 5.1
+- Hewlett Packard HPUX: 11.10 or higher. 11.0 comes with Perl 4.0 :(
+- Sun Solaris: 2.9. With 2.8 you can install BlastWare Perl 5.8 package, see more 
+information in our FAQ about how to install Blashware packages.
+- Other Unix: TRU, IRIX, etc not tested, if you want to port the agent to this 
+unixes, please contact with us, we'll glad to port them !!!
+
+License
+-------
+
+The project is distributed under the GPL License v2 or later.
+Copyright (C) 2004-2011 Pandora FMS development team
+

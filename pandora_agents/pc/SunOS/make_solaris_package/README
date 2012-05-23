@@ -1,0 +1,12 @@
+This directory contains Pandora FMS agent package builder for Solaris.
+
+To make the Solaris package, execute:
+
+   ./make_solaris_package.sh
+
+It works with x86/SPARC Solaris 9 or 10.
+
+The package file, named "PandoraFMS-agent-X.X.X.pkg", will be created.
+You can install it to Solaris 9 or 10 like this:
+
+  pkgadd -d ./PandoraFMS-agent-X.X.X.pkg

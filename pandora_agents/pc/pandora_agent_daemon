@@ -1,0 +1,128 @@
+#!/bin/sh
+
+# **********************************************************************
+# Pandora FMS Agent Daemon launcher for Unix (AIX, HP-UX, SunOS, Linux)
+# (c) 2008-2010 Artica ST
+# (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
+#
+# Please see http://www.pandorafms.org
+# v3.2 Build 101115
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+### BEGIN INIT INFO
+# Provides: pandora_agent
+# Required-Start: $network
+# Required-Stop: $network
+# Default-Start: 2 3 5
+# Default-Stop: 0 1 6
+# Short-Description: Startup script daemon for Pandora FMS agent
+# Description: Startup script daemon for Pandora FMS agent (linux)
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+PANDORA_PATH=/etc/pandora
+DAEMON=/usr/bin/pandora_agent
+DAEMON_TENTACLE=/usr/bin/tentacle_server
+LOGFILE=/var/log/pandora/pandora_agent.log
+PANDORA_USER=root
+
+# This function replace pidof, not working in the same way in different linux distros
+
+pidof_pandora () {
+	COLUMNS=400
+	OS_NAME=`uname -s`
+	if [ $OS_NAME = "HP-UX" ]
+	then
+		PANDORA_PID=`ps -ex | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $1 }'`
+	else
+		if [ "$OS_NAME" = "SunOS" ]
+		then
+			ZONENAME_CMD="/bin/zonename"
+			TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-40`
+			if [ -x $ZONENAME_CMD ]
+			then
+				ZONE=`$ZONENAME_CMD`
+			else
+				ZONE=
+			fi
+			if [ "$ZONE" = "global" ]
+			then
+				PANDORA_PID=`ps -f -z global | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+			else
+				PANDORA_PID=`ps -Af | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+			fi
+		elif [ "$OS_NAME" = "Linux" -a -x /usr/sbin/vzpid ]
+		then
+			for _pid in `ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
+			do
+				_ctid=`/usr/sbin/vzpid $_pid | awk '$1 == '$_pid' { print $2 }'`
+				if [ "X$_ctid" = "X0" ]
+				then
+					PANDORA_PID=$_pid
+					break
+				fi
+			done
+		else
+			PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+		fi
+	fi
+	
+	echo $PANDORA_PID
+}
+
+if [ ! -f $DAEMON ]
+then
+	echo "Pandora FMS Agent not found at $DAEMON, please check setup"
+	exit
+fi
+
+case "$1" in
+	start)
+		PANDORA_PID=`pidof_pandora`
+		if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Agent is currently running on this machine with PID $PANDORA_PID"
+			echo "Cannot launch again. Aborting."
+			exit 1
+		fi
+		su $PANDORA_USER -c "PATH=$PATH nohup $DAEMON $PANDORA_PATH >/dev/null 2>$LOGFILE &"
+		sleep 2
+		PANDORA_PID=`pidof_pandora`
+		echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
+	;;
+	
+	stop)
+		PANDORA_PID=`pidof_pandora`
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
+			exit 1
+		else
+			echo "Stopping Pandora Agent."
+			su $PANDORA_USER -c "kill $PANDORA_PID >/dev/null 2>&1"
+		fi
+	;;
+
+	status)
+		PANDORA_PID=`pidof_pandora`	
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Agent is not running."
+		else
+			echo "Pandora FMS Agent is running with PID $PANDORA_PID."
+		fi
+		exit 0
+	;;
+
+	force-reload|restart)
+		$0 stop
+		sleep 2
+		$0 start
+	;;
+	
+	*)
+	echo "Usage: /etc/init.d/pandora_agent_daemon {start|stop|restart|status}"
+	exit 1
+esac
+

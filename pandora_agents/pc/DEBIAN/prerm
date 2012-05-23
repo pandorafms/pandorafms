@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo Stop Pandora agent daemon
+/etc/init.d/pandora_agent_daemon stop
+
+PANDORA_CFG=/etc/pandora
+
+#rm -rf $PANDORA_CFG/plugins
+#rm -rf $PANDORA_CFG/pandora_agent.conf
+
+update-rc.d -f pandora_agent_daemon remove

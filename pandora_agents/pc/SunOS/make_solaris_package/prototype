@@ -1,0 +1,23 @@
+i pkginfo
+i copyright
+f none usr/bin/pandora_agent 0755 root root
+f none usr/bin/tentacle_client 0755 root root
+f none usr/bin/tentacle_server 0755 root root
+f none usr/bin/pandora_agent_exec 0755 root root
+d none usr/share/pandora_agent 0755 root root
+d none usr/share/pandora_agent/plugins 0755 root root
+f none usr/share/pandora_agent/plugins/files_indir 0755 root root
+f none usr/share/pandora_agent/plugins/grep_log 0755 root root
+f none usr/share/pandora_agent/plugins/inventory 0755 root root
+f none usr/share/pandora_agent/plugins/pandora_df 0755 root root
+f none usr/share/pandora_agent/plugins/nagios_plugin_wrapper 0755 root root
+f none usr/share/pandora_agent/plugins/pandora_update 0755 root root
+d none etc/pandora/ 0755 root root
+f none etc/pandora/pandora_agent.conf 0755 root root
+f none usr/man/man1/pandora_agent.1 0644 root root
+f none usr/man/man1/tentacle_client.1 0644 root root
+d none var/spool/pandora 0755 root root
+d none var/spool/pandora/data_out 0755 root root
+d none var/log/pandora 0755 root root
+f none etc/init.d/pandora_agent_daemon 0755 root root
+s none etc/rc2.d/S90pandora_agent_daemon=../init.d/pandora_agent_daemon

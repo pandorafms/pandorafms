@@ -1,0 +1,678 @@
+2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/postinst, DEBIAN/make_deb_package.sh: disabled the checking
+	the plugins files with same name.
+
+2012-04-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged from 4.0 branch. Leave the secondary server
+	  password empty by default. Fixes bug #3519520.
+
+2012-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Removed an unused variable.
+
+2012-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Backup and restore conf file and daemon
+	  launcher. Moved the code that sets PANDORA_USER back to its original
+	  place and set the variable properly instead.
+
+2012-04-19  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* pandora_agent: Also added the temporal directory to the file path
+	 for symlink check.
+
+2012-04-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Add the temporal directory to the file path before
+	  trying to send a buffered XML file.
+
+2012-03-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Moved the code that sets PANDORA_USER to
+	  the right place.
+
+2012-03-02  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* pandora_agent: Fixed bug of my previous commit (removed "qw").
+
+2012-03-01  Koichiro Kikuchi  <koichiro@rworks.jp>
+
+	* pandora_agent: Added symlink checks for temporary files before writing
+	 them to avoid symlink attacks.
+
+2012-02-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: Added a warning text. Thanks to Koichiro.
+
+2012-02-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf,
+	  pandora_agent: Added support for xml_buffer.
+
+2012-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Set the intensive interval before reading modules.
+
+2012-02-10  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* pandora_agent: Allow filename wildcards to specify
+	additional configuration files.
+
+2012-01-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added support for intensive modules.
+
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged from 4.0 branch. Empty the broker PID array.
+
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Wait for broker childs instead of ignoring
+	  SIGCHLD.
+
+2011-12-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Ignore SIGCHLD.
+
+2011-12-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Empty modules, plugins and collections before
+	  running a broker agent.
+
+2011-12-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Do not display a warning if the output of a
+	  pre-condition is not numeric.
+
+2011-12-07  KIKUCHI Koichiro  <koichiro@rworks.jp>
+
+	* pandora_agent_installer: Removed duplicated lines and spaces to
+	  tabs.  Also removed lines that set group to wheel (gid of wheel is 0).
+	* plugins/files_indir: Added support for FreeBSD.
+	* plugins/pandora_update: Fixed $conf_path for FreeBSD and spaces
+	  to tabs.
+
+2011-11-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Re-wrote broker agent code (was not working properly).
+
+2011-09-29  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent.redhat.spec: Fixed wrong command paths in %prereq.
+
+2011-09-13  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent: Clear the old process information before
+	  parsing current process information. Also added
+	  missing load_procs() call to module_cpuproc().
+
+2011-09-05  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent_daemon: Added support for OpenVZ/Virtuozzo.
+
+2011-09-02  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent: Now module_condition and module_precondition
+	  accept numeric parameter without fractional part.
+
+2011-08-22  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent.spec, 
+	pandora_agent.redhat.spec (added) Updated specs to be used
+	with OpenSUSE build service. New version for CentOS/RHEL
+
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control
+	DEBIAN/make_deb_package.sh: Updated version to 4.0RC1.
+
+2011-08-19  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agents/unix/pandora_agent.spec: Updated spec.
+
+2011-07-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Set additional module configuration parameters
+	  from the XML.
+
+2011-04-13 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* HP-UX/pandora_agent.conf: Fixed a wrong path for command swapinfo.
+
+2011-04-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* SunOS/make_solaris_package/prototype,
+	SunOS/make_solaris_package/make_solaris_package.sh: Added tentacle_server.
+
+2011-04-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* FreeBSD/pandora_agent.conf: Added missing templates.
+
+2011-04-13 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* AIX/pandora_agent.conf, Linux/pandora_agent.conf, HP-UX/pandora_agent.conf
+	SunOS/pandora_agent.conf: Deleted proxy_user parameter because is not 
+	needed. Also fixed some comments.	
+	* pandora_agent: Resctricted Proxy Mode to non root users. The agent must
+	be launched by a non root user to use Proxy Mode.
+
+2011-04-12 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_daemon: Deleted code that kill tentacle server and
+	replaced kill -9 to kill of agent stop command.
+	* Linux/pandora_agent.conf, AIX/pandora_agent.conf, 
+	HP-UX/pandora_agent.conf,SunOS/pandora_agent.conf : Added parameters 
+	proxy_max_connection and proxy_timeout 1.
+	* pandora_agent: Fixed problems launching tentacle_server and also 
+	added code to handle kill signal.
+
+2011-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent: Fixed an error with command that launch tentacle server
+	when proxy mode is enable.
+
+2011-04-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_installer: Added code to install tentacle_server with
+	pandora agent.
+	* AIX/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+	* tentacle_server: Added tentacle server with proxy support.
+	* pandora_agent_daemon: Add feature to stop tentacle_server when
+	pandora agent stops.
+	* Linux/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+	* HP-UX/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+	* pandora_agent: Added support to tentacle_server and proxy_mode.
+	* SunOS/pandora_agent.conf: Added two new parameters proxy_mode and 
+	proxy_user.
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_installer: Fixed an error with chown in AIX OS.
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* plugins/pandora_update: Fixed a problem getting pandora_agent pid
+	in SunOS.
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_installer: Added correct user to tentacle_client binary.
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_agent_installer: Modified agent isntaller to deal with 
+	specified user installation. 
+
+2011-04-04 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* plugins/pandora_update: Modified plugin for agent autoupdate.
+
+2011-03-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Fixed a typo.
+
+2011-03-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added a module to get the ocupied space % in a
+	  partition.
+
+2011-02-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/postinst: Updated.
+
+2011-02-14  Sancho Lerena <slerena@artica.es>
+
+	* OpenWRT: Special files for OpenWRT/Perl version.
+
+2011-02-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Detach threads to avoid excessive resource usage,
+	  since threads were not joined until all modules were executed.
+
+2011-02-01  Junichi Satoh  <junichi@rworks.jp>
+
+	* FreeBSD/pandora_agent.conf: Fixed invalid cpu usage data is returned
+	when system has only one disk device.
+
+2011-01-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_daemon: Changed order of 'su' argument.
+	Username should be as the 1st argument on Solaris.
+
+2010-12-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent.spec: Added a release variable as in the rest of the
+	  spec files.
+
+2010-12-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer, DEBIAN/postinst, DEBIAN/prerm,
+	  DEBIAN/make_deb_package.sh, pandora_agent.spec,
+	  pandora_agent, SunOS/make_solaris_package/prototype,
+	  SunOS/make_solaris_package/make_solaris_package.sh,
+	  pandora_agent_exec: Renamed pandora_exec to
+	  pandora_agent_exec to avoid conflicts with the pandora_exec
+	  script installed by the server.
+
+2010-12-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer, pandora_agent_daemon: Additional
+	  changes to run the agent as a different user. Starting and
+	  stopping the daemon did not work except as root.
+
+2010-12-16  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/control, DEBIAN/make_deb_package.sh, pandora_console.spec,
+	pandora_console.redhat.spec: update the version number.
+
+2010-12-04  Junichi Satoh  <junichi@rworks.jp>
+
+	* plugins/pandora_update: Added support for FreeBSD.
+
+2010-12-02  Junichi Satoh  <junichi@rworks.jp>
+
+	* SunOS/make_solaris_package/prototype: Added pandora_update.
+
+2010-12-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* plugins/pandora_update: Fixed md5 calculation.
+
+2010-11-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Remove all init symbolic links.
+
+	* plugins/pandora_update: Give the agent daemon some time to stop.
+	  Necessary on Windows.
+
+2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* pandora_agent.spec: change version number.
+
+2010-11-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_daemon: Solaris specific fixes.
+
+2010-11-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: Set root as the default pandora_user.
+
+	* pandora_agent: Share the semaphore after creating it. Removed
+	  an unnecessary require.
+
+2010-11-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent, AIX/pandora_agent.conf,
+	  pandora_agent_daemon, Linux/pandora_agent.conf,
+	  HP-UX/pandora_agent.conf, NT4/pandora_agent.conf,
+	  SunOS/pandora_agent.conf, FreeBSD/pandora_agent.conf: Added a new
+	  configuration option that lets the agent run as a different user
+	  by changing the process' EUID.
+
+	* pandora_agent_installer: Several fixes.
+
+2010-11-15  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* pandora_agent*, pandora_exec, plugins/pandora_update: Small changes:
+	Year, version, spaces to tabs.
+
+2010-11-14  Sancho Lerena <slerena@artica.es>
+
+	* plugins/pandora_update: Small tool (in perl), used also in windows
+	(compiled as .exe), to auto-upgrade the software agents by stopping
+	replacing the binary, and starting again the service/process, and also
+	notifying the system about the upgrade. This will be possible using
+	the new filecollection mechanism in 3.2 version.
+
+2010-11-10  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/postinst, DEBIAN/prerm, DEBIAN/make_deb_package.sh: fixed the use
+	pandora_exec for Pandora Server and Pandora Agent, now make a
+	pandora_exec.agent and try to link to pandora_exec.
+	
+	Fixes: #3106578
+
+2010-11-10  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/make_deb_package.sh: fixed the include the bigger NT4 files in the
+	DEB package.
+
+2010-11-04  Sancho Lerena <slerena@artica.es>
+
+	* NT4: New binary version of Unix perl agent for NT4, with some tools.
+	.exe compiled with ActiveState SDK 9.0
+	
+	* pandora_agent: Some small modifications to make it work nicely in 
+	windows boxes.
+
+2010-11-02  Raul Mateos  <raulofpandora@gmail.com>
+
+	* tentacle_client: Fixed year from last commit. Converted some spaces
+	to tab.
+
+2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* ChangeLog: uploaded lost lines of my commit of yesterday.
+
+2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/postinst, DEBIAN/conffiles, DEBIAN/make_deb_package.sh: fixed the
+	warning of check md5sum on dir "plugins". Now the dir "plugins" is filled
+	postinstall with the package plugins in temp directory, the copy is
+	interactive for don't overwrite the user modified plugins of previous
+	installation.
+	
+	Fixes: #3081496
+
+2010-10-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* SunOS/make_solaris_package/prototype: Added nagios_plugin_wrapper.
+
+2010-10-15  Sancho Lerena <slerena@artica.es>
+
+	* plugins/nagios_plugin_wrapper: Added new plugin.
+
+	* pandora_agent: Version update.
+
+2010-10-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Pass server_pwd and server_ssl configuration tokens
+	  to tentacle. Fixes bug #3080299.
+
+2010-10-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: Added an example usage of the
+	  agent_threads configuration token.
+
+2010-10-06  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent: Added FreeBSD specific commands.
+
+2010-10-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* plugins/inventory: Fixed inventory process information.
+
+	* pandora_agent: Fixed an error that showed when no logfile was
+	  specified in the agent configuration file.
+
+2010-09-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* FreeBSD/pandora_agent: Fixed a typo.
+
+2010-09-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* FreeBSD/pandora_agent: Changed PID detection method to support
+	"jail", FreeBSD virtualization.
+
+2010-09-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_installer: Set PANDORA_USER="root" when it is not
+	defined.
+
+2010-09-22  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent.spec: Updated RPM spec for SUSE
+
+2010-09-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added multi-thread support.
+
+2010-09-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* SunOS/make_solaris_package/README,
+	SunOS/make_solaris_package/copyright,
+	SunOS/make_solaris_package/make_solaris_package.sh,
+	SunOS/make_solaris_package/prototype: Added agent package builder
+	for Solaris.
+
+2010-08-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_daemon, tentacle_client: Added support for Solaris
+	virtualization, "zone".
+
+2010-08-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Fixed collection issues related to the agent. See
+	  bug #3042577.
+
+2010-08-04  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control,
+	pandora_agent.spec: Added unzip to dependencies (for fille collection
+	management).
+
+2010-08-04  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_agent_daemon: fixed user of daemon, it is root, not dario.
+
+2010-07-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* SunOS/pandora_agent.conf: Fixed a typo.
+
+2010-07-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Delete unused collections.
+
+2010-07-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Fixed some directories and permissions.
+
+2010-07-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer,
+	  DEBIAN/make_deb_package.sh,
+	  pandora_agent.spec: Updated to take the collections directory into
+	  account.
+
+	* collections: Added to repository. Collections directory.
+
+2010-07-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added support for file collections.
+
+2010-07-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: changed the module cron configuration token to
+	  module_crontab.
+
+2010-07-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_exec: Do not verify the command to allow pipes and complex
+	  commands.
+
+	* pandora_agent: Quote the command passed to pandora_exec. Fixed
+	  the module cron. Modules without a module cron would not run.
+
+2010-07-05  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_installer: Fixed typo and directory permission
+	for FreeBSD.
+	
+	* FreeBSD/pandora_agent: Simplified.
+
+2010-07-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Fixed a typo.
+
+2010-06-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Improved the module cron to allow intervals and
+	  multiple runs within an interval.
+
+2010-06-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Call df with -P from the Linux abstraction layer
+	  to avoid split lines.
+
+2010-06-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added the module_cron feature to schedule modules
+	  using a cron-like syntax.
+
+2010-06-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added the module_save and module_condition features.
+	  See http://www.openideas.info/wiki/ for more information.
+
+2010-06-14  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_installer: Set execute bit to startup script for
+	FreeBSD.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Improved OS version detection. Disabled error output
+	  for plugins.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent.spec: Create the man dir.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer, pandora_agent.spec: Copy the man pages.
+
+2010-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Removed the need for indexes in the abstraction layer.
+
+2010-06-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added build information to the agent version.
+
+2010-06-07  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_installer: Added support for FreeBSD.
+
+	* FreeBSD/pandora_agent: Added startup script for FreeBSD.
+
+	* FreeBSD/pandora_agent.conf: Added configuration file for FreeBSD.
+
+2010-06-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent.spec: Fixed. Upgrading an RPM broke the installation.
+
+2010-05-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/postinst, DEBIAN/make_deb_package.sh: fixed the script to generate
+	deb package.
+
+2010-05-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/make_deb_package.sh: fixed the permissions to DEBIAN temp package. 
+
+2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN, DEBIAN/control, DEBIAN/conffiles, DEBIAN/make_deb_package.sh,
+	DEBIAN/md5sums: added the scripts and conf files for create package.
+
+2010-05-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added a data collection layer and native modules
+	  similar to those of the Windows agent.
+
+2010-05-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Disabled the plugin command check. Was not working.
+
+2010-04-29 Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent_installer: Added darwin (snow leopard), and BSD to
+	installer OS detection.
+
+	* AIX/pandora_agent.conf: Fixed version & date.
+
+	* HP-UX/pandora_agent.conf: Replaced some default modules by 
+	better ones.
+
+2010-02-22 Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* Linux/pandora_agent.conf: Added parameters position_description
+	and parent_agent_name, and updated loadaverage with a more efficient
+	version.
+
+	* pandora_agent: Added POD documentation, modified to only add
+	to the XML the minimum parameters (positional parameters,
+	parent_agent_name,...) are not sent with default values if not
+	deffined in the config file. Updated verion and build.
+
+2010-02-16  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* Linux/pandora_agent.conf: Fixed Load Average module example
+
+2010-02-16  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	Updated tentacle from the tentacle repository and generated
+	manpage. TODO:Make the installer install the manpages
+
+	* unix/tentacle_client: Added pod documentation to generate manpages.
+
+	*  man/man1/tentacle_client.1: First version of the manpages for
+	tentacle_client
+
+2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_agent_installer: fix bug when uninstall the agent in the same
+	machine that it have a Pandora Server, that the uninstaller deleted the
+	dirs share with Pandora Server (/var/spool/pandora/*)
+	 
+2010-01-27  Sancho Lerena <slerena@artica,es>
+
+	* plugins/files_indir: New agent to detect if files in a specficied
+	directory are less than in previous run. Return two modules.
+
+2009-12-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Removed debugging code.
+
+2009-12-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Make modules with a module_interval run the first time.
+
+2009-12-07  Sancho Lerena <slerena@artica.es>
+
+	* plugins/inventory: Fixed some problems with the plugin (for linux). Added
+	inventory for RPM systems.
+
+2009-12-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Empty modules and plugins before loading a remote
+	  configuration. Made the md5 function 64bit proof :-)
+
+2009-11-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Fixed bug #2888991. Skip remote_config if debug is enabled.
+
+2009-11-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent: Fixed a problem sending the module type in the XML.
+	This causes that all modules were "generic_data". 
+
+2009-11-16  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent: Updated default encoding to iso-8859-1 instead
+	iso-8859-15, because in some systems this encoding is not installed
+	and don't work :-(. Thanks for summa_sp for report this.
+
+2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
+
+	* *.conf: Updated URL and some small fixes.
+
+	* README: Updated name :-D
+
+2009-11-05  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_agent_installer: Added a common installer for all systems.
+
+	* Deleted daemon script for all systems, creaded a general one.
+
+	* Modified HPUX to HP-UX directory.
+
+	* Updated some .conf
+
+

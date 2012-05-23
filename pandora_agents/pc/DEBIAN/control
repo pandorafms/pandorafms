@@ -1,0 +1,10 @@
+package: pandorafms-agent-unix
+Version: 4.0.1
+Architecture: all
+Priority: optional
+Section: admin
+Installed-Size: 260
+Maintainer: Miguel de Dios <miguel.dedios@artica.es>
+Homepage: http://pandorafms.org/
+Depends: coreutils, perl, unzip
+Description: Pandora FMS agents are based on native languages in every platform: scripts that can be written in any language. It’s possible to reproduce any agent in any programming language and can be extended without difﬁculty the existing ones in order to cover aspects not taken into account up to the moment. These scripts are formed by modules that each one gathers a "chunk" of information. Thus, every agent gathers several "chunks" of information; this one is organized in a data set and stored in a single ﬁle, called data ﬁle.

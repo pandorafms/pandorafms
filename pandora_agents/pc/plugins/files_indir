@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Syntax:
+#
+# Directory_Name : Directory to check
+
+if [ -z "$1" ]
+then
+	echo "You need too pass target directory to monitor"
+	echo "Plugin will report CRITICAL if previous number"
+	echo "of files in directory is greater than actual number"
+	exit
+fi
+
+DIRE=$1
+if [ `uname -s` = "FreeBSD" ];then
+	DIRETMP=`echo $DIRE | /sbin/md5`;
+else
+	DIRETMP=`echo $DIRE | md5sum | awk '{ print $1 }'`
+fi
+DIRETMP=/tmp/$DIRETMP
+
+CURRENT=`ls -la ${DIRE} | wc -l | tr -d ' '`
+
+if [ -e $DIRETMP ]
+then
+	ANTERIOR=`cat $DIRETMP`
+else
+	ANTERIOR=0
+fi
+
+if [ $ANTERIOR -gt $CURRENT ]
+then
+	DISPARA=0
+else
+	DISPARA=1
+fi
+
+echo $CURRENT > $DIRETMP
+
+echo "<module>
+    <name><![CDATA[FS_$DIRE]]></name>
+    <description>Number of files in directory</description>
+    <type>generic_proc</type>
+    <data>$DISPARA</data>
+</module>
+
+<module>
+    <name><![CDATA[NumFiles_FS_$DIRE]]></name>
+    <description>Number of files</description>
+    <type>generic_data</type>
+    <data>$CURRENT</data>
+</module>"
+

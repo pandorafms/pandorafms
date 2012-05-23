@@ -247,49 +247,32 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	}
 
 	/**
-	 * Serializes all params.
-	 * @param total True if only want the count
-	 * @return All params in a string.
+	 * Serializes all parameters.
+	 * 
+	 * @param total
+	 *            True if only want the count
+	 * @return All parameters in a string.
 	 */
 	private String serializeParams2Api(boolean total) {
-		String return_var = "";
-
-		return_var += ';'; // Separator for the csv
-		return_var += "|";
-		return_var += Integer.toString(this.severity); // Criticity or severity
-		return_var += "|";
-		return_var += this.agentNameStr; // The agent name
-		return_var += "|";
-		return_var += ""; // Name of module
-		return_var += "|";
-		return_var += ""; // Name of alert template
-		return_var += "|";
-		return_var += ""; // Id user
-		return_var += "|";
-		return_var += Long.toString(this.timestamp); // The minimun timestamp
-		return_var += "|";
-		return_var += ""; // The maximum timestamp
-		return_var += "|";
-		return_var += this.status; // The status
-		return_var += "|";
-		return_var += this.eventSearch; // The free search in the text event
-										// description.
-		return_var += "|";
-		return_var += Integer.toString(this.pagination); // The pagination of
-															// list events
-		return_var += "|";
-		return_var += Long.toString(this.offset); // The offset of list events
-		return_var += "|";
-		if (total) {
-			return_var+="total";
-		} else {
-			return_var+="-1";
+		String totalStr = (total) ? "total" : "-1";
+		if (!total) {
+			totalStr = "-1";
 		}
-		return_var += "|";
-		return_var += Integer.toString(this.id_group);
-		Log.i(TAG + " serializeParams2Api", return_var);
-
-		return return_var;
+		return Core.serializeParams2Api(new String[] { ";", // Separator
+				Integer.toString(this.severity), // Severity
+				this.agentNameStr, // Agent name
+				"", // Module
+				"", // Alert template
+				"", // Id user
+				Long.toString(this.timestamp), // Minimum timestamp,
+				"", // Maximum timestamp
+				String.valueOf(this.status), // Status
+				this.eventSearch, // Search in event description
+				String.valueOf(this.pagination), // Pagination
+				String.valueOf(this.offset), // Event list offset
+				totalStr, // Count or show
+				String.valueOf(this.id_group) // Group id
+				});
 	}
 
 	/**
